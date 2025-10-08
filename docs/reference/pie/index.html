@@ -1,0 +1,5787 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://plotly.com/javascript/reference/pie/">
+      
+      
+        <link rel="prev" href="../parcoords/">
+      
+      
+        <link rel="next" href="../sankey/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>pie - Plotly.js Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra_css.css">
+    
+      <link rel="stylesheet" href="https://docs.plotly.com/css/plotly-style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pie" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Plotly.js Docs" class="md-header__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Plotly.js Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pie
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+
+  <!-- Main navigation -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--primary"
+      data-md-component="sidebar"
+      data-md-type="navigation"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Plotly.js Docs" class="md-nav__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Plotly.js Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/plotlyjs-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Event Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Fundamentals
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Fundamentals
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/configuration-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/responsive-fluid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Responsive / Fluid Layouts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/uirevision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    uirevision in Plotly.react
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    React Plotly.js
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://dash.plotly.com/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Analytical Apps with Dash
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/colorway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Colorway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-hover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Hover Options
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-surface-lighting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Lighting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/horizontal-legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hover-text-and-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Text and Formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/figure-labels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting the Title, Legend Entries, and Axis Titles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/layout-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Layout Template Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/setting-graph-size/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting Graph Size
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tick-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatting Ticks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Shapes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/texttemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/text-and-annotations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Annotations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/font/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Font Styling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/multiple-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Basic Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/line-and-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/line-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Line Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/pie-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pie Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bubble-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dot-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dot Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/insets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inset Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/horizontal-bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sunburst-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sunburst Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sankey-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sankey Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/treemaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Treemap Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/graphing-multiple-chart-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Chart Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/webgl-vs-svg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    WebGL vs SVG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Statistical Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Statistical Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/box-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Box Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/histograms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/continuous-error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Continuous Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/2D-Histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/spc-control-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SPC Control Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Violin Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/parallel-categories-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Categories Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatterplot Matrix
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/2d-histogram-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histogram Contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Scientific Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Scientific Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/contour-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contour Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ternary-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/parallel-coordinates-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Coordinates Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/log-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Log Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/wind-rose-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wind Rose and Polar Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ternary-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary contours
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/radar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Radar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Scatter Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Contour Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Financial Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Financial Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/waterfall-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Waterfall Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/candlestick-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Candlestick Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/funnel-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Funnel Chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/time-series/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Time Series and Date Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ohlc-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OHLC Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gauge-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gauge Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bullet-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bullet Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Maps
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Maps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-map-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Map Layers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-density-heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Density Heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-county-choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/lines-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lines on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bubble-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/scatter-plots-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/scatter-tile-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choropleth-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-on-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3D Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            3D Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-scatter-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ribbon-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ribbon Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-surface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Mesh Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-line-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Line Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/trisurf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trisurf Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-point-clustering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cluster Graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cone-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cone Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streamtube-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Streamtube Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-isosurface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Isosurface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Multiple Axes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/mixed-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mixed Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/table-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Table and Chart Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Chart Events
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Chart Events
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/click-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Click Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hover-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/zoom-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/disable-zoom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Disable Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Animations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Animations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gapminder-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adding Sliders to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-animation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled-Area Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/map-animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Options
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Options
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ajax-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plot CSV Data from an Ajax Call
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streaming
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/remove-trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Remove Trace from Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/LaTeX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LaTeX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Controls
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            Controls
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dropdowns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dropdown Menus
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/custom-buttons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Buttons
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sliders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sliders
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/lasso-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lasso Selection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/range-slider/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Range Slider and Selector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../barpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    barpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../candlestick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choroplethmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choroplethmapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contourcarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contourcarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../densitymap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../densitymapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnelarea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnelarea
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram2dcontour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2dcontour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../icicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    icicle
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../isosurface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    isosurface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mesh3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parcoords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcoords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sankey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattercarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattercarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattergeo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergeo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattergl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattermap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattermapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterpolargl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolargl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattersmith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattersmith
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterternary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterternary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamtube/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sunburst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../volume/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    volume
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waterfall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+
+        <div class="nav-bottom-image">
+            <a href="https://plotly.com/webinars/data-apps-publishing-playbook/?utm_medium=graphing_libraries&utm_campaign=plotly_publishing_playbook&utm_content=sidebar" target="_blank">
+                <img src="https://images.prismic.io/plotly-marketing-website-2/aNMW2J5xUNkB1CWg_PlotlyPublishingPlaybook.jpg?auto=format,compress" alt="plotly-studio-banner" type="image/avif">
+            </a>
+        </div>
+      </div>
+    </div>
+  
+
+  <!-- Table of contents -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--secondary"
+      data-md-component="sidebar"
+      data-md-type="toc"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="pie">pie</h1>
+<div class="description">
+  A <code>pie</code> trace is an object with the key <code>"type"</code> equal to <code>"pie"</code>
+  (i.e. <code>{"type": "pie"}</code>) and any of the keys listed below.
+  <br><br>A data visualized by the sectors of the pie is set in `values`. The sector labels are set in `labels`. The sector colors are set in `marker.colors`<br><br>
+</div>
+<ul>
+<li>
+<a class="attribute-name" id="pie-automargin" href="#pie-automargin">
+    automargin
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> boolean<p>Determines whether outside text labels can push the margins.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-customdata" href="#pie-customdata">
+    customdata
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, "scatter" traces also appends customdata items in the markers DOM elements</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-direction" href="#pie-direction">
+    direction
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"clockwise"</code>| <code>"counterclockwise"</code>                    )
+                <br><em>Default:</em> <code>"counterclockwise"</code>
+<p>Specifies the direction at which succeeding sectors follow one another.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-dlabel" href="#pie-dlabel">
+    dlabel
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Sets the label step. See `label0` for more info.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-domain" href="#pie-domain">
+    domain
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="pie-column" href="#pie-column">
+    column
+</a>
+<br><em>Parent:</em> <code>data[type=pie].domain</code>
+<br>
+                    <em>Type:</em> integer<p>If there is a layout grid, use the domain for this column in the grid for this pie trace .</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-row" href="#pie-row">
+    row
+</a>
+<br><em>Parent:</em> <code>data[type=pie].domain</code>
+<br>
+                    <em>Type:</em> integer<p>If there is a layout grid, use the domain for this row in the grid for this pie trace .</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-x" href="#pie-x">
+    x
+</a>
+<br><em>Parent:</em> <code>data[type=pie].domain</code>
+<br>
+{inner}<em>Type:</em> {array}
+                <br><em>Default:</em> <code>[0, 1]</code>
+<p>Sets the horizontal domain of this pie trace (in plot fraction).</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-y" href="#pie-y">
+    y
+</a>
+<br><em>Parent:</em> <code>data[type=pie].domain</code>
+<br>
+{inner}<em>Type:</em> {array}
+                <br><em>Default:</em> <code>[0, 1]</code>
+<p>Sets the vertical domain of this pie trace (in plot fraction).</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-hole" href="#pie-hole">
+    hole
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+<p>Sets the fraction of the radius to cut out of the pie. Use this to make a donut chart.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-hoverinfo" href="#pie-hoverinfo">
+    hoverinfo
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "label", "text", "value", "percent", "name" joined with a <code>"+"</code>
+                    OR "all", "none", "skip".
+
+                    <br><em>Examples:</em> <code>"label"</code>, <code>"text"</code>, <code>"label+text"</code>, <code>"label+text+value"</code>, <code>"all"</code>
+
+                <br><em>Default:</em> <code>"all"</code>
+<p>Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-hoverlabel" href="#pie-hoverlabel">
+    hoverlabel
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="pie-align" href="#pie-align">
+    align
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"left"</code>| <code>"right"</code>| <code>"auto"</code>                    )
+                <br><em>Default:</em> <code>"auto"</code>
+<p>Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-bgcolor" href="#pie-bgcolor">
+    bgcolor
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the background color of the hover labels for this trace</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-bordercolor" href="#pie-bordercolor">
+    bordercolor
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the border color of the hover labels for this trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-font" href="#pie-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used in hover labels.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="pie-family" href="#pie-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-lineposition" href="#pie-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shadow" href="#pie-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="pie-style" href="#pie-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textcase" href="#pie-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-variant" href="#pie-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-weight" href="#pie-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-namelength" href="#pie-namelength">
+    namelength
+</a>
+<br><em>Parent:</em> <code>data[type=pie].hoverlabel</code>
+<br>
+                    <em>Type:</em> integer or array of integers greater than or equal to -1
+                <br><em>Default:</em> <code>15</code>
+<p>Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer &gt;3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-hovertemplate" href="#pie-hovertemplate">
+    hovertemplate
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example &quot;y: %{y}&quot; as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, "xother" will be added to those with different x positions from the first point. An underscore before or after "(x|y)other" will add a space on that side, only when this field is shown. Numbers are formatted using d3-format&#x27;s syntax %{variable:d3-format}, for example &quot;Price: %{y:$.2f}&quot;. https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format&#x27;s syntax %{variable|d3-time-format}, for example &quot;Day: %{2019-01-01|%A}&quot;. https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `percent` and `text`. Anything contained in tag `&lt;extra&gt;` is displayed in the secondary box, for example `&lt;extra&gt;%{fullData.name}&lt;/extra&gt;`. To hide the secondary box completely, use an empty tag `&lt;extra&gt;&lt;/extra&gt;`.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-hovertext" href="#pie-hovertext">
+    hovertext
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Sets hover text elements associated with each sector. If a single string, the same string appears for all data points. If an array of string, the items are mapped in order of this trace&#x27;s sectors. To be seen, trace `hoverinfo` must contain a "text" flag.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-ids" href="#pie-ids">
+    ids
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-insidetextfont" href="#pie-insidetextfont">
+    insidetextfont
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used for `textinfo` lying inside the sector.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="pie-family" href="#pie-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-lineposition" href="#pie-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shadow" href="#pie-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="pie-style" href="#pie-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textcase" href="#pie-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-variant" href="#pie-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-weight" href="#pie-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=pie].insidetextfont</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-insidetextorientation" href="#pie-insidetextorientation">
+    insidetextorientation
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"horizontal"</code>| <code>"radial"</code>| <code>"tangential"</code>| <code>"auto"</code>                    )
+                <br><em>Default:</em> <code>"auto"</code>
+<p>Controls the orientation of the text inside chart sectors. When set to "auto", text may be oriented in any direction in order to be as big as possible in the middle of a sector. The "horizontal" option orients text to be parallel with the bottom of the chart, and may make text smaller in order to achieve that goal. The "radial" option orients text along the radius of the sector. The "tangential" option orients text perpendicular to the radius of the sector.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-label0" href="#pie-label0">
+    label0
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number<p>Alternate to `labels`. Builds a numeric set of labels. Use with `dlabel` where `label0` is the starting label and `dlabel` the step.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-labels" href="#pie-labels">
+    labels
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the sector labels. If `labels` entries are duplicated, we sum associated `values` or simply count occurrences if `values` is not provided. For other array attributes (including color) we use the first non-empty entry among all occurrences of the label.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-legend" href="#pie-legend">
+    legend
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> subplotid
+                <br><em>Default:</em> <code>legend</code>
+<p>Sets the reference to a legend to show this trace in. References to these legends are "legend", "legend2", "legend3", etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-legendgroup" href="#pie-legendgroup">
+    legendgroup
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string<p>Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-legendgrouptitle" href="#pie-legendgrouptitle">
+    legendgrouptitle
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="pie-font" href="#pie-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets this legend group&#x27;s title font.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> color</li>
+<li>
+<a class="attribute-name" id="pie-family" href="#pie-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> string<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-lineposition" href="#pie-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shadow" href="#pie-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> number greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="pie-style" href="#pie-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textcase" href="#pie-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-variant" href="#pie-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-weight" href="#pie-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> integer between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-text" href="#pie-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=pie].legendgrouptitle</code>
+<br>
+                    <em>Type:</em> string<p>Sets the title of the legend group.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-legendrank" href="#pie-legendrank">
+    legendrank
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1000</code>
+<p>Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with "reversed" `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-legendwidth" href="#pie-legendwidth">
+    legendwidth
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number<p>Sets the width (in px or fraction) of the legend for this trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-marker" href="#pie-marker">
+    marker
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="pie-colors" href="#pie-colors">
+    colors
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the color of each sector. If not specified, the default trace color set is used to pick the sector colors.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-line" href="#pie-line">
+    line
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.line</code>
+<br>
+                    <em>Type:</em> color or array of colors                <br><em>Default:</em> <code>"#444"</code>
+<p>Sets the color of the line enclosing each sector.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-width" href="#pie-width">
+    width
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.line</code>
+<br>
+                    <em>Type:</em> number or array of numbers<p>Sets the width (in px) of the line enclosing each sector.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-pattern" href="#pie-pattern">
+    pattern
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the pattern within the marker.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-bgcolor" href="#pie-bgcolor">
+    bgcolor
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is "overlay". Otherwise, defaults to a transparent background.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-fgcolor" href="#pie-fgcolor">
+    fgcolor
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is "replace". Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-fgopacity" href="#pie-fgopacity">
+    fgopacity
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+<p>Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is "overlay". Otherwise, defaults to 1.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-fillmode" href="#pie-fillmode">
+    fillmode
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"replace"</code>| <code>"overlay"</code>                    )
+                <br><em>Default:</em> <code>"replace"</code>
+<p>Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-path" href="#pie-path">
+    path
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shape" href="#pie-shape">
+    shape
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>""</code>| <code>"/"</code>| <code>"\"</code>| <code>"x"</code>| <code>"-"</code>| <code>"|"</code>| <code>"+"</code>| <code>"."</code>                    )
+<p>Sets the shape of the pattern fill. By default, no pattern is used for filling the area.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+                    <em>Type:</em> number or array of numbers                <br><em>Default:</em> <code>8</code>
+<p>Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-solidity" href="#pie-solidity">
+    solidity
+</a>
+<br><em>Parent:</em> <code>data[type=pie].marker.pattern</code>
+<br>
+                    <em>Type:</em> number or array of numbers less than or equal to 1
+                <br><em>Default:</em> <code>0.3</code>
+<p>Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-meta" href="#pie-meta">
+    meta
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-name" href="#pie-name">
+    name
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string<p>Sets the trace name. The trace name appears as the legend item and on hover.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-opacity" href="#pie-opacity">
+    opacity
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+                <br><em>Default:</em> <code>1</code>
+<p>Sets the opacity of the trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-outsidetextfont" href="#pie-outsidetextfont">
+    outsidetextfont
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used for `textinfo` lying outside the sector.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="pie-family" href="#pie-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-lineposition" href="#pie-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shadow" href="#pie-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="pie-style" href="#pie-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textcase" href="#pie-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-variant" href="#pie-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-weight" href="#pie-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=pie].outsidetextfont</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-pull" href="#pie-pull">
+    pull
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number or array of numbers less than or equal to 1
+<p>Sets the fraction of larger radius to pull the sectors out from the center. This can be a constant to pull all slices apart from each other equally or an array to highlight one or more slices.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-rotation" href="#pie-rotation">
+    rotation
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> angle
+<p>Instead of the first slice starting at 12 o&#x27;clock, rotate to some other angle.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-scalegroup" href="#pie-scalegroup">
+    scalegroup
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string<p>If there are multiple pie charts that should be sized according to their totals, link them by providing a non-empty group id here shared by every trace in the same group.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-showlegend" href="#pie-showlegend">
+    showlegend
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not an item corresponding to this trace is shown in the legend.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-sort" href="#pie-sort">
+    sort
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not the sectors are reordered from largest to smallest.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-text" href="#pie-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets text elements associated with each sector. If trace `textinfo` contains a "text" flag, these elements will be seen on the chart. If trace `hoverinfo` contains a "text" flag and "hovertext" is not set, these elements will be seen in the hover labels.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textfont" href="#pie-textfont">
+    textfont
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used for `textinfo`.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="pie-family" href="#pie-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-lineposition" href="#pie-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shadow" href="#pie-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="pie-style" href="#pie-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textcase" href="#pie-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-variant" href="#pie-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-weight" href="#pie-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=pie].textfont</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-textinfo" href="#pie-textinfo">
+    textinfo
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "label", "text", "value", "percent" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"label"</code>, <code>"text"</code>, <code>"label+text"</code>, <code>"label+text+value"</code>, <code>"none"</code>
+
+<p>Determines which trace information appear on the graph.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textposition" href="#pie-textposition">
+    textposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"inside"</code>| <code>"outside"</code>| <code>"auto"</code>| <code>"none"</code>                    )
+                <br><em>Default:</em> <code>"auto"</code>
+<p>Specifies the location of the `textinfo`.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-texttemplate" href="#pie-texttemplate">
+    texttemplate
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example &quot;y: %{y}&quot;. Numbers are formatted using d3-format&#x27;s syntax %{variable:d3-format}, for example &quot;Price: %{y:$.2f}&quot;. https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format&#x27;s syntax %{variable|d3-time-format}, for example &quot;Day: %{2019-01-01|%A}&quot;. https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `label`, `color`, `value`, `percent` and `text`.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-title" href="#pie-title">
+    title
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="pie-font" href="#pie-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used for `title`.</p>
+<ul>
+<li>
+<a class="attribute-name" id="pie-color" href="#pie-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="pie-family" href="#pie-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-lineposition" href="#pie-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-shadow" href="#pie-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-size" href="#pie-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="pie-style" href="#pie-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-textcase" href="#pie-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-variant" href="#pie-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-weight" href="#pie-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title.font</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-position" href="#pie-position">
+    position
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"top left"</code>| <code>"top center"</code>| <code>"top right"</code>| <code>"middle center"</code>| <code>"bottom left"</code>| <code>"bottom center"</code>| <code>"bottom right"</code>                    )
+<p>Specifies the location of the `title`.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-text" href="#pie-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=pie].title</code>
+<br>
+                    <em>Type:</em> string<p>Sets the title of the chart. If it is empty, no title is displayed.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="pie-type" href="#pie-type">
+    type
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br />
+<em>Type:</em> "pie"
+</li>
+<li>
+<a class="attribute-name" id="pie-uid" href="#pie-uid">
+    uid
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> string<p>Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-uirevision" href="#pie-uirevision">
+    uirevision
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-values" href="#pie-values">
+    values
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the values of the sectors. If omitted, we count occurrences of each label.</p>
+</li>
+<li>
+<a class="attribute-name" id="pie-visible" href="#pie-visible">
+    visible
+</a>
+<br><em>Parent:</em> <code>data[type=pie]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>true</code>| <code>false</code>| <code>"legendonly"</code>                    )
+                <br><em>Default:</em> <code>"True"</code>
+<p>Determines whether or not this trace is visible. If "legendonly", the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

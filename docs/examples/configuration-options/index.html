@@ -1,0 +1,5736 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://plotly.com/javascript/examples/configuration-options/">
+      
+      
+        <link rel="prev" href="../plotlyjs-events/">
+      
+      
+        <link rel="next" href="../responsive-fluid-layout/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Configuration - Plotly.js Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra_css.css">
+    
+      <link rel="stylesheet" href="https://docs.plotly.com/css/plotly-style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration-options" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Plotly.js Docs" class="md-header__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Plotly.js Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+
+  <!-- Main navigation -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--primary"
+      data-md-component="sidebar"
+      data-md-type="navigation"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Plotly.js Docs" class="md-nav__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Plotly.js Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotlyjs-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Event Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Fundamentals
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Fundamentals
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responsive-fluid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Responsive / Fluid Layouts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uirevision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    uirevision in Plotly.react
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    React Plotly.js
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://dash.plotly.com/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Analytical Apps with Dash
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colorway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Colorway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-hover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Hover Options
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-surface-lighting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Lighting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizontal-legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hover-text-and-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Text and Formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figure-labels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting the Title, Legend Entries, and Axis Titles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layout-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Layout Template Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setting-graph-size/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting Graph Size
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tick-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatting Ticks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Shapes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../texttemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-and-annotations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Annotations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../font/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Font Styling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiple-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Basic Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../line-and-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../line-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Line Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pie-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pie Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bubble-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dot-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dot Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../insets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inset Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizontal-bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sunburst-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sunburst Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sankey-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sankey Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treemaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Treemap Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../graphing-multiple-chart-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Chart Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../webgl-vs-svg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    WebGL vs SVG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Statistical Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Statistical Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Box Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histograms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../continuous-error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Continuous Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2D-Histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spc-control-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SPC Control Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Violin Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel-categories-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Categories Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatterplot Matrix
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2d-histogram-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histogram Contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Scientific Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Scientific Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contour-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contour Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ternary-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel-coordinates-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Coordinates Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../log-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Log Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wind-rose-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wind Rose and Polar Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ternary-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary contours
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../radar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Radar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Scatter Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Contour Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Financial Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Financial Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waterfall-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Waterfall Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../candlestick-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Candlestick Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnel-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Funnel Chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../time-series/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Time Series and Date Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlc-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OHLC Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gauge-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gauge Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bullet-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bullet Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Maps
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Maps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-map-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Map Layers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-density-heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Density Heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-county-choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lines-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lines on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bubble-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter-plots-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter-tile-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choropleth-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-on-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3D Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            3D Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-scatter-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ribbon-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ribbon Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-surface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Mesh Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-line-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Line Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trisurf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trisurf Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-point-clustering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cluster Graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cone-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cone Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamtube-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Streamtube Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-isosurface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Isosurface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Multiple Axes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mixed-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mixed Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Table and Chart Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Chart Events
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Chart Events
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../click-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Click Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hover-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zoom-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disable-zoom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Disable Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Animations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Animations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gapminder-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adding Sliders to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-animation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled-Area Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../map-animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Options
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Options
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ajax-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plot CSV Data from an Ajax Call
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streaming
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remove-trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Remove Trace from Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LaTeX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LaTeX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Controls
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            Controls
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dropdowns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dropdown Menus
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-buttons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Buttons
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sliders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sliders
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lasso-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lasso Selection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../range-slider/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Range Slider and Selector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/bar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/barpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    barpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/box/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/candlestick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/carpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choroplethmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choroplethmapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contourcarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contourcarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/densitymap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/densitymapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/funnel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/funnelarea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnelarea
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/heatmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram2dcontour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2dcontour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/icicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    icicle
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isosurface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    isosurface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/mesh3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mesh3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ohlc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/parcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/parcoords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcoords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/pie/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/sankey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatter3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattercarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattercarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattergeo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergeo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattergl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattermap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattermapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterpolargl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolargl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattersmith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattersmith
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterternary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterternary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/streamtube/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/sunburst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/treemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/volume/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    volume
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/waterfall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+
+        <div class="nav-bottom-image">
+            <a href="https://plotly.com/webinars/data-apps-publishing-playbook/?utm_medium=graphing_libraries&utm_campaign=plotly_publishing_playbook&utm_content=sidebar" target="_blank">
+                <img src="https://images.prismic.io/plotly-marketing-website-2/aNMW2J5xUNkB1CWg_PlotlyPublishingPlaybook.jpg?auto=format,compress" alt="plotly-studio-banner" type="image/avif">
+            </a>
+        </div>
+      </div>
+    </div>
+  
+
+  <!-- Table of contents -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--secondary"
+      data-md-component="sidebar"
+      data-md-type="toc"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="configuration-options">configuration-options</h1>
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="scroll-and-zoom">
+        <a class="no_underline plot-blue" href="#scroll-and-zoom">scroll-and-zoom</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">// mousewheel or two-finger scroll zooms the plot
+
+var trace1 = {
+    x:[&#x27;2020-10-04&#x27;, &#x27;2021-11-04&#x27;, &#x27;2023-12-04&#x27;],
+    y: [90, 40, 60],
+    type: &#x27;scatter&#x27;
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: &#x27;Scroll and Zoom&#x27;
+    },
+    showlegend: false
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {scrollZoom: true});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Scroll and Zoom&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;// mousewheel or two-finger scroll zooms the plot\n\nvar trace1 = {\n    x:[&#x27;2020-10-04&#x27;, &#x27;2021-11-04&#x27;, &#x27;2023-12-04&#x27;],\n    y: [90, 40, 60],\n    type: &#x27;scatter&#x27;\n};\n\nvar data = [trace1];\n\nvar layout = {\n    title: {\n        text: &#x27;Scroll and Zoom&#x27;\n    },\n    showlegend: false\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {scrollZoom: true});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_0"></div>
+              <script>
+                // mousewheel or two-finger scroll zooms the plot
+
+var trace1 = {
+    x:['2020-10-04', '2021-11-04', '2023-12-04'],
+    y: [90, 40, 60],
+    type: 'scatter'
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: 'Scroll and Zoom'
+    },
+    showlegend: false
+};
+
+Plotly.newPlot('myDiv_0', data, layout, {scrollZoom: true});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="editable-mode">
+        <a class="no_underline plot-blue" href="#editable-mode">editable-mode</a>
+      </h3>
+    <div class="row">
+    <p>In editable mode, users can edit the chart title, axis labels and trace names in the legend.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [0, 1, 2, 3, 4],
+  y: [1, 5, 3, 7, 5],
+  mode: &#x27;lines+markers&#x27;,
+  type: &#x27;scatter&#x27;
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5],
+  y: [4, 0, 4, 6, 8],
+  mode: &#x27;lines+markers&#x27;,
+  type: &#x27;scatter&#x27;
+};
+
+var data = [trace1, trace2];
+var layout = {
+  title: {
+      text: &#x27;Click Here&lt;br&gt;to Edit Chart Title&#x27;
+  }
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {editable: true});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Editable Mode&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [0, 1, 2, 3, 4],\n  y: [1, 5, 3, 7, 5],\n  mode: &#x27;lines+markers&#x27;,\n  type: &#x27;scatter&#x27;\n};\n\nvar trace2 = {\n  x: [1, 2, 3, 4, 5],\n  y: [4, 0, 4, 6, 8],\n  mode: &#x27;lines+markers&#x27;,\n  type: &#x27;scatter&#x27;\n};\n\nvar data = [trace1, trace2];\nvar layout = {\n  title: {\n      text: &#x27;Click Here&lt;br&gt;to Edit Chart Title&#x27;\n  }\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {editable: true});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_1"></div>
+              <script>
+                var trace1 = {
+  x: [0, 1, 2, 3, 4],
+  y: [1, 5, 3, 7, 5],
+  mode: 'lines+markers',
+  type: 'scatter'
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5],
+  y: [4, 0, 4, 6, 8],
+  mode: 'lines+markers',
+  type: 'scatter'
+};
+
+var data = [trace1, trace2];
+var layout = {
+  title: {
+      text: 'Click Here<br>to Edit Chart Title'
+  }
+};
+
+Plotly.newPlot('myDiv_1', data, layout, {editable: true});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="making-a-static-chart">
+        <a class="no_underline plot-blue" href="#making-a-static-chart">making-a-static-chart</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+    x: [0, 1, 2, 3, 4, 5, 6],
+    y: [1, 9, 4, 7, 5, 2, 4],
+    mode: &#x27;markers&#x27;,
+    marker: {
+        size: [20, 40, 25, 10, 60, 90, 30],
+    }
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: &#x27;Create a Static Chart&#x27;
+    },
+    showlegend: false
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {staticPlot: true});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Making a Static Chart&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n    x: [0, 1, 2, 3, 4, 5, 6],\n    y: [1, 9, 4, 7, 5, 2, 4],\n    mode: &#x27;markers&#x27;,\n    marker: {\n        size: [20, 40, 25, 10, 60, 90, 30],\n    }\n};\n\nvar data = [trace1];\n\nvar layout = {\n    title: {\n        text: &#x27;Create a Static Chart&#x27;\n    },\n    showlegend: false\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {staticPlot: true});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_2"></div>
+              <script>
+                var trace1 = {
+    x: [0, 1, 2, 3, 4, 5, 6],
+    y: [1, 9, 4, 7, 5, 2, 4],
+    mode: 'markers',
+    marker: {
+        size: [20, 40, 25, 10, 60, 90, 30],
+    }
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: 'Create a Static Chart'
+    },
+    showlegend: false
+};
+
+Plotly.newPlot('myDiv_2', data, layout, {staticPlot: true});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="customize-download-plot-options">
+        <a class="no_underline plot-blue" href="#customize-download-plot-options">customize-download-plot-options</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+    x: [0, 1, 2, 3, 4, 5, 6],
+    y: [1, 9, 4, 7, 5, 2, 4],
+    mode: &#x27;markers&#x27;,
+    marker: {
+        size: [20, 40, 25, 10, 60, 90, 30],
+    }
+};
+
+var data = [trace1];
+
+var layout = {
+  title: {
+      text: &#x27;Download Chart as SVG instead of PNG&#x27;
+  },
+  showlegend: false
+};
+
+var config = {
+  toImageButtonOptions: {
+    format: &#x27;svg&#x27;, // one of png, svg, jpeg, webp
+    filename: &#x27;custom_image&#x27;,
+    height: 500,
+    width: 700,
+    scale: 1 // Multiply title/legend/axis/canvas sizes by this factor
+  }
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Customize Download Plot Options&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n    x: [0, 1, 2, 3, 4, 5, 6],\n    y: [1, 9, 4, 7, 5, 2, 4],\n    mode: &#x27;markers&#x27;,\n    marker: {\n        size: [20, 40, 25, 10, 60, 90, 30],\n    }\n};\n\nvar data = [trace1];\n\nvar layout = {\n  title: {\n      text: &#x27;Download Chart as SVG instead of PNG&#x27;\n  },\n  showlegend: false\n};\n\nvar config = {\n  toImageButtonOptions: {\n    format: &#x27;svg&#x27;, // one of png, svg, jpeg, webp\n    filename: &#x27;custom_image&#x27;,\n    height: 500,\n    width: 700,\n    scale: 1 // Multiply title/legend/axis/canvas sizes by this factor\n  }\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_3"></div>
+              <script>
+                var trace1 = {
+    x: [0, 1, 2, 3, 4, 5, 6],
+    y: [1, 9, 4, 7, 5, 2, 4],
+    mode: 'markers',
+    marker: {
+        size: [20, 40, 25, 10, 60, 90, 30],
+    }
+};
+
+var data = [trace1];
+
+var layout = {
+  title: {
+      text: 'Download Chart as SVG instead of PNG'
+  },
+  showlegend: false
+};
+
+var config = {
+  toImageButtonOptions: {
+    format: 'svg', // one of png, svg, jpeg, webp
+    filename: 'custom_image',
+    height: 500,
+    width: 700,
+    scale: 1 // Multiply title/legend/axis/canvas sizes by this factor
+  }
+};
+
+Plotly.newPlot('myDiv_3', data, layout, config);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="force-the-modebar-to-always-be-visible">
+        <a class="no_underline plot-blue" href="#force-the-modebar-to-always-be-visible">force-the-modebar-to-always-be-visible</a>
+      </h3>
+    <div class="row">
+    <p>When users hover over a figure generated with <code>plotly.js</code>, a <code>modebar</code> appears in the top-right of the figure. This presents users with several options for interacting with the figure.</p>
+<p>By default, the <code>modebar</code> is only visible while the user is hovering over the chart. If you would like the <code>modebar</code> to always be visible regardless of whether or not the user is currently hovering over the figure, set the <code>displayModeBar</code> attribute in the <code>config</code> of your figure to <code>true</code>.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+    y:[&#x27;Marc&#x27;, &#x27;Henrietta&#x27;, &#x27;Jean&#x27;, &#x27;Claude&#x27;, &#x27;Jeffrey&#x27;, &#x27;Jonathan&#x27;, &#x27;Jennifer&#x27;, &#x27;Zacharias&#x27;],
+      x: [90, 40, 60, 80, 75, 92, 87, 73],
+      type: &#x27;bar&#x27;,
+      orientation: &#x27;h&#x27;}]
+
+var layout = {
+    title: {
+        text: &#x27;Always Display the Modebar&#x27;
+    },
+    showlegend: false
+}
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {displayModeBar: true})</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Force The Modebar to Always Be Visible&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n    y:[&#x27;Marc&#x27;, &#x27;Henrietta&#x27;, &#x27;Jean&#x27;, &#x27;Claude&#x27;, &#x27;Jeffrey&#x27;, &#x27;Jonathan&#x27;, &#x27;Jennifer&#x27;, &#x27;Zacharias&#x27;],\n      x: [90, 40, 60, 80, 75, 92, 87, 73],\n      type: &#x27;bar&#x27;,\n      orientation: &#x27;h&#x27;}]\n\nvar layout = {\n    title: {\n        text: &#x27;Always Display the Modebar&#x27;\n    },\n    showlegend: false\n}\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {displayModeBar: true})&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_4"></div>
+              <script>
+                var data = [{
+    y:['Marc', 'Henrietta', 'Jean', 'Claude', 'Jeffrey', 'Jonathan', 'Jennifer', 'Zacharias'],
+      x: [90, 40, 60, 80, 75, 92, 87, 73],
+      type: 'bar',
+      orientation: 'h'}]
+
+var layout = {
+    title: {
+        text: 'Always Display the Modebar'
+    },
+    showlegend: false
+}
+
+Plotly.newPlot('myDiv_4', data, layout, {displayModeBar: true})
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="never-display-the-modebar">
+        <a class="no_underline plot-blue" href="#never-display-the-modebar">never-display-the-modebar</a>
+      </h3>
+    <div class="row">
+    <p>When users hover over a figure generated with <code>plotly.js</code>, a <code>modebar</code> appears in the top-right of the figure. This presents users with several options for interacting with the figure.</p>
+<p>By default, the <code>modebar</code> is only visible while the user is hovering over the chart. If you would like the <code>modebar</code> to never be visible, then set the <code>displayModeBar</code> attribute in the <code>config</code> of your figure to <code>false</code>.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+    x:[&#x27;Zebras&#x27;, &#x27;Lions&#x27;, &#x27;Pelicans&#x27;],
+    y: [90, 40, 60],
+    type: &#x27;bar&#x27;,
+    name: &#x27;New York Zoo&#x27;
+};
+
+var trace2 = {
+    x:[&#x27;Zebras&#x27;, &#x27;Lions&#x27;, &#x27;Pelicans&#x27;],
+    y: [10, 80, 45],
+    type: &#x27;bar&#x27;,
+    name: &#x27;San Francisco Zoo&#x27;
+};
+
+var data = [trace1, trace2];
+
+var layout = {
+    title: {
+        text: &#x27;Hide the Modebar&#x27;
+    },
+    showlegend: true
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {displayModeBar: false});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Never Display The Modebar&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n    x:[&#x27;Zebras&#x27;, &#x27;Lions&#x27;, &#x27;Pelicans&#x27;],\n    y: [90, 40, 60],\n    type: &#x27;bar&#x27;,\n    name: &#x27;New York Zoo&#x27;\n};\n\nvar trace2 = {\n    x:[&#x27;Zebras&#x27;, &#x27;Lions&#x27;, &#x27;Pelicans&#x27;],\n    y: [10, 80, 45],\n    type: &#x27;bar&#x27;,\n    name: &#x27;San Francisco Zoo&#x27;\n};\n\nvar data = [trace1, trace2];\n\nvar layout = {\n    title: {\n        text: &#x27;Hide the Modebar&#x27;\n    },\n    showlegend: true\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {displayModeBar: false});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_5"></div>
+              <script>
+                var trace1 = {
+    x:['Zebras', 'Lions', 'Pelicans'],
+    y: [90, 40, 60],
+    type: 'bar',
+    name: 'New York Zoo'
+};
+
+var trace2 = {
+    x:['Zebras', 'Lions', 'Pelicans'],
+    y: [10, 80, 45],
+    type: 'bar',
+    name: 'San Francisco Zoo'
+};
+
+var data = [trace1, trace2];
+
+var layout = {
+    title: {
+        text: 'Hide the Modebar'
+    },
+    showlegend: true
+};
+
+Plotly.newPlot('myDiv_5', data, layout, {displayModeBar: false});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="remove-modebar-buttons">
+        <a class="no_underline plot-blue" href="#remove-modebar-buttons">remove-modebar-buttons</a>
+      </h3>
+    <div class="row">
+    <p>To delete buttons from the modebar, pass an array of strings containing the names of the buttons you want to remove to the <code>modeBarButtonsToRemove</code> attribute in the figure's configuration object. Note that different chart types have different default modebars. The following is a list of all the modebar buttons and the chart types they are associated with:
+
+<ul>
+     <li> -'2D', `zoom2d`, `pan2d`, `select2d`, `lasso2d`, `zoomIn2d`, `zoomOut2d`, `autoScale2d`, `resetScale2d` </li>
+     <li> -'3D', `zoom3d`, `pan3d`, `orbitRotation`, `tableRotation`, `handleDrag3d`, `resetCameraDefault3d`, `resetCameraLastSave3d`, `hoverClosest3d` </li>
+     <li> -'Cartesian', `hoverClosestCartesian`, `hoverCompareCartesian` </li>
+     <li> -'Geo', `zoomInGeo`, `zoomOutGeo`, `resetGeo`, `hoverClosestGeo` </li>
+     <li> -'Other', `hoverClosestGl2d`, `hoverClosestPie`, `toggleHover`, `resetViews`, `toImage`, `sendDataToCloud`, `toggleSpikelines`, `resetViewMapbox` </li>
+ </ul>
+</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+    x:[&#x27;trees&#x27;, &#x27;flowers&#x27;, &#x27;hedges&#x27;],
+    y: [90, 130, 40],
+    type: &#x27;bar&#x27;}]
+
+var layout = {
+    title: {
+        text: &#x27;Remove Modebar Buttons&#x27;
+    },
+    showlegend: false
+}
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {modeBarButtonsToRemove: [&#x27;toImage&#x27;]})</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Remove ModeBar Buttons&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n    x:[&#x27;trees&#x27;, &#x27;flowers&#x27;, &#x27;hedges&#x27;],\n    y: [90, 130, 40],\n    type: &#x27;bar&#x27;}]\n\nvar layout = {\n    title: {\n        text: &#x27;Remove Modebar Buttons&#x27;\n    },\n    showlegend: false\n}\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {modeBarButtonsToRemove: [&#x27;toImage&#x27;]})&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_6"></div>
+              <script>
+                var data = [{
+    x:['trees', 'flowers', 'hedges'],
+    y: [90, 130, 40],
+    type: 'bar'}]
+
+var layout = {
+    title: {
+        text: 'Remove Modebar Buttons'
+    },
+    showlegend: false
+}
+
+Plotly.newPlot('myDiv_6', data, layout, {modeBarButtonsToRemove: ['toImage']})
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="add-buttons-to-modebar">
+        <a class="no_underline plot-blue" href="#add-buttons-to-modebar">add-buttons-to-modebar</a>
+      </h3>
+    <div class="row">
+    <p>The following example shows how to add a button to your modebar, either by using one of the <a href="https://github.com/plotly/plotly.js/blob/master/src/fonts/ploticon.js">Plotly icons</a> or an <a href="https://fontawesome.com/icons?d=gallery&amp;m=free">arbitrary icon</a> with a custom behaviour.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var icon1 = {
+  &#x27;width&#x27;: 500,
+  &#x27;height&#x27;: 600,
+  &#x27;path&#x27;: &#x27;M224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64zm215.39-149.71c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71z&#x27;
+}
+
+var colors = [&#x27;green&#x27;, &#x27;red&#x27;, &#x27;blue&#x27;]
+var data = [{
+  mode: &#x27;lines&#x27;,
+  y: [2, 1, 2],
+  line: {color: colors[0], width: 3, shape: &#x27;spline&#x27;}
+}]
+
+var layout = {
+  title: {
+    text: &#x27;add mode bar button with custom icon&#x27;
+  }
+}
+
+var config = {
+  displayModeBar: true,
+  modeBarButtonsToAdd: [
+    {
+      name: &#x27;color toggler&#x27;,
+      icon: icon1,
+      click: function(gd) {
+        var newColor = colors[Math.floor(3 * Math.random())]
+        Plotly.restyle(gd, &#x27;line.color&#x27;, newColor)
+      }},
+    {
+      name: &#x27;button1&#x27;,
+      icon: Plotly.Icons.pencil,
+      direction: &#x27;up&#x27;,
+      click: function(gd) {alert(&#x27;button1&#x27;)
+    }}],
+  modeBarButtonsToRemove: [&#x27;pan2d&#x27;,&#x27;select2d&#x27;,&#x27;lasso2d&#x27;,&#x27;resetScale2d&#x27;,&#x27;zoomOut2d&#x27;]}
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, config)</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Add Buttons to ModeBar&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var icon1 = {\n  &#x27;width&#x27;: 500,\n  &#x27;height&#x27;: 600,\n  &#x27;path&#x27;: &#x27;M224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64zm215.39-149.71c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71z&#x27;\n}\n\nvar colors = [&#x27;green&#x27;, &#x27;red&#x27;, &#x27;blue&#x27;]\nvar data = [{\n  mode: &#x27;lines&#x27;,\n  y: [2, 1, 2],\n  line: {color: colors[0], width: 3, shape: &#x27;spline&#x27;}\n}]\n\nvar layout = {\n  title: {\n    text: &#x27;add mode bar button with custom icon&#x27;\n  }\n}\n\nvar config = {\n  displayModeBar: true,\n  modeBarButtonsToAdd: [\n    {\n      name: &#x27;color toggler&#x27;,\n      icon: icon1,\n      click: function(gd) {\n        var newColor = colors[Math.floor(3 * Math.random())]\n        Plotly.restyle(gd, &#x27;line.color&#x27;, newColor)\n      }},\n    {\n      name: &#x27;button1&#x27;,\n      icon: Plotly.Icons.pencil,\n      direction: &#x27;up&#x27;,\n      click: function(gd) {alert(&#x27;button1&#x27;)\n    }}],\n  modeBarButtonsToRemove: [&#x27;pan2d&#x27;,&#x27;select2d&#x27;,&#x27;lasso2d&#x27;,&#x27;resetScale2d&#x27;,&#x27;zoomOut2d&#x27;]}\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, config)&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_7"></div>
+              <script>
+                var icon1 = {
+  'width': 500,
+  'height': 600,
+  'path': 'M224 512c35.32 0 63.97-28.65 63.97-64H160.03c0 35.35 28.65 64 63.97 64zm215.39-149.71c-19.32-20.76-55.47-51.99-55.47-154.29 0-77.7-54.48-139.9-127.94-155.16V32c0-17.67-14.32-32-31.98-32s-31.98 14.33-31.98 32v20.84C118.56 68.1 64.08 130.3 64.08 208c0 102.3-36.15 133.53-55.47 154.29-6 6.45-8.66 14.16-8.61 21.71.11 16.4 12.98 32 32.1 32h383.8c19.12 0 32-15.6 32.1-32 .05-7.55-2.61-15.27-8.61-21.71z'
+}
+
+var colors = ['green', 'red', 'blue']
+var data = [{
+  mode: 'lines',
+  y: [2, 1, 2],
+  line: {color: colors[0], width: 3, shape: 'spline'}
+}]
+
+var layout = {
+  title: {
+    text: 'add mode bar button with custom icon'
+  }
+}
+
+var config = {
+  displayModeBar: true,
+  modeBarButtonsToAdd: [
+    {
+      name: 'color toggler',
+      icon: icon1,
+      click: function(gd) {
+        var newColor = colors[Math.floor(3 * Math.random())]
+        Plotly.restyle(gd, 'line.color', newColor)
+      }},
+    {
+      name: 'button1',
+      icon: Plotly.Icons.pencil,
+      direction: 'up',
+      click: function(gd) {alert('button1')
+    }}],
+  modeBarButtonsToRemove: ['pan2d','select2d','lasso2d','resetScale2d','zoomOut2d']}
+
+Plotly.newPlot('myDiv_7', data, layout, config)
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="disabling-buttons-for-specific-axes">
+        <a class="no_underline plot-blue" href="#disabling-buttons-for-specific-axes">disabling-buttons-for-specific-axes</a>
+      </h3>
+    <div class="row">
+    <p><em>New in 3.1</em></p>
+<p>Disabling the zoom in, zoom out, and autoscale buttons for specific axes is supported on cartesian axes using the <code>modebardisable</code> attribute. In the following example, the zoom in and zoom out buttons are disabled on the <code>xaxis</code>, meaning these buttons only zoom in and out on the <code>yaxis</code>. Disable the autoscale button using <code>modebardisable='autoscale'</code>. You can also disable both autoscaling and zoom buttons using <code>modebardisable='zoominout+autoscale'</code>.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+  type: &quot;scatter&quot;,
+  mode: &quot;lines+markers&quot;,
+  x: [&quot;2023-01-01&quot;, &quot;2023-02-01&quot;, &quot;2023-03-01&quot;, &quot;2023-04-01&quot;, &quot;2023-05-01&quot;, &quot;2023-06-01&quot;],
+  y: [150, 160, 155, 170, 165, 180],
+  name: &quot;Google Stock Price&quot;
+}];
+
+var layout = {
+  title: &quot;Google Stock Price Over Time with Mode Bar Disabled&quot;,
+  xaxis: {
+    title: &quot;Date&quot;,
+    type: &quot;date&quot;,
+    // Try zooming in or out using the modebar buttons. These only apply to the yaxis in this example.
+    modebardisable: &quot;zoominout&quot;
+  },
+  yaxis: {
+    title: &quot;Stock Price (USD)&quot;
+  }
+};
+
+Plotly.newPlot(&quot;myDiv&quot;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Disabling Buttons for Specific Axes&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n  type: \&quot;scatter\&quot;,\n  mode: \&quot;lines+markers\&quot;,\n  x: [\&quot;2023-01-01\&quot;, \&quot;2023-02-01\&quot;, \&quot;2023-03-01\&quot;, \&quot;2023-04-01\&quot;, \&quot;2023-05-01\&quot;, \&quot;2023-06-01\&quot;],\n  y: [150, 160, 155, 170, 165, 180],\n  name: \&quot;Google Stock Price\&quot;\n}];\n\nvar layout = {\n  title: \&quot;Google Stock Price Over Time with Mode Bar Disabled\&quot;,\n  xaxis: {\n    title: \&quot;Date\&quot;,\n    type: \&quot;date\&quot;,\n    // Try zooming in or out using the modebar buttons. These only apply to the yaxis in this example.\n    modebardisable: \&quot;zoominout\&quot;\n  },\n  yaxis: {\n    title: \&quot;Stock Price (USD)\&quot;\n  }\n};\n\nPlotly.newPlot(\&quot;myDiv\&quot;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_8"></div>
+              <script>
+                var data = [{
+  type: "scatter",
+  mode: "lines+markers",
+  x: ["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01"],
+  y: [150, 160, 155, 170, 165, 180],
+  name: "Google Stock Price"
+}];
+
+var layout = {
+  title: "Google Stock Price Over Time with Mode Bar Disabled",
+  xaxis: {
+    title: "Date",
+    type: "date",
+    // Try zooming in or out using the modebar buttons. These only apply to the yaxis in this example.
+    modebardisable: "zoominout"
+  },
+  yaxis: {
+    title: "Stock Price (USD)"
+  }
+};
+
+Plotly.newPlot("myDiv_8", data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="display-the-`edit-chart`-link">
+        <a class="no_underline plot-blue" href="#display-the-`edit-chart`-link">display-the-`edit-chart`-link</a>
+      </h3>
+    <div class="row">
+    <p>Note: <code>showLink</code> now defaults to false.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [0, 1, 2, 3, 4, 5, 6],
+  y: [1, 9, 4, 7, 5, 2, 4],
+  mode: &#x27;lines+markers&#x27;,
+  type: &#x27;scatter&#x27;
+};
+
+var data = [trace1];
+
+var layout = {
+  title: {
+      text: &#x27;Display the Edit Chart Link&#x27;
+  }
+};
+
+var config = {
+  showLink: true,
+  plotlyServerURL: &quot;https://chart-studio.plotly.com&quot;
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Display the `Edit Chart` Link&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [0, 1, 2, 3, 4, 5, 6],\n  y: [1, 9, 4, 7, 5, 2, 4],\n  mode: &#x27;lines+markers&#x27;,\n  type: &#x27;scatter&#x27;\n};\n\nvar data = [trace1];\n\nvar layout = {\n  title: {\n      text: &#x27;Display the Edit Chart Link&#x27;\n  }\n};\n\nvar config = {\n  showLink: true,\n  plotlyServerURL: \&quot;https://chart-studio.plotly.com\&quot;\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_9"></div>
+              <script>
+                var trace1 = {
+  x: [0, 1, 2, 3, 4, 5, 6],
+  y: [1, 9, 4, 7, 5, 2, 4],
+  mode: 'lines+markers',
+  type: 'scatter'
+};
+
+var data = [trace1];
+
+var layout = {
+  title: {
+      text: 'Display the Edit Chart Link'
+  }
+};
+
+var config = {
+  showLink: true,
+  plotlyServerURL: "https://chart-studio.plotly.com"
+};
+
+Plotly.newPlot('myDiv_9', data, layout, config);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="customize-the-`edit-chart`-link-text">
+        <a class="no_underline plot-blue" href="#customize-the-`edit-chart`-link-text">customize-the-`edit-chart`-link-text</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+  z: [[0, 1, 2, 3, 4, 5, 6],
+      [1, 9, 4, 7, 5, 2, 4],
+      [2, 4, 2, 1, 6, 9, 3]],
+  type: &#x27;heatmap&#x27;}]
+
+var layout = {
+  title: {
+      text: &#x27;Customize The Edit Chart Link Text&#x27;
+  }
+};
+
+var config = {
+  showLink: true,
+  plotlyServerURL: &quot;https://chart-studio.plotly.com&quot;,
+  linkText: &#x27;This text is custom!&#x27;
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, config)</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Customize The `Edit Chart` Link Text&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n  z: [[0, 1, 2, 3, 4, 5, 6],\n      [1, 9, 4, 7, 5, 2, 4],\n      [2, 4, 2, 1, 6, 9, 3]],\n  type: &#x27;heatmap&#x27;}]\n\nvar layout = {\n  title: {\n      text: &#x27;Customize The Edit Chart Link Text&#x27;\n  }\n};\n\nvar config = {\n  showLink: true,\n  plotlyServerURL: \&quot;https://chart-studio.plotly.com\&quot;,\n  linkText: &#x27;This text is custom!&#x27;\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, config)&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_10"></div>
+              <script>
+                var data = [{
+  z: [[0, 1, 2, 3, 4, 5, 6],
+      [1, 9, 4, 7, 5, 2, 4],
+      [2, 4, 2, 1, 6, 9, 3]],
+  type: 'heatmap'}]
+
+var layout = {
+  title: {
+      text: 'Customize The Edit Chart Link Text'
+  }
+};
+
+var config = {
+  showLink: true,
+  plotlyServerURL: "https://chart-studio.plotly.com",
+  linkText: 'This text is custom!'
+};
+
+Plotly.newPlot('myDiv_10', data, layout, config)
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="display-edit-in-chart-studio-modebar-button">
+        <a class="no_underline plot-blue" href="#display-edit-in-chart-studio-modebar-button">display-edit-in-chart-studio-modebar-button</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+  values: [19, 26, 55],
+  labels: [&#x27;Residential&#x27;, &#x27;Non-Residential&#x27;, &#x27;Utility&#x27;],
+  type: &#x27;pie&#x27;
+}];
+
+var layout = {
+  title: {
+      text: &#x27;Show Edit in Chart Studio Modebar Button&#x27;
+  }
+};
+
+var config = {
+  showEditInChartStudio: true,
+  plotlyServerURL: &quot;https://chart-studio.plotly.com&quot;
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Display Edit in Chart Studio Modebar Button&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n  values: [19, 26, 55],\n  labels: [&#x27;Residential&#x27;, &#x27;Non-Residential&#x27;, &#x27;Utility&#x27;],\n  type: &#x27;pie&#x27;\n}];\n\nvar layout = {\n  title: {\n      text: &#x27;Show Edit in Chart Studio Modebar Button&#x27;\n  }\n};\n\nvar config = {\n  showEditInChartStudio: true,\n  plotlyServerURL: \&quot;https://chart-studio.plotly.com\&quot;\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_11"></div>
+              <script>
+                var data = [{
+  values: [19, 26, 55],
+  labels: ['Residential', 'Non-Residential', 'Utility'],
+  type: 'pie'
+}];
+
+var layout = {
+  title: {
+      text: 'Show Edit in Chart Studio Modebar Button'
+  }
+};
+
+var config = {
+  showEditInChartStudio: true,
+  plotlyServerURL: "https://chart-studio.plotly.com"
+};
+
+Plotly.newPlot('myDiv_11', data, layout, config);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="change-the-default-locale">
+        <a class="no_underline plot-blue" href="#change-the-default-locale">change-the-default-locale</a>
+      </h3>
+    <div class="row">
+    <p>Load and register a non-default locale by adding <code>&lt;script src="https://cdn.plot.ly/plotly-locale-YOUR-LOCALE-latest.js"&gt;&lt;/script&gt;</code>
+to your HTML after the plotly.js tag and then reference the locale in the <code>config</code>. For Example, the codepen example below has
+<code>&lt;script src="https://cdn.plot.ly/plotly-locale-fr-latest.js"&gt;&lt;/script&gt;</code> in its HTML.  For more information and a list of available locales, see
+<a href="https://github.com/plotly/plotly.js/blob/master/dist/README.md#to-include-localization">https://github.com/plotly/plotly.js/blob/master/dist/README.md#to-include-localization</a></p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  type: &quot;scatter&quot;,
+  mode: &quot;lines&quot;,
+  x: [&#x27;2018-01-01&#x27;, &#x27;2018-08-31&#x27;],
+  y: [10, 5],
+  line: {color: &#x27;#17BECF&#x27;}
+};
+
+var trace2 = {
+  type: &quot;scatter&quot;,
+  mode: &quot;lines&quot;,
+  x: [&#x27;2018-01-01&#x27;, &#x27;2018-08-31&#x27;],
+  y: [3,7],
+  line: {color: &#x27;#7F7F7F&#x27;}
+};
+
+var data = [trace1,trace2];
+
+var layout = {
+  title: {
+    text: &#x27;Custom Locale&#x27;
+  }
+};
+
+var config = {locale: &#x27;fr&#x27;};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Change the Default Locale&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  type: \&quot;scatter\&quot;,\n  mode: \&quot;lines\&quot;,\n  x: [&#x27;2018-01-01&#x27;, &#x27;2018-08-31&#x27;],\n  y: [10, 5],\n  line: {color: &#x27;#17BECF&#x27;}\n};\n\nvar trace2 = {\n  type: \&quot;scatter\&quot;,\n  mode: \&quot;lines\&quot;,\n  x: [&#x27;2018-01-01&#x27;, &#x27;2018-08-31&#x27;],\n  y: [3,7],\n  line: {color: &#x27;#7F7F7F&#x27;}\n};\n\nvar data = [trace1,trace2];\n\nvar layout = {\n  title: {\n    text: &#x27;Custom Locale&#x27;\n  }\n};\n\nvar config = {locale: &#x27;fr&#x27;};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, config);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_12"></div>
+              <script>
+                var trace1 = {
+  type: "scatter",
+  mode: "lines",
+  x: ['2018-01-01', '2018-08-31'],
+  y: [10, 5],
+  line: {color: '#17BECF'}
+};
+
+var trace2 = {
+  type: "scatter",
+  mode: "lines",
+  x: ['2018-01-01', '2018-08-31'],
+  y: [3,7],
+  line: {color: '#7F7F7F'}
+};
+
+var data = [trace1,trace2];
+
+var layout = {
+  title: {
+    text: 'Custom Locale'
+  }
+};
+
+var config = {locale: 'fr'};
+
+Plotly.newPlot('myDiv_12', data, layout, config);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="hide-the-plotly-logo-on-the-modebar">
+        <a class="no_underline plot-blue" href="#hide-the-plotly-logo-on-the-modebar">hide-the-plotly-logo-on-the-modebar</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+    x:[&#x27;trees&#x27;, &#x27;flowers&#x27;, &#x27;hedges&#x27;],
+    y: [90, 130, 40],
+    type: &#x27;bar&#x27;
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: &#x27;Hide the Plotly Logo on the Modebar&#x27;
+    },
+    showlegend: false
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {displaylogo: false});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Hide the Plotly Logo on the Modebar&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n    x:[&#x27;trees&#x27;, &#x27;flowers&#x27;, &#x27;hedges&#x27;],\n    y: [90, 130, 40],\n    type: &#x27;bar&#x27;\n};\n\nvar data = [trace1];\n\nvar layout = {\n    title: {\n        text: &#x27;Hide the Plotly Logo on the Modebar&#x27;\n    },\n    showlegend: false\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {displaylogo: false});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_13"></div>
+              <script>
+                var trace1 = {
+    x:['trees', 'flowers', 'hedges'],
+    y: [90, 130, 40],
+    type: 'bar'
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: 'Hide the Plotly Logo on the Modebar'
+    },
+    showlegend: false
+};
+
+Plotly.newPlot('myDiv_13', data, layout, {displaylogo: false});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="making-a-responsive-chart">
+        <a class="no_underline plot-blue" href="#making-a-responsive-chart">making-a-responsive-chart</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+    type: &#x27;bar&#x27;,
+    x: [1, 2, 3, 4],
+    y: [5, 10, 2, 8],
+    marker: {
+        color: &#x27;#C8A2C8&#x27;,
+        line: {
+            width: 2.5
+        }
+    }
+};
+
+var data = [ trace1 ];
+
+var layout = {
+    title: {
+      text: &#x27;Responsive to window size!&#x27;
+    },
+    font: {size: 18}
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout, {responsive: true});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Making a Responsive Chart&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n    type: &#x27;bar&#x27;,\n    x: [1, 2, 3, 4],\n    y: [5, 10, 2, 8],\n    marker: {\n        color: &#x27;#C8A2C8&#x27;,\n        line: {\n            width: 2.5\n        }\n    }\n};\n\nvar data = [ trace1 ];\n\nvar layout = {\n    title: {\n      text: &#x27;Responsive to window size!&#x27;\n    },\n    font: {size: 18}\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout, {responsive: true});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_14"></div>
+              <script>
+                var trace1 = {
+    type: 'bar',
+    x: [1, 2, 3, 4],
+    y: [5, 10, 2, 8],
+    marker: {
+        color: '#C8A2C8',
+        line: {
+            width: 2.5
+        }
+    }
+};
+
+var data = [ trace1 ];
+
+var layout = {
+    title: {
+      text: 'Responsive to window size!'
+    },
+    font: {size: 18}
+};
+
+Plotly.newPlot('myDiv_14', data, layout, {responsive: true});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="double-click-delay">
+        <a class="no_underline plot-blue" href="#double-click-delay">double-click-delay</a>
+      </h3>
+    <div class="row">
+    <p>Sets the maximum delay between two consecutive clicks to be interpreted as a double-click in ms. This is the time interval between first mousedown, and' second mouseup. The default timing is 300 ms (less than half a second).
+This setting propagates to all on-subplot double clicks, (except for geo, map, and mapbox).</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+  type: &quot;bar&quot;,
+  y: [3, 5, 3, 2],
+  x: [&quot;2019-09-02&quot;, &quot;2019-10-10&quot;, &quot;2019-11-12&quot;, &quot;2019-12-22&quot;]
+}];
+
+var layout = {xaxis: {type: &#x27;date&#x27;}};
+
+var config = {doubleClickDelay: 1000}
+
+Plotly.newPlot(&quot;myDiv&quot;, data, layout, config)</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Double Click Delay&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n  type: \&quot;bar\&quot;,\n  y: [3, 5, 3, 2],\n  x: [\&quot;2019-09-02\&quot;, \&quot;2019-10-10\&quot;, \&quot;2019-11-12\&quot;, \&quot;2019-12-22\&quot;]\n}];\n\nvar layout = {xaxis: {type: &#x27;date&#x27;}};\n\nvar config = {doubleClickDelay: 1000}\n\nPlotly.newPlot(\&quot;myDiv\&quot;, data, layout, config)&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_15"></div>
+              <script>
+                var data = [{
+  type: "bar",
+  y: [3, 5, 3, 2],
+  x: ["2019-09-02", "2019-10-10", "2019-11-12", "2019-12-22"]
+}];
+
+var layout = {xaxis: {type: 'date'}};
+
+var config = {doubleClickDelay: 1000}
+
+Plotly.newPlot("myDiv_15", data, layout, config)
+              </script>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
