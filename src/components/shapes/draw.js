@@ -196,7 +196,7 @@ function setClipPath(shapePath, gd, shapeOptions) {
     //
     // if axis is 'paper' or an axis with " domain" appended, then there is no
     // clip axis
-    var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, '').replace(/[xyz][1-9]* *domain/g, '');
+    var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
 
     Drawing.setClipUrl(
         shapePath,
