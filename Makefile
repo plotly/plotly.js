@@ -5,27 +5,27 @@ HANDWRITTEN=content
 SCHEMA_SRC=test/plot-schema.json
 TMP=tmp
 EXAMPLES_DIR=${TMP}/javascript
-EXAMPLES_FILE=${EXAMPLES_DIR}/axes/index.html
+EXAMPLES_FILE=${EXAMPLES_DIR}/axes/index.html # could be any of the generated files
 REFERENCE_DIR=${TMP}/reference
-REFERENCE_FILE=${REFERENCE_DIR}/bar/index.html
+REFERENCE_FILE=${REFERENCE_DIR}/bar/index.html # could be any of the generated files
 
 ## commands: show available commands
 commands:
 	@grep -h -E '^##' ${MAKEFILE_LIST} | sed -e 's/## //g' | column -t -s ':'
 
-## docs: rebuild documentation
+## docs: rebuild full documentation in `./docs`
 .PHONY: docs
 docs: ${EXAMPLES_FILE} ${REFERENCE_FILE}
 	${RUN} mkdocs build
 
-## examples: build example documentation in ./tmp
+## examples: build intermediate example documentation in ./tmp
 examples: ${EXAMPLES_FILE}
 
 ${EXAMPLES_FILE}:
 	@mkdir -p ${TMP}
 	${RUN} bin/example_pages.py --indir ${HANDWRITTEN}/plotly_js --outdir ${EXAMPLES_DIR} --jsversion 3.2.1
 
-## reference: build reference documentation in ./tmp
+## reference: build intermediate reference documentation in ./tmp
 reference: ${REFERENCE_FILE}
 
 ${REFERENCE_FILE}:

@@ -151,12 +151,12 @@ def _make_mydiv(args, accum, path, header, content, counter):
     unique_mydiv = f"myDiv_{counter}"
     content_mydiv = content.replace("myDiv", unique_mydiv)
     content_json = escape(json.dumps(content))
-    
+
     # Get JS Version
     mkdocs_path = Path(__file__).resolve().parent.parent / "mkdocs.yml"
     config = load_config(config_file=str(mkdocs_path))
-    extra = config.get('extra', {})
-    version = extra.get('js-version')
+    extra = config.get("extra", {})
+    version = extra.get("js-version")
 
     accum.append(
         MYDIV.format(
