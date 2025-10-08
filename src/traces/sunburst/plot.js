@@ -633,11 +633,11 @@ exports.formatSliceLabel = function (pt, entry, trace, cd, fullLayout) {
     if (Lib.isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
     obj.customdata = Lib.castOption(trace, cdi.i, 'customdata');
     return Lib.texttemplateString({
-        args: [obj, trace._meta],
-        d3locale: fullLayout._d3locale,
+        data: [obj, trace._meta],
         fallback: trace.texttemplatefallback,
         labels: obj,
-        string: txt
+        locale: fullLayout._d3locale,
+        template: txt
     });
 };
 

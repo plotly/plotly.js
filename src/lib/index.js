@@ -1112,22 +1112,22 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
  * or fallback to associated labels.
  *
  * Examples:
- *  Lib.hovertemplateString({ string 'name: %{trace}', labels: {trace: 'asdf'} }) --> 'name: asdf'
- *  Lib.hovertemplateString({ string: 'name: %{trace[0].name}', labels: { trace: [{ name: 'asdf' }] } }) --> 'name: asdf'
- *  Lib.hovertemplateString({ string: 'price: %{y:$.2f}', labels: { y: 1 } }) --> 'price: $1.00'
+ *  Lib.templateFormatString({ template 'name: %{trace}', labels: {trace: 'asdf'} }) --> 'name: asdf'
+ *  Lib.templateFormatString({ template: 'name: %{trace[0].name}', labels: { trace: [{ name: 'asdf' }] } }) --> 'name: asdf'
+ *  Lib.templateFormatString({ template: 'price: %{y:$.2f}', labels: { y: 1 } }) --> 'price: $1.00'
  *
  * @param {object}  options - Configuration object
- * @param {array}   options.args - Data objects containing substitution values
- * @param {object}  options.d3locale - D3 locale for formatting
+ * @param {array}   options.data - Data objects containing substitution values
  * @param {string}  options.fallback - Fallback value when substitution fails
  * @param {object}  options.labels - Data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
+ * @param {object}  options.locale - D3 locale for formatting
  * @param {object}  options.opts - Additional options
- * @param {string}  options.string - Input string containing %{...:...} template strings
+ * @param {string}  options.template - Input string containing %{...:...} template strings
  *
  * @return {string} templated string
  */
-function templateFormatString({ args = [], d3locale, fallback, labels = {}, opts, string }) {
-    return string.replace(lib.TEMPLATE_STRING_REGEX, (_, rawKey, format) => {
+function templateFormatString({ data = [], locale, fallback, labels = {}, opts, template }) {
+    return template.replace(lib.TEMPLATE_STRING_REGEX, (_, rawKey, format) => {
         const isOther = ['xother', 'yother'].includes(rawKey);
         const isSpaceOther = ['_xother', '_yother'].includes(rawKey);
         const isSpaceOtherSpace = ['_xother_', '_yother_'].includes(rawKey);
@@ -1154,7 +1154,7 @@ function templateFormatString({ args = [], d3locale, fallback, labels = {}, opts
             if (labels[key] === undefined) return '';
             value = labels[key];
         } else {
-            for (const obj of args) {
+            for (const obj of data) {
                 if (!obj) continue;
                 if (obj.hasOwnProperty(key)) {
                     value = obj[key];
@@ -1184,7 +1184,7 @@ function templateFormatString({ args = [], d3locale, fallback, labels = {}, opts
         if (format) {
             var fmt;
             if (format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
+                fmt = locale ? locale.numberFormat : lib.numberFormat;
                 if (value !== '') {
                     // e.g. skip missing data on heatmap
                     value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
@@ -1192,7 +1192,7 @@ function templateFormatString({ args = [], d3locale, fallback, labels = {}, opts
             }
 
             if (format[0] === '|') {
-                fmt = d3locale ? d3locale.timeFormat : utcFormat;
+                fmt = locale ? locale.timeFormat : utcFormat;
                 var ms = lib.dateTime2ms(value);
                 value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''), false, fmt);
             }

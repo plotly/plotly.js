@@ -143,11 +143,11 @@ function convertTextStyle(gd, trace) {
             appendArrayPointValue(pointValues, trace, i);
             optsOut.text.push(
                 Lib.texttemplateString({
-                    args: [pointValues, d, trace._meta],
-                    d3locale,
+                    data: [pointValues, d, trace._meta],
                     fallback: trace.texttemplatefallback,
                     labels,
-                    string: txt(i)
+                    locale: d3locale,
+                    template: txt(i)
                 })
             );
         }

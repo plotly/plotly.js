@@ -451,11 +451,11 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
                     obj.text = theText;
 
                     var _t = Lib.texttemplateString({
-                        args: [obj, trace._meta],
-                        d3locale: gd._fullLayout._d3locale,
+                        data: [obj, trace._meta],
                         fallback: trace.texttemplatefallback,
                         labels: obj,
-                        string: texttemplate
+                        locale: gd._fullLayout._d3locale,
+                        template: texttemplate
                     });
                     if (!_t) continue;
 

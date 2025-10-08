@@ -301,11 +301,11 @@ function makeSymbolGeoJSON(calcTrace, gd) {
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, calcPt.i);
             text = Lib.texttemplateString({
-                args: [pointValues, calcPt, trace._meta],
-                d3locale: fullLayout._d3locale,
+                data: [pointValues, calcPt, trace._meta],
                 fallback: trace.texttemplatefallback,
                 labels,
-                string: tt
+                locale: fullLayout._d3locale,
+                template: tt
             });
         } else {
             text = fillText(i);

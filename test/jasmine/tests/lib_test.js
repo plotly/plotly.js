@@ -2525,9 +2525,9 @@ describe('Test lib.js:', function () {
         it('evaluates attributes', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ bar: 'baz' }],
+                    data: [{ bar: 'baz' }],
                     fallback: '',
-                    string: 'foo %{bar}'
+                    template: 'foo %{bar}'
                 })
             ).toEqual('foo baz');
         });
@@ -2535,9 +2535,9 @@ describe('Test lib.js:', function () {
         it('evaluates attributes with a dot in their name', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ 'marker.size': 12 }, { marker: { size: 14 } }],
+                    data: [{ 'marker.size': 12 }, { marker: { size: 14 } }],
                     fallback: '',
-                    string: '%{marker.size}'
+                    template: '%{marker.size}'
                 })
             ).toEqual('12');
         });
@@ -2545,9 +2545,9 @@ describe('Test lib.js:', function () {
         it('evaluates nested properties', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ bar: { baz: 'asdf' } }],
+                    data: [{ bar: { baz: 'asdf' } }],
                     fallback: '',
-                    string: 'foo %{bar.baz}'
+                    template: 'foo %{bar.baz}'
                 })
             ).toEqual('foo asdf');
         });
@@ -2555,9 +2555,9 @@ describe('Test lib.js:', function () {
         it('evaluates array nested properties', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ bar: [{ baz: 'asdf' }] }],
+                    data: [{ bar: [{ baz: 'asdf' }] }],
                     fallback: '',
-                    string: 'foo %{bar[0].baz}'
+                    template: 'foo %{bar[0].baz}'
                 })
             ).toEqual('foo asdf');
         });
@@ -2565,9 +2565,9 @@ describe('Test lib.js:', function () {
         it('should work with the number *0*', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ group: 0 }],
+                    data: [{ group: 0 }],
                     fallback: '',
-                    string: '%{group}'
+                    template: '%{group}'
                 })
             ).toEqual('0');
         });
@@ -2575,9 +2575,9 @@ describe('Test lib.js:', function () {
         it('should work with the number *0* (nested case)', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ x: { y: 0 } }],
+                    data: [{ x: { y: 0 } }],
                     fallback: '',
-                    string: '%{x.y}'
+                    template: '%{x.y}'
                 })
             ).toEqual('0');
         });
@@ -2585,9 +2585,9 @@ describe('Test lib.js:', function () {
         it('preserves null and NaN', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
+                    data: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
                     fallback: '',
-                    string: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
+                    template: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
                 })
             ).toEqual('null NaN null NaN null NaN');
         });
@@ -2595,9 +2595,9 @@ describe('Test lib.js:', function () {
         it('subtitutes multiple matches', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ group: 'asdf', trace: 'jkl;' }],
+                    data: [{ group: 'asdf', trace: 'jkl;' }],
                     fallback: '',
-                    string: 'foo %{group} %{trace}'
+                    template: 'foo %{group} %{trace}'
                 })
             ).toEqual('foo asdf jkl;');
         });
@@ -2605,9 +2605,9 @@ describe('Test lib.js:', function () {
         it('replaces missing matches with fallback value', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ group: 1 }],
+                    data: [{ group: 1 }],
                     fallback: '',
-                    string: 'foo %{group} %{trace}'
+                    template: 'foo %{group} %{trace}'
                 })
             ).toEqual('foo 1 ');
         });
@@ -2619,34 +2619,34 @@ describe('Test lib.js:', function () {
             // Simple key
             expect(
                 Lib.hovertemplateString({
-                    args: [obj1, obj2],
+                    data: [obj1, obj2],
                     fallback: '',
-                    string: 'foo %{a}'
+                    template: 'foo %{a}'
                 })
             ).toEqual('foo first');
             expect(
                 Lib.hovertemplateString({
-                    args: [obj2, obj1],
+                    data: [obj2, obj1],
                     fallback: '',
-                    string: 'foo %{a}'
+                    template: 'foo %{a}'
                 })
             ).toEqual('foo second');
 
             // Nested Keys
             expect(
                 Lib.hovertemplateString({
-                    args: [obj1, obj2],
+                    data: [obj1, obj2],
                     fallback: '',
-                    string: 'foo %{foo.bar}'
+                    template: 'foo %{foo.bar}'
                 })
             ).toEqual('foo bar');
 
             // Nested keys with 0
             expect(
                 Lib.hovertemplateString({
-                    args: [{ y: 0 }, { y: 1 }],
+                    data: [{ y: 0 }, { y: 1 }],
                     fallback: '',
-                    string: 'y: %{y}'
+                    template: 'y: %{y}'
                 })
             ).toEqual('y: 0');
         });
@@ -2654,23 +2654,23 @@ describe('Test lib.js:', function () {
         it('formats numbers using d3-format mini-language when `:`', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ a: 0.123 }],
+                    data: [{ a: 0.123 }],
                     fallback: '',
-                    string: 'a: %{a:.0%}'
+                    template: 'a: %{a:.0%}'
                 })
             ).toEqual('a: 12%');
             expect(
                 Lib.hovertemplateString({
-                    args: [{ a: 0.123 }],
+                    data: [{ a: 0.123 }],
                     fallback: '',
-                    string: 'a: %{a:0.2%}'
+                    template: 'a: %{a:0.2%}'
                 })
             ).toEqual('a: 12.30%');
             expect(
                 Lib.hovertemplateString({
-                    args: [{ b: 43 }],
+                    data: [{ b: 43 }],
                     fallback: '',
-                    string: 'b: %{b:2.2f}'
+                    template: 'b: %{b:2.2f}'
                 })
             ).toEqual('b: 43.00');
         });
@@ -2678,16 +2678,16 @@ describe('Test lib.js:', function () {
         it('formats date using d3-time-format mini-language `|`', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ a: '2019-05-22' }],
+                    data: [{ a: '2019-05-22' }],
                     fallback: '',
-                    string: 'a: %{a|%A}'
+                    template: 'a: %{a|%A}'
                 })
             ).toEqual('a: Wednesday');
             expect(
                 Lib.hovertemplateString({
-                    args: [{ x: '2019-01-01' }],
+                    data: [{ x: '2019-01-01' }],
                     fallback: '',
-                    string: '%{x|%b %-d, %Y}'
+                    template: '%{x|%b %-d, %Y}'
                 })
             ).toEqual('Jan 1, 2019');
         });
@@ -2695,40 +2695,33 @@ describe('Test lib.js:', function () {
         it('looks for default label if no format is provided', function () {
             expect(
                 Lib.hovertemplateString({
-                    args: [{ y: 0.123 }],
+                    data: [{ y: 0.123 }],
                     fallback: '',
                     labels: { yLabel: '0.1' },
-                    string: 'y: %{y}'
+                    template: 'y: %{y}'
                 })
             ).toEqual('y: 0.1');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function () {
             spyOn(Lib, 'warn').and.callThrough();
-            Lib.hovertemplateString({
-                fallback: '',
-                string: '%{idontexist}'
-            });
+            Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             expect(Lib.warn.calls.count()).toBe(1);
 
             for (var i = 0; i < 15; i++) {
-                Lib.hovertemplateString({
-                    fallback: '',
-                    string: '%{idontexist}'
-                });
+                Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             }
             expect(Lib.warn.calls.count()).toBe(10);
         });
     });
 
     describe('texttemplateString', function () {
-        var locale = false;
         it('evaluates attributes', function () {
             expect(
                 Lib.texttemplateString({
-                    args: [{ bar: 'baz' }],
+                    data: [{ bar: 'baz' }],
                     fallback: '',
-                    string: 'foo %{bar}'
+                    template: 'foo %{bar}'
                 })
             ).toEqual('foo baz');
         });
@@ -2736,10 +2729,10 @@ describe('Test lib.js:', function () {
         it('looks for default label if no format is provided', function () {
             expect(
                 Lib.texttemplateString({
-                    args: [{ y: 0.123 }],
+                    data: [{ y: 0.123 }],
                     fallback: '',
                     labels: { yLabel: '0.1' },
-                    string: 'y: %{y}'
+                    template: 'y: %{y}'
                 })
             ).toEqual('y: 0.1');
         });
@@ -2747,20 +2740,20 @@ describe('Test lib.js:', function () {
         it('preserves null and NaN', function () {
             expect(
                 Lib.texttemplateString({
-                    args: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
+                    data: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
                     fallback: '',
-                    string: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
+                    template: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
                 })
             ).toEqual('null NaN null NaN null NaN');
         });
 
         it('warns user up to 10 times if a variable cannot be found', function () {
             spyOn(Lib, 'warn').and.callThrough();
-            Lib.texttemplateString({ fallback: '', string: '%{idontexist}' });
+            Lib.texttemplateString({ fallback: '', template: '%{idontexist}' });
             expect(Lib.warn.calls.count()).toBe(1);
 
             for (var i = 0; i < 15; i++) {
-                Lib.texttemplateString({ fallback: '', string: '%{idontexist}' });
+                Lib.texttemplateString({ fallback: '', template: '%{idontexist}' });
             }
             expect(Lib.warn.calls.count()).toBe(11);
         });

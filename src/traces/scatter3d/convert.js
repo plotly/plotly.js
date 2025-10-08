@@ -258,11 +258,11 @@ function convertPlotlyOptions(scene, data) {
             var pointValues = {};
             appendArrayPointValue(pointValues, data, i);
             text[i] = Lib.texttemplateString({
-                args: [pointValues, d, data._meta],
-                d3locale,
+                data: [pointValues, d, data._meta],
                 fallback: data.texttemplatefallback,
                 labels,
-                string: txt(i)
+                locale: d3locale,
+                template: txt(i)
             });
         }
     }

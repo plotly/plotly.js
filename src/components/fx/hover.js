@@ -1249,11 +1249,11 @@ function createHoverText(hoverData, opts) {
         var mainText = !unifiedhovertitleText
             ? t0
             : Lib.hovertemplateString({
-                  args:
+                  data:
                       hovermode === 'x unified' ? [{ xa: item0.xa, x: item0.xVal }] : [{ ya: item0.ya, y: item0.yVal }],
-                  d3locale: fullLayout._d3locale,
                   fallback: item0.trace.hovertemplatefallback,
-                  string: unifiedhovertitleText
+                  locale: fullLayout._d3locale,
+                  template: unifiedhovertitleText
               });
 
         var mockLayoutIn = {
@@ -1673,11 +1673,11 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         }
 
         text = Lib.hovertemplateString({
-            args: [d.eventData[0] || {}, d.trace._meta],
-            d3locale: fullLayout._d3locale,
+            data: [d.eventData[0] || {}, d.trace._meta],
             fallback: d.trace.hovertemplatefallback,
             labels,
-            string: hovertemplate
+            locale: fullLayout._d3locale,
+            template: hovertemplate
         });
 
         text = text.replace(EXTRA_STRING_REGEX, (_, extra) => {

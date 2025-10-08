@@ -1272,11 +1272,11 @@ function formatSliceLabel(gd, pt, cd0) {
             var ptTx = helpers.getFirstFilled(trace.text, pt.pts);
             if (isValidTextValue(ptTx) || ptTx === '') obj.text = ptTx;
             pt.text = Lib.texttemplateString({
-                args: [obj, trace._meta],
-                d3locale: gd._fullLayout._d3locale,
+                data: [obj, trace._meta],
                 fallback: trace.texttemplatefallback,
                 labels: obj,
-                string: txt
+                locale: gd._fullLayout._d3locale,
+                template: txt
             });
         }
     }
