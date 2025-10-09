@@ -2602,16 +2602,6 @@ describe('Test lib.js:', function () {
             ).toEqual('foo asdf jkl;');
         });
 
-        it('replaces missing matches with fallback value', function () {
-            expect(
-                Lib.hovertemplateString({
-                    data: [{ group: 1 }],
-                    fallback: '',
-                    template: 'foo %{group} %{trace}'
-                })
-            ).toEqual('foo 1 ');
-        });
-
         it('uses the value from the first object with the specified key', function () {
             var obj1 = { a: 'first' };
             var obj2 = { a: 'second', foo: { bar: 'bar' } };
@@ -2711,7 +2701,19 @@ describe('Test lib.js:', function () {
             for (var i = 0; i < 15; i++) {
                 Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             }
-            expect(Lib.warn.calls.count()).toBe(10);
+            // Expect 11 since the suppression warning also calls Lib.warn
+            expect(Lib.warn.calls.count()).toBe(11);
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces missing matches with fallback value', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ group: 1 }],
+                    fallback: 'Planet Express',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 Planet Express');
         });
     });
 
@@ -2755,7 +2757,19 @@ describe('Test lib.js:', function () {
             for (var i = 0; i < 15; i++) {
                 Lib.texttemplateString({ fallback: '', template: '%{idontexist}' });
             }
+            // Expect 11 since the suppression warning also calls Lib.warn
             expect(Lib.warn.calls.count()).toBe(11);
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces missing matches with fallback value', function () {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ group: 1 }],
+                    fallback: 'Zoidberg',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 Zoidberg');
         });
     });
 
