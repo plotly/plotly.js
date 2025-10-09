@@ -5,7 +5,7 @@ var scatterAttrs = require('../scatter/attributes');
 var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -15,18 +15,12 @@ module.exports = {
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the y sample data or coordinates.',
-            'See overview for more info.'
-        ].join(' ')
+        description: 'Sets the y sample data or coordinates. See overview for more info.'
     },
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the x sample data or coordinates.',
-            'See overview for more info.'
-        ].join(' ')
+        description: 'Sets the x sample data or coordinates. See overview for more info.'
     },
     x0: {
         valType: 'any',
@@ -52,18 +46,12 @@ module.exports = {
     dx: {
         valType: 'number',
         editType: 'calc',
-        description: [
-            'Sets the x coordinate step for multi-box traces',
-            'set using q1/median/q3.'
-        ].join(' ')
+        description: 'Sets the x coordinate step for multi-box traces set using q1/median/q3.'
     },
     dy: {
         valType: 'number',
         editType: 'calc',
-        description: [
-            'Sets the y coordinate step for multi-box traces',
-            'set using q1/median/q3.'
-        ].join(' ')
+        description: 'Sets the y coordinate step for multi-box traces set using q1/median/q3.'
     },
 
     xperiod: scatterAttrs.xperiod,
@@ -92,24 +80,18 @@ module.exports = {
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the Quartile 1 values.',
-            'There should be as many items as the number of boxes desired.',
+            'There should be as many items as the number of boxes desired.'
         ].join(' ')
     },
     median: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the median values.',
-            'There should be as many items as the number of boxes desired.',
-        ].join(' ')
+        description: 'Sets the median values. There should be as many items as the number of boxes desired.'
     },
     q3: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the Quartile 3 values.',
-            'There should be as many items as the number of boxes desired.',
-        ].join(' ')
+        description: 'Sets the Quartile 3 values. There should be as many items as the number of boxes desired.'
     },
     lowerfence: {
         valType: 'data_array',
@@ -142,7 +124,7 @@ module.exports = {
             'Notches displays a confidence interval around the median.',
             'We compute the confidence interval as median +/- 1.57 * IQR / sqrt(N),',
             'where IQR is the interquartile range and N is the sample size.',
-            'If two boxes\' notches do not overlap there is 95% confidence their medians differ.',
+            "If two boxes' notches do not overlap there is 95% confidence their medians differ.",
             'See https://sites.google.com/site/davidsstatistics/home/notched-box-plots for more info.',
             'Defaults to *false* unless `notchwidth` or `notchspan` is set.'
         ].join(' ')
@@ -155,7 +137,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the width of the notches relative to',
-            'the box\' width.',
+            'the box width.',
             'For example, with 0, the notches are as wide as the box(es).'
         ].join(' ')
     },
@@ -163,7 +145,7 @@ module.exports = {
         valType: 'data_array',
         editType: 'calc',
         description: [
-            'Sets the notch span from the boxes\' `median` values.',
+            "Sets the notch span from the boxes' `median` values.",
             'There should be as many items as the number of boxes desired.',
             'This attribute has effect only under the q1/median/q3 signature.',
             'If `notchspan` is not provided but a sample (in `y` or `x`) is set,',
@@ -192,7 +174,7 @@ module.exports = {
             'Defaults to *suspectedoutliers* when `marker.outliercolor` or',
             '`marker.line.outliercolor` is set.',
             'Defaults to *all* under the q1/median/q3 signature.',
-            'Otherwise defaults to *outliers*.',
+            'Otherwise defaults to *outliers*.'
         ].join(' ')
     },
     jitter: {
@@ -227,7 +209,7 @@ module.exports = {
         description: [
             'Scales the box size when sizemode=sd',
             'Allowing boxes to be drawn across any stddev range',
-            'For example 1-stddev, 3-stddev, 5-stddev',
+            'For example 1-stddev, 3-stddev, 5-stddev'
         ].join(' ')
     },
     sizemode: {
@@ -240,7 +222,7 @@ module.exports = {
             'quartiles means box is drawn between Q1 and Q3',
             'SD means the box is drawn between Mean +- Standard Deviation',
             'Argument sdmultiple (default 1) to scale the box size',
-            'So it could be drawn 1-stddev, 3-stddev etc',
+            'So it could be drawn 1-stddev, 3-stddev etc'
         ].join(' ')
     },
     boxmean: {
@@ -248,7 +230,7 @@ module.exports = {
         values: [true, 'sd', false],
         editType: 'calc',
         description: [
-            'If *true*, the mean of the box(es)\' underlying distribution is',
+            "If *true*, the mean of the box(es)' underlying distribution is",
             'drawn as a dashed line inside the box(es).',
             'If *sd* the standard deviation is also drawn.',
             'Defaults to *true* when `mean` is set.',
@@ -296,7 +278,7 @@ module.exports = {
         dflt: 'linear',
         editType: 'calc',
         description: [
-            'Sets the method used to compute the sample\'s Q1 and Q3 quartiles.',
+            "Sets the method used to compute the sample's Q1 and Q3 quartiles.",
 
             'The *linear* method uses the 25th percentile for Q1 and 75th percentile for Q3',
             'as computed using method #10 (listed on http://jse.amstat.org/v14n3/langford.html).',
@@ -332,23 +314,18 @@ module.exports = {
             editType: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
-        symbol: extendFlat({}, scatterMarkerAttrs.symbol,
-            {arrayOk: false, editType: 'plot'}),
-        opacity: extendFlat({}, scatterMarkerAttrs.opacity,
-            {arrayOk: false, dflt: 1, editType: 'style'}),
-        angle: extendFlat({}, scatterMarkerAttrs.angle,
-            {arrayOk: false, editType: 'calc'}),
-        size: extendFlat({}, scatterMarkerAttrs.size,
-            {arrayOk: false, editType: 'calc'}),
-        color: extendFlat({}, scatterMarkerAttrs.color,
-            {arrayOk: false, editType: 'style'}),
+        symbol: extendFlat({}, scatterMarkerAttrs.symbol, { arrayOk: false, editType: 'plot' }),
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity, { arrayOk: false, dflt: 1, editType: 'style' }),
+        angle: extendFlat({}, scatterMarkerAttrs.angle, { arrayOk: false, editType: 'calc' }),
+        size: extendFlat({}, scatterMarkerAttrs.size, { arrayOk: false, editType: 'calc' }),
+        color: extendFlat({}, scatterMarkerAttrs.color, { arrayOk: false, editType: 'style' }),
         line: {
-            color: extendFlat({}, scatterMarkerLineAttrs.color,
-                {arrayOk: false, dflt: colorAttrs.defaultLine, editType: 'style'}
-            ),
-            width: extendFlat({}, scatterMarkerLineAttrs.width,
-                {arrayOk: false, dflt: 0, editType: 'style'}
-            ),
+            color: extendFlat({}, scatterMarkerLineAttrs.color, {
+                arrayOk: false,
+                dflt: colorAttrs.defaultLine,
+                editType: 'style'
+            }),
+            width: extendFlat({}, scatterMarkerLineAttrs.width, { arrayOk: false, dflt: 0, editType: 'style' }),
             outliercolor: {
                 valType: 'color',
                 editType: 'style',
@@ -362,9 +339,7 @@ module.exports = {
                 min: 0,
                 dflt: 1,
                 editType: 'style',
-                description: [
-                    'Sets the border line width (in px) of the outlier sample points.'
-                ].join(' ')
+                description: 'Sets the border line width (in px) of the outlier sample points.'
             },
             editType: 'style'
         },
@@ -397,7 +372,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the width of the whiskers relative to',
-            'the box\' width.',
+            'the box width.',
             'For example, with 1, the whiskers are as wide as the box(es).'
         ].join(' ')
     },
@@ -429,28 +404,20 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.',
+            "this trace's (x,y) coordinates.",
             'To be seen, trace `hoverinfo` must contain a *text* flag.'
         ].join(' ')
     }),
-    hovertext: extendFlat({}, scatterAttrs.hovertext, {
-        description: 'Same as `text`.'
-    }),
-    hovertemplate: hovertemplateAttrs({
-        description: [
-            'N.B. This only has an effect when hovering on points.'
-        ].join(' ')
-    }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, { description: 'Same as `text`.' }),
+    hovertemplate: hovertemplateAttrs({ description: 'N.B. This only has an effect when hovering on points.' }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],
         dflt: 'boxes+points',
         editType: 'style',
-        description: [
-            'Do the hover effects highlight individual boxes ',
-            'or sample points or both?'
-        ].join(' ')
+        description: 'Do the hover effects highlight individual boxes or sample points or both?'
     },
     zorder: scatterAttrs.zorder
 };

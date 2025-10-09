@@ -13,12 +13,13 @@ var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     coerce('line.shape');
     coerce('line.hovertemplate');
+    coerce('line.hovertemplatefallback');
 
     var lineColor = coerce('line.color', layout.colorway[0]);
-    if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
-        if(lineColor.length) {
+    if (hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
+        if (lineColor.length) {
             coerce('line.colorscale');
-            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+            colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: 'line.', cLetter: 'c' });
             return lineColor.length;
         } else {
             traceOut.line.color = defaultColor;
@@ -34,26 +35,25 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
 
     var values = coerce('values');
     var visible = coerce('visible');
-    if(!(values && values.length)) {
+    if (!(values && values.length)) {
         visible = dimensionOut.visible = false;
     }
 
-    if(visible) {
+    if (visible) {
         // Dimension level
         coerce('label');
         coerce('displayindex', dimensionOut._index);
 
         // Category level
         var arrayIn = dimensionIn.categoryarray;
-        var isValidArray = (Lib.isArrayOrTypedArray(arrayIn) && arrayIn.length > 0) ||
-            isTypedArraySpec(arrayIn);
+        var isValidArray = (Lib.isArrayOrTypedArray(arrayIn) && arrayIn.length > 0) || isTypedArraySpec(arrayIn);
 
         var orderDefault;
-        if(isValidArray) orderDefault = 'array';
+        if (isValidArray) orderDefault = 'array';
         var order = coerce('categoryorder', orderDefault);
 
         // coerce 'categoryarray' only in array order case
-        if(order === 'array') {
+        if (order === 'array') {
             coerce('categoryarray');
             coerce('ticktext');
         } else {
@@ -62,7 +62,7 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
         }
 
         // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
-        if(!isValidArray && order === 'array') {
+        if (!isValidArray && order === 'array') {
             dimensionOut.categoryorder = 'trace';
         }
     }
@@ -82,7 +82,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleDomainDefaults(traceOut, layout, coerce);
 
-    if(!Array.isArray(dimensions) || !dimensions.length) {
+    if (!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;
     }
 
@@ -90,6 +90,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('hoveron');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('arrangement');
     coerce('bundlecolors');
     coerce('sortpaths');

@@ -20,34 +20,36 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var len = handleLonLatDefaults(traceIn, traceOut, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
 
     coerce('text');
     coerce('texttemplate');
+    coerce('texttemplatefallback');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('mode');
     coerce('below');
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noAngle: true});
+    if (subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noLine: true, noAngle: true });
 
         coerce('marker.allowoverlap');
         coerce('marker.angle');
 
         // array marker.size and marker.color are only supported with circles
         var marker = traceOut.marker;
-        if(marker.symbol !== 'circle') {
-            if(Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
-            if(Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];
+        if (marker.symbol !== 'circle') {
+            if (Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
+            if (Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];
         }
     }
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
+    if (subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noDash: true });
         coerce('connectgaps');
     }
 
@@ -66,28 +68,27 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var clusterEnabled = coerce('cluster.enabled', clusterEnabledDflt);
 
-    if(clusterEnabled || subTypes.hasText(traceOut)) {
+    if (clusterEnabled || subTypes.hasText(traceOut)) {
         var layoutFontFamily = layout.font.family;
 
-        handleTextDefaults(traceIn, traceOut, layout, coerce,
-            {
-                noSelect: true,
-                noFontVariant: true,
-                noFontShadow: true,
-                noFontLineposition: true,
-                noFontTextcase: true,
-                font: {
-                    family: isSupportedFont(layoutFontFamily) ? layoutFontFamily : 'Open Sans Regular',
-                    weight: layout.font.weight,
-                    style: layout.font.style,
-                    size: layout.font.size,
-                    color: layout.font.color
-                }
-            });
+        handleTextDefaults(traceIn, traceOut, layout, coerce, {
+            noSelect: true,
+            noFontVariant: true,
+            noFontShadow: true,
+            noFontLineposition: true,
+            noFontTextcase: true,
+            font: {
+                family: isSupportedFont(layoutFontFamily) ? layoutFontFamily : 'Open Sans Regular',
+                weight: layout.font.weight,
+                style: layout.font.style,
+                size: layout.font.size,
+                color: layout.font.color
+            }
+        });
     }
 
     coerce('fill');
-    if(traceOut.fill !== 'none') {
+    if (traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 

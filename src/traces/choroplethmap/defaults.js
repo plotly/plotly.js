@@ -13,8 +13,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var z = coerce('z');
     var geojson = coerce('geojson');
 
-    if(!Lib.isArrayOrTypedArray(locations) || !locations.length ||
-        !Lib.isArrayOrTypedArray(z) || !z.length ||
+    if (
+        !Lib.isArrayOrTypedArray(locations) ||
+        !locations.length ||
+        !Lib.isArrayOrTypedArray(z) ||
+        !z.length ||
         !((typeof geojson === 'string' && geojson !== '') || Lib.isPlainObject(geojson))
     ) {
         traceOut.visible = false;
@@ -30,12 +33,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var mlw = coerce('marker.line.width');
-    if(mlw) coerce('marker.line.color');
+    if (mlw) coerce('marker.line.color');
     coerce('marker.opacity');
 
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'z' });
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

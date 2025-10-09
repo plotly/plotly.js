@@ -12,7 +12,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -27,6 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     // var textPosition = coerce('textposition');
     // var hasBoth = Array.isArray(textPosition) || textPosition === 'auto';

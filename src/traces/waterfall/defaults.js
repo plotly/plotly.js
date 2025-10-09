@@ -26,7 +26,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -37,7 +37,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('measure');
 
-    coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+    coerce('orientation', traceOut.x && !traceOut.y ? 'h' : 'v');
     coerce('base');
     coerce('offset');
     coerce('width');
@@ -46,6 +46,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -57,10 +58,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         moduleHasInsideanchor: true
     });
 
-
-    if(traceOut.textposition !== 'none') {
+    if (traceOut.textposition !== 'none') {
         coerce('texttemplate');
-        if(!traceOut.texttemplate) coerce('textinfo');
+        coerce('texttemplatefallback');
+        if (!traceOut.texttemplate) coerce('textinfo');
     }
 
     handleDirection(coerce, 'increasing', INCREASING_COLOR);
@@ -68,10 +69,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     handleDirection(coerce, 'totals', TOTALS_COLOR);
 
     var connectorVisible = coerce('connector.visible');
-    if(connectorVisible) {
+    if (connectorVisible) {
         coerce('connector.mode');
         var connectorLineWidth = coerce('connector.line.width');
-        if(connectorLineWidth) {
+        if (connectorLineWidth) {
             coerce('connector.line.color');
             coerce('connector.line.dash');
         }
@@ -85,8 +86,8 @@ function crossTraceDefaults(fullData, fullLayout) {
     function coerce(attr) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
-    if(fullLayout.waterfallmode === 'group') {
-        for(var i = 0; i < fullData.length; i++) {
+    if (fullLayout.waterfallmode === 'group') {
+        for (var i = 0; i < fullData.length; i++) {
             traceOut = fullData[i];
             traceIn = traceOut._input;
 
