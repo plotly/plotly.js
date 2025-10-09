@@ -133,4 +133,5 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     coerce('title.side', isVertical ? 'top' : 'right');
+    coerce('title.align', isVertical ? 'start' : 'middle');
 };
