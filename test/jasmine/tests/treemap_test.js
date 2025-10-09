@@ -737,7 +737,7 @@ describe('Test treemap hover:', function() {
         exp: {
             label: {
                 nums: 'Abel :: 6.00',
-                name: '<tspan style="font-weight:bold">N.B.</tspan>'
+                name: '<tspan style="font-weight: bold;">N.B.</tspan>'
             },
             ptData: {
                 curveNumber: 0,
