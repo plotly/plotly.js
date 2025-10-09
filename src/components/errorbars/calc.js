@@ -26,7 +26,7 @@ module.exports = function calc(gd) {
 
 function calcOneAxis(calcTrace, trace, axis, coord) {
     var opts = trace['error_' + coord] || {};
-    var isVisible = (opts.visible && ['linear', 'log'].indexOf(axis.type) !== -1);
+    var isVisible = (opts.visible && ['linear', 'log', 'date'].indexOf(axis.type) !== -1);
     var vals = [];
 
     if(!isVisible) return;
@@ -53,14 +53,20 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         else if(iIn === null) continue;
 
         var calcCoord = calcPt[coord];
-
-        if(!isNumeric(axis.c2l(calcCoord))) continue;
-
-        var errors = computeError(calcCoord, iIn);
+        var coordVal = axis.c2l(calcCoord); // always numeric (ms for dates, raw for linear)
+        
+        if(!isNumeric(coordVal)) continue;
+        
+        var errors = computeError(coordVal, iIn);
         if(isNumeric(errors[0]) && isNumeric(errors[1])) {
-            var shoe = calcPt[coord + 's'] = calcCoord - errors[0];
-            var hat = calcPt[coord + 'h'] = calcCoord + errors[1];
-            vals.push(shoe, hat);
+          var shoe = coordVal - errors[0];
+          var hat  = coordVal + errors[1];
+
+          // convert back to axis coords
+          calcPt[coord + 's'] = axis.l2c(shoe);
+          calcPt[coord + 'h'] = axis.l2c(hat);
+
+          vals.push(shoe, hat);
         }
     }
 
