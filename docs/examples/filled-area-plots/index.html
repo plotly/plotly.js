@@ -4568,53 +4568,6 @@ Plotly.newPlot('myDiv_0', data);
 
 <div class="section">
   <div class="row auto-eg-padding">
-      <h3 id="stacked-area-chart">
-        <a class="no_underline plot-blue" href="#stacked-area-chart">stacked-area-chart</a>
-      </h3>
-    <div class="row">
-
-          <div class="z-depth-1">
-        <pre><code class="javascript">var plotDiv = document.getElementById(&#x27;plot&#x27;);
-var traces = [
-    {x: [1,2,3], y: [2,1,4], stackgroup: &#x27;one&#x27;},
-    {x: [1,2,3], y: [1,1,2], stackgroup: &#x27;one&#x27;},
-    {x: [1,2,3], y: [3,0,2], stackgroup: &#x27;one&#x27;}
-];
-
-Plotly.newPlot(&#x27;myDiv&#x27;, traces, {title: {text: &#x27;stacked and filled line chart&#x27;}});</code></pre>
-      </div>
-
-
-              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
-                    action="https://codepen.io/pen/define" method="POST" target="_blank">
-                <input type="hidden" name="data"
-                  value="{&quot;title&quot;:&quot;Plotly.js Stacked Area Chart&quot;,&quot;html&quot;:&quot;&lt;head&gt;
-    &lt;!-- Load plotly.js into the DOM --&gt;
-    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
-&lt;/head>
-
-&lt;body&gt;
-    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
-&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var plotDiv = document.getElementById(&#x27;plot&#x27;);\nvar traces = [\n\t{x: [1,2,3], y: [2,1,4], stackgroup: &#x27;one&#x27;},\n\t{x: [1,2,3], y: [1,1,2], stackgroup: &#x27;one&#x27;},\n\t{x: [1,2,3], y: [3,0,2], stackgroup: &#x27;one&#x27;}\n];\n\nPlotly.newPlot(&#x27;myDiv&#x27;, traces, {title: {text: &#x27;stacked and filled line chart&#x27;}});&quot;}">
-                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
-              </form>
-              <div style="max-width: 100%; margin: auto" id="myDiv_1"></div>
-              <script>
-                var plotDiv = document.getElementById('plot');
-var traces = [
-    {x: [1,2,3], y: [2,1,4], stackgroup: 'one'},
-    {x: [1,2,3], y: [1,1,2], stackgroup: 'one'},
-    {x: [1,2,3], y: [3,0,2], stackgroup: 'one'}
-];
-
-Plotly.newPlot('myDiv_1', traces, {title: {text: 'stacked and filled line chart'}});
-              </script>
-    </div>
-  </div>
-</div>
-
-<div class="section">
-  <div class="row auto-eg-padding">
       <h3 id="overlaid-area-chart-without-boundary-lines">
         <a class="no_underline plot-blue" href="#overlaid-area-chart-without-boundary-lines">overlaid-area-chart-without-boundary-lines</a>
       </h3>
@@ -4662,7 +4615,7 @@ Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
 &lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4],\n  y: [0, 2, 3, 5],\n  fill: &#x27;tozeroy&#x27;,\n  type: &#x27;scatter&#x27;,\n  mode: &#x27;none&#x27;\n};\n\nvar trace2 = {\n  x: [1, 2, 3, 4],\n  y: [3, 5, 1, 7],\n  fill: &#x27;tonexty&#x27;,\n  type: &#x27;scatter&#x27;,\n  mode: &#x27;none&#x27;\n};\n\nvar layout = {\n  title: {\n    text: &#x27;Overlaid Chart Without Boundary Lines&#x27;\n  }\n};\n\nvar data = [trace1, trace2];\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
                 <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
               </form>
-              <div style="max-width: 100%; margin: auto" id="myDiv_2"></div>
+              <div style="max-width: 100%; margin: auto" id="myDiv_1"></div>
               <script>
                 var trace1 = {
   x: [1, 2, 3, 4],
@@ -4688,7 +4641,54 @@ var layout = {
 
 var data = [trace1, trace2];
 
-Plotly.newPlot('myDiv_2', data, layout);
+Plotly.newPlot('myDiv_1', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="stacked-area-chart">
+        <a class="no_underline plot-blue" href="#stacked-area-chart">stacked-area-chart</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var plotDiv = document.getElementById(&#x27;plot&#x27;);
+var traces = [
+    {x: [1,2,3], y: [2,1,4], stackgroup: &#x27;one&#x27;},
+    {x: [1,2,3], y: [1,1,2], stackgroup: &#x27;one&#x27;},
+    {x: [1,2,3], y: [3,0,2], stackgroup: &#x27;one&#x27;}
+];
+
+Plotly.newPlot(&#x27;myDiv&#x27;, traces, {title: {text: &#x27;stacked and filled line chart&#x27;}});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Stacked Area Chart&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var plotDiv = document.getElementById(&#x27;plot&#x27;);\nvar traces = [\n\t{x: [1,2,3], y: [2,1,4], stackgroup: &#x27;one&#x27;},\n\t{x: [1,2,3], y: [1,1,2], stackgroup: &#x27;one&#x27;},\n\t{x: [1,2,3], y: [3,0,2], stackgroup: &#x27;one&#x27;}\n];\n\nPlotly.newPlot(&#x27;myDiv&#x27;, traces, {title: {text: &#x27;stacked and filled line chart&#x27;}});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_2"></div>
+              <script>
+                var plotDiv = document.getElementById('plot');
+var traces = [
+    {x: [1,2,3], y: [2,1,4], stackgroup: 'one'},
+    {x: [1,2,3], y: [1,1,2], stackgroup: 'one'},
+    {x: [1,2,3], y: [3,0,2], stackgroup: 'one'}
+];
+
+Plotly.newPlot('myDiv_2', traces, {title: {text: 'stacked and filled line chart'}});
               </script>
     </div>
   </div>
