@@ -1,5 +1,7 @@
 site_name: "Plotly.js Docs"
 site_url: 'https://plotly.com/javascript/'
+repo_url: https://github.com/plotly/plotly.js
+repo_name: plotly/plotly.js
 docs_dir: pages
 site_dir: docs
 
@@ -20,6 +22,31 @@ plugins:
 theme:
   name: "material"
   custom_dir: "pages/overrides"
+  font:
+  text: Inter
+  features:
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+  logo: https://docs.plotly.com/assets/plotly_logo_square.png
+  palette:
+    # Auto (follows system)
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
 
 markdown_extensions:
   - footnotes
@@ -155,4 +182,4 @@ nav:
 - API Reference: reference/
 
 extra:
-  js-version: "3.2.1"
+  js-version: "3.1.0"
