@@ -64,7 +64,7 @@ function _doPlot(gd, data, layout, config) {
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
 
-    if(Lib.isPlainObject(data)) {
+    if (Lib.isPlainObject(data)) {
         var obj = data;
         data = obj.data;
         layout = obj.layout;
@@ -73,17 +73,16 @@ function _doPlot(gd, data, layout, config) {
     }
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot === false) return Promise.reject();
+    if (okToPlot === false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
-    if(!data && !layout && !Lib.isPlotDiv(gd)) {
-        Lib.warn('Calling _doPlot as if redrawing ' +
-            'but this container doesn\'t yet have a plot.', gd);
+    if (!data && !layout && !Lib.isPlotDiv(gd)) {
+        Lib.warn('Calling _doPlot as if redrawing ' + "but this container doesn't yet have a plot.", gd);
     }
 
     function addFrames() {
-        if(frames) {
+        if (frames) {
             return exports.addFrames(gd, frames);
         }
     }
@@ -92,7 +91,7 @@ function _doPlot(gd, data, layout, config) {
     // a more OO like model
     setPlotContext(gd, config);
 
-    if(!layout) layout = {};
+    if (!layout) layout = {};
 
     // hook class for plots main container (in case of plotly.js
     // this won't be #embedded-graph or .js-tab-contents)
@@ -107,16 +106,16 @@ function _doPlot(gd, data, layout, config) {
     // any part of the plotting code can push to gd._promises, then
     // before we move to the next step, we check that they're all
     // complete, and empty out the promise list again.
-    if(!Array.isArray(gd._promises)) gd._promises = [];
+    if (!Array.isArray(gd._promises)) gd._promises = [];
 
-    var graphWasEmpty = ((gd.data || []).length === 0 && Array.isArray(data));
+    var graphWasEmpty = (gd.data || []).length === 0 && Array.isArray(data);
 
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass a non-array for data
-    if(Array.isArray(data)) {
+    if (Array.isArray(data)) {
         helpers.cleanData(data);
 
-        if(graphWasEmpty) gd.data = data;
+        if (graphWasEmpty) gd.data = data;
         else gd.data.push.apply(gd.data, data);
 
         // for routines outside graph_obj that want a clean tab
@@ -125,7 +124,7 @@ function _doPlot(gd, data, layout, config) {
         gd.empty = false;
     }
 
-    if(!gd.layout || graphWasEmpty) {
+    if (!gd.layout || graphWasEmpty) {
         gd.layout = helpers.cleanLayout(layout);
     }
 
@@ -139,10 +138,10 @@ function _doPlot(gd, data, layout, config) {
     fullLayout._replotting = true;
 
     // make or remake the framework if we need to
-    if(graphWasEmpty || fullLayout._shouldCreateBgLayer) {
+    if (graphWasEmpty || fullLayout._shouldCreateBgLayer) {
         makePlotFramework(gd);
 
-        if(fullLayout._shouldCreateBgLayer) {
+        if (fullLayout._shouldCreateBgLayer) {
             delete fullLayout._shouldCreateBgLayer;
         }
     }
@@ -152,25 +151,27 @@ function _doPlot(gd, data, layout, config) {
     Drawing.initPatterns(gd);
 
     // save initial show spikes once per graph
-    if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
+    if (graphWasEmpty) Axes.saveShowSpikeInitial(gd);
 
     // prepare the data and find the autorange
 
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling _doPlot
     var recalc = !gd.calcdata || gd.calcdata.length !== (gd._fullData || []).length;
-    if(recalc) Plots.doCalcdata(gd);
+    if (recalc) Plots.doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
-    for(var i = 0; i < gd.calcdata.length; i++) {
+    for (var i = 0; i < gd.calcdata.length; i++) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
     // make the figure responsive
-    if(gd._context.responsive) {
-        if(!gd._responsiveChartHandler) {
+    if (gd._context.responsive) {
+        if (!gd._responsiveChartHandler) {
             // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() { if(!Lib.isHidden(gd)) Plots.resize(gd); };
+            gd._responsiveChartHandler = function () {
+                if (!Lib.isHidden(gd)) Plots.resize(gd);
+            };
 
             // Listen to window resize
             window.addEventListener('resize', gd._responsiveChartHandler);
@@ -191,29 +192,40 @@ function _doPlot(gd, data, layout, config) {
     function drawFramework() {
         var basePlotModules = fullLayout._basePlotModules;
 
-        for(var i = 0; i < basePlotModules.length; i++) {
-            if(basePlotModules[i].drawFramework) {
+        for (var i = 0; i < basePlotModules.length; i++) {
+            if (basePlotModules[i].drawFramework) {
                 basePlotModules[i].drawFramework(gd);
             }
         }
 
-        if(!fullLayout._glcanvas && fullLayout._has('gl')) {
-            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([{
-                key: 'contextLayer',
-                context: true,
-                pick: false
-            }, {
-                key: 'focusLayer',
-                context: false,
-                pick: false
-            }, {
-                key: 'pickLayer',
-                context: false,
-                pick: true
-            }], function(d) { return d.key; });
+        if (!fullLayout._glcanvas && fullLayout._has('gl')) {
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(
+                [
+                    {
+                        key: 'contextLayer',
+                        context: true,
+                        pick: false
+                    },
+                    {
+                        key: 'focusLayer',
+                        context: false,
+                        pick: false
+                    },
+                    {
+                        key: 'pickLayer',
+                        context: false,
+                        pick: true
+                    }
+                ],
+                function (d) {
+                    return d.key;
+                }
+            );
 
-            fullLayout._glcanvas.enter().append('canvas')
-                .attr('class', function(d) {
+            fullLayout._glcanvas
+                .enter()
+                .append('canvas')
+                .attr('class', function (d) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
                 .style({
@@ -226,7 +238,7 @@ function _doPlot(gd, data, layout, config) {
         }
 
         var plotGlPixelRatio = gd._context.plotGlPixelRatio;
-        if(fullLayout._glcanvas) {
+        if (fullLayout._glcanvas) {
             fullLayout._glcanvas
                 .attr('width', fullLayout.width * plotGlPixelRatio)
                 .attr('height', fullLayout.height * plotGlPixelRatio)
@@ -234,14 +246,15 @@ function _doPlot(gd, data, layout, config) {
                 .style('height', fullLayout.height + 'px');
 
             var regl = fullLayout._glcanvas.data()[0].regl;
-            if(regl) {
+            if (regl) {
                 // Unfortunately, this can happen when relayouting to large
                 // width/height on some browsers.
-                if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
+                if (
+                    Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
                     Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
-                 ) {
+                ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
-                    if(drawFrameworkCalls) {
+                    if (drawFrameworkCalls) {
                         Lib.error(msg);
                     } else {
                         Lib.log(msg + ' Clearing graph and plotting again.');
@@ -256,14 +269,10 @@ function _doPlot(gd, data, layout, config) {
             }
         }
 
-        if(fullLayout.modebar.orientation === 'h') {
-            fullLayout._modebardiv
-              .style('height', null)
-              .style('width', '100%');
+        if (fullLayout.modebar.orientation === 'h') {
+            fullLayout._modebardiv.style('height', null).style('width', '100%');
         } else {
-            fullLayout._modebardiv
-              .style('width', null)
-              .style('height', fullLayout.height + 'px');
+            fullLayout._modebardiv.style('width', null).style('height', fullLayout.height + 'px');
         }
 
         return Plots.previousPromises(gd);
@@ -280,14 +289,14 @@ function _doPlot(gd, data, layout, config) {
 
         subroutines.drawMarginPushers(gd);
         Axes.allowAutoMargin(gd);
-        if(gd._fullLayout.title.text && gd._fullLayout.title.automargin) Plots.allowAutoMargin(gd, 'title.automargin');
+        if (gd._fullLayout.title.text && gd._fullLayout.title.automargin) Plots.allowAutoMargin(gd, 'title.automargin');
 
         // TODO can this be moved elsewhere?
-        if(fullLayout._has('pie')) {
+        if (fullLayout._has('pie')) {
             var fullData = gd._fullData;
-            for(var i = 0; i < fullData.length; i++) {
+            for (var i = 0; i < fullData.length; i++) {
                 var trace = fullData[i];
-                if(trace.type === 'pie' && trace.automargin) {
+                if (trace.type === 'pie' && trace.automargin) {
                     Plots.allowAutoMargin(gd, 'pie.' + trace.uid + '.automargin');
                 }
             }
@@ -299,37 +308,37 @@ function _doPlot(gd, data, layout, config) {
 
     // in case the margins changed, draw margin pushers again
     function marginPushersAgain() {
-        if(!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
+        if (!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
 
-        return Lib.syncOrAsync([
-            marginPushers,
-            subroutines.layoutStyles
-        ], gd);
+        return Lib.syncOrAsync([marginPushers, subroutines.layoutStyles], gd);
     }
 
     function positionAndAutorange() {
-        if(!recalc) {
+        if (!recalc) {
             doAutoRangeAndConstraints();
             return;
         }
 
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
-        return Lib.syncOrAsync([
-            Registry.getComponentMethod('shapes', 'calcAutorange'),
-            Registry.getComponentMethod('annotations', 'calcAutorange'),
-            doAutoRangeAndConstraints
-        ], gd);
+        return Lib.syncOrAsync(
+            [
+                Registry.getComponentMethod('shapes', 'calcAutorange'),
+                Registry.getComponentMethod('annotations', 'calcAutorange'),
+                doAutoRangeAndConstraints
+            ],
+            gd
+        );
     }
 
     function doAutoRangeAndConstraints() {
-        if(gd._transitioning) return;
+        if (gd._transitioning) return;
 
         subroutines.doAutoRangeAndConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
-        if(graphWasEmpty) Axes.saveRangeInitial(gd);
+        if (graphWasEmpty) Axes.saveRangeInitial(gd);
 
         // this one is different from shapes/annotations calcAutorange
         // the others incorporate those components into ax._extremes,
@@ -342,31 +351,22 @@ function _doPlot(gd, data, layout, config) {
         return Axes.draw(gd, graphWasEmpty ? '' : 'redraw');
     }
 
-    var seq = [
-        Plots.previousPromises,
-        addFrames,
-        drawFramework,
-        marginPushers,
-        marginPushersAgain
-    ];
+    var seq = [Plots.previousPromises, addFrames, drawFramework, marginPushers, marginPushersAgain];
 
-    if(hasCartesian) seq.push(positionAndAutorange);
+    if (hasCartesian) seq.push(positionAndAutorange);
 
     seq.push(subroutines.layoutStyles);
-    if(hasCartesian) {
-        seq.push(
-            drawAxes,
-            function insideTickLabelsAutorange(gd) {
-                var insideTickLabelsUpdaterange = gd._fullLayout._insideTickLabelsUpdaterange;
-                if(insideTickLabelsUpdaterange) {
-                    gd._fullLayout._insideTickLabelsUpdaterange = undefined;
+    if (hasCartesian) {
+        seq.push(drawAxes, function insideTickLabelsAutorange(gd) {
+            var insideTickLabelsUpdaterange = gd._fullLayout._insideTickLabelsUpdaterange;
+            if (insideTickLabelsUpdaterange) {
+                gd._fullLayout._insideTickLabelsUpdaterange = undefined;
 
-                    return relayout(gd, insideTickLabelsUpdaterange).then(function() {
-                        Axes.saveRangeInitial(gd, true);
-                    });
-                }
+                return relayout(gd, insideTickLabelsUpdaterange).then(function () {
+                    Axes.saveRangeInitial(gd, true);
+                });
             }
-        );
+        });
     }
 
     seq.push(
@@ -388,9 +388,9 @@ function _doPlot(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     var plotDone = Lib.syncOrAsync(seq, gd);
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+    if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
-    return plotDone.then(function() {
+    return plotDone.then(function () {
         emitAfterPlot(gd);
         return gd;
     });
@@ -399,7 +399,7 @@ function _doPlot(gd, data, layout, config) {
 function emitAfterPlot(gd) {
     var fullLayout = gd._fullLayout;
 
-    if(fullLayout._redrawFromAutoMarginCount) {
+    if (fullLayout._redrawFromAutoMarginCount) {
         fullLayout._redrawFromAutoMarginCount--;
     } else {
         gd.emit('plotly_afterplot');
@@ -413,7 +413,7 @@ function setPlotConfig(obj) {
 function setBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
-    } catch(e) {
+    } catch (e) {
         Lib.error(e);
     }
 }
@@ -424,27 +424,25 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) {
+    if (!gd._context) {
         gd._context = Lib.extendDeep({}, dfltConfig);
 
         // stash <base> href, used to make robust clipPath URLs
         var base = d3.select('base');
-        gd._context._baseUrl = base.size() && base.attr('href') ?
-            window.location.href.split('#')[0] :
-            '';
+        gd._context._baseUrl = base.size() && base.attr('href') ? window.location.href.split('#')[0] : '';
     }
 
     var context = gd._context;
 
     var i, keys, key;
 
-    if(config) {
+    if (config) {
         keys = Object.keys(config);
-        for(i = 0; i < keys.length; i++) {
+        for (i = 0; i < keys.length; i++) {
             key = keys[i];
-            if(key === 'editable' || key === 'edits') continue;
-            if(key in context) {
-                if(key === 'setBackground' && config[key] === 'opaque') {
+            if (key === 'editable' || key === 'edits') continue;
+            if (key in context) {
+                if (key === 'setBackground' && config[key] === 'opaque') {
                     context[key] = opaqueSetBackground;
                 } else {
                     context[key] = config[key];
@@ -455,21 +453,21 @@ function setPlotContext(gd, config) {
         // now deal with editable and edits - first editable overrides
         // everything, then edits refines
         var editable = config.editable;
-        if(editable !== undefined) {
+        if (editable !== undefined) {
             // we're not going to *use* context.editable, we're only going to
             // use context.edits... but keep it for the record
             context.editable = editable;
 
             keys = Object.keys(context.edits);
-            for(i = 0; i < keys.length; i++) {
+            for (i = 0; i < keys.length; i++) {
                 context.edits[keys[i]] = editable;
             }
         }
-        if(config.edits) {
+        if (config.edits) {
             keys = Object.keys(config.edits);
-            for(i = 0; i < keys.length; i++) {
+            for (i = 0; i < keys.length; i++) {
                 key = keys[i];
-                if(key in context.edits) {
+                if (key in context.edits) {
                     context.edits[key] = config.edits[key];
                 }
             }
@@ -480,7 +478,7 @@ function setPlotContext(gd, config) {
     }
 
     // staticPlot forces a bunch of others:
-    if(context.staticPlot) {
+    if (context.staticPlot) {
         context.editable = false;
         context.edits = {};
         context.autosizable = false;
@@ -492,12 +490,12 @@ function setPlotContext(gd, config) {
     }
 
     // make sure hover-only devices have mode bar visible
-    if(context.displayModeBar === 'hover' && !hasHover) {
+    if (context.displayModeBar === 'hover' && !hasHover) {
         context.displayModeBar = true;
     }
 
     // default and fallback for setBackground
-    if(context.setBackground === 'transparent' || typeof context.setBackground !== 'function') {
+    if (context.setBackground === 'transparent' || typeof context.setBackground !== 'function') {
         context.setBackground = setBackground;
     }
 
@@ -507,19 +505,19 @@ function setPlotContext(gd, config) {
 
     // fill context._scrollZoom helper to help manage scrollZoom flaglist
     var szIn = context.scrollZoom;
-    var szOut = context._scrollZoom = {};
-    if(szIn === true) {
+    var szOut = (context._scrollZoom = {});
+    if (szIn === true) {
         szOut.cartesian = 1;
         szOut.gl3d = 1;
         szOut.geo = 1;
         szOut.mapbox = 1;
         szOut.map = 1;
-    } else if(typeof szIn === 'string') {
+    } else if (typeof szIn === 'string') {
         var parts = szIn.split('+');
-        for(i = 0; i < parts.length; i++) {
+        for (i = 0; i < parts.length; i++) {
             szOut[parts[i]] = 1;
         }
-    } else if(szIn !== false) {
+    } else if (szIn !== false) {
         szOut.gl3d = 1;
         szOut.geo = 1;
         szOut.mapbox = 1;
@@ -527,12 +525,11 @@ function setPlotContext(gd, config) {
     }
 }
 
-
 // convenience function to force a full redraw, mostly for use by plotly.js
 function redraw(gd) {
     gd = Lib.getGraphDiv(gd);
 
-    if(!Lib.isPlotDiv(gd)) {
+    if (!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
@@ -540,7 +537,7 @@ function redraw(gd) {
     helpers.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
-    return exports._doPlot(gd).then(function() {
+    return exports._doPlot(gd).then(function () {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -576,9 +573,9 @@ function positivifyIndices(indices, maxIndex) {
     var i;
     var index;
 
-    for(i = 0; i < indices.length; i++) {
+    for (i = 0; i < indices.length; i++) {
         index = indices[i];
-        if(index < 0) {
+        if (index < 0) {
             positiveIndices.push(parentLength + index);
         } else {
             positiveIndices.push(index);
@@ -597,26 +594,27 @@ function positivifyIndices(indices, maxIndex) {
  * @param arrayName
  */
 function assertIndexArray(gd, indices, arrayName) {
-    var i,
-        index;
+    var i, index;
 
-    for(i = 0; i < indices.length; i++) {
+    for (i = 0; i < indices.length; i++) {
         index = indices[i];
 
         // validate that indices are indeed integers
-        if(index !== parseInt(index, 10)) {
+        if (index !== parseInt(index, 10)) {
             throw new Error('all values in ' + arrayName + ' must be integers');
         }
 
         // check that all indices are in bounds for given gd.data array length
-        if(index >= gd.data.length || index < -gd.data.length) {
+        if (index >= gd.data.length || index < -gd.data.length) {
             throw new Error(arrayName + ' must be valid indices for gd.data.');
         }
 
         // check that indices aren't repeated
-        if(indices.indexOf(index, i + 1) > -1 ||
-                index >= 0 && indices.indexOf(-gd.data.length + index) > -1 ||
-                index < 0 && indices.indexOf(gd.data.length + index) > -1) {
+        if (
+            indices.indexOf(index, i + 1) > -1 ||
+            (index >= 0 && indices.indexOf(-gd.data.length + index) > -1) ||
+            (index < 0 && indices.indexOf(gd.data.length + index) > -1)
+        ) {
             throw new Error('each index in ' + arrayName + ' must be unique.');
         }
     }
@@ -631,28 +629,28 @@ function assertIndexArray(gd, indices, arrayName) {
  */
 function checkMoveTracesArgs(gd, currentIndices, newIndices) {
     // check that gd has attribute 'data' and 'data' is array
-    if(!Array.isArray(gd.data)) {
+    if (!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
     }
 
     // validate currentIndices array
-    if(typeof currentIndices === 'undefined') {
+    if (typeof currentIndices === 'undefined') {
         throw new Error('currentIndices is a required argument.');
-    } else if(!Array.isArray(currentIndices)) {
+    } else if (!Array.isArray(currentIndices)) {
         currentIndices = [currentIndices];
     }
     assertIndexArray(gd, currentIndices, 'currentIndices');
 
     // validate newIndices array if it exists
-    if(typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+    if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
-    if(typeof newIndices !== 'undefined') {
+    if (typeof newIndices !== 'undefined') {
         assertIndexArray(gd, newIndices, 'newIndices');
     }
 
     // check currentIndices and newIndices are the same length if newIdices exists
-    if(typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
+    if (typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
         throw new Error('current and new indices must be of equal length.');
     }
 }
@@ -667,36 +665,34 @@ function checkAddTracesArgs(gd, traces, newIndices) {
     var i, value;
 
     // check that gd has attribute 'data' and 'data' is array
-    if(!Array.isArray(gd.data)) {
+    if (!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
     }
 
     // make sure traces exists
-    if(typeof traces === 'undefined') {
+    if (typeof traces === 'undefined') {
         throw new Error('traces must be defined.');
     }
 
     // make sure traces is an array
-    if(!Array.isArray(traces)) {
+    if (!Array.isArray(traces)) {
         traces = [traces];
     }
 
     // make sure each value in traces is an object
-    for(i = 0; i < traces.length; i++) {
+    for (i = 0; i < traces.length; i++) {
         value = traces[i];
-        if(typeof value !== 'object' || (Array.isArray(value) || value === null)) {
+        if (typeof value !== 'object' || Array.isArray(value) || value === null) {
             throw new Error('all values in traces array must be non-array objects');
         }
     }
 
     // make sure we have an index for each trace
-    if(typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+    if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
-    if(typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
-        throw new Error(
-            'if indices is specified, traces.length must equal indices.length'
-        );
+    if (typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
+        throw new Error('if indices is specified, traces.length must equal indices.length');
     }
 }
 
@@ -713,36 +709,39 @@ function checkAddTracesArgs(gd, traces, newIndices) {
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
-    if(!Array.isArray(gd.data)) {
+    if (!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array');
     }
-    if(!Lib.isPlainObject(update)) {
+    if (!Lib.isPlainObject(update)) {
         throw new Error('update must be a key:value object');
     }
 
-    if(typeof indices === 'undefined') {
+    if (typeof indices === 'undefined') {
         throw new Error('indices must be an integer or array of integers');
     }
 
     assertIndexArray(gd, indices, 'indices');
 
-    for(var key in update) {
+    for (var key in update) {
         /*
          * Verify that the attribute to be updated contains as many trace updates
          * as indices. Failure must result in throw and no-op
          */
-        if(!Array.isArray(update[key]) || update[key].length !== indices.length) {
+        if (!Array.isArray(update[key]) || update[key].length !== indices.length) {
             throw new Error('attribute ' + key + ' must be an array of length equal to indices array length');
         }
 
         /*
          * if maxPoints is an object it must match keys and array lengths of 'update' 1:1
          */
-        if(maxPointsIsObject &&
-            (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
-            maxPoints[key].length !== update[key].length)) {
-            throw new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
-                            'correspondence with the keys and number of traces in the update object');
+        if (
+            maxPointsIsObject &&
+            (!(key in maxPoints) || !Array.isArray(maxPoints[key]) || maxPoints[key].length !== update[key].length)
+        ) {
+            throw new Error(
+                'when maxPoints is set as a key:value object it must contain a 1:1 ' +
+                    'correspondence with the keys and number of traces in the update object'
+            );
         }
     }
 }
@@ -762,14 +761,14 @@ function getExtendProperties(gd, update, indices, maxPoints) {
     var trace, target, prop, insert, maxp;
 
     // allow scalar index to represent a single trace position
-    if(!Array.isArray(indices)) indices = [indices];
+    if (!Array.isArray(indices)) indices = [indices];
 
     // negative indices are wrapped around to their positive value. Equivalent to python indexing.
     indices = positivifyIndices(indices, gd.data.length - 1);
 
     // loop through all update keys and traces and harvest validated data.
-    for(var key in update) {
-        for(var j = 0; j < indices.length; j++) {
+    for (var key in update) {
+        for (var j = 0; j < indices.length; j++) {
             /*
              * Choose the trace indexed by the indices map argument and get the prop setter-getter
              * instance that references the key and value for this particular trace.
@@ -784,13 +783,13 @@ function getExtendProperties(gd, update, indices, maxPoints) {
             target = prop.get();
             insert = update[key][j];
 
-            if(!Lib.isArrayOrTypedArray(insert)) {
+            if (!Lib.isArrayOrTypedArray(insert)) {
                 throw new Error('attribute: ' + key + ' index: ' + j + ' must be an array');
             }
-            if(!Lib.isArrayOrTypedArray(target)) {
+            if (!Lib.isArrayOrTypedArray(target)) {
                 throw new Error('cannot extend missing or non-array attribute: ' + key);
             }
-            if(target.constructor !== insert.constructor) {
+            if (target.constructor !== insert.constructor) {
                 throw new Error('cannot extend array with an array of a different type: ' + key);
             }
 
@@ -801,7 +800,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
             maxp = maxPointsIsObject ? maxPoints[key][j] : maxPoints;
 
             // could have chosen null here, -1 just tells us to not take a window
-            if(!isNumeric(maxp)) maxp = -1;
+            if (!isNumeric(maxp)) maxp = -1;
 
             /*
              * Wrap the nestedProperty in an object containing required data
@@ -838,7 +837,7 @@ function spliceTraces(gd, update, indices, maxPoints, updateArray) {
     var undoUpdate = {};
     var undoPoints = {};
 
-    for(var i = 0; i < updateProps.length; i++) {
+    for (var i = 0; i < updateProps.length; i++) {
         var prop = updateProps[i].prop;
         var maxp = updateProps[i].maxp;
 
@@ -847,15 +846,15 @@ function spliceTraces(gd, update, indices, maxPoints, updateArray) {
         prop.set(out[0]);
 
         // build the inverse update object for the undo operation
-        if(!Array.isArray(undoUpdate[prop.astr])) undoUpdate[prop.astr] = [];
+        if (!Array.isArray(undoUpdate[prop.astr])) undoUpdate[prop.astr] = [];
         undoUpdate[prop.astr].push(out[1]);
 
-         // build the matching maxPoints undo object containing original trace lengths
-        if(!Array.isArray(undoPoints[prop.astr])) undoPoints[prop.astr] = [];
+        // build the matching maxPoints undo object containing original trace lengths
+        if (!Array.isArray(undoPoints[prop.astr])) undoPoints[prop.astr] = [];
         undoPoints[prop.astr].push(updateProps[i].target.length);
     }
 
-    return {update: undoUpdate, maxPoints: undoPoints};
+    return { update: undoUpdate, maxPoints: undoPoints };
 }
 
 function concatTypedArray(arr0, arr1) {
@@ -888,12 +887,12 @@ function extendTraces(gd, update, indices, maxPoints) {
     function updateArray(target, insert, maxp) {
         var newArray, remainder;
 
-        if(Lib.isTypedArray(target)) {
-            if(maxp < 0) {
+        if (Lib.isTypedArray(target)) {
+            if (maxp < 0) {
                 var none = new target.constructor(0);
                 var both = concatTypedArray(target, insert);
 
-                if(maxp < 0) {
+                if (maxp < 0) {
                     newArray = both;
                     remainder = none;
                 } else {
@@ -904,10 +903,10 @@ function extendTraces(gd, update, indices, maxPoints) {
                 newArray = new target.constructor(maxp);
                 remainder = new target.constructor(target.length + insert.length - maxp);
 
-                if(maxp === insert.length) {
+                if (maxp === insert.length) {
                     newArray.set(insert);
                     remainder.set(target);
-                } else if(maxp < insert.length) {
+                } else if (maxp < insert.length) {
                     var numberOfItemsFromInsert = insert.length - maxp;
 
                     newArray.set(insert.subarray(numberOfItemsFromInsert));
@@ -924,9 +923,7 @@ function extendTraces(gd, update, indices, maxPoints) {
             }
         } else {
             newArray = target.concat(insert);
-            remainder = (maxp >= 0 && maxp < newArray.length) ?
-                newArray.splice(0, newArray.length - maxp) :
-                [];
+            remainder = maxp >= 0 && maxp < newArray.length ? newArray.splice(0, newArray.length - maxp) : [];
         }
 
         return [newArray, remainder];
@@ -946,12 +943,12 @@ function prependTraces(gd, update, indices, maxPoints) {
     function updateArray(target, insert, maxp) {
         var newArray, remainder;
 
-        if(Lib.isTypedArray(target)) {
-            if(maxp <= 0) {
+        if (Lib.isTypedArray(target)) {
+            if (maxp <= 0) {
                 var none = new target.constructor(0);
                 var both = concatTypedArray(insert, target);
 
-                if(maxp < 0) {
+                if (maxp < 0) {
                     newArray = both;
                     remainder = none;
                 } else {
@@ -962,10 +959,10 @@ function prependTraces(gd, update, indices, maxPoints) {
                 newArray = new target.constructor(maxp);
                 remainder = new target.constructor(target.length + insert.length - maxp);
 
-                if(maxp === insert.length) {
+                if (maxp === insert.length) {
                     newArray.set(insert);
                     remainder.set(target);
-                } else if(maxp < insert.length) {
+                } else if (maxp < insert.length) {
                     var numberOfItemsFromInsert = insert.length - maxp;
 
                     newArray.set(insert.subarray(0, numberOfItemsFromInsert));
@@ -981,9 +978,7 @@ function prependTraces(gd, update, indices, maxPoints) {
             }
         } else {
             newArray = insert.concat(target);
-            remainder = (maxp >= 0 && maxp < newArray.length) ?
-                newArray.splice(maxp, newArray.length) :
-                [];
+            remainder = maxp >= 0 && maxp < newArray.length ? newArray.splice(maxp, newArray.length) : [];
         }
 
         return [newArray, remainder];
@@ -1013,7 +1008,7 @@ function addTraces(gd, traces, newIndices) {
     var undoFunc = exports.deleteTraces;
     var redoFunc = addTraces;
     var undoArgs = [gd, currentIndices];
-    var redoArgs = [gd, traces];  // no newIndices here
+    var redoArgs = [gd, traces]; // no newIndices here
     var i;
     var promise;
 
@@ -1021,44 +1016,44 @@ function addTraces(gd, traces, newIndices) {
     checkAddTracesArgs(gd, traces, newIndices);
 
     // make sure traces is an array
-    if(!Array.isArray(traces)) {
+    if (!Array.isArray(traces)) {
         traces = [traces];
     }
 
     // make sure traces do not repeat existing ones
-    traces = traces.map(function(trace) {
+    traces = traces.map(function (trace) {
         return Lib.extendFlat({}, trace);
     });
 
     helpers.cleanData(traces);
 
     // add the traces to gd.data (no redrawing yet!)
-    for(i = 0; i < traces.length; i++) {
+    for (i = 0; i < traces.length; i++) {
         gd.data.push(traces[i]);
     }
 
     // to continue, we need to call moveTraces which requires currentIndices
-    for(i = 0; i < traces.length; i++) {
+    for (i = 0; i < traces.length; i++) {
         currentIndices.push(-traces.length + i);
     }
 
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
-    if(typeof newIndices === 'undefined') {
+    if (typeof newIndices === 'undefined') {
         promise = exports.redraw(gd);
         Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
 
     // make sure indices is property defined
-    if(!Array.isArray(newIndices)) {
+    if (!Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
 
     try {
         // this is redundant, but necessary to not catch later possible errors!
         checkMoveTracesArgs(gd, currentIndices, newIndices);
-    } catch(error) {
+    } catch (error) {
         // something went wrong, reset gd to be safe and rethrow error
         gd.data.splice(gd.data.length - traces.length, traces.length);
         throw error;
@@ -1092,9 +1087,9 @@ function deleteTraces(gd, indices) {
     var deletedTrace;
 
     // make sure indices are defined
-    if(typeof indices === 'undefined') {
+    if (typeof indices === 'undefined') {
         throw new Error('indices must be an integer or array of integers.');
-    } else if(!Array.isArray(indices)) {
+    } else if (!Array.isArray(indices)) {
         indices = [indices];
     }
     assertIndexArray(gd, indices, 'indices');
@@ -1104,7 +1099,7 @@ function deleteTraces(gd, indices) {
 
     // we want descending here so that splicing later doesn't affect indexing
     indices.sort(Lib.sorterDes);
-    for(i = 0; i < indices.length; i += 1) {
+    for (i = 0; i < indices.length; i += 1) {
         deletedTrace = gd.data.splice(indices[i], 1)[0];
         traces.push(deletedTrace);
     }
@@ -1165,9 +1160,9 @@ function moveTraces(gd, currentIndices, newIndices) {
     currentIndices = Array.isArray(currentIndices) ? currentIndices : [currentIndices];
 
     // if undefined, define newIndices to point to the end of gd.data array
-    if(typeof newIndices === 'undefined') {
+    if (typeof newIndices === 'undefined') {
         newIndices = [];
-        for(i = 0; i < currentIndices.length; i++) {
+        for (i = 0; i < currentIndices.length; i++) {
             newIndices.push(-currentIndices.length + i);
         }
     }
@@ -1182,25 +1177,25 @@ function moveTraces(gd, currentIndices, newIndices) {
     // at this point, we've coerced the index arrays into predictable forms
 
     // get the traces that aren't being moved around
-    for(i = 0; i < gd.data.length; i++) {
+    for (i = 0; i < gd.data.length; i++) {
         // if index isn't in currentIndices, include it in ignored!
-        if(currentIndices.indexOf(i) === -1) {
+        if (currentIndices.indexOf(i) === -1) {
             newData.push(gd.data[i]);
         }
     }
 
     // get a mapping of indices to moving traces
-    for(i = 0; i < currentIndices.length; i++) {
-        movingTraceMap.push({newIndex: newIndices[i], trace: gd.data[currentIndices[i]]});
+    for (i = 0; i < currentIndices.length; i++) {
+        movingTraceMap.push({ newIndex: newIndices[i], trace: gd.data[currentIndices[i]] });
     }
 
     // reorder this mapping by newIndex, ascending
-    movingTraceMap.sort(function(a, b) {
+    movingTraceMap.sort(function (a, b) {
         return a.newIndex - b.newIndex;
     });
 
     // now, add the moving traces back in, in order!
-    for(i = 0; i < movingTraceMap.length; i += 1) {
+    for (i = 0; i < movingTraceMap.length; i += 1) {
         newData.splice(movingTraceMap[i].newIndex, 0, movingTraceMap[i].trace);
     }
 
@@ -1247,17 +1242,17 @@ function restyle(gd, astr, val, _traces) {
     helpers.clearPromiseQueue(gd);
 
     var aobj = {};
-    if(typeof astr === 'string') aobj[astr] = val;
-    else if(Lib.isPlainObject(astr)) {
+    if (typeof astr === 'string') aobj[astr] = val;
+    else if (Lib.isPlainObject(astr)) {
         // the 3-arg form
         aobj = Lib.extendFlat({}, astr);
-        if(_traces === undefined) _traces = val;
+        if (_traces === undefined) _traces = val;
     } else {
         Lib.warn('Restyle fail.', astr, val, _traces);
         return Promise.reject();
     }
 
-    if(Object.keys(aobj).length) gd.changed = true;
+    if (Object.keys(aobj).length) gd.changed = true;
 
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
@@ -1265,13 +1260,13 @@ function restyle(gd, astr, val, _traces) {
     var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
-    if(flags.calc) gd.calcdata = undefined;
-    if(flags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, {});
+    if (flags.calc) gd.calcdata = undefined;
+    if (flags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
     var seq = [];
 
-    if(flags.fullReplot) {
+    if (flags.fullReplot) {
         seq.push(exports._doPlot);
     } else {
         seq.push(Plots.previousPromises);
@@ -1280,7 +1275,7 @@ function restyle(gd, astr, val, _traces) {
         // to skip over long and slow axes defaults
         Plots.supplyDefaults(gd);
 
-        if(flags.markerSize) {
+        if (flags.markerSize) {
             Plots.doCalcdata(gd);
             addAxRangeSequence(seq);
 
@@ -1291,27 +1286,20 @@ function restyle(gd, astr, val, _traces) {
             // which in general must redraws 'all' axes
         }
 
-        if(flags.style) seq.push(subroutines.doTraceStyle);
-        if(flags.colorbars) seq.push(subroutines.doColorBars);
+        if (flags.style) seq.push(subroutines.doTraceStyle);
+        if (flags.colorbars) seq.push(subroutines.doColorBars);
 
         seq.push(emitAfterPlot);
     }
 
-    seq.push(
-        Plots.rehover,
-        Plots.redrag,
-        Plots.reselect
-    );
+    seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
 
-    Queue.add(gd,
-        restyle, [gd, specs.undoit, specs.traces],
-        restyle, [gd, specs.redoit, specs.traces]
-    );
+    Queue.add(gd, restyle, [gd, specs.undoit, specs.traces], restyle, [gd, specs.redoit, specs.traces]);
 
     var plotDone = Lib.syncOrAsync(seq, gd);
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+    if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
-    return plotDone.then(function() {
+    return plotDone.then(function () {
         gd.emit('plotly_restyle', specs.eventData);
         return gd;
     });
@@ -1320,7 +1308,7 @@ function restyle(gd, astr, val, _traces) {
 // for undo: undefined initial vals must be turned into nulls
 // so that we unset rather than ignore them
 function undefinedToNull(val) {
-    if(val === undefined) return null;
+    if (val === undefined) return null;
     return val;
 }
 
@@ -1330,12 +1318,12 @@ function undefinedToNull(val) {
  * to prepend to the attribute string in the preGUI store.
  */
 function makeNP(preGUI, guiEditFlag) {
-    if(!guiEditFlag) return nestedProperty;
+    if (!guiEditFlag) return nestedProperty;
 
-    return function(container, attr, prefix) {
+    return function (container, attr, prefix) {
         var np = nestedProperty(container, attr);
         var npSet = np.set;
-        np.set = function(val) {
+        np.set = function (val) {
             var fullAttr = (prefix || '') + attr;
             storeCurrent(fullAttr, np.get(), val, preGUI);
             npSet(val);
@@ -1345,21 +1333,21 @@ function makeNP(preGUI, guiEditFlag) {
 }
 
 function storeCurrent(attr, val, newVal, preGUI) {
-    if(Array.isArray(val) || Array.isArray(newVal)) {
+    if (Array.isArray(val) || Array.isArray(newVal)) {
         var arrayVal = Array.isArray(val) ? val : [];
         var arrayNew = Array.isArray(newVal) ? newVal : [];
         var maxLen = Math.max(arrayVal.length, arrayNew.length);
-        for(var i = 0; i < maxLen; i++) {
+        for (var i = 0; i < maxLen; i++) {
             storeCurrent(attr + '[' + i + ']', arrayVal[i], arrayNew[i], preGUI);
         }
-    } else if(Lib.isPlainObject(val) || Lib.isPlainObject(newVal)) {
+    } else if (Lib.isPlainObject(val) || Lib.isPlainObject(newVal)) {
         var objVal = Lib.isPlainObject(val) ? val : {};
         var objNew = Lib.isPlainObject(newVal) ? newVal : {};
         var objBoth = Lib.extendFlat({}, objVal, objNew);
-        for(var key in objBoth) {
+        for (var key in objBoth) {
             storeCurrent(attr + '.' + key, objVal[key], objNew[key], preGUI);
         }
-    } else if(preGUI[attr] === undefined) {
+    } else if (preGUI[attr] === undefined) {
         preGUI[attr] = undefinedToNull(val);
     }
 }
@@ -1377,7 +1365,7 @@ function storeCurrent(attr, val, newVal, preGUI) {
  * @param {object} edits: the {attr: val} object as normally passed to `relayout` etc
  */
 function _storeDirectGUIEdit(container, preGUI, edits) {
-    for(var attr in edits) {
+    for (var attr in edits) {
         var np = nestedProperty(container, attr);
         storeCurrent(attr, np.get(), edits[attr], preGUI);
     }
@@ -1402,23 +1390,31 @@ function _restyle(gd, aobj, traces) {
     var axlist;
 
     // make a new empty vals array for undoit
-    function a0() { return traces.map(function() { return undefined; }); }
+    function a0() {
+        return traces.map(function () {
+            return undefined;
+        });
+    }
 
     // for autoranging multiple axes
     function addToAxlist(axid) {
         var axName = Axes.id2name(axid);
-        if(axlist.indexOf(axName) === -1) axlist.push(axName);
+        if (axlist.indexOf(axName) === -1) axlist.push(axName);
     }
 
-    function autorangeAttr(axName) { return 'LAYOUT' + axName + '.autorange'; }
+    function autorangeAttr(axName) {
+        return 'LAYOUT' + axName + '.autorange';
+    }
 
-    function rangeAttr(axName) { return 'LAYOUT' + axName + '.range'; }
+    function rangeAttr(axName) {
+        return 'LAYOUT' + axName + '.range';
+    }
 
     function getFullTrace(traceIndex) {
         // usually fullData maps 1:1 onto data, but with groupby transforms
         // the fullData index can be greater. Take the *first* matching trace.
-        for(var j = traceIndex; j < fullData.length; j++) {
-            if(fullData[j]._input === data[traceIndex]) return fullData[j];
+        for (var j = traceIndex; j < fullData.length; j++) {
+            if (fullData[j]._input === data[traceIndex]) return fullData[j];
         }
         // should never get here - and if we *do* it should cause an error
         // later on undefined fullTrace is passed to nestedProperty.
@@ -1430,15 +1426,17 @@ function _restyle(gd, aobj, traces) {
     // val=null will delete the attribute
     // attr can be an array to set several at once (all to the same val)
     function doextra(attr, val, i) {
-        if(Array.isArray(attr)) {
-            attr.forEach(function(a) { doextra(a, val, i); });
+        if (Array.isArray(attr)) {
+            attr.forEach(function (a) {
+                doextra(a, val, i);
+            });
             return;
         }
         // quit if explicitly setting this elsewhere
-        if(attr in aobj || helpers.hasParent(aobj, attr)) return;
+        if (attr in aobj || helpers.hasParent(aobj, attr)) return;
 
         var extraparam;
-        if(attr.substr(0, 6) === 'LAYOUT') {
+        if (attr.substr(0, 6) === 'LAYOUT') {
             extraparam = layoutNP(gd.layout, attr.replace('LAYOUT', ''));
         } else {
             var tracei = traces[i];
@@ -1446,33 +1444,33 @@ function _restyle(gd, aobj, traces) {
             extraparam = makeNP(preGUI, guiEditFlag)(data[tracei], attr);
         }
 
-        if(!(attr in undoit)) {
+        if (!(attr in undoit)) {
             undoit[attr] = a0();
         }
-        if(undoit[attr][i] === undefined) {
+        if (undoit[attr][i] === undefined) {
             undoit[attr][i] = undefinedToNull(extraparam.get());
         }
-        if(val !== undefined) {
+        if (val !== undefined) {
             extraparam.set(val);
         }
     }
 
     function allBins(binAttr) {
-        return function(j) {
+        return function (j) {
             return fullData[j][binAttr];
         };
     }
 
     function arrayBins(binAttr) {
-        return function(vij, j) {
+        return function (vij, j) {
             return vij === false ? fullData[traces[j]][binAttr] : null;
         };
     }
 
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
-    for(var ai in aobj) {
-        if(helpers.hasParent(aobj, ai)) {
+    for (var ai in aobj) {
+        if (helpers.hasParent(aobj, ai)) {
             throw new Error('cannot set ' + ai + ' and a parent attribute simultaneously');
         }
 
@@ -1488,16 +1486,16 @@ function _restyle(gd, aobj, traces) {
         // or freezing previous autobinned values.
         // Replace obsolete `autobin(x|y): true` with `(x|y)bins: null`
         // and `autobin(x|y): false` with the `(x|y)bins` in `fullData`
-        if(ai === 'autobinx' || ai === 'autobiny') {
+        if (ai === 'autobinx' || ai === 'autobiny') {
             ai = ai.charAt(ai.length - 1) + 'bins';
-            if(Array.isArray(vi)) vi = vi.map(arrayBins(ai));
-            else if(vi === false) vi = traces.map(allBins(ai));
+            if (Array.isArray(vi)) vi = vi.map(arrayBins(ai));
+            else if (vi === false) vi = traces.map(allBins(ai));
             else vi = null;
         }
 
         redoit[ai] = vi;
 
-        if(ai.substr(0, 6) === 'LAYOUT') {
+        if (ai.substr(0, 6) === 'LAYOUT') {
             param = layoutNP(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
@@ -1511,7 +1509,7 @@ function _restyle(gd, aobj, traces) {
 
         // set attribute in gd.data
         undoit[ai] = a0();
-        for(i = 0; i < traces.length; i++) {
+        for (i = 0; i < traces.length; i++) {
             cont = data[traces[i]];
             contFull = getFullTrace(traces[i]);
             var preGUI = fullLayout._tracePreGUI[contFull._fullInput.uid];
@@ -1519,24 +1517,24 @@ function _restyle(gd, aobj, traces) {
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
-            if(newVal === undefined) continue;
+            if (newVal === undefined) continue;
 
             var finalPart = param.parts[param.parts.length - 1];
             var prefix = ai.substr(0, ai.length - finalPart.length - 1);
             var prefixDot = prefix ? prefix + '.' : '';
-            var innerContFull = prefix ?
-                nestedProperty(contFull, prefix).get() : contFull;
+            var innerContFull = prefix ? nestedProperty(contFull, prefix).get() : contFull;
 
             valObject = PlotSchema.getTraceValObject(contFull, param.parts);
 
-            if(valObject && valObject.impliedEdits && newVal !== null) {
-                for(var impliedKey in valObject.impliedEdits) {
+            if (valObject && valObject.impliedEdits && newVal !== null) {
+                for (var impliedKey in valObject.impliedEdits) {
                     doextra(Lib.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey], i);
                 }
-            } else if((finalPart === 'thicknessmode' || finalPart === 'lenmode') &&
-                    oldVal !== newVal &&
-                    (newVal === 'fraction' || newVal === 'pixels') &&
-                    innerContFull
+            } else if (
+                (finalPart === 'thicknessmode' || finalPart === 'lenmode') &&
+                oldVal !== newVal &&
+                (newVal === 'fraction' || newVal === 'pixels') &&
+                innerContFull
             ) {
                 // changing colorbar size modes,
                 // make the resulting size not change
@@ -1546,23 +1544,25 @@ function _restyle(gd, aobj, traces) {
 
                 var gs = fullLayout._size;
                 var orient = innerContFull.orient;
-                var topOrBottom = (orient === 'top') || (orient === 'bottom');
-                if(finalPart === 'thicknessmode') {
+                var topOrBottom = orient === 'top' || orient === 'bottom';
+                if (finalPart === 'thicknessmode') {
                     var thicknorm = topOrBottom ? gs.h : gs.w;
-                    doextra(prefixDot + 'thickness', innerContFull.thickness *
-                        (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
+                    doextra(
+                        prefixDot + 'thickness',
+                        innerContFull.thickness * (newVal === 'fraction' ? 1 / thicknorm : thicknorm),
+                        i
+                    );
                 } else {
                     var lennorm = topOrBottom ? gs.w : gs.h;
-                    doextra(prefixDot + 'len', innerContFull.len *
-                        (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
+                    doextra(prefixDot + 'len', innerContFull.len * (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
                 }
-            } else if(ai === 'type' && (
-                (newVal === 'pie') !== (oldVal === 'pie') ||
-                (newVal === 'funnelarea') !== (oldVal === 'funnelarea')
-            )) {
+            } else if (
+                ai === 'type' &&
+                ((newVal === 'pie') !== (oldVal === 'pie') || (newVal === 'funnelarea') !== (oldVal === 'funnelarea'))
+            ) {
                 var labelsTo = 'x';
                 var valuesTo = 'y';
-                if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
+                if ((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
                     labelsTo = 'y';
                     valuesTo = 'x';
                 }
@@ -1570,54 +1570,50 @@ function _restyle(gd, aobj, traces) {
                 Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
                 Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
-                if(oldVal === 'pie' || oldVal === 'funnelarea') {
-                    nestedProperty(cont, 'marker.color')
-                        .set(nestedProperty(cont, 'marker.colors').get());
+                if (oldVal === 'pie' || oldVal === 'funnelarea') {
+                    nestedProperty(cont, 'marker.color').set(nestedProperty(cont, 'marker.colors').get());
 
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
-                } else if(Registry.traceIs(cont, 'cartesian')) {
-                    nestedProperty(cont, 'marker.colors')
-                        .set(nestedProperty(cont, 'marker.color').get());
+                } else if (Registry.traceIs(cont, 'cartesian')) {
+                    nestedProperty(cont, 'marker.colors').set(nestedProperty(cont, 'marker.color').get());
                 }
             }
 
             undoit[ai][i] = undefinedToNull(oldVal);
             // set the new value - if val is an array, it's one el per trace
             // first check for attributes that get more complex alterations
-            var swapAttrs = [
-                'swapxy', 'swapxyaxes', 'orientation', 'orientationaxes'
-            ];
-            if(swapAttrs.indexOf(ai) !== -1) {
+            var swapAttrs = ['swapxy', 'swapxyaxes', 'orientation', 'orientationaxes'];
+            if (swapAttrs.indexOf(ai) !== -1) {
                 // setting an orientation: make sure it's changing
                 // before we swap everything else
-                if(ai === 'orientation') {
+                if (ai === 'orientation') {
                     param.set(newVal);
                     // obnoxious that we need this level of coupling... but in order to
                     // properly handle setting orientation to `null` we need to mimic
                     // the logic inside Bars.supplyDefaults for default orientation
-                    var defaultOrientation = (cont.x && !cont.y) ? 'h' : 'v';
-                    if((param.get() || defaultOrientation) === contFull.orientation) {
+                    var defaultOrientation = cont.x && !cont.y ? 'h' : 'v';
+                    if ((param.get() || defaultOrientation) === contFull.orientation) {
                         continue;
                     }
-                } else if(ai === 'orientationaxes') {
+                } else if (ai === 'orientationaxes') {
                     // orientationaxes has no value,
                     // it flips everything and the axes
 
-                    cont.orientation =
-                        {v: 'h', h: 'v'}[contFull.orientation];
+                    cont.orientation = { v: 'h', h: 'v' }[contFull.orientation];
                 }
                 helpers.swapXYData(cont);
                 flags.calc = flags.clearAxisTypes = true;
-            } else if(Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
+            } else if (Plots.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
                 // TODO: use manageArrays.applyContainerArrayChanges here too
                 helpers.manageArrayContainers(param, newVal, undoit);
                 flags.calc = true;
             } else {
-                if(valObject) {
+                if (valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
                     // ... but no need to this for regl-based traces
-                    if(valObject.arrayOk &&
+                    if (
+                        valObject.arrayOk &&
                         !Registry.traceIs(contFull, 'regl') &&
                         (Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
                     ) {
@@ -1639,21 +1635,21 @@ function _restyle(gd, aobj, traces) {
         }
 
         // swap the data attributes of the relevant x and y axes?
-        if(['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
+        if (['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
             Axes.swap(gd, traces);
         }
 
         // swap hovermode if set to "compare x/y data"
-        if(ai === 'orientationaxes') {
+        if (ai === 'orientationaxes') {
             var hovermode = nestedProperty(gd.layout, 'hovermode');
             var h = hovermode.get();
-            if(h === 'x') {
+            if (h === 'x') {
                 hovermode.set('y');
-            } else if(h === 'y') {
+            } else if (h === 'y') {
                 hovermode.set('x');
-            } else if(h === 'x unified') {
+            } else if (h === 'x unified') {
                 hovermode.set('y unified');
-            } else if(h === 'y unified') {
+            } else if (h === 'y unified') {
                 hovermode.set('x unified');
             }
         }
@@ -1664,12 +1660,12 @@ function _restyle(gd, aobj, traces) {
         // Note: autobin (or its new analog bin clearing) is not included here
         // since we're not pushing bins back to gd.data, so if we have bin
         // info it was explicitly provided by the user.
-        if(['orientation', 'type'].indexOf(ai) !== -1) {
+        if (['orientation', 'type'].indexOf(ai) !== -1) {
             axlist = [];
-            for(i = 0; i < traces.length; i++) {
+            for (i = 0; i < traces.length; i++) {
                 var trace = data[traces[i]];
 
-                if(Registry.traceIs(trace, 'cartesian')) {
+                if (Registry.traceIs(trace, 'cartesian')) {
                     addToAxlist(trace.xaxis || 'x');
                     addToAxlist(trace.yaxis || 'y');
                 }
@@ -1680,7 +1676,7 @@ function _restyle(gd, aobj, traces) {
         }
     }
 
-    if(flags.calc || flags.plot) {
+    if (flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
@@ -1718,22 +1714,22 @@ function relayout(gd, astr, val) {
     helpers.clearPromiseQueue(gd);
 
     var aobj = {};
-    if(typeof astr === 'string') {
+    if (typeof astr === 'string') {
         aobj[astr] = val;
-    } else if(Lib.isPlainObject(astr)) {
+    } else if (Lib.isPlainObject(astr)) {
         aobj = Lib.extendFlat({}, astr);
     } else {
         Lib.warn('Relayout fail.', astr, val);
         return Promise.reject();
     }
 
-    if(Object.keys(aobj).length) gd.changed = true;
+    if (Object.keys(aobj).length) gd.changed = true;
 
     var specs = _relayout(gd, aobj);
     var flags = specs.flags;
 
     // clear calcdata if required
-    if(flags.calc) gd.calcdata = undefined;
+    if (flags.calc) gd.calcdata = undefined;
 
     // fill in redraw sequence
 
@@ -1741,37 +1737,30 @@ function relayout(gd, astr, val) {
     // something may have happened within relayout that we
     // need to wait for
     var seq = [Plots.previousPromises];
-    if(flags.layoutReplot) {
+    if (flags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
-    } else if(Object.keys(aobj).length) {
+    } else if (Object.keys(aobj).length) {
         axRangeSupplyDefaultsByPass(gd, flags, specs) || Plots.supplyDefaults(gd);
 
-        if(flags.legend) seq.push(subroutines.doLegend);
-        if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
-        if(flags.axrange) addAxRangeSequence(seq, specs.rangesAltered);
-        if(flags.ticks) seq.push(subroutines.doTicksRelayout);
-        if(flags.modebar) seq.push(subroutines.doModeBar);
-        if(flags.camera) seq.push(subroutines.doCamera);
-        if(flags.colorbars) seq.push(subroutines.doColorBars);
+        if (flags.legend) seq.push(subroutines.doLegend);
+        if (flags.layoutstyle) seq.push(subroutines.layoutStyles);
+        if (flags.axrange) addAxRangeSequence(seq, specs.rangesAltered);
+        if (flags.ticks) seq.push(subroutines.doTicksRelayout);
+        if (flags.modebar) seq.push(subroutines.doModeBar);
+        if (flags.camera) seq.push(subroutines.doCamera);
+        if (flags.colorbars) seq.push(subroutines.doColorBars);
 
         seq.push(emitAfterPlot);
     }
 
-    seq.push(
-        Plots.rehover,
-        Plots.redrag,
-        Plots.reselect
-    );
+    seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
 
-    Queue.add(gd,
-        relayout, [gd, specs.undoit],
-        relayout, [gd, specs.redoit]
-    );
+    Queue.add(gd, relayout, [gd, specs.undoit], relayout, [gd, specs.redoit]);
 
     var plotDone = Lib.syncOrAsync(seq, gd);
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
+    if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
-    return plotDone.then(function() {
+    return plotDone.then(function () {
         gd.emit('plotly_relayout', specs.eventData);
         return gd;
     });
@@ -1782,29 +1771,29 @@ function relayout(gd, astr, val) {
 function axRangeSupplyDefaultsByPass(gd, flags, specs) {
     var fullLayout = gd._fullLayout;
 
-    if(!flags.axrange) return false;
+    if (!flags.axrange) return false;
 
-    for(var k in flags) {
-        if(k !== 'axrange' && flags[k]) return false;
+    for (var k in flags) {
+        if (k !== 'axrange' && flags[k]) return false;
     }
 
     var axIn, axOut;
-    var coerce = function(attr, dflt) {
+    var coerce = function (attr, dflt) {
         return Lib.coerce(axIn, axOut, cartesianLayoutAttributes, attr, dflt);
     };
 
     var options = {}; // passing empty options for now!
 
-    for(var axId in specs.rangesAltered) {
+    for (var axId in specs.rangesAltered) {
         var axName = Axes.id2name(axId);
         axIn = gd.layout[axName];
         axOut = fullLayout[axName];
 
         handleRangeDefaults(axIn, axOut, coerce, options);
 
-        if(axOut._matchGroup) {
-            for(var axId2 in axOut._matchGroup) {
-                if(axId2 !== axId) {
+        if (axOut._matchGroup) {
+            for (var axId2 in axOut._matchGroup) {
+                if (axId2 !== axId) {
                     var ax2 = fullLayout[Axes.id2name(axId2)];
                     ax2.autorange = axOut.autorange;
                     ax2.range = axOut.range.slice();
@@ -1821,35 +1810,35 @@ function addAxRangeSequence(seq, rangesAltered) {
     // N.B. leave as sequence of subroutines (for now) instead of
     // subroutine of its own so that finalDraw always gets
     // executed after drawData
-    var drawAxes = rangesAltered ?
-        function(gd) {
-            var axIds = [];
-            var skipTitle = true;
+    var drawAxes = rangesAltered
+        ? function (gd) {
+              var axIds = [];
+              var skipTitle = true;
 
-            for(var id in rangesAltered) {
-                var ax = Axes.getFromId(gd, id);
-                axIds.push(id);
+              for (var id in rangesAltered) {
+                  var ax = Axes.getFromId(gd, id);
+                  axIds.push(id);
 
-                if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
-                    if(ax._anchorAxis) {
-                        axIds.push(ax._anchorAxis._id);
-                    }
-                }
+                  if ((ax.ticklabelposition || '').indexOf('inside') !== -1) {
+                      if (ax._anchorAxis) {
+                          axIds.push(ax._anchorAxis._id);
+                      }
+                  }
 
-                if(ax._matchGroup) {
-                    for(var id2 in ax._matchGroup) {
-                        if(!rangesAltered[id2]) {
-                            axIds.push(id2);
-                        }
-                    }
-                }
-            }
+                  if (ax._matchGroup) {
+                      for (var id2 in ax._matchGroup) {
+                          if (!rangesAltered[id2]) {
+                              axIds.push(id2);
+                          }
+                      }
+                  }
+              }
 
-            return Axes.draw(gd, axIds, {skipTitle: skipTitle});
-        } :
-        function(gd) {
-            return Axes.draw(gd, 'redraw');
-        };
+              return Axes.draw(gd, axIds, { skipTitle: skipTitle });
+          }
+        : function (gd) {
+              return Axes.draw(gd, 'redraw');
+          };
 
     seq.push(
         clearOutline,
@@ -1880,14 +1869,14 @@ function _relayout(gd, aobj) {
 
     // look for 'allaxes', split out into all axes
     // in case of 3D the axis are nested within a scene which is held in _id
-    for(i = 0; i < keys.length; i++) {
-        if(keys[i].indexOf('allaxes') === 0) {
-            for(j = 0; j < axes.length; j++) {
+    for (i = 0; i < keys.length; i++) {
+        if (keys[i].indexOf('allaxes') === 0) {
+            for (j = 0; j < axes.length; j++) {
                 var scene = axes[j]._id.substr(1);
-                var axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '';
+                var axisAttr = scene.indexOf('scene') !== -1 ? scene + '.' : '';
                 var newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
 
-                if(!aobj[newkey]) aobj[newkey] = aobj[keys[i]];
+                if (!aobj[newkey]) aobj[newkey] = aobj[keys[i]];
             }
 
             delete aobj[keys[i]];
@@ -1907,20 +1896,22 @@ function _relayout(gd, aobj) {
     // val=undefined will not set a value, just record what the value was.
     // attr can be an array to set several at once (all to the same val)
     function doextra(attr, val) {
-        if(Array.isArray(attr)) {
-            attr.forEach(function(a) { doextra(a, val); });
+        if (Array.isArray(attr)) {
+            attr.forEach(function (a) {
+                doextra(a, val);
+            });
             return;
         }
 
         // if we have another value for this attribute (explicitly or
         // via a parent) do not override with this auto-generated extra
-        if(attr in aobj || helpers.hasParent(aobj, attr)) return;
+        if (attr in aobj || helpers.hasParent(aobj, attr)) return;
 
         var p = layoutNP(layout, attr);
-        if(!(attr in undoit)) {
+        if (!(attr in undoit)) {
             undoit[attr] = undefinedToNull(p.get());
         }
-        if(val !== undefined) p.set(val);
+        if (val !== undefined) p.set(val);
     }
 
     // for constraint enforcement: keep track of all axes (as {id: name})
@@ -1936,8 +1927,8 @@ function _relayout(gd, aobj) {
     }
 
     // alter gd.layout
-    for(var ai in aobj) {
-        if(helpers.hasParent(aobj, ai)) {
+    for (var ai in aobj) {
+        if (helpers.hasParent(aobj, ai)) {
             throw new Error('cannot set ' + ai + ' and a parent attribute simultaneously');
         }
 
@@ -1946,7 +1937,7 @@ function _relayout(gd, aobj) {
         var plen = p.parts.length;
         // p.parts may end with an index integer if the property is an array
         var pend = plen - 1;
-        while(pend > 0 && typeof p.parts[pend] !== 'string') pend--;
+        while (pend > 0 && typeof p.parts[pend] !== 'string') pend--;
         // last property in chain (leaf node)
         var pleaf = p.parts[pend];
         // leaf plus immediate parent
@@ -1957,18 +1948,18 @@ function _relayout(gd, aobj) {
         var parentFull = nestedProperty(fullLayout, ptrunk).get();
         var vOld = p.get();
 
-        if(vi === undefined) continue;
+        if (vi === undefined) continue;
 
         redoit[ai] = vi;
 
         // axis reverse is special - it is its own inverse
         // op and has no flag.
-        undoit[ai] = (pleaf === 'reverse') ? vi : undefinedToNull(vOld);
+        undoit[ai] = pleaf === 'reverse' ? vi : undefinedToNull(vOld);
 
         var valObject = PlotSchema.getLayoutValObject(fullLayout, p.parts);
 
-        if(valObject && valObject.impliedEdits && vi !== null) {
-            for(var impliedKey in valObject.impliedEdits) {
+        if (valObject && valObject.impliedEdits && vi !== null) {
+            for (var impliedKey in valObject.impliedEdits) {
                 doextra(Lib.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey]);
             }
         }
@@ -1978,8 +1969,8 @@ function _relayout(gd, aobj) {
         //
         // To do so, we must manually set them back here using the _initialAutoSize cache.
         // can't use impliedEdits for this because behavior depends on vi
-        if(['width', 'height'].indexOf(ai) !== -1) {
-            if(vi) {
+        if (['width', 'height'].indexOf(ai) !== -1) {
+            if (vi) {
                 doextra('autosize', null);
                 // currently we don't support autosize one dim only - so
                 // explicitly set the other one. Note that doextra will
@@ -1989,25 +1980,25 @@ function _relayout(gd, aobj) {
             } else {
                 fullLayout[ai] = gd._initialAutoSize[ai];
             }
-        } else if(ai === 'autosize') {
+        } else if (ai === 'autosize') {
             // depends on vi here too, so again can't use impliedEdits
             doextra('width', vi ? null : fullLayout.width);
             doextra('height', vi ? null : fullLayout.height);
-        } else if(pleafPlus.match(AX_RANGE_RE)) {
+        } else if (pleafPlus.match(AX_RANGE_RE)) {
             // check autorange vs range
 
             recordAlteredAxis(pleafPlus);
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
-        } else if(pleafPlus.match(AX_AUTORANGE_RE)) {
+        } else if (pleafPlus.match(AX_AUTORANGE_RE)) {
             recordAlteredAxis(pleafPlus);
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
             var axFull = nestedProperty(fullLayout, ptrunk).get();
-            if(axFull._inputDomain) {
+            if (axFull._inputDomain) {
                 // if we're autoranging and this axis has a constrained domain,
                 // reset it so we don't get locked into a shrunken size
                 axFull._input.domain = axFull._inputDomain.slice();
             }
-        } else if(pleafPlus.match(AX_DOMAIN_RE)) {
+        } else if (pleafPlus.match(AX_DOMAIN_RE)) {
             nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
         }
 
@@ -2016,30 +2007,30 @@ function _relayout(gd, aobj) {
         // not data values like newer components.
         // previously we did this for log <-> not-log, but now only do it
         // for log <-> linear
-        if(pleaf === 'type') {
+        if (pleaf === 'type') {
             ax = parentIn;
             var toLog = parentFull.type === 'linear' && vi === 'log';
             var fromLog = parentFull.type === 'log' && vi === 'linear';
 
-            if(toLog || fromLog) {
-                if(!ax || !ax.range) {
+            if (toLog || fromLog) {
+                if (!ax || !ax.range) {
                     // 2D never gets here, but 3D does
                     // I don't think this is needed, but left here in case there
                     // are edge cases I'm not thinking of.
                     doextra(ptrunk + '.autorange', true);
-                } else if(!parentFull.autorange) {
+                } else if (!parentFull.autorange) {
                     // toggling log without autorange: need to also recalculate ranges
                     // because log axes use linearized values for range endpoints
                     var r0 = ax.range[0];
                     var r1 = ax.range[1];
-                    if(toLog) {
+                    if (toLog) {
                         // if both limits are negative, autorange
-                        if(r0 <= 0 && r1 <= 0) {
+                        if (r0 <= 0 && r1 <= 0) {
                             doextra(ptrunk + '.autorange', true);
                         }
                         // if one is negative, set it 6 orders below the other.
-                        if(r0 <= 0) r0 = r1 / 1e6;
-                        else if(r1 <= 0) r1 = r0 / 1e6;
+                        if (r0 <= 0) r0 = r1 / 1e6;
+                        else if (r1 <= 0) r1 = r0 / 1e6;
                         // now set the range values as appropriate
                         doextra(ptrunk + '.range[0]', Math.log(r0) / Math.LN10);
                         doextra(ptrunk + '.range[1]', Math.log(r1) / Math.LN10);
@@ -2047,15 +2038,16 @@ function _relayout(gd, aobj) {
                         doextra(ptrunk + '.range[0]', Math.pow(10, r0));
                         doextra(ptrunk + '.range[1]', Math.pow(10, r1));
                     }
-                } else if(toLog) {
+                } else if (toLog) {
                     // just make sure the range is positive and in the right
                     // order, it'll get recalculated later
-                    ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
+                    ax.range = ax.range[1] > ax.range[0] ? [1, 2] : [2, 1];
                 }
 
                 // clear polar view initial stash for radial range so that
                 // value get recomputed in correct units
-                if(Array.isArray(fullLayout._subplots.polar) &&
+                if (
+                    Array.isArray(fullLayout._subplots.polar) &&
                     fullLayout._subplots.polar.length &&
                     fullLayout[p.parts[0]] &&
                     p.parts[1] === 'radialaxis'
@@ -2074,14 +2066,14 @@ function _relayout(gd, aobj) {
                 doextra(ptrunk + '.range', null);
             }
             nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
-        } else if(pleaf.match(AX_NAME_PATTERN)) {
+        } else if (pleaf.match(AX_NAME_PATTERN)) {
             var fullProp = nestedProperty(fullLayout, ai).get();
             var newType = (vi || {}).type;
 
             // This can potentially cause strange behavior if the autotype is not
             // numeric (linear, because we don't auto-log) but the previous type
             // was log. That's a very strange edge case though
-            if(!newType || newType === '-') newType = 'linear';
+            if (!newType || newType === '-') newType = 'linear';
             Registry.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
             Registry.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
         }
@@ -2093,19 +2085,19 @@ function _relayout(gd, aobj) {
         // and order-independence for add/remove/edit all together in
         // one relayout call
         var containerArrayMatch = manageArrays.containerArrayMatch(ai);
-        if(containerArrayMatch) {
+        if (containerArrayMatch) {
             arrayStr = containerArrayMatch.array;
             i = containerArrayMatch.index;
             var propStr = containerArrayMatch.property;
-            var updateValObject = valObject || {editType: 'calc'};
+            var updateValObject = valObject || { editType: 'calc' };
 
-            if(i !== '' && propStr === '') {
+            if (i !== '' && propStr === '') {
                 // special handling of undoit if we're adding or removing an element
                 // ie 'annotations[2]' which can be {...} (add) or null,
                 // does not work when replacing the entire array
-                if(manageArrays.isAddVal(vi)) {
+                if (manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
-                } else if(manageArrays.isRemoveVal(vi)) {
+                } else if (manageArrays.isRemoveVal(vi)) {
                     undoit[ai] = (nestedProperty(layout, arrayStr).get() || [])[i];
                 } else {
                     Lib.warn('unrecognized full object value', aobj);
@@ -2114,33 +2106,35 @@ function _relayout(gd, aobj) {
             editTypes.update(flags, updateValObject);
 
             // prepare the edits object we'll send to applyContainerArrayChanges
-            if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
+            if (!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
             var objEdits = arrayEdits[arrayStr][i];
-            if(!objEdits) objEdits = arrayEdits[arrayStr][i] = {};
+            if (!objEdits) objEdits = arrayEdits[arrayStr][i] = {};
             objEdits[propStr] = vi;
 
             delete aobj[ai];
-        } else if(pleaf === 'reverse') {
+        } else if (pleaf === 'reverse') {
             // handle axis reversal explicitly, as there's no 'reverse' attribute
 
-            if(parentIn.range) parentIn.range.reverse();
+            if (parentIn.range) parentIn.range.reverse();
             else {
                 doextra(ptrunk + '.autorange', true);
                 parentIn.range = [1, 0];
             }
 
-            if(parentFull.autorange) flags.calc = true;
+            if (parentFull.autorange) flags.calc = true;
             else flags.plot = true;
         } else {
-            if(ai === 'dragmode' && ((vi === false && vOld !== false) || (vi !== false && vOld === false))) {
+            if (ai === 'dragmode' && ((vi === false && vOld !== false) || (vi !== false && vOld === false))) {
                 flags.plot = true;
-            } else if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
-                (ai === 'dragmode' &&
+            } else if (
+                fullLayout._has('scatter-like') &&
+                fullLayout._has('regl') &&
+                ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
-                !(vOld === 'lasso' || vOld === 'select'))
+                !(vOld === 'lasso' || vOld === 'select')
             ) {
                 flags.plot = true;
-            } else if(valObject) editTypes.update(flags, valObject);
+            } else if (valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
 
             p.set(vi);
@@ -2148,25 +2142,30 @@ function _relayout(gd, aobj) {
     }
 
     // now we've collected component edits - execute them all together
-    for(arrayStr in arrayEdits) {
-        var finished = manageArrays.applyContainerArrayChanges(gd,
-            layoutNP(layout, arrayStr), arrayEdits[arrayStr], flags, layoutNP);
-        if(!finished) flags.plot = true;
+    for (arrayStr in arrayEdits) {
+        var finished = manageArrays.applyContainerArrayChanges(
+            gd,
+            layoutNP(layout, arrayStr),
+            arrayEdits[arrayStr],
+            flags,
+            layoutNP
+        );
+        if (!finished) flags.plot = true;
     }
 
     // figure out if we need to recalculate axis constraints
-    for(var axId in rangesAltered) {
+    for (var axId in rangesAltered) {
         ax = Axes.getFromId(gd, axId);
         var group = ax && ax._constraintGroup;
-        if(group) {
+        if (group) {
             // Always recalc if we're changing constrained ranges.
             // Otherwise it's possible to violate the constraints by
             // specifying arbitrary ranges for all axes in the group.
             // this way some ranges may expand beyond what's specified,
             // as they do at first draw, to satisfy the constraints.
             flags.calc = true;
-            for(var groupAxId in group) {
-                if(!rangesAltered[groupAxId]) {
+            for (var groupAxId in group) {
+                if (!rangesAltered[groupAxId]) {
                     Axes.getFromId(gd, groupAxId)._constraintShrinkable = true;
                 }
             }
@@ -2177,18 +2176,18 @@ function _relayout(gd, aobj) {
     // this triggers a redraw
     // TODO: do we really need special aobj.height/width handling here?
     // couldn't editType do this?
-    if(updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
+    if (updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
 
     // update shape legends
     var shapes = fullLayout.shapes;
-    for(i = 0; i < shapes.length; i++) {
-        if(shapes[i].showlegend) {
+    for (i = 0; i < shapes.length; i++) {
+        if (shapes[i].showlegend) {
             flags.calc = true;
             break;
         }
     }
 
-    if(flags.plot || flags.calc) {
+    if (flags.plot || flags.calc) {
         flags.layoutReplot = true;
     }
 
@@ -2215,9 +2214,9 @@ function updateAutosize(gd) {
     var oldHeight = fullLayout.height;
 
     // calculate autosizing
-    if(gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, fullLayout);
+    if (gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, fullLayout);
 
-    return (fullLayout.width !== oldWidth) || (fullLayout.height !== oldHeight);
+    return fullLayout.width !== oldWidth || fullLayout.height !== oldHeight;
 }
 
 /**
@@ -2239,11 +2238,11 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    if(!Lib.isPlainObject(traceUpdate)) traceUpdate = {};
-    if(!Lib.isPlainObject(layoutUpdate)) layoutUpdate = {};
+    if (!Lib.isPlainObject(traceUpdate)) traceUpdate = {};
+    if (!Lib.isPlainObject(layoutUpdate)) layoutUpdate = {};
 
-    if(Object.keys(traceUpdate).length) gd.changed = true;
-    if(Object.keys(layoutUpdate).length) gd.changed = true;
+    if (Object.keys(traceUpdate).length) gd.changed = true;
+    if (Object.keys(layoutUpdate).length) gd.changed = true;
 
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
@@ -2254,49 +2253,47 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
     var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
-    if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
-    if(restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
+    if (restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
+    if (restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
 
     // fill in redraw sequence
     var seq = [];
 
-    if(relayoutFlags.layoutReplot) {
+    if (relayoutFlags.layoutReplot) {
         // N.B. works fine when both
         // relayoutFlags.layoutReplot and restyleFlags.fullReplot are true
         seq.push(subroutines.layoutReplot);
-    } else if(restyleFlags.fullReplot) {
+    } else if (restyleFlags.fullReplot) {
         seq.push(exports._doPlot);
     } else {
         seq.push(Plots.previousPromises);
         axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
 
-        if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
-        if(restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
-        if(relayoutFlags.legend) seq.push(subroutines.doLegend);
-        if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
-        if(relayoutFlags.axrange) addAxRangeSequence(seq, relayoutSpecs.rangesAltered);
-        if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
-        if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
-        if(relayoutFlags.camera) seq.push(subroutines.doCamera);
+        if (restyleFlags.style) seq.push(subroutines.doTraceStyle);
+        if (restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
+        if (relayoutFlags.legend) seq.push(subroutines.doLegend);
+        if (relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+        if (relayoutFlags.axrange) addAxRangeSequence(seq, relayoutSpecs.rangesAltered);
+        if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+        if (relayoutFlags.modebar) seq.push(subroutines.doModeBar);
+        if (relayoutFlags.camera) seq.push(subroutines.doCamera);
 
         seq.push(emitAfterPlot);
     }
 
-    seq.push(
-        Plots.rehover,
-        Plots.redrag,
-        Plots.reselect
-    );
+    seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
 
-    Queue.add(gd,
-        update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
-        update, [gd, restyleSpecs.redoit, relayoutSpecs.redoit, restyleSpecs.traces]
-    );
+    Queue.add(gd, update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces], update, [
+        gd,
+        restyleSpecs.redoit,
+        relayoutSpecs.redoit,
+        restyleSpecs.traces
+    ]);
 
     var plotDone = Lib.syncOrAsync(seq, gd);
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
+    if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
-    return plotDone.then(function() {
+    return plotDone.then(function () {
         gd.emit('plotly_update', {
             data: restyleSpecs.eventData,
             layout: relayoutSpecs.eventData
@@ -2324,35 +2321,35 @@ function guiEdit(func) {
 // If no `attr` we use `match[1] + '.uirevision'`
 // Ordered by most common edits first, to minimize our search time
 var layoutUIControlPatterns = [
-    {pattern: /^hiddenlabels/, attr: 'legend.uirevision'},
-    {pattern: /^((x|y)axis\d*)\.((auto)?range|title\.text)/},
+    { pattern: /^hiddenlabels/, attr: 'legend.uirevision' },
+    { pattern: /^((x|y)axis\d*)\.((auto)?range|title\.text)/ },
 
     // showspikes and modes include those nested inside scenes
-    {pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision'},
-    {pattern: /(hover|drag)mode$/, attr: 'modebar.uirevision'},
+    { pattern: /axis\d*\.showspikes$/, attr: 'modebar.uirevision' },
+    { pattern: /(hover|drag)mode$/, attr: 'modebar.uirevision' },
 
-    {pattern: /^(scene\d*)\.camera/},
-    {pattern: /^(geo\d*)\.(projection|center|fitbounds)/},
-    {pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/},
-    {pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/},
-    {pattern: /^(polar\d*\.angularaxis)\.rotation/},
-    {pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/},
-    {pattern: /^(map\d*)\.(center|zoom|bearing|pitch)/},
+    { pattern: /^(scene\d*)\.camera/ },
+    { pattern: /^(geo\d*)\.(projection|center|fitbounds)/ },
+    { pattern: /^(ternary\d*\.[abc]axis)\.(min|title\.text)$/ },
+    { pattern: /^(polar\d*\.radialaxis)\.((auto)?range|angle|title\.text)/ },
+    { pattern: /^(polar\d*\.angularaxis)\.rotation/ },
+    { pattern: /^(mapbox\d*)\.(center|zoom|bearing|pitch)/ },
+    { pattern: /^(map\d*)\.(center|zoom|bearing|pitch)/ },
 
-    {pattern: /^legend\.(x|y)$/, attr: 'editrevision'},
-    {pattern: /^(shapes|annotations)/, attr: 'editrevision'},
-    {pattern: /^title\.text$/, attr: 'editrevision'}
+    { pattern: /^legend\.(x|y)$/, attr: 'editrevision' },
+    { pattern: /^(shapes|annotations)/, attr: 'editrevision' },
+    { pattern: /^title\.text$/, attr: 'editrevision' }
 ];
 
 // same for trace attributes: if `attr` is given it's in layout,
 // or with no `attr` we use `trace.uirevision`
 var traceUIControlPatterns = [
-    {pattern: /^selectedpoints$/, attr: 'selectionrevision'},
+    { pattern: /^selectedpoints$/, attr: 'selectionrevision' },
     // "visible" includes trace.transforms[i].styles[j].value.visible
-    {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
-    {pattern: /^dimensions\[\d+\]\.constraintrange/},
-    {pattern: /^node\.(x|y|groups)/}, // for Sankey nodes
-    {pattern: /^level$/}, // for Sunburst, Treemap and Icicle traces
+    { pattern: /(^|value\.)visible$/, attr: 'legend.uirevision' },
+    { pattern: /^dimensions\[\d+\]\.constraintrange/ },
+    { pattern: /^node\.(x|y|groups)/ }, // for Sankey nodes
+    { pattern: /^level$/ }, // for Sunburst, Treemap and Icicle traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -2360,19 +2357,19 @@ var traceUIControlPatterns = [
     // Also applies to axis titles up in the layout section
 
     // "name" also includes transform.styles
-    {pattern: /(^|value\.)name$/},
+    { pattern: /(^|value\.)name$/ },
     // including nested colorbar attributes (ie marker.colorbar)
-    {pattern: /colorbar\.title\.text$/},
-    {pattern: /colorbar\.(x|y)$/, attr: 'editrevision'}
+    { pattern: /colorbar\.title\.text$/ },
+    { pattern: /colorbar\.(x|y)$/, attr: 'editrevision' }
 ];
 
 function findUIPattern(key, patternSpecs) {
-    for(var i = 0; i < patternSpecs.length; i++) {
+    for (var i = 0; i < patternSpecs.length; i++) {
         var spec = patternSpecs[i];
         var match = key.match(spec.pattern);
-        if(match) {
+        if (match) {
             var head = match[1] || '';
-            return {head: head, tail: key.substr(head.length + 1), attr: spec.attr};
+            return { head: head, tail: key.substr(head.length + 1), attr: spec.attr };
         }
     }
 }
@@ -2382,42 +2379,42 @@ function findUIPattern(key, patternSpecs) {
 // falsy values are returned.
 function getNewRev(revAttr, container) {
     var newRev = nestedProperty(container, revAttr).get();
-    if(newRev !== undefined) return newRev;
+    if (newRev !== undefined) return newRev;
 
     var parts = revAttr.split('.');
     parts.pop();
-    while(parts.length > 1) {
+    while (parts.length > 1) {
         parts.pop();
         newRev = nestedProperty(container, parts.join('.') + '.uirevision').get();
-        if(newRev !== undefined) return newRev;
+        if (newRev !== undefined) return newRev;
     }
 
     return container.uirevision;
 }
 
 function getFullTraceIndexFromUid(uid, fullData) {
-    for(var i = 0; i < fullData.length; i++) {
-        if(fullData[i]._fullInput.uid === uid) return i;
+    for (var i = 0; i < fullData.length; i++) {
+        if (fullData[i]._fullInput.uid === uid) return i;
     }
     return -1;
 }
 
 function getTraceIndexFromUid(uid, data, tracei) {
-    for(var i = 0; i < data.length; i++) {
-        if(data[i].uid === uid) return i;
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].uid === uid) return i;
     }
     // fall back on trace order, but only if user didn't provide a uid for that trace
-    return (!data[tracei] || data[tracei].uid) ? -1 : tracei;
+    return !data[tracei] || data[tracei].uid ? -1 : tracei;
 }
 
 function valsMatch(v1, v2) {
     var v1IsObj = Lib.isPlainObject(v1);
     var v1IsArray = Array.isArray(v1);
-    if(v1IsObj || v1IsArray) {
+    if (v1IsObj || v1IsArray) {
         return (
-            (v1IsObj && Lib.isPlainObject(v2)) ||
-            (v1IsArray && Array.isArray(v2))
-        ) && JSON.stringify(v1) === JSON.stringify(v2);
+            ((v1IsObj && Lib.isPlainObject(v2)) || (v1IsArray && Array.isArray(v2))) &&
+            JSON.stringify(v1) === JSON.stringify(v2)
+        );
     }
     return v1 === v2;
 }
@@ -2428,46 +2425,45 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     var bothInheritAutorange = [];
     var newAutorangeIn = {};
     var newRangeAccepted = {};
-    for(key in layoutPreGUI) {
+    for (key in layoutPreGUI) {
         match = findUIPattern(key, layoutUIControlPatterns);
-        if(match) {
+        if (match) {
             head = match.head;
             tail = match.tail;
-            revAttr = match.attr || (head + '.uirevision');
+            revAttr = match.attr || head + '.uirevision';
             oldRev = nestedProperty(oldFullLayout, revAttr).get();
             newRev = oldRev && getNewRev(revAttr, layout);
 
-            if(newRev && (newRev === oldRev)) {
+            if (newRev && newRev === oldRev) {
                 preGUIVal = layoutPreGUI[key];
-                if(preGUIVal === null) preGUIVal = undefined;
+                if (preGUIVal === null) preGUIVal = undefined;
                 newNP = nestedProperty(layout, key);
                 newVal = newNP.get();
 
-                if(valsMatch(newVal, preGUIVal)) {
-                    if(newVal === undefined && tail === 'autorange') {
+                if (valsMatch(newVal, preGUIVal)) {
+                    if (newVal === undefined && tail === 'autorange') {
                         bothInheritAutorange.push(head);
                     }
                     newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                     continue;
-                } else if(tail === 'autorange' || tail.substr(0, 6) === 'range[') {
+                } else if (tail === 'autorange' || tail.substr(0, 6) === 'range[') {
                     // Special case for (auto)range since we push it back into the layout
                     // so all null should be treated equivalently to autorange: true with any range
                     var pre0 = layoutPreGUI[head + '.range[0]'];
                     var pre1 = layoutPreGUI[head + '.range[1]'];
                     var preAuto = layoutPreGUI[head + '.autorange'];
-                    if(preAuto || (preAuto === null && pre0 === null && pre1 === null)) {
+                    if (preAuto || (preAuto === null && pre0 === null && pre1 === null)) {
                         // Only read the input layout once and stash the result,
                         // so we get it before we start modifying it
-                        if(!(head in newAutorangeIn)) {
+                        if (!(head in newAutorangeIn)) {
                             var newContainer = nestedProperty(layout, head).get();
-                            newAutorangeIn[head] = newContainer && (
-                                newContainer.autorange ||
-                                (newContainer.autorange !== false && (
-                                    !newContainer.range || newContainer.range.length !== 2)
-                                )
-                            );
+                            newAutorangeIn[head] =
+                                newContainer &&
+                                (newContainer.autorange ||
+                                    (newContainer.autorange !== false &&
+                                        (!newContainer.range || newContainer.range.length !== 2)));
                         }
-                        if(newAutorangeIn[head]) {
+                        if (newAutorangeIn[head]) {
                             newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                             continue;
                         }
@@ -2482,7 +2478,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
         // so remove it from _preGUI for next time.
         delete layoutPreGUI[key];
 
-        if(match && match.tail.substr(0, 6) === 'range[') {
+        if (match && match.tail.substr(0, 6) === 'range[') {
             newRangeAccepted[match.head] = 1;
         }
     }
@@ -2491,27 +2487,27 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     // If the new figure's matching `range` was kept, and `autorange`
     // wasn't supplied explicitly in either the original or the new figure,
     // we shouldn't alter that - but we may just have done that, so fix it.
-    for(var i = 0; i < bothInheritAutorange.length; i++) {
+    for (var i = 0; i < bothInheritAutorange.length; i++) {
         var axAttr = bothInheritAutorange[i];
-        if(newRangeAccepted[axAttr]) {
+        if (newRangeAccepted[axAttr]) {
             var newAx = nestedProperty(layout, axAttr).get();
-            if(newAx) delete newAx.autorange;
+            if (newAx) delete newAx.autorange;
         }
     }
 
     // Now traces - try to match them up by uid (in case we added/deleted in
     // the middle), then fall back on index.
     var allTracePreGUI = oldFullLayout._tracePreGUI;
-    for(var uid in allTracePreGUI) {
+    for (var uid in allTracePreGUI) {
         var tracePreGUI = allTracePreGUI[uid];
         var newTrace = null;
         var fullInput;
-        for(key in tracePreGUI) {
+        for (key in tracePreGUI) {
             // wait until we know we have preGUI values to look for traces
             // but if we don't find both, stop looking at this uid
-            if(!newTrace) {
+            if (!newTrace) {
                 var fulli = getFullTraceIndexFromUid(uid, oldFullData);
-                if(fulli < 0) {
+                if (fulli < 0) {
                     // Somehow we didn't even have this trace in oldFullData...
                     // I guess this could happen with `deleteTraces` or something
                     delete allTracePreGUI[uid];
@@ -2521,7 +2517,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                 fullInput = fullTrace._fullInput;
 
                 var newTracei = getTraceIndexFromUid(uid, data, fullInput.index);
-                if(newTracei < 0) {
+                if (newTracei < 0) {
                     // No match in new data
                     delete allTracePreGUI[uid];
                     break;
@@ -2530,23 +2526,23 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
             }
 
             match = findUIPattern(key, traceUIControlPatterns);
-            if(match) {
-                if(match.attr) {
+            if (match) {
+                if (match.attr) {
                     oldRev = nestedProperty(oldFullLayout, match.attr).get();
                     newRev = oldRev && getNewRev(match.attr, layout);
                 } else {
                     oldRev = fullInput.uirevision;
                     // inheritance for trace.uirevision is simple, just layout.uirevision
                     newRev = newTrace.uirevision;
-                    if(newRev === undefined) newRev = layout.uirevision;
+                    if (newRev === undefined) newRev = layout.uirevision;
                 }
 
-                if(newRev && newRev === oldRev) {
+                if (newRev && newRev === oldRev) {
                     preGUIVal = tracePreGUI[key];
-                    if(preGUIVal === null) preGUIVal = undefined;
+                    if (preGUIVal === null) preGUIVal = undefined;
                     newNP = nestedProperty(newTrace, key);
                     newVal = newNP.get();
-                    if(valsMatch(newVal, preGUIVal)) {
+                    if (valsMatch(newVal, preGUIVal)) {
                         newNP.set(undefinedToNull(nestedProperty(fullInput, key).get()));
                         continue;
                     }
@@ -2585,7 +2581,9 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
 function react(gd, data, layout, config) {
     var frames, plotDone;
 
-    function addFrames() { return exports.addFrames(gd, frames); }
+    function addFrames() {
+        return exports.addFrames(gd, frames);
+    }
 
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
@@ -2594,10 +2592,10 @@ function react(gd, data, layout, config) {
     var oldFullLayout = gd._fullLayout;
 
     // you can use this as the initial draw as well as to update
-    if(!Lib.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
+    if (!Lib.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
         plotDone = exports.newPlot(gd, data, layout, config);
     } else {
-        if(Lib.isPlainObject(data)) {
+        if (Lib.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
             layout = obj.layout;
@@ -2608,25 +2606,24 @@ function react(gd, data, layout, config) {
         var configChanged = false;
         // assume that if there's a config at all, we're reacting to it too,
         // and completely replace the previous config
-        if(config) {
+        if (config) {
             var oldConfig = Lib.extendDeep({}, gd._context);
             gd._context = undefined;
             setPlotContext(gd, config);
             configChanged = diffConfig(oldConfig, gd._context);
         }
 
-        if(configChanged) {
+        if (configChanged) {
             // Save event listeners as newPlot will remove them
-            const eventListeners = gd._ev.eventNames().map(name => [name, gd._ev.listeners(name)]);
-            plotDone = exports.newPlot(gd, data, layout, config)
-                .then(() => {
-                    for (const [name, callbacks] of eventListeners) {
-                        callbacks.forEach((cb) => gd.on(name, cb));
-                    }
-                    
-                    // Call react in case transition should have occurred along with config change
-                    return exports.react(gd, data, layout, config)
-                });
+            const eventListeners = gd._ev.eventNames().map((name) => [name, gd._ev.listeners(name)]);
+            plotDone = exports.newPlot(gd, data, layout, config).then(() => {
+                for (const [name, callbacks] of eventListeners) {
+                    callbacks.forEach((cb) => gd.on(name, cb));
+                }
+
+                // Call react in case transition should have occurred along with config change
+                return exports.react(gd, data, layout, config);
+            });
         } else {
             gd.data = data || [];
             helpers.cleanData(gd.data);
@@ -2638,7 +2635,7 @@ function react(gd, data, layout, config) {
             // "true" skips updating calcdata and remapping arrays from calcTransforms,
             // which supplyDefaults usually does at the end, but we may need to NOT do
             // if the diff (which we haven't determined yet) says we'll recalc
-            Plots.supplyDefaults(gd, {skipUpdateCalc: true});
+            Plots.supplyDefaults(gd, { skipUpdateCalc: true });
 
             var newFullData = gd._fullData;
             var newFullLayout = gd._fullLayout;
@@ -2658,21 +2655,21 @@ function react(gd, data, layout, config) {
             //     fullLayout[ai] = gd._initialAutoSize[ai];
             // }
 
-            if(updateAutosize(gd)) relayoutFlags.layoutReplot = true;
+            if (updateAutosize(gd)) relayoutFlags.layoutReplot = true;
 
             // clear calcdata and empty categories if required
-            if(restyleFlags.calc || relayoutFlags.calc) {
+            if (restyleFlags.calc || relayoutFlags.calc) {
                 gd.calcdata = undefined;
                 var allNames = Object.getOwnPropertyNames(newFullLayout);
-                for(var q = 0; q < allNames.length; q++) {
+                for (var q = 0; q < allNames.length; q++) {
                     var name = allNames[q];
                     var start = name.substring(0, 5);
-                    if(start === 'xaxis' || start === 'yaxis') {
+                    if (start === 'xaxis' || start === 'yaxis') {
                         var emptyCategories = newFullLayout[name]._emptyCategories;
-                        if(emptyCategories) emptyCategories();
+                        if (emptyCategories) emptyCategories();
                     }
                 }
-            // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
+                // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
             } else {
                 Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
             }
@@ -2683,7 +2680,7 @@ function react(gd, data, layout, config) {
             // fill in redraw sequence
             var seq = [];
 
-            if(frames) {
+            if (frames) {
                 gd._transitionData = {};
                 Plots.createTransitionData(gd);
                 seq.push(addFrames);
@@ -2693,30 +2690,30 @@ function react(gd, data, layout, config) {
             // only used when 'transition' is set by user and
             // when at least one animatable attribute has changed,
             // N.B. config changed aren't animatable
-            if(newFullLayout.transition && (restyleFlags.anim || relayoutFlags.anim)) {
-                if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+            if (newFullLayout.transition && (restyleFlags.anim || relayoutFlags.anim)) {
+                if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
 
                 Plots.doCalcdata(gd);
                 subroutines.doAutoRangeAndConstraints(gd);
 
-                seq.push(function() {
+                seq.push(function () {
                     return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
                 });
-            } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot) {
+            } else if (restyleFlags.fullReplot || relayoutFlags.layoutReplot) {
                 gd._fullLayout._skipDefaults = true;
                 seq.push(exports._doPlot);
             } else {
-                for(var componentType in relayoutFlags.arrays) {
+                for (var componentType in relayoutFlags.arrays) {
                     var indices = relayoutFlags.arrays[componentType];
-                    if(indices.length) {
+                    if (indices.length) {
                         var drawOne = Registry.getComponentMethod(componentType, 'drawOne');
-                        if(drawOne !== Lib.noop) {
-                            for(var i = 0; i < indices.length; i++) {
+                        if (drawOne !== Lib.noop) {
+                            for (var i = 0; i < indices.length; i++) {
                                 drawOne(gd, indices[i]);
                             }
                         } else {
                             var draw = Registry.getComponentMethod(componentType, 'draw');
-                            if(draw === Lib.noop) {
+                            if (draw === Lib.noop) {
                                 throw new Error('cannot draw components: ' + componentType);
                             }
                             draw(gd);
@@ -2725,25 +2722,21 @@ function react(gd, data, layout, config) {
                 }
 
                 seq.push(Plots.previousPromises);
-                if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
-                if(restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
-                if(relayoutFlags.legend) seq.push(subroutines.doLegend);
-                if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
-                if(relayoutFlags.axrange) addAxRangeSequence(seq);
-                if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
-                if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
-                if(relayoutFlags.camera) seq.push(subroutines.doCamera);
+                if (restyleFlags.style) seq.push(subroutines.doTraceStyle);
+                if (restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
+                if (relayoutFlags.legend) seq.push(subroutines.doLegend);
+                if (relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+                if (relayoutFlags.axrange) addAxRangeSequence(seq);
+                if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+                if (relayoutFlags.modebar) seq.push(subroutines.doModeBar);
+                if (relayoutFlags.camera) seq.push(subroutines.doCamera);
                 seq.push(emitAfterPlot);
             }
 
-            seq.push(
-                Plots.rehover,
-                Plots.redrag,
-                Plots.reselect
-            );
+            seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
 
             plotDone = Lib.syncOrAsync(seq, gd);
-            if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
+            if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
         }
     }
 
@@ -2757,7 +2750,7 @@ function react(gd, data, layout, config) {
 function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision) {
     var sameTraceLength = oldFullData.length === newFullData.length;
 
-    if(!transition && !sameTraceLength) {
+    if (!transition && !sameTraceLength) {
         return {
             fullReplot: true,
             calc: true
@@ -2773,7 +2766,7 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
 
     function getTraceValObject(parts) {
         var out = PlotSchema.getTraceValObject(trace, parts);
-        if(!trace._module.animatable && out.anim) {
+        if (!trace._module.animatable && out.anim) {
             out.anim = false;
         }
         return out;
@@ -2790,22 +2783,22 @@ function diffData(gd, oldFullData, newFullData, immutable, transition, newDataRe
 
     var seenUIDs = {};
 
-    for(i = 0; i < oldFullData.length; i++) {
-        if(newFullData[i]) {
+    for (i = 0; i < oldFullData.length; i++) {
+        if (newFullData[i]) {
             trace = newFullData[i]._fullInput;
-            if(seenUIDs[trace.uid]) continue;
+            if (seenUIDs[trace.uid]) continue;
             seenUIDs[trace.uid] = 1;
 
             getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
         }
     }
 
-    if(flags.calc || flags.plot) {
+    if (flags.calc || flags.plot) {
         flags.fullReplot = true;
     }
 
-    if(transition && flags.nChanges && flags.nChangesAnim) {
-        flags.anim = (flags.nChanges === flags.nChangesAnim) && sameTraceLength ? 'all' : 'some';
+    if (transition && flags.nChanges && flags.nChangesAnim) {
+        flags.anim = flags.nChanges === flags.nChangesAnim && sameTraceLength ? 'all' : 'some';
     }
 
     return flags;
@@ -2858,11 +2851,11 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
 
     getDiffFlags(oldFullLayout, newFullLayout, [], diffOpts);
 
-    if(flags.plot || flags.calc) {
+    if (flags.plot || flags.calc) {
         flags.layoutReplot = true;
     }
 
-    if(transition && flags.nChanges && flags.nChangesAnim) {
+    if (transition && flags.nChanges && flags.nChangesAnim) {
         flags.anim = flags.nChanges === flags.nChangesAnim ? 'all' : 'some';
     }
 
@@ -2880,28 +2873,28 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
     function changed() {
         var editType = valObject.editType;
-        if(inArray && editType.indexOf('arraydraw') !== -1) {
+        if (inArray && editType.indexOf('arraydraw') !== -1) {
             Lib.pushUnique(flags.arrays[inArray], arrayIndex);
             return;
         }
         editTypes.update(flags, valObject);
 
-        if(editType !== 'none') {
+        if (editType !== 'none') {
             flags.nChanges++;
         }
 
         // track animatable changes
-        if(opts.transition && valObject.anim) {
+        if (opts.transition && valObject.anim) {
             flags.nChangesAnim++;
         }
 
         // track cartesian axes with altered ranges
-        if(AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
+        if (AX_RANGE_RE.test(astr) || AX_AUTORANGE_RE.test(astr)) {
             flags.rangesAltered[outerparts[0]] = 1;
         }
 
         // track datarevision changes
-        if(key === 'datarevision') {
+        if (key === 'datarevision') {
             flags.newDataRevision = 1;
         }
     }
@@ -2910,35 +2903,35 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         return valObject.valType === 'data_array' || valObject.arrayOk;
     }
 
-    for(key in oldContainer) {
+    for (key in oldContainer) {
         // short-circuit based on previous calls or previous keys that already maximized the pathway
-        if(flags.calc && !opts.transition) return;
+        if (flags.calc && !opts.transition) return;
 
         var oldVal = oldContainer[key];
         var newVal = newContainer[key];
         var parts = outerparts.concat(key);
         astr = parts.join('.');
 
-        if(key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
+        if (key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
 
         // FIXME: ax.tick0 and dtick get filled in during plotting (except for geo subplots),
         // and unlike other auto values they don't make it back into the input,
         // so newContainer won't have them.
-        if((key === 'tick0' || key === 'dtick') && outerparts[0] !== 'geo') {
+        if ((key === 'tick0' || key === 'dtick') && outerparts[0] !== 'geo') {
             var tickMode = newContainer.tickmode;
-            if(tickMode === 'auto' || tickMode === 'array' || !tickMode) continue;
+            if (tickMode === 'auto' || tickMode === 'array' || !tickMode) continue;
         }
         // FIXME: Similarly for axis ranges for 3D
         // contourcarpet doesn't HAVE zmin/zmax, they're just auto-added. It needs them.
-        if(key === 'range' && newContainer.autorange) continue;
-        if((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
+        if (key === 'range' && newContainer.autorange) continue;
+        if ((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
 
         valObject = getValObject(parts);
 
         // in case type changed, we may not even *have* a valObject.
-        if(!valObject) continue;
+        if (!valObject) continue;
 
-        if(valObject._compareAsJSON && JSON.stringify(oldVal) === JSON.stringify(newVal)) continue;
+        if (valObject._compareAsJSON && JSON.stringify(oldVal) === JSON.stringify(newVal)) continue;
 
         var valType = valObject.valType;
         var i;
@@ -2949,25 +2942,25 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
         // hack for traces that modify the data in supplyDefaults, like
         // converting 1D to 2D arrays, which will always create new objects
-        if(wasArray && nowArray) {
+        if (wasArray && nowArray) {
             var inputKey = '_input_' + key;
             var oldValIn = oldContainer[inputKey];
             var newValIn = newContainer[inputKey];
-            if(Array.isArray(oldValIn) && oldValIn === newValIn) continue;
+            if (Array.isArray(oldValIn) && oldValIn === newValIn) continue;
         }
 
-        if(newVal === undefined) {
-            if(canBeDataArray && wasArray) flags.calc = true;
+        if (newVal === undefined) {
+            if (canBeDataArray && wasArray) flags.calc = true;
             else changed();
-        } else if(valObject._isLinkedToArray) {
+        } else if (valObject._isLinkedToArray) {
             var arrayEditIndices = [];
             var extraIndices = false;
-            if(!inArray) flags.arrays[key] = arrayEditIndices;
+            if (!inArray) flags.arrays[key] = arrayEditIndices;
 
             var minLen = Math.min(oldVal.length, newVal.length);
             var maxLen = Math.max(oldVal.length, newVal.length);
-            if(minLen !== maxLen) {
-                if(valObject.editType === 'arraydraw') {
+            if (minLen !== maxLen) {
+                if (valObject.editType === 'arraydraw') {
                     extraIndices = true;
                 } else {
                     changed();
@@ -2975,43 +2968,47 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                 }
             }
 
-            for(i = 0; i < minLen; i++) {
-                getDiffFlags(oldVal[i], newVal[i], parts.concat(i),
+            for (i = 0; i < minLen; i++) {
+                getDiffFlags(
+                    oldVal[i],
+                    newVal[i],
+                    parts.concat(i),
                     // add array indices, but not if we're already in an array
-                    Lib.extendFlat({inArray: key, arrayIndex: i}, opts));
+                    Lib.extendFlat({ inArray: key, arrayIndex: i }, opts)
+                );
             }
 
             // put this at the end so that we know our collected array indices are sorted
             // but the check for length changes happens up front so we can short-circuit
             // diffing if appropriate
-            if(extraIndices) {
-                for(i = minLen; i < maxLen; i++) {
+            if (extraIndices) {
+                for (i = minLen; i < maxLen; i++) {
                     arrayEditIndices.push(i);
                 }
             }
-        } else if(!valType && Lib.isPlainObject(oldVal)) {
+        } else if (!valType && Lib.isPlainObject(oldVal)) {
             getDiffFlags(oldVal, newVal, parts, opts);
-        } else if(canBeDataArray) {
-            if(wasArray && nowArray) {
+        } else if (canBeDataArray) {
+            if (wasArray && nowArray) {
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
-                if(immutable) {
+                if (immutable) {
                     flags.calc = true;
                 }
 
                 // look for animatable attributes when the data changed
-                if(immutable || opts.newDataRevision) {
+                if (immutable || opts.newDataRevision) {
                     changed();
                 }
-            } else if(wasArray !== nowArray) {
+            } else if (wasArray !== nowArray) {
                 flags.calc = true;
             } else changed();
-        } else if(wasArray && nowArray) {
+        } else if (wasArray && nowArray) {
             // info array, colorscale, 'any' - these are short, just stringify.
             // I don't *think* that covers up any real differences post-validation, does it?
             // otherwise we need to dive in 1 (info_array) or 2 (colorscale) levels and compare
             // all elements.
-            if(oldVal.length !== newVal.length || String(oldVal) !== String(newVal)) {
+            if (oldVal.length !== newVal.length || String(oldVal) !== String(newVal)) {
                 changed();
             }
         } else {
@@ -3019,11 +3016,11 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
     }
 
-    for(key in newContainer) {
-        if(!(key in oldContainer || key.charAt(0) === '_' || typeof newContainer[key] === 'function')) {
+    for (key in newContainer) {
+        if (!(key in oldContainer || key.charAt(0) === '_' || typeof newContainer[key] === 'function')) {
             valObject = getValObject(outerparts.concat(key));
 
-            if(valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {
+            if (valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {
                 flags.calc = true;
                 return;
             } else changed();
@@ -3037,23 +3034,23 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 function diffConfig(oldConfig, newConfig) {
     var key;
 
-    for(key in oldConfig) {
-        if(key.charAt(0) === '_') continue;
+    for (key in oldConfig) {
+        if (key.charAt(0) === '_') continue;
         var oldVal = oldConfig[key];
         var newVal = newConfig[key];
-        if(oldVal !== newVal) {
-            if(Lib.isPlainObject(oldVal) && Lib.isPlainObject(newVal)) {
-                if(diffConfig(oldVal, newVal)) {
+        if (oldVal !== newVal) {
+            if (Lib.isPlainObject(oldVal) && Lib.isPlainObject(newVal)) {
+                if (diffConfig(oldVal, newVal)) {
                     return true;
                 }
-            } else if(Array.isArray(oldVal) && Array.isArray(newVal)) {
-                if(oldVal.length !== newVal.length) {
+            } else if (Array.isArray(oldVal) && Array.isArray(newVal)) {
+                if (oldVal.length !== newVal.length) {
                     return true;
                 }
-                for(var i = 0; i < oldVal.length; i++) {
-                    if(oldVal[i] !== newVal[i]) {
-                        if(Lib.isPlainObject(oldVal[i]) && Lib.isPlainObject(newVal[i])) {
-                            if(diffConfig(oldVal[i], newVal[i])) {
+                for (var i = 0; i < oldVal.length; i++) {
+                    if (oldVal[i] !== newVal[i]) {
+                        if (Lib.isPlainObject(oldVal[i]) && Lib.isPlainObject(newVal[i])) {
+                            if (diffConfig(oldVal[i], newVal[i])) {
                                 return true;
                             }
                         } else {
@@ -3098,11 +3095,13 @@ function diffConfig(oldConfig, newConfig) {
 function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = Lib.getGraphDiv(gd);
 
-    if(!Lib.isPlotDiv(gd)) {
+    if (!Lib.isPlotDiv(gd)) {
         throw new Error(
-            'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
-            'to create a plot before animating it. For more details, see ' +
-            'https://plotly.com/javascript/animations/'
+            'This element is not a Plotly plot: ' +
+                gd +
+                ". It's likely that you've failed " +
+                'to create a plot before animating it. For more details, see ' +
+                'https://plotly.com/javascript/animations/'
         );
     }
 
@@ -3110,7 +3109,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
     // This is the queue of frames that will be animated as soon as possible. They
     // are popped immediately upon the *start* of a transition:
-    if(!trans._frameQueue) {
+    if (!trans._frameQueue) {
         trans._frameQueue = [];
     }
 
@@ -3122,13 +3121,13 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     // *started* to transition, not that the animation is complete. To solve that,
     // track a separate counter that increments at the same time as frames are added
     // to the queue, but decrements only when the transition is complete.
-    if(trans._frameWaitingCnt === undefined) {
+    if (trans._frameWaitingCnt === undefined) {
         trans._frameWaitingCnt = 0;
     }
 
     function getTransitionOpts(i) {
-        if(Array.isArray(transitionOpts)) {
-            if(i >= transitionOpts.length) {
+        if (Array.isArray(transitionOpts)) {
+            if (i >= transitionOpts.length) {
                 return transitionOpts[0];
             } else {
                 return transitionOpts[i];
@@ -3139,8 +3138,8 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     }
 
     function getFrameOpts(i) {
-        if(Array.isArray(frameOpts)) {
-            if(i >= frameOpts.length) {
+        if (Array.isArray(frameOpts)) {
+            if (i >= frameOpts.length) {
                 return frameOpts[0];
             } else {
                 return frameOpts[i];
@@ -3157,22 +3156,22 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     // or vice versa.
     function callbackOnNthTime(cb, n) {
         var cnt = 0;
-        return function() {
-            if(cb && ++cnt === n) {
+        return function () {
+            if (cb && ++cnt === n) {
                 return cb();
             }
         };
     }
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         function discardExistingFrames() {
-            if(trans._frameQueue.length === 0) {
+            if (trans._frameQueue.length === 0) {
                 return;
             }
 
-            while(trans._frameQueue.length) {
+            while (trans._frameQueue.length) {
                 var next = trans._frameQueue.pop();
-                if(next.onInterrupt) {
+                if (next.onInterrupt) {
                     next.onInterrupt();
                 }
             }
@@ -3181,12 +3180,12 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         }
 
         function queueFrames(frameList) {
-            if(frameList.length === 0) return;
+            if (frameList.length === 0) return;
 
-            for(var i = 0; i < frameList.length; i++) {
+            for (var i = 0; i < frameList.length; i++) {
                 var computedFrame;
 
-                if(frameList[i].type === 'byname') {
+                if (frameList[i].type === 'byname') {
                     // If it's a named frame, compute it:
                     computedFrame = Plots.computeFrame(gd, frameList[i].name);
                 } else {
@@ -3206,9 +3205,9 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     frame: computedFrame,
                     name: frameList[i].name,
                     frameOpts: frameOpts,
-                    transitionOpts: transitionOpts,
+                    transitionOpts: transitionOpts
                 };
-                if(i === frameList.length - 1) {
+                if (i === frameList.length - 1) {
                     // The last frame in this .animate call stores the promise resolve
                     // and reject callbacks. This is how we ensure that the animation
                     // loop (which may exist as a result of a *different* .animate call)
@@ -3225,7 +3224,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
             // loop to immediately transition to the next frame (which, for immediate mode,
             // is the first frame in the list since all others would have been discarded
             // below)
-            if(animationOpts.mode === 'immediate') {
+            if (animationOpts.mode === 'immediate') {
                 trans._lastFrameAt = -Infinity;
             }
 
@@ -3234,7 +3233,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
             // and only sped things up by about 5% or so for a lorenz attractor simulation.
             // It would be a fine thing to implement, but the benefit of that optimization
             // doesn't seem worth the extra complexity.
-            if(!trans._animationRaf) {
+            if (!trans._animationRaf) {
                 beginAnimationLoop();
             }
         }
@@ -3248,15 +3247,15 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         }
 
         function nextFrame() {
-            if(trans._currentFrame && trans._currentFrame.onComplete) {
+            if (trans._currentFrame && trans._currentFrame.onComplete) {
                 // Execute the callback and unset it to ensure it doesn't
                 // accidentally get called twice
                 trans._currentFrame.onComplete();
             }
 
-            var newFrame = trans._currentFrame = trans._frameQueue.shift();
+            var newFrame = (trans._currentFrame = trans._frameQueue.shift());
 
-            if(newFrame) {
+            if (newFrame) {
                 // Since it's sometimes necessary to do deep digging into frame data,
                 // we'll consider it not 100% impossible for nulls or numbers to sneak through,
                 // so check when casting the name, just to be absolutely certain:
@@ -3269,14 +3268,15 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
                 // This is simply called and it's left to .transition to decide how to manage
                 // interrupting current transitions. That means we don't need to worry about
                 // how it resolves or what happens after this:
-                Plots.transition(gd,
+                Plots.transition(
+                    gd,
                     newFrame.frame.data,
                     newFrame.frame.layout,
                     helpers.coerceTraceIndices(gd, newFrame.frame.traces),
                     newFrame.frameOpts,
                     newFrame.transitionOpts
-                ).then(function() {
-                    if(newFrame.onComplete) {
+                ).then(function () {
+                    if (newFrame.onComplete) {
                         newFrame.onComplete();
                     }
                 });
@@ -3286,7 +3286,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     frame: newFrame.frame,
                     animation: {
                         frame: newFrame.frameOpts,
-                        transition: newFrame.transitionOpts,
+                        transition: newFrame.transitionOpts
                     }
                 });
             } else {
@@ -3305,13 +3305,13 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
             trans._runningTransitions = 0;
             trans._currentFrame = null;
 
-            var doFrame = function() {
+            var doFrame = function () {
                 // This *must* be requested before nextFrame since nextFrame may decide
                 // to cancel it if there's nothing more to animated:
                 trans._animationRaf = window.requestAnimationFrame(doFrame);
 
                 // Check if we're ready for a new frame:
-                if(Date.now() - trans._lastFrameAt > trans._timeToNext) {
+                if (Date.now() - trans._lastFrameAt > trans._timeToNext) {
                     nextFrame();
                 }
             };
@@ -3323,8 +3323,8 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         // items with the particular frame.
         var configCounter = 0;
         function setTransitionConfig(frame) {
-            if(Array.isArray(transitionOpts)) {
-                if(configCounter >= transitionOpts.length) {
+            if (Array.isArray(transitionOpts)) {
+                if (configCounter >= transitionOpts.length) {
                     frame.transitionOpts = transitionOpts[configCounter];
                 } else {
                     frame.transitionOpts = transitionOpts[0];
@@ -3343,40 +3343,40 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
         var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
 
-        if(isSingleFrame) {
+        if (isSingleFrame) {
             // In this case, a simple object has been passed to animate.
             frameList.push({
                 type: 'object',
                 data: setTransitionConfig(Lib.extendFlat({}, frameOrGroupNameOrFrameList))
             });
-        } else if(allFrames || ['string', 'number'].indexOf(typeof frameOrGroupNameOrFrameList) !== -1) {
+        } else if (allFrames || ['string', 'number'].indexOf(typeof frameOrGroupNameOrFrameList) !== -1) {
             // In this case, null or undefined has been passed so that we want to
             // animate *all* currently defined frames
-            for(i = 0; i < trans._frames.length; i++) {
+            for (i = 0; i < trans._frames.length; i++) {
                 frame = trans._frames[i];
 
-                if(!frame) continue;
+                if (!frame) continue;
 
-                if(allFrames || String(frame.group) === String(frameOrGroupNameOrFrameList)) {
+                if (allFrames || String(frame.group) === String(frameOrGroupNameOrFrameList)) {
                     frameList.push({
                         type: 'byname',
                         name: String(frame.name),
-                        data: setTransitionConfig({name: frame.name})
+                        data: setTransitionConfig({ name: frame.name })
                     });
                 }
             }
-        } else if(isFrameArray) {
-            for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
+        } else if (isFrameArray) {
+            for (i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
                 var frameOrName = frameOrGroupNameOrFrameList[i];
-                if(['number', 'string'].indexOf(typeof frameOrName) !== -1) {
+                if (['number', 'string'].indexOf(typeof frameOrName) !== -1) {
                     frameOrName = String(frameOrName);
                     // In this case, there's an array and this frame is a string name:
                     frameList.push({
                         type: 'byname',
                         name: frameOrName,
-                        data: setTransitionConfig({name: frameOrName})
+                        data: setTransitionConfig({ name: frameOrName })
                     });
-                } else if(Lib.isPlainObject(frameOrName)) {
+                } else if (Lib.isPlainObject(frameOrName)) {
                     frameList.push({
                         type: 'object',
                         data: setTransitionConfig(Lib.extendFlat({}, frameOrName))
@@ -3386,9 +3386,9 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
         }
 
         // Verify that all of these frames actually exist; return and reject if not:
-        for(i = 0; i < frameList.length; i++) {
+        for (i = 0; i < frameList.length; i++) {
             frame = frameList[i];
-            if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
+            if (frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
                 Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
                 reject();
                 return;
@@ -3397,30 +3397,30 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
         // If the mode is either next or immediate, then all currently queued frames must
         // be dumped and the corresponding .animate promises rejected.
-        if(['next', 'immediate'].indexOf(animationOpts.mode) !== -1) {
+        if (['next', 'immediate'].indexOf(animationOpts.mode) !== -1) {
             discardExistingFrames();
         }
 
-        if(animationOpts.direction === 'reverse') {
+        if (animationOpts.direction === 'reverse') {
             frameList.reverse();
         }
 
         var currentFrame = gd._fullLayout._currentFrame;
-        if(currentFrame && animationOpts.fromcurrent) {
+        if (currentFrame && animationOpts.fromcurrent) {
             var idx = -1;
-            for(i = 0; i < frameList.length; i++) {
+            for (i = 0; i < frameList.length; i++) {
                 frame = frameList[i];
-                if(frame.type === 'byname' && frame.name === currentFrame) {
+                if (frame.type === 'byname' && frame.name === currentFrame) {
                     idx = i;
                     break;
                 }
             }
 
-            if(idx > 0 && idx < frameList.length - 1) {
+            if (idx > 0 && idx < frameList.length - 1) {
                 var filteredFrameList = [];
-                for(i = 0; i < frameList.length; i++) {
+                for (i = 0; i < frameList.length; i++) {
                     frame = frameList[i];
-                    if(frameList[i].type !== 'byname' || i > idx) {
+                    if (frameList[i].type !== 'byname' || i > idx) {
                         filteredFrameList.push(frame);
                     }
                 }
@@ -3428,7 +3428,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
             }
         }
 
-        if(frameList.length > 0) {
+        if (frameList.length > 0) {
             queueFrames(frameList);
         } else {
             // This is the case where there were simply no frames. It's a little strange
@@ -3461,15 +3461,17 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
 function addFrames(gd, frameList, indices) {
     gd = Lib.getGraphDiv(gd);
 
-    if(frameList === null || frameList === undefined) {
+    if (frameList === null || frameList === undefined) {
         return Promise.resolve();
     }
 
-    if(!Lib.isPlotDiv(gd)) {
+    if (!Lib.isPlotDiv(gd)) {
         throw new Error(
-            'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
-            'to create a plot before adding frames. For more details, see ' +
-            'https://plotly.com/javascript/animations/'
+            'This element is not a Plotly plot: ' +
+                gd +
+                ". It's likely that you've failed " +
+                'to create a plot before adding frames. For more details, see ' +
+                'https://plotly.com/javascript/animations/'
         );
     }
 
@@ -3477,8 +3479,7 @@ function addFrames(gd, frameList, indices) {
     var _frames = gd._transitionData._frames;
     var _frameHash = gd._transitionData._frameHash;
 
-
-    if(!Array.isArray(frameList)) {
+    if (!Array.isArray(frameList)) {
         throw new Error('addFrames failure: frameList must be an Array of frame definitions' + frameList);
     }
 
@@ -3491,8 +3492,8 @@ function addFrames(gd, frameList, indices) {
 
     var insertions = [];
     var _frameHashLocal = {};
-    for(i = frameList.length - 1; i >= 0; i--) {
-        if(!Lib.isPlainObject(frameList[i])) continue;
+    for (i = frameList.length - 1; i >= 0; i--) {
+        if (!Lib.isPlainObject(frameList[i])) continue;
 
         // The entire logic for checking for this type of name collision can be removed once we migrate to ES6 and
         // use a Map instead of an Object instance, as Map keys aren't converted to strings.
@@ -3501,34 +3502,46 @@ function addFrames(gd, frameList, indices) {
         var newName = frameList[i].name;
         var collisionPresent = _frameHash[name] || _frameHashLocal[name];
 
-        if(name && newName && typeof newName === 'number' && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
+        if (
+            name &&
+            newName &&
+            typeof newName === 'number' &&
+            collisionPresent &&
+            numericNameWarningCount < numericNameWarningCountLimit
+        ) {
             numericNameWarningCount++;
 
-            Lib.warn('addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name +
-                '" with a frame whose name of type "number" also equates to "' +
-                name + '". This is valid but may potentially lead to unexpected ' +
-                'behavior since all plotly.js frame names are stored internally ' +
-                'as strings.');
+            Lib.warn(
+                'addFrames: overwriting frame "' +
+                    (_frameHash[name] || _frameHashLocal[name]).name +
+                    '" with a frame whose name of type "number" also equates to "' +
+                    name +
+                    '". This is valid but may potentially lead to unexpected ' +
+                    'behavior since all plotly.js frame names are stored internally ' +
+                    'as strings.'
+            );
 
-            if(numericNameWarningCount === numericNameWarningCountLimit) {
-                Lib.warn('addFrames: This API call has yielded too many of these warnings. ' +
-                    'For the rest of this call, further warnings about numeric frame ' +
-                    'names will be suppressed.');
+            if (numericNameWarningCount === numericNameWarningCountLimit) {
+                Lib.warn(
+                    'addFrames: This API call has yielded too many of these warnings. ' +
+                        'For the rest of this call, further warnings about numeric frame ' +
+                        'names will be suppressed.'
+                );
             }
         }
 
-        _frameHashLocal[lookupName] = {name: lookupName};
+        _frameHashLocal[lookupName] = { name: lookupName };
 
         insertions.push({
             frame: Plots.supplyFrameDefaults(frameList[i]),
-            index: (indices && indices[i] !== undefined && indices[i] !== null) ? indices[i] : bigIndex + i
+            index: indices && indices[i] !== undefined && indices[i] !== null ? indices[i] : bigIndex + i
         });
     }
 
     // Sort this, taking note that undefined insertions end up at the end:
-    insertions.sort(function(a, b) {
-        if(a.index > b.index) return -1;
-        if(a.index < b.index) return 1;
+    insertions.sort(function (a, b) {
+        if (a.index > b.index) return -1;
+        if (a.index < b.index) return 1;
         return 0;
     });
 
@@ -3536,33 +3549,35 @@ function addFrames(gd, frameList, indices) {
     var revops = [];
     var frameCount = _frames.length;
 
-    for(i = insertions.length - 1; i >= 0; i--) {
+    for (i = insertions.length - 1; i >= 0; i--) {
         frame = insertions[i].frame;
 
-        if(typeof frame.name === 'number') {
-            Lib.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
-                'implicitly cast to strings');
+        if (typeof frame.name === 'number') {
+            Lib.warn(
+                'Warning: addFrames accepts frames with numeric names, but the numbers are' +
+                    'implicitly cast to strings'
+            );
         }
 
-        if(!frame.name) {
+        if (!frame.name) {
             // Repeatedly assign a default name, incrementing the counter each time until
             // we get a name that's not in the hashed lookup table:
-            while(_frameHash[(frame.name = 'frame ' + gd._transitionData._counter++)]);
+            while (_frameHash[(frame.name = 'frame ' + gd._transitionData._counter++)]);
         }
 
-        if(_frameHash[frame.name]) {
+        if (_frameHash[frame.name]) {
             // If frame is present, overwrite its definition:
-            for(j = 0; j < _frames.length; j++) {
-                if((_frames[j] || {}).name === frame.name) break;
+            for (j = 0; j < _frames.length; j++) {
+                if ((_frames[j] || {}).name === frame.name) break;
             }
-            ops.push({type: 'replace', index: j, value: frame});
-            revops.unshift({type: 'replace', index: j, value: _frames[j]});
+            ops.push({ type: 'replace', index: j, value: frame });
+            revops.unshift({ type: 'replace', index: j, value: _frames[j] });
         } else {
             // Otherwise insert it at the end of the list:
             idx = Math.max(0, Math.min(insertions[i].index, frameCount));
 
-            ops.push({type: 'insert', index: idx, value: frame});
-            revops.unshift({type: 'delete', index: idx});
+            ops.push({ type: 'insert', index: idx, value: frame });
+            revops.unshift({ type: 'delete', index: idx });
             frameCount++;
         }
     }
@@ -3572,7 +3587,7 @@ function addFrames(gd, frameList, indices) {
     var undoArgs = [gd, revops];
     var redoArgs = [gd, ops];
 
-    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
 }
@@ -3589,7 +3604,7 @@ function addFrames(gd, frameList, indices) {
 function deleteFrames(gd, frameList) {
     gd = Lib.getGraphDiv(gd);
 
-    if(!Lib.isPlotDiv(gd)) {
+    if (!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
@@ -3598,9 +3613,9 @@ function deleteFrames(gd, frameList) {
     var ops = [];
     var revops = [];
 
-    if(!frameList) {
+    if (!frameList) {
         frameList = [];
-        for(i = 0; i < _frames.length; i++) {
+        for (i = 0; i < _frames.length; i++) {
             frameList.push(i);
         }
     }
@@ -3608,10 +3623,10 @@ function deleteFrames(gd, frameList) {
     frameList = frameList.slice();
     frameList.sort();
 
-    for(i = frameList.length - 1; i >= 0; i--) {
+    for (i = frameList.length - 1; i >= 0; i--) {
         idx = frameList[i];
-        ops.push({type: 'delete', index: idx});
-        revops.unshift({type: 'insert', index: idx, value: _frames[idx]});
+        ops.push({ type: 'delete', index: idx });
+        revops.unshift({ type: 'insert', index: idx, value: _frames[idx] });
     }
 
     var undoFunc = Plots.modifyFrames;
@@ -3619,7 +3634,7 @@ function deleteFrames(gd, frameList) {
     var undoArgs = [gd, revops];
     var redoArgs = [gd, ops];
 
-    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return Plots.modifyFrames(gd, ops);
 }
@@ -3646,7 +3661,7 @@ function purge(gd) {
     Events.purge(gd);
 
     // remove plot container
-    if(fullLayout._container) fullLayout._container.remove();
+    if (fullLayout._container) fullLayout._container.remove();
 
     // in contrast to _doPlots.purge which does NOT clear _context!
     delete gd._context;
@@ -3659,9 +3674,9 @@ function calcInverseTransform(gd) {
     var fullLayout = gd._fullLayout;
 
     var newBBox = gd.getBoundingClientRect();
-    if(Lib.equalDomRects(newBBox, fullLayout._lastBBox)) return;
+    if (Lib.equalDomRects(newBBox, fullLayout._lastBBox)) return;
 
-    var m = fullLayout._invTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd));
+    var m = (fullLayout._invTransform = Lib.inverseTransformMatrix(Lib.getFullTransformMatrix(gd)));
     fullLayout._invScaleX = Math.sqrt(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
     fullLayout._invScaleY = Math.sqrt(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
     fullLayout._lastBBox = newBBox;
@@ -3679,7 +3694,8 @@ function makePlotFramework(gd) {
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
-    fullLayout._container.enter()
+    fullLayout._container
+        .enter()
         .insert('div', ':first-child')
         .classed('plot-container', true)
         .classed('plotly', true)
@@ -3698,13 +3714,15 @@ function makePlotFramework(gd) {
         // children do not have any height, because they are all positioned
         // absolutely, and therefore take up no space.
         .style({
-            width: "100%",
-            height: "100%"
+            width: '100%',
+            height: '100%'
         });
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
-    fullLayout._paperdiv.enter().append('div')
+    fullLayout._paperdiv
+        .enter()
+        .append('div')
         .classed('user-select-none', true)
         .classed('svg-container', true)
         .style('position', 'relative');
@@ -3715,55 +3733,43 @@ function makePlotFramework(gd) {
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
     // FIXME: parcoords reuses this object, not the best pattern
-    fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
-        .data([{}]);
+    fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container').data([{}]);
 
-    fullLayout._glcontainer.enter().append('div')
-        .classed('gl-container', true);
+    fullLayout._glcontainer.enter().append('div').classed('gl-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
     fullLayout._paperdiv.select('.modebar-container').remove();
 
-    fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child')
-        .classed('main-svg', true);
+    fullLayout._paper = fullLayout._paperdiv.insert('svg', ':first-child').classed('main-svg', true);
 
-    fullLayout._toppaper = fullLayout._paperdiv.append('svg')
-        .classed('main-svg', true);
+    fullLayout._toppaper = fullLayout._paperdiv.append('svg').classed('main-svg', true);
 
     fullLayout._modebardiv = fullLayout._paperdiv.append('div');
     delete fullLayout._modeBar;
 
-    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
-        .classed('main-svg', true);
+    fullLayout._hoverpaper = fullLayout._paperdiv.append('svg').classed('main-svg', true);
 
-    if(!fullLayout._uid) {
+    if (!fullLayout._uid) {
         var otherUids = {};
-        d3.selectAll('defs').each(function() {
-            if(this.id) otherUids[this.id.split('-')[1]] = 1;
+        d3.selectAll('defs').each(function () {
+            if (this.id) otherUids[this.id.split('-')[1]] = 1;
         });
         fullLayout._uid = Lib.randstr(otherUids);
     }
 
-    fullLayout._paperdiv.selectAll('.main-svg')
-        .attr(xmlnsNamespaces.svgAttrs);
+    fullLayout._paperdiv.selectAll('.main-svg').attr(xmlnsNamespaces.svgAttrs);
 
-    fullLayout._defs = fullLayout._paper.append('defs')
-        .attr('id', 'defs-' + fullLayout._uid);
+    fullLayout._defs = fullLayout._paper.append('defs').attr('id', 'defs-' + fullLayout._uid);
 
-    fullLayout._clips = fullLayout._defs.append('g')
-        .classed('clips', true);
+    fullLayout._clips = fullLayout._defs.append('g').classed('clips', true);
 
-    fullLayout._topdefs = fullLayout._toppaper.append('defs')
-        .attr('id', 'topdefs-' + fullLayout._uid);
+    fullLayout._topdefs = fullLayout._toppaper.append('defs').attr('id', 'topdefs-' + fullLayout._uid);
 
-    fullLayout._topclips = fullLayout._topdefs.append('g')
-        .classed('clips', true);
+    fullLayout._topclips = fullLayout._topdefs.append('g').classed('clips', true);
 
-    fullLayout._bgLayer = fullLayout._paper.append('g')
-        .classed('bglayer', true);
+    fullLayout._bgLayer = fullLayout._paper.append('g').classed('bglayer', true);
 
-    fullLayout._draggers = fullLayout._paper.append('g')
-        .classed('draglayer', true);
+    fullLayout._draggers = fullLayout._paper.append('g').classed('draglayer', true);
 
     // lower shape/image layer - note that this is behind
     // all subplots data/grids but above the backgrounds
@@ -3773,12 +3779,9 @@ function makePlotFramework(gd) {
     // lower shapes and images which are fully referenced to
     // a subplot still get drawn within the subplot's group
     // so they will work correctly on insets
-    var layerBelow = fullLayout._paper.append('g')
-        .classed('layer-below', true);
-    fullLayout._imageLowerLayer = layerBelow.append('g')
-        .classed('imagelayer', true);
-    fullLayout._shapeLowerLayer = layerBelow.append('g')
-        .classed('shapelayer', true);
+    var layerBelow = fullLayout._paper.append('g').classed('layer-below', true);
+    fullLayout._imageLowerLayer = layerBelow.append('g').classed('imagelayer', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g').classed('shapelayer', true);
 
     // single cartesian layer for the whole plot
     fullLayout._cartesianlayer = fullLayout._paper.append('g').classed('cartesianlayer', true);
@@ -3820,12 +3823,9 @@ function makePlotFramework(gd) {
     // these are in a different svg element normally, but get collapsed into a single
     // svg when exporting (after inserting 3D)
     // upper shapes/images are only those drawn above the whole plot, including subplots
-    var layerAbove = fullLayout._toppaper.append('g')
-        .classed('layer-above', true);
-    fullLayout._imageUpperLayer = layerAbove.append('g')
-        .classed('imagelayer', true);
-    fullLayout._shapeUpperLayer = layerAbove.append('g')
-        .classed('shapelayer', true);
+    var layerAbove = fullLayout._toppaper.append('g').classed('layer-above', true);
+    fullLayout._imageUpperLayer = layerAbove.append('g').classed('imagelayer', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g').classed('shapelayer', true);
 
     fullLayout._selectionLayer = fullLayout._toppaper.append('g').classed('selectionlayer', true);
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
