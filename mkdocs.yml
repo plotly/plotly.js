@@ -56,6 +56,11 @@ markdown_extensions:
 extra_css:
   - css/extra_css.css
   - https://docs.plotly.com/css/plotly-style.css
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js
+  - javascript/highlight.js
 
 nav:
 - Event Reference: examples/plotlyjs-events.md

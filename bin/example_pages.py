@@ -93,7 +93,7 @@ HTML_TEXT = """\
 
 HTML_TEXT_PAGE_CONTENT = """\
       <div class="z-depth-1">
-        <pre><code class="javascript">{text}</code></pre>
+        <pre><code class="language-javascript">{text}</code></pre>
       </div>
 """
 
