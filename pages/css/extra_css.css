@@ -23,6 +23,14 @@
   content: none !important;
 }
 
+.bottom-dash-img img {
+    margin-top: 20px;
+}
+
+.bottom-dash-img::after {
+    display: none;
+}
+
 /* Footer Styling */
 
 .--footer-top {
@@ -175,6 +183,10 @@
 
 article {
     display: block;
+}
+
+.md-footer-meta__inner {
+    max-width: 100% !important;
 }
 
 /* Header Styling */
