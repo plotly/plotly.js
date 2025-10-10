@@ -3094,6 +3094,47 @@ describe('plot_api helpers', function () {
             expect(helpers.hasParent({ 'marker.line': 1 }, attr2)).toBe(true);
         });
     });
+
+    describe('hasCollectionChanged', () => {
+        it('Returns true if object collection has changed', () => {
+            expect(
+                helpers.hasCollectionChanged(
+                    { captain: 'Leela', deliveryBoy: 'Fry' },
+                    { captain: 'Leela', deliveryBoy: 'Bender' }
+                )
+            ).toBe(true);
+        });
+
+        it("Returns false if object collection hasn't changed", () => {
+            expect(
+                helpers.hasCollectionChanged(
+                    { captain: 'Leela', deliveryBoy: 'Fry' },
+                    { captain: 'Leela', deliveryBoy: 'Fry' }
+                )
+            ).toBe(false);
+        });
+
+        it('Returns true if array collection has changed', () => {
+            expect(helpers.hasCollectionChanged(['Zoidberg', 'Hermes'], ['Zoidberg', 'Leela'])).toBe(true);
+        });
+
+        it("Returns false if object collection hasn't changed", () => {
+            expect(helpers.hasCollectionChanged(['Zoidberg', 'Hermes'], ['Zoidberg', 'Hermes'])).toBe(false);
+        });
+
+        it('Handles nested objects', () => {
+            expect(
+                helpers.hasCollectionChanged(
+                    { level1: { captain: 'Leela', deliveryBoy: 'Fry' } },
+                    { level1: { captain: 'Leela', deliveryBoy: 'Bender' } }
+                )
+            ).toBe(true);
+        });
+
+        it('Handles nested arrays', () => {
+            expect(helpers.hasCollectionChanged([['Zoidberg', 'Hermes']], [['Zoidberg', 'Leela']])).toBe(true);
+        });
+    });
 });
 
 describe('plot_api edit_types', function () {
