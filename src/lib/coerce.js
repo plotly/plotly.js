@@ -225,8 +225,12 @@ exports.valObjectMeta = {
             '\'geo\', \'geo2\', \'geo3\', ...'
         ].join(' '),
         requiredOpts: ['dflt'],
-        otherOpts: ['regex'],
+        otherOpts: ['regex', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            if(opts.arrayOk && isArrayOrTypedArray(v)) {
+                propOut.set(v);
+                return;
+            }
             var regex = opts.regex || counterRegex(dflt);
             if(typeof v === 'string' && regex.test(v)) {
                 propOut.set(v);

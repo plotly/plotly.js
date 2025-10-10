@@ -45,8 +45,44 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     var shapesWithLegend = (layoutOut.shapes || []).filter(function(d) { return d.showlegend; });
 
+    fullData
+        .filter(function(trace) { return Registry.traceIs(trace, 'pie-like'); })
+        .map(function (trace, idx) {
+            if (trace.visible) {
+                legendTraceCount++;
+            }
+            if (Array.isArray(trace.legend)) {
+                for (var index = 0; index < trace._length; index++) {
+                    var legend = trace.legend[index] || 'legend';
+                    if(legend === legendId) {
+                        // showlegend can be undefined, boolean or a boolean array.
+                        // will fall back to default if undefined or if array index is out-of-range
+                        if (
+                          !Array.isArray(trace.showlegend)
+                            ? trace.showlegend || trace._dfltShowLegend
+                            : trace.showlegend[index] == null
+                            ? trace._dfltShowLegend
+                            : trace.showlegend[index]
+                        ) {
+                          legendReallyHasATrace = true;
+                          legendTraceCount++;
+                        }
+                    }
+                }
+                if (legendId === 'legend' && trace._length > trace.legend.length) {
+                    for (var idx = trace.legend.length; idx < trace._length; idx++) {
+                        legendReallyHasATrace = true;
+                        legendTraceCount++;
+                    }
+                }
+            } else if (legendId === (trace.legend || 'legend')) {
+                legendReallyHasATrace = true;
+                legendTraceCount += trace._length;
+            }
+        });
+
     var allLegendItems = fullData.concat(shapesWithLegend).filter(function(d) {
-        return legendId === (d.legend || 'legend');
+        return !Registry.traceIs(trace, 'pie-like') && legendId === (d.legend || 'legend');
     });
 
     for(var i = 0; i < allLegendItems.length; i++) {
@@ -71,18 +107,15 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
             legendTraceCount++;
             if(trace.showlegend) {
                 legendReallyHasATrace = true;
-                // Always show the legend by default if there's a pie,
-                // or if there's only one trace but it's explicitly shown
-                if(!isShape && Registry.traceIs(trace, 'pie-like') ||
-                    trace._input.showlegend === true
-                ) {
+                // Always show the legend by default if there's only one trace
+                // but it's explicitly shown
+                if(trace._input.showlegend === true) {
                     legendTraceCount++;
                 }
             }
 
             Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
         }
-
         if((!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
             ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({ traceorder: defaultOrder }) ?
@@ -95,9 +128,15 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         }
     }
 
-    var showLegend = Lib.coerce(layoutIn, layoutOut,
-        basePlotLayoutAttributes, 'showlegend',
-        legendReallyHasATrace && (legendTraceCount > (legendId === 'legend' ? 1 : 0)));
+    var showLegend = Lib.coerce(
+      layoutIn,
+      layoutOut,
+      basePlotLayoutAttributes,
+      'showlegend',
+      layoutOut.showlegend ||
+        (legendReallyHasATrace &&
+          legendTraceCount > (legendId === 'legend' ? 1 : 0))
+    );
 
     // delete legend
     if(showLegend === false) layoutOut[legendId] = undefined;
@@ -230,7 +269,11 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     var legends = ['legend'];
     for(i = 0; i < allLegendsData.length; i++) {
-        Lib.pushUnique(legends, allLegendsData[i].legend);
+        if (Array.isArray(allLegendsData[i].legend)) {
+            Lib.extendFlat(legends, allLegendsData[i].legend);
+        } else {
+            Lib.pushUnique(legends, allLegendsData[i].legend);
+        }
     }
 
     layoutOut._legends = [];

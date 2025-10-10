@@ -56338,6 +56338,7 @@
      "valType": "string"
     },
     "legend": {
+     "arrayOk": true,
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
@@ -56453,6 +56454,11 @@
      "dflt": 1000,
      "editType": "style",
      "valType": "number"
+    },
+    "legendsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `legend`.",
+     "editType": "none",
+     "valType": "string"
     },
     "legendwidth": {
      "description": "Sets the width (in px or fraction) of the legend for this trace.",

@@ -199,6 +199,9 @@ module.exports = {
     showlegend: extendFlat({}, baseAttrs.showlegend, {
         arrayOk: true
     }),
+    legend: extendFlat({}, baseAttrs.legend, {
+        arrayOk: true
+    }),
     title: {
         text: {
             valType: 'string',
