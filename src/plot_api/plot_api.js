@@ -2607,7 +2607,7 @@ function react(gd, data, layout, config) {
         // assume that if there's a config at all, we're reacting to it too,
         // and completely replace the previous config
         if (config) {
-            const oldConfig = Lib.extendDeep({}, gd._context);
+            const oldConfig = Lib.extendDeepAll({}, gd._context);
             gd._context = undefined;
             setPlotContext(gd, config);
             configChanged = helpers.hasCollectionChanged(oldConfig, gd._context);
