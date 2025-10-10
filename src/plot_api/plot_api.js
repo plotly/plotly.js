@@ -2607,10 +2607,10 @@ function react(gd, data, layout, config) {
         // assume that if there's a config at all, we're reacting to it too,
         // and completely replace the previous config
         if (config) {
-            var oldConfig = Lib.extendDeep({}, gd._context);
+            const oldConfig = Lib.extendDeep({}, gd._context);
             gd._context = undefined;
             setPlotContext(gd, config);
-            configChanged = diffConfig(oldConfig, gd._context);
+            configChanged = helpers.hasCollectionChanged(oldConfig, gd._context);
         }
 
         if (configChanged) {
@@ -3024,43 +3024,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                 flags.calc = true;
                 return;
             } else changed();
-        }
-    }
-}
-
-/*
- * simple diff for config - for now, just treat all changes as equivalent
- */
-function diffConfig(oldConfig, newConfig) {
-    var key;
-
-    for (key in oldConfig) {
-        if (key.charAt(0) === '_') continue;
-        var oldVal = oldConfig[key];
-        var newVal = newConfig[key];
-        if (oldVal !== newVal) {
-            if (Lib.isPlainObject(oldVal) && Lib.isPlainObject(newVal)) {
-                if (diffConfig(oldVal, newVal)) {
-                    return true;
-                }
-            } else if (Array.isArray(oldVal) && Array.isArray(newVal)) {
-                if (oldVal.length !== newVal.length) {
-                    return true;
-                }
-                for (var i = 0; i < oldVal.length; i++) {
-                    if (oldVal[i] !== newVal[i]) {
-                        if (Lib.isPlainObject(oldVal[i]) && Lib.isPlainObject(newVal[i])) {
-                            if (diffConfig(oldVal[i], newVal[i])) {
-                                return true;
-                            }
-                        } else {
-                            return true;
-                        }
-                    }
-                }
-            } else {
-                return true;
-            }
         }
     }
 }

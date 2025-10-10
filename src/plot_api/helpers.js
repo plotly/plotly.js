@@ -455,7 +455,7 @@ function getParent(attr) {
     if (tail > 0) return attr.substr(0, tail);
 }
 
-/*
+/**
  * hasParent: does an attribute object contain a parent of the given attribute?
  * for example, given 'images[2].x' do we also have 'images' or 'images[2]'?
  *
@@ -475,6 +475,7 @@ exports.hasParent = function (aobj, attr) {
     return false;
 };
 
+const AX_LETTERS = ['x', 'y', 'z'];
 /**
  * Empty out types for all axes containing these traces so we auto-set them again
  *
@@ -483,12 +484,11 @@ exports.hasParent = function (aobj, attr) {
  * @param {object} layoutUpdate: any update being done concurrently to the layout,
  *   which may supercede clearing the axis types
  */
-var axLetters = ['x', 'y', 'z'];
 exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
     for (var i = 0; i < traces.length; i++) {
         var trace = gd._fullData[i];
         for (var j = 0; j < 3; j++) {
-            var ax = getFromTrace(gd, trace, axLetters[j]);
+            var ax = getFromTrace(gd, trace, AX_LETTERS[j]);
 
             // do not clear log type - that's never an auto result so must have been intentional
             if (ax && ax.type !== 'log') {
@@ -507,3 +507,32 @@ exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
         }
     }
 };
+
+/**
+ * Check if a collection (object or array) has changed given two versions of
+ * the collection: old and new.
+ *
+ * @param {Object|Array} oldCollection: Old version of collection to compare
+ * @param {Object|Array} newCollection: New version of collection to compare
+ */
+const hasCollectionChanged = (oldCollection, newCollection) => {
+    const isArrayOrObject = (...vals) => vals.every((v) => Lib.isPlainObject(v)) || vals.every((v) => Array.isArray(v));
+    if ([oldCollection, newCollection].every((a) => Array.isArray(a))) {
+        if (oldCollection.length !== newCollection.length) return true;
+
+        return oldCollection.some((oldVal, i) => {
+            const newVal = newCollection[i];
+            if (oldVal !== newVal) return isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
+        });
+    } else {
+        if (Object.keys(oldCollection).length !== Object.keys(newCollection).length) return true;
+
+        return Object.keys(oldCollection).some((k) => {
+            if (k.startsWith('_')) return false;
+            const oldVal = oldCollection[k];
+            const newVal = newCollection[k];
+            if (oldVal !== newVal) return isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
+        });
+    }
+};
+exports.hasCollectionChanged = hasCollectionChanged;
