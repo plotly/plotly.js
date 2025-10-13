@@ -3118,7 +3118,7 @@ describe('plot_api helpers', function () {
             expect(helpers.hasCollectionChanged(['Zoidberg', 'Hermes'], ['Zoidberg', 'Leela'])).toBe(true);
         });
 
-        it("Returns false if object collection hasn't changed", () => {
+        it("Returns false if array collection hasn't changed", () => {
             expect(helpers.hasCollectionChanged(['Zoidberg', 'Hermes'], ['Zoidberg', 'Hermes'])).toBe(false);
         });
 
