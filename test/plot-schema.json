@@ -448,7 +448,8 @@
    "boolean": {
     "description": "A boolean (true/false) value.",
     "otherOpts": [
-     "dflt"
+     "dflt",
+     "arrayOk"
     ],
     "requiredOpts": []
    },
@@ -549,7 +550,8 @@
    "subplotid": {
     "description": "An id string of a subplot type (given by dflt), optionally followed by an integer >1. e.g. if dflt='geo', we can have 'geo', 'geo2', 'geo3', ...",
     "otherOpts": [
-     "regex"
+     "regex",
+     "arrayOk"
     ],
     "requiredOpts": [
      "dflt"
