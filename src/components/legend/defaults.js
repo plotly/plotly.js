@@ -51,13 +51,13 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
             if (trace.visible) {
                 legendTraceCount++;
             }
-            if (Array.isArray(trace.legend)) {
-                for (var index = 0; index < trace._length; index++) {
+            if(Array.isArray(trace.legend)) {
+                for(var index = 0; index < trace._length; index++) {
                     var legend = trace.legend[index] || 'legend';
                     if(legend === legendId) {
                         // showlegend can be undefined, boolean or a boolean array.
                         // will fall back to default if undefined or if array index is out-of-range
-                        if (
+                        if(
                           !Array.isArray(trace.showlegend)
                             ? trace.showlegend || trace._dfltShowLegend
                             : trace.showlegend[index] == null
@@ -69,15 +69,18 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
                         }
                     }
                 }
-                if (legendId === 'legend' && trace._length > trace.legend.length) {
-                    for (var idx = trace.legend.length; idx < trace._length; idx++) {
-                        legendReallyHasATrace = true;
-                        legendTraceCount++;
-                    }
+                if(
+                  legendId === 'legend' &&
+                  (trace._length == null || trace._length > trace.legend.length)
+                ) {
+                  for(var idx = trace.legend.length; idx < trace._length; idx++) {
+                    legendReallyHasATrace = true;
+                    legendTraceCount++;
+                  }
                 }
-            } else if (legendId === (trace.legend || 'legend')) {
+            } else if(legendId === (trace.legend || 'legend')) {
                 legendReallyHasATrace = true;
-                legendTraceCount += trace._length;
+                legendTraceCount += trace._length || 1;
             }
         });
 
