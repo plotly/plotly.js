@@ -520,19 +520,22 @@ const hasCollectionChanged = (oldCollection, newCollection) => {
     if ([oldCollection, newCollection].every((a) => Array.isArray(a))) {
         if (oldCollection.length !== newCollection.length) return true;
 
-        return oldCollection.some((oldVal, i) => {
+        for (let i = 0; i < oldCollection.length; i++) {
+            const oldVal = oldCollection[i];
             const newVal = newCollection[i];
             if (oldVal !== newVal) return isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
-        });
+        }
     } else {
         if (Object.keys(oldCollection).length !== Object.keys(newCollection).length) return true;
 
-        return Object.keys(oldCollection).some((k) => {
+        for (const k in oldCollection) {
             if (k.startsWith('_')) return false;
             const oldVal = oldCollection[k];
             const newVal = newCollection[k];
             if (oldVal !== newVal) return isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
-        });
+        }
     }
+
+    return false;
 };
 exports.hasCollectionChanged = hasCollectionChanged;
