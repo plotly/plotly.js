@@ -45,47 +45,44 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     var shapesWithLegend = (layoutOut.shapes || []).filter(function(d) { return d.showlegend; });
 
+    function isPieWithLegendArray(trace) {
+        return Registry.traceIs(trace, 'pie-like')
+            && trace._length != null
+            && (Array.isArray(trace.legend) || Array.isArray(trace.showlegend));
+    };
     fullData
-        .filter(function(trace) { return Registry.traceIs(trace, 'pie-like'); })
+        .filter(isPieWithLegendArray)
         .map(function (trace, idx) {
             if (trace.visible) {
                 legendTraceCount++;
             }
-            if(Array.isArray(trace.legend)) {
-                for(var index = 0; index < trace._length; index++) {
-                    var legend = trace.legend[index] || 'legend';
-                    if(legend === legendId) {
-                        // showlegend can be undefined, boolean or a boolean array.
-                        // will fall back to default if undefined or if array index is out-of-range
-                        if(
-                          !Array.isArray(trace.showlegend)
-                            ? trace.showlegend || trace._dfltShowLegend
-                            : trace.showlegend[index] == null
-                            ? trace._dfltShowLegend
-                            : trace.showlegend[index]
-                        ) {
-                          legendReallyHasATrace = true;
-                          legendTraceCount++;
-                        }
+            for(var index = 0; index < trace._length; index++) {
+                var legend = (Array.isArray(trace.legend) ? trace.legend[index] : trace.legend) || 'legend';
+                if(legend === legendId) {
+                    // showlegend can be undefined, boolean or a boolean array.
+                    // will fall back to default if undefined or if array index is out-of-range
+                    if(
+                        !Array.isArray(trace.showlegend)
+                        ? trace.showlegend || trace._dfltShowLegend
+                        : trace.showlegend[index] == null
+                        ? trace._dfltShowLegend
+                        : trace.showlegend[index]
+                    ) {
+                        legendReallyHasATrace = true;
+                        legendTraceCount++;
                     }
                 }
-                if(
-                  legendId === 'legend' &&
-                  (trace._length == null || trace._length > trace.legend.length)
-                ) {
-                  for(var idx = trace.legend.length; idx < trace._length; idx++) {
+            }
+            if(legendId === 'legend' && trace._length > trace.legend.length) {
+                for(var idx = trace.legend.length; idx < trace._length; idx++) {
                     legendReallyHasATrace = true;
                     legendTraceCount++;
-                  }
                 }
-            } else if(legendId === (trace.legend || 'legend')) {
-                legendReallyHasATrace = true;
-                legendTraceCount += trace._length || 1;
             }
         });
 
     var allLegendItems = fullData.concat(shapesWithLegend).filter(function(d) {
-        return !Registry.traceIs(trace, 'pie-like') && legendId === (d.legend || 'legend');
+        return !isPieWithLegendArray(trace) && legendId === (d.legend || 'legend');
     });
 
     for(var i = 0; i < allLegendItems.length; i++) {
@@ -110,9 +107,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
             legendTraceCount++;
             if(trace.showlegend) {
                 legendReallyHasATrace = true;
-                // Always show the legend by default if there's only one trace
-                // but it's explicitly shown
-                if(trace._input.showlegend === true) {
+                // Always show the legend by default if there's a pie,
+                // or if there's only one trace but it's explicitly shown
+                if(!isShape && Registry.traceIs(trace, 'pie-like') ||
+                    trace._input.showlegend === true
+                ) {
                     legendTraceCount++;
                 }
             }
@@ -130,7 +129,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
                 'reversed+grouped' : 'grouped';
         }
     }
-
+    debugger
     var showLegend = Lib.coerce(
       layoutIn,
       layoutOut,
