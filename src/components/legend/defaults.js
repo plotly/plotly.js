@@ -129,7 +129,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
                 'reversed+grouped' : 'grouped';
         }
     }
-    debugger
+
     var showLegend = Lib.coerce(
       layoutIn,
       layoutOut,
