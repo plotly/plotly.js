@@ -184,7 +184,7 @@ PLOT_URL_IMG = """\
 
 PLOT_URL_EMBED = """\
                 <iframe id="auto-examples" src="{plot_url}{embed_class}"
-                style="width: {width} height: {height} border: none;"></iframe>
+                style="width: {width}; height: {height}; border: none;"></iframe>
 """
 
 
