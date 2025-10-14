@@ -84,7 +84,7 @@
 </section>
 
 <div class="row centered btnrow">
-	<a href="/javascript/" class="button no_underline">more examples</a>
+	<a href="/javascript/" class="button no_underline more-examples">more examples</a>
 </div>
 
 <section class="sponsor--wrap">

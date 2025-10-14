@@ -255,3 +255,35 @@ article {
     display: none;
 }
 
+div.row {
+    margin-left: 0;
+    padding-left: 0;
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.more-examples {
+    padding: 10px;
+    text-decoration: none;
+    background: #f4f4f8;
+    border: 1px solid #e7e7e7;
+    margin-right: 10px;
+    display: block;
+    margin-top: 10px;
+}
+
+section.sponsor--wrap {
+    display: flex;
+    margin-top: 20px;
+    padding: 40px;
+    background: #f4f4f8;
+    max-width: 1400px;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    -webkit-box-align: center;
+    align-items: center;
+}
