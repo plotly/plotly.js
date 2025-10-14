@@ -523,16 +523,22 @@ const hasCollectionChanged = (oldCollection, newCollection) => {
         for (let i = 0; i < oldCollection.length; i++) {
             const oldVal = oldCollection[i];
             const newVal = newCollection[i];
-            if (oldVal !== newVal) return isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
+            if (oldVal !== newVal) {
+                const hasChanged = isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
+                if (hasChanged) return true;
+            }
         }
     } else {
         if (Object.keys(oldCollection).length !== Object.keys(newCollection).length) return true;
 
         for (const k in oldCollection) {
-            if (k.startsWith('_')) return false;
+            if (k.startsWith('_')) continue;
             const oldVal = oldCollection[k];
             const newVal = newCollection[k];
-            if (oldVal !== newVal) return isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
+            if (oldVal !== newVal) {
+                const hasChanged = isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
+                if (hasChanged) return true;
+            }
         }
     }
 
