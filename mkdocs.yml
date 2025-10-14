@@ -18,6 +18,7 @@ plugins:
         - bin/generate_reference_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
+  - macros
 
 theme:
   name: "material"
@@ -58,6 +59,7 @@ markdown_extensions:
 extra_css:
   - css/extra_css.css
   - https://docs.plotly.com/css/plotly-style.css
+  - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
 #   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
 
 # extra_javascript:
@@ -68,8 +70,13 @@ nav:
 - Home: index.md
 - Quick Reference:
   - Getting Started: getting-started.md
-  - Is Plotly Free?: is-plotly-free-js.md
+  - Is Plotly Free?: is-plotly-free.md
+  - Figure Reference: reference/index/index.md # To match link to existing ploty.com/javascript
+  - Function Reference: plotlyjs-function-reference.md
   - Event Reference: examples/plotlyjs-events.md
+  - Configuration Options: examples/configuration-options.md
+  - GitHub: https://github.com/plotly/plotly.js/
+  - Plotly Community Forum: https://community.plotly.com/
 - Examples:
   - Fundamentals:
     - Configuration: examples/configuration-options.md
@@ -194,4 +201,4 @@ nav:
 - API Reference: reference/
 
 extra:
-  js-version: "3.1.0"
+  js_version: "3.1.0"

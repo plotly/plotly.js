@@ -16,4 +16,5 @@ dev_build = [
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
     "markdown-include",
+    "mkdocs-macros-plugin",
 ]

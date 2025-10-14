@@ -17,7 +17,7 @@
         </p>
 
     <pre><code class="hljs html">&lt;head&gt;
-    &lt;script src="https://cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js" charset="utf-8"&gt;&lt;/script&gt;
+    &lt;script src="https://cdn.plot.ly/plotly-{{ js_version }}.min.js" charset="utf-8"&gt;&lt;/script&gt;
 &lt;/head&gt;</code></pre>
 
     </div>
@@ -35,14 +35,14 @@
         </p>
 
 <pre><code class="hljs html">&lt;head&gt;
-	&lt;script src="plotly-{{site.data.jsversion.version}}.min.js" charset="utf-8"&gt;&lt;/script&gt;
+	&lt;script src="plotly-{{ js_version }}.min.js" charset="utf-8"&gt;&lt;/script&gt;
 &lt;/head&gt;
 </code></pre>
 
         </div>
 
         <p style="text-align: center;">
-  			<a class="button plotlyjs-download" href="https://cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js"
+  			<a class="button plotlyjs-download" href="https://cdn.plot.ly/plotly-{{ js_version }}.min.js"
   			 style="display: inline-block;" download>
 				<i class="fa fa-download fa-lg"></i> Download&nbsp;plotly.js</a>
 		</p>

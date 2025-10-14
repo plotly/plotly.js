@@ -10,7 +10,7 @@ language: plotly_js
 
 ### Is Plotly.js Free?
 
- &nbsp;  &nbsp; **Yes.** &nbsp; Plotly.js is free and open-source software, [licensed under the **MIT license**](https://github.com/plotly/plotly.js/blob/master/LICENSE). It costs nothing to [install and use](/javascript/getting-started). You can view the source, report issues or contribute using [our Github repository](https://github.com/plotly/plotly.js).
+ &nbsp;  &nbsp; **Yes.** &nbsp; Plotly.js is free and open-source software, [licensed under the **MIT license**](https://github.com/plotly/plotly.js/blob/master/LICENSE). It costs nothing to [install and use](getting-started.md). You can view the source, report issues or contribute using [our Github repository](https://github.com/plotly/plotly.js).
 
 
 ### Can I use Plotly.js without signing up to any service?

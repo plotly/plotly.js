@@ -156,7 +156,7 @@ def _make_mydiv(args, accum, path, header, content, counter):
     mkdocs_path = Path(__file__).resolve().parent.parent / "mkdocs.yml"
     config = load_config(config_file=str(mkdocs_path))
     extra = config.get("extra", {})
-    version = extra.get("js-version")
+    version = extra.get("js_version")
 
     accum.append(
         MYDIV.format(

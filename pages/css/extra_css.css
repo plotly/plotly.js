@@ -249,3 +249,9 @@ article {
 
 }
 
+/* Page Element Styling */
+
+.plotlyjs-download::after {
+    display: none;
+}
+
