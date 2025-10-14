@@ -13,6 +13,8 @@ var cleanId = AxisIds.cleanId;
 var getFromTrace = AxisIds.getFromTrace;
 var traceIs = Registry.traceIs;
 
+const AX_LETTERS = ['x', 'y', 'z'];
+
 // clear the promise queue if one of them got rejected
 exports.clearPromiseQueue = function (gd) {
     if (Array.isArray(gd._promises) && gd._promises.length > 0) {
@@ -475,7 +477,6 @@ exports.hasParent = function (aobj, attr) {
     return false;
 };
 
-const AX_LETTERS = ['x', 'y', 'z'];
 /**
  * Empty out types for all axes containing these traces so we auto-set them again
  *
