@@ -122,6 +122,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var keyFunc = getKeyFunc(trace);
         var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
 
+        plotGroup.classed('trace' + trace.uid, true);
+
         bars.enter().append('g')
             .classed('point', true);
 
