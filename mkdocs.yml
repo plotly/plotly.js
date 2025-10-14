@@ -51,139 +51,146 @@ theme:
 markdown_extensions:
   - footnotes
   - pymdownx.snippets:
-        base_path: ["tmp"]
+      base_path: ["tmp"]
+  - markdown_include.include:
+      base_path: docs
 
 extra_css:
   - css/extra_css.css
   - https://docs.plotly.com/css/plotly-style.css
-  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
+#   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
 
-extra_javascript:
-  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js
-  - javascript/highlight.js
+# extra_javascript:
+#   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js
+#   - javascript/highlight.js
 
 nav:
-- Event Reference: examples/plotlyjs-events.md
-- Fundamentals: 
-  - Configuration: examples/configuration-options.md
-  - Responsive / Fluid Layouts: examples/responsive-fluid-layout.md
-  - uirevision in Plotly.react: examples/uirevision.md
-  - React Plotly.js: examples/react.md
-  - Analytical Apps with Dash: https://dash.plotly.com/
-  - Colorway: examples/colorway.md
-  - Images: examples/images.md
-  - 3D Axes: examples/3d-axes.md
-  - 3D Hover Options: examples/3d-hover.md
-  - 3D Surface Lighting: examples/3d-surface-lighting.md
-  - Axes: examples/axes.md
-  - Horizontal Legends: examples/horizontal-legend.md
-  - Hover Text and Formatting: examples/hover-text-and-formatting.md
-  - Setting the Title, Legend Entries, and Axis Titles: examples/figure-labels.md
-  - Layout Template Examples: examples/layout-template.md
-  - Legends: examples/legend.md
-  - Setting Graph Size: examples/setting-graph-size.md
-  - Formatting Ticks: examples/tick-formatting.md
-  - Shapes: examples/shapes.md
-  - Text Template: examples/texttemplate.md
-  - Text and Annotations: examples/text-and-annotations.md
-  - Text and Font Styling: examples/font.md
-  - Multiple Axes: examples/multiple-axes.md
-  - Subplots: examples/subplots.md
-- Basic Charts:
-  - Scatter Plots: examples/line-and-scatter.md
-  - Line Charts: examples/line-charts.md
-  - Bar Charts: examples/bar-charts.md
-  - Pie Charts: examples/pie-charts.md
-  - Bubble Charts: examples/bubble-charts.md
-  - Dot Plots: examples/dot-plots.md
-  - Inset Plots: examples/insets.md
-  - Filled Area Plots: examples/filled-area-plots.md
-  - Horizontal Bar Charts: examples/horizontal-bar-charts.md
-  - Sunburst Charts: examples/sunburst-charts.md
-  - Sankey Diagram: examples/sankey-diagram.md
-  - Treemap Charts: examples/treemaps.md
-  - Tables: examples/table.md
-  - Multiple Chart Types: examples/graphing-multiple-chart-types.md
-  - WebGL vs SVG: examples/webgl-vs-svg.md
-- Statistical Charts: 
-  - Error Bars: examples/error-bars.md
-  - Box Plots: examples/box-plots.md
-  - Histograms: examples/histograms.md
-  - Continuous Error Bars: examples/continuous-error-bars.md
-  - 2D Histograms: examples/2D-Histogram.md
-  - SPC Control Charts: examples/spc-control-charts.md
-  - Violin Plots: examples/violin.md
-  - Parallel Categories Diagram: examples/parallel-categories-diagram.md
-  - Scatterplot Matrix: examples/splom.md
-  - 2D Histogram Contour: examples/2d-histogram-contour.md
-- Scientific Charts: 
-  - Contour Plots: examples/contour-plots.md
-  - Heatmaps: examples/heatmaps.md
-  - Ternary Plots: examples/ternary-plots.md
-  - Parallel Coordinates Plot: examples/parallel-coordinates-plot.md
-  - Log Plots: examples/log-plot.md
-  - Wind Rose and Polar Bar Charts: examples/wind-rose-charts.md
-  - Ternary contours: examples/ternary-contour.md
-  - Radar Charts: examples/radar-chart.md
-  - Carpet Plots: examples/carpet-plot.md
-  - Carpet Scatter Plot: examples/carpet-scatter.md
-  - Carpet Contour Plot: examples/carpet-contour.md
-  - Polar Charts: examples/polar-chart.md
-- Financial Charts: 
-  - Waterfall Charts: examples/waterfall-charts.md
-  - Indicators: examples/indicator.md
-  - Candlestick Charts: examples/candlestick-charts.md
-  - Funnel Chart: examples/funnel-charts.md
-  - Time Series and Date Axes: examples/time-series.md
-  - OHLC Charts: examples/ohlc-charts.md
-  - Gauge Charts: examples/gauge-charts.md
-  - Bullet Charts: examples/bullet-charts.md
-- Maps: 
-  - Tile Map Layers: examples/tile-map-layers.md
-  - Tile Density Heatmap: examples/tile-density-heatmaps.md
-  - Tile Choropleth Maps: examples/tile-county-choropleth.md
-  - Lines on Maps: examples/lines-on-maps.md
-  - Bubble Maps: examples/bubble-maps.md
-  - Scatter Plots on Maps: examples/scatter-plots-on-maps.md
-  - Scatter Plots on Tile Maps: examples/scatter-tile-maps.md
-  - Choropleth Maps: examples/choropleth-maps.md
-  - Filled Area on Tile Maps: examples/filled-area-on-map.md
-- 3D Charts: 
-  - 3D Scatter Plots: examples/3d-scatter-plots.md
-  - Ribbon Plots: examples/ribbon-plots.md
-  - 3D Surface Plots: examples/3d-surface-plots.md
-  - 3D Mesh Plots: examples/3d-mesh.md
-  - 3D Line Plots: examples/3d-line-plots.md
-  - Trisurf Plots: examples/trisurf.md
-  - 3D Cluster Graph: examples/3d-point-clustering.md
-  - 3D Cone Plots: examples/cone-plot.md
-  - 3D Streamtube Plots: examples/streamtube-plot.md
-  - 3D Isosurface Plots: examples/3d-isosurface-plots.md
-  - 3D Subplots: examples/3d-subplots.md
-- Multiple Axes: 
-  - Mixed Subplots: examples/mixed-subplots.md
-  - Table and Chart Subplots: examples/table-subplots.md
-- Chart Events:
-  - Click Events: examples/click-events.md
-  - Hover Events: examples/hover-events.md
-  - Zoom Events: examples/zoom-events.md
-  - Disable Zoom Events: examples/disable-zoom.md
-- Animations:
-  - Intro to Animations: examples/animations.md
-  - Adding Sliders to Animations: examples/gapminder-example.md
-  - Filled-Area Animation: examples/filled-area-animation.md
-  - Map Animation: examples/map-animations.md
-- Advanced Options: 
-  - Plot CSV Data from an Ajax Call: examples/ajax-call.md
-  - Streaming: examples/streaming.md
-  - Remove Trace from Plot: examples/remove-trace.md
-  - LaTeX: examples/LaTeX.md
-- Controls: 
-  - Dropdown Menus: examples/dropdowns.md
-  - Custom Buttons: examples/custom-buttons.md
-  - Sliders: examples/sliders.md
-  - Lasso Selection: examples/lasso-selection.md
-  - Range Slider and Selector: examples/range-slider.md
+- Home: index.md
+- Quick Reference:
+  - Getting Started: getting-started.md
+  - Is Plotly Free?: is-plotly-free-js.md
+  - Event Reference: examples/plotlyjs-events.md
+- Examples:
+  - Fundamentals:
+    - Configuration: examples/configuration-options.md
+    - Responsive / Fluid Layouts: examples/responsive-fluid-layout.md
+    - uirevision in Plotly.react: examples/uirevision.md
+    - React Plotly.js: examples/react.md
+    - Analytical Apps with Dash: https://dash.plotly.com/
+    - Colorway: examples/colorway.md
+    - Images: examples/images.md
+    - 3D Axes: examples/3d-axes.md
+    - 3D Hover Options: examples/3d-hover.md
+    - 3D Surface Lighting: examples/3d-surface-lighting.md
+    - Axes: examples/axes.md
+    - Horizontal Legends: examples/horizontal-legend.md
+    - Hover Text and Formatting: examples/hover-text-and-formatting.md
+    - Setting the Title, Legend Entries, and Axis Titles: examples/figure-labels.md
+    - Layout Template Examples: examples/layout-template.md
+    - Legends: examples/legend.md
+    - Setting Graph Size: examples/setting-graph-size.md
+    - Formatting Ticks: examples/tick-formatting.md
+    - Shapes: examples/shapes.md
+    - Text Template: examples/texttemplate.md
+    - Text and Annotations: examples/text-and-annotations.md
+    - Text and Font Styling: examples/font.md
+    - Multiple Axes: examples/multiple-axes.md
+    - Subplots: examples/subplots.md
+  - Basic Charts:
+    - Scatter Plots: examples/line-and-scatter.md
+    - Line Charts: examples/line-charts.md
+    - Bar Charts: examples/bar-charts.md
+    - Pie Charts: examples/pie-charts.md
+    - Bubble Charts: examples/bubble-charts.md
+    - Dot Plots: examples/dot-plots.md
+    - Inset Plots: examples/insets.md
+    - Filled Area Plots: examples/filled-area-plots.md
+    - Horizontal Bar Charts: examples/horizontal-bar-charts.md
+    - Sunburst Charts: examples/sunburst-charts.md
+    - Sankey Diagram: examples/sankey-diagram.md
+    - Treemap Charts: examples/treemaps.md
+    - Tables: examples/table.md
+    - Multiple Chart Types: examples/graphing-multiple-chart-types.md
+    - WebGL vs SVG: examples/webgl-vs-svg.md
+  - Statistical Charts:
+    - Error Bars: examples/error-bars.md
+    - Box Plots: examples/box-plots.md
+    - Histograms: examples/histograms.md
+    - Continuous Error Bars: examples/continuous-error-bars.md
+    - 2D Histograms: examples/2D-Histogram.md
+    - SPC Control Charts: examples/spc-control-charts.md
+    - Violin Plots: examples/violin.md
+    - Parallel Categories Diagram: examples/parallel-categories-diagram.md
+    - Scatterplot Matrix: examples/splom.md
+    - 2D Histogram Contour: examples/2d-histogram-contour.md
+  - Scientific Charts:
+    - Contour Plots: examples/contour-plots.md
+    - Heatmaps: examples/heatmaps.md
+    - Ternary Plots: examples/ternary-plots.md
+    - Parallel Coordinates Plot: examples/parallel-coordinates-plot.md
+    - Log Plots: examples/log-plot.md
+    - Wind Rose and Polar Bar Charts: examples/wind-rose-charts.md
+    - Ternary contours: examples/ternary-contour.md
+    - Radar Charts: examples/radar-chart.md
+    - Carpet Plots: examples/carpet-plot.md
+    - Carpet Scatter Plot: examples/carpet-scatter.md
+    - Carpet Contour Plot: examples/carpet-contour.md
+    - Polar Charts: examples/polar-chart.md
+  - Financial Charts:
+    - Waterfall Charts: examples/waterfall-charts.md
+    - Indicators: examples/indicator.md
+    - Candlestick Charts: examples/candlestick-charts.md
+    - Funnel Chart: examples/funnel-charts.md
+    - Time Series and Date Axes: examples/time-series.md
+    - OHLC Charts: examples/ohlc-charts.md
+    - Gauge Charts: examples/gauge-charts.md
+    - Bullet Charts: examples/bullet-charts.md
+  - Maps:
+    - Tile Map Layers: examples/tile-map-layers.md
+    - Tile Density Heatmap: examples/tile-density-heatmaps.md
+    - Tile Choropleth Maps: examples/tile-county-choropleth.md
+    - Lines on Maps: examples/lines-on-maps.md
+    - Bubble Maps: examples/bubble-maps.md
+    - Scatter Plots on Maps: examples/scatter-plots-on-maps.md
+    - Scatter Plots on Tile Maps: examples/scatter-tile-maps.md
+    - Choropleth Maps: examples/choropleth-maps.md
+    - Filled Area on Tile Maps: examples/filled-area-on-map.md
+  - 3D Charts:
+    - 3D Scatter Plots: examples/3d-scatter-plots.md
+    - Ribbon Plots: examples/ribbon-plots.md
+    - 3D Surface Plots: examples/3d-surface-plots.md
+    - 3D Mesh Plots: examples/3d-mesh.md
+    - 3D Line Plots: examples/3d-line-plots.md
+    - Trisurf Plots: examples/trisurf.md
+    - 3D Cluster Graph: examples/3d-point-clustering.md
+    - 3D Cone Plots: examples/cone-plot.md
+    - 3D Streamtube Plots: examples/streamtube-plot.md
+    - 3D Isosurface Plots: examples/3d-isosurface-plots.md
+    - 3D Subplots: examples/3d-subplots.md
+  - Multiple Axes:
+    - Mixed Subplots: examples/mixed-subplots.md
+    - Table and Chart Subplots: examples/table-subplots.md
+  - Chart Events:
+    - Click Events: examples/click-events.md
+    - Hover Events: examples/hover-events.md
+    - Zoom Events: examples/zoom-events.md
+    - Disable Zoom Events: examples/disable-zoom.md
+  - Animations:
+    - Intro to Animations: examples/animations.md
+    - Adding Sliders to Animations: examples/gapminder-example.md
+    - Filled-Area Animation: examples/filled-area-animation.md
+    - Map Animation: examples/map-animations.md
+  - Advanced Options:
+    - Plot CSV Data from an Ajax Call: examples/ajax-call.md
+    - Streaming: examples/streaming.md
+    - Remove Trace from Plot: examples/remove-trace.md
+    - LaTeX: examples/LaTeX.md
+  - Controls:
+    - Dropdown Menus: examples/dropdowns.md
+    - Custom Buttons: examples/custom-buttons.md
+    - Sliders: examples/sliders.md
+    - Lasso Selection: examples/lasso-selection.md
+    - Range Slider and Selector: examples/range-slider.md
 - API Reference: reference/
 
 extra:

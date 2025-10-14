@@ -15,4 +15,5 @@ dev_build = [
     "mkdocs-material",
     "mkdocs-gen-files",
     "mkdocs-literate-nav",
+    "markdown-include",
 ]
