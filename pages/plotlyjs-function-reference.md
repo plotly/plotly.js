@@ -1,8 +1,9 @@
+<section class="tutorial-content">
 <style>
-fieldset.signatures { margin: 0 auto; width: 90%; padding: 0 30px;}
+fieldset.signatures { margin: 0 0; width: 100%; padding: 0 30px;}
 fieldset.signatures legend { padding: 5px; font-size: 16px; }
 pre { width: 80%; margin: 0 auto; margin-top: 10px;}
-.cp_embed_wrapper { width: 80%; margin: 0 auto; }
+.cp_embed_wrapper { width: 100%; margin-top: 20px; }
 </style>
 
 <h4 id="retrieving-data-layout"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#common-parameters">Common parameters</a></h4>
@@ -618,3 +619,5 @@ Plotly.downloadImage(graphDiv, {format: 'png', width: 800, height: 600, filename
 <h4 id="plotly-events"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#using-events">Using events</a></h4>
 
 Plots emit events prefixed with <code>plotly_</code> when clicked or hovered over, and event handlers can be bound to events using the <code>on</code> method that is exposed by the plot div object. For more information and examples of how to use Plotly events see: <a href="https://plotly.com/javascript/plotlyjs-events/">https://plotly.com/javascript/plotlyjs-events/</a>.
+
+</section>

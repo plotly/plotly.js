@@ -294,3 +294,15 @@ section.sponsor--wrap {
 .z-depth-1 {
     width: 100%;
 }
+
+.tutorial-content h4 a {
+    color: #20293d !important;
+    font-weight: 300;
+    font-size: 1.2rem;
+}
+
+.tutorial-content pre {
+    width: 100%;
+    margin: 0;
+}
+
