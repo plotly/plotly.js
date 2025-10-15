@@ -55,6 +55,7 @@ markdown_extensions:
       base_path: ["tmp"]
   - markdown_include.include:
       base_path: docs
+  - md_in_html
 
 extra_css:
   - css/extra_css.css

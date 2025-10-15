@@ -1,71 +1,70 @@
-<section class="tutorial-content">
-<style>
-fieldset.signatures { margin: 0 0; width: 100%; padding: 0 30px;}
-fieldset.signatures legend { padding: 5px; font-size: 16px; }
-pre { width: 80%; margin: 0 auto; margin-top: 10px;}
-.cp_embed_wrapper { width: 100%; margin-top: 20px; }
-</style>
+### Common Parameters
 
-<h4 id="retrieving-data-layout"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#common-parameters">Common parameters</a></h4>
+`graphDiv`
 
-<dl>
-  <dt><code>graphDiv</code></dt>
-  <dd>The functions documented here all create or modify a plot that is drawn into a <code>&lt;div&gt;</code> element on the page, commonly referred to as <code>graphDiv</code> or <code>plotDiv</code>. The first argument to each function on this page is a reference to this element, and it can be either a DOM node, i.e. the output of <code>document.getElementById()</code>, or a string, in which case it will be treated as the <code>id</code> of the <code>div</code>. A note on sizing: You can either supply height and width in the <code>layout</code> object (see below), or give the <code>&lt;div&gt;</code> a height and width in CSS.</dd>
+The functions documented here all create or modify a plot that is drawn into a `<div>` element on the page, commonly referred to as `graphDiv` or `plotDiv`. The first argument to each function on this page is a reference to this element, and it can be either a DOM node, i.e. the output of `document.getElementById()`, or a string, in which case it will be treated as the `id` of the `div`. A note on sizing: You can either supply height and width in the `layout` object (see below), or give the `<div>` a height and width in CSS.
 
-  <dt><code>data</code></dt>
-  <dd>The data to be plotted is described in an array usually called <code>data</code>, whose elements are trace objects of various types (e.g. <code>scatter</code>, <code>bar</code> etc) as documented <a href="{{ BASE_URL }}/javascript/reference">in the Full Reference</a>.
-  </dd>
-  <dt><code>layout</code></dt>
-  <dd>The layout of the plot &ndash; non-data-related visual attributes such as the title, annotations etc &ndash; is described in an object usually called <code>layout</code>, as documented <a href="{{ BASE_URL }}/javascript/reference/layout">in/ the Full Reference</a>.
-  </dd>
-  <dt><code>config</code></dt>
-  <dd>High-level configuration options for the plot, such as the scroll/zoom/hover behaviour, is described in an object usually called <code>config</code>, as <a href="{{ BASE_URL }}/javascript/configuration-options">documented here</a>. The difference between <code>config</code> and <code>layout</code> is that <code>layout</code> relates to the content of the plot, whereas <code>config</code> relates to the context in which the plot is being shown.
-  </dd>
-  <dt><code>frames</code></dt>
-  <dd>Animation frames are described in an object usually called <code>frames</code> as per the <a href="{{ BASE_URL }}/javascript/gapminder-example/">example here</a>.
-    They can contain <code>data</code> and <code>layout</code> objects, which define any changes to be animated, and a <code>traces</code>
-    object that defines which traces to animate. Additionally, frames containing <code>name</code> and/or <code>group</code>
-    attributes can be referenced by <a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyanimate">Plotly.animate</a>
-    after they are added by <a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyaddframes">Plotly.addFrames</a>
-  </dd>
-</dl>
+`data`
+
+The data to be plotted is described in an array usually called `data`, whose elements are trace objects of various types (e.g. `scatter`, `bar` etc) as documented [in the Full Reference](/javascript/reference).
+
+`layout`
+
+The layout of the plot – non-data-related visual attributes such as the title, annotations etc – is described in an object usually called `layout`, as documented [in the Full Reference](/reference/layout.md).
+
+`config`
+
+High-level configuration options for the plot, such as the scroll/zoom/hover behaviour, is described in an object usually called `config`, as [documented here](examples/configuration-options.md). The difference between `config` and `layout` is that `layout` relates to the content of the plot, whereas `config` relates to the context in which the plot is being shown.
+
+`frames`
+
+Animation frames are described in an object usually called `frames` as per the [example here](/javascript/gapminder-example/). They can contain `data` and `layout` objects, which define any changes to be animated, and a `traces` object that defines which traces to animate. Additionally, frames containing `name` and/or `group` attributes can be referenced by [Plotly.animate](#plotlyanimate) after they are added by [Plotly.addFrames](#plotlyaddframes)
 
 
-<h4 id="plotly-newplot"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlynewplot">Plotly.newPlot</a></h4>
+### Plotly.newPlot
 
-Draws a new plot in an <code>&lt;div&gt;</code> element, <em>overwriting any existing plot</em>. To update an existing plot in a <code>&lt;div&gt;</code>, it is much more efficient to use <a href="#plotlyreact"><code>Plotly.react</code></a> than to overwrite it.
-<br /><br />
-<fieldset class="signatures">
+Draws a new plot in an `<div>` element, *overwriting any existing plot*. To update an existing plot in a `<div>`, it is much more efficient to use [`Plotly.react`](#plotlyreact) than to overwrite it.
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.newPlot(graphDiv, data, layout, config)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>graphDiv</code></dt>
-      <dd>DOM node or string id of a DOM node</dd>
-      <dt><code>data</code></dt>
-      <dd>array of objects, see <a href="{{ BASE_URL }}/javascript/reference">documentation</a> <br />(defaults to <code>[]</code>)</dd>
-      <dt><code>layout</code></dt>
-      <dd>object, see <a href="{{ BASE_URL }}/javascript/reference/layout">documentation</a>/ <br />(defaults to <code>{}</code>)</dd>
-      <dt><code>config</code></dt>
-      <dd>object, see <a href="{{ BASE_URL }}/javascript/configuration-options">documentation</a> <br />(defaults to <code>{}</code>)</dd>
-    </dl>
-  </dd>
-  <dt><code>Plotly.newPlot(graphDiv, obj)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>graphDiv</code></dt>
-      <dd>DOM node or string id of a DOM node</dd>
-      <dt><code>obj</code><dt>
-      <dd>single object with keys for <code>data</code>, <code>layout</code>, <code>config</code> and <code>frames</code>, see above for contents <br />(defaults to <code>{data: [], layout: {}, config: {}, frames: []}</code>)</dd>
-    </dl>
-  </dd>
-</dl>
+
+`Plotly.newPlot(graphDiv, data, layout, config)`
+
+  `graphDiv`
+
+  DOM node or string id of a DOM node
+    
+  `data`
+
+  array of objects, see [documentation](/javascript/reference)  
+  (defaults to `[]`)
+    
+  `layout`
+
+  object, see [documentation](/reference/layout.md)  
+  (defaults to `{}`)
+    
+  `config`
+
+  object, see [documentation](/examples/configuration-options.md)  
+  (defaults to `{}`)
+
+`Plotly.newPlot(graphDiv, obj)`
+
+  `graphDiv`
+
+  DOM node or string id of a DOM node
+    
+  `obj`
+
+  single object with keys for `data`, `layout`, `config` and `frames`, see above for contents  
+  (defaults to `{data: [], layout: {}, config: {}, frames: []}`)
+
 </fieldset>
-<br /><br />
+<br />
 
 
-After plotting, the <code>data</code> or <code>layout</code> can always be retrieved from the <code>&lt;div&gt;</code> element in which the plot was drawn:
+After plotting, the `data` or `layout` can always be retrieved from the `<div>` element in which the plot was drawn:
 <pre><code class="language-javascript hljs" data-lang="javascript">
 var graphDiv = document.getElementById('id_of_the_div')
 
@@ -101,35 +100,41 @@ var layoutRetrievedLater = graphDiv.layout;
 </code></pre>
 
 
-<h4 id="plotly-react"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyreact">Plotly.react</a></h4>
+### Plotly.react
 
-<code>Plotly.react</code> has the same signature as <a href="#plotlynewplot"><code>Plotly.newPlot</code></a> above, and can be used in its place to create a plot, but when called again on the same <code>&lt;div&gt;</code> will update it far more efficiently than <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>, which would destroy and recreate the plot. <code>Plotly.react</code> is as fast as <code>Plotly.restyle</code>/<code>Plotly.relayout</code> documented below.
-<br /><br />
-Important Note: In order to use this method to plot new items in arrays under <code>data</code> such as <code>x</code> or <code>marker.color</code> etc, these items must either have been added immutably (i.e. the identity of the parent array must have changed) or the value of <a href="{{ BASE_URL }}/javascript/reference/layout/#layout-datarevision"><code>layout.datarevision</code></a> must have changed.
+`Plotly.react` has the same signature as [`Plotly.newPlot`](#plotlynewplot) above, and can be used in its place to create a plot, but when called again on the same `<div>` will update it far more efficiently than [`Plotly.newPlot`](#plotlynewplot), which would destroy and recreate the plot. `Plotly.react` is as fast as `Plotly.restyle`/`Plotly.relayout` documented below.
 
-<h4 id="plotly-restyle"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyrestyle">Plotly.restyle</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
+Important Note: In order to use this method to plot new items in arrays under `data` such as `x` or `marker.color` etc, these items must either have been added immutably (i.e. the identity of the parent array must have changed) or the value of [`layout.datarevision`](/reference/layout.md#layout-datarevision) must have changed.
 
-An efficient means of changing attributes in the <code>data</code> array in an existing plot. When restyling, you may choose to have the specified changes affect as many traces as desired. The update is given as a single object and the traces that are affected are given as a list of traces indices. Note, leaving the trace indices unspecified assumes that you want to restyle <b>all</b> the traces.
 
-<br /><br />
-<fieldset class="signatures">
+### Plotly.restyle
+
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
+
+An efficient means of changing attributes in the `data` array in an existing plot. When restyling, you may choose to have the specified changes affect as many traces as desired. The update is given as a single object and the traces that are affected are given as a list of traces indices. Note, leaving the trace indices unspecified assumes that you want to restyle **all** the traces.
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.restyle(graphDiv, update [, traceIndices])</code></dt>
-  <dd>
-    <dl>
-      <dt><code>graphDiv</code></dt>
-      <dd>DOM node or string id of a DOM node</dd>
-      <dt><code>update</code></dt>
-      <dd>object, see below for examples <br />(defaults to <code>{}</code>)</dd>
-      <dt><code>traceIndices</code></dt>
-      <dd>array of integer indices into existing value of <code>data</code> <br />(optional, default behaviour is to apply to all traces)</dd>
-    </dl>
-  </d>
-</dl>
+
+`Plotly.restyle(graphDiv, update [, traceIndices])`
+
+`graphDiv`
+
+ DOM node or string id of a DOM node
+
+`update`
+
+object, see below for examples  
+(defaults to `{}`)
+
+`traceIndices`
+
+array of integer indices into existing value of `data`  
+(optional, default behaviour is to apply to all traces)
+
 </fieldset>
-<br /><br />
+<br />
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // restyle a single trace using attribute strings
@@ -157,7 +162,7 @@ Plotly.restyle(graphDiv, update, [1, 2]);
 <p data-height="400" data-theme-id="15263" data-slug-hash="meaKYw" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/meaKYw/'>Plotly.restyle</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<br /><br />
+<br />
 
 The above examples have applied values across single or multiple traces. However, you can also specify <b>arrays</b> of values to apply to traces <b>in turn</b>.
 
@@ -224,27 +229,29 @@ Plotly.restyle(graphDiv, {
 <p data-height="528" data-theme-id="15263" data-slug-hash="XMWRqj" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/XMWRqj/'>null vs. undefined in Plotly.restyle</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-relayout"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyrelayout">Plotly.relayout</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
+### Plotly.relayout
 
-An efficient means of updating the <code>layout</code> object of an existing plot. The call signature and arguments for relayout are similar (but simpler) to restyle. Because there are no indices to deal with, arrays need not be wrapped. Also, no argument specifying applicable trace indices is passed in.
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
 
-<br /><br />
-<fieldset class="signatures">
+An efficient means of updating the `layout` object of an existing plot. The call signature and arguments for relayout are similar (but simpler) to restyle. Because there are no indices to deal with, arrays need not be wrapped. Also, no argument specifying applicable trace indices is passed in.
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.relayout(graphDiv, update)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>graphDiv</code></dt>
-      <dd>DOM node or string id of a DOM node</dd>
-      <dt><code>update</code></dt>
-      <dd>object, see below for examples <br />(defaults to <code>{}</code>)</dd>
-    </dl>
-  </dd>
-</dl>
+
+`Plotly.relayout(graphDiv, update)`
+
+`graphDiv`
+
+DOM node or string id of a DOM node
+
+`update`
+
+object, see below for examples  
+(defaults to `{}`)
+
 </fieldset>
-<br /><br />
+<br />
 
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
@@ -260,30 +267,39 @@ Plotly.relayout(graphDiv, update)
 <p data-height="526" data-theme-id="15263" data-slug-hash="meajqx" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/meajqx/'>Plotly.relayout</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-update"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyupdate">Plotly.update</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
+### Plotly.update
 
-An  efficient means of updating both the <code>data</code> array and <code>layout</code> object in an existing plot, basically a combination of <code>Plotly.restyle</code> and <code>Plotly.relayout</code>.
-<br /><br />
-<fieldset class="signatures">
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
+
+An efficient means of updating both the `data` array and `layout` object in an existing plot, basically a combination of `Plotly.restyle` and `Plotly.relayout`.
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.update(graphDiv, data_update, layout_update, [, traceIndices])</code></dt>
-  <dd>
-    <dl>
-      <dt><code>graphDiv</code></dt>
-      <dd>DOM node or string id of a DOM node</dd>
-      <dt><code>data_update</code></dt>
-      <dd>object, see <code>Plotly.restyle</code> above <br />(defaults to <code>{}</code>)</dd>
-      <dt><code>layout_update</code></dt>
-      <dd>object, see <code>Plotly.relayout</code> above <br />(defaults to <code>{}</code>)</dd>
-      <dt><code>traceIndices</code></dt>
-      <dd>array of integer indices into existing value of <code>data</code>, see <code>Plotly.restyle</code> above <br />(optional, default behaviour is to apply to all traces)</dd>
-    </dl>
-  </dd>
-</dl>
+
+`Plotly.update(graphDiv, data_update, layout_update, [, traceIndices])`
+
+`graphDiv`
+
+DOM node or string id of a DOM node
+    
+`data_update`
+
+object, see `Plotly.restyle` above  
+(defaults to `{}`)
+    
+`layout_update`
+
+object, see `Plotly.relayout` above  
+(defaults to `{}`)
+    
+`traceIndices`
+
+array of integer indices into existing value of `data`, see `Plotly.restyle` above  
+(optional, default behaviour is to apply to all traces)
+
 </fieldset>
-<br /><br />
+<br />
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 //update the layout and all the traces
@@ -319,25 +335,26 @@ Plotly.update(graphDiv, data_update, layout_update, [0,2])
 <p data-height="510" data-theme-id="15263" data-slug-hash="PKGrem" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/PKGrem/'>Plotly.update</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-validate"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyvalidate">Plotly.validate</a></h4>
+### Plotly.validate
 
-<code>Plotly.validate</code> allows users to validate their input <code>data</code> array and <code>layout</code> object. This can be done on the <code>data</code> array and <code>layout</code> object passed into <code>Plotly.newPlot</code> or on an updated <code>graphDiv</code> with <code>Plotly.validate(graphDiv.data, graphDiv.layout)</code>.
-<br /><br />
-<fieldset class="signatures">
+`Plotly.validate` allows users to validate their input `data` array and `layout` object. This can be done on the `data` array and `layout` object passed into `Plotly.newPlot` or on an updated `graphDiv` with `Plotly.validate(graphDiv.data, graphDiv.layout)`.
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.validate(data, layout)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>data</code></dt>
-      <dd>array of objects
-      <dt><code>layout</code></dt>
-      <dd>object
-    </dl>
-  </dd>
-</dl>
+
+`Plotly.validate(data, layout)`
+
+`data`
+
+array of objects
+    
+`layout`
+
+object
+
 </fieldset>
-<br /><br />
+<br />
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 var data = [{
@@ -351,24 +368,22 @@ console.log(out[0].msg)
 // "In data trace 0, key orientation is set to an invalid value (horizontal)"
 </code></pre>
 
-<h4 id="plotly-makeTemplate"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlymaketemplate">Plotly.makeTemplate</a></h4>
+### Plotly.makeTemplate
 
-<code>Plotly.makeTemplate</code> copies the style information from a figure. It does this by returning a <code>template</code> object which can be passed to the <code>layout.template</code> attribute of another figure.
-<br /><br />
-<fieldset class="signatures">
+`Plotly.makeTemplate` copies the style information from a figure. It does this by returning a `template` object which can be passed to the `layout.template` attribute of another figure.
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.makeTemplate(figure)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>figure</code> or <code>DOM Node</code></dt>
-      <dd>where <code>figure</code> is a plot object, with <code>{data, layout}</code> members. If a DOM node is used
-      it must be a div element already containing a plot.
-    </dl>
-  </dd>
-</dl>
+
+`Plotly.makeTemplate(figure)`
+
+`figure` or `DOM Node`
+
+where `figure` is a plot object, with `{data, layout}` members. If a DOM node is used it must be a div element already containing a plot.
+
 </fieldset>
-<br /><br />
+<br />
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 var figure = {
@@ -397,29 +412,30 @@ Plotly.newPlot(graphDiv,newData,layout)
 
 </code></pre>
 
-<h4 id="plotly-validate-template"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyvalidatetemplate">Plotly.validateTemplate</a></h4>
+### Plotly.validateTemplate
 
-<code>Plotly.validateTemplate</code> allows users to Test for consistency between the given figure and a template,
+`Plotly.validateTemplate` allows users to Test for consistency between the given figure and a template,
 either already included in the figure or given separately. Note that not every issue identified here is necessarily
 a problem, it depends on what you're using the template for.
-<br /><br />
-<fieldset class="signatures">
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
-  <dt><code>Plotly.validateTemplate(figure, template)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>figure</code> or <code>DOM Node</code></dt>
-      <dd>where <code>figure</code> is a plot object, with <code>{data, layout}</code> members.
-      <dt><code>template</code></dt>
-      <dd>the template, with its own <code>{data, layout}</code>, to test.
-          If omitted, we will look for a template already attached as
-        the plot's <code>layout.template</code> attribute.
-    </dl>
-  </dd>
-</dl>
+
+`Plotly.validateTemplate(figure, template)`
+
+`figure` or `DOM Node`
+
+where `figure` is a plot object, with `{data, layout}` members.
+
+`template`
+
+the template, with its own `{data, layout}`, to test.
+If omitted, we will look for a template already attached as
+the plot's `layout.template` attribute.
+
 </fieldset>
-<br /><br />
+<br />
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 var out = Plotly.validateTemplate(figure, template);
@@ -427,11 +443,11 @@ console.log(out[0].msg)
 // "The template has 1 traces of type bar but there are none in the data."
 </code></pre>
 
-<h4 id="plotly-addtraces"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyaddtraces">Plotly.addTraces</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
+### Plotly.addTraces
 
-This allows you to add <b>new</b> traces to an existing <code>graphDiv</code> at any location in its <a href='#retrieving-data-layout'>data array</a>. Every <code>graphDiv</code> object has a <code>data</code> component which is an array of JSON blobs that each describe one trace. The full list of trace types can be found <a href="{{ BASE_URL }}/javascript/reference/">in the Full Reference</a>.
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
 
+This allows you to add **new** traces to an existing `graphDiv` at any location in its [data array](#retrieving-data-layout). Every `graphDiv` object has a `data` component which is an array of JSON blobs that each describe one trace. The full list of trace types can be found [in the Full Reference](/javascript/reference/).
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // add a single trace to an existing graphDiv
@@ -447,9 +463,11 @@ Plotly.addTraces(graphDiv, {y: [1, 5, 7]}, 0);
 <p data-height="510" data-theme-id="15263" data-slug-hash="xwmJvL" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/xwmJvL/'>Plotly.addtraces</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-deletetraces"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlydeletetraces">Plotly.deleteTraces</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
-This allows you to remove traces from an existing <code>graphDiv</code> by specifying the indices of the traces to be removed.
+### Plotly.deleteTraces
+
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
+
+This allows you to remove traces from an existing `graphDiv` by specifying the indices of the traces to be removed.
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // remove the first trace
@@ -462,11 +480,13 @@ Plotly.deleteTraces(graphDiv, [-2, -1]);
 <p data-height="503" data-theme-id="15263" data-slug-hash="meaGRo" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/meaGRo/'>Plotly.deleteTraces</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-movetraces"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlymovetraces">Plotly.moveTraces</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
-This allows you to reorder traces in an existing <code>graphDiv</code>. This will change the ordering of the layering and the legend.
+### Plotly.moveTraces
 
-All traces defined in <code>graphDiv</code> are ordered in an array. They are drawn one by one from first to last. Each time a new layer or trace is drawn to the canvas the new trace is drawn directly over the current canvas, replacing the colors of the traces and background. This algorithm to image stacking/drawing is known as the <a href='https://www.youtube.com/watch?v=oMgOR3PxmDU'>Painter's Algorithm</a>. As its name implies the Painter's Algorithm is typically the manner in which a painter paints a landscape, starting from objects with the most perspective depth and progressively moving forward and layering over the background objects.
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
+
+This allows you to reorder traces in an existing `graphDiv`. This will change the ordering of the layering and the legend.
+
+All traces defined in `graphDiv` are ordered in an array. They are drawn one by one from first to last. Each time a new layer or trace is drawn to the canvas the new trace is drawn directly over the current canvas, replacing the colors of the traces and background. This algorithm to image stacking/drawing is known as the [Painter's Algorithm](https://www.youtube.com/watch?v=oMgOR3PxmDU). As its name implies the Painter's Algorithm is typically the manner in which a painter paints a landscape, starting from objects with the most perspective depth and progressively moving forward and layering over the background objects.
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // move the first trace (at index 0) the the end of the data array
@@ -485,9 +505,11 @@ Plotly.moveTraces(graphDiv, [1, 4, 5], [0, 3, 2]);
 <p data-height="500" data-theme-id="15263" data-slug-hash="LpMJyB" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/LpMJyB/'>Plotly.moveTraces</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-extendtraces"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyextendtraces">Plotly.extendTraces</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
-This allows you to add data to traces in an existing <code>graphDiv</code>.
+### Plotly.extendTraces
+
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
+
+This allows you to add data to traces in an existing `graphDiv`.
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // extend one trace
@@ -503,9 +525,11 @@ Plotly.extendTraces(graphDiv, {y: [[rand()], [rand()]]}, [0, 1], 10)
 <p data-height="515" data-theme-id="15263" data-slug-hash="apaoOw" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/apaoOw/'>Plotly.extendTraces</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-prependtraces"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyprependtraces">Plotly.prependTraces</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
-This allows you to prepend data to an existing trace <code>graphDiv</code>.
+### Plotly.prependTraces
+
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
+
+This allows you to prepend data to an existing trace `graphDiv`.
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // prepend one trace
@@ -518,38 +542,40 @@ Plotly.prependTraces(graphDiv, {y: [[rand()], [rand()]]}, [0, 1])
 Plotly.prependTraces(graphDiv, {y: [[rand()], [rand()]]}, [0, 1], 10)
 </code></pre>
 
-<h4 id="plotly-addframes"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyaddframes">Plotly.addFrames</a></h4>
-<em>This function has comparable performance to <a href="#plotlyreact"><code>Plotly.react</code></a> and is faster than redrawing the whole plot with <a href="#plotlynewplot"><code>Plotly.newPlot</code></a>.</em><br /><br />
-This allows you to add animation frames to a <code>graphDiv</code>. The <code>group</code> or <code>name</code> attribute of a frame can
-be used by <a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyanimate">Plotly.animate</a> in place of a frame object (or array of
-frame objects).
-See <a href="{{ BASE_URL }}/javascript/gapminder-example/">example here</a>.
+### Plotly.addFrames
 
-<h4 id="plotly-animate"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyanimate">Plotly.animate</a></h4>
-Add dynamic behaviour to plotly graphs with <code>Plotly.animate</code>.
+*This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
 
-<br /><br />
-<fieldset class="signatures">
+This allows you to add animation frames to a `graphDiv`. The `group` or `name` attribute of a frame can be used by [Plotly.animate](#plotlyanimate) in place of a frame object (or array of frame objects). See [example here](/javascript/gapminder-example/).
+
+
+### Plotly.animate
+
+Add dynamic behaviour to plotly graphs with `Plotly.animate`.
+
+<br />
+<fieldset class="signatures" markdown="1">
 <legend>Signature</legend>
-<dl>
 
-  <dt><code>Plotly.animate(graphDiv, frameOrGroupNameOrFrameList, animationAttributes)</code></dt>
-  <dd>
-    <dl>
-      <dt><code>graphDiv</code></dt>
-      <dd>DOM node or string id of a DOM node</dd>
-      <dt><code>frameOrGroupNameOrFrameList</code></dt>
-      <dd>A frame to be animated or an array of frames to be animated in sequence. Frames added by
-      <a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlyaddframes">Plotly.addFrames</a> which have a
-      <code>group</code> attribute, can be animated by passing their group name here.
-      Similarly, you can reference frames by an array of strings of frame <code>name</code> values.</dd>
-      <dt><code>animationAttributes</code></dt>
-      <dd>An object, see <a href="{{ BASE_URL }}/javascript/animations">documentation</a> for examples.</dd>
-    </dl>
-  </dd>
-</dl>
+`Plotly.animate(graphDiv, frameOrGroupNameOrFrameList, animationAttributes)`
+
+`graphDiv`
+
+DOM node or string id of a DOM node
+
+`frameOrGroupNameOrFrameList`
+
+A frame to be animated or an array of frames to be animated in sequence. Frames added by
+[Plotly.addFrames](#plotlyaddframes) which have a
+`group` attribute, can be animated by passing their group name here.
+Similarly, you can reference frames by an array of strings of frame `name` values.
+
+`animationAttributes`
+
+An object, see [documentation](examples/animations.md) for examples.
+
 </fieldset>
-<br /><br />
+<br />
 
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
@@ -580,9 +606,10 @@ function randomize() {
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
 
-<h4 id="plotly-purge"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlypurge">Plotly.purge</a></h4>
+### Plotly.purge
 
-Using <code>purge</code> will clear the div, and remove any Plotly plots that have been placed in it.
+Using `purge` will clear the div, and remove any Plotly plots that have been placed in it.
+
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // purge will be used on the div that you wish clear of Plotly plots
 Plotly.purge(graphDiv);
@@ -591,9 +618,10 @@ Plotly.purge(graphDiv);
 <p data-height="515" data-theme-id="15263" data-slug-hash="xOVpeb" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/xOVpeb'>Plotly.purge</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-toImage"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlytoimage">Plotly.toImage</a></h4>
+### Plotly.toImage
 
-<code>toImage</code> will generate a promise to an image of the plot in data URL format.
+`toImage` will generate a promise to an image of the plot in data URL format.
+
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // Plotly.toImage will turn the plot in the given div into a data URL string
 // toImage takes the div as the first argument and an object specifying image properties as the other
@@ -605,9 +633,10 @@ Plotly.toImage(graphDiv, {format: 'png', width: 800, height: 600}).then(function
 <p data-height="515" data-theme-id="15263" data-slug-hash="mEPxyQ" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/mEPxyQ'>Plotly.toImage</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-downloadImage"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#plotlydownloadimage">Plotly.downloadImage</a></h4>
+### Plotly.downloadImage
 
-<code>downloadImage</code> will trigger a request to download the image of a Plotly plot.
+`downloadImage` will trigger a request to download the image of a Plotly plot.
+
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // downloadImage will accept the div as the first argument and an object specifying image properties as the other
 Plotly.downloadImage(graphDiv, {format: 'png', width: 800, height: 600, filename: 'newplot'});
@@ -616,8 +645,6 @@ Plotly.downloadImage(graphDiv, {format: 'png', width: 800, height: 600, filename
 <p data-height="515" data-theme-id="15263" data-slug-hash="jrqzar" data-default-tab="result" data-user="plotly" class='codepen' data-preview="true">See the Pen <a href='http://codepen.io/plotly/pen/jrqzar'>Plotly.toImage</a> by plotly (<a href='http://codepen.io/plotly'>@plotly</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 <script async src="//assets.codepen.io/assets/embed/ei.js"></script>
 
-<h4 id="plotly-events"><a href="{{ BASE_URL }}/javascript/plotlyjs-function-reference/#using-events">Using events</a></h4>
+### Using events
 
-Plots emit events prefixed with <code>plotly_</code> when clicked or hovered over, and event handlers can be bound to events using the <code>on</code> method that is exposed by the plot div object. For more information and examples of how to use Plotly events see: <a href="https://plotly.com/javascript/plotlyjs-events/">https://plotly.com/javascript/plotlyjs-events/</a>.
-
-</section>
+Plots emit events prefixed with <code>plotly_</code> when clicked or hovered over, and event handlers can be bound to events using the <code>on</code> method that is exposed by the plot div object. For more information and examples of how to use Plotly events see: [https://plotly.com/javascript/plotlyjs-events/](examples/plotlyjs-events.md).

@@ -295,14 +295,18 @@ section.sponsor--wrap {
     width: 100%;
 }
 
-.tutorial-content h4 a {
-    color: #20293d !important;
-    font-weight: 300;
-    font-size: 1.2rem;
+fieldset.signatures { 
+    margin: 0 0; 
+    width: 100%; 
+    padding: 0 30px;
 }
 
-.tutorial-content pre {
-    width: 100%;
-    margin: 0;
+fieldset.signatures legend { 
+    padding: 5px; 
+    font-size: 16px; 
 }
 
+.cp_embed_wrapper { 
+    width: 100%; 
+    margin-top: 20px; 
+}
