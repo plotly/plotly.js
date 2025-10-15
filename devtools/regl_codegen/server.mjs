@@ -13,14 +13,7 @@ var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
 var strict = args.strict;
 
-var reglTraceList = [
-    'parcoords',
-    'scattergl',
-    'scatterpolargl',
-    'splom'
-];
-
-
+var reglTraceList = ['parcoords', 'scattergl', 'scatterpolargl', 'splom'];
 
 // Create server
 var _static = ecstatic({
@@ -32,13 +25,13 @@ var _static = ecstatic({
 
 var tracesReceived = [];
 
-var server = http.createServer(function(req, res) {
-    if(req.method === 'POST' && req.url === '/api/submit-code') {
+var server = http.createServer(function (req, res) {
+    if (req.method === 'POST' && req.url === '/api/submit-code') {
         var body = '';
-        req.on('data', function(data) {
+        req.on('data', function (data) {
             body += data;
         });
-        req.on('end', function() {
+        req.on('end', function () {
             var data = JSON.parse(body);
 
             tracesReceived.push(data.trace);
@@ -46,7 +39,7 @@ var server = http.createServer(function(req, res) {
             res.statusCode = 200;
             res.end();
         });
-    } else if(req.method === 'GET' && req.url === '/api/codegen-done') {
+    } else if (req.method === 'GET' && req.url === '/api/codegen-done') {
         console.log('Codegen complete');
         console.log('Traces received:', tracesReceived);
 
@@ -79,9 +72,9 @@ config.minify = false;
 await build(config);
 
 function getMockFiles() {
-    return new Promise(function(resolve, reject) {
-        fs.readdir(constants.pathToTestImageMocks, function(err, files) {
-            if(err) {
+    return new Promise(function (resolve, reject) {
+        fs.readdir(constants.pathToTestImageMocks, function (err, files) {
+            if (err) {
                 reject(err);
             } else {
                 resolve(files);
@@ -91,7 +84,7 @@ function getMockFiles() {
 }
 
 function readFiles(files) {
-    var promises = files.map(function(file) {
+    var promises = files.map(function (file) {
         var filePath = path.join(constants.pathToTestImageMocks, file);
         return readFilePromise(filePath);
     });
@@ -101,22 +94,24 @@ function readFiles(files) {
 
 function createMocksList(files) {
     // eliminate pollutants (e.g .DS_Store) that can accumulate in the mock directory
-    var jsonFiles = files.filter(function(file) {
+    var jsonFiles = files.filter(function (file) {
         return file.name.substr(-5) === '.json';
     });
 
-    var mocksList = jsonFiles.map(function(file) {
+    var mocksList = jsonFiles.map(function (file) {
         var contents = JSON.parse(file.contents);
 
         // get plot type keywords from mocks
-        var types = contents.data.map(function(trace) {
-            return trace.type || 'scatter';
-        }).reduce(function(acc, type, i, arr) {
-            if(arr.lastIndexOf(type) === i) {
-                acc.push(type);
-            }
-            return acc;
-        }, []);
+        var types = contents.data
+            .map(function (trace) {
+                return trace.type || 'scatter';
+            })
+            .reduce(function (acc, type, i, arr) {
+                if (arr.lastIndexOf(type) === i) {
+                    acc.push(type);
+                }
+                return acc;
+            }, []);
 
         var filename = file.name.split(path.sep).pop();
 
@@ -145,9 +140,9 @@ function saveReglTracesToFile(traces) {
 }
 
 function readFilePromise(file) {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(file, { encoding: 'utf-8' }, function(err, contents) {
-            if(err) {
+    return new Promise(function (resolve, reject) {
+        fs.readFile(file, { encoding: 'utf-8' }, function (err, contents) {
+            if (err) {
                 reject(err);
             } else {
                 resolve({
@@ -160,9 +155,9 @@ function readFilePromise(file) {
 }
 
 function writeFilePromise(path, contents) {
-    return new Promise(function(resolve, reject) {
-        fs.writeFile(path, contents, function(err) {
-            if(err) {
+    return new Promise(function (resolve, reject) {
+        fs.writeFile(path, contents, function (err) {
+            if (err) {
                 reject(err);
             } else {
                 resolve(path);
@@ -178,31 +173,23 @@ function handleCodegen(data) {
     var pathToReglCodegenSrc = constants.pathToReglCodegenSrc;
     var pathToReglPrecompiledSrc = path.join(constants.pathToSrc, 'traces', trace, 'regl_precompiled.js');
 
-    var header = [
-        '\'use strict\';',
-        '',
-    ].join('\n');
+    var header = ["'use strict';", ''].join('\n');
     var imports = '';
-    var exports = [
-        '',
-        '/* eslint-disable quote-props */',
-        'module.exports = {',
-        '',
-    ].join('\n');
+    var exports = ['', '/* eslint-disable quote-props */', 'module.exports = {', ''].join('\n');
     var varId = 0;
 
-    Object.entries(generated).forEach(function(kv) {
+    Object.entries(generated).forEach(function (kv) {
         var key = kv[0];
         var value = kv[1];
         var filePath = path.join(pathToReglCodegenSrc, key);
         fs.writeFileSync(filePath, 'module.exports = ' + value);
 
-        imports += 'var v' + varId + ' = require(\'../../' + path.join(constants.reglCodegenSubdir, key) + '\');\n';
-        exports += '    \'' + key + '\': v' + varId + ',\n';
+        imports += 'var v' + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
+        exports += "    '" + key + "': v" + varId + ',\n';
         varId++;
     });
 
-    if(varId > 0) {
+    if (varId > 0) {
         exports = exports.slice(0, -2) + '\n};\n';
     } else {
         exports = 'module.exports = {};\n';

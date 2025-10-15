@@ -12,17 +12,24 @@ var argv = minimist(process.argv.slice(4), {
     boolean: [
         'mathjax3',
         'info',
-        'nowatch', 'randomize',
-        'failFast', 'doNotFailOnEmptyTestSuite',
-        'Chrome', 'Firefox',
-        'verbose', 'showSkipped', 'report-progress', 'report-spec', 'report-dots'
+        'nowatch',
+        'randomize',
+        'failFast',
+        'doNotFailOnEmptyTestSuite',
+        'Chrome',
+        'Firefox',
+        'verbose',
+        'showSkipped',
+        'report-progress',
+        'report-spec',
+        'report-dots'
     ],
     alias: {
         Chrome: 'chrome',
         Firefox: ['firefox', 'FF'],
         bundleTest: ['bundletest', 'bundle_test'],
         nowatch: 'no-watch',
-        failFast: 'fail-fast',
+        failFast: 'fail-fast'
     },
     default: {
         info: false,
@@ -37,78 +44,80 @@ var argv = minimist(process.argv.slice(4), {
     }
 });
 
-if(argv.info) {
-    console.log([
-        'plotly.js karma runner for jasmine tests CLI info',
-        '',
-        'Examples:',
-        '',
-        'Run `axes_test.js`, `bar_test.js` and `scatter_test.js` suites w/o `autoWatch`:',
-        '  $ npm run test-jasmine -- axes bar_test.js scatter --nowatch',
-        '',
-        'Run all tests with the `noCI` tag on Firefox in a 1500px wide window:',
-        '  $ npm run test-jasmine -- --tags=noCI --FF --width=1500',
-        '',
-        'Arguments:',
-        '  - All non-flagged arguments corresponds to the test suites in `test/jasmine/tests/` to be run.',
-        '    No need to add the `_test.js` suffix, we expand them correctly here.',
-        '  - `--bundleTest` set the bundle test suite `test/jasmine/bundle_tests/ to be run.',
-        '    Note that only one bundle test can be run at a time.',
-        '  - Use `--tags` to specify which `@` tags to test (if any) e.g `npm run test-jasmine -- --tags=gl`',
-        '    will run only gl tests.',
-        '  - Use `--skip-tags` to specify which `@` tags to skip (if any) e.g `npm run test-jasmine -- --skip-tags=gl`',
-        '    will skip all gl tests.',
-        '',
-        'Other options:',
-        '  - `--info`: show this info message',
-        '  - `--mathjax3`: to load mathjax v3 in relevant test',
-        '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
-        '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
-        '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
-        '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
-        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
-        '  - `--doNotFailOnEmptyTestSuite` (dflt: `false`): do not fail run when no spec are ran (either from bundle error OR tag filtering)',
-        '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
-        '  - `--width`(dflt: 1035): set width of the browser window',
-        '  - `--height` (dflt: 617): set height of the browser window',
-        '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
-        '  - `--showSkipped` show tests that are skipped',
-        '  - `--report-progress`: use *progress* reporter',
-        '  - `--report-spec`: use *spec* reporter',
-        '  - `--report-dots`: use *dots* reporter',
-        '',
-        'For info on the karma CLI options run `npm run test-jasmine -- --help`'
-    ].join('\n'));
+if (argv.info) {
+    console.log(
+        [
+            'plotly.js karma runner for jasmine tests CLI info',
+            '',
+            'Examples:',
+            '',
+            'Run `axes_test.js`, `bar_test.js` and `scatter_test.js` suites w/o `autoWatch`:',
+            '  $ npm run test-jasmine -- axes bar_test.js scatter --nowatch',
+            '',
+            'Run all tests with the `noCI` tag on Firefox in a 1500px wide window:',
+            '  $ npm run test-jasmine -- --tags=noCI --FF --width=1500',
+            '',
+            'Arguments:',
+            '  - All non-flagged arguments corresponds to the test suites in `test/jasmine/tests/` to be run.',
+            '    No need to add the `_test.js` suffix, we expand them correctly here.',
+            '  - `--bundleTest` set the bundle test suite `test/jasmine/bundle_tests/ to be run.',
+            '    Note that only one bundle test can be run at a time.',
+            '  - Use `--tags` to specify which `@` tags to test (if any) e.g `npm run test-jasmine -- --tags=gl`',
+            '    will run only gl tests.',
+            '  - Use `--skip-tags` to specify which `@` tags to skip (if any) e.g `npm run test-jasmine -- --skip-tags=gl`',
+            '    will skip all gl tests.',
+            '',
+            'Other options:',
+            '  - `--info`: show this info message',
+            '  - `--mathjax3`: to load mathjax v3 in relevant test',
+            '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
+            '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
+            '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
+            '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
+            '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
+            '  - `--doNotFailOnEmptyTestSuite` (dflt: `false`): do not fail run when no spec are ran (either from bundle error OR tag filtering)',
+            '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
+            '  - `--width`(dflt: 1035): set width of the browser window',
+            '  - `--height` (dflt: 617): set height of the browser window',
+            '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
+            '  - `--showSkipped` show tests that are skipped',
+            '  - `--report-progress`: use *progress* reporter',
+            '  - `--report-spec`: use *spec* reporter',
+            '  - `--report-dots`: use *dots* reporter',
+            '',
+            'For info on the karma CLI options run `npm run test-jasmine -- --help`'
+        ].join('\n')
+    );
     process.exit(0);
 }
 
 var SUFFIX = '_test.js';
-var basename = function(s) { return path.basename(s, SUFFIX); };
-var merge = function(_) {
+var basename = function (s) {
+    return path.basename(s, SUFFIX);
+};
+var merge = function (_) {
     var list = [];
 
-    (Array.isArray(_) ? _ : [_]).forEach(function(p) {
+    (Array.isArray(_) ? _ : [_]).forEach(function (p) {
         list = list.concat(p.split(','));
     });
 
     return list;
 };
-var glob = function(_) {
-    return _.length === 1 ?
-        _[0] + SUFFIX :
-        '{' + _.join(',') + '}' + SUFFIX;
+var glob = function (_) {
+    return _.length === 1 ? _[0] + SUFFIX : '{' + _.join(',') + '}' + SUFFIX;
 };
 
 var isBundleTest = !!argv.bundleTest;
 var isFullSuite = !isBundleTest && argv._.length === 0;
 var testFileGlob;
 
-if(isFullSuite) {
+if (isFullSuite) {
     testFileGlob = path.join(__dirname, 'tests', '*' + SUFFIX);
-} else if(isBundleTest) {
+} else if (isBundleTest) {
     var _ = merge(argv.bundleTest);
 
-    if(_.length > 1) {
+    if (_.length > 1) {
         console.warn('Can only run one bundle test suite at a time, ignoring ', _.slice(1));
     }
 
@@ -124,15 +133,15 @@ var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/m
 var pathToVirtualWebgl = path.join(__dirname, '..', '..', 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js');
 
 var reporters = [];
-if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
-    if(argv['report-progress']) reporters.push('progress');
-    if(argv['report-spec']) reporters.push('spec');
-    if(argv['report-dots']) reporters.push('dots');
+if (argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
+    if (argv['report-progress']) reporters.push('progress');
+    if (argv['report-spec']) reporters.push('spec');
+    if (argv['report-dots']) reporters.push('dots');
 } else {
-    if(isCI) {
+    if (isCI) {
         reporters.push('spec');
     } else {
-        if(isFullSuite) {
+        if (isFullSuite) {
             reporters.push('dots');
         } else {
             reporters.push('progress');
@@ -142,10 +151,10 @@ if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
 
 var hasSpecReporter = reporters.indexOf('spec') !== -1;
 
-if(!hasSpecReporter && argv.showSkipped) reporters.push('spec');
-if(argv.verbose) reporters.push('verbose');
+if (!hasSpecReporter && argv.showSkipped) reporters.push('spec');
+if (argv.verbose) reporters.push('verbose');
 
-if(process.argv.indexOf('--tags=noCI,noCIdep') !== -1) {
+if (process.argv.indexOf('--tags=noCI,noCIdep') !== -1) {
     reporters = ['dots'];
 }
 
@@ -169,7 +178,6 @@ function func(config) {
 }
 
 func.defaultConfig = {
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: constants.pathToRoot,
 
@@ -184,7 +192,7 @@ func.defaultConfig = {
         require('karma-spec-reporter'),
         require('karma-chrome-launcher'),
         require('karma-firefox-launcher'),
-        require('karma-esbuild'),
+        require('karma-esbuild')
     ],
 
     // list of files / patterns to load in the browser
@@ -194,9 +202,9 @@ func.defaultConfig = {
         pathToCustomMatchers,
         // available to fetch from /base/node_modules/@plotly/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
-        {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
-        {pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true},
-        {pattern: pathToTopojsonDist + '/**', included: false, watched: false, served: true}
+        { pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true },
+        { pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true },
+        { pattern: pathToTopojsonDist + '/**', included: false, watched: false, served: true }
     ],
 
     // list of files / pattern to exclude
@@ -253,7 +261,7 @@ func.defaultConfig = {
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blacklist' : '',
-                (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : ''
+                isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
         },
         _Firefox: {
@@ -318,11 +326,9 @@ func.defaultConfig = {
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['esbuild'];
 func.defaultConfig.preprocessors[testFileGlob] = ['esbuild'];
 
-if(argv.virtualWebgl) {
+if (argv.virtualWebgl) {
     // add virtual-webgl to the top
-    func.defaultConfig.files = [
-        pathToVirtualWebgl
-    ].concat(func.defaultConfig.files);
+    func.defaultConfig.files = [pathToVirtualWebgl].concat(func.defaultConfig.files);
 }
 
 // lastly, load test file glob
@@ -330,8 +336,8 @@ func.defaultConfig.files.push(testFileGlob);
 
 // add browsers
 var browsers = func.defaultConfig.browsers;
-if(argv.Chrome) browsers.push('_Chrome');
-if(argv.Firefox) browsers.push('_Firefox');
-if(browsers.length === 0) browsers.push('_Chrome');
+if (argv.Chrome) browsers.push('_Chrome');
+if (argv.Firefox) browsers.push('_Firefox');
+if (browsers.length === 0) browsers.push('_Chrome');
 
 module.exports = func;
