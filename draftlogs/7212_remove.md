@@ -1,1 +1,0 @@
-- Drop support for passing a string to the `title` attribute, and drop support for deprecated attributes `titlefont`, `titleposition`, `titleside`, and `titleoffset` [[#7212](https://github.com/plotly/plotly.js/pull/7212)]

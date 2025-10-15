@@ -41,7 +41,7 @@ modeBarButtons.toImage = {
         var opts = gd._context.toImageButtonOptions || {};
         var format = opts.format || 'png';
         return format === 'png' ?
-            _(gd, 'Download plot as a png') : // legacy text
+            _(gd, 'Download plot as a PNG') : // legacy text
             _(gd, 'Download plot'); // generic non-PNG text
     },
     icon: Icons.camera,
@@ -50,11 +50,6 @@ modeBarButtons.toImage = {
         var opts = {format: toImageButtonOptions.format || 'png'};
 
         Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long');
-
-        if(opts.format !== 'svg' && Lib.isIE()) {
-            Lib.notifier(_(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
-            opts.format = 'svg';
-        }
 
         ['filename', 'width', 'height', 'scale'].forEach(function(key) {
             if(key in toImageButtonOptions) {
@@ -261,12 +256,15 @@ function handleCartesian(gd, ev) {
         var mag = (val === 'in') ? 0.5 : 2;
         var r0 = (1 + mag) / 2;
         var r1 = (1 - mag) / 2;
-        var axName;
+        var axName, allowed;
 
         for(i = 0; i < axList.length; i++) {
             ax = axList[i];
+            allowed = ax.modebardisable === 'none' || ax.modebardisable.indexOf(
+                (val === 'auto' || val === 'reset') ? 'autoscale' : 'zoominout'
+            ) === -1;
 
-            if(!ax.fixedrange) {
+            if(allowed && !ax.fixedrange) {
                 axName = ax._name;
                 if(val === 'auto') {
                     aobj[axName + '.autorange'] = true;

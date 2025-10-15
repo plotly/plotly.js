@@ -1,1 +1,0 @@
- - Drop jQuery events support [[#7224](https://github.com/plotly/plotly.js/pull/7224)]

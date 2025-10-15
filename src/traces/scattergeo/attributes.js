@@ -15,6 +15,11 @@ var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
+const breakingChangeWarning = [
+    'The library used by the *country names* `locationmode` option is changing in an upcoming version.',
+    'Country names in existing plots may not work in the new version.'
+].join(' ');
+
 module.exports = overrideAll({
     lon: {
         valType: 'data_array',
@@ -38,6 +43,7 @@ module.exports = overrideAll({
         values: ['ISO-3', 'USA-states', 'country names', 'geojson-id'],
         dflt: 'ISO-3',
         description: [
+            breakingChangeWarning,
             'Determines the set of locations used to match entries in `locations`',
             'to regions on the map.',
             'Values *ISO-3*, *USA-states*, *country names* correspond to features on',

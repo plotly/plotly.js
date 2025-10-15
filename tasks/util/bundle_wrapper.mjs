@@ -1,12 +1,12 @@
+import fs from 'fs';
 import fsExtra from 'fs-extra';
 import prependFile from 'prepend-file';
 
 import { build } from 'esbuild';
 
 import esbuildConfig from '../../esbuild-config.js';
-import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
+import esbuildPluginStripMeta from '../../tasks/compress_attributes.js';
 
-import transform from '../../tasks/compress_attributes.js';
 import common from './common.js';
 
 var basePlugins = esbuildConfig.plugins;
@@ -29,28 +29,28 @@ var basePlugins = esbuildConfig.plugins;
 export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     opts = opts || {};
 
-    var config = {...esbuildConfig};
+    var config = { ...esbuildConfig };
 
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle;
     config.minify = !!opts.minify;
 
     if(!opts.noCompressAttributes) {
-        config.plugins = basePlugins.concat([browserifyAdapter(transform)]);
+        config.plugins = basePlugins.concat([esbuildPluginStripMeta]);
     }
 
     if(opts.noPlugins) config.plugins = [];
 
     await build(config);
 
-    addWrapper(pathToBundle)
+    addWrapper(pathToBundle);
 
     if(cb) cb();
 }
 
 // Until https://github.com/evanw/esbuild/pull/513 is merged
 // Thanks to https://github.com/prantlf and https://github.com/birkskyum
-function addWrapper(path){
+function addWrapper(path) {
     prependFile.sync(
         path,
         [

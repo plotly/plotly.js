@@ -100,7 +100,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
-    if(axType !== 'category' && !options.noHover) coerce('hoverformat');
+    if(!options.noHover) {
+        if(axType !== 'category') coerce('hoverformat');
+        if(!options.noUnifiedhovertitle) {
+            coerce('unifiedhovertitle.text');
+        }
+    }
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
@@ -167,11 +172,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         (axType === 'category' || isMultiCategory) &&
         (containerOut.ticks || containerOut.showgrid)
     ) {
-        var ticksonDflt;
-        if(isMultiCategory) ticksonDflt = 'boundaries';
-        var tickson = coerce('tickson', ticksonDflt);
-        if(tickson === 'boundaries') {
+        if (isMultiCategory) {
+            coerce('tickson', 'boundaries');
             delete containerOut.ticklabelposition;
+        } else { // category axis
+            coerce('tickson');
         }
     }
 

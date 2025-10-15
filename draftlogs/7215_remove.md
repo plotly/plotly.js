@@ -1,1 +1,0 @@
-Drop support for deprecated `annotation.ref` attribute (use `annotation.xref` and `annotation.yref` instead) [[#7215](https://github.com/plotly/plotly.js/pull/7215)]

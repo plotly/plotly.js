@@ -226,11 +226,11 @@ module.exports = extendFlat({
                 'Sets the value or values of the constraint boundary.',
 
                 'When `operation` is set to one of the comparison values',
-                '(' + COMPARISON_OPS2 + ')',
+                '(`' + COMPARISON_OPS2 + '`)',
                 '*value* is expected to be a number.',
 
                 'When `operation` is set to one of the interval values',
-                '(' + INTERVAL_OPS + ')',
+                '(`' + INTERVAL_OPS + '`)',
                 '*value* is expected to be an array of two numbers where the first',
                 'is the lower bound and the second is the upper bound.',
             ].join(' ')

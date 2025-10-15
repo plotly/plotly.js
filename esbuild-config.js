@@ -1,6 +1,6 @@
 var glsl = require('esbuild-plugin-glsl').glsl;
 var environmentPlugin = require('esbuild-plugin-environment').environmentPlugin;
-const stylePlugin = require('esbuild-style-plugin');
+const InlineCSSPlugin = require('esbuild-plugin-inline-css');
 
 module.exports = {
     entryPoints: ['./lib/index.js'],
@@ -10,7 +10,7 @@ module.exports = {
     minify: false,
     sourcemap: false,
     plugins: [
-        stylePlugin(),
+        InlineCSSPlugin(),
         glsl({
             minify: true,
         }),
@@ -23,6 +23,7 @@ module.exports = {
     },
     define: {
         global: 'window',
+        'define.amd': 'false',
     },
     target: 'es2016',
     logLevel: 'info',

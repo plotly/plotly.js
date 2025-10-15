@@ -53,11 +53,8 @@ if 'virtual-webgl' in sys.argv or 'virtual-webgl=' in sys.argv :
     plotlyjs = plotlyjs_with_virtual_webgl
 
 pio.kaleido.scope.plotlyjs = plotlyjs
+pio.kaleido.scope.topojson = "file://" + os.path.join(root, 'topojson', 'dist')
 pio.templates.default = 'none'
-
-_credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
-pio.kaleido.scope.mapbox_access_token = json.load(_credentials)['MAPBOX_ACCESS_TOKEN']
-_credentials.close()
 
 ALL_MOCKS = [os.path.splitext(a)[0] for a in os.listdir(dirIn) if a.endswith('.json')]
 ALL_MOCKS.sort()
@@ -70,10 +67,10 @@ else :
 # unable to generate baselines for the following mocks
 blacklist = [
     'map_stamen-style',
-    'mapbox_density0-legend',
-    'mapbox_osm-style',
-    'mapbox_stamen-style', # Could pass by setting mapboxAccessToken to a stadiamaps.com token
-    'mapbox_custom-style' # Figure out why needed this in https://github.com/plotly/plotly.js/pull/6610
+    'map_predefined-styles2',
+    'map_scattercluster',
+    'map_fonts-supported-open-sans',
+    'map_fonts-supported-open-sans-weight',
 ]
 allNames = [a for a in allNames if a not in blacklist]
 

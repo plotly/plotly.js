@@ -3,7 +3,8 @@
 var deprecationWarning = [
     '*choroplethmapbox* trace is deprecated!',
     'Please consider switching to the *choroplethmap* trace type and `map` subplots.',
-    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
+    'Learn more at: https://plotly.com/python/maplibre-migration/',
+    'as well as https://plotly.com/javascript/maplibre-migration/'
 ].join(' ');
 
 module.exports = {

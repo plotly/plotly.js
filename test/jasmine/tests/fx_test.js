@@ -179,7 +179,8 @@ describe('Fx defaults', function() {
                 shadow: 'auto',
             },
             align: 'auto',
-            namelength: 15
+            namelength: 15,
+            showarrow: true,
         });
 
         expect(out.data[1].hoverlabel).toEqual({
@@ -197,7 +198,8 @@ describe('Fx defaults', function() {
                 shadow: 'auto',
             },
             align: 'auto',
-            namelength: 15
+            namelength: 15,
+            showarrow: true,
         });
 
         expect(out.layout.annotations[0].hoverlabel).toEqual({

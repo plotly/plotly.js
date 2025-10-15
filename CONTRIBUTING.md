@@ -340,7 +340,7 @@ This will produce the following plot, and say you want to simulate a selection p
 
 The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/master/src/traces))
 are defined as plain objects with functions and constants attached to them in an index file
-(e.g. `src/traces/scatter/index.js`). The trace modules are "registered" undo the `Registry` object
+(e.g. `src/traces/scatter/index.js`). The trace modules are "registered" under the `Registry` object
 (found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/master/src/registry.js)) using
 `Plotly.register` (as done in the index files in `dist/`).
 

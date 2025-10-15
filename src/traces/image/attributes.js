@@ -21,7 +21,7 @@ module.exports = extendFlat({
         editType: 'calc',
         description: [
             'Specifies the data URI of the image to be visualized.',
-            'The URI consists of "data:image/[<media subtype>][;base64],<data>"'
+            'The URI consists of "data:image/[<media subtype\\\\>][;base64\\\\],<data\\\\>"'
         ].join(' ')
     },
     z: {
@@ -135,5 +135,4 @@ module.exports = extendFlat({
     }),
 
     zorder: zorder,
-    transforms: undefined
 });

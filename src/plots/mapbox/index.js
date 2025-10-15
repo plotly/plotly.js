@@ -28,7 +28,8 @@ exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPBOX);
 var deprecationWarning = [
     'mapbox subplots and traces are deprecated!',
     'Please consider switching to `map` subplots and traces.',
-    'Learn more at: https://plotly.com/javascript/maplibre-migration/'
+    'Learn more at: https://plotly.com/python/maplibre-migration/',
+    'as well as https://plotly.com/javascript/maplibre-migration/'
 ].join(' ');
 
 exports.attributes = {

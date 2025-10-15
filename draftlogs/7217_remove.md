@@ -1,1 +1,0 @@
-Drop support for deprecated attribute `gl3d.cameraposition` (use `gl3d.camera` instead) [[#7217](https://github.com/plotly/plotly.js/pull/7217)]

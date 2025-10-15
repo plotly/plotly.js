@@ -40,7 +40,7 @@ var exports = module.exports = function plot(gd, cdModule) {
     cdModule.forEach(function(d, i) {
         var trace = d[0].trace;
         fullIndices[i] = trace.index;
-        var iIn = inputIndices[i] = trace._fullInput.index;
+        var iIn = inputIndices[i] = trace.index;
         currentDims[i] = gd.data[iIn].dimensions;
         initialDims[i] = gd.data[iIn].dimensions.slice();
     });
