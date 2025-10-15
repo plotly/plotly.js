@@ -231,8 +231,11 @@ article {
     padding: 0;
 }
 
-.md-header__inner ul li{
+.md-header-ul li{
     margin-right: 24px;
+}
+
+.md-header__inner ul li{
     padding: 5px;
     display: flex;
     -webkit-box-pack: center;
