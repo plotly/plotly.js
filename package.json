@@ -28,7 +28,7 @@
     "bundle": "node tasks/bundle.mjs",
     "extra-bundles": "node tasks/extra_bundles.mjs",
     "locales": "node tasks/locales.js",
-    "schema": "node tasks/schema.mjs",
+    "schema": "node devtools/test_dashboard/build.mjs && node tasks/schema.mjs",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
     "preprocess": "node tasks/preprocess.js",
