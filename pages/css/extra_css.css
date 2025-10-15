@@ -290,3 +290,7 @@ section.sponsor--wrap {
     -webkit-box-align: center;
     align-items: center;
 }
+
+.z-depth-1 {
+    width: 100%;
+}
