@@ -1,7 +1,6 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var m4FromQuat = require('gl-mat4/fromQuat');
 
 var Registry = require('../registry');
 var Lib = require('../lib');
@@ -510,39 +509,40 @@ exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
 };
 
 /**
- * Check if a collection (object or array) has changed given two versions of
- * the collection: old and new.
+ * Check if two collections (object or array) are equal
  *
- * @param {Object|Array} oldCollection: Old version of collection to compare
- * @param {Object|Array} newCollection: New version of collection to compare
+ * @param {Object|Array} collection1: First collection to compare
+ * @param {Object|Array} collection2: Second collection to compare
  */
-const hasCollectionChanged = (oldCollection, newCollection) => {
+const collectionsAreEqual = (collection1, collection2) => {
     const isArrayOrObject = (...vals) => vals.every((v) => Lib.isPlainObject(v)) || vals.every((v) => Array.isArray(v));
-    if ([oldCollection, newCollection].every((a) => Array.isArray(a))) {
-        if (oldCollection.length !== newCollection.length) return true;
+    if ([collection1, collection2].every((a) => Array.isArray(a))) {
+        if (collection1.length !== collection2.length) return false;
 
-        for (let i = 0; i < oldCollection.length; i++) {
-            const oldVal = oldCollection[i];
-            const newVal = newCollection[i];
+        for (let i = 0; i < collection1.length; i++) {
+            const oldVal = collection1[i];
+            const newVal = collection2[i];
             if (oldVal !== newVal) {
-                const hasChanged = isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
-                if (hasChanged) return true;
+                const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+                if (!equal) return false;
             }
         }
+
+        return true;
     } else {
-        if (Object.keys(oldCollection).length !== Object.keys(newCollection).length) return true;
+        if (Object.keys(collection1).length !== Object.keys(collection2).length) return false;
 
-        for (const k in oldCollection) {
+        for (const k in collection1) {
             if (k.startsWith('_')) continue;
-            const oldVal = oldCollection[k];
-            const newVal = newCollection[k];
+            const oldVal = collection1[k];
+            const newVal = collection2[k];
             if (oldVal !== newVal) {
-                const hasChanged = isArrayOrObject(oldVal, newVal) ? hasCollectionChanged(oldVal, newVal) : true;
-                if (hasChanged) return true;
+                const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+                if (!equal) return false;
             }
         }
-    }
 
-    return false;
+        return true;
+    }
 };
-exports.hasCollectionChanged = hasCollectionChanged;
+exports.collectionsAreEqual = collectionsAreEqual;

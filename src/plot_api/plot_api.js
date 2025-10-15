@@ -2610,7 +2610,7 @@ function react(gd, data, layout, config) {
             const oldConfig = Lib.extendDeepAll({}, gd._context);
             gd._context = undefined;
             setPlotContext(gd, config);
-            configChanged = helpers.hasCollectionChanged(oldConfig, gd._context);
+            configChanged = !helpers.collectionsAreEqual(oldConfig, gd._context);
         }
 
         if (configChanged) {
