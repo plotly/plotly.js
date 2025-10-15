@@ -7,9 +7,8 @@ import minimist from 'minimist';
 
 import constants from '../../tasks/util/constants.js';
 import { context, build } from 'esbuild';
-import config from '../../esbuild-config.js';
 
-import { glsl } from 'esbuild-plugin-glsl';
+import { devtoolsConfig, localDevConfig } from '../../esbuild-config.js';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -17,41 +16,16 @@ var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
 
-if (strict) {
-    config.entryPoints = ['./lib/index-strict.js'];
-}
-
-config.outfile = './build/plotly.js';
+if (strict) localDevConfig.entryPoints = ['./lib/index-strict.js'];
 
 var mockFolder = constants.pathToTestImageMocks;
 
 // mock list
 await getMockFiles().then(readFiles).then(createMocksList).then(saveMockListToFile);
 
-// Devtools config
-var devtoolsConfig = {
-    entryPoints: [path.join(constants.pathToRoot, 'devtools', 'test_dashboard', 'devtools.js')],
-    outfile: path.join(constants.pathToRoot, 'build', 'test_dashboard-bundle.js'),
-    format: 'cjs',
-    globalName: 'Tabs',
-    bundle: true,
-    minify: false,
-    sourcemap: false,
-    plugins: [
-        glsl({
-            minify: true
-        })
-    ],
-    define: {
-        global: 'window'
-    },
-    target: 'es2016',
-    logLevel: 'info'
-};
-
 build(devtoolsConfig);
 
-var ctx = await context(config);
+var ctx = await context(localDevConfig);
 devServer();
 console.log('watching esbuild...');
 await ctx.watch();

@@ -4,7 +4,7 @@ import prependFile from 'prepend-file';
 
 import { build } from 'esbuild';
 
-import esbuildConfig from '../../esbuild-config.js';
+import { esbuildConfig } from '../../esbuild-config.js';
 import esbuildPluginStripMeta from '../../tasks/compress_attributes.js';
 
 import common from './common.js';

@@ -7,7 +7,7 @@ import minimist from 'minimist';
 
 import constants from '../../tasks/util/constants.js';
 import { build } from 'esbuild';
-import config from '../../esbuild-config.js';
+import { esbuildConfig as config } from '../../esbuild-config.js';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -64,11 +64,6 @@ server.listen(PORT);
 // open up browser window
 open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
 
-var devtoolsPath = path.join(constants.pathToRoot, 'devtools/regl_codegen');
-config.entryPoints = [path.join(devtoolsPath, 'devtools.js')];
-config.outfile = './build/regl_codegen-bundle.js';
-config.sourcemap = false;
-config.minify = false;
 await build(config);
 
 function getMockFiles() {

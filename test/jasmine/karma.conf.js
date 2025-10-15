@@ -3,7 +3,7 @@
 var path = require('path');
 var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
-var esbuildConfig = require('../../esbuild-config.js');
+const { esbuildConfig } = require('../../esbuild-config.js');
 
 var isCI = Boolean(process.env.CI);
 
