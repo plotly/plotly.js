@@ -3143,6 +3143,70 @@ describe('plot_api helpers', function () {
                 )
             ).toBe(true);
         });
+
+        it('Returns false for null values', () => {
+            expect(helpers.collectionsAreEqual(null, null)).toBe(false);
+        });
+
+        it('Returns false when comparing null and object', () => {
+            expect(helpers.collectionsAreEqual(null, {})).toBe(false);
+        });
+
+        it('Returns true for empty objects', () => {
+            expect(helpers.collectionsAreEqual({}, {})).toBe(true);
+        });
+
+        it('Returns true for empty arrays', () => {
+            expect(helpers.collectionsAreEqual([], [])).toBe(true);
+        });
+
+        it('Returns false for different array lengths', () => {
+            expect(helpers.collectionsAreEqual([1, 2], [1, 2, 3])).toBe(false);
+        });
+
+        it('Handles underscore keys in nested objects', () => {
+            expect(
+                helpers.collectionsAreEqual(
+                    { level1: { _private: 'a', public: 'b' } },
+                    { level1: { _private: 'z', public: 'b' } }
+                )
+            ).toBe(true);
+        });
+
+        it('Returns false when comparing undefined and object', () => {
+            expect(helpers.collectionsAreEqual(undefined, {})).toBe(false);
+        });
+
+        it('Returns false for objects with different number of keys', () => {
+            expect(helpers.collectionsAreEqual({ a: 1, b: 2 }, { a: 1 })).toBe(false);
+        });
+
+        it('Returns false when comparing object and array', () => {
+            expect(helpers.collectionsAreEqual({}, [])).toBe(false);
+        });
+
+        it('Handles objects with array values', () => {
+            expect(helpers.collectionsAreEqual({ crew: ['Leela', 'Fry'] }, { crew: ['Leela', 'Fry'] })).toBe(true);
+        });
+
+        it('Returns false for objects with different array values', () => {
+            expect(helpers.collectionsAreEqual({ crew: ['Leela', 'Fry'] }, { crew: ['Leela', 'Bender'] })).toBe(false);
+        });
+
+        it('Handles arrays with object elements', () => {
+            expect(
+                helpers.collectionsAreEqual([{ name: 'Leela' }, { name: 'Fry' }], [{ name: 'Leela' }, { name: 'Fry' }])
+            ).toBe(true);
+        });
+
+        it('Returns false for arrays with different object elements', () => {
+            expect(
+                helpers.collectionsAreEqual(
+                    [{ name: 'Leela' }, { name: 'Fry' }],
+                    [{ name: 'Leela' }, { name: 'Bender' }]
+                )
+            ).toBe(false);
+        });
     });
 });
 
