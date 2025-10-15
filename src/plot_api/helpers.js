@@ -529,7 +529,7 @@ const collectionsAreEqual = (collection1, collection2) => {
         }
 
         return true;
-    } else {
+    } else if ([collection1, collection2].every((a) => Lib.isPlainObject(a))) {
         if (Object.keys(collection1).length !== Object.keys(collection2).length) return false;
 
         for (const k in collection1) {
@@ -544,5 +544,7 @@ const collectionsAreEqual = (collection1, collection2) => {
 
         return true;
     }
+
+    return false;
 };
 exports.collectionsAreEqual = collectionsAreEqual;
