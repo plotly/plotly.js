@@ -1,97 +1,97 @@
 {
- "data": [
-  {
-   "type": "scatterpolar",
-   "r": [],
-   "theta": []
-  },
-  {
-   "type": "scatterpolar",
-   "r": [],
-   "theta": [],
-   "subplot": "polar2"
-  },
-  {
-   "type": "scatterpolar",
-   "r": [],
-   "theta": [],
-   "subplot": "polar3"
-  },
-  {
-   "type": "scatterpolar",
-   "mode": "markers+text",
-   "r": [0],
-   "theta": [0],
-   "text": "<b>N.B.</b><br>radial<br>auotrange<br>for (0,0)<br>gives [0,1]",
-   "textposition": "left",
-   "subplot": "polar4"
-  },
-  {
-   "type": "scatterpolar",
-   "r": [1, 2, 3],
-   "theta": [0, 90, 200],
-   "subplot": "polar5"
+  "data": [
+    {
+      "type": "scatterpolar",
+      "r": [],
+      "theta": []
+    },
+    {
+      "type": "scatterpolar",
+      "r": [],
+      "theta": [],
+      "subplot": "polar2"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [],
+      "theta": [],
+      "subplot": "polar3"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "markers+text",
+      "r": [0],
+      "theta": [0],
+      "text": "<b>N.B.</b><br>radial<br>auotrange<br>for (0,0)<br>gives [0,1]",
+      "textposition": "left",
+      "subplot": "polar4"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [1, 2, 3],
+      "theta": [0, 90, 200],
+      "subplot": "polar5"
+    }
+  ],
+  "layout": {
+    "polar": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.56, 1]
+      },
+      "angularaxis": {
+        "labelalias": { "0°": "ZERO<sup>2</sup>" }
+      },
+      "radialaxis": {
+        "title": { "text": "blank" },
+        "angle": 180
+      }
+    },
+    "polar2": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0, 0.44]
+      },
+      "angularaxis": {
+        "showline": true,
+        "showgrid": false,
+        "showticklabels": false,
+        "ticks": ""
+      },
+      "radialaxis": {
+        "showline": false,
+        "showgrid": false,
+        "showticklabels": false,
+        "ticks": ""
+      }
+    },
+    "polar3": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0.56, 1]
+      },
+      "radialaxis": {
+        "title": { "text": "blank" },
+        "side": "counterclockwise"
+      },
+      "angularaxis": { "visible": false }
+    },
+    "polar4": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0, 0.44]
+      },
+      "radialaxis": { "visible": false }
+    },
+    "polar5": {
+      "domain": {
+        "x": [0.12, 0.34],
+        "y": [0.11, 0.34]
+      },
+      "hole": 1
+    },
+    "showlegend": false,
+    "width": 600,
+    "height": 500
   }
- ],
- "layout": {
-  "polar": {
-   "domain": {
-    "x": [0, 0.46],
-    "y": [0.56, 1]
-   },
-   "angularaxis": {
-    "labelalias": { "0°": "ZERO<sup>2</sup>" }
-   },
-   "radialaxis": {
-    "title": { "text": "blank" },
-    "angle": 180
-   }
-  },
-  "polar2": {
-   "domain": {
-    "x": [0, 0.46],
-    "y": [0, 0.44]
-   },
-   "angularaxis": {
-    "showline": true,
-    "showgrid": false,
-    "showticklabels": false,
-    "ticks": ""
-   },
-   "radialaxis": {
-    "showline": false,
-    "showgrid": false,
-    "showticklabels": false,
-    "ticks": ""
-   }
-  },
-  "polar3": {
-   "domain": {
-    "x": [0.54, 1],
-    "y": [0.56, 1]
-   },
-   "radialaxis": {
-    "title": { "text": "blank" },
-    "side": "counterclockwise"
-   },
-   "angularaxis": { "visible": false }
-  },
-  "polar4": {
-   "domain": {
-    "x": [0.54, 1],
-    "y": [0, 0.44]
-   },
-   "radialaxis": { "visible": false }
-  },
-  "polar5": {
-   "domain": {
-    "x": [0.12, 0.34],
-    "y": [0.11, 0.34]
-   },
-   "hole": 1
-  },
-  "showlegend": false,
-  "width": 600,
-  "height": 500
- }
 }
