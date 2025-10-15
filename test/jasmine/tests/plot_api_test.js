@@ -3095,44 +3095,53 @@ describe('plot_api helpers', function () {
         });
     });
 
-    describe('hasCollectionChanged', () => {
-        it('Returns true if object collection has changed', () => {
+    describe('collectionsAreEqual', () => {
+        it('Returns false if object collections are NOT equal', () => {
             expect(
-                helpers.hasCollectionChanged(
+                helpers.collectionsAreEqual(
                     { captain: 'Leela', deliveryBoy: 'Fry' },
                     { captain: 'Leela', deliveryBoy: 'Bender' }
-                )
-            ).toBe(true);
-        });
-
-        it("Returns false if object collection hasn't changed", () => {
-            expect(
-                helpers.hasCollectionChanged(
-                    { captain: 'Leela', deliveryBoy: 'Fry' },
-                    { captain: 'Leela', deliveryBoy: 'Fry' }
                 )
             ).toBe(false);
         });
 
-        it('Returns true if array collection has changed', () => {
-            expect(helpers.hasCollectionChanged(['Zoidberg', 'Hermes'], ['Zoidberg', 'Leela'])).toBe(true);
-        });
-
-        it("Returns false if array collection hasn't changed", () => {
-            expect(helpers.hasCollectionChanged(['Zoidberg', 'Hermes'], ['Zoidberg', 'Hermes'])).toBe(false);
-        });
-
-        it('Handles nested objects', () => {
+        it('Returns true if object collections are equal', () => {
             expect(
-                helpers.hasCollectionChanged(
-                    { level1: { captain: 'Leela', deliveryBoy: 'Fry' } },
-                    { level1: { captain: 'Leela', deliveryBoy: 'Bender' } }
+                helpers.collectionsAreEqual(
+                    { captain: 'Leela', deliveryBoy: 'Fry' },
+                    { captain: 'Leela', deliveryBoy: 'Fry' }
                 )
             ).toBe(true);
         });
 
+        it('Returns false if array collections are NOT equal', () => {
+            expect(helpers.collectionsAreEqual(['Zoidberg', 'Hermes'], ['Zoidberg', 'Leela'])).toBe(false);
+        });
+
+        it('Returns true if array collection are equal', () => {
+            expect(helpers.collectionsAreEqual(['Zoidberg', 'Hermes'], ['Zoidberg', 'Hermes'])).toBe(true);
+        });
+
+        it('Handles nested objects', () => {
+            expect(
+                helpers.collectionsAreEqual(
+                    { level1: { captain: 'Leela', deliveryBoy: 'Fry' } },
+                    { level1: { captain: 'Leela', deliveryBoy: 'Bender' } }
+                )
+            ).toBe(false);
+        });
+
         it('Handles nested arrays', () => {
-            expect(helpers.hasCollectionChanged([['Zoidberg', 'Hermes']], [['Zoidberg', 'Leela']])).toBe(true);
+            expect(helpers.collectionsAreEqual([['Zoidberg', 'Hermes']], [['Zoidberg', 'Leela']])).toBe(false);
+        });
+
+        it("Ignores object keys prefixed with '_'", () => {
+            expect(
+                helpers.collectionsAreEqual(
+                    { captain: 'Leela', _deliveryBoy: 'Fry' },
+                    { captain: 'Leela', _deliveryBoy: 'Bender' }
+                )
+            ).toBe(true);
         });
     });
 });
