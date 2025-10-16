@@ -33,6 +33,38 @@ jobs:
           paths:
             - plotly.js
 
+  performance-jasmine:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:18.20.4-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run performance tests
+          command: .circleci/test.sh performance-jasmine
+      - run:
+          name: Display system information
+          command: npm run system-info > ~/Downloads/system_info.txt
+      - run:
+          name: Combine CSV files
+          command: |
+            head -n 1 `ls ~/Downloads/*.csv | head -n 1` > ~/Downloads/all.csv
+            tail -n+2 -q ~/Downloads/*.csv >> ~/Downloads/all.csv
+      - store_artifacts:
+          path: ~/Downloads
+          destination: /
+
   timezone-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
@@ -525,6 +557,9 @@ workflows:
           requires:
             - install-and-cibuild
       - bundle-jasmine:
+          requires:
+            - install-and-cibuild
+      - performance-jasmine:
           requires:
             - install-and-cibuild
       - mathjax-firefoxLatest:

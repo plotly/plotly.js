@@ -79,6 +79,11 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
+    performance-jasmine)
+        npm run test-performance || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
     mathjax-firefox)
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --nowatch || EXIT_STATE=$?
         exit $EXIT_STATE
