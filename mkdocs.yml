@@ -199,7 +199,67 @@ nav:
     - Sliders: examples/sliders.md
     - Lasso Selection: examples/lasso-selection.md
     - Range Slider and Selector: examples/range-slider.md
-- API Reference: reference/
+- API Reference: 
+    - Core Objects: 
+      - Layout: reference/layout.md
+    - Simple Traces:
+      - Bar: reference/bar.md
+      - Contour: reference/contour.md
+      - Heatmap: reference/heatmap.md
+      - Image: reference/image.md
+      - Pie: reference/pie.md
+      - Scatter: reference/scatter.md
+      - Scatter GL: reference/scattergl.md
+      - Table: reference/table.md
+    - Distribution Traces:
+      - Box: reference/box.md
+      - Histogram: reference/histogram.md
+      - Histogram 2D: reference/histogram2d.md
+      - Histogram 2D Contour: reference/histogram2dcontour.md
+      - Violin: reference/violin.md
+    - Finance Traces:
+      - Candlestick: reference/candlestick.md
+      - Funnel: reference/funnel.md
+      - Funnel Area: reference/funnelarea.md
+      - Indicator: reference/indicator.md
+      - Ohlc: reference/ohlc.md
+      - Waterfall: reference/waterfall.md
+    - 3D Traces:
+      - Cone: reference/cone.md
+      - Isosurface: reference/isosurface.md
+      - Mesh 3D: reference/mesh3d.md
+      - Scatter 3D: reference/scatter3d.md
+      - Streamtube: reference/streamtube.md
+      - Surface: reference/surface.md
+      - Volume: reference/volume.md
+    - Map Traces:
+      - Choropleth: reference/choropleth.md
+      - Choropleth Map: reference/choroplethmap.md
+      - Choropleth Mapbox: reference/choroplethmapbox.md
+      - Density Map: reference/densitymap.md
+      - Density Mapbox: reference/densitymapbox.md
+      - Scatter Geo: reference/scattergeo.md
+      - Scatter Map: reference/scattermap.md
+      - Scatter Mapbox: reference/scattermapbox.md
+    - Specialized Traces:
+      - Bar Polar: reference/barpolar.md
+      - Carpet: reference/carpet.md
+      - Contour Carpet: reference/contourcarpet.md
+      - Icicle: reference/icicle.md
+      - Parallel Categories: reference/parcats.md
+      - Parallel Coordinates: reference/parcoords.md
+      - Sankey: reference/sankey.md
+      - Scatter Carpet: reference/scattercarpet.md
+      - Scatter Polar: reference/scatterpolar.md
+      - Scatter Polar GL: reference/scatterpolargl.md
+      - Scatter Smith: reference/scattersmith.md
+      - Scatter Ternary: reference/scatterternary.md
+      - SPLOM: reference/splom.md
+      - Sunburst: reference/sunburst.md
+      - Treemap: reference/treemap.md
 
 extra:
   js_version: "3.1.0"
+
+exclude_docs: |
+  reference/SUMMARY.md
