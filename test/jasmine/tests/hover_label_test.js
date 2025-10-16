@@ -748,7 +748,7 @@ describe('hover info', function() {
 
         it('provides exponents correctly for z data', function(done) {
             function expFmt(val, exp) {
-                return val + '×10\u200b<tspan style="font-size:70%" dy="-0.6em">' +
+                return val + '×10\u200b<tspan dy="-0.6em" style="font-size: 70%;">' +
                     (exp < 0 ? MINUS_SIGN + -exp : exp) +
                     '</tspan><tspan dy="0.42em">\u200b</tspan>';
             }
@@ -2106,7 +2106,7 @@ describe('hover info', function() {
                 expect(hoverTrace.y).toEqual(1);
 
                 assertHoverLabelContent({
-                    nums: '<tspan style="font-weight:bold">$1.00</tspan>\nPV learning curve.txt',
+                    nums: '<tspan style="font-weight: bold;">$1.00</tspan>\nPV learning curve.txt',
                     name: '',
                     axis: '0.388'
                 });
@@ -2155,7 +2155,7 @@ describe('hover info', function() {
                 expect(hoverTrace.y).toEqual(1);
 
                 assertHoverLabelContent({
-                    nums: 'Cost ($/W​<tspan style="font-size:70%" dy="0.3em">P</tspan><tspan dy="-0.21em">​</tspan>):$1.00\nCumulative Production (GW):0.3880',
+                    nums: 'Cost ($/W​<tspan dy="0.3em" style="font-size: 70%;">P</tspan><tspan dy="-0.21em">​</tspan>):$1.00\nCumulative Production (GW):0.3880',
                     name: '',
                     axis: '0.388'
                 });
