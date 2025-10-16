@@ -2066,11 +2066,9 @@ function num2frac(num) {
 var SIPREFIXES = ['f', 'p', 'n', 'μ', 'm', '', 'k', 'M', 'G', 'T'];
 
 // extending SI prefixes
-var SIPREFIXES_EXTENDED = ['q', 'r', 'y', 'z', 'a', 'f', 'p', 'n', 'μ', 'm', '', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y', 'R', 'Q'];
+var SIPREFIXES_EXTENDED = ['q', 'r', 'y', 'z', 'a', ...SIPREFIXES, 'P', 'E', 'Z', 'Y', 'R', 'Q'];
 
-function isSIFormat(exponentFormat) {
-    return exponentFormat === 'SI' || exponentFormat === 'SI extended' || exponentFormat === 'B';
-}
+const isSIFormat = (exponentFormat) => ['SI', 'SI extended','B'].includes(exponentFormat);
 
 // are we beyond the range of common SI prefixes?
 // 10^-16 -> 1x10^-16
@@ -2083,8 +2081,24 @@ function beyondSI(exponent) {
     return exponent > 14 || exponent < -15;
 }
 
+
+// are we beyond the range of all SI prefixes?
+// 10^-31 -> 1x10^-31
+// 10^-30 -> 1q
+// 10^-29 -> 10q
+// ...
+// 10^31 -> 10Q
+// 10^32 -> 100Q
+// 10^33 -> 1x10^33
 function beyondSIExtended(exponent) {
     return exponent > 32 || exponent < -30;
+}
+
+function shouldSwitchSIToPowerFormat(exponent, exponentFormat) {
+    if (!isSIFormat(exponentFormat)) return false;
+    if (exponentFormat === 'SI extended' && beyondSIExtended(exponent)) return true;
+    if (exponentFormat !== 'SI extended' && beyondSI(exponent)) return true;
+    return false;
 }
 
 function numFormat(v, ax, fmtoverride, hover) {
@@ -2162,8 +2176,7 @@ function numFormat(v, ax, fmtoverride, hover) {
 
     // add exponent
     if(exponent && exponentFormat !== 'hide') {
-        if((isSIFormat(exponentFormat) && exponentFormat !== 'SI extended' && beyondSI(exponent)) ||
-        (isSIFormat(exponentFormat) && exponentFormat === 'SI extended' && beyondSIExtended(exponent))) exponentFormat = 'power';
+        if (shouldSwitchSIToPowerFormat(exponent, exponentFormat)) exponentFormat = 'power';
 
         var signedExponent;
         if(exponent < 0) signedExponent = MINUS_SIGN + -exponent;
@@ -2177,11 +2190,9 @@ function numFormat(v, ax, fmtoverride, hover) {
         } else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
         } else if(isSIFormat(exponentFormat)) {
-            if(exponentFormat !== 'SI extended') {
-                v += SIPREFIXES[exponent / 3 + 5];
-            } else if(exponentFormat === 'SI extended') {
-                v += SIPREFIXES_EXTENDED[exponent / 3 + 10];
-            }
+            v += exponentFormat === 'SI extended' 
+                ? SIPREFIXES_EXTENDED[exponent / 3 + 10] 
+                : SIPREFIXES[exponent / 3 + 5];
         }
     }
 
