@@ -1,13 +1,13 @@
 {
- "data": [
-  {
-   "x": ["a", "b", "c", "a", "b", "d", "b", "c", "d"],
-   "texttemplate": "%{value} X %{label}",
-   "type": "histogram"
+  "data": [
+    {
+      "x": ["a", "b", "c", "a", "b", "d", "b", "c", "d"],
+      "texttemplate": "%{value} X %{label}",
+      "type": "histogram"
+    }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 400
   }
- ],
- "layout": {
-  "height": 300,
-  "width": 400
- }
 }
