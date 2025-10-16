@@ -401,6 +401,20 @@ describe('Test violin calc:', function() {
         expect(cd.length).toBe(1, '# of violins');
         expect(cd[0].bandwidth).toBe(0, 'bandwidth');
     });
+
+    it('should produce exactly n density samples for tiny or near-equal spans', function() {
+        var cd = _calc({
+            type: 'violin',
+            x: [0, 0],
+            y: [0.5006312999999999, 0.5006313]
+        });
+        var cdi = cd[0];
+
+        var dist = cdi.span[1] - cdi.span[0];
+        var n = Math.ceil(dist / (cdi.bandwidth / 3));
+
+        expect(cdi.density.length).toBe(n);
+    });
 });
 
 describe('Test violin hover:', function() {
