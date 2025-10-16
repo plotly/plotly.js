@@ -213,6 +213,21 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
 
     var projection = this.projection = getProjection(geoLayout);
 
+    projection.getScale = function() {
+        return projection.scale();
+    };
+
+    projection.setScale = function(scale) {
+        this._initalScale = this._initalScale || projection.scale();
+
+        var minscale = projLayout.minscale;
+        var maxscale = projLayout.maxscale;
+        if(minscale !== undefined) scale = Math.max(minscale, scale / this._initalScale) * this._initalScale;
+        if(maxscale !== undefined) scale = Math.min(maxscale, scale / this._initalScale) * this._initalScale;
+
+        return projection.scale(scale);
+    };
+
     // setup subplot extent [[x0,y0], [x1,y1]]
     var extent = [[
         gs.l + gs.w * domain.x[0],
@@ -265,7 +280,7 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
     projection.fitExtent(extent, rangeBox);
 
     var b = this.bounds = projection.getBounds(rangeBox);
-    var s = this.fitScale = projection.scale();
+    var s = this.fitScale = projection.getScale();
     var t = projection.translate();
 
     if(geoLayout.fitbounds) {
@@ -276,13 +291,13 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
         );
 
         if(isFinite(k2)) {
-            projection.scale(k2 * s);
+            projection.setScale(k2 * s);
         } else {
             Lib.warn('Something went wrong during' + this.id + 'fitbounds computations.');
         }
     } else {
         // adjust projection to user setting
-        projection.scale(projLayout.scale * s);
+        projection.setScale(projLayout.scale * s);
     }
 
     // px coordinates of view mid-point,
