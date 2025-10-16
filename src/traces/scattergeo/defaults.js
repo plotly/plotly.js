@@ -13,7 +13,7 @@ var attributes = require('./attributes');
 const locationmodeBreakingChangeWarning = [
     'The library used by the *country names* `locationmode` option is changing in the next major version.',
     'Some country names in existing plots may not work in the new version.',
-    'To ensure consistent behavior, consider setting `locationmode` to *ISO-3*.',
+    'To ensure consistent behavior, consider setting `locationmode` to *ISO-3*.'
 ].join(' ');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -24,20 +24,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var locations = coerce('locations');
     var len;
 
-    if(locations && locations.length) {
+    if (locations && locations.length) {
         var geojson = coerce('geojson');
         var locationmodeDflt;
-        if((typeof geojson === 'string' && geojson !== '') || Lib.isPlainObject(geojson)) {
+        if ((typeof geojson === 'string' && geojson !== '') || Lib.isPlainObject(geojson)) {
             locationmodeDflt = 'geojson-id';
         }
 
         var locationMode = coerce('locationmode', locationmodeDflt);
 
-        if(locationMode === 'country names') {
+        if (locationMode === 'country names') {
             Lib.warn(locationmodeBreakingChangeWarning);
         }
 
-        if(locationMode === 'geojson-id') {
+        if (locationMode === 'geojson-id') {
             coerce('featureidkey');
         }
 
@@ -48,7 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         len = Math.min(lon.length, lat.length);
     }
 
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -58,24 +58,26 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('mode');
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    if (subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { gradient: true });
     }
 
-    if(subTypes.hasLines(traceOut)) {
+    if (subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('connectgaps');
     }
 
-    if(subTypes.hasText(traceOut)) {
+    if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     coerce('fill');
-    if(traceOut.fill !== 'none') {
+    if (traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 

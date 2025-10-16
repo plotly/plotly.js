@@ -13,36 +13,37 @@ var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 
-
 module.exports = function drawLabel(gd, index, options, shapeGroup) {
     // Remove existing label
     shapeGroup.selectAll('.shape-label').remove();
 
     // If no label text or texttemplate, return
-    if(!(options.label.text || options.label.texttemplate)) return;
+    if (!(options.label.text || options.label.texttemplate)) return;
 
     // Text template overrides text
     var text;
-    if(options.label.texttemplate) {
+    if (options.label.texttemplate) {
         var templateValues = {};
-        if(options.type !== 'path') {
+        if (options.type !== 'path') {
             var _xa = Axes.getFromId(gd, options.xref);
             var _ya = Axes.getFromId(gd, options.yref);
-            for(var key in shapeLabelTexttemplateVars) {
+            for (var key in shapeLabelTexttemplateVars) {
                 var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
-                if(val !== undefined) templateValues[key] = val;
+                if (val !== undefined) templateValues[key] = val;
             }
         }
-        text = Lib.texttemplateStringForShapes(options.label.texttemplate,
-            {},
-            gd._fullLayout._d3locale,
-            templateValues);
+        text = Lib.texttemplateStringForShapes({
+            data: [templateValues],
+            fallback: options.label.texttemplatefallback,
+            locale: gd._fullLayout._d3locale,
+            template: options.label.texttemplate
+        });
     } else {
         text = options.label.text;
     }
 
     var labelGroupAttrs = {
-        'data-index': index,
+        'data-index': index
     };
     var font = options.label.font;
 
@@ -50,17 +51,12 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         'data-notex': 1
     };
 
-    var labelGroup = shapeGroup.append('g')
-        .attr(labelGroupAttrs)
-        .classed('shape-label', true);
-    var labelText = labelGroup.append('text')
-        .attr(labelTextAttrs)
-        .classed('shape-label-text', true)
-        .text(text);
+    var labelGroup = shapeGroup.append('g').attr(labelGroupAttrs).classed('shape-label', true);
+    var labelText = labelGroup.append('text').attr(labelTextAttrs).classed('shape-label-text', true).text(text);
 
     // Get x and y bounds of shape
     var shapex0, shapex1, shapey0, shapey1;
-    if(options.path) {
+    if (options.path) {
         // If shape is defined as a path, get the
         // min and max bounds across all polygons in path
         var d = getPathString(gd, options);
@@ -69,10 +65,10 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         shapey0 = Infinity;
         shapex1 = -Infinity;
         shapey1 = -Infinity;
-        for(var i = 0; i < polygons.length; i++) {
-            for(var j = 0; j < polygons[i].length; j++) {
+        for (var i = 0; i < polygons.length; i++) {
+            for (var j = 0; j < polygons[i].length; j++) {
                 var p = polygons[i][j];
-                for(var k = 1; k < p.length; k += 2) {
+                for (var k = 1; k < p.length; k += 2) {
                     var _x = p[k];
                     var _y = p[k + 1];
 
@@ -95,11 +91,11 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         var yShiftStart = options.y0shift;
         var yShiftEnd = options.y1shift;
         var yRefType = Axes.getRefType(options.yref);
-        var x2p = function(v, shift) {
+        var x2p = function (v, shift) {
             var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
             return dataToPixel(v);
         };
-        var y2p = function(v, shift) {
+        var y2p = function (v, shift) {
             var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
             return dataToPixel(v);
         };
@@ -111,8 +107,8 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
 
     // Handle `auto` angle
     var textangle = options.label.textangle;
-    if(textangle === 'auto') {
-        if(options.type === 'line') {
+    if (textangle === 'auto') {
+        if (options.type === 'line') {
             // Auto angle for line is same angle as line
             textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
         } else {
@@ -122,7 +118,7 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
     }
 
     // Do an initial render so we can get the text bounding box height
-    labelText.call(function(s) {
+    labelText.call(function (s) {
         s.call(Drawing.font, font).attr({});
         svgTextUtils.convertToTspans(s, gd);
         return s;
@@ -137,27 +133,29 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
     var xanchor = textPos.xanchor;
 
     // Update (x,y) position, xanchor, and angle
-    labelText.attr({
-        'text-anchor': {
-            left: 'start',
-            center: 'middle',
-            right: 'end'
-        }[xanchor],
-        y: texty,
-        x: textx,
-        transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
-    }).call(svgTextUtils.positionText, textx, texty);
+    labelText
+        .attr({
+            'text-anchor': {
+                left: 'start',
+                center: 'middle',
+                right: 'end'
+            }[xanchor],
+            y: texty,
+            x: textx,
+            transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+        })
+        .call(svgTextUtils.positionText, textx, texty);
 };
 
 function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
     var dy, dx;
     dx = Math.abs(shapex1 - shapex0);
-    if(shapex1 >= shapex0) {
+    if (shapex1 >= shapex0) {
         dy = shapey0 - shapey1;
     } else {
         dy = shapey1 - shapey0;
     }
-    return -180 / Math.PI * Math.atan2(dy, dx);
+    return (-180 / Math.PI) * Math.atan2(dy, dx);
 }
 
 function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
@@ -165,7 +163,7 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     var textAngle = shapeOptions.label.textangle;
     var textPadding = shapeOptions.label.padding;
     var shapeType = shapeOptions.type;
-    var textAngleRad = Math.PI / 180 * actualTextAngle;
+    var textAngleRad = (Math.PI / 180) * actualTextAngle;
     var sinA = Math.sin(textAngleRad);
     var cosA = Math.cos(textAngleRad);
     var xanchor = shapeOptions.label.xanchor;
@@ -174,39 +172,40 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     var textx, texty, paddingX, paddingY;
 
     // Text position functions differently for lines vs. other shapes
-    if(shapeType === 'line') {
+    if (shapeType === 'line') {
         // Set base position for start vs. center vs. end of line (default is 'center')
-        if(textPosition === 'start') {
+        if (textPosition === 'start') {
             textx = shapex0;
             texty = shapey0;
-        } else if(textPosition === 'end') {
+        } else if (textPosition === 'end') {
             textx = shapex1;
             texty = shapey1;
-        } else { // Default: center
+        } else {
+            // Default: center
             textx = (shapex0 + shapex1) / 2;
             texty = (shapey0 + shapey1) / 2;
         }
 
         // Set xanchor if xanchor is 'auto'
-        if(xanchor === 'auto') {
-            if(textPosition === 'start') {
-                if(textAngle === 'auto') {
-                    if(shapex1 > shapex0) xanchor = 'left';
-                    else if(shapex1 < shapex0) xanchor = 'right';
+        if (xanchor === 'auto') {
+            if (textPosition === 'start') {
+                if (textAngle === 'auto') {
+                    if (shapex1 > shapex0) xanchor = 'left';
+                    else if (shapex1 < shapex0) xanchor = 'right';
                     else xanchor = 'center';
                 } else {
-                    if(shapex1 > shapex0) xanchor = 'right';
-                    else if(shapex1 < shapex0) xanchor = 'left';
+                    if (shapex1 > shapex0) xanchor = 'right';
+                    else if (shapex1 < shapex0) xanchor = 'left';
                     else xanchor = 'center';
                 }
-            } else if(textPosition === 'end') {
-                if(textAngle === 'auto') {
-                    if(shapex1 > shapex0) xanchor = 'right';
-                    else if(shapex1 < shapex0) xanchor = 'left';
+            } else if (textPosition === 'end') {
+                if (textAngle === 'auto') {
+                    if (shapex1 > shapex0) xanchor = 'right';
+                    else if (shapex1 < shapex0) xanchor = 'left';
                     else xanchor = 'center';
                 } else {
-                    if(shapex1 > shapex0) xanchor = 'left';
-                    else if(shapex1 < shapex0) xanchor = 'right';
+                    if (shapex1 > shapex0) xanchor = 'left';
+                    else if (shapex1 < shapex0) xanchor = 'right';
                     else xanchor = 'center';
                 }
             } else {
@@ -219,7 +218,7 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
         // Otherwise, padding is just a simple x and y offset
         var paddingConstantsX = { left: 1, center: 0, right: -1 };
         var paddingConstantsY = { bottom: -1, middle: 0, top: 1 };
-        if(textAngle === 'auto') {
+        if (textAngle === 'auto') {
             // Set direction to apply padding (based on `yanchor` only)
             var paddingDirection = paddingConstantsY[yanchor];
             paddingX = -textPadding * sinA * paddingDirection;
@@ -238,30 +237,31 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
         // calc horizontal position
         // Horizontal needs a little extra padding to look balanced
         paddingX = textPadding + 3;
-        if(textPosition.indexOf('right') !== -1) {
+        if (textPosition.indexOf('right') !== -1) {
             textx = Math.max(shapex0, shapex1) - paddingX;
-            if(xanchor === 'auto') xanchor = 'right';
-        } else if(textPosition.indexOf('left') !== -1) {
+            if (xanchor === 'auto') xanchor = 'right';
+        } else if (textPosition.indexOf('left') !== -1) {
             textx = Math.min(shapex0, shapex1) + paddingX;
-            if(xanchor === 'auto') xanchor = 'left';
-        } else { // Default: center
+            if (xanchor === 'auto') xanchor = 'left';
+        } else {
+            // Default: center
             textx = (shapex0 + shapex1) / 2;
-            if(xanchor === 'auto') xanchor = 'center';
+            if (xanchor === 'auto') xanchor = 'center';
         }
 
         // calc vertical position
-        if(textPosition.indexOf('top') !== -1) {
+        if (textPosition.indexOf('top') !== -1) {
             texty = Math.min(shapey0, shapey1);
-        } else if(textPosition.indexOf('bottom') !== -1) {
+        } else if (textPosition.indexOf('bottom') !== -1) {
             texty = Math.max(shapey0, shapey1);
         } else {
             texty = (shapey0 + shapey1) / 2;
         }
         // Apply padding
         paddingY = textPadding;
-        if(yanchor === 'bottom') {
+        if (yanchor === 'bottom') {
             texty = texty - paddingY;
-        } else if(yanchor === 'top') {
+        } else if (yanchor === 'top') {
             texty = texty + paddingY;
         }
     }
