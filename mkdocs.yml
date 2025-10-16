@@ -200,6 +200,7 @@ nav:
     - Lasso Selection: examples/lasso-selection.md
     - Range Slider and Selector: examples/range-slider.md
 - API Reference: 
+    - Overview: reference/index.md
     - Core Objects: 
       - Layout: reference/layout.md
     - Simple Traces:
