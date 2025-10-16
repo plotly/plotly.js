@@ -264,7 +264,7 @@ describe('Funnelarea traces', function() {
 
     it('can use a separate funnelarea colorway and disable extended colors', function(done) {
         Plotly.newPlot(gd, [{type: 'funnelarea', values: [7, 6, 5, 4, 3, 2, 1]}], {colorway: ['#777', '#F00']})
-        .then(_checkSliceColors(['119,119,119', '255,0,0', '170,170,170', '255,102,102', '68,68,68', '153,0,0', '119,119,119']))
+        .then(_checkSliceColors(['119,119,119', '255,0,0', '143,143,143', '255,51,51', '95,95,95', '204,0,0', '119,119,119']))
         .then(function() {
             return Plotly.relayout(gd, {extendfunnelareacolors: false});
         })
@@ -276,7 +276,7 @@ describe('Funnelarea traces', function() {
         .then(function() {
             return Plotly.relayout(gd, {extendfunnelareacolors: null});
         })
-        .then(_checkSliceColors(['255,255,0', '0,255,0', '0,0,255', '255,255,102', '102,255,102', '102,102,255', '153,153,0']))
+        .then(_checkSliceColors(['255,255,0', '0,255,0', '0,0,255', '255,255,51', '51,255,51', '51,51,255', '204,204,0']))
         .then(done, done.fail);
     });
 
