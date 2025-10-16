@@ -187,7 +187,7 @@ See the [Releases section](https://github.com/plotly/plotly.js/releases) of our 
 ---
 ## Community
 
-* Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for the latest Plotly news.
-* Implementation help may be found on community.plot.com (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
-  on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
-* Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
+* Follow us on [X](https://x.com/plotlygraphs) and [LinkedIn](https://www.linkedin.com/company/plotly/) for the latest Plotly news.
+* Implementation help may be found on our community forum (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
+  on Stack Overflow (tagged [`plotly.js`](https://stackoverflow.com/questions/tagged/plotly.js)).
+* Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/search?q=keywords:plotly).
