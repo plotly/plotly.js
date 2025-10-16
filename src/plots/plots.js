@@ -1254,8 +1254,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 _module.attributes.showlegend ? _module.attributes : plots.attributes,
                 'showlegend'
             );
-
-            coerce('legend');
+            Lib.coerce(traceIn, traceOut,
+                _module.attributes.legend ? _module.attributes : plots.attributes,
+                'legend'
+            );
             coerce('legendwidth');
             coerce('legendgroup');
             coerce('legendgrouptitle.text');
