@@ -80,6 +80,7 @@ nav:
   - Plotly Community Forum: https://community.plotly.com/
 - Examples:
   - Fundamentals:
+    - Overview: plotly-fundamentals.md
     - Configuration: examples/configuration-options.md
     - Responsive / Fluid Layouts: examples/responsive-fluid-layout.md
     - uirevision in Plotly.react: examples/uirevision.md
