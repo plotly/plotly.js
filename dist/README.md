@@ -183,7 +183,7 @@ The `gl2d` partial bundle contains trace modules `parcoords`, `scatter`, `scatte
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.8 MB | 1.5 MB | 517.3 kB |
+| 3.8 MB | 1.5 MB | 517.4 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-gl2d-3.1.2.js
