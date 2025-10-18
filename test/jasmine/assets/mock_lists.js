@@ -47,6 +47,9 @@ var svgMockList = [
     ['updatemenus', require('../../image/mocks/updatemenus.json')],
     ['violin_side-by-side', require('../../image/mocks/violin_side-by-side.json')],
     ['world-cals', require('../../image/mocks/world-cals.json')],
+    ['scatterquiver_basic', require('../../image/mocks/scatterquiver_basic.json')],
+    ['scatterquiver_gradient', require('../../image/mocks/scatterquiver_gradient.json')],
+    ['scatterquiver_meshgrid', require('../../image/mocks/scatterquiver_meshgrid.json')],
     ['typed arrays', {
         data: [{
             x: new Float32Array([1, 2, 3]),

@@ -1,0 +1,85 @@
+{
+    "data": [
+        {
+            "type": "scatterquiver",
+            "x": [
+                0,
+                1,
+                2,
+                0,
+                1,
+                2,
+                0,
+                1,
+                2
+            ],
+            "y": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1,
+                2,
+                2,
+                2
+            ],
+            "u": [
+                1,
+                0,
+                -1,
+                1,
+                0,
+                -1,
+                1,
+                0,
+                -1
+            ],
+            "v": [
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            "scale": 0.5,
+            "arrow_scale": 0.3,
+            "angle": 0.5235987755982988,
+            "line": {
+                "color": "blue",
+                "width": 2
+            },
+            "name": "Basic Quiver"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "Basic Quiver Plot"
+        },
+        "xaxis": {
+            "title": {
+                "text": "X"
+            },
+            "range": [
+                -0.5,
+                2.5
+            ]
+        },
+        "yaxis": {
+            "title": {
+                "text": "Y"
+            },
+            "range": [
+                -0.5,
+                2.5
+            ]
+        },
+        "width": 800,
+        "height": 600,
+        "showlegend": true
+    }
+}
