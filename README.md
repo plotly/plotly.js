@@ -145,35 +145,36 @@ Please read through our [contributing guidelines](https://github.com/plotly/plot
 
 Plotly.js is at the core of a large and dynamic ecosystem with many contributors who file issues, reproduce bugs, suggest improvements, write code in this repo (and other upstream or downstream ones) and help users in the Plotly community forum. The following people deserve special recognition for their outsized contributions to this ecosystem:
 
-|   | GitHub | Twitter | Status |
-|---|--------|---------|--------|
-|**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | | Active, Maintainer |
-|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | [@solarchvision](https://twitter.com/solarchvision) | Active, Maintainer |
-|**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | | Active, Maintainer |
-|**My-Tien Nguyen**| [@my-tien](https://github.com/my-tien) | | Active, Community Contributor |
-|**Birk Skyum**| [@birkskyum](https://github.com/birkskyum) | | Active, Community Contributor |
-|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) | Hall of Fame |
-|**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | | Hall of Fame |
-|**Jack Parmer**| [@jackparmer](https://github.com/jackparmer) | | Hall of Fame |
-|**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | [@nicolaskruchten](https://twitter.com/nicolaskruchten) | Hall of Fame |
-|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | Hall of Fame |
-|**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) | Hall of Fame |
-|**Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)| Hall of Fame |
-|**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | [@jonmmease](https://twitter.com/jonmmease) | Hall of Fame |
-|**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) | Hall of Fame |
-|**Robert Möstl** | [@rmoestl](https://github.com/rmoestl) | [@rmoestl](https://twitter.com/rmoestl) | Hall of Fame |
-|**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | | Hall of Fame |
-|**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)| Hall of Fame |
-|**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | | Hall of Fame |
-|**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | | Hall of Fame |
-|**Hannah Ker** | [@hannahker](https://github.com/hannahker) | [@hannahker11](https://twitter.com/hannahker11)| Hall of Fame |
-|**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | | Hall of Fame |
-|**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | | Hall of Fame |
+| Contributor | GitHub |  Status |
+|-------------|--------|---------|
+|**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | Active, Maintainer |
+|**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | Active, Maintainer |
+|**Cameron DeCoster** | [@camdecoster](https://github.com/camdecoster) | Active, Maintainer |
+|**My-Tien Nguyen**| [@my-tien](https://github.com/my-tien) | Active, Community Contributor |
+|**Birk Skyum**| [@birkskyum](https://github.com/birkskyum) | Active, Community Contributor |
+|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | Hall of Fame |
+|**Antoine Roy-Gobeil** | [@antoinerg](https://github.com/antoinerg) | Hall of Fame |
+|**Jack Parmer**| [@jackparmer](https://github.com/jackparmer) | Hall of Fame |
+|**Nicolas Kruchten** | [@nicolaskruchten](https://github.com/nicolaskruchten) | Hall of Fame |
+|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | Hall of Fame |
+|**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | Hall of Fame |
+|**Dmitry Yv.** | [@dy](https://github.com/dy) | Hall of Fame |
+|**Jon Mease** | [@jonmmease](https://github.com/jonmmease) | Hall of Fame |
+|**Robert Monfera**| [@monfera](https://github.com/monfera) | Hall of Fame |
+|**Robert Möstl** | [@rmoestl](https://github.com/rmoestl) | Hall of Fame |
+|**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | Hall of Fame |
+|**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | Hall of Fame |
+|**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | Hall of Fame |
+|**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | Hall of Fame |
+|**Hannah Ker** | [@hannahker](https://github.com/hannahker) | Hall of Fame |
+|**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | Hall of Fame |
+|**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | Hall of Fame |
+|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | Hall of Fame |
 
 ---
 ## Copyright and license
 
-Code and documentation copyright 2021 Plotly, Inc.
+Code and documentation copyright 2025 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 
@@ -186,7 +187,7 @@ See the [Releases section](https://github.com/plotly/plotly.js/releases) of our 
 ---
 ## Community
 
-* Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for the latest Plotly news.
-* Implementation help may be found on community.plot.com (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
-  on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
-* Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
+* Follow us on [X](https://x.com/plotlygraphs) and [LinkedIn](https://www.linkedin.com/company/plotly/) for the latest Plotly news.
+* Implementation help may be found on our community forum (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
+  on Stack Overflow (tagged [`plotly.js`](https://stackoverflow.com/questions/tagged/plotly.js)).
+* Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/search?q=keywords:plotly).
