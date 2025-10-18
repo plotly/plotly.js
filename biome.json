@@ -4,6 +4,7 @@
   "files": {
     "maxSize": 10000000,
     "includes": [
+      "**/esbuild-config.js",
       "**/src/**",
       "**/lib/**",
       "**/test/**",
