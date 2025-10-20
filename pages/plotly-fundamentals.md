@@ -98,7 +98,7 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/legends.gif)](/examples/legends.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/legends.gif)](/examples/legend.md)
 
     **Legends**
 

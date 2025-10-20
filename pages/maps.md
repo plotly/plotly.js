@@ -8,7 +8,7 @@
     **Tile Map Layers**
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/mapbox-density.png)](examples/tile-density-heatmap.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/mapbox-density.png)](examples/tile-density-heatmaps.md)
 
     **Tile Density Heatmap**
 

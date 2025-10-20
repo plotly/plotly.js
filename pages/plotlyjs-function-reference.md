@@ -6,7 +6,7 @@ The functions documented here all create or modify a plot that is drawn into a `
 
 `data`
 
-The data to be plotted is described in an array usually called `data`, whose elements are trace objects of various types (e.g. `scatter`, `bar` etc) as documented [in the Full Reference](/javascript/reference).
+The data to be plotted is described in an array usually called `data`, whose elements are trace objects of various types (e.g. `scatter`, `bar` etc) as documented [in the Full Reference](/reference/index.md).
 
 `layout`
 
@@ -18,7 +18,7 @@ High-level configuration options for the plot, such as the scroll/zoom/hover beh
 
 `frames`
 
-Animation frames are described in an object usually called `frames` as per the [example here](/javascript/gapminder-example/). They can contain `data` and `layout` objects, which define any changes to be animated, and a `traces` object that defines which traces to animate. Additionally, frames containing `name` and/or `group` attributes can be referenced by [Plotly.animate](#plotlyanimate) after they are added by [Plotly.addFrames](#plotlyaddframes)
+Animation frames are described in an object usually called `frames` as per the [example here](examples/gapminder-example.md). They can contain `data` and `layout` objects, which define any changes to be animated, and a `traces` object that defines which traces to animate. Additionally, frames containing `name` and/or `group` attributes can be referenced by [Plotly.animate](#plotlyanimate) after they are added by [Plotly.addFrames](#plotlyaddframes)
 
 
 ### Plotly.newPlot
@@ -36,7 +36,7 @@ Draws a new plot in an `<div>` element, *overwriting any existing plot*. To upda
     
   `data`
 
-  array of objects, see [documentation](/javascript/reference)  
+  array of objects, see [documentation](/reference/index.md)  
   (defaults to `[]`)
     
   `layout`
@@ -447,7 +447,7 @@ console.log(out[0].msg)
 
 *This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
 
-This allows you to add **new** traces to an existing `graphDiv` at any location in its [data array](#retrieving-data-layout). Every `graphDiv` object has a `data` component which is an array of JSON blobs that each describe one trace. The full list of trace types can be found [in the Full Reference](/javascript/reference/).
+This allows you to add **new** traces to an existing `graphDiv` at any location in its [data array](#retrieving-data-layout). Every `graphDiv` object has a `data` component which is an array of JSON blobs that each describe one trace. The full list of trace types can be found [in the Full Reference](/reference/index.md).
 
 <pre><code class="language-javascript hljs" data-lang="javascript">
 // add a single trace to an existing graphDiv
@@ -546,7 +546,7 @@ Plotly.prependTraces(graphDiv, {y: [[rand()], [rand()]]}, [0, 1], 10)
 
 *This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
 
-This allows you to add animation frames to a `graphDiv`. The `group` or `name` attribute of a frame can be used by [Plotly.animate](#plotlyanimate) in place of a frame object (or array of frame objects). See [example here](/javascript/gapminder-example/).
+This allows you to add animation frames to a `graphDiv`. The `group` or `name` attribute of a frame can be used by [Plotly.animate](#plotlyanimate) in place of a frame object (or array of frame objects). See [example here](examples/gapminder-example.md).
 
 
 ### Plotly.animate
