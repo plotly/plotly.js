@@ -7,7 +7,7 @@
   "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/plotly/plotly.js.git"
+    "url": "git+https://github.com/plotly/plotly.js.git"
   },
   "bugs": {
     "url": "https://github.com/plotly/plotly.js/issues"
