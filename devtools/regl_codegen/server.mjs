@@ -1,13 +1,19 @@
-import fs from 'fs';
-import path from 'path';
-import http from 'http';
 import ecstatic from 'ecstatic';
-import open from 'open';
-import minimist from 'minimist';
-
-import constants from '../../tasks/util/constants.js';
 import { build } from 'esbuild';
-import { esbuildConfig as config } from '../../esbuild-config.js';
+import fs from 'fs';
+import http from 'http';
+import minimist from 'minimist';
+import open from 'open';
+import path from 'path';
+import { localDevReglCodegenConfig as config } from '../../esbuild-config.js';
+import constants from '../../tasks/util/constants.js';
+import {
+    createMocksList,
+    getMockFiles,
+    readFiles,
+    saveMockListToFile,
+    saveReglTracesToFile
+} from '../dashboard_utilities.mjs';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -65,101 +71,6 @@ server.listen(PORT);
 open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
 
 await build(config);
-
-function getMockFiles() {
-    return new Promise(function (resolve, reject) {
-        fs.readdir(constants.pathToTestImageMocks, function (err, files) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(files);
-            }
-        });
-    });
-}
-
-function readFiles(files) {
-    var promises = files.map(function (file) {
-        var filePath = path.join(constants.pathToTestImageMocks, file);
-        return readFilePromise(filePath);
-    });
-
-    return Promise.all(promises);
-}
-
-function createMocksList(files) {
-    // eliminate pollutants (e.g .DS_Store) that can accumulate in the mock directory
-    var jsonFiles = files.filter(function (file) {
-        return file.name.substr(-5) === '.json';
-    });
-
-    var mocksList = jsonFiles.map(function (file) {
-        var contents = JSON.parse(file.contents);
-
-        // get plot type keywords from mocks
-        var types = contents.data
-            .map(function (trace) {
-                return trace.type || 'scatter';
-            })
-            .reduce(function (acc, type, i, arr) {
-                if (arr.lastIndexOf(type) === i) {
-                    acc.push(type);
-                }
-                return acc;
-            }, []);
-
-        var filename = file.name.split(path.sep).pop();
-
-        return {
-            name: filename.slice(0, -5),
-            file: filename,
-            keywords: types.join(', ')
-        };
-    });
-
-    return mocksList;
-}
-
-function saveMockListToFile(mocksList) {
-    var filePath = path.join(constants.pathToBuild, 'test_dashboard_mocks.json');
-    var content = JSON.stringify(mocksList, null, 4);
-
-    return writeFilePromise(filePath, content);
-}
-
-function saveReglTracesToFile(traces) {
-    var filePath = path.join(constants.pathToBuild, 'regl_traces.json');
-    var content = JSON.stringify(traces, null, 4);
-
-    return writeFilePromise(filePath, content);
-}
-
-function readFilePromise(file) {
-    return new Promise(function (resolve, reject) {
-        fs.readFile(file, { encoding: 'utf-8' }, function (err, contents) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve({
-                    name: file,
-                    contents: contents
-                });
-            }
-        });
-    });
-}
-
-function writeFilePromise(path, contents) {
-    return new Promise(function (resolve, reject) {
-        fs.writeFile(path, contents, function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(path);
-            }
-        });
-    });
-}
 
 function handleCodegen(data) {
     var trace = data.trace;
