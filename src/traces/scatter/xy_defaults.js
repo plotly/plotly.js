@@ -28,6 +28,9 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
         coerce('dx');
     }
 
+    coerce('x1');
+    coerce('y1');
+
     traceOut._length = len;
 
     return len;

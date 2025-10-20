@@ -25,17 +25,18 @@ var sin = Math.sin;
 module.exports = {
     circle: {
         n: 0,
-        f: function(r, angle, standoff) {
+        f: function(rx, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
-            var circle = 'M' + rs + ',0A' + rs + ',' + rs + ' 0 1,1 0,-' + rs + 'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z';
+            var rxs = round(rx, 2);
+            var rys = round(ry, 2);
+            var circle = 'M' + rxs + ',0A' + rxs + ',' + rys + ' 0 1,1 0,-' + rys + 'A' + rxs + ',' + rys + ' 0 0,1 ' + rxs + ',0Z';
             return standoff ? align(angle, standoff, circle) : circle;
         }
     },
     square: {
         n: 1,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rs = round(r, 2);
@@ -44,7 +45,7 @@ module.exports = {
     },
     diamond: {
         n: 2,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rd = round(r * 1.3, 2);
@@ -53,7 +54,7 @@ module.exports = {
     },
     cross: {
         n: 3,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rc = round(r * 0.4, 2);
@@ -65,7 +66,7 @@ module.exports = {
     },
     x: {
         n: 4,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rx = round(r * 0.8 / sqrt2, 2);
@@ -78,51 +79,51 @@ module.exports = {
     },
     'triangle-up': {
         n: 5,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rt = round(r * 2 / sqrt3, 2);
             var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M-' + rt + ',' + r2 + 'H' + rt + 'L0,-' + rs + 'Z');
         }
     },
     'triangle-down': {
         n: 6,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rt = round(r * 2 / sqrt3, 2);
             var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M-' + rt + ',-' + r2 + 'H' + rt + 'L0,' + rs + 'Z');
         }
     },
     'triangle-left': {
         n: 7,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rt = round(r * 2 / sqrt3, 2);
             var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M' + r2 + ',-' + rt + 'V' + rt + 'L-' + rs + ',0Z');
         }
     },
     'triangle-right': {
         n: 8,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rt = round(r * 2 / sqrt3, 2);
             var r2 = round(r / 2, 2);
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M-' + r2 + ',-' + rt + 'V' + rt + 'L' + rs + ',0Z');
         }
     },
     'triangle-ne': {
         n: 9,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var r1 = round(r * 0.6, 2);
@@ -132,7 +133,7 @@ module.exports = {
     },
     'triangle-se': {
         n: 10,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var r1 = round(r * 0.6, 2);
@@ -142,7 +143,7 @@ module.exports = {
     },
     'triangle-sw': {
         n: 11,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var r1 = round(r * 0.6, 2);
@@ -152,7 +153,7 @@ module.exports = {
     },
     'triangle-nw': {
         n: 12,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var r1 = round(r * 0.6, 2);
@@ -162,12 +163,12 @@ module.exports = {
     },
     pentagon: {
         n: 13,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x1 = round(r * 0.951, 2);
             var x2 = round(r * 0.588, 2);
-            var y0 = round(-r, 2);
+            var y0 = round(-rx, ry, 2);
             var y1 = round(r * -0.309, 2);
             var y2 = round(r * 0.809, 2);
             return align(angle, standoff, 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2 + 'H-' + x2 +
@@ -176,10 +177,10 @@ module.exports = {
     },
     hexagon: {
         n: 14,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var y0 = round(r, 2);
+            var y0 = round(rx, 2);
             var y1 = round(r / 2, 2);
             var x = round(r * sqrt3 / 2, 2);
             return align(angle, standoff, 'M' + x + ',-' + y1 + 'V' + y1 + 'L0,' + y0 +
@@ -188,10 +189,10 @@ module.exports = {
     },
     hexagon2: {
         n: 15,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var x0 = round(r, 2);
+            var x0 = round(rx, 2);
             var x1 = round(r / 2, 2);
             var y = round(r * sqrt3 / 2, 2);
             return align(angle, standoff, 'M-' + x1 + ',' + y + 'H' + x1 + 'L' + x0 +
@@ -200,7 +201,7 @@ module.exports = {
     },
     octagon: {
         n: 16,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var a = round(r * 0.924, 2);
@@ -211,7 +212,7 @@ module.exports = {
     },
     star: {
         n: 17,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rs = r * 1.4;
@@ -232,7 +233,7 @@ module.exports = {
     },
     hexagram: {
         n: 18,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var y = round(r * 0.66, 2);
@@ -246,7 +247,7 @@ module.exports = {
     },
     'star-triangle-up': {
         n: 19,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x = round(r * sqrt3 * 0.8, 2);
@@ -260,7 +261,7 @@ module.exports = {
     },
     'star-triangle-down': {
         n: 20,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x = round(r * sqrt3 * 0.8, 2);
@@ -274,7 +275,7 @@ module.exports = {
     },
     'star-square': {
         n: 21,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rp = round(r * 1.1, 2);
@@ -287,7 +288,7 @@ module.exports = {
     },
     'star-diamond': {
         n: 22,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rp = round(r * 1.4, 2);
@@ -300,7 +301,7 @@ module.exports = {
     },
     'diamond-tall': {
         n: 23,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x = round(r * 0.7, 2);
@@ -310,7 +311,7 @@ module.exports = {
     },
     'diamond-wide': {
         n: 24,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x = round(r * 1.4, 2);
@@ -320,30 +321,30 @@ module.exports = {
     },
     hourglass: {
         n: 25,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M' + rs + ',' + rs + 'H-' + rs + 'L' + rs + ',-' + rs + 'H-' + rs + 'Z');
         },
         noDot: true
     },
     bowtie: {
         n: 26,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M' + rs + ',' + rs + 'V-' + rs + 'L-' + rs + ',' + rs + 'V-' + rs + 'Z');
         },
         noDot: true
     },
     'circle-cross': {
         n: 27,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M0,' + rs + 'V-' + rs + 'M' + rs + ',0H-' + rs +
                 'M' + rs + ',0A' + rs + ',' + rs + ' 0 1,1 0,-' + rs +
                 'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z');
@@ -353,10 +354,10 @@ module.exports = {
     },
     'circle-x': {
         n: 28,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             var rc = round(r / sqrt2, 2);
             return align(angle, standoff, 'M' + rc + ',' + rc + 'L-' + rc + ',-' + rc +
                 'M' + rc + ',-' + rc + 'L-' + rc + ',' + rc +
@@ -368,10 +369,10 @@ module.exports = {
     },
     'square-cross': {
         n: 29,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M0,' + rs + 'V-' + rs + 'M' + rs + ',0H-' + rs +
                 'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z');
         },
@@ -380,10 +381,10 @@ module.exports = {
     },
     'square-x': {
         n: 30,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rs = round(r, 2);
+            var rs = round(rx, 2);
             return align(angle, standoff, 'M' + rs + ',' + rs + 'L-' + rs + ',-' + rs +
                 'M' + rs + ',-' + rs + 'L-' + rs + ',' + rs +
                 'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z');
@@ -393,7 +394,7 @@ module.exports = {
     },
     'diamond-cross': {
         n: 31,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rd = round(r * 1.3, 2);
@@ -405,7 +406,7 @@ module.exports = {
     },
     'diamond-x': {
         n: 32,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rd = round(r * 1.3, 2);
@@ -419,7 +420,7 @@ module.exports = {
     },
     'cross-thin': {
         n: 33,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rc = round(r * 1.4, 2);
@@ -431,7 +432,7 @@ module.exports = {
     },
     'x-thin': {
         n: 34,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rx = round(r, 2);
@@ -444,7 +445,7 @@ module.exports = {
     },
     asterisk: {
         n: 35,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rc = round(r * 1.2, 2);
@@ -459,11 +460,11 @@ module.exports = {
     },
     hash: {
         n: 36,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var r1 = round(r / 2, 2);
-            var r2 = round(r, 2);
+            var r2 = round(rx, 2);
 
             return align(angle, standoff, 'M' + r1 + ',' + r2 + 'V-' + r2 +
                 'M' + (r1 - r2) + ',-' + r2 + 'V' + r2 +
@@ -475,7 +476,7 @@ module.exports = {
     },
     'y-up': {
         n: 37,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x = round(r * 1.2, 2);
@@ -489,7 +490,7 @@ module.exports = {
     },
     'y-down': {
         n: 38,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var x = round(r * 1.2, 2);
@@ -503,7 +504,7 @@ module.exports = {
     },
     'y-left': {
         n: 39,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var y = round(r * 1.2, 2);
@@ -517,7 +518,7 @@ module.exports = {
     },
     'y-right': {
         n: 40,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var y = round(r * 1.2, 2);
@@ -531,7 +532,7 @@ module.exports = {
     },
     'line-ew': {
         n: 41,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rc = round(r * 1.4, 2);
@@ -543,7 +544,7 @@ module.exports = {
     },
     'line-ns': {
         n: 42,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rc = round(r * 1.4, 2);
@@ -555,10 +556,10 @@ module.exports = {
     },
     'line-ne': {
         n: 43,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rx = round(r, 2);
+            var rx = round(rx, 2);
             return align(angle, standoff, 'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx);
         },
         needLine: true,
@@ -567,10 +568,10 @@ module.exports = {
     },
     'line-nw': {
         n: 44,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rx = round(r, 2);
+            var rx = round(rx, 2);
             return align(angle, standoff, 'M' + rx + ',' + rx + 'L-' + rx + ',-' + rx);
         },
         needLine: true,
@@ -579,10 +580,10 @@ module.exports = {
     },
     'arrow-up': {
         n: 45,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rx = round(r, 2);
+            var rx = round(rx, 2);
             var ry = round(r * 2, 2);
             return align(angle, standoff, 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z');
         },
@@ -591,10 +592,10 @@ module.exports = {
     },
     'arrow-down': {
         n: 46,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rx = round(r, 2);
+            var rx = round(rx, 2);
             var ry = round(r * 2, 2);
             return align(angle, standoff, 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z');
         },
@@ -602,32 +603,32 @@ module.exports = {
     },
     'arrow-left': {
         n: 47,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rx = round(r * 2, 2);
-            var ry = round(r, 2);
+            var ry = round(rx, 2);
             return align(angle, standoff, 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         noDot: true
     },
     'arrow-right': {
         n: 48,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rx = round(r * 2, 2);
-            var ry = round(r, 2);
+            var ry = round(rx, 2);
             return align(angle, standoff, 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         noDot: true
     },
     'arrow-bar-up': {
         n: 49,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rx = round(r, 2);
+            var rx = round(rx, 2);
             var ry = round(r * 2, 2);
             return align(angle, standoff, 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z');
         },
@@ -637,10 +638,10 @@ module.exports = {
     },
     'arrow-bar-down': {
         n: 50,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var rx = round(r, 2);
+            var rx = round(rx, 2);
             var ry = round(r * 2, 2);
             return align(angle, standoff, 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z');
         },
@@ -649,11 +650,11 @@ module.exports = {
     },
     'arrow-bar-left': {
         n: 51,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rx = round(r * 2, 2);
-            var ry = round(r, 2);
+            var ry = round(rx, 2);
             return align(angle, standoff, 'M0,-' + ry + 'V' + ry + 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         needLine: true,
@@ -661,11 +662,11 @@ module.exports = {
     },
     'arrow-bar-right': {
         n: 52,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var rx = round(r * 2, 2);
-            var ry = round(r, 2);
+            var ry = round(rx, 2);
             return align(angle, standoff, 'M0,-' + ry + 'V' + ry + 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         needLine: true,
@@ -673,7 +674,7 @@ module.exports = {
     },
     arrow: {
         n: 53,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var headAngle = PI / 2.5; // 36 degrees - golden ratio
@@ -692,7 +693,7 @@ module.exports = {
     },
     'arrow-wide': {
         n: 54,
-        f: function(r, angle, standoff) {
+        f: function(r, ry, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
             var headAngle = PI / 4; // 90 degrees
