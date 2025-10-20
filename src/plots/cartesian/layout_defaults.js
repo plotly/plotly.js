@@ -46,7 +46,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
+        if(!traceIs(trace, 'cartesian')) continue;
 
         var xaName;
         if(trace.xaxis) {
@@ -143,7 +143,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     function newAxLayoutOut() {
         var traces = ax2traces[axName] || [];
-        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
+        axLayoutOut._traceIndices = traces.map(function(t) { return t.index; });
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
         axLayoutOut._selectionIndices = [];
@@ -338,6 +338,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         });
 
         coerce('fixedrange');
+        coerce('modebardisable');
 
         addMissingMatchedAxis();
 
@@ -366,6 +367,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
 
         coerce('fixedrange');
+        coerce('modebardisable');
     }
 
     for(i = 0; i < yNames.length; i++) {
@@ -378,6 +380,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var fixedRangeDflt = getComponentMethod('rangeslider', 'isVisible')(anchoredAxis);
 
         coerce('fixedrange', fixedRangeDflt);
+        coerce('modebardisable');
     }
 
     // Finally, handle scale constraints and matching axes.

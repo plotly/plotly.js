@@ -35,7 +35,8 @@
     },
     "xaxis2": {
       "automargin": true,
-      "ticks": "outside", "ticklen": 10,
+      "ticks": "outside",
+      "ticklen": 10,
       "showline": true,
       "mirror": "allticks"
     },
@@ -48,12 +49,14 @@
     },
     "yaxis2": {
       "automargin": true,
-      "ticks": "outside", "ticklen": 5,
-      "showline": true, "linewidth": 5,
+      "ticks": "outside",
+      "ticklen": 5,
+      "showline": true,
+      "linewidth": 5,
       "zeroline": false,
       "mirror": "allticks"
     },
-    "margin": {"l": 0, "b": 0, "t": 0, "r": 0},
+    "margin": { "l": 0, "b": 0, "t": 0, "r": 0 },
     "width": 500,
     "height": 400
   }

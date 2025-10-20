@@ -1,32 +1,38 @@
 {
-  "data": [{
-    "type": "scatterpolar",
-    "r": [],
-    "theta": []
-  }, {
-    "type": "scatterpolar",
-    "r": [],
-    "theta": [],
-    "subplot": "polar2"
-  }, {
-    "type": "scatterpolar",
-    "r": [],
-    "theta": [],
-    "subplot": "polar3"
-  }, {
-    "type": "scatterpolar",
-    "mode": "markers+text",
-    "r": [0],
-    "theta": [0],
-    "text": "<b>N.B.</b><br>radial<br>auotrange<br>for (0,0)<br>gives [0,1]",
-    "textposition": "left",
-    "subplot": "polar4"
-  }, {
-    "type": "scatterpolar",
-    "r": [1, 2, 3],
-    "theta": [0, 90, 200],
-    "subplot": "polar5"
-  }],
+  "data": [
+    {
+      "type": "scatterpolar",
+      "r": [],
+      "theta": []
+    },
+    {
+      "type": "scatterpolar",
+      "r": [],
+      "theta": [],
+      "subplot": "polar2"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [],
+      "theta": [],
+      "subplot": "polar3"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "markers+text",
+      "r": [0],
+      "theta": [0],
+      "text": "<b>N.B.</b><br>radial<br>auotrange<br>for (0,0)<br>gives [0,1]",
+      "textposition": "left",
+      "subplot": "polar4"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [1, 2, 3],
+      "theta": [0, 90, 200],
+      "subplot": "polar5"
+    }
+  ],
   "layout": {
     "polar": {
       "domain": {
@@ -37,7 +43,7 @@
         "labelalias": { "0°": "ZERO<sup>2</sup>" }
       },
       "radialaxis": {
-        "title": {"text": "blank"},
+        "title": { "text": "blank" },
         "angle": 180
       }
     },
@@ -65,17 +71,17 @@
         "y": [0.56, 1]
       },
       "radialaxis": {
-        "title": {"text": "blank"},
+        "title": { "text": "blank" },
         "side": "counterclockwise"
       },
-      "angularaxis": {"visible": false}
+      "angularaxis": { "visible": false }
     },
     "polar4": {
       "domain": {
         "x": [0.54, 1],
         "y": [0, 0.44]
       },
-      "radialaxis": {"visible": false}
+      "radialaxis": { "visible": false }
     },
     "polar5": {
       "domain": {

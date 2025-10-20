@@ -15,12 +15,8 @@
       "yaxis": "y",
       "alignmentgroup": "a",
       "offsetgroup": 0,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -37,12 +33,8 @@
       "yaxis": "y",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -59,12 +51,8 @@
       "yaxis": "y",
       "alignmentgroup": "a",
       "offsetgroup": 2,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -81,12 +69,8 @@
       "yaxis": "y2",
       "alignmentgroup": "a",
       "offsetgroup": 0,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -103,12 +87,8 @@
       "yaxis": "y2",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -125,12 +105,8 @@
       "yaxis": "y2",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -147,12 +123,8 @@
       "yaxis": "y3",
       "alignmentgroup": "a",
       "offsetgroup": 0,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -169,12 +141,8 @@
       "yaxis": "y3",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -191,12 +159,8 @@
       "yaxis": "y3",
       "alignmentgroup": "b",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -213,12 +177,8 @@
       "yaxis": "y5",
       "alignmentgroup": "a",
       "offsetgroup": 0,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -235,12 +195,8 @@
       "yaxis": "y5",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -257,12 +213,8 @@
       "yaxis": "y4",
       "alignmentgroup": "a",
       "offsetgroup": 2,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -279,12 +231,8 @@
       "yaxis": "y7",
       "alignmentgroup": "a",
       "offsetgroup": 0,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -301,12 +249,8 @@
       "yaxis": "y7",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -323,12 +267,8 @@
       "yaxis": "y6",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -345,12 +285,8 @@
       "yaxis": "y9",
       "alignmentgroup": "a",
       "offsetgroup": 0,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -367,12 +303,8 @@
       "yaxis": "y9",
       "alignmentgroup": "a",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     },
     {
       "type": "bar",
@@ -389,12 +321,8 @@
       "yaxis": "y8",
       "alignmentgroup": "b",
       "offsetgroup": 1,
-      "x": [
-        1
-      ],
-      "y": [
-        1
-      ]
+      "x": [1],
+      "y": [1]
     }
   ],
   "layout": {
@@ -432,126 +360,81 @@
       }
     ],
     "xaxis": {
-      "domain": [
-        0,
-        0.14666666666666667
-      ],
+      "domain": [0, 0.14666666666666667],
       "anchor": "y",
       "title": {
         "text": "=alignment<br>≠offset"
       }
     },
     "yaxis": {
-      "domain": [
-        0,
-        1
-      ],
+      "domain": [0, 1],
       "anchor": "x"
     },
     "xaxis2": {
-      "domain": [
-        0.18666666666666665,
-        0.3133333333333333
-      ],
+      "domain": [0.18666666666666665, 0.3133333333333333],
       "anchor": "y2",
       "title": {
         "text": "=alignment<br>=offset"
       }
     },
     "yaxis2": {
-      "domain": [
-        0,
-        1
-      ],
+      "domain": [0, 1],
       "anchor": "x2"
     },
     "xaxis3": {
-      "domain": [
-        0.35333333333333333,
-        0.48
-      ],
+      "domain": [0.35333333333333333, 0.48],
       "anchor": "y3",
       "title": {
         "text": "≠alignment<br>=offset"
       }
     },
     "yaxis3": {
-      "domain": [
-        0,
-        1
-      ],
+      "domain": [0, 1],
       "anchor": "x3"
     },
     "xaxis4": {
-      "domain": [
-        0.52,
-        0.6466666666666666
-      ],
+      "domain": [0.52, 0.6466666666666666],
       "anchor": "y4",
       "title": {
         "text": "=alignment<br>≠offset"
       }
     },
     "yaxis4": {
-      "domain": [
-        0,
-        0.45
-      ],
+      "domain": [0, 0.45],
       "anchor": "x4"
     },
     "yaxis5": {
-      "domain": [
-        0.55,
-        1
-      ],
+      "domain": [0.55, 1],
       "anchor": "x4"
     },
     "xaxis5": {
-      "domain": [
-        0.6866666666666666,
-        0.8133333333333332
-      ],
+      "domain": [0.6866666666666666, 0.8133333333333332],
       "anchor": "y6",
       "title": {
         "text": "=alignment<br>=offset"
       }
     },
     "yaxis6": {
-      "domain": [
-        0,
-        0.45
-      ],
+      "domain": [0, 0.45],
       "anchor": "x5"
     },
     "yaxis7": {
-      "domain": [
-        0.55,
-        1
-      ],
+      "domain": [0.55, 1],
       "anchor": "x5"
     },
     "xaxis6": {
-      "domain": [
-        0.8533333333333333,
-        1
-      ],
+      "domain": [0.8533333333333333, 1],
       "anchor": "y8",
       "title": {
         "text": "≠alignment<br>=offset"
       }
     },
     "yaxis8": {
-      "domain": [
-        0,
-        0.45
-      ],
+      "domain": [0, 0.45],
       "anchor": "x6"
     },
     "yaxis9": {
-      "domain": [
-        0.55,
-        1
-      ],
+      "domain": [0.55, 1],
       "anchor": "x6"
     }
   }

@@ -39,7 +39,7 @@
       "type": "bar",
       "marker": {
         "line": {
-            "color": "green"
+          "color": "green"
         }
       },
       "error_y": {
@@ -52,8 +52,8 @@
       "type": "bar",
       "marker": {
         "line": {
-            "color": "blue"
-          },
+          "color": "blue"
+        },
         "color": "black"
       },
       "error_y": {
@@ -62,12 +62,12 @@
     }
   ],
   "layout": {
-      "width": 600,
-      "yaxis": {
-        "autorangeoptions" : {"maxallowed": 1100}
-      },
-      "title": {
-          "text": "Bar chart error bars inherit color from marker.line not marker"
-      }
+    "width": 600,
+    "yaxis": {
+      "autorangeoptions": { "maxallowed": 1100 }
+    },
+    "title": {
+      "text": "Bar chart error bars inherit color from marker.line not marker"
+    }
   }
 }

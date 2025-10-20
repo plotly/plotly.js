@@ -6,8 +6,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x",
       "yaxis": "y",
       "cheaterslope": -10
@@ -18,8 +27,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0.8, 0, 2], [2, 1.2, 3.2], [2.8, 2, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x2",
       "yaxis": "y",
       "cheaterslope": -10
@@ -30,8 +48,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x",
       "yaxis": "y2",
       "cheaterslope": -0.3
@@ -42,8 +69,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0.8, 0, 2], [2, 1.2, 3.2], [2.8, 2, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x2",
       "yaxis": "y2",
       "cheaterslope": -0.3
@@ -54,8 +90,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x",
       "yaxis": "y3",
       "cheaterslope": 0
@@ -66,8 +111,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0.8, 0, 2], [2, 1.2, 3.2], [2.8, 2, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x2",
       "yaxis": "y3",
       "cheaterslope": 0
@@ -78,8 +132,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x",
       "yaxis": "y4",
       "cheaterslope": 0.3
@@ -90,8 +153,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0.8, 0, 2], [2, 1.2, 3.2], [2.8, 2, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x2",
       "yaxis": "y4",
       "cheaterslope": 0.3
@@ -102,8 +174,17 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x",
       "yaxis": "y5",
       "cheaterslope": 10
@@ -114,15 +195,24 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0.8, 0, 2], [2, 1.2, 3.2], [2.8, 2, 4]],
-      "aaxis": {"smoothing": 1, "title": {"text": "A axis<br>title"}, "color": "red", "showticklabels": "none"},
-      "baxis": {"smoothing": 1, "title": {"text": "B axis<br>title"}, "showticklabels": "none"},
+      "aaxis": {
+        "smoothing": 1,
+        "title": { "text": "A axis<br>title" },
+        "color": "red",
+        "showticklabels": "none"
+      },
+      "baxis": {
+        "smoothing": 1,
+        "title": { "text": "B axis<br>title" },
+        "showticklabels": "none"
+      },
       "xaxis": "x2",
       "yaxis": "y5",
       "cheaterslope": 10
     }
   ],
   "layout": {
-    "title": {"text": "Cheaterslope with titles and no tick labels"},
+    "title": { "text": "Cheaterslope with titles and no tick labels" },
     "width": 600,
     "height": 800,
     "dragmode": "pan",

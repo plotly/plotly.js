@@ -65,9 +65,9 @@
     }
   ],
   "layout": {
-      "width": 600,
-      "title": {
-          "text": "Scatter-gl error bars inherit color from line or marker"
-      }
+    "width": 600,
+    "title": {
+      "text": "Scatter-gl error bars inherit color from line or marker"
+    }
   }
 }

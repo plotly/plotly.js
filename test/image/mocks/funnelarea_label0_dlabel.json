@@ -1,13 +1,7 @@
 {
   "data": [
     {
-      "values": [
-        5,
-        4,
-        3,
-        2,
-        1
-      ],
+      "values": [5, 4, 3, 2, 1],
       "label0": 20,
       "dlabel": 5,
       "type": "funnelarea"

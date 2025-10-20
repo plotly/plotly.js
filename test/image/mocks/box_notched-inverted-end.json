@@ -29,7 +29,7 @@
       "zeroline": false
     },
     "showlegend": false,
-    "margin": {"l": 220, "b": 20, "r": 20},
+    "margin": { "l": 220, "b": 20, "r": 20 },
     "width": 600,
     "height": 300
   }

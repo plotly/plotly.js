@@ -39,7 +39,7 @@
       "barmode": "stack",
       "marker": {
         "line": {
-            "color": "green"
+          "color": "green"
         }
       },
       "error_y": {
@@ -52,8 +52,8 @@
       "barmode": "stack",
       "marker": {
         "line": {
-            "color": "blue"
-          },
+          "color": "blue"
+        },
         "color": "black"
       },
       "error_y": {
@@ -62,10 +62,10 @@
     }
   ],
   "layout": {
-      "width": 600,
-      "heigh": 600,
-      "title": {
-          "text": "Histogram error bars inherit color from marker.line not marker"
-      }
+    "width": 600,
+    "heigh": 600,
+    "title": {
+      "text": "Histogram error bars inherit color from marker.line not marker"
+    }
   }
 }

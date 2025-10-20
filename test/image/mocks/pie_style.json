@@ -1,19 +1,7 @@
 {
   "data": [
     {
-      "values": [
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20
-      ],
+      "values": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
       "hole": 0.5,
       "rotation": 45,
       "marker": {
@@ -31,7 +19,8 @@
     "width": 500,
     "paper_bgcolor": "#ddd",
     "showlegend": false,
-    "shapes": [{
+    "shapes": [
+      {
         "type": "rect",
         "xref": "paper",
         "yref": "paper",
@@ -40,9 +29,10 @@
         "x1": 1,
         "y1": 0.6,
         "fillcolor": "rgba(128, 0, 0, 0.5)",
-        "line": {"width": 0},
+        "line": { "width": 0 },
         "layer": "below"
-    }, {
+      },
+      {
         "type": "rect",
         "xref": "paper",
         "yref": "paper",
@@ -51,8 +41,9 @@
         "x1": 0.6,
         "y1": 1,
         "fillcolor": "rgba(0, 0, 128, 0.5)",
-        "line": {"width": 0},
+        "line": { "width": 0 },
         "layer": "above"
-    }]
+      }
+    ]
   }
 }

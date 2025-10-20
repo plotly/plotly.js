@@ -2,24 +2,9 @@
   "data": [
     {
       "type": "pie",
-      "values": [
-        1,
-        5,
-        3,
-        2
-      ],
-      "labels": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "text": [
-        "textA",
-        "textB",
-        "textC",
-        "textD"
-      ],
+      "values": [1, 5, 3, 2],
+      "labels": ["A", "B", "C", "D"],
+      "text": ["textA", "textB", "textC", "textD"],
       "texttemplate": "%{label}: %{value} (%{percent})",
       "textposition": "inside",
       "hovertemplate": "%{text}",
@@ -30,24 +15,9 @@
     },
     {
       "type": "funnelarea",
-      "values": [
-        1,
-        5,
-        3,
-        2
-      ],
-      "labels": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
-      "text": [
-        "textA",
-        "textB",
-        "textC",
-        "textD"
-      ],
+      "values": [1, 5, 3, 2],
+      "labels": ["A", "B", "C", "D"],
+      "text": ["textA", "textB", "textC", "textD"],
       "texttemplate": "%{label}-%{color}-%{value}-%{percent}-%{text}",
       "textposition": "inside",
       "hovertemplate": "%{text}",
@@ -58,34 +28,10 @@
     },
     {
       "type": "sunburst",
-      "labels": [
-        "Eve",
-        "Cain",
-        "Seth",
-        "Enos",
-        "Esther"
-      ],
-      "values": [
-        11,
-        12,
-        13,
-        14,
-        15
-      ],
-      "text": [
-        "txt1",
-        "txt2",
-        "txt3",
-        "txt4",
-        "txt5"
-      ],
-      "parents": [
-        "",
-        "Eve",
-        "Eve",
-        "Seth",
-        "Seth"
-      ],
+      "labels": ["Eve", "Cain", "Seth", "Enos", "Esther"],
+      "values": [11, 12, 13, 14, 15],
+      "text": ["txt1", "txt2", "txt3", "txt4", "txt5"],
+      "parents": ["", "Eve", "Eve", "Seth", "Seth"],
       "texttemplate": "%{label} %{value} %{text}",
       "domain": {
         "row": 0,
@@ -95,12 +41,7 @@
     {
       "type": "scatter",
       "mode": "markers+lines+text",
-      "y": [
-        1,
-        5,
-        3,
-        2
-      ],
+      "y": [1, 5, 3, 2],
       "texttemplate": "%{x}, %{y}",
       "textposition": "top center",
       "xaxis": "x5",
@@ -108,18 +49,8 @@
     },
     {
       "type": "bar",
-      "y": [
-        1,
-        5,
-        3,
-        2
-      ],
-      "text": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
+      "y": [1, 5, 3, 2],
+      "text": ["A", "B", "C", "D"],
       "texttemplate": "%{text}<br>%{value}",
       "textposition": "inside",
       "hovertemplate": "%{text}",
@@ -128,18 +59,8 @@
     },
     {
       "type": "waterfall",
-      "y": [
-        1,
-        5,
-        3,
-        2
-      ],
-      "text": [
-        "A",
-        "B",
-        "C",
-        "D"
-      ],
+      "y": [1, 5, 3, 2],
+      "text": ["A", "B", "C", "D"],
       "texttemplate": "%{text}-%{initial}-%{final}-%{delta}",
       "textposition": "inside",
       "hovertemplate": "%{text}",
@@ -149,16 +70,8 @@
     {
       "type": "funnel",
       "orientation": "h",
-      "y": [
-        "A",
-        "B",
-        "C"
-      ],
-      "x": [
-        3,
-        2,
-        1
-      ],
+      "y": ["A", "B", "C"],
+      "x": [3, 2, 1],
       "textinfo": "value+percent initial+percent previous+percent total",
       "texttemplate": "%{value}-%{percentInitial}-%{percentPrevious}-%{percentTotal:0.3f}",
       "xaxis": "x8",
@@ -176,7 +89,7 @@
     },
     "width": 1000,
     "height": 500,
-    "margin": {"t": 5, "b": 25, "l": 15, "r": 0},
+    "margin": { "t": 5, "b": 25, "l": 15, "r": 0 },
     "grid": {
       "rows": 2,
       "columns": 4,
@@ -186,18 +99,12 @@
     },
     "xaxis": {
       "type": "category",
-      "range": [
-        -0.5,
-        3.5
-      ],
+      "range": [-0.5, 3.5],
       "autorange": true
     },
     "yaxis": {
       "type": "linear",
-      "range": [
-        -2.1944444444444446,
-        11.694444444444445
-      ],
+      "range": [-2.1944444444444446, 11.694444444444445],
       "autorange": true
     }
   }

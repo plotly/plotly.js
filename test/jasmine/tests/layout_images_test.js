@@ -319,9 +319,8 @@ describe('Layout images', function() {
         var gd;
         var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
-            Plotly.newPlot(gd, data, {
+        var layoutFn = function() {
+            return {
                 images: [{
                     source: jsLogo,
                     x: 2,
@@ -331,12 +330,17 @@ describe('Layout images', function() {
                 }],
                 width: 500,
                 height: 400
-            }).then(done);
+            };
+        }
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, data, layoutFn()).then(done);
         });
 
         afterEach(destroyGraphDiv);
 
-        it('should only create canvas if url image', function(done) {
+        it('should only create canvas if url image and staticPlot', function(done) {
             var originalCreateElement = document.createElement;
             var newCanvasElement;
             spyOn(document, 'createElement').and.callFake(function(elementType) {
@@ -350,7 +354,21 @@ describe('Layout images', function() {
 
             Plotly.relayout(gd, 'images[0].source', dataUriImage)
             .then(function() {
-                expect(newCanvasElement).toBeUndefined();
+                expect(newCanvasElement).withContext('non-static data uri').toBeUndefined();
+
+                return Plotly.relayout(gd, 'images[0].source', jsLogo);
+            })
+            .then(function() {
+                expect(newCanvasElement).withContext('non-static url').toBeUndefined();
+
+                return Plotly.newPlot(gd, data, layoutFn(), {staticPlot: true});
+            })
+            .then(function() {
+                newCanvasElement = undefined;
+                return Plotly.relayout(gd, 'images[0].source', dataUriImage);
+            })
+            .then(function() {
+                expect(newCanvasElement).withContext('static data uri').toBeUndefined();
 
                 return Plotly.relayout(gd, 'images[0].source', jsLogo);
             })
@@ -392,11 +410,21 @@ describe('Layout images', function() {
             .then(done, done.fail);
         });
 
-        it('should remove the image tag if an invalid source', function(done) {
+        it('should remove the image tag if an invalid source and staticPlot', function(done) {
             var selection = d3Select('image');
             expect(selection.size()).toBe(1);
 
             Plotly.relayout(gd, 'images[0].source', 'invalidUrl')
+            .then(function() {
+                var newSelection = d3Select('image');
+                expect(newSelection.size()).toBe(1);
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, layoutFn(), {staticPlot: true});
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'images[0].source', 'invalidUrl');
+            })
             .then(function() {
                 var newSelection = d3Select('image');
                 expect(newSelection.size()).toBe(0);
@@ -413,6 +441,8 @@ describe('Layout images', function() {
             var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
             var layout = { width: 500, height: 400 };
 
+            var imgEls;
+
             function makeImage(source, x, y) {
                 return {
                     source: source,
@@ -423,8 +453,21 @@ describe('Layout images', function() {
                 };
             }
 
-            function assertImages(cnt) {
+            function getImageEls() {
+                return Array.from(gd.querySelectorAll('image'));
+            }
+
+            function assertImages(cnt, expectedEls, msg) {
                 expect(d3SelectAll('image').size()).toEqual(cnt);
+
+                if (expectedEls) {
+                    var foundImageEls = getImageEls();
+                    expectedEls.forEach(function(expi, i) {
+                        if (expi) {
+                            expect(foundImageEls[i]).toBe(expi, msg + ': ' + i);
+                        }
+                    });
+                }
             }
 
             Plotly.newPlot(gd, data, layout).then(function() {
@@ -435,42 +478,45 @@ describe('Layout images', function() {
             })
             .then(function() {
                 assertImages(1);
+                imgEls = getImageEls();
 
                 return Plotly.relayout(gd, 'images[1]', makeImage(pythonLogo, 0.9, 0.9));
             })
             .then(function() {
-                assertImages(2);
+                assertImages(2, [imgEls[0], null], 'add second image');
+                imgEls = getImageEls();
 
                 // insert an image not at the end of the array
                 return Plotly.relayout(gd, 'images[0]', makeImage(pythonLogo, 0.2, 0.5));
             })
             .then(function() {
-                assertImages(3);
+                assertImages(3, [null, imgEls[0], imgEls[1]], 'add third at the start');
                 expect(gd.layout.images.length).toEqual(3);
+                imgEls = getImageEls();
 
                 return Plotly.relayout(gd, 'images[1].visible', false);
             })
             .then(function() {
-                assertImages(2);
-                expect(gd.layout.images.length).toEqual(3);
+                assertImages(2, [imgEls[0], imgEls[2]], 'hide second');
 
                 return Plotly.relayout(gd, 'images[1].visible', true);
             })
             .then(function() {
-                assertImages(3);
+                assertImages(3, [imgEls[0], null, imgEls[2]], 'reshow second');
                 expect(gd.layout.images.length).toEqual(3);
+                imgEls = getImageEls();
 
                 // delete not from the end of the array
                 return Plotly.relayout(gd, 'images[0]', null);
             })
             .then(function() {
-                assertImages(2);
+                assertImages(2, [imgEls[1], imgEls[2]], 'delete first');
                 expect(gd.layout.images.length).toEqual(2);
 
                 return Plotly.relayout(gd, 'images[1]', null);
             })
             .then(function() {
-                assertImages(1);
+                assertImages(1, [imgEls[1]], 'delete last');
                 expect(gd.layout.images.length).toEqual(1);
 
                 return Plotly.relayout(gd, 'images[0]', null);

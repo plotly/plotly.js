@@ -134,8 +134,6 @@ module.exports = extendFlat({
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false}),
     zorder: scatterAttrs.zorder
-}, {
-    transforms: undefined
 },
     colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
 );

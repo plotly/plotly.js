@@ -4,21 +4,11 @@
       "hovertemplate": "%{text}",
       "texttemplate": "Rien ne se perd, rien ne se crée, tout se transforme!<br>%{text}",
       "mode": "text",
-      "text": [
-        "normal",
-        "word caps",
-        "upper",
-        "lower"
-      ],
+      "text": ["normal", "word caps", "upper", "lower"],
       "textfont": {
         "family": "Inter",
         "size": 16,
-        "textcase": [
-          "normal",
-          "word caps",
-          "upper",
-          "lower"
-        ]
+        "textcase": ["normal", "word caps", "upper", "lower"]
       },
       "x": [0, 0, 0, 0],
       "y": [0, 1, 2, 3]

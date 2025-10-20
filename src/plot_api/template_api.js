@@ -347,7 +347,7 @@ exports.validateTemplate = function(figureIn, template) {
                 // the template
                 errorList.push({
                     code: 'missing',
-                    index: fullTrace._fullInput.index,
+                    index: fullTrace.index,
                     traceType: traceType
                 });
             }

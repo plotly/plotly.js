@@ -4,7 +4,7 @@
       "type": "splom",
       "opacity": 0.9,
       "showupperhalf": false,
-      "diagonal": {"visible": false },
+      "diagonal": { "visible": false },
       "dimensions": [
         {
           "label": "numeric",
@@ -16,23 +16,45 @@
         },
         {
           "label": "bool",
-          "values": [false, true, true, true, false, true, false, false, false, true],
-          "axis": {"type": "category"}
+          "values": [
+            false,
+            true,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true
+          ],
+          "axis": { "type": "category" }
         },
         {
           "label": "0/1",
           "values": [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-          "axis": {"type": "category"}
+          "axis": { "type": "category" }
         },
         {
           "label": "string",
-          "values": ["lyndon", "richard", "gerald", "jimmy", "ronald", "george", "bill", "georgeW", "barack", "donald"]
+          "values": [
+            "lyndon",
+            "richard",
+            "gerald",
+            "jimmy",
+            "ronald",
+            "george",
+            "bill",
+            "georgeW",
+            "barack",
+            "donald"
+          ]
         }
       ]
     }
   ],
   "layout": {
     "hovermode": "closest",
-    "margin": {"b": 80, "l": 80, "r": 30, "t": 30}
+    "margin": { "b": 80, "l": 80, "r": 30, "t": 30 }
   }
 }

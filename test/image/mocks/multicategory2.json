@@ -25,7 +25,7 @@
   ],
   "layout": {
     "xaxis": {
-      "title": {"text": "MULTI-CATEGORY ON TOP"},
+      "title": { "text": "MULTI-CATEGORY ON TOP" },
       "side": "top",
       "tickson": "labels",
       "ticks": "outside",

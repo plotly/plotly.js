@@ -7,7 +7,7 @@
       "cliponaxis": false
     },
     {
-      "x": [1, 2, 3, 4 ],
+      "x": [1, 2, 3, 4],
       "y": [3, 5, 1, 7],
       "fill": "tonexty",
       "cliponaxis": false
@@ -21,7 +21,14 @@
         "opacity": 1
       },
       "text": "not<br>clipped",
-      "textposition": ["left", "left", "bottom", "bottom left", "top left", "top"],
+      "textposition": [
+        "left",
+        "left",
+        "bottom",
+        "bottom left",
+        "top left",
+        "top"
+      ],
       "error_y": {
         "array": [0.1, 0.2, 0.3, 0.1, 0.3, 0.2],
         "arrayminus": [0.1, 0.2, 0.1, 0.1, 0.1, 0.2]
@@ -31,7 +38,6 @@
         "arrayminus": [0.1, 0.2, 0.1, 0.1, 0.1, 0.2]
       },
       "cliponaxis": false
-
     },
     {
       "mode": "markers",
@@ -91,19 +97,26 @@
       "side": "right",
       "layer": "above traces"
     },
-    "annotations": [{
-      "showarrow": false,
-      "xref": "paper", "yref": "paper",
-      "x": 0.24, "y": 0.5,
-      "xanchor": "center",
-      "text": "axis layer<br>below traces"
-    }, {
-      "showarrow": false,
-      "xref": "paper", "yref": "paper",
-      "x": 0.74, "y": 0.5,
-      "xanchor": "center",
-      "text": "axis layer<br>above traces"
-    }],
+    "annotations": [
+      {
+        "showarrow": false,
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0.24,
+        "y": 0.5,
+        "xanchor": "center",
+        "text": "axis layer<br>below traces"
+      },
+      {
+        "showarrow": false,
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0.74,
+        "y": 0.5,
+        "xanchor": "center",
+        "text": "axis layer<br>above traces"
+      }
+    ],
     "showlegend": false,
     "dragmode": "pan",
     "hovermode": "closest",

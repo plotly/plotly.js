@@ -47,8 +47,8 @@
       }
     },
     "xaxis": {
-        "ticklabelstep": 2,
-        "side": "top"
+      "ticklabelstep": 2,
+      "side": "top"
     }
   }
 }

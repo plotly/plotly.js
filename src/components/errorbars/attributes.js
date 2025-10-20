@@ -16,7 +16,7 @@ module.exports = {
         description: [
             'Determines the rule used to generate the error bars.',
 
-            'If *constant`, the bar lengths are of a constant value.',
+            'If *constant*, the bar lengths are of a constant value.',
             'Set this constant in `value`.',
 
             'If *percent*, the bar lengths correspond to a percentage of',
@@ -102,7 +102,7 @@ module.exports = {
     color: {
         valType: 'color',
         editType: 'style',
-        description: 'Sets the stoke color of the error bars.'
+        description: 'Sets the stroke color of the error bars.'
     },
     thickness: {
         valType: 'number',
@@ -121,15 +121,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'calc',
-
-    _deprecated: {
-        opacity: {
-            valType: 'number',
-            editType: 'style',
-            description: [
-                'Obsolete.',
-                'Use the alpha channel in error bar `color` to set the opacity.'
-            ].join(' ')
-        }
-    }
 };

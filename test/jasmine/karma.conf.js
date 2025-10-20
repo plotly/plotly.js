@@ -2,10 +2,8 @@
 
 var path = require('path');
 var minimist = require('minimist');
-var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-var LoaderOptionsPlugin = require('webpack').LoaderOptionsPlugin;
 var constants = require('../../tasks/util/constants');
-var webpackConfig = require('../../webpack.config.js');
+var esbuildConfig = require('../../esbuild-config.js');
 
 var isCI = Boolean(process.env.CI);
 
@@ -16,13 +14,12 @@ var argv = minimist(process.argv.slice(4), {
         'info',
         'nowatch', 'randomize',
         'failFast', 'doNotFailOnEmptyTestSuite',
-        'Chrome', 'Firefox', 'IE11',
+        'Chrome', 'Firefox',
         'verbose', 'showSkipped', 'report-progress', 'report-spec', 'report-dots'
     ],
     alias: {
         Chrome: 'chrome',
         Firefox: ['firefox', 'FF'],
-        IE11: ['ie11'],
         bundleTest: ['bundletest', 'bundle_test'],
         nowatch: 'no-watch',
         failFast: 'fail-fast',
@@ -67,7 +64,6 @@ if(argv.info) {
         '  - `--mathjax3`: to load mathjax v3 in relevant test',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
-        '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
         '  - `--randomize` (dflt: `false`): randomize test ordering (useful to detect bad test teardown)',
         '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
@@ -121,12 +117,10 @@ if(isFullSuite) {
     testFileGlob = path.join(__dirname, 'tests', glob(merge(argv._).map(basename)));
 }
 
-var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
-var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
-var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
-var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v2');
-var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v3');
+var pathToTopojsonDist = path.join(__dirname, '..', '..', 'topojson', 'dist');
+var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v2');
+var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', '@plotly/mathjax-v3');
 var pathToVirtualWebgl = path.join(__dirname, '..', '..', 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js');
 
 var reporters = [];
@@ -150,6 +144,10 @@ var hasSpecReporter = reporters.indexOf('spec') !== -1;
 
 if(!hasSpecReporter && argv.showSkipped) reporters.push('spec');
 if(argv.verbose) reporters.push('verbose');
+
+if(process.argv.indexOf('--tags=noCI,noCIdep') !== -1) {
+    reporters = ['dots'];
+}
 
 function func(config) {
     // level of logging
@@ -177,20 +175,28 @@ func.defaultConfig = {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'jasmine-spec-tags', 'webpack', 'viewport'],
+    frameworks: ['jasmine', 'jasmine-spec-tags', 'viewport'],
+
+    plugins: [
+        require('karma-jasmine'),
+        require('karma-jasmine-spec-tags'),
+        require('karma-viewport'),
+        require('karma-spec-reporter'),
+        require('karma-chrome-launcher'),
+        require('karma-firefox-launcher'),
+        require('karma-esbuild'),
+    ],
 
     // list of files / patterns to load in the browser
     //
     // N.B. the rest of this field is filled below
     files: [
         pathToCustomMatchers,
-        pathToUnpolyfill,
-        // available to fetch from /base/node_modules/mathjax-v2/
+        // available to fetch from /base/node_modules/@plotly/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
         {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
         {pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true},
-        // available to fetch from /base/node_modules/sane-topojson/dist/
-        {pattern: pathToSaneTopojsonDist + '/**', included: false, watched: false, served: true}
+        {pattern: pathToTopojsonDist + '/**', included: false, watched: false, served: true}
     ],
 
     // list of files / pattern to exclude
@@ -262,26 +268,7 @@ func.defaultConfig = {
         }
     },
 
-    webpack: {
-        target: ['web', 'es5'],
-        module: {
-            rules: webpackConfig.module.rules
-        },
-        resolve: {
-            fallback: {
-                stream: require.resolve('stream-browserify')
-            }
-        },
-        plugins: [
-            new NodePolyfillPlugin({ includeAliases: ['process'] }),
-            new LoaderOptionsPlugin({
-                // test: /\.xxx$/, // may apply this only for some modules
-                options: {
-                    library: webpackConfig.output.library
-                }
-            })
-        ]
-    },
+    esbuild: esbuildConfig,
 
     client: {
         // Options for `karma-jasmine-spec-tags`
@@ -292,7 +279,7 @@ func.defaultConfig = {
         //
         // Although not recommended, some tests "depend" on other
         // tests to pass (e.g. the Plotly.react tests check that
-        // all available traces and transforms are tested). Tag these
+        // all available traces are tested). Tag these
         // with @noCIdep, so that
         // - $ npm run test-jasmine -- tags=noCI,noCIdep
         // can pass.
@@ -328,29 +315,8 @@ func.defaultConfig = {
     failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };
 
-func.defaultConfig.preprocessors[pathToCustomMatchers] = ['webpack'];
-func.defaultConfig.preprocessors[testFileGlob] = ['webpack'];
-
-if(isBundleTest) {
-    switch(basename(testFileGlob)) {
-        case 'minified_bundle':
-            func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
-            func.defaultConfig.module = {
-                rules: {
-                    test: /\.js$/,
-                    use: [
-                        'transform-loader?' + path.resolve(__dirname, 'tasks/compress_attributes.js')
-                    ]
-                }
-            };
-            break;
-        case 'plotschema':
-            // no tasks/compress_attributes in this case
-            break;
-    }
-} else {
-    func.defaultConfig.files.push(pathToJQuery);
-}
+func.defaultConfig.preprocessors[pathToCustomMatchers] = ['esbuild'];
+func.defaultConfig.preprocessors[testFileGlob] = ['esbuild'];
 
 if(argv.virtualWebgl) {
     // add virtual-webgl to the top
@@ -366,7 +332,6 @@ func.defaultConfig.files.push(testFileGlob);
 var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
-if(argv.IE11) browsers.push('IE');
 if(browsers.length === 0) browsers.push('_Chrome');
 
 module.exports = func;

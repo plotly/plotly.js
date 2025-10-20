@@ -33,6 +33,18 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the color of the border enclosing the legend.'
     },
+    maxheight: {
+        valType: 'number',
+        min: 0,
+        editType: 'legend',
+        description: [
+            'Sets the max height (in px) of the legend, or max height ratio (reference height * ratio) if less than or equal to 1.',
+            'Default value is: 0.5 for horizontal legends; 1 for vertical legends. The minimum allowed height is 30px.',
+            'For a ratio of 0.5, the legend will take up to 50% of the reference height before displaying a scrollbar.',
+            'The reference height is the full layout height with the following exception: vertically oriented legends with',
+            'a `yref` of `"paper", located to the side of the plot. In this case, the reference height is the plot height.'
+        ].join(' ')
+    },
     borderwidth: {
         valType: 'number',
         min: 0,
@@ -231,7 +243,7 @@ module.exports = {
         values: ['auto', 'top', 'middle', 'bottom'],
         editType: 'legend',
         description: [
-            'Sets the legend\'s vertical position anchor',
+            'Sets the legend\'s vertical position anchor.',
             'This anchor binds the `y` position to the *top*, *middle*',
             'or *bottom* of the legend.',
             'Value *auto* anchors legends at their bottom for `y` values less than or equal to 1/3,',

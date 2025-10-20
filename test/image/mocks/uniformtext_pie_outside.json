@@ -1,13 +1,7 @@
 {
   "data": [
     {
-      "values": [
-        3,
-        1,
-        5,
-        2,
-        4
-      ],
+      "values": [3, 1, 5, 2, 4],
       "type": "pie",
       "domain": {
         "x": [0, 0.4],
@@ -18,13 +12,7 @@
       "name": "sorted ccw (default)"
     },
     {
-      "values": [
-        3,
-        1,
-        5,
-        2,
-        4
-      ],
+      "values": [3, 1, 5, 2, 4],
       "type": "pie",
       "domain": {
         "x": [0.6, 1],
@@ -35,13 +23,7 @@
       "name": "sorted cw"
     },
     {
-      "values": [
-        3,
-        1,
-        5,
-        2,
-        4
-      ],
+      "values": [3, 1, 5, 2, 4],
       "type": "pie",
       "domain": {
         "x": [0, 0.4],
@@ -52,13 +34,7 @@
       "name": "unsorted ccw"
     },
     {
-      "values": [
-        3,
-        1,
-        5,
-        2,
-        4
-      ],
+      "values": [3, 1, 5, 2, 4],
       "type": "pie",
       "domain": {
         "x": [0.6, 1],
@@ -73,8 +49,8 @@
     "height": 500,
     "width": 600,
     "uniformtext": {
-        "mode": "hide",
-        "minsize": 16
+      "mode": "hide",
+      "minsize": 16
     },
     "showlegend": false
   }

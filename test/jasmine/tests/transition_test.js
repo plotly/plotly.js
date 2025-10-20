@@ -106,7 +106,7 @@ describe('Plots.transition', function() {
             var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
             function imageel() {
-                return gd._fullLayout._imageUpperLayer.select('image').node();
+                return gd._fullLayout._imageUpperLayer.node().querySelector('image');
             }
             function imagesrc() {
                 return imageel().getAttribute('href');
@@ -190,42 +190,6 @@ describe('Plots.transition', function() {
 
                 expect(d3).toEqual(d2);
                 expect(s3).not.toEqual(s2);
-            }).then(done, done.fail);
-        });
-
-
-        it('with duration:' + transitionDuration + ', transitions a transform', function(done) {
-            Plotly.restyle(gd, {
-                'transforms[0]': {
-                    enabled: true,
-                    type: 'filter',
-                    operation: '<',
-                    target: 'x',
-                    value: 10
-                }
-            }, [0]).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
-                    enabled: true,
-                    type: 'filter',
-                    operation: '<',
-                    target: 'x',
-                    value: 10
-                })]);
-
-                return Plots.transition(gd, [{
-                    'transforms[0].operation': '>'
-                }], null, [0],
-                    {redraw: true, duration: transitionDuration},
-                    {duration: transitionDuration, easing: 'cubic-in-out'}
-                );
-            }).then(function() {
-                expect(gd._fullData[0].transforms).toEqual([jasmine.objectContaining({
-                    enabled: true,
-                    type: 'filter',
-                    operation: '>',
-                    target: 'x',
-                    value: 10
-                })]);
             }).then(done, done.fail);
         });
 
@@ -491,7 +455,7 @@ describe('Plotly.react transitions:', function() {
             ]);
         })
         .then(function() {
-            layout.title = 'FIGURE';
+            layout.title = { text: 'FIGURE' };
             return Plotly.react(gd, data, layout);
         })
         .then(function() {
@@ -632,7 +596,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI should only transition the layout when both traces and layout have animatable changes by default', function(done) {
+    it('@flaky should only transition the layout when both traces and layout have animatable changes by default', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {
             transition: {duration: 10},
@@ -651,6 +615,7 @@ describe('Plotly.react transitions:', function() {
             data[0].marker = {color: 'red'};
             return Plotly.react(gd, data, layout);
         })
+        .then(delay(50))
         .then(function() {
             assertSpies('just trace transition', [
                 [Plots, 'transitionFromReact', 1],
@@ -663,6 +628,7 @@ describe('Plotly.react transitions:', function() {
             layout.xaxis.range = [-2, 2];
             return Plotly.react(gd, data, layout);
         })
+        .then(delay(50))
         .then(function() {
             assertSpies('just layout transition', [
                 [Plots, 'transitionFromReact', 1],
@@ -682,7 +648,7 @@ describe('Plotly.react transitions:', function() {
             layout.xaxis.range = [-1, 1];
             return Plotly.react(gd, data, layout);
         })
-        .then(delay(20))
+        .then(delay(100))
         .then(function() {
             assertSpies('both trace and layout transitions', [
                 [Plots, 'transitionFromReact', 1],
@@ -705,7 +671,7 @@ describe('Plotly.react transitions:', function() {
             layout.transition.ordering = 'traces first';
             return Plotly.react(gd, data, layout);
         })
-        .then(delay(20))
+        .then(delay(50))
         .then(function() {
             assertSpies('both trace and layout transitions under *ordering:traces first*', [
                 [Plots, 'transitionFromReact', 1],
@@ -813,6 +779,7 @@ describe('Plotly.react transitions:', function() {
             data[0].marker = {size: 30};
             return Plotly.react(gd, data, layout);
         })
+        .then(delay(50))
         .then(function() {
             assertSpies('must transition autoranged axes, not the traces', [
                 [Plots, 'transitionFromReact', 1],
@@ -828,6 +795,7 @@ describe('Plotly.react transitions:', function() {
             data[0].marker = {size: 10};
             return Plotly.react(gd, data, layout);
         })
+        .then(delay(50))
         .then(function() {
             assertSpies('transition just traces, as now axis ranges are set', [
                 [Plots, 'transitionFromReact', 1],

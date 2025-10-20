@@ -1,102 +1,62 @@
 {
-    "data": [
-        {
-            "x": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8
-            ],
-            "y": [
-                8,
-                7,
-                6,
-                5,
-                4,
-                3,
-                2,
-                1,
-                0
-            ],
-            "type": "scattergl"
-        },
-        {
-            "x": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8
-            ],
-            "y": [
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8
-            ],
-            "type": "scattergl"
-        }
-    ],
-    "layout": {
-        "xaxis": {
-            "autorangeoptions": {
-                "clipmin": 0.5,
-                "clipmax": 7.5
-            },
-            "tickfont": {
-                "color": "black",
-                "family": "Old Standard TT, serif",
-                "size": 14
-            },
-            "showexponent": "All",
-            "showticklabels": true,
-            "title": {
-                "text": "AXIS TITLE",
-                "font": {
-                    "color": "lightgrey",
-                    "family": "Arial, sans-serif",
-                    "size": 18
-                }
-            },
-            "tickangle": 45,
-            "exponentformat": "e"
-        },
-        "yaxis": {
-            "autorangeoptions": {
-                "clipmin": "5e-1",
-                "clipmax": "7.5"
-            },
-            "tickfont": {
-                "color": "black",
-                "family": "Old Standard TT, serif",
-                "size": 14
-            },
-            "showexponent": "All",
-            "showticklabels": true,
-            "title": {
-                "text": "AXIS TITLE",
-                "font": {
-                    "color": "lightgrey",
-                    "family": "Arial, sans-serif",
-                    "size": 18
-                }
-            },
-            "tickangle": 45,
-            "exponentformat": "e"
-        }
+  "data": [
+    {
+      "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      "y": [8, 7, 6, 5, 4, 3, 2, 1, 0],
+      "type": "scattergl"
+    },
+    {
+      "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      "y": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      "type": "scattergl"
     }
+  ],
+  "layout": {
+    "xaxis": {
+      "autorangeoptions": {
+        "clipmin": 0.5,
+        "clipmax": 7.5
+      },
+      "tickfont": {
+        "color": "black",
+        "family": "Old Standard TT, serif",
+        "size": 14
+      },
+      "showexponent": "All",
+      "showticklabels": true,
+      "title": {
+        "text": "AXIS TITLE",
+        "font": {
+          "color": "lightgrey",
+          "family": "Arial, sans-serif",
+          "size": 18
+        }
+      },
+      "tickangle": 45,
+      "exponentformat": "e"
+    },
+    "yaxis": {
+      "autorangeoptions": {
+        "clipmin": "5e-1",
+        "clipmax": "7.5"
+      },
+      "tickfont": {
+        "color": "black",
+        "family": "Old Standard TT, serif",
+        "size": 14
+      },
+      "showexponent": "All",
+      "showticklabels": true,
+      "title": {
+        "text": "AXIS TITLE",
+        "font": {
+          "color": "lightgrey",
+          "family": "Arial, sans-serif",
+          "size": 18
+        }
+      },
+      "tickangle": 45,
+      "exponentformat": "e"
+    }
+  }
 }

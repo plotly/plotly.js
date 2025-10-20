@@ -65,25 +65,25 @@
     "polar": {
       "gridshape": "linear",
       "bargap": 0.1,
-      "domain": {"row": 0, "column": 0}
+      "domain": { "row": 0, "column": 0 }
     },
     "polar2": {
       "gridshape": "linear",
       "bargap": 0,
-      "domain": {"row": 0, "column": 1},
-      "angularaxis": {"direction": "clockwise"}
+      "domain": { "row": 0, "column": 1 },
+      "angularaxis": { "direction": "clockwise" }
     },
     "polar3": {
       "gridshape": "linear",
-      "domain": {"row": 1, "column": 0},
+      "domain": { "row": 1, "column": 0 },
       "barmode": "overlay",
       "sector": [0, 180]
     },
     "polar4": {
       "gridshape": "linear",
-      "domain": {"row": 1, "column": 1},
-      "angularaxis": {"direction": "clockwise"},
-      "radialaxis": {"range": [0, 2]}
+      "domain": { "row": 1, "column": 1 },
+      "angularaxis": { "direction": "clockwise" },
+      "radialaxis": { "range": [0, 2] }
     }
   }
 }

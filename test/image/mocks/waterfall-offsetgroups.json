@@ -2,54 +2,54 @@
   "data": [
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 1, -2, 3, 4 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [1, -2, 3, 4],
       "offsetgroup": 1,
       "hovertext": "offsetgroup: 1"
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 2, -3, 1, 5 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [2, -3, 1, 5],
       "offsetgroup": 2,
       "hovertext": "offsetgroup: 2"
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 1, -2, 3, 4 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [1, -2, 3, 4],
       "yaxis": "y2",
       "offsetgroup": 1,
       "hovertext": "offsetgroup: 1"
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 2, -3, 1, 5 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [2, -3, 1, 5],
       "yaxis": "y2",
       "offsetgroup": 2,
       "hovertext": "offsetgroup: 2"
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 1, -2, 3, 4 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [1, -2, 3, 4],
       "offsetgroup": 1,
       "hovertext": "offsetgroup: 1",
       "xaxis": "x2"
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 2, -3, 1, 5 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [2, -3, 1, 5],
       "offsetgroup": 2,
       "hovertext": "offsetgroup: 2",
       "xaxis": "x2"
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 1, -2, 3, 4 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [1, -2, 3, 4],
       "yaxis": "y2",
       "offsetgroup": 3,
       "hovertext": "offsetgroup: 3",
@@ -57,8 +57,8 @@
     },
     {
       "type": "waterfall",
-      "x": [ "A", "B", "C", "D" ],
-      "y": [ 2, -3, 1, 5 ],
+      "x": ["A", "B", "C", "D"],
+      "y": [2, -3, 1, 5],
       "yaxis": "y2",
       "offsetgroup": 4,
       "hovertext": "offsetgroup: 4",

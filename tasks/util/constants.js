@@ -24,26 +24,7 @@ var strictIndex = fs.readFileSync(pathToPlotlyStrict, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
-var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
-    .filter(function(v) {
-        return startsWithLowerCase(v) && v !== 'helpers.js';
-    })
-    .map(function(e) { return e.replace('.js', ''); });
-
-var pathToTopojsonSrc;
-try {
-    pathToTopojsonSrc = path.join(path.dirname(require.resolve('sane-topojson')), 'dist/');
-} catch(e) {
-    console.log([
-        '',
-        'WARN: Cannot resolve path to *sane-topojson* package.',
-        '  This can happen when one `npm link sane-topojson`',
-        '  and runs a command in a Docker container.',
-        '  There is nothing to worry, if you see this warning while running',
-        '  `npm run test-image`, `npm run test-export` or `npm run baseline` ;)',
-        ''
-    ].join('\n'));
-}
+var pathToTopojsonSrc = path.join(pathToRoot, 'topojson/dist');
 
 var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
@@ -87,9 +68,7 @@ var partialBundleTraces = {
         'scattergeo'
     ],
     gl2d: [
-        'heatmapgl',
         'parcoords',
-        'pointcloud',
         'scatter',
         'scattergl',
         'splom'
@@ -125,7 +104,6 @@ var partialBundleTraces = {
         'funnel',
         'funnelarea',
         'heatmap',
-        'heatmapgl',
         'histogram',
         'histogram2d',
         'histogram2dcontour',
@@ -138,7 +116,6 @@ var partialBundleTraces = {
         'parcats',
         'parcoords',
         'pie',
-        'pointcloud',
         'sankey',
         'scatter',
         'scattergl',
@@ -166,7 +143,6 @@ function makePartialBundleOpts(name) {
     return {
         name: name,
         traceList: partialBundleTraces[name],
-        transformList: allTransforms,
         calendars: true,
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
@@ -189,7 +165,6 @@ module.exports = {
 
     partialBundleTraces: partialBundleTraces,
 
-    allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
     strictIndex: strictIndex,
@@ -221,6 +196,7 @@ module.exports = {
 
     pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
+    pathToCSSDist: path.join(pathToDist, 'plotly.css'),
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
     pathToReglCodegenBundle: path.join(pathToBuild, 'regl_codegen-bundle.js'),

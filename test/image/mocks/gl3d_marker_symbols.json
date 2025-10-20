@@ -38,7 +38,7 @@
   "layout": {
     "width": 500,
     "height": 500,
-    "margin": {"l": 0, "r": 0, "b": 0, "t": 0},
+    "margin": { "l": 0, "r": 0, "b": 0, "t": 0 },
     "scene": {
       "camera": {
         "eye": {
@@ -52,7 +52,7 @@
         "zeroline": false,
         "showline": false,
         "showticklabels": false,
-        "title": {"text": ""},
+        "title": { "text": "" },
         "range": [0, 10]
       },
       "yaxis": {
@@ -60,7 +60,7 @@
         "zeroline": false,
         "showline": false,
         "showticklabels": false,
-        "title": {"text": ""},
+        "title": { "text": "" },
         "range": [0, 6]
       },
       "zaxis": {
@@ -68,7 +68,7 @@
         "zeroline": false,
         "showline": false,
         "showticklabels": false,
-        "title": {"text": ""},
+        "title": { "text": "" },
         "range": [0, 2]
       }
     },

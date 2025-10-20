@@ -471,9 +471,9 @@ function attachFxHandlers(sliceTop, gd, cd) {
     sliceTop.on('click', function(pt) {
         // TODO: this does not support right-click. If we want to support it, we
         // would likely need to change pie to use dragElement instead of straight
-        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // map subplot event binding. Or perhaps better, make a simple wrapper with the
         // right mousedown, mousemove, and mouseup handlers just for a left/right click
-        // mapbox would use this too.
+        // map subplots would use this too.
         var fullLayout2 = gd._fullLayout;
         var trace2 = gd._fullData[trace.index];
 

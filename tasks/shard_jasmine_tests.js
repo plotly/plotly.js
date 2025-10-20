@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 var falafel = require('falafel');
-var glob = require('glob');
+var { glob } = require('glob');
 var minimist = require('minimist');
 
 var pathToJasmineTests = require('./util/constants').pathToJasmineTests;
@@ -22,16 +22,14 @@ var argv = minimist(process.argv.slice(2), {
 var tag = argv.tag;
 var limit = argv.limit;
 
-glob(path.join(pathToJasmineTests, '*.js'), function(err, files) {
-    if(err) throw err;
-
+glob(path.join(pathToJasmineTests, '*.js')).then((files) => {
     var file2cnt = {};
 
     files.forEach(function(file) {
         var code = fs.readFileSync(file, 'utf-8');
         var bn = path.basename(file);
 
-        falafel(code, function(node) {
+        falafel(code, { ecmaVersion: 'latest' }, function(node) {
             if(isJasmineTestIt(node, tag)) {
                 if(file2cnt[bn]) {
                     file2cnt[bn]++;
@@ -91,4 +89,6 @@ glob(path.join(pathToJasmineTests, '*.js'), function(err, files) {
 
     // print result to stdout
     console.log(runs.join('\n'));
+}).catch((err) => {
+    throw err;
 });

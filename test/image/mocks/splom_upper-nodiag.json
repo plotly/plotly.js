@@ -4,7 +4,7 @@
       "type": "splom",
       "name": "Setosa",
       "showlowerhalf": false,
-      "diagonal": {"visible": false},
+      "diagonal": { "visible": false },
       "dimensions": [
         {
           "label": "SepalLength",
@@ -235,7 +235,7 @@
       "type": "splom",
       "name": "Versicolor",
       "showlowerhalf": false,
-      "diagonal": {"visible": false},
+      "diagonal": { "visible": false },
       "dimensions": [
         {
           "label": "SepalLength",
@@ -466,7 +466,7 @@
       "type": "splom",
       "name": "Virginica",
       "showlowerhalf": false,
-      "diagonal": {"visible": false},
+      "diagonal": { "visible": false },
       "dimensions": [
         {
           "label": "SepalLength",
@@ -695,9 +695,9 @@
     }
   ],
   "layout": {
-	"title": {"text": "Iris dataset splom"},
-  	"width": 600,
-	"height": 500,
+    "title": { "text": "Iris dataset splom" },
+    "width": 600,
+    "height": 500,
     "legend": {
       "x": 0,
       "xanchor": "left",

@@ -214,15 +214,6 @@ module.exports = {
         },
         editType: 'calc'
     },
-    transforms: {
-        _isLinkedToArray: 'transform',
-        editType: 'calc',
-        description: [
-            'WARNING: All transforms are deprecated and may be removed from the API in next major version.',
-            'An array of operations that manipulate the trace data,',
-            'for example filtering or sorting the data arrays.'
-        ].join(' ')
-    },
     uirevision: {
         valType: 'any',
         editType: 'none',

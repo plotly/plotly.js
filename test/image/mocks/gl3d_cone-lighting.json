@@ -36,7 +36,7 @@
       "w": [4, 4, 1],
       "hoverinfo": "u+v+w+name",
       "showscale": false,
-      "lighting": {"ambient": 0.3}
+      "lighting": { "ambient": 0.3 }
     },
     {
       "type": "cone",
@@ -49,7 +49,7 @@
       "w": [4, 4, 1],
       "hoverinfo": "u+v+w+name",
       "showscale": false,
-      "lighting": {"diffuse": 0.3}
+      "lighting": { "diffuse": 0.3 }
     },
     {
       "type": "cone",
@@ -62,7 +62,7 @@
       "w": [4, 4, 1],
       "hoverinfo": "u+v+w+name",
       "showscale": false,
-      "lighting": {"specular": 2}
+      "lighting": { "specular": 2 }
     },
     {
       "type": "cone",
@@ -75,7 +75,7 @@
       "w": [4, 4, 1],
       "hoverinfo": "u+v+w+name",
       "showscale": false,
-      "lighting": {"roughness": 1}
+      "lighting": { "roughness": 1 }
     },
     {
       "type": "cone",
@@ -88,7 +88,7 @@
       "w": [4, 4, 1],
       "hoverinfo": "u+v+w+name",
       "showscale": false,
-      "lighting": {"fresnel": 2}
+      "lighting": { "fresnel": 2 }
     },
     {
       "type": "cone",
@@ -101,18 +101,18 @@
       "w": [4, 4, 1],
       "hoverinfo": "u+v+w+name",
       "showscale": false,
-      "lightposition": {"x": 0, "y": 0, "z": 1e5}
+      "lightposition": { "x": 0, "y": 0, "z": 1e5 }
     }
   ],
   "layout": {
     "scene": {
       "aspectmode": "data",
       "camera": {
-        "eye": {"x": 0.05, "y": -2.6, "z": 2}
+        "eye": { "x": 0.05, "y": -2.6, "z": 2 }
       }
     },
     "width": 500,
     "height": 500,
-    "margin": {"t": 0, "b": 0, "l": 0, "r": 0}
+    "margin": { "t": 0, "b": 0, "l": 0, "r": 0 }
   }
 }

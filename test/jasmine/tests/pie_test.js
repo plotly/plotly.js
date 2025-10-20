@@ -16,6 +16,8 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+const { position } = require('../../../src/plots/cartesian/layout_attributes');
+const { font } = require('../../../src/plots/layout_attributes');
 
 var SLICES_SELECTOR = '.slice path';
 var SLICES_TEXT_SELECTOR = '.pielayer text.slicetext';
@@ -305,7 +307,7 @@ describe('Pie traces', function() {
     it('shows multiline title in hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<br>Title',
+            title: { text: 'Test<BR>Title' },
             hole: 0.5,
             type: 'pie',
             textinfo: 'none'
@@ -329,11 +331,7 @@ describe('Pie traces', function() {
     it('scales multiline title to fit in hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<br>Title',
-            titleposition: 'middle center',
-            titlefont: {
-                size: 60
-            },
+            title: { text: 'Test<BR>Title', position: 'middle center', font: { size: 60 } },
             hole: 0.1,
             type: 'pie',
             textinfo: 'none'
@@ -379,11 +377,7 @@ describe('Pie traces', function() {
     it('shows title top center if hole is zero', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
-            titleposition: 'middle center',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'middle center', font: { size: 12 } },
             hole: 0,
             type: 'pie',
             textinfo: 'none'
@@ -392,13 +386,10 @@ describe('Pie traces', function() {
         .then(done, done.fail);
     });
 
-    it('shows title top center if titleposition is undefined and no hole', function(done) {
+    it('shows title top center if title.position is undefined and no hole', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -409,11 +400,7 @@ describe('Pie traces', function() {
     it('shows title top center', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 1, 1, 1, 2],
-            title: 'Test<BR>Title',
-            titleposition: 'top center',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -424,11 +411,7 @@ describe('Pie traces', function() {
     it('shows title top left', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: 'Test<BR>Title',
-            titleposition: 'top left',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top left', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -439,11 +422,7 @@ describe('Pie traces', function() {
     it('shows title top right', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
-            titleposition: 'top right',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top right', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -454,11 +433,7 @@ describe('Pie traces', function() {
     it('shows title bottom left', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
-            titleposition: 'bottom left',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'bottom left', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -469,11 +444,7 @@ describe('Pie traces', function() {
     it('shows title bottom center', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
-            titleposition: 'bottom center',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'bottom center', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -484,11 +455,7 @@ describe('Pie traces', function() {
     it('shows title bottom right', function(done) {
         Plotly.newPlot(gd, [{
             values: [4, 5, 6, 5],
-            title: 'Test<BR>Title',
-            titleposition: 'bottom right',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'bottom right', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -499,22 +466,18 @@ describe('Pie traces', function() {
     it('should be able to restyle title position', function(done) {
         Plotly.newPlot(gd, [{
             values: [3, 2, 1],
-            title: 'Test<BR>Title',
-            titleposition: 'top left',
-            titlefont: {
-                size: 12
-            },
+            title: { text: 'Test<BR>Title', position: 'top left', font: { size: 12 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
         .then(_verifyTitle(true, false, true, false, false))
-        .then(function() { return Plotly.restyle(gd, 'titleposition', 'top right'); })
+        .then(function() { return Plotly.restyle(gd, 'title.position', 'top right'); })
         .then(_verifyTitle(false, true, true, false, false))
-        .then(function() { return Plotly.restyle(gd, 'titleposition', 'bottom left'); })
+        .then(function() { return Plotly.restyle(gd, 'title.position', 'bottom left'); })
         .then(_verifyTitle(true, false, false, true, false))
-        .then(function() { return Plotly.restyle(gd, 'titleposition', 'bottom center'); })
+        .then(function() { return Plotly.restyle(gd, 'title.position', 'bottom center'); })
         .then(_verifyTitle(false, false, false, true, true))
-        .then(function() { return Plotly.restyle(gd, 'titleposition', 'bottom right'); })
+        .then(function() { return Plotly.restyle(gd, 'title.position', 'bottom right'); })
         .then(_verifyTitle(false, true, false, true, false))
         .then(done, done.fail);
     });
@@ -522,11 +485,7 @@ describe('Pie traces', function() {
     it('does not intersect pulled slices', function(done) {
         Plotly.newPlot(gd, [{
             values: [2, 2, 2, 2],
-            title: 'Test<BR>Title',
-            titleposition: 'top center',
-            titlefont: {
-                size: 14
-            },
+            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 14 } },
             pull: [0.9, 0.9, 0.9, 0.9],
             type: 'pie',
             textinfo: 'none'
@@ -548,11 +507,7 @@ describe('Pie traces', function() {
     it('correctly positions large title', function(done) {
         Plotly.newPlot(gd, [{
             values: [1, 3, 4, 1, 2],
-            title: 'Test<BR>Title',
-            titleposition: 'top center',
-            titlefont: {
-                size: 60
-            },
+            title: { text: 'Test<BR>Title', position: 'top center', font: { size: 60 } },
             type: 'pie',
             textinfo: 'none'
         }], {height: 300, width: 300})
@@ -795,9 +750,7 @@ describe('Pie traces', function() {
         Plotly.newPlot(gd, [{
             type: 'pie',
             values: [1, 2, 3],
-            title: 'yo',
-            titlefont: {color: 'blue'},
-            titleposition: 'top left'
+            title: { text: 'yo', font: {color: 'blue'}, position: 'top left' }
         }])
           .then(function() {
               _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
@@ -831,31 +784,6 @@ describe('Pie traces', function() {
             _verifyTitle(false, true, false, true, false);
         })
         .then(done, done.fail);
-    });
-
-    it('should be able to restyle title despite using the deprecated attributes', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'pie',
-            values: [1, 2, 3],
-            title: 'yo',
-            titlefont: {color: 'blue'},
-            titleposition: 'top left'
-        }])
-          .then(function() {
-              _assertTitle('base', 'yo', 'rgb(0, 0, 255)');
-              _verifyTitle(true, false, true, false, false);
-
-              return Plotly.restyle(gd, {
-                  title: 'oy',
-                  'titlefont.color': 'red',
-                  titleposition: 'bottom right'
-              });
-          })
-          .then(function() {
-              _assertTitle('base', 'oy', 'rgb(255, 0, 0)');
-              _verifyTitle(false, true, false, true, false);
-          })
-          .then(done, done.fail);
     });
 
     it('should be able to react with new text colors', function(done) {

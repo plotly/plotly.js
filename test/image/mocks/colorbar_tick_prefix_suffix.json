@@ -1,21 +1,18 @@
 {
-    "data": [
-        {
-            "type": "contour",
-            "z": [
-                ["1e5", "2e6"],
-                ["2e6", "3e7"]
-            ],
-            "colorbar": {
-                "showexponent": "last",
-                "tickprefix": "*** ",
-                "showtickprefix": "first",
-                "ticksuffix": " €",
-                "showticksuffix": "last"
-            }
-        }
-    ],
-    "layout": {
-        "title": {"text": "colorbar tick label prefix and suffix"}
+  "data": [
+    {
+      "type": "contour",
+      "z": [["1e5", "2e6"], ["2e6", "3e7"]],
+      "colorbar": {
+        "showexponent": "last",
+        "tickprefix": "*** ",
+        "showtickprefix": "first",
+        "ticksuffix": " €",
+        "showticksuffix": "last"
+      }
     }
+  ],
+  "layout": {
+    "title": { "text": "colorbar tick label prefix and suffix" }
+  }
 }

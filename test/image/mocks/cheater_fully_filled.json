@@ -38,15 +38,17 @@
     "title": {
       "text": "Fully filled carpet with a hole"
     },
-    "annotations": [{
-      "text": "These two fills differ only in a tiny threshold that affects whether the<br>contour fills the whole region or cuts off a sliver on the left side.<br> They should be effectively identical, not complementary.",
-      "align": "left",
-      "showarrow": false,
-      "x": 0.5,
-      "y": 2.5,
-      "xref": "x",
-      "yref": "y"
-    }],
+    "annotations": [
+      {
+        "text": "These two fills differ only in a tiny threshold that affects whether the<br>contour fills the whole region or cuts off a sliver on the left side.<br> They should be effectively identical, not complementary.",
+        "align": "left",
+        "showarrow": false,
+        "x": 0.5,
+        "y": 2.5,
+        "xref": "x",
+        "yref": "y"
+      }
+    ],
     "margin": {
       "t": 60,
       "r": 30,

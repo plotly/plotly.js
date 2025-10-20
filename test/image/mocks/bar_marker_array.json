@@ -3,38 +3,13 @@
     {
       "texttemplate": "%{y:(}",
       "textfont": { "size": 32 },
-      "x": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "y": [
-        5,
-        4,
-        -3,
-        2
-      ],
+      "x": [1, 2, 3, 4],
+      "y": [5, 4, -3, 2],
       "marker": {
-        "color": [
-          "#447adb",
-          "#447adb",
-          "#db5a44",
-          "#447adb"
-        ],
+        "color": ["#447adb", "#447adb", "#db5a44", "#447adb"],
         "line": {
-          "width": [
-            2,
-            3,
-            2,
-            3
-          ],
-          "color": [
-            "red",
-            "green",
-            "blue",
-            "yellow"
-          ]
+          "width": [2, 3, 2, 3],
+          "color": ["red", "green", "blue", "yellow"]
         }
       },
       "type": "bar"

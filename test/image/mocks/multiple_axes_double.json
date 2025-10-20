@@ -1,39 +1,23 @@
 {
   "data": [
     {
-      "x": [
-        1,
-        2,
-        3
-      ],
-      "y": [
-        40,
-        50,
-        60
-      ],
+      "x": [1, 2, 3],
+      "y": [40, 50, 60],
       "name": "yaxis data",
       "type": "scatter"
     },
     {
-      "x": [
-        2,
-        3,
-        4
-      ],
-      "y": [
-        4,
-        5,
-        6
-      ],
+      "x": [2, 3, 4],
+      "y": [4, 5, 6],
       "name": "yaxis2 data",
       "yaxis": "y2",
       "type": "scatter"
     }
   ],
   "layout": {
-    "title": {"text": "Double Y Axis Example"},
+    "title": { "text": "Double Y Axis Example" },
     "yaxis": {
-      "title": {"text": "yaxis title"}
+      "title": { "text": "yaxis title" }
     },
     "yaxis2": {
       "title": {

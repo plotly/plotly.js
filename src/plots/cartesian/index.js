@@ -45,7 +45,7 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     var xList = subplots.xaxis;
     var yList = subplots.yaxis;
     var spSVG = subplots.cartesian;
-    var spAll = spSVG.concat(subplots.gl2d || []);
+    var spAll = spSVG;
     var allX = {};
     var allY = {};
     var i, xi, yi;
@@ -244,7 +244,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
                 if(cdModule.length) {
                     layerData.push({
                         i: traceLayerClasses.indexOf(classBaseName),
-                        zorder: z,
+                        zindex: z,
                         className: className,
                         plotMethod: plotMethod,
                         cdModule: cdModule
@@ -257,10 +257,10 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             }
         }
     }
-    // Sort the layers primarily by z, then by i
+    // Sort the layers primarily by zindex, then by i
     layerData.sort(function(a, b) {
         return (
-            (a.zorder || 0) - (b.zorder || 0) ||
+            (a.zindex || 0) - (b.zindex || 0) ||
             (a.i - b.i)
         );
     });
@@ -557,6 +557,7 @@ function makeSubplotData(gd) {
 }
 
 function makeSubplotLayer(gd, plotinfo) {
+    var fullLayout = gd._fullLayout;
     var plotgroup = plotinfo.plotgroup;
     var id = plotinfo.id;
 
@@ -565,9 +566,12 @@ function makeSubplotLayer(gd, plotinfo) {
 
     var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
-    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
+    var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
 
-    if(!plotinfo.mainplot) {
+    var hasMultipleZ = fullLayout._zindices.length > 1;
+    var mainplotinfo = plotinfo.mainplotinfo;
+
+    if(!plotinfo.mainplot || hasMultipleZ) {
         if(hasOnlyLargeSploms) {
             // TODO could do even better
             // - we don't need plot (but we would have to mock it in lsInner
@@ -584,9 +588,15 @@ function makeSubplotLayer(gd, plotinfo) {
                 plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
                 plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
 
-                plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
-                plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
-                plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+                if(mainplotinfo && hasMultipleZ) {
+                    plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
+                    plotinfo.gridlayer = mainplotinfo.gridlayer;
+                    plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+                } else {
+                    plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
+                    plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+                    plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
+                }
 
                 var betweenLayer = ensureSingle(plotgroup, 'g', 'layer-between');
                 plotinfo.shapelayerBetween = ensureSingle(betweenLayer, 'g', 'shapelayer');
@@ -603,6 +613,12 @@ function makeSubplotLayer(gd, plotinfo) {
 
             plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
             plotinfo.plot = ensureSingle(plotinfo.overplot, 'g', id);
+
+            if(mainplotinfo && hasMultipleZ) {
+                plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
+            } else {
+                plotinfo.zerolinelayerAbove = ensureSingle(plotgroup, 'g', 'zerolinelayer-above');
+            }
 
             if(!hasZ) {
                 plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
@@ -621,7 +637,6 @@ function makeSubplotLayer(gd, plotinfo) {
             }
         }
     } else {
-        var mainplotinfo = plotinfo.mainplotinfo;
         var mainplotgroup = mainplotinfo.plotgroup;
         var xId = id + '-x';
         var yId = id + '-y';
@@ -634,6 +649,7 @@ function makeSubplotLayer(gd, plotinfo) {
         plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
         plotinfo.gridlayer = mainplotinfo.gridlayer;
         plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+        plotinfo.zerolinelayerAbove = mainplotinfo.zerolinelayerAbove;
 
         ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
         ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);

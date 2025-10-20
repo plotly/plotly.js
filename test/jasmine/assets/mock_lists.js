@@ -44,7 +44,6 @@ var svgMockList = [
     ['table_wrapped_birds', require('../../image/mocks/table_wrapped_birds.json')],
     ['ternary_fill', require('../../image/mocks/ternary_fill.json')],
     ['text_chart_arrays', require('../../image/mocks/text_chart_arrays.json')],
-    ['transforms', require('../../image/mocks/transforms.json')],
     ['updatemenus', require('../../image/mocks/updatemenus.json')],
     ['violin_side-by-side', require('../../image/mocks/violin_side-by-side.json')],
     ['world-cals', require('../../image/mocks/world-cals.json')],
@@ -57,10 +56,8 @@ var svgMockList = [
 ];
 
 var glMockList = [
-    ['gl2d_heatmapgl', require('../../image/mocks/gl2d_heatmapgl.json')],
     ['gl2d_line_dash', require('../../image/mocks/gl2d_line_dash.json')],
     ['gl2d_parcoords_2', require('../../image/mocks/gl2d_parcoords_2.json')],
-    ['gl2d_pointcloud-basic', require('../../image/mocks/gl2d_pointcloud-basic.json')],
     ['gl3d_annotations', require('../../image/mocks/gl3d_annotations.json')],
     ['gl3d_set-ranges', require('../../image/mocks/gl3d_set-ranges.json')],
     ['gl3d_world-cals', require('../../image/mocks/gl3d_world-cals.json')],
@@ -71,15 +68,15 @@ var glMockList = [
     ['gl3d_volume_multiple-traces', require('../../image/mocks/gl3d_volume_multiple-traces.json')]
 ];
 
-var mapboxMockList = [
-    ['scattermapbox', require('../../image/mocks/mapbox_bubbles-text.json')],
-    ['choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json')],
-    ['densitymapbox', require('../../image/mocks/mapbox_density0.json')]
+var mapMockList = [
+    ['scattermap', require('../../image/mocks/map_bubbles-text.json')],
+    ['choroplethmap', require('../../image/mocks/map_choropleth0.json')],
+    ['densitymap', require('../../image/mocks/map_density0.json')]
 ];
 
 module.exports = {
     svg: svgMockList,
     gl: glMockList,
-    mapbox: mapboxMockList,
-    all: svgMockList.concat(glMockList).concat(mapboxMockList)
+    map: mapMockList,
+    all: svgMockList.concat(glMockList).concat(mapMockList)
 };

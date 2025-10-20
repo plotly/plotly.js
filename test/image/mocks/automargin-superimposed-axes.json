@@ -1,19 +1,19 @@
 {
   "data": [
     {
-      "x": [ 1, 2 ],
-      "y": [ 1, 2 ]
+      "x": [1, 2],
+      "y": [1, 2]
     },
     {
-      "x": [ 1, 2 ],
-      "y": [ 1, 2 ],
+      "x": [1, 2],
+      "y": [1, 2],
       "xaxis": "x2",
       "yaxis": "y2"
     }
   ],
   "layout": {
     "showlegend": false,
-    "margin": {"b": 0},
+    "margin": { "b": 0 },
     "title": {
       "text": "automargin:true on superimposed x axes"
     },

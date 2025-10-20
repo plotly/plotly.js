@@ -1,13 +1,13 @@
 {
   "data": [
-    {"x": ["looooooooooong label"], "y": [1]},
-    {"y": ["looooooooooong label"], "x": [1], "xaxis": "x2", "yaxis": "y2"}
+    { "x": ["looooooooooong label"], "y": [1] },
+    { "y": ["looooooooooong label"], "x": [1], "xaxis": "x2", "yaxis": "y2" }
   ],
   "layout": {
-    "grid": {"rows": 1, "columns": 2, "pattern": "independent"},
+    "grid": { "rows": 1, "columns": 2, "pattern": "independent" },
     "width": 600,
     "height": 500,
-    "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
+    "margin": { "l": 0, "r": 0, "t": 0, "b": 0 },
     "showlegend": false,
     "title": {
       "text": "With axis automargin:true<br>with margin:0",
@@ -19,7 +19,7 @@
       "title": {
         "text": "X Axis (standoff: 60)",
         "standoff": 60,
-        "font": {"size": 25}
+        "font": { "size": 25 }
       },
       "automargin": true,
       "showline": true,
@@ -31,7 +31,7 @@
       "title": {
         "text": "Y<br>Axis (standoff: 100)",
         "standoff": 100,
-        "font": {"size": 20}
+        "font": { "size": 20 }
       },
       "automargin": true,
       "showline": true,

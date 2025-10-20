@@ -5,7 +5,7 @@
       "labels": ["Mandarin", "Spanish", "<u>English</u>", "Hindi", "Arabic"],
       "textinfo": "label+percent",
       "hole": 0.4,
-      "title":{
+      "title": {
         "text": "Number<br>of<br>speakers",
         "position": "middle center"
       },

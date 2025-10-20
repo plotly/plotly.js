@@ -67,7 +67,7 @@
     {
       "type": "bar",
       "name": "some bar",
-      "marker": {"color": "black"},
+      "marker": { "color": "black" },
       "x": ["B"],
       "y": [2],
       "offsetgroup": 3,
@@ -77,7 +77,7 @@
     {
       "type": "bar",
       "name": "some other bar",
-      "marker": {"color": "black"},
+      "marker": { "color": "black" },
       "x": ["A"],
       "y": [0.5],
       "offsetgroup": 1,

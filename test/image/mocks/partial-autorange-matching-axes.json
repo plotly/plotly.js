@@ -97,7 +97,7 @@
     },
     "showlegend": false,
     "margin": {
-        "t": 50
+      "t": 50
     },
     "width": 1200,
     "height": 400

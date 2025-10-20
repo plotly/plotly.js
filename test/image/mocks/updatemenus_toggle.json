@@ -17,14 +17,8 @@
           {
             "label": "toggle",
             "method": "restyle",
-            "args": [
-              "line.color",
-              "blue"
-            ],
-            "args2": [
-              "line.color",
-              "red"
-            ]
+            "args": ["line.color", "blue"],
+            "args2": ["line.color", "red"]
           }
         ]
       }

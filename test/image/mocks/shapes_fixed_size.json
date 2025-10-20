@@ -1,91 +1,94 @@
 {
   "data": [
     {
-      "x": [1,4],
-      "y": [1,4]
-    }, {
-      "x": [1,3,4],
-      "y": ["Giraffes","Apes","Zebras"],
+      "x": [1, 4],
+      "y": [1, 4]
+    },
+    {
+      "x": [1, 3, 4],
+      "y": ["Giraffes", "Apes", "Zebras"],
       "xaxis": "x2",
       "yaxis": "y2"
-    }, {
+    },
+    {
       "x": [
         "2018-01-01 00:00:00",
         "2018-02-01 00:00:00",
         "2018-03-01 00:00:00"
       ],
-      "y": [1,5,7],
+      "y": [1, 5, 7],
       "xaxis": "x3",
       "yaxis": "y3"
-    }, {
-      "x": [1,4],
-      "y": [1,5],
+    },
+    {
+      "x": [1, 4],
+      "y": [1, 5],
       "xaxis": "x4",
       "yaxis": "y4"
     }
   ],
   "layout": {
-    "title": {"text": "Fixed size shapes"},
+    "title": { "text": "Fixed size shapes" },
     "autosize": false,
     "width": 1000,
     "height": 800,
     "xaxis": {
-      "domain": [0,0.30],
+      "domain": [0, 0.3],
       "anchor": "y",
-      "title": {"text": "rect, circle, line"}
+      "title": { "text": "rect, circle, line" }
     },
     "yaxis": {
-      "domain": [0.55,1],
+      "domain": [0.55, 1],
       "type": "log",
       "anchor": "x"
     },
     "xaxis2": {
-      "domain":[0.33,0.66],
+      "domain": [0.33, 0.66],
       "anchor": "y2",
-      "title": {"text": "triangle as path"}
+      "title": { "text": "triangle as path" }
     },
     "yaxis2": {
-      "domain": [0.55,1],
+      "domain": [0.55, 1],
       "type": "categorical",
       "anchor": "x2"
     },
     "xaxis3": {
-      "domain":[0.70,1],
+      "domain": [0.7, 1],
       "anchor": "y3",
-      "title": {"text": "drag / resize for auto-range"}
+      "title": { "text": "drag / resize for auto-range" }
     },
     "yaxis3": {
-      "domain": [0.55,1],
+      "domain": [0.55, 1],
       "type": "linear",
       "anchor": "x3"
     },
     "xaxis4": {
-      "domain": [0,0.30],
+      "domain": [0, 0.3],
       "anchor": "y4",
-      "title": {"text": "xy pos & x size paper, y size pixel"}
+      "title": { "text": "xy pos & x size paper, y size pixel" }
     },
     "yaxis4": {
-      "domain": [0,0.45],
+      "domain": [0, 0.45],
       "type": "linear",
       "anchor": "x4"
     },
     "xaxis5": {
-      "domain":[0.33,0.66],
+      "domain": [0.33, 0.66],
       "anchor": "y5",
-      "title": {"text": "rects w/ mixed size modes"}
+      "title": { "text": "rects w/ mixed size modes" }
     },
     "yaxis5": {
-      "domain": [0,0.45],
+      "domain": [0, 0.45],
       "type": "linear",
       "anchor": "x5"
     },
     "xaxis6": {
-      "domain":[0.70,1],
+      "domain": [0.7, 1],
       "anchor": "y6",
-      "title": {"text": "paths w/ mixed size modes"}
+      "title": { "text": "paths w/ mixed size modes" }
     },
     "yaxis6": {
-      "domain": [0,0.45],
+      "domain": [0, 0.45],
       "type": "linear",
       "anchor": "x6"
     },

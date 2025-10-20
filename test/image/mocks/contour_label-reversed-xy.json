@@ -6,7 +6,7 @@
       "x": [1, 2, 3, 4],
       "y": [1, 2, 3, 4],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false
     },
     {
@@ -15,7 +15,7 @@
       "x": [4, 3, 2, 1],
       "y": [1, 2, 3, 4],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x2",
       "yaxis": "y2"
@@ -26,7 +26,7 @@
       "x": [1, 2, 3, 4],
       "y": [4, 3, 2, 1],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x3",
       "yaxis": "y3"
@@ -37,7 +37,7 @@
       "x": [4, 3, 2, 1],
       "y": [4, 3, 2, 1],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x4",
       "yaxis": "y4"
@@ -49,7 +49,7 @@
       "x": [1, 2, 3, 4],
       "y": [1, 2, 3, 4],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x5",
       "yaxis": "y5"
@@ -60,7 +60,7 @@
       "x": [4, 3, 2, 1],
       "y": [1, 2, 3, 4],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x6",
       "yaxis": "y6"
@@ -71,7 +71,7 @@
       "x": [1, 2, 3, 4],
       "y": [4, 3, 2, 1],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x7",
       "yaxis": "y7"
@@ -82,29 +82,31 @@
       "x": [4, 3, 2, 1],
       "y": [4, 3, 2, 1],
       "z": [[1, 2, 3, 4], [1, 2, 3, 4], [2, 3, 4, 5], [4, 5, 6, 7]],
-      "contours": {"showlabels": true},
+      "contours": { "showlabels": true },
       "showscale": false,
       "xaxis": "x8",
       "yaxis": "y8"
     }
   ],
   "layout": {
-    "grid": {"rows": 4, "columns": 2, "pattern": "independent"},
+    "grid": { "rows": 4, "columns": 2, "pattern": "independent" },
 
     "template": {
       "data": {
-        "contour": [{
-          "hoverlabel": {"namelength": -1}
-        }]
+        "contour": [
+          {
+            "hoverlabel": { "namelength": -1 }
+          }
+        ]
       }
     },
 
-    "xaxis6": {"autorange": "reversed"},
+    "xaxis6": { "autorange": "reversed" },
 
-    "yaxis7": {"autorange": "reversed"},
+    "yaxis7": { "autorange": "reversed" },
 
-    "xaxis8": {"autorange": "reversed"},
-    "yaxis8": {"autorange": "reversed"},
+    "xaxis8": { "autorange": "reversed" },
+    "yaxis8": { "autorange": "reversed" },
 
     "width": 500,
     "height": 800

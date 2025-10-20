@@ -163,18 +163,18 @@
       "lineposition": "under",
       "shadow": "auto"
     },
-    "grid": {"rows": 4, "columns": 2, "pattern": "independent"},
+    "grid": { "rows": 4, "columns": 2, "pattern": "independent" },
     "width": 600,
     "height": 800,
     "showlegend": false,
-    "title": {"text": "Constraints that (almost) equal boundary min/max"},
-    "yaxis": {"title": {"text": "[0, 0.9999]"}},
-    "yaxis2": {"title": {"text": "[0, 1]"}, "side": "right"},
-    "yaxis3": {"title": {"text": "[0, 0.9999]"}},
-    "yaxis4": {"title": {"text": "[0, 1]"}, "side": "right"},
-    "yaxis5": {"title": {"text": "]1, 2["}},
-    "yaxis6": {"title": {"text": "[0.999, 2.001]"}, "side": "right"},
-    "yaxis7": {"title": {"text": "]1, 2["}},
-    "yaxis8": {"title": {"text": "[0.999, 2.001]"}, "side": "right"}
+    "title": { "text": "Constraints that (almost) equal boundary min/max" },
+    "yaxis": { "title": { "text": "[0, 0.9999]" } },
+    "yaxis2": { "title": { "text": "[0, 1]" }, "side": "right" },
+    "yaxis3": { "title": { "text": "[0, 0.9999]" } },
+    "yaxis4": { "title": { "text": "[0, 1]" }, "side": "right" },
+    "yaxis5": { "title": { "text": "]1, 2[" } },
+    "yaxis6": { "title": { "text": "[0.999, 2.001]" }, "side": "right" },
+    "yaxis7": { "title": { "text": "]1, 2[" } },
+    "yaxis8": { "title": { "text": "[0.999, 2.001]" }, "side": "right" }
   }
 }

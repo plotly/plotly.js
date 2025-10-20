@@ -29,10 +29,7 @@
         "Eve"
       ],
       "domain": {
-        "x": [
-          0,
-          0.5
-        ]
+        "x": [0, 0.5]
       }
     },
     {
@@ -51,21 +48,9 @@
         "Enoch",
         "Azura"
       ],
-      "parents": [
-        "Eve",
-        "Eve",
-        "Seth",
-        "Seth",
-        "Eve",
-        "Eve",
-        "Awan",
-        "Eve"
-      ],
+      "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"],
       "domain": {
-        "x": [
-          0.5,
-          1
-        ]
+        "x": [0.5, 1]
       }
     }
   ],

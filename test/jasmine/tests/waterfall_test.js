@@ -1045,32 +1045,6 @@ describe('A waterfall plot', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
-        Plotly.newPlot(gd, {
-            data: [{
-                type: 'waterfall',
-                x: [1, 2, 3],
-                xsrc: 'ints',
-                transforms: [{
-                    type: 'filter',
-                    target: [1, 2, 3],
-                    targetsrc: 'ints',
-                    operation: '<',
-                    value: 0
-                }]
-            }]
-        })
-        .then(function() {
-            var traceNodes = getAllTraceNodes(gd);
-            expect(traceNodes.length).toBe(0);
-
-            expect(gd.calcdata[0][0].x).toEqual(NaN);
-            expect(gd.calcdata[0][0].y).toEqual(NaN);
-            expect(gd.calcdata[0][0].isBlank).toBe(undefined);
-        })
-        .then(done, done.fail);
-    });
-
     it('should coerce text-related attributes', function(done) {
         var data = [{
             y: [10, 20, 30, 40],

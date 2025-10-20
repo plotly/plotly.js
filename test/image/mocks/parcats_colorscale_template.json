@@ -3,21 +3,48 @@
     {
       "type": "parcats",
       "line": {
-        "color": [ 0, 1, 1, 0, 1 ],
+        "color": [0, 1, 1, 0, 1],
         "showscale": true
       },
       "dimensions": [
         {
           "label": "Hair",
-          "values": [ "Black", "Black", "Black", "Brown", "Brown", "Brown", "Red", "Brown" ]
+          "values": [
+            "Black",
+            "Black",
+            "Black",
+            "Brown",
+            "Brown",
+            "Brown",
+            "Red",
+            "Brown"
+          ]
         },
         {
           "label": "Eye",
-          "values": [ "Brown", "Brown", "Brown", "Brown", "Brown", "Blue", "Blue", "Blue" ]
+          "values": [
+            "Brown",
+            "Brown",
+            "Brown",
+            "Brown",
+            "Brown",
+            "Blue",
+            "Blue",
+            "Blue"
+          ]
         },
         {
           "label": "Sex",
-          "values": [ "Female", "Female", "Female", "Male", "Female", "Male", "Male", "Male" ]
+          "values": [
+            "Female",
+            "Female",
+            "Female",
+            "Male",
+            "Female",
+            "Male",
+            "Male",
+            "Male"
+          ]
         }
       ]
     }

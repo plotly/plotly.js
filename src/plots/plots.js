@@ -35,8 +35,6 @@ plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
 
-var transformsRegistry = plots.transformsRegistry;
-
 var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
@@ -148,7 +146,7 @@ plots.addLinks = function(gd) {
 
     // If text's width is bigger than the layout
     // Check that text is a child node or document.body
-    // because otherwise IE/Edge might throw an exception
+    // because otherwise Edge might throw an exception
     // when calling getComputedTextLength().
     // Apparently offsetParent is null for invisibles.
     if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {
@@ -252,9 +250,7 @@ var extraFormatKeys = [
  * @param {object} opts
  * @param {boolean} opts.skipUpdateCalc: normally if the existing gd.calcdata looks
  *   compatible with the new gd._fullData we finish by linking the new _fullData traces
- *   to the old gd.calcdata, so it's correctly set if we're not going to recalc. But also,
- *   if there are calcTransforms on the trace, we first remap data arrays from the old full
- *   trace into the new one. Use skipUpdateCalc to defer this (needed by Plotly.react)
+ *   to the old gd.calcdata, so it's correctly set if we're not going to recalc.
  *
  * gd.data, gd.layout:
  *   are precisely what the user specified (except as modified by cleanData/cleanLayout),
@@ -397,7 +393,6 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._traceUids = getTraceUids(oldFullData, newData);
 
     // then do the data
-    newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
 
     // redo grid size defaults with info about splom x/y axes,
@@ -461,12 +456,10 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadGL2D;
-    var hasBgLayer = hasCartesian || hasGL2D;
+    var hadBgLayer = hadCartesian;
+    var hasBgLayer = hasCartesian;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
@@ -855,7 +848,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         _fullLayout: newFullLayout
     };
 
-    var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
+    var ids = newSubplotList.cartesian || [];
 
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];
@@ -1095,59 +1088,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         fullTrace.index = i;
         fullTrace._input = trace;
-        fullTrace._expandedIndex = cnt;
+        fullTrace._fullInput = fullTrace;
 
-        if(fullTrace.transforms && fullTrace.transforms.length) {
-            var sdInvisible = trace.visible !== false && fullTrace.visible === false;
-
-            var expandedTraces = applyTransforms(fullTrace, dataOut, layout, fullLayout);
-
-            for(var j = 0; j < expandedTraces.length; j++) {
-                var expandedTrace = expandedTraces[j];
-
-                // No further templating during transforms.
-                var fullExpandedTrace = {
-                    _template: fullTrace._template,
-                    type: fullTrace.type,
-                    // set uid using parent uid and expanded index
-                    // to promote consistency between update calls
-                    uid: fullTrace.uid + j
-                };
-
-                // If the first supplyDefaults created `visible: false`,
-                // clear it before running supplyDefaults a second time,
-                // because sometimes there are items we still want to coerce
-                // inside trace modules before determining that the trace is
-                // again `visible: false`, for example partial visibilities
-                // in `splom` traces.
-                if(sdInvisible && expandedTrace.visible === false) {
-                    delete expandedTrace.visible;
-                }
-
-                plots.supplyTraceDefaults(expandedTrace, fullExpandedTrace, cnt, fullLayout, i);
-
-                // relink private (i.e. underscore) keys expanded trace to full expanded trace so
-                // that transform supply-default methods can set _ keys for future use.
-                relinkPrivateKeys(fullExpandedTrace, expandedTrace);
-
-                // add info about parent data trace
-                fullExpandedTrace.index = i;
-                fullExpandedTrace._input = trace;
-                fullExpandedTrace._fullInput = fullTrace;
-
-                // add info about the expanded data
-                fullExpandedTrace._expandedIndex = cnt;
-                fullExpandedTrace._expandedInput = expandedTrace;
-
-                pushModule(fullExpandedTrace);
-            }
-        } else {
-            // add identify refs for consistency with transformed traces
-            fullTrace._fullInput = fullTrace;
-            fullTrace._expandedInput = fullTrace;
-
-            pushModule(fullTrace);
-        }
+        pushModule(fullTrace);
 
         if(Registry.traceIs(fullTrace, 'carpetAxis')) {
             carpetIndex[fullTrace.carpet] = fullTrace;
@@ -1283,28 +1226,20 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             var subplots = layout._subplots;
             var subplotId = '';
 
-            if(
-                visible ||
-                basePlotModule.name !== 'gl2d' // for now just drop empty gl2d subplots
-                // TODO - currently if we draw an empty gl2d subplot, it draws
-                // nothing then gets stuck and you can't get it back without newPlot
-                // sort this out in the regl refactor?
-            ) {
-                if(Array.isArray(subplotAttr)) {
-                    for(i = 0; i < subplotAttr.length; i++) {
-                        var attri = subplotAttr[i];
-                        var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
+            if(Array.isArray(subplotAttr)) {
+                for(i = 0; i < subplotAttr.length; i++) {
+                    var attri = subplotAttr[i];
+                    var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
 
-                        if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
-                        subplotId += vali;
-                    }
-                } else {
-                    subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+                    if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
+                    subplotId += vali;
                 }
+            } else {
+                subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+            }
 
-                if(subplots[basePlotModule.name]) {
-                    Lib.pushUnique(subplots[basePlotModule.name], subplotId);
-                }
+            if(subplots[basePlotModule.name]) {
+                Lib.pushUnique(subplots[basePlotModule.name], subplotId);
             }
         }
     }
@@ -1360,105 +1295,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 traceOut.selectedpoints = Array.from(selectedpoints);
             }
         }
-
-        plots.supplyTransformDefaults(traceIn, traceOut, layout);
     }
 
     return traceOut;
 };
-
-/**
- * hasMakesDataTransform: does this trace have a transform that makes its own
- * data, either by grabbing it from somewhere else or by creating it from input
- * parameters? If so, we should still keep going with supplyDefaults
- * even if the trace is invisible, which may just be because it has no data yet.
- */
-function hasMakesDataTransform(trace) {
-    var transforms = trace.transforms;
-    if(Array.isArray(transforms) && transforms.length) {
-        for(var i = 0; i < transforms.length; i++) {
-            var ti = transforms[i];
-            var _module = ti._module || transformsRegistry[ti.type];
-            if(_module && _module.makesData) return true;
-        }
-    }
-    return false;
-}
-
-plots.hasMakesDataTransform = hasMakesDataTransform;
-
-plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
-    // For now we only allow transforms on 1D traces, ie those that specify a _length.
-    // If we were to implement 2D transforms, we'd need to have each transform
-    // describe its own applicability and disable itself when it doesn't apply.
-    // Also allow transforms that make their own data, but not in globalTransforms
-    if(!(traceOut._length || hasMakesDataTransform(traceIn))) return;
-
-    var globalTransforms = layout._globalTransforms || [];
-    var transformModules = layout._transformModules || [];
-
-    if(!Array.isArray(traceIn.transforms) && globalTransforms.length === 0) return;
-
-    var containerIn = traceIn.transforms || [];
-    var transformList = globalTransforms.concat(containerIn);
-    var containerOut = traceOut.transforms = [];
-
-    for(var i = 0; i < transformList.length; i++) {
-        var transformIn = transformList[i];
-        var type = transformIn.type;
-        var _module = transformsRegistry[type];
-        var transformOut;
-
-        /*
-         * Supply defaults may run twice. First pass runs all supply defaults steps
-         * and adds the _module to any output transforms.
-         * If transforms exist another pass is run so that any generated traces also
-         * go through supply defaults. This has the effect of rerunning
-         * supplyTransformDefaults. If the transform does not have a `transform`
-         * function it could not have generated any new traces and the second stage
-         * is unnecessary. We detect this case with the following variables.
-         */
-        var isFirstStage = !(transformIn._module && transformIn._module === _module);
-        var doLaterStages = _module && typeof _module.transform === 'function';
-
-        if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
-
-        if(_module && _module.supplyDefaults && (isFirstStage || doLaterStages)) {
-            transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
-            transformOut.type = type;
-            transformOut._module = _module;
-
-            Lib.pushUnique(transformModules, _module);
-        } else {
-            transformOut = Lib.extendFlat({}, transformIn);
-        }
-
-        containerOut.push(transformOut);
-    }
-};
-
-function applyTransforms(fullTrace, fullData, layout, fullLayout) {
-    var container = fullTrace.transforms;
-    var dataOut = [fullTrace];
-
-    for(var i = 0; i < container.length; i++) {
-        var transform = container[i];
-        var _module = transformsRegistry[transform.type];
-
-        if(_module && _module.transform) {
-            dataOut = _module.transform(dataOut, {
-                transform: transform,
-                fullTrace: fullTrace,
-                fullData: fullData,
-                layout: layout,
-                fullLayout: fullLayout,
-                transformIndex: i
-            });
-        }
-    }
-
-    return dataOut;
-}
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     function coerce(attr, dflt) {
@@ -2519,7 +2359,7 @@ plots.recomputeFrameHash = function(gd) {
  *
  * This exists so that we can extendDeepNoArrays and avoid stepping into data
  * arrays without knowledge of the plot schema, but so that we may also manually
- * recurse into known container arrays, such as transforms.
+ * recurse into known container arrays.
  *
  * See extendTrace and extendLayout below for usage.
  */

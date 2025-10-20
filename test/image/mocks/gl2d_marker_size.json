@@ -11,7 +11,12 @@
           "color": "rgba(0, 0, 0, 0.8)",
           "width": 5
         },
-        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "symbol": [
+          "circle",
+          "circle-cross-open",
+          "circle-cross",
+          "circle-open"
+        ],
         "size": [20, 20, 20, 20]
       }
     },
@@ -26,7 +31,12 @@
           "color": "rgba(0, 0, 0, 0.8)",
           "width": 5
         },
-        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "symbol": [
+          "circle",
+          "circle-cross-open",
+          "circle-cross",
+          "circle-open"
+        ],
         "size": 20
       }
     },
@@ -41,7 +51,12 @@
           "color": "rgba(0, 0, 0, 0.8)",
           "width": [5, 5, 5, 5]
         },
-        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "symbol": [
+          "circle",
+          "circle-cross-open",
+          "circle-cross",
+          "circle-open"
+        ],
         "size": 20
       }
     },
@@ -56,7 +71,12 @@
           "color": "rgba(0, 0, 0, 0.8)",
           "width": [5, 5, 5, 5]
         },
-        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "symbol": [
+          "circle",
+          "circle-cross-open",
+          "circle-cross",
+          "circle-open"
+        ],
         "size": [20, 20, 20, 20]
       }
     }

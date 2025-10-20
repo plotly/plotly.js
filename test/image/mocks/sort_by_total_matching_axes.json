@@ -1,22 +1,25 @@
 {
-  "data": [{
-    "type": "scatter",
-    "x": ["a", "b", "c"],
-    "y": [7, 2, 3]
-  }, {
-    "type": "bar",
-    "x": ["a", "b", "c"],
-    "y": [10, 20, 30],
-    "yaxis": "y2",
-    "xaxis": "x2"
-  }],
+  "data": [
+    {
+      "type": "scatter",
+      "x": ["a", "b", "c"],
+      "y": [7, 2, 3]
+    },
+    {
+      "type": "bar",
+      "x": ["a", "b", "c"],
+      "y": [10, 20, 30],
+      "yaxis": "y2",
+      "xaxis": "x2"
+    }
+  ],
   "layout": {
     "xaxis": {
-        "type": "category",
-        "categoryorder": "total ascending"
+      "type": "category",
+      "categoryorder": "total ascending"
     },
     "xaxis2": {
-        "matches": "x"
+      "matches": "x"
     },
     "yaxis": {
       "domain": [0, 0.45]

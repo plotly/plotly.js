@@ -1,13 +1,7 @@
 {
   "data": [
     {
-      "values": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "values": [1, 2, 3, 4, 5],
       "label0": 20,
       "dlabel": 5,
       "type": "pie",

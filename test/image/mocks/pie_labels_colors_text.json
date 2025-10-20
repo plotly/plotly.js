@@ -1,36 +1,12 @@
 {
   "data": [
     {
-      "values": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
-      "labels": [
-        "apples",
-        "oranges",
-        "blueberries",
-        "lemons",
-        "watermelon"
-      ],
+      "values": [1, 2, 3, 4, 5],
+      "labels": ["apples", "oranges", "blueberries", "lemons", "watermelon"],
       "marker": {
-        "colors": [
-          "rgba(255,0,0,0.5)",
-          "orange",
-          "blue",
-          "yellow",
-          "green"
-        ]
+        "colors": ["rgba(255,0,0,0.5)", "orange", "blue", "yellow", "green"]
       },
-      "text": [
-        "red delicious",
-        "mandarin",
-        "high bush",
-        "meyer",
-        "jubilee"
-      ],
+      "text": ["red delicious", "mandarin", "high bush", "meyer", "jubilee"],
       "textinfo": "label+text+value+percent",
       "type": "pie"
     }

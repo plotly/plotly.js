@@ -1,14 +1,8 @@
 {
   "data": [
     {
-      "values": [
-        1.151,
-        8.134
-      ],
-      "text": [
-        "inherit from<br><b>global...</b>",
-        "font"
-      ],
+      "values": [1.151, 8.134],
+      "text": ["inherit from<br><b>global...</b>", "font"],
       "textposition": ["outside", "inside"],
       "type": "pie",
       "domain": {
@@ -17,14 +11,8 @@
       }
     },
     {
-      "values": [
-        1.151,
-        8.134
-      ],
-      "text": [
-        "a font of...",
-        "my own"
-      ],
+      "values": [1.151, 8.134],
+      "text": ["a font of...", "my own"],
       "type": "pie",
       "domain": {
         "x": [0.6, 1],
@@ -37,14 +25,8 @@
       }
     },
     {
-      "values": [
-        1.151,
-        8.134
-      ],
-      "text": [
-        "outside and textfont<br>both modify...",
-        "global"
-      ],
+      "values": [1.151, 8.134],
+      "text": ["outside and textfont<br>both modify...", "global"],
       "type": "pie",
       "domain": {
         "x": [0, 0.4],
@@ -58,14 +40,8 @@
       }
     },
     {
-      "values": [
-        1.151,
-        8.134
-      ],
-      "text": [
-        "independent fonts<br>outside and...",
-        "inside"
-      ],
+      "values": [1.151, 8.134],
+      "text": ["independent fonts<br>outside and...", "inside"],
       "type": "pie",
       "domain": {
         "x": [0.6, 1],

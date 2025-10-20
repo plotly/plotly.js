@@ -4,10 +4,10 @@
       "type": "splom",
       "name": "Setosa",
       "showupperhalf": false,
-      "diagonal": {"visible": false},
+      "diagonal": { "visible": false },
       "dimensions": [
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "SepalLength",
           "values": [
             "5.1",
@@ -63,7 +63,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "SepalWidth",
           "values": [
             "3.5",
@@ -119,7 +119,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "PetalLength",
           "values": [
             "1.4",
@@ -175,7 +175,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "PetalWidth",
           "values": [
             "0.2",
@@ -239,10 +239,10 @@
       "type": "splom",
       "name": "Versicolor",
       "showupperhalf": false,
-      "diagonal": {"visible": false},
+      "diagonal": { "visible": false },
       "dimensions": [
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "SepalLength",
           "values": [
             "7.0",
@@ -298,7 +298,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "SepalWidth",
           "values": [
             "3.2",
@@ -354,7 +354,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "PetalLength",
           "values": [
             "4.7",
@@ -410,7 +410,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "PetalWidth",
           "values": [
             "1.4",
@@ -474,10 +474,10 @@
       "type": "splom",
       "name": "Virginica",
       "showupperhalf": false,
-      "diagonal": {"visible": false},
+      "diagonal": { "visible": false },
       "dimensions": [
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "SepalLength",
           "values": [
             "6.3",
@@ -533,7 +533,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "SepalWidth",
           "values": [
             "3.3",
@@ -589,7 +589,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "PetalLength",
           "values": [
             "6.0",
@@ -645,7 +645,7 @@
           ]
         },
         {
-          "axis": {"matches": true},
+          "axis": { "matches": true },
           "label": "PetalWidth",
           "values": [
             "2.5",
@@ -707,9 +707,9 @@
     }
   ],
   "layout": {
-	"title": {"text": "Iris dataset splom"},
-  	"width": 600,
-	"height": 500,
+    "title": { "text": "Iris dataset splom" },
+    "width": 600,
+    "height": 500,
     "legend": {
       "x": 1,
       "xanchor": "right"

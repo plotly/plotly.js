@@ -2,17 +2,56 @@
   "data": [
     {
       "type": "box",
-      "x": ["day 1", "day 1", "day 1", "day 1", "day 1", "day 1", "day 2", "day 2", "day 2", "day 2", "day 2", "day 2"],
+      "x": [
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2"
+      ],
       "y": [0.2, 0.2, 0.6, 1, 0.5, 0.4, 0.2, 0.7, 0.9, 0.1, 0.5, 0.3]
     },
     {
       "type": "box",
-      "x": ["day 1", "day 1", "day 1", "day 1", "day 1", "day 1", "day 2", "day 2", "day 2", "day 2", "day 2", "day 2"],
+      "x": [
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2"
+      ],
       "y": [0.1, 0.3, 0.1, 0.9, 0.6, 0.6, 0.9, 1, 0.3, 0.6, 0.8, 0.5]
     },
     {
       "type": "box",
-      "x": ["day 1", "day 1", "day 1", "day 1", "day 1", "day 1", "day 2", "day 2", "day 2", "day 2", "day 2", "day 2"],
+      "x": [
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 1",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2",
+        "day 2"
+      ],
       "y": [0.6, 0.7, 0.3, 0.6, 0, 0.5, 0.7, 0.9, 0.5, 0.8, 0.7, 0.2]
     },
 
@@ -52,7 +91,7 @@
 
     {
       "mode": "markers",
-      "marker": {"symbol": "square"},
+      "marker": { "symbol": "square" },
       "name": "with overlapping tick labels",
       "x": ["A very long title", "short", "Another very long title"],
       "y": [1, 4, 2],
@@ -99,6 +138,6 @@
     "showlegend": false,
     "width": 500,
     "height": 800,
-    "margin": {"b": 140}
+    "margin": { "b": 140 }
   }
 }

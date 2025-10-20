@@ -3,7 +3,7 @@
     {
       "type": "violin",
       "x0": 10,
-      "y": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "y": [1, 1, 2, 2, 3, 3, 4, 4],
       "box": { "visible": true },
       "meanline": { "visible": true },
       "side": "positive"
@@ -11,7 +11,7 @@
     {
       "type": "violin",
       "x0": 100,
-      "y": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "y": [1, 1, 2, 2, 3, 3, 4, 4],
       "box": { "visible": true },
       "meanline": { "visible": true },
       "side": "negative"
@@ -19,7 +19,7 @@
     {
       "type": "violin",
       "y0": 10,
-      "x": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "x": [1, 1, 2, 2, 3, 3, 4, 4],
       "box": { "visible": true },
       "meanline": { "visible": true },
       "side": "positive",
@@ -29,7 +29,7 @@
     {
       "type": "violin",
       "y0": 100,
-      "x": [ 1, 1, 2, 2, 3, 3, 4, 4 ],
+      "x": [1, 1, 2, 2, 3, 3, 4, 4],
       "box": { "visible": true },
       "meanline": { "visible": true },
       "side": "negative",

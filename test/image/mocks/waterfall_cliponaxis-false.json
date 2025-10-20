@@ -2,7 +2,7 @@
   "data": [
     {
       "type": "waterfall",
-	  "name": "not clipped",
+      "name": "not clipped",
       "x": ["apple", "banana", "clementine"],
       "y": [1.8, 0.2, 0.1],
       "text": ["apple", "banana", "x"],
@@ -11,12 +11,12 @@
       "textfont": {
         "size": [60, 40, 20]
       },
-      "increasing": { "marker": {"color": "blue"} },
-      "decreasing": { "marker": {"color": "blue"} }
+      "increasing": { "marker": { "color": "blue" } },
+      "decreasing": { "marker": { "color": "blue" } }
     },
     {
       "type": "waterfall",
-	  "name": "same but clipped",
+      "name": "same but clipped",
       "x": ["apple", "banana", "clementine"],
       "y": [1.8, 0.2, 0.1],
       "text": ["apple", "banana", "clementine"],
@@ -25,22 +25,22 @@
       "textfont": {
         "size": [60, 40, 20]
       },
-	  "xaxis": "x2",
-	  "yaxis": "y2",
-      "increasing": { "marker": {"color": "orange"} },
-      "decreasing": { "marker": {"color": "orange"} }
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "increasing": { "marker": { "color": "orange" } },
+      "decreasing": { "marker": { "color": "orange" } }
     },
     {
       "type": "waterfall",
-	  "name": "should <b>not</b> see text",
+      "name": "should <b>not</b> see text",
       "x": ["banana"],
       "y": [2],
       "text": ["X"],
       "textposition": "outside",
       "cliponaxis": true,
-      "textfont": {"size": [20]},
-      "increasing": { "marker": {"color": "green"} },
-      "decreasing": { "marker": {"color": "green"} }
+      "textfont": { "size": [20] },
+      "increasing": { "marker": { "color": "green" } },
+      "decreasing": { "marker": { "color": "green" } }
     },
     {
       "type": "waterfall",
@@ -50,27 +50,27 @@
       "text": ["banana"],
       "textposition": "outside",
       "cliponaxis": false,
-      "textfont": {"size": [20]},
+      "textfont": { "size": [20] },
       "xaxis": "x3",
       "yaxis": "y3",
-      "increasing": { "marker": {"color": "red"} },
-      "decreasing": { "marker": {"color": "red"} }
+      "increasing": { "marker": { "color": "red" } },
+      "decreasing": { "marker": { "color": "red" } }
     }
   ],
   "layout": {
-	"waterfallmode": "overlay",
-	"legend": {
+    "waterfallmode": "overlay",
+    "legend": {
       "x": 0.5,
       "xanchor": "center",
       "y": -0.05,
       "yanchor": "top"
-	},
+    },
     "xaxis": {
       "showline": true,
       "showticklabels": false,
       "mirror": true,
       "layer": "below traces",
-	  "domain": [0, 0.38]
+      "domain": [0, 0.38]
     },
     "xaxis2": {
       "anchor": "y2",
@@ -78,7 +78,7 @@
       "showticklabels": false,
       "mirror": true,
       "layer": "below traces",
-	  "domain": [0.42, 0.80]
+      "domain": [0.42, 0.8]
     },
     "xaxis3": {
       "anchor": "y3",
@@ -110,7 +110,7 @@
     },
     "width": 800,
     "height": 400,
-	"margin": {"t": 40},
-	"dragmode": "pan"
+    "margin": { "t": 40 },
+    "dragmode": "pan"
   }
 }

@@ -1,5 +1,6 @@
 {
-  "data": [{
+  "data": [
+    {
       "y": [1, 5, 3, 4, 5],
       "name": "Scatter",
       "type": "scatter",

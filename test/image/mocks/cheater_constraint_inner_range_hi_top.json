@@ -10,7 +10,7 @@
         "operation": "[]",
         "value": [5, 100]
       },
-      "line": {"smoothing": 0}
+      "line": { "smoothing": 0 }
     },
     {
       "type": "contourcarpet",
@@ -33,7 +33,7 @@
         "operation": "[]",
         "value": [3, 100]
       },
-      "line": {"smoothing": 0}
+      "line": { "smoothing": 0 }
     },
     {
       "type": "contourcarpet",
@@ -56,7 +56,7 @@
         "operation": "[]",
         "value": [1, 100]
       },
-      "line": {"smoothing": 0}
+      "line": { "smoothing": 0 }
     },
     {
       "type": "contourcarpet",
@@ -79,7 +79,7 @@
         "operation": "[]",
         "value": [-1, 100]
       },
-      "line": {"smoothing": 0}
+      "line": { "smoothing": 0 }
     },
     {
       "type": "contourcarpet",
@@ -98,8 +98,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 0},
-      "baxis": {"smoothing": 0},
+      "aaxis": { "smoothing": 0 },
+      "baxis": { "smoothing": 0 },
       "xaxis": "x",
       "yaxis": "y"
     },
@@ -109,8 +109,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1},
-      "baxis": {"smoothing": 1},
+      "aaxis": { "smoothing": 1 },
+      "baxis": { "smoothing": 1 },
       "xaxis": "x2",
       "yaxis": "y"
     },
@@ -120,8 +120,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 0},
-      "baxis": {"smoothing": 0},
+      "aaxis": { "smoothing": 0 },
+      "baxis": { "smoothing": 0 },
       "xaxis": "x",
       "yaxis": "y2"
     },
@@ -131,8 +131,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1},
-      "baxis": {"smoothing": 1},
+      "aaxis": { "smoothing": 1 },
+      "baxis": { "smoothing": 1 },
       "xaxis": "x2",
       "yaxis": "y2"
     },
@@ -142,8 +142,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 0},
-      "baxis": {"smoothing": 0},
+      "aaxis": { "smoothing": 0 },
+      "baxis": { "smoothing": 0 },
       "xaxis": "x",
       "yaxis": "y3"
     },
@@ -153,8 +153,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1},
-      "baxis": {"smoothing": 1},
+      "aaxis": { "smoothing": 1 },
+      "baxis": { "smoothing": 1 },
       "xaxis": "x2",
       "yaxis": "y3"
     },
@@ -164,8 +164,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 0},
-      "baxis": {"smoothing": 0},
+      "aaxis": { "smoothing": 0 },
+      "baxis": { "smoothing": 0 },
       "xaxis": "x",
       "yaxis": "y4"
     },
@@ -175,8 +175,8 @@
       "a": [1, 2, 3],
       "b": [1, 2, 3],
       "y": [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]],
-      "aaxis": {"smoothing": 1},
-      "baxis": {"smoothing": 1},
+      "aaxis": { "smoothing": 1 },
+      "baxis": { "smoothing": 1 },
       "xaxis": "x2",
       "yaxis": "y4"
     }

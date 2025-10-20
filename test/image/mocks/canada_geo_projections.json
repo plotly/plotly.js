@@ -13,18 +13,12 @@
       "geo": "geo",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -34,16 +28,12 @@
       "geo": "geo",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "airy"
-      ],
+      "text": ["airy"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -59,18 +49,12 @@
       "geo": "geo2",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -80,16 +64,12 @@
       "geo": "geo2",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "aitoff"
-      ],
+      "text": ["aitoff"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -105,18 +85,12 @@
       "geo": "geo3",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -126,16 +100,12 @@
       "geo": "geo3",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "albers"
-      ],
+      "text": ["albers"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -144,9 +114,7 @@
       "type": "choropleth",
       "locationmode": "USA-states",
       "locations": ["OK"],
-      "z": [
-        1
-      ],
+      "z": [1],
       "showscale": false,
       "hovertemplate": "albers usa"
     },
@@ -154,18 +122,12 @@
       "geo": "geo83",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -175,9 +137,7 @@
       "geo": "geo83",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "albers<br>usa"
-      ],
+      "text": ["albers<br>usa"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
@@ -199,18 +159,12 @@
       "geo": "geo4",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -220,16 +174,12 @@
       "geo": "geo4",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "august"
-      ],
+      "text": ["august"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -245,18 +195,12 @@
       "geo": "geo5",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -266,16 +210,12 @@
       "geo": "geo5",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "azimuthal<br>equal area"
-      ],
+      "text": ["azimuthal<br>equal area"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -291,18 +231,12 @@
       "geo": "geo6",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -312,16 +246,12 @@
       "geo": "geo6",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "azimuthal<br>equidistant"
-      ],
+      "text": ["azimuthal<br>equidistant"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -337,18 +267,12 @@
       "geo": "geo7",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -358,16 +282,12 @@
       "geo": "geo7",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "baker"
-      ],
+      "text": ["baker"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -383,18 +303,12 @@
       "geo": "geo8",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -404,16 +318,12 @@
       "geo": "geo8",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "bertin1953"
-      ],
+      "text": ["bertin1953"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -429,18 +339,12 @@
       "geo": "geo9",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -450,16 +354,12 @@
       "geo": "geo9",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "boggs"
-      ],
+      "text": ["boggs"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -475,18 +375,12 @@
       "geo": "geo10",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -496,16 +390,12 @@
       "geo": "geo10",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "bonne"
-      ],
+      "text": ["bonne"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -521,18 +411,12 @@
       "geo": "geo11",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -542,16 +426,12 @@
       "geo": "geo11",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "bottomley"
-      ],
+      "text": ["bottomley"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -567,18 +447,12 @@
       "geo": "geo12",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -588,16 +462,12 @@
       "geo": "geo12",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "bromley"
-      ],
+      "text": ["bromley"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -613,18 +483,12 @@
       "geo": "geo13",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -634,16 +498,12 @@
       "geo": "geo13",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "collignon"
-      ],
+      "text": ["collignon"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -659,18 +519,12 @@
       "geo": "geo14",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -680,16 +534,12 @@
       "geo": "geo14",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "conic<br>conformal"
-      ],
+      "text": ["conic<br>conformal"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -705,18 +555,12 @@
       "geo": "geo15",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -726,16 +570,12 @@
       "geo": "geo15",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "conic<br>equal area"
-      ],
+      "text": ["conic<br>equal area"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -751,18 +591,12 @@
       "geo": "geo16",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -772,16 +606,12 @@
       "geo": "geo16",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "conic<br>equidistant"
-      ],
+      "text": ["conic<br>equidistant"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -797,18 +627,12 @@
       "geo": "geo17",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -818,16 +642,12 @@
       "geo": "geo17",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "craig"
-      ],
+      "text": ["craig"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -843,18 +663,12 @@
       "geo": "geo18",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -864,16 +678,12 @@
       "geo": "geo18",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "craster"
-      ],
+      "text": ["craster"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -889,18 +699,12 @@
       "geo": "geo19",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -910,16 +714,12 @@
       "geo": "geo19",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "cylindrical<br>equal area"
-      ],
+      "text": ["cylindrical<br>equal area"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -935,18 +735,12 @@
       "geo": "geo20",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -956,16 +750,12 @@
       "geo": "geo20",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "cylindrical<br>stereographic"
-      ],
+      "text": ["cylindrical<br>stereographic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -981,18 +771,12 @@
       "geo": "geo21",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1002,16 +786,12 @@
       "geo": "geo21",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eckert1"
-      ],
+      "text": ["eckert1"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1027,18 +807,12 @@
       "geo": "geo22",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1048,16 +822,12 @@
       "geo": "geo22",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eckert2"
-      ],
+      "text": ["eckert2"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1073,18 +843,12 @@
       "geo": "geo23",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1094,16 +858,12 @@
       "geo": "geo23",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eckert3"
-      ],
+      "text": ["eckert3"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1119,18 +879,12 @@
       "geo": "geo24",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1140,16 +894,12 @@
       "geo": "geo24",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eckert4"
-      ],
+      "text": ["eckert4"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1165,18 +915,12 @@
       "geo": "geo25",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1186,16 +930,12 @@
       "geo": "geo25",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eckert5"
-      ],
+      "text": ["eckert5"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1211,18 +951,12 @@
       "geo": "geo26",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1232,16 +966,12 @@
       "geo": "geo26",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eckert6"
-      ],
+      "text": ["eckert6"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1257,18 +987,12 @@
       "geo": "geo27",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1278,16 +1002,12 @@
       "geo": "geo27",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "eisenlohr"
-      ],
+      "text": ["eisenlohr"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1303,18 +1023,12 @@
       "geo": "geo84",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1324,16 +1038,12 @@
       "geo": "geo84",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "equal earth"
-      ],
+      "text": ["equal earth"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1349,18 +1059,12 @@
       "geo": "geo28",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1370,16 +1074,12 @@
       "geo": "geo28",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "equirectangular"
-      ],
+      "text": ["equirectangular"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1395,18 +1095,12 @@
       "geo": "geo29",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1416,16 +1110,12 @@
       "geo": "geo29",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "fahey"
-      ],
+      "text": ["fahey"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1441,18 +1131,12 @@
       "geo": "geo30",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1462,16 +1146,12 @@
       "geo": "geo30",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "foucaut"
-      ],
+      "text": ["foucaut"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1487,18 +1167,12 @@
       "geo": "geo31",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1508,16 +1182,12 @@
       "geo": "geo31",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "foucaut<br>sinusoidal"
-      ],
+      "text": ["foucaut<br>sinusoidal"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1533,18 +1203,12 @@
       "geo": "geo32",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1554,16 +1218,12 @@
       "geo": "geo32",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "ginzburg4"
-      ],
+      "text": ["ginzburg4"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1579,18 +1239,12 @@
       "geo": "geo33",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1600,16 +1254,12 @@
       "geo": "geo33",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "ginzburg5"
-      ],
+      "text": ["ginzburg5"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1625,18 +1275,12 @@
       "geo": "geo34",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1646,16 +1290,12 @@
       "geo": "geo34",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "ginzburg6"
-      ],
+      "text": ["ginzburg6"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1671,18 +1311,12 @@
       "geo": "geo35",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1692,16 +1326,12 @@
       "geo": "geo35",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "ginzburg8"
-      ],
+      "text": ["ginzburg8"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1717,18 +1347,12 @@
       "geo": "geo36",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1738,16 +1362,12 @@
       "geo": "geo36",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "ginzburg9"
-      ],
+      "text": ["ginzburg9"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1763,18 +1383,12 @@
       "geo": "geo37",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1784,16 +1398,12 @@
       "geo": "geo37",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "gnomonic"
-      ],
+      "text": ["gnomonic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1809,18 +1419,12 @@
       "geo": "geo38",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1830,16 +1434,12 @@
       "geo": "geo38",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "gringorten"
-      ],
+      "text": ["gringorten"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1855,18 +1455,12 @@
       "geo": "geo39",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1876,16 +1470,12 @@
       "geo": "geo39",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "gringorten<br>quincuncial"
-      ],
+      "text": ["gringorten<br>quincuncial"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1901,18 +1491,12 @@
       "geo": "geo40",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1922,16 +1506,12 @@
       "geo": "geo40",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "guyou"
-      ],
+      "text": ["guyou"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1947,18 +1527,12 @@
       "geo": "geo41",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -1968,16 +1542,12 @@
       "geo": "geo41",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "hammer"
-      ],
+      "text": ["hammer"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -1993,18 +1563,12 @@
       "geo": "geo42",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2014,16 +1578,12 @@
       "geo": "geo42",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "hill"
-      ],
+      "text": ["hill"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2039,18 +1599,12 @@
       "geo": "geo43",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2060,16 +1614,12 @@
       "geo": "geo43",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "homolosine"
-      ],
+      "text": ["homolosine"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2085,18 +1635,12 @@
       "geo": "geo44",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2106,16 +1650,12 @@
       "geo": "geo44",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "hufnagel"
-      ],
+      "text": ["hufnagel"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2131,18 +1671,12 @@
       "geo": "geo45",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2152,16 +1686,12 @@
       "geo": "geo45",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "hyperelliptical"
-      ],
+      "text": ["hyperelliptical"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2177,18 +1707,12 @@
       "geo": "geo46",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2198,16 +1722,12 @@
       "geo": "geo46",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "kavrayskiy7"
-      ],
+      "text": ["kavrayskiy7"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2223,18 +1743,12 @@
       "geo": "geo47",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2244,16 +1758,12 @@
       "geo": "geo47",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "lagrange"
-      ],
+      "text": ["lagrange"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2269,18 +1779,12 @@
       "geo": "geo48",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2290,16 +1794,12 @@
       "geo": "geo48",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "larrivee"
-      ],
+      "text": ["larrivee"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2315,18 +1815,12 @@
       "geo": "geo49",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2336,16 +1830,12 @@
       "geo": "geo49",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "laskowski"
-      ],
+      "text": ["laskowski"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2361,18 +1851,12 @@
       "geo": "geo50",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2382,16 +1866,12 @@
       "geo": "geo50",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "loximuthal"
-      ],
+      "text": ["loximuthal"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2407,18 +1887,12 @@
       "geo": "geo51",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2428,16 +1902,12 @@
       "geo": "geo51",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "mercator"
-      ],
+      "text": ["mercator"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2453,18 +1923,12 @@
       "geo": "geo52",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2474,16 +1938,12 @@
       "geo": "geo52",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "miller"
-      ],
+      "text": ["miller"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2499,18 +1959,12 @@
       "geo": "geo53",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2520,16 +1974,12 @@
       "geo": "geo53",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "mollweide"
-      ],
+      "text": ["mollweide"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2545,18 +1995,12 @@
       "geo": "geo54",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2566,16 +2010,12 @@
       "geo": "geo54",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "mt<br>flat polar parabolic"
-      ],
+      "text": ["mt<br>flat polar parabolic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2591,18 +2031,12 @@
       "geo": "geo55",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2612,16 +2046,12 @@
       "geo": "geo55",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "mt<br>flat polar quartic"
-      ],
+      "text": ["mt<br>flat polar quartic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2637,18 +2067,12 @@
       "geo": "geo56",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2658,16 +2082,12 @@
       "geo": "geo56",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "mt<br>flat polar sinusoidal"
-      ],
+      "text": ["mt<br>flat polar sinusoidal"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2683,18 +2103,12 @@
       "geo": "geo57",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2704,16 +2118,12 @@
       "geo": "geo57",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "natural<br>earth"
-      ],
+      "text": ["natural<br>earth"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2729,18 +2139,12 @@
       "geo": "geo58",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2750,16 +2154,12 @@
       "geo": "geo58",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "natural<br>earth1"
-      ],
+      "text": ["natural<br>earth1"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2775,18 +2175,12 @@
       "geo": "geo59",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2796,16 +2190,12 @@
       "geo": "geo59",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "natural<br>earth2"
-      ],
+      "text": ["natural<br>earth2"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2821,18 +2211,12 @@
       "geo": "geo60",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2842,16 +2226,12 @@
       "geo": "geo60",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "nell<br>hammer"
-      ],
+      "text": ["nell<br>hammer"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2867,18 +2247,12 @@
       "geo": "geo61",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2888,16 +2262,12 @@
       "geo": "geo61",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "nicolosi"
-      ],
+      "text": ["nicolosi"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2913,18 +2283,12 @@
       "geo": "geo62",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2934,16 +2298,12 @@
       "geo": "geo62",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "orthographic"
-      ],
+      "text": ["orthographic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -2959,18 +2319,12 @@
       "geo": "geo63",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -2980,16 +2334,12 @@
       "geo": "geo63",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "patterson"
-      ],
+      "text": ["patterson"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3005,18 +2355,12 @@
       "geo": "geo64",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3026,16 +2370,12 @@
       "geo": "geo64",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "peirce<br>quincuncial"
-      ],
+      "text": ["peirce<br>quincuncial"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3051,18 +2391,12 @@
       "geo": "geo65",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3072,16 +2406,12 @@
       "geo": "geo65",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "polyconic"
-      ],
+      "text": ["polyconic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3097,18 +2427,12 @@
       "geo": "geo66",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3118,16 +2442,12 @@
       "geo": "geo66",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "rectangular<br>polyconic"
-      ],
+      "text": ["rectangular<br>polyconic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3143,18 +2463,12 @@
       "geo": "geo67",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3164,16 +2478,12 @@
       "geo": "geo67",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "robinson"
-      ],
+      "text": ["robinson"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3189,18 +2499,12 @@
       "geo": "geo68",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3210,16 +2514,12 @@
       "geo": "geo68",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "satellite"
-      ],
+      "text": ["satellite"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3235,18 +2535,12 @@
       "geo": "geo69",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3256,16 +2550,12 @@
       "geo": "geo69",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "sinu<br>mollweide"
-      ],
+      "text": ["sinu<br>mollweide"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3281,18 +2571,12 @@
       "geo": "geo70",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3302,16 +2586,12 @@
       "geo": "geo70",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "sinusoidal"
-      ],
+      "text": ["sinusoidal"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3327,18 +2607,12 @@
       "geo": "geo71",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3348,16 +2622,12 @@
       "geo": "geo71",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "stereographic"
-      ],
+      "text": ["stereographic"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3373,18 +2643,12 @@
       "geo": "geo72",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3394,16 +2658,12 @@
       "geo": "geo72",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "times"
-      ],
+      "text": ["times"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3419,18 +2679,12 @@
       "geo": "geo73",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3440,16 +2694,12 @@
       "geo": "geo73",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "transverse<br>mercator"
-      ],
+      "text": ["transverse<br>mercator"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3465,18 +2715,12 @@
       "geo": "geo74",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3486,16 +2730,12 @@
       "geo": "geo74",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "van<br>der grinten"
-      ],
+      "text": ["van<br>der grinten"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3511,18 +2751,12 @@
       "geo": "geo75",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3532,16 +2766,12 @@
       "geo": "geo75",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "van<br>der grinten2"
-      ],
+      "text": ["van<br>der grinten2"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3557,18 +2787,12 @@
       "geo": "geo76",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3578,16 +2802,12 @@
       "geo": "geo76",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "van<br>der grinten3"
-      ],
+      "text": ["van<br>der grinten3"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3603,18 +2823,12 @@
       "geo": "geo77",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3624,16 +2838,12 @@
       "geo": "geo77",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "van<br>der grinten4"
-      ],
+      "text": ["van<br>der grinten4"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3649,18 +2859,12 @@
       "geo": "geo78",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3670,16 +2874,12 @@
       "geo": "geo78",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "wagner4"
-      ],
+      "text": ["wagner4"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3695,18 +2895,12 @@
       "geo": "geo79",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3716,16 +2910,12 @@
       "geo": "geo79",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "wagner6"
-      ],
+      "text": ["wagner6"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3741,18 +2931,12 @@
       "geo": "geo80",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3762,16 +2946,12 @@
       "geo": "geo80",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "wiechel"
-      ],
+      "text": ["wiechel"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3787,18 +2967,12 @@
       "geo": "geo81",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3808,16 +2982,12 @@
       "geo": "geo81",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "winkel<br>tripel"
-      ],
+      "text": ["winkel<br>tripel"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     },
     {
@@ -3833,18 +3003,12 @@
       "geo": "geo82",
       "type": "scattergeo",
       "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
+      "text": ["Vancouver", "Montreal"],
       "textfont": {
         "size": 6
       },
       "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
+        "color": ["lightgreen", "blue"],
         "size": 10
       },
       "lat": [49, 45.5],
@@ -3854,16 +3018,12 @@
       "geo": "geo82",
       "type": "scattergeo",
       "mode": "text",
-      "text": [
-        "winkel3"
-      ],
+      "text": ["winkel3"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
       },
-      "locations": [
-        "CAN"
-      ],
+      "locations": ["CAN"],
       "hoverinfo": "skip"
     }
   ],
@@ -4764,7 +3924,8 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "gringorten", "rotation": {"lat": 30}
+        "type": "gringorten",
+        "rotation": { "lat": 30 }
       },
       "lonaxis": {
         "showgrid": true,
@@ -4808,7 +3969,8 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "guyou", "rotation": {"lat": 60}
+        "type": "guyou",
+        "rotation": { "lat": 60 }
       },
       "lonaxis": {
         "showgrid": true,
@@ -5424,7 +4586,8 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "satellite", "rotation": {"lat": 45}
+        "type": "satellite",
+        "rotation": { "lat": 45 }
       },
       "lonaxis": {
         "showgrid": true,

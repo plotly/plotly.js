@@ -40,7 +40,7 @@
     }
   ],
   "layout": {
-    "margin": {"t": 20, "b": 20},
+    "margin": { "t": 20, "b": 20 },
     "showlegend": false,
     "xaxis": {
       "domain": [0, 0.4]

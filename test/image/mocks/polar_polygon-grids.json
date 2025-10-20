@@ -63,7 +63,7 @@
       },
       "radialaxis": {
         "angle": 45,
-        "title": {"text": "angular period > _categories"}
+        "title": { "text": "angular period > _categories" }
       },
       "angularaxis": {
         "direction": "clockwise",
@@ -89,7 +89,7 @@
       "sector": [-20, 200],
       "radialaxis": {
         "angle": 60,
-        "title": {"text": "snapped to 90"}
+        "title": { "text": "snapped to 90" }
       },
       "angularaxis": {
         "categoryarray": ["d", "a", "c", "b"],
@@ -118,7 +118,7 @@
       },
       "angularaxis": {
         "direction": "clockwise",
-        "tickfont": {"color": "red"}
+        "tickfont": { "color": "red" }
       },
       "sector": [-90, 90]
     },
@@ -129,13 +129,13 @@
         "y": [0.45, 0.65]
       },
       "angularaxis": {
-        "tickfont": {"color": "blue" }
+        "tickfont": { "color": "blue" }
       },
       "sector": [0, 180]
     },
     "width": 550,
     "height": 550,
-    "margin": {"l": 40, "r": 40, "b": 60, "t": 20, "pad": 0},
+    "margin": { "l": 40, "r": 40, "b": 60, "t": 20, "pad": 0 },
     "showlegend": false
   }
 }

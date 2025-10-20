@@ -4,12 +4,8 @@
       "name": "airy",
       "geo": "geo",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "airy"
     },
@@ -18,21 +14,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "airy",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "aitoff",
       "geo": "geo2",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "aitoff"
     },
@@ -41,21 +31,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "aitoff",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "albers",
       "geo": "geo3",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "albers"
     },
@@ -64,9 +48,7 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "albers",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
@@ -74,12 +56,8 @@
       "geo": "geo83",
       "type": "choropleth",
       "locationmode": "USA-states",
-      "locations": [
-        "WA"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["WA"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "albers usa"
     },
@@ -89,21 +67,15 @@
       "mode": "text",
       "text": "albers<br>usa",
       "locationmode": "USA-states",
-      "locations": [
-        "WA"
-      ],
+      "locations": ["WA"],
       "hoverinfo": "skip"
     },
     {
       "name": "august",
       "geo": "geo4",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "august"
     },
@@ -112,21 +84,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "august",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "azimuthal equal area",
       "geo": "geo5",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "azimuthal equal area"
     },
@@ -135,21 +101,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "azimuthal<br>equal area",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "azimuthal equidistant",
       "geo": "geo6",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "azimuthal equidistant"
     },
@@ -158,21 +118,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "azimuthal<br>equidistant",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "baker",
       "geo": "geo7",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "baker"
     },
@@ -181,21 +135,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "baker",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "bertin1953",
       "geo": "geo8",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "bertin1953"
     },
@@ -204,21 +152,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "bertin1953",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "boggs",
       "geo": "geo9",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "boggs"
     },
@@ -227,21 +169,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "boggs",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "bonne",
       "geo": "geo10",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "bonne"
     },
@@ -250,21 +186,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "bonne",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "bottomley",
       "geo": "geo11",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "bottomley"
     },
@@ -273,21 +203,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "bottomley",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "bromley",
       "geo": "geo12",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "bromley"
     },
@@ -296,21 +220,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "bromley",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "collignon",
       "geo": "geo13",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "collignon"
     },
@@ -319,21 +237,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "collignon",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "conic conformal",
       "geo": "geo14",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "conic conformal"
     },
@@ -342,21 +254,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "conic<br>conformal",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "conic equal area",
       "geo": "geo15",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "conic equal area"
     },
@@ -365,21 +271,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "conic<br>equal area",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "conic equidistant",
       "geo": "geo16",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "conic equidistant"
     },
@@ -388,21 +288,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "conic<br>equidistant",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "craig",
       "geo": "geo17",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "craig"
     },
@@ -411,21 +305,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "craig",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "craster",
       "geo": "geo18",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "craster"
     },
@@ -434,21 +322,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "craster",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "cylindrical equal area",
       "geo": "geo19",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "cylindrical equal area"
     },
@@ -457,21 +339,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "cylindrical<br>equal area",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "cylindrical stereographic",
       "geo": "geo20",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "cylindrical stereographic"
     },
@@ -480,21 +356,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "cylindrical<br>stereographic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eckert1",
       "geo": "geo21",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eckert1"
     },
@@ -503,21 +373,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert1",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eckert2",
       "geo": "geo22",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eckert2"
     },
@@ -526,21 +390,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert2",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eckert3",
       "geo": "geo23",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eckert3"
     },
@@ -549,21 +407,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert3",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eckert4",
       "geo": "geo24",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eckert4"
     },
@@ -572,21 +424,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert4",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eckert5",
       "geo": "geo25",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eckert5"
     },
@@ -595,21 +441,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert5",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eckert6",
       "geo": "geo26",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eckert6"
     },
@@ -618,21 +458,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert6",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "eisenlohr",
       "geo": "geo27",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "eisenlohr"
     },
@@ -641,21 +475,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "eisenlohr",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "equal earth",
       "geo": "geo84",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "equal earth"
     },
@@ -664,21 +492,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "equal earth",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "equirectangular",
       "geo": "geo28",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "equirectangular"
     },
@@ -687,21 +509,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "equirectangular",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "fahey",
       "geo": "geo29",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "fahey"
     },
@@ -710,21 +526,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "fahey",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "foucaut",
       "geo": "geo30",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "foucaut"
     },
@@ -733,21 +543,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "foucaut",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "foucaut sinusoidal",
       "geo": "geo31",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "foucaut sinusoidal"
     },
@@ -756,21 +560,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "foucaut<br>sinusoidal",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "ginzburg4",
       "geo": "geo32",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "ginzburg4"
     },
@@ -779,21 +577,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg4",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "ginzburg5",
       "geo": "geo33",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "ginzburg5"
     },
@@ -802,21 +594,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg5",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "ginzburg6",
       "geo": "geo34",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "ginzburg6"
     },
@@ -825,21 +611,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg6",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "ginzburg8",
       "geo": "geo35",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "ginzburg8"
     },
@@ -848,21 +628,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg8",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "ginzburg9",
       "geo": "geo36",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "ginzburg9"
     },
@@ -871,21 +645,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg9",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "gnomonic",
       "geo": "geo37",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "gnomonic"
     },
@@ -894,21 +662,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "gnomonic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "gringorten",
       "geo": "geo38",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "gringorten"
     },
@@ -917,21 +679,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "gringorten",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "gringorten quincuncial",
       "geo": "geo39",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "gringorten quincuncial"
     },
@@ -940,21 +696,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "gringorten<br>quincuncial",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "guyou",
       "geo": "geo40",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "guyou"
     },
@@ -963,21 +713,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "guyou",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "hammer",
       "geo": "geo41",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "hammer"
     },
@@ -986,21 +730,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "hammer",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "hill",
       "geo": "geo42",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "hill"
     },
@@ -1009,21 +747,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "hill",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "homolosine",
       "geo": "geo43",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "homolosine"
     },
@@ -1032,21 +764,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "homolosine",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "hufnagel",
       "geo": "geo44",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "hufnagel"
     },
@@ -1055,21 +781,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "hufnagel",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "hyperelliptical",
       "geo": "geo45",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "hyperelliptical"
     },
@@ -1078,21 +798,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "hyperelliptical",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "kavrayskiy7",
       "geo": "geo46",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "kavrayskiy7"
     },
@@ -1101,21 +815,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "kavrayskiy7",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "lagrange",
       "geo": "geo47",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "lagrange"
     },
@@ -1124,21 +832,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "lagrange",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "larrivee",
       "geo": "geo48",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "larrivee"
     },
@@ -1147,21 +849,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "larrivee",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "laskowski",
       "geo": "geo49",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "laskowski"
     },
@@ -1170,21 +866,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "laskowski",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "loximuthal",
       "geo": "geo50",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "loximuthal"
     },
@@ -1193,21 +883,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "loximuthal",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "mercator",
       "geo": "geo51",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "mercator"
     },
@@ -1216,21 +900,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "mercator",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "miller",
       "geo": "geo52",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "miller"
     },
@@ -1239,21 +917,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "miller",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "mollweide",
       "geo": "geo53",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "mollweide"
     },
@@ -1262,21 +934,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "mollweide",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "mt flat polar parabolic",
       "geo": "geo54",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "mt flat polar parabolic"
     },
@@ -1285,21 +951,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "mt<br>flat polar parabolic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "mt flat polar quartic",
       "geo": "geo55",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "mt flat polar quartic"
     },
@@ -1308,21 +968,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "mt<br>flat polar quartic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "mt flat polar sinusoidal",
       "geo": "geo56",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "mt flat polar sinusoidal"
     },
@@ -1331,21 +985,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "mt<br>flat polar sinusoidal",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "natural earth",
       "geo": "geo57",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "natural earth"
     },
@@ -1354,21 +1002,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "natural<br>earth",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "natural earth1",
       "geo": "geo58",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "natural earth1"
     },
@@ -1377,21 +1019,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "natural<br>earth1",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "natural earth2",
       "geo": "geo59",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "natural earth2"
     },
@@ -1400,21 +1036,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "natural<br>earth2",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "nell hammer",
       "geo": "geo60",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "nell hammer"
     },
@@ -1423,21 +1053,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "nell<br>hammer",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "nicolosi",
       "geo": "geo61",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "nicolosi"
     },
@@ -1446,21 +1070,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "nicolosi",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "orthographic",
       "geo": "geo62",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "orthographic"
     },
@@ -1469,21 +1087,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "orthographic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "patterson",
       "geo": "geo63",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "patterson"
     },
@@ -1492,21 +1104,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "patterson",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "peirce quincuncial",
       "geo": "geo64",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "peirce quincuncial"
     },
@@ -1515,21 +1121,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "peirce<br>quincuncial",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "polyconic",
       "geo": "geo65",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "polyconic"
     },
@@ -1538,21 +1138,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "polyconic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "rectangular polyconic",
       "geo": "geo66",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "rectangular polyconic"
     },
@@ -1561,21 +1155,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "rectangular<br>polyconic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "robinson",
       "geo": "geo67",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "robinson"
     },
@@ -1584,21 +1172,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "robinson",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "satellite",
       "geo": "geo68",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "satellite"
     },
@@ -1607,21 +1189,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "satellite",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "sinu mollweide",
       "geo": "geo69",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "sinu mollweide"
     },
@@ -1630,21 +1206,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "sinu<br>mollweide",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "sinusoidal",
       "geo": "geo70",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "sinusoidal"
     },
@@ -1653,21 +1223,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "sinusoidal",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "stereographic",
       "geo": "geo71",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "stereographic"
     },
@@ -1676,21 +1240,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "stereographic",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "times",
       "geo": "geo72",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "times"
     },
@@ -1699,21 +1257,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "times",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "transverse mercator",
       "geo": "geo73",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "transverse mercator"
     },
@@ -1722,21 +1274,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "transverse<br>mercator",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "van der grinten",
       "geo": "geo74",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "van der grinten"
     },
@@ -1745,21 +1291,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "van der grinten2",
       "geo": "geo75",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "van der grinten2"
     },
@@ -1768,21 +1308,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten2",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "van der grinten3",
       "geo": "geo76",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "van der grinten3"
     },
@@ -1791,21 +1325,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten3",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "van der grinten4",
       "geo": "geo77",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "van der grinten4"
     },
@@ -1814,21 +1342,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten4",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "wagner4",
       "geo": "geo78",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "wagner4"
     },
@@ -1837,21 +1359,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "wagner4",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "wagner6",
       "geo": "geo79",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "wagner6"
     },
@@ -1860,21 +1376,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "wagner6",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "wiechel",
       "geo": "geo80",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "wiechel"
     },
@@ -1883,21 +1393,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "wiechel",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "winkel tripel",
       "geo": "geo81",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "winkel tripel"
     },
@@ -1906,21 +1410,15 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "winkel<br>tripel",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     },
     {
       "name": "winkel3",
       "geo": "geo82",
       "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
+      "locations": ["AUS"],
+      "z": [10],
       "showscale": false,
       "hovertemplate": "winkel3"
     },
@@ -1929,9 +1427,7 @@
       "type": "scattergeo",
       "mode": "text",
       "text": "winkel3",
-      "locations": [
-        "AUS"
-      ],
+      "locations": ["AUS"],
       "hoverinfo": "skip"
     }
   ],

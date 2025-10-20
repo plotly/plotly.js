@@ -4,7 +4,7 @@
       "type": "bar",
       "x": [
         ["2017", "2017", "2017", "2017", "2018", "2018", "2018"],
-        ["q1", "q2", "q3", "q4", "q1", "q2", "q3" ]
+        ["q1", "q2", "q3", "q4", "q1", "q2", "q3"]
       ],
       "y": [1, 2, 3, 1, 3, 2, 3, 1]
     },
@@ -19,7 +19,7 @@
   ],
   "layout": {
     "xaxis": {
-      "title": {"text": "MULTI-CATEGORY"},
+      "title": { "text": "MULTI-CATEGORY" },
       "ticks": "outside",
       "showline": true,
       "mirror": "ticks",
@@ -31,11 +31,13 @@
       "mirror": "ticks",
       "range": [-0.5, 3.5]
     },
-    "selections": [{
-      "x0": 6.25,
-      "x1": -0.25,
-      "y1": 3.25,
-      "y0": 1.25
-    }]
+    "selections": [
+      {
+        "x0": 6.25,
+        "x1": -0.25,
+        "y1": 3.25,
+        "y0": 1.25
+      }
+    ]
   }
 }

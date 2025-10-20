@@ -1,8 +1,9 @@
 {
   "data": [
     {
-      "type": "funnel", "orientation": "v",
-  	  "name": "not clipped",
+      "type": "funnel",
+      "orientation": "v",
+      "name": "not clipped",
       "x": ["apple", "banana", "clementine"],
       "y": [3.8, 4, 4.2],
       "text": ["apple", "banana", "x"],
@@ -14,8 +15,9 @@
       }
     },
     {
-      "type": "funnel", "orientation": "v",
-	    "name": "same but clipped",
+      "type": "funnel",
+      "orientation": "v",
+      "name": "same but clipped",
       "x": ["apple", "banana", "clementine"],
       "y": [3.8, 4, 4.2],
       "text": ["apple", "banana", "clementine"],
@@ -25,22 +27,24 @@
       "textfont": {
         "size": [60, 40, 20]
       },
-	  "xaxis": "x2",
-	  "yaxis": "y2"
+      "xaxis": "x2",
+      "yaxis": "y2"
     },
     {
-      "type": "funnel", "orientation": "v",
-	    "name": "should <b>not</b> see text",
+      "type": "funnel",
+      "orientation": "v",
+      "name": "should <b>not</b> see text",
       "x": ["banana"],
       "y": [4],
       "text": ["X"],
       "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": true,
-      "textfont": {"size": [20]}
+      "textfont": { "size": [20] }
     },
     {
-      "type": "funnel", "orientation": "v",
+      "type": "funnel",
+      "orientation": "v",
       "name": "should see text",
       "x": ["banana"],
       "y": [2],
@@ -48,25 +52,25 @@
       "textinfo": "text",
       "textposition": "outside",
       "cliponaxis": false,
-      "textfont": {"size": [20]},
+      "textfont": { "size": [20] },
       "xaxis": "x3",
       "yaxis": "y3"
     }
   ],
   "layout": {
-	"funnelmode": "overlay",
-	"legend": {
+    "funnelmode": "overlay",
+    "legend": {
       "x": 0.5,
       "xanchor": "center",
       "y": -0.05,
       "yanchor": "top"
-	},
+    },
     "xaxis": {
       "showline": true,
       "showticklabels": false,
       "mirror": true,
       "layer": "below traces",
-	    "domain": [0, 0.38]
+      "domain": [0, 0.38]
     },
     "xaxis2": {
       "anchor": "y2",
@@ -74,7 +78,7 @@
       "showticklabels": false,
       "mirror": true,
       "layer": "below traces",
-	  "domain": [0.42, 0.80]
+      "domain": [0.42, 0.8]
     },
     "xaxis3": {
       "anchor": "y3",
@@ -100,7 +104,7 @@
     },
     "width": 800,
     "height": 400,
-	  "margin": {"t": 40},
-	  "dragmode": "pan"
+    "margin": { "t": 40 },
+    "dragmode": "pan"
   }
 }

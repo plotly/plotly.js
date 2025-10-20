@@ -217,82 +217,38 @@
       "name": "Middle East & Africa"
     },
     {
-      "text": [
-        "Mont Blanc",
-        "Klyuchevskaya Volcano",
-        "Gunnbjørnsfjeld"
-      ],
-      "lon": [
-        "6.866666667",
-        "160.65",
-        "-29.9"
-      ],
-      "lat": [
-        "45.83333333",
-        "56.05",
-        "68.91666667"
-      ],
+      "text": ["Mont Blanc", "Klyuchevskaya Volcano", "Gunnbjørnsfjeld"],
+      "lon": ["6.866666667", "160.65", "-29.9"],
+      "lat": ["45.83333333", "56.05", "68.91666667"],
       "type": "scattergeo",
       "marker": {
         "sizeref": 770.3,
         "symbol": "triangle-up",
-        "size": [
-          "15406",
-          "15252",
-          "12119"
-        ]
+        "size": ["15406", "15252", "12119"]
       },
       "name": "Europe"
     },
     {
-      "text": [
-        "Puncak Jaya",
-        "Mt. Cook",
-        "Finisterre Range HP"
-      ],
-      "lon": [
-        "137.1833333",
-        "170.1333333",
-        "146.3666667"
-      ],
-      "lat": [
-        "-4.066666667",
-        "-43.6",
-        "-5.95"
-      ],
+      "text": ["Puncak Jaya", "Mt. Cook", "Finisterre Range HP"],
+      "lon": ["137.1833333", "170.1333333", "146.3666667"],
+      "lat": ["-4.066666667", "-43.6", "-5.95"],
       "type": "scattergeo",
       "marker": {
         "sizeref": 801.15,
         "symbol": "triangle-up",
-        "size": [
-          "16023",
-          "12319",
-          "12057"
-        ]
+        "size": ["16023", "12319", "12057"]
       },
       "name": "Oceania"
     },
     {
-      "text": [
-        "Vinson Massif",
-        "Mt. Erebus"
-      ],
-      "lon": [
-        "-85.6",
-        "167.1833333"
-      ],
-      "lat": [
-        "-78.51666667",
-        "-77.51666667"
-      ],
+      "text": ["Vinson Massif", "Mt. Erebus"],
+      "lon": ["-85.6", "167.1833333"],
+      "lat": ["-78.51666667", "-77.51666667"],
       "type": "scattergeo",
       "marker": {
         "sizeref": 802.5,
         "symbol": "triangle-up",
-        "size": [
-          "16050",
-          "12448"
-        ]
+        "size": ["16050", "12448"]
       },
       "name": "Antartica"
     },
@@ -516,84 +472,40 @@
       "geo": "geo2"
     },
     {
-      "text": [
-        "Mont Blanc",
-        "Klyuchevskaya Volcano",
-        "Gunnbjørnsfjeld"
-      ],
-      "lon": [
-        "6.866666667",
-        "160.65",
-        "-29.9"
-      ],
-      "lat": [
-        "45.83333333",
-        "56.05",
-        "68.91666667"
-      ],
+      "text": ["Mont Blanc", "Klyuchevskaya Volcano", "Gunnbjørnsfjeld"],
+      "lon": ["6.866666667", "160.65", "-29.9"],
+      "lat": ["45.83333333", "56.05", "68.91666667"],
       "type": "scattergeo",
       "marker": {
         "sizeref": 770.3,
         "symbol": "triangle-up",
-        "size": [
-          "15406",
-          "15252",
-          "12119"
-        ]
+        "size": ["15406", "15252", "12119"]
       },
       "name": "Europe",
       "geo": "geo2"
     },
     {
-      "text": [
-        "Puncak Jaya",
-        "Mt. Cook",
-        "Finisterre Range HP"
-      ],
-      "lon": [
-        "137.1833333",
-        "170.1333333",
-        "146.3666667"
-      ],
-      "lat": [
-        "-4.066666667",
-        "-43.6",
-        "-5.95"
-      ],
+      "text": ["Puncak Jaya", "Mt. Cook", "Finisterre Range HP"],
+      "lon": ["137.1833333", "170.1333333", "146.3666667"],
+      "lat": ["-4.066666667", "-43.6", "-5.95"],
       "type": "scattergeo",
       "marker": {
         "sizeref": 801.15,
         "symbol": "triangle-up",
-        "size": [
-          "16023",
-          "12319",
-          "12057"
-        ]
+        "size": ["16023", "12319", "12057"]
       },
       "name": "Oceania",
       "geo": "geo2"
     },
     {
-      "text": [
-        "Vinson Massif",
-        "Mt. Erebus"
-      ],
-      "lon": [
-        "-85.6",
-        "167.1833333"
-      ],
-      "lat": [
-        "-78.51666667",
-        "-77.51666667"
-      ],
+      "text": ["Vinson Massif", "Mt. Erebus"],
+      "lon": ["-85.6", "167.1833333"],
+      "lat": ["-78.51666667", "-77.51666667"],
       "type": "scattergeo",
       "marker": {
         "sizeref": 802.5,
         "symbol": "triangle-up",
-        "size": [
-          "16050",
-          "12448"
-        ]
+        "size": ["16050", "12448"]
       },
       "name": "Antartica",
       "geo": "geo2"

@@ -2,7 +2,7 @@ var path = require('path');
 var fs = require('fs');
 
 var falafel = require('falafel');
-var glob = require('glob');
+var { glob } = require('glob');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -19,13 +19,7 @@ var noOutput = process.argv.indexOf('--no-output') !== -1;
 findLocaleStrings();
 
 function findLocaleStrings() {
-    glob(srcGlob, function(err, files) {
-        if(err) {
-            EXIT_CODE = 1;
-            console.log(err);
-            return;
-        }
-
+    glob(srcGlob).then(function(files) {
         var dict = {};
         var hasTranslation = false;
         var maxLen = 0;
@@ -34,7 +28,7 @@ function findLocaleStrings() {
             var code = fs.readFileSync(file, 'utf-8');
             var filePartialPath = file.substr(constants.pathToSrc.length);
 
-            falafel(code, {locations: true}, function(node) {
+            falafel(code, { ecmaVersion: 'latest', locations: true }, function(node) {
                 if(node.type === 'CallExpression' &&
                     (node.callee.name === '_' || node.callee.source() === 'Lib._')
                 ) {
@@ -82,6 +76,9 @@ function findLocaleStrings() {
                 console.log('ok find_locale_strings - wrote new key file.');
             }
         }
+    }).catch(function(err) {
+        EXIT_CODE = 1;
+        console.log(err);
     });
 }
 

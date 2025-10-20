@@ -4,19 +4,11 @@
       "type": "splom",
       "dimensions": [
         {
-          "values": [
-            1,
-            2,
-            3
-          ],
+          "values": [1, 2, 3],
           "label": "A"
         },
         {
-          "values": [
-            4,
-            5,
-            6
-          ],
+          "values": [4, 5, 6],
           "label": "B"
         }
       ]
@@ -25,34 +17,20 @@
       "type": "splom",
       "dimensions": [
         {
-          "values": [
-            1,
-            2,
-            3
-          ],
+          "values": [1, 2, 3],
           "label": "C"
         },
         {
-          "values": [
-            4,
-            5,
-            6
-          ],
+          "values": [4, 5, 6],
           "label": "D"
         }
       ],
-      "xaxes": [
-        "x3",
-        "x4"
-      ],
-      "yaxes": [
-        "y3",
-        "y4"
-      ]
+      "xaxes": ["x3", "x4"],
+      "yaxes": ["y3", "y4"]
     }
   ],
   "layout": {
-    "title": {"text": "ragged sploms using trace xaxes yaxes"},
+    "title": { "text": "ragged sploms using trace xaxes yaxes" },
     "showlegend": false
   }
 }

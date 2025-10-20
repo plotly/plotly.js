@@ -1,31 +1,11 @@
 {
   "data": [
     {
-      "text": [
-        "a",
-        "j",
-        "i",
-        "k"
-      ],
+      "text": ["a", "j", "i", "k"],
       "mode": "lines+markers+text",
-      "y": [
-        -102.63,
-        -110.53,
-        -96.97,
-        -163.59
-      ],
-      "x": [
-        100.75,
-        157.53,
-        140.72,
-        134.03
-      ],
-      "z": [
-        8.41,
-        28.25,
-        67.78,
-        71.06
-      ],
+      "y": [-102.63, -110.53, -96.97, -163.59],
+      "x": [100.75, 157.53, 140.72, 134.03],
+      "z": [8.41, 28.25, 67.78, 71.06],
       "type": "scatter3d",
       "projection": {
         "y": {
@@ -42,7 +22,7 @@
   ],
   "layout": {
     "autosize": true,
-    "title": {"text": "Scatter3d with text weirdness"},
+    "title": { "text": "Scatter3d with text weirdness" },
     "showlegend": false,
     "height": 758,
     "width": 1310

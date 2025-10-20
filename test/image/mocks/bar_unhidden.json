@@ -2,18 +2,18 @@
   "data": [
     {
       "type": "bar",
-      "x": [ 0, 0, 0 ],
-      "y": [ 1, 1, -1 ],
+      "x": [0, 0, 0],
+      "y": [1, 1, -1],
       "marker": {
-        "color": [ "red", "green", "blue" ]
+        "color": ["red", "green", "blue"]
       }
     },
     {
       "type": "bar",
-      "x": [ 0, 0, 0 ],
-      "y": [ 1, 1, -1 ],
+      "x": [0, 0, 0],
+      "y": [1, 1, -1],
       "marker": {
-        "color": [ "cyan", "magenta", "yellow" ]
+        "color": ["cyan", "magenta", "yellow"]
       }
     }
   ],

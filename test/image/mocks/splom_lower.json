@@ -692,8 +692,8 @@
     }
   ],
   "layout": {
-	"title": {"text": "Iris dataset splom"},
-  	"width": 600,
-	"height": 500
+    "title": { "text": "Iris dataset splom" },
+    "width": 600,
+    "height": 500
   }
 }

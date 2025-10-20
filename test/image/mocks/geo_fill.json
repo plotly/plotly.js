@@ -69,20 +69,8 @@
     {
       "type": "scattergeo",
       "fill": "toself",
-      "lon": [
-        -75,
-        -77,
-        -77,
-        -75,
-        -75
-      ],
-      "lat": [
-        47,
-        47,
-        49,
-        49,
-        47
-      ],
+      "lon": [-75, -77, -77, -75, -75],
+      "lat": [47, 47, 49, 49, 47],
       "marker": {
         "size": 20
       }
@@ -92,12 +80,12 @@
     "geo": {
       "projection": {
         "type": "natural earth",
-        "rotation": {"lon": 0}
+        "rotation": { "lon": 0 }
       },
-      "lonaxis": { 
+      "lonaxis": {
         "range": [-80, -65]
       },
-      "lataxis": { 
+      "lataxis": {
         "range": [42, 51]
       },
       "center": {

@@ -376,11 +376,14 @@ module.exports = function style(s, gd, legend) {
             var fillColor = mcc || d0.mc || marker.color;
 
             var markerPattern = marker.pattern;
-            var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, '');
+            var pAttr = Drawing.getPatternAttr;
+            var patternShape = markerPattern && (
+                pAttr(markerPattern.shape, 0, '') || pAttr(markerPattern.path, 0, '')
+            );
 
             if(patternShape) {
-                var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-                var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+                var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
+                var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
                 var patternFGOpacity = markerPattern.fgopacity;
                 var patternSize = dimAttr(markerPattern.size, 8, 10);
                 var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
@@ -542,12 +545,14 @@ module.exports = function style(s, gd, legend) {
                     break;
                 case 'choropleth' :
                 case 'choroplethmapbox' :
+                case 'choroplethmap' :
                     ptsData = [
                         ['M-6,-6V6H6V-6Z']
                     ];
                     useGradient = true;
                     break;
                 case 'densitymapbox' :
+                case 'densitymap' :
                     ptsData = [
                         ['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']
                     ];

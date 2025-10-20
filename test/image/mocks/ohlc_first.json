@@ -962,21 +962,18 @@
   ],
   "layout": {
     "xaxis": {
-      "range": [
-        1472577187875,
-        1475225280000
-      ]
+      "range": [1472577187875, 1475225280000]
     },
     "yaxis": {
       "tickprefix": "$",
       "showtickprefix": "last"
     },
-	"legend": {
+    "legend": {
       "x": 0,
-	  "xanchor": "left",
-	  "y": 1,
-	  "yanchor": "bottom"
-	},
+      "xanchor": "left",
+      "y": 1,
+      "yanchor": "bottom"
+    },
     "height": 600,
     "width": 1100
   }

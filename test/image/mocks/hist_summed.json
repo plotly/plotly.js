@@ -1,27 +1,15 @@
 {
-    "data": [
-        {
-            "histfunc": "sum",
-            "y": [
-                "5",
-                "10",
-                "3",
-                "10",
-                "5"
-            ],
-            "x": [
-                "Apples",
-                "Apples",
-                "Apples",
-                "Oranges",
-                "Bananas"
-            ],
-            "texttemplate": "%{y:.1f}<br>%{x}",
-            "type": "histogram"
-        }
-    ],
-    "layout": {
-        "height": 300,
-        "width": 400
+  "data": [
+    {
+      "histfunc": "sum",
+      "y": ["5", "10", "3", "10", "5"],
+      "x": ["Apples", "Apples", "Apples", "Oranges", "Bananas"],
+      "texttemplate": "%{y:.1f}<br>%{x}",
+      "type": "histogram"
     }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 400
+  }
 }

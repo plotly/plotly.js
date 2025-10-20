@@ -1,22 +1,8 @@
 {
   "data": [
     {
-      "x": [
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f"
-      ],
-      "y": [
-        1,
-        null,
-        "nonsense",
-        14,
-        0,
-        1
-      ],
+      "x": ["a", "b", "c", "d", "e", "f"],
+      "y": [1, null, "nonsense", 14, 0, 1],
       "type": "waterfall"
     }
   ]

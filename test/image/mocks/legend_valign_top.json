@@ -1,5 +1,6 @@
 {
-  "data": [{
+  "data": [
+    {
       "y": [1, 5, 3, 4, 5],
       "name": "Super long name<br>Super long name<br>Super long name<br>Super long name",
       "type": "scatter",
@@ -12,15 +13,15 @@
       "showlegend": true
     },
     {
-        "type": "pie",
-        "labels": ["a very<br>long<br>legend item", "a", "b", "c"],
-        "values": [10, 15, 13, 17],
-        "domain": {"x": [0.5, 1]}
+      "type": "pie",
+      "labels": ["a very<br>long<br>legend item", "a", "b", "c"],
+      "values": [10, 15, 13, 17],
+      "domain": { "x": [0.5, 1] }
     }
   ],
   "layout": {
     "width": 800,
-    "xaxis": {"domain": [0, 0.5]},
+    "xaxis": { "domain": [0, 0.5] },
     "legend": {
       "bgcolor": "rgba(0,255,255,1)",
       "valign": "top",

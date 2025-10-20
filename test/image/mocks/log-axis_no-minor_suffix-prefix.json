@@ -2,44 +2,28 @@
   "data": [
     {
       "name": "L10000000",
-      "y": [
-        1e8,
-        1e6,
-        1e7
-      ],
+      "y": [1e8, 1e6, 1e7],
       "type": "scatter"
     },
     {
       "name": "dtick=0.5 | tick0=1",
       "xaxis": "x2",
       "yaxis": "y2",
-      "y": [
-        1e8,
-        1e6,
-        1e7
-      ],
+      "y": [1e8, 1e6, 1e7],
       "type": "scatter"
     },
     {
       "name": "D1",
       "xaxis": "x3",
       "yaxis": "y3",
-      "y": [
-        1e8,
-        1e6,
-        1e7
-      ],
+      "y": [1e8, 1e6, 1e7],
       "type": "scatter"
     },
     {
       "name": "default",
       "xaxis": "x4",
       "yaxis": "y4",
-      "y": [
-        1e8,
-        1e6,
-        1e7
-      ],
+      "y": [1e8, 1e6, 1e7],
       "type": "scatter"
     }
   ],
@@ -47,31 +31,19 @@
     "width": 800,
     "height": 800,
     "xaxis": {
-      "domain": [
-        0,
-        0.45
-      ]
+      "domain": [0, 0.45]
     },
     "xaxis2": {
       "anchor": "y2",
-      "domain": [
-        0.6,
-        1
-      ]
+      "domain": [0.6, 1]
     },
     "xaxis3": {
       "anchor": "y3",
-      "domain": [
-        0,
-        0.45
-      ]
+      "domain": [0, 0.45]
     },
     "xaxis4": {
       "anchor": "y4",
-      "domain": [
-        0.6,
-        1
-      ]
+      "domain": [0.6, 1]
     },
     "yaxis": {
       "tick0": 1,
@@ -79,10 +51,7 @@
       "type": "log",
       "tickprefix": "$",
       "ticksuffix": "Hz",
-      "domain": [
-        0,
-        0.45
-      ]
+      "domain": [0, 0.45]
     },
     "yaxis2": {
       "tick0": 1,
@@ -91,10 +60,7 @@
       "tickprefix": "$",
       "ticksuffix": "Hz",
       "anchor": "x2",
-      "domain": [
-        0,
-        0.45
-      ]
+      "domain": [0, 0.45]
     },
     "yaxis3": {
       "dtick": "D1",
@@ -102,20 +68,14 @@
       "tickprefix": "$",
       "ticksuffix": "Hz",
       "anchor": "x3",
-      "domain": [
-        0.6,
-        1
-      ]
+      "domain": [0.6, 1]
     },
     "yaxis4": {
       "type": "log",
       "tickprefix": "$",
       "ticksuffix": "Hz",
       "anchor": "x4",
-      "domain": [
-        0.6,
-        1
-      ]
+      "domain": [0.6, 1]
     }
   }
 }

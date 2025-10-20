@@ -6,7 +6,8 @@
       "x": ["A", "B", "C", "D", "E"],
       "y": [1, 1, 1, 1, 1],
       "marker": {
-        "colorscale": "Greens", "reversescale": true,
+        "colorscale": "Greens",
+        "reversescale": true,
         "line": { "color": "#444", "width": 1 },
         "color": [1, 2, 3, 4, 5],
         "pattern": {
@@ -22,11 +23,13 @@
       "x": ["A", "B", "C", "D", "E"],
       "y": [1, 1, 1, 1, 1],
       "marker": {
-        "colorscale": "Greens", "reversescale": true,
+        "colorscale": "Greens",
+        "reversescale": true,
         "line": { "color": "#444", "width": 1 },
         "color": [1, 2, 3, 4, 5],
         "pattern": {
-          "fillmode": "overlay", "fgopacity": 1,
+          "fillmode": "overlay",
+          "fgopacity": 1,
           "size": 6,
           "shape": "."
         }
@@ -58,7 +61,8 @@
         "line": { "color": "#444", "width": 1 },
         "color": [1, 2, 3, 4, 5],
         "pattern": {
-          "fillmode": "overlay", "fgopacity": 1,
+          "fillmode": "overlay",
+          "fgopacity": 1,
           "size": 10,
           "shape": "."
         }
@@ -70,7 +74,8 @@
       "x": ["A", "B", "C", "D", "E"],
       "y": [1, 1, 1, 1, 1],
       "marker": {
-        "colorscale": "Blues", "reversescale": true,
+        "colorscale": "Blues",
+        "reversescale": true,
         "line": { "color": "#444", "width": 1 },
         "color": [1, 2, 3, 4, 5],
         "pattern": {
@@ -86,11 +91,13 @@
       "x": ["A", "B", "C", "D", "E"],
       "y": [1, 1, 1, 1, 1],
       "marker": {
-        "colorscale": "Blues", "reversescale": true,
+        "colorscale": "Blues",
+        "reversescale": true,
         "line": { "color": "#444", "width": 1 },
         "color": [1, 2, 3, 4, 5],
         "pattern": {
-          "fillmode": "overlay", "fgopacity": 1,
+          "fillmode": "overlay",
+          "fgopacity": 1,
           "size": [4, 6, 8, 10, 12],
           "shape": "."
         }

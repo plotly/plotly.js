@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  browser-tools: circleci/browser-tools@1.4.8
+  browser-tools: circleci/browser-tools@1.5.1
 
 # Inspired by:
 # https://github.com/CircleCI-Public/circleci-demo-workflows/blob/workspace-forwarding/.circleci/config.yml
@@ -10,25 +10,9 @@ orbs:
 # https://hub.docker.com/r/cimg/node/tags/
 
 jobs:
-  install-and-cibuild-node12: # cibuild using node 12 & npm 6
+  install-and-cibuild:
     docker:
-      - image: cimg/node:12.22.7
-    working_directory: ~/plotly.js
-    steps:
-      - checkout
-      - run:
-          name: Set up build environment
-          command: .circleci/env_build.sh
-      - run:
-          name: Pretest
-          command: npm run pretest
-      - run:
-          name: CI-Build
-          command: npm run cibuild
-
-  install-and-cibuild: # main cibuild using node 16 & npm 7
-    docker:
-      - image: cimg/node:16.17.1
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -52,12 +36,15 @@ jobs:
   timezone-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -84,16 +71,19 @@ jobs:
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 12
+    parallelism: 4
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -103,16 +93,19 @@ jobs:
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -122,7 +115,29 @@ jobs:
   virtual-webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    parallelism: 8
+    working_directory: ~/plotly.js
+    steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run jasmine tests (part B)
+          command: .circleci/test.sh virtual-webgl-jasmine
+
+  webgl-jasmine-chromeLatest:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -132,24 +147,28 @@ jobs:
       - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part B)
-          command: .circleci/test.sh virtual-webgl-jasmine
+          command: .circleci/test.sh webgl-jasmine
 
   flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
@@ -159,85 +178,51 @@ jobs:
   bundle-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
+          install-chrome: true
+          chrome-version: "132.0.6834.110"
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part D)
           command: .circleci/test.sh bundle-jasmine
 
-  mathjax-firefox81:
-    docker:
-      # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
-    environment:
-      # Alaska time (arbitrary timezone to test date logic)
-      TZ: "America/Anchorage"
-    working_directory: ~/plotly.js
-    steps:
-      - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: '81.0'
-          install-chrome: false
-          install-chromedriver: false
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Test MathJax on firefox-81
-          command: .circleci/test.sh mathjax-firefox
-
-  mathjax-firefox82:
-    docker:
-      # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
-    environment:
-      # Alaska time (arbitrary timezone to test date logic)
-      TZ: "America/Anchorage"
-    working_directory: ~/plotly.js
-    steps:
-      - browser-tools/install-browser-tools: &browser-versions
-          firefox-version: '82.0'
-          install-chrome: false
-          install-chromedriver: false
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Test MathJax on firefox-82
-          command: .circleci/test.sh mathjax-firefox82+
-
   mathjax-firefoxLatest:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: cimg/node:16.17.1-browsers
+      - image: cimg/node:18.20.4-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
+      - browser-tools/install-browser-tools:
           install-chrome: false
           install-chromedriver: false
       - attach_workspace:
           at: ~/
       - run:
           name: Test MathJax on firefox-latest
-          command: .circleci/test.sh mathjax-firefox82+
+          command: .circleci/test.sh mathjax-firefox
 
   make-baselines-virtual-webgl:
-    parallelism: 4
+    parallelism: 8
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.12.11
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
+      - run: sudo apt-get update
       - run:
           name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
@@ -251,11 +236,12 @@ jobs:
 
   make-baselines-mathjax3:
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.12.11
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
+      - run: sudo apt-get update
       - run:
           name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
@@ -268,13 +254,14 @@ jobs:
             - plotly.js
 
   make-baselines:
-    parallelism: 4
+    parallelism: 12
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.12.11
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
+      - run: sudo apt-get update
       - run:
           name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
@@ -287,13 +274,14 @@ jobs:
             - plotly.js
 
   make-baselines-b64:
-    parallelism: 4
+    parallelism: 12
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.12.11
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
+      - run: sudo apt-get update
       - run:
           name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
@@ -307,7 +295,7 @@ jobs:
 
   test-baselines:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -321,7 +309,7 @@ jobs:
 
   test-baselines-virtual-webgl:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -335,7 +323,7 @@ jobs:
 
   test-baselines-b64:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -349,7 +337,7 @@ jobs:
 
   test-baselines-mathjax3:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -363,22 +351,23 @@ jobs:
 
   make-exports:
     docker:
-      - image: circleci/python:3.8.9
+      - image: cimg/python:3.12.11
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
+      - run: sudo apt-get update
       - run:
           name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
       - run:
           name: Install poppler-utils to have pdftops for exporting eps
           command: |
-              sudo apt-get update --allow-releaseinfo-change
-              sudo apt-get install poppler-utils
+            sudo apt-get update --allow-releaseinfo-change
+            sudo apt-get install poppler-utils
       - run:
           name: Create svg, jpg, jpeg, webp, pdf and eps files
-          command: python3 test/image/make_exports.py
+          command: sudo python3 test/image/make_exports.py
       - persist_to_workspace:
           root: ~/
           paths:
@@ -386,7 +375,7 @@ jobs:
 
   test-exports:
     docker:
-      - image: circleci/node:16.9.0
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -400,7 +389,7 @@ jobs:
 
   mock-validation:
     docker:
-      - image: cimg/node:16.17.1
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -414,7 +403,7 @@ jobs:
 
   source-syntax:
     docker:
-      - image: cimg/node:16.17.1
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -423,9 +412,9 @@ jobs:
           name: Run syntax tests on source files
           command: .circleci/test.sh source-syntax
 
-  publish-dist:
+  publish-dist: &publish-dist
     docker:
-      - image: cimg/node:16.17.1
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -480,22 +469,15 @@ jobs:
       - run:
           name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
-      - run:
-          name: Test plotly.min.js import using amdefine
-          command: npm run test-amdefine
-      - run:
-          name: Test plotly.min.js import using requirejs
-          command: npm run test-requirejs
-      - run:
-          name: Test plotly bundles against es6
-          command: npm run no-es6-dist
-      - run:
-          name: Display function constructors in all bundles
-          command: npm run no-new-func
+
+  publish-dist-node-v22:
+    <<: *publish-dist
+    docker:
+      - image: cimg/node:22.14.0
 
   test-stackgl-bundle:
     docker:
-      - image: cimg/node:16.17.1
+      - image: cimg/node:18.20.4
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -506,29 +488,43 @@ jobs:
           name: Bundle bundle-stackgl/index.js
           command: cd stackgl_modules && cp index.js INDEX.js && npm run bundle-stackgl
       - run:
-          name: Test stackgl_modules/index.js diff - If failed please remember this file in auto generated and you should not modify it directly until a dependeny change. To suggest changes please submit pull request to the relevant dependency.
+          name: Test stackgl_modules/index.js diff - If failed please remember this file in auto generated and you should not modify it directly until a dependency change. To suggest changes please submit pull request to the relevant dependency.
           command: diff --unified --color stackgl_modules/INDEX.js stackgl_modules/index.js
       - store_artifacts:
           path: stackgl_modules/index.js
           destination: stackgl_modules/index.js
 
+  test-topojson-build:
+    docker:
+      - image: cimg/node:18.20.4
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - run:
+          name: Set up build environment
+          command: cd topojson && npm ci
+      - run:
+          name: Build topojson
+          command: cd topojson && mv dist dist_backup && npm run build
+      - run:
+          name: Compare existing files with newly built files. Any difference is a failure. A failure might mean that the source data changed.
+          command: diff -qr topojson/dist topojson/dist_backup
+      - run:
+          name: Compress artifacts
+          command: tar -cvzf topojson.tar topojson/dist
+      - store_artifacts:
+          path: topojson.tar
+
 workflows:
   version: 2
   build-and-test:
+    max_auto_reruns: 1
     jobs:
-      - install-and-cibuild-node12
-
       - install-and-cibuild
       - timezone-jasmine:
           requires:
             - install-and-cibuild
       - bundle-jasmine:
-          requires:
-            - install-and-cibuild
-      - mathjax-firefox81:
-          requires:
-            - install-and-cibuild
-      - mathjax-firefox82:
           requires:
             - install-and-cibuild
       - mathjax-firefoxLatest:
@@ -541,6 +537,9 @@ workflows:
           requires:
             - install-and-cibuild
       - virtual-webgl-jasmine:
+          requires:
+            - install-and-cibuild
+      - webgl-jasmine-chromeLatest:
           requires:
             - install-and-cibuild
       - flaky-no-gl-jasmine:
@@ -585,4 +584,8 @@ workflows:
 
       - publish-dist
 
+      - publish-dist-node-v22
+
       - test-stackgl-bundle
+
+      - test-topojson-build

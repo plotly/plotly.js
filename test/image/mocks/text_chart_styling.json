@@ -1,23 +1,11 @@
 {
   "data": [
     {
-      "x": [
-        0,
-        1,
-        2
-      ],
-      "y": [
-        1,
-        1,
-        1
-      ],
+      "x": [0, 1, 2],
+      "y": [1, 1, 1],
       "mode": "lines+markers+text",
       "name": "Lines, Markers and Text",
-      "text": [
-        "Text A",
-        "Text B",
-        "Text C"
-      ],
+      "text": ["Text A", "Text B", "Text C"],
       "textfont": {
         "family": "Arial, sans-serif",
         "size": 18,
@@ -27,23 +15,11 @@
       "type": "scatter"
     },
     {
-      "x": [
-        0,
-        1,
-        2
-      ],
-      "y": [
-        2,
-        2,
-        2
-      ],
+      "x": [0, 1, 2],
+      "y": [2, 2, 2],
       "mode": "lines+markers+text",
       "name": "Lines and Text",
-      "text": [
-        "Text G",
-        "Text H",
-        "Text I"
-      ],
+      "text": ["Text G", "Text H", "Text I"],
       "textfont": {
         "family": "Arial, sans-serif",
         "size": 18,

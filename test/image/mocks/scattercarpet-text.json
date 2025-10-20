@@ -4,19 +4,15 @@
       "type": "carpet",
       "a": [0.1, 0.2, 0.3],
       "b": [1, 2, 3],
-      "y": [
-        [1, 2.2, 3],
-        [1.5, 2.7, 3.5],
-        [1.7, 2.9, 3.7]
-      ],
+      "y": [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]],
       "cheaterslope": 1,
       "aaxis": {
-        "title": {"text": "a"},
+        "title": { "text": "a" },
         "tickmode": "linear",
         "dtick": 0.05
       },
       "baxis": {
-        "title": {"text": "b"},
+        "title": { "text": "b" },
         "tickmode": "linear",
         "dtick": 0.5
       }
@@ -52,7 +48,7 @@
       "style": "italic",
       "variant": "small-caps"
     },
-    "title": {"text": "scattercarpet with text"},
+    "title": { "text": "scattercarpet with text" },
     "hovermode": "closest"
   }
 }

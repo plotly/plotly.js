@@ -60,12 +60,20 @@
     }
   ],
   "layout": {
-    "grid": {"rows": 1, "columns": 3},
+    "grid": { "rows": 1, "columns": 3 },
     "width": 600,
     "height": 400,
     "showlegend": false,
-    "xaxis": {"side": "top", "title": {"text": "<0.99<br>no edge path"}},
-    "xaxis2": {"matches": "x", "side": "top", "title": {"text": "<1<br>rounded off edge path"}},
-    "xaxis3": {"matches": "x", "side": "top", "title": {"text": "<1.01<br>one edge path"}}
+    "xaxis": { "side": "top", "title": { "text": "<0.99<br>no edge path" } },
+    "xaxis2": {
+      "matches": "x",
+      "side": "top",
+      "title": { "text": "<1<br>rounded off edge path" }
+    },
+    "xaxis3": {
+      "matches": "x",
+      "side": "top",
+      "title": { "text": "<1.01<br>one edge path" }
+    }
   }
 }

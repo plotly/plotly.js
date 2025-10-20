@@ -1,10 +1,10 @@
 {
   "data": [
-    {"x": ["looooooooooong label"], "y": [1]},
-    {"y": ["looooooooooong label"], "x": [1], "xaxis": "x2", "yaxis": "y2"}
+    { "x": ["looooooooooong label"], "y": [1] },
+    { "y": ["looooooooooong label"], "x": [1], "xaxis": "x2", "yaxis": "y2" }
   ],
   "layout": {
-    "grid": {"rows": 1, "columns": 2, "pattern": "independent"},
+    "grid": { "rows": 1, "columns": 2, "pattern": "independent" },
     "width": 600,
     "height": 500,
     "showlegend": false,
@@ -18,7 +18,7 @@
       "title": {
         "text": "X Axis (standoff:10)",
         "standoff": 10,
-        "font": {"size": 25}
+        "font": { "size": 25 }
       },
       "showline": true,
       "mirror": true,
@@ -28,7 +28,7 @@
       "title": {
         "text": "Y<br>Axis (standoff:0)",
         "standoff": 0,
-        "font": {"size": 8}
+        "font": { "size": 8 }
       },
       "showline": true,
       "mirror": true

@@ -2,8 +2,8 @@
   "data": [
     {
       "type": "bar",
-      "x": [ "Montreal", "Tofu Bowl", "Tropical Beaches" ],
-      "y": [ 3, 1, 2 ]
+      "x": ["Montreal", "Tofu Bowl", "Tropical Beaches"],
+      "y": [3, 1, 2]
     }
   ],
   "layout": {

@@ -1,36 +1,12 @@
 {
   "data": [
     {
-      "values": [
-        500000,
-        400000,
-        300000,
-        200000,
-        100000
-      ],
-      "labels": [
-        "apples",
-        "oranges",
-        "blueberries",
-        "lemons",
-        "watermelon"
-      ],
+      "values": [500000, 400000, 300000, 200000, 100000],
+      "labels": ["apples", "oranges", "blueberries", "lemons", "watermelon"],
       "marker": {
-        "colors": [
-          "rgba(255,0,0,0.5)",
-          "orange",
-          "blue",
-          "yellow",
-          "green"
-        ]
+        "colors": ["rgba(255,0,0,0.5)", "orange", "blue", "yellow", "green"]
       },
-      "text": [
-        "red delicious",
-        "mandarin",
-        "high bush",
-        "meyer",
-        "jubilee"
-      ],
+      "text": ["red delicious", "mandarin", "high bush", "meyer", "jubilee"],
       "textinfo": "label+text+value+percent total",
       "type": "funnelarea"
     }

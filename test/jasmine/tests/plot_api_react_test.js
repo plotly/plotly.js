@@ -183,7 +183,7 @@ describe('@noCIdep Plotly.react', function() {
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            layout.title = 'XXXXX';
+            layout.title = { text: 'XXXXX' };
             layout.hovermode = 'closest';
             data[0].marker = {color: 'rgb(0, 100, 200)'};
             return Plotly.react(gd, data, layout);
@@ -425,6 +425,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(0);
             expect(d3SelectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.gtitle-subtitle').size()).toBe(0);
             countCalls({plot: 1});
 
             return Plotly.react(gd, data, layout, {});
@@ -432,6 +433,7 @@ describe('@noCIdep Plotly.react', function() {
         .then(function() {
             expect(d3SelectAll('.drag').size()).toBe(11);
             expect(d3SelectAll('.gtitle').size()).toBe(0);
+            expect(d3SelectAll('.gtitle-subtitle').size()).toBe(0);
             countCalls({plot: 1});
         })
         .then(done, done.fail);
@@ -574,104 +576,6 @@ describe('@noCIdep Plotly.react', function() {
         .then(done, done.fail);
     });
 
-    function aggregatedPie(i) {
-        var labels = i <= 1 ?
-            ['A', 'B', 'A', 'C', 'A', 'B', 'C', 'A', 'B', 'C', 'A'] :
-            ['X', 'Y', 'Z', 'Z', 'Y', 'Z', 'X', 'Z', 'Y', 'Z', 'X'];
-        var trace = {
-            type: 'pie',
-            values: [4, 1, 4, 4, 1, 4, 4, 2, 1, 1, 15],
-            labels: labels,
-            transforms: [{
-                type: 'aggregate',
-                groups: labels,
-                aggregations: [{target: 'values', func: 'sum'}]
-            }]
-        };
-        return {
-            data: [trace],
-            layout: {
-                datarevision: i,
-                colorway: ['red', 'orange', 'yellow', 'green', 'blue', 'violet']
-            }
-        };
-    }
-
-    var aggPie1CD = [[
-        {v: 26, label: 'A', color: 'red', i: 0},
-        {v: 9, label: 'C', color: 'orange', i: 2},
-        {v: 6, label: 'B', color: 'yellow', i: 1}
-    ]];
-
-    var aggPie2CD = [[
-        {v: 23, label: 'X', color: 'red', i: 0},
-        {v: 15, label: 'Z', color: 'orange', i: 2},
-        {v: 3, label: 'Y', color: 'yellow', i: 1}
-    ]];
-
-    function aggregatedScatter(i) {
-        return {
-            data: [{
-                x: [1, 2, 3, 4, 6, 5],
-                y: [2, 1, 3, 5, 6, 4],
-                transforms: [{
-                    type: 'aggregate',
-                    groups: [1, -1, 1, -1, 1, -1],
-                    aggregations: i > 1 ? [{func: 'last', target: 'x'}] : []
-                }]
-            }],
-            layout: {daterevision: i + 10}
-        };
-    }
-
-    var aggScatter1CD = [[
-        {x: 1, y: 2, i: 0},
-        {x: 2, y: 1, i: 1}
-    ]];
-
-    var aggScatter2CD = [[
-        {x: 6, y: 2, i: 0},
-        {x: 5, y: 1, i: 1}
-    ]];
-
-    function aggregatedParcoords(i) {
-        return {
-            data: [{
-                type: 'parcoords',
-                dimensions: [
-                    {label: 'A', values: [1, 2, 3, 4]},
-                    {label: 'B', values: [4, 3, 2, 1]}
-                ],
-                transforms: i ? [{
-                    type: 'aggregate',
-                    groups: [1, 2, 1, 2],
-                    aggregations: [
-                        {target: 'dimensions[0].values', func: i > 1 ? 'avg' : 'first'},
-                        {target: 'dimensions[1].values', func: i > 1 ? 'first' : 'avg'}
-                    ]
-                }] :
-                []
-            }]
-        };
-    }
-
-    var aggParcoords0Vals = [[1, 2, 3, 4], [4, 3, 2, 1]];
-    var aggParcoords1Vals = [[1, 2], [3, 2]];
-    var aggParcoords2Vals = [[2, 3], [4, 3]];
-
-    function checkCalcData(expectedCD) {
-        return function() {
-            expect(gd.calcdata.length).toBe(expectedCD.length);
-            expectedCD.forEach(function(expectedCDi, i) {
-                var cdi = gd.calcdata[i];
-                expect(cdi.length).toBe(expectedCDi.length, i);
-                expectedCDi.forEach(function(expectedij, j) {
-                    expect(cdi[j]).toEqual(jasmine.objectContaining(expectedij));
-                });
-            });
-        };
-    }
-
     function checkValues(expectedVals) {
         return function() {
             expect(gd._fullData.length).toBe(1);
@@ -686,73 +590,6 @@ describe('@noCIdep Plotly.react', function() {
     function reactTo(fig) {
         return function() { return Plotly.react(gd, fig); };
     }
-
-    it('can change pie aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedPie(1))
-        .then(checkCalcData(aggPie1CD))
-
-        .then(reactTo(aggregatedPie(2)))
-        .then(checkCalcData(aggPie2CD))
-
-        .then(reactTo(aggregatedPie(1)))
-        .then(checkCalcData(aggPie1CD))
-        .then(done, done.fail);
-    });
-
-    it('can change scatter aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedScatter(1))
-        .then(checkCalcData(aggScatter1CD))
-
-        .then(reactTo(aggregatedScatter(2)))
-        .then(checkCalcData(aggScatter2CD))
-
-        .then(reactTo(aggregatedScatter(1)))
-        .then(checkCalcData(aggScatter1CD))
-        .then(done, done.fail);
-    });
-
-    it('@gl can change parcoords aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedParcoords(0))
-        .then(checkValues(aggParcoords0Vals))
-
-        .then(reactTo(aggregatedParcoords(1)))
-        .then(checkValues(aggParcoords1Vals))
-
-        .then(reactTo(aggregatedParcoords(2)))
-        .then(checkValues(aggParcoords2Vals))
-
-        .then(reactTo(aggregatedParcoords(0)))
-        .then(checkValues(aggParcoords0Vals))
-
-        .then(done, done.fail);
-    });
-
-    it('@gl can change type with aggregations', function(done) {
-        Plotly.newPlot(gd, aggregatedScatter(1))
-        .then(checkCalcData(aggScatter1CD))
-
-        .then(reactTo(aggregatedPie(1)))
-        .then(checkCalcData(aggPie1CD))
-
-        .then(reactTo(aggregatedParcoords(1)))
-        .then(checkValues(aggParcoords1Vals))
-
-        .then(reactTo(aggregatedScatter(1)))
-        .then(checkCalcData(aggScatter1CD))
-
-        .then(reactTo(aggregatedParcoords(2)))
-        .then(checkValues(aggParcoords2Vals))
-
-        .then(reactTo(aggregatedPie(2)))
-        .then(checkCalcData(aggPie2CD))
-
-        .then(reactTo(aggregatedScatter(2)))
-        .then(checkCalcData(aggScatter2CD))
-
-        .then(reactTo(aggregatedParcoords(0)))
-        .then(checkValues(aggParcoords0Vals))
-        .then(done, done.fail);
-    });
 
     it('can change frames without redrawing', function(done) {
         var data = [{y: [1, 2, 3]}];
@@ -782,7 +619,6 @@ describe('@noCIdep Plotly.react', function() {
     var typesTested = {};
     var itemType;
     for(itemType in Registry.modules) { typesTested[itemType] = 0; }
-    for(itemType in Registry.transformsRegistry) { typesTested[itemType] = 0; }
 
     function _runReactMock(mockSpec, done) {
         var mock = mockSpec[1];
@@ -849,12 +685,6 @@ describe('@noCIdep Plotly.react', function() {
             }
 
             typesTested[trace.type]++;
-
-            if(trace.transforms) {
-                trace.transforms.forEach(function(transform) {
-                    typesTested[transform.type]++;
-                });
-            }
         });
 
         Plotly.newPlot(gd, mock)
@@ -866,7 +696,9 @@ describe('@noCIdep Plotly.react', function() {
         })
         .then(function() {
             expect(fullJson()).toEqual(initialJson);
-            countCalls({});
+            if(['sankey', 'sunburst', 'treemap', 'icicle'].indexOf(gd._fullData[0].type) === -1) {
+                countCalls({});
+            }
         })
         .then(done, done.fail);
     }
@@ -883,20 +715,16 @@ describe('@noCIdep Plotly.react', function() {
         });
     });
 
-    mockLists.mapbox.forEach(function(mockSpec) {
-        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
-            Plotly.setPlotConfig({
-                mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-            });
+    mockLists.map.forEach(function(mockSpec) {
+        it('@noCI @gl can redraw "' + mockSpec[0] + '" with no changes as a noop (map mocks)', function(done) {
+            Plotly.setPlotConfig({});
             _runReactMock(mockSpec, done);
         });
     });
 
-    // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
-    // but I should hope that if someone is doing something as major as adding a new type,
-    // they'll run the full test suite locally!
-    it('@noCI tested every trace & transform type at least once', function() {
+    it('@noCI tested every trace type at least once', function() {
         for(var itemType in typesTested) {
+            if(itemType.indexOf('mapbox') !== -1) continue;
             expect(typesTested[itemType]).toBeGreaterThan(0, itemType + ' was not tested');
         }
     });
@@ -1149,7 +977,7 @@ describe('Plotly.react and uirevision attributes', function() {
             dataKeys.forEach(function(traceKeys, i) {
                 var trace = gd.data[i];
                 var fullTrace = gd._fullData.filter(function(ft) {
-                    return ft._fullInput.index === i;
+                    return ft.index === i;
                 })[0]._fullInput;
 
                 for(var key in traceKeys) {
@@ -1527,55 +1355,6 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done);
     });
 
-    it('preserves groupby group visibility', function(done) {
-        // TODO: there's a known problem if the groups change... unlike
-        // traces we will keep visibility by group in order, not by group value
-
-        function fig(mainRev, legendRev) {
-            return {
-                data: [{
-                    y: [1, 2, 3, 4, 5, 6],
-                    transforms: [{
-                        type: 'groupby',
-                        groups: ['a', 'b', 'c', 'a', 'b', 'c']
-                    }]
-                }, {
-                    y: [7, 8]
-                }],
-                layout: {
-                    uirevision: mainRev,
-                    legend: {uirevision: legendRev}
-                }
-            };
-        }
-
-        function hideSome() {
-            return Registry.call('_guiRestyle', gd, {
-                'transforms[0].styles[0].value.visible': 'legendonly',
-                'transforms[0].styles[2].value.visible': 'legendonly'
-            }, [0])
-            .then(function() {
-                return Registry.call('_guiRestyle', gd, 'visible', 'legendonly', [1]);
-            });
-        }
-
-        function checkVisible(groups, extraTrace) {
-            var trace0edits = {};
-            groups.forEach(function(visi, i) {
-                var attr = 'transforms[0].styles[' + i + '].value.visible';
-                trace0edits[attr] = visi ? undefined : 'legendonly';
-            });
-            return checkState([
-                trace0edits,
-                {visible: extraTrace ? [undefined, true] : 'legendonly'}
-            ]);
-        }
-        var checkAllVisible = checkVisible([true, true, true], true);
-        var checkSomeHidden = checkVisible([false, true, false], false);
-
-        _run(fig, hideSome, checkAllVisible, checkSomeHidden).then(done, done.fail);
-    });
-
     it('@gl preserves modebar interactions using modebar.uirevision', function(done) {
         function fig(mainRev, modebarRev) {
             return {
@@ -1765,46 +1544,6 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editSelection, checkNoSelection, checkSelection).then(done, done.fail);
     });
 
-    it('preserves selectedpoints using selectedrevision (groupby case)', function(done) {
-        function fig(mainRev, selectionRev) {
-            return {
-                data: [{
-                    x: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-                    y: [1, 1, 1, 2, 2, 2, 3, 3, 3],
-                    mode: 'markers',
-                    marker: {size: 20},
-                    transforms: [{
-                        type: 'groupby',
-                        groups: [1, 2, 3, 2, 3, 1, 3, 1, 2]
-                    }]
-                }],
-                layout: {
-                    uirevision: mainRev,
-                    selectionrevision: selectionRev,
-                    dragmode: 'select',
-                    width: 400,
-                    height: 400,
-                    margin: {l: 100, t: 100, r: 100, b: 100}
-                }
-            };
-        }
-
-        function editSelection() {
-            // drag across the upper right quadrant, so we'll select
-            // curve 0 point 1 and curve 1 point 2
-            return drag({node: document.querySelector('.nsewdrag'), dpos: [148, 148], pos0: [150, 102]});
-        }
-
-        var checkNoSelection = checkState([{selectedpoints: undefined}]);
-        // the funny point order here is from the grouping:
-        // points 5 & 7 come first as they're in group 1
-        // point 8 is next, in group 2
-        // point 4 is last, in group 3
-        var checkSelection = checkState([{selectedpoints: [[5, 7, 8, 4]]}]);
-
-        _run(fig, editSelection, checkNoSelection, checkSelection).then(done, done.fail);
-    });
-
     it('preserves polar view changes using polar.uirevision', function(done) {
         // polar you can control either at the subplot or the axis level
         function fig(mainRev, polarRev) {
@@ -1931,6 +1670,39 @@ describe('Plotly.react and uirevision attributes', function() {
         Plotly.setPlotConfig({
             mapboxAccessToken: MAPBOX_ACCESS_TOKEN
         });
+
+        _run(fig, editMap, checkInitial, checkEdited).then(done);
+    });
+
+    it('@gl preserves map view changes using map.uirevision', function(done) {
+        function fig(mainRev, mapRev) {
+            return {
+                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermap'}],
+                layout: {
+                    uirevision: mainRev,
+                    map: {uirevision: mapRev}
+                }
+            };
+        }
+
+        function attrs(original) {
+            return {
+                'map.center.lat': original ? [undefined, 0] : 1,
+                'map.center.lon': original ? [undefined, 0] : 2,
+                'map.zoom': original ? [undefined, 1] : 3,
+                'map.bearing': original ? [undefined, 0] : 4,
+                'map.pitch': original ? [undefined, 0] : 5
+            };
+        }
+
+        function editMap() {
+            return Registry.call('_guiRelayout', gd, attrs());
+        }
+
+        var checkInitial = checkState([], attrs(true));
+        var checkEdited = checkState([], attrs());
+
+        Plotly.setPlotConfig({});
 
         _run(fig, editMap, checkInitial, checkEdited).then(done);
     });
@@ -2350,6 +2122,79 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             expect(fullMapbox.center.lon).toBe(0);
             expect(fullMapbox.center.lat).toBe(0);
             expect(fullMapbox.zoom).toBe(1);
+
+            expect(gd._fullLayout._preGUI).toEqual({});
+        })
+        .then(function() { return _drag([200, 200], [250, 250]); })
+        .then(function() { _assertGUI('before'); })
+        .then(_react)
+        .then(function() { _assertGUI('after'); })
+        .then(done, done.fail);
+    });
+
+    it('@gl map subplots should preserve viewport changes after panning', function(done) {
+        Plotly.setPlotConfig({});
+
+        function _react() {
+            return Plotly.react(gd, [{
+                type: 'scattermap',
+                lon: [3, 1, 2],
+                lat: [2, 3, 1]
+            }], {
+                width: 500,
+                height: 500,
+                uirevision: true
+            });
+        }
+
+        // see map_test.js for rationale
+        function _mouseEvent(type, pos) {
+            return new Promise(function(resolve) {
+                mouseEvent(type, pos[0], pos[1], {
+                    buttons: 1 // left button
+                });
+                setTimeout(resolve, 100);
+            });
+        }
+
+        // see map_test.js for rationale
+        function _drag(p0, p1) {
+            return _mouseEvent('mousemove', p0)
+                .then(function() { return _mouseEvent('mousedown', p0); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mousemove', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); })
+                .then(function() { return _mouseEvent('mouseup', p1); });
+        }
+
+        // should be same before & after 2nd react()
+        function _assertGUI(msg) {
+            var TOL = 2;
+
+            var map = gd.layout.map || {};
+            expect((map.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
+            expect((map.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
+            expect(map.zoom).toBe(1);
+
+            var fullMap = gd._fullLayout.map || {};
+            expect(fullMap.center.lon).toBeCloseTo(-17.578, TOL, msg);
+            expect(fullMap.center.lat).toBeCloseTo(17.308, TOL, msg);
+            expect(fullMap.zoom).toBe(1);
+
+            var preGUI = gd._fullLayout._preGUI;
+            expect(preGUI['map.center.lon']).toBe(null, msg);
+            expect(preGUI['map.center.lat']).toBe(null, msg);
+            expect(preGUI['map.zoom']).toBe(null, msg);
+        }
+
+        _react()
+        .then(function() {
+            expect(gd.layout.map).toEqual({});
+
+            var fullMap = gd._fullLayout.map;
+            expect(fullMap.center.lon).toBe(0);
+            expect(fullMap.center.lat).toBe(0);
+            expect(fullMap.zoom).toBe(1);
 
             expect(gd._fullLayout._preGUI).toEqual({});
         })

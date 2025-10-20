@@ -62,7 +62,17 @@
       "yaxis": "y2",
       "marker": {
         "size": 15,
-        "symbol": ["square", "square", "square", "square", "square", "square", "square", "square", "square"]
+        "symbol": [
+          "square",
+          "square",
+          "square",
+          "square",
+          "square",
+          "square",
+          "square",
+          "square",
+          "square"
+        ]
       }
     }
   ],

@@ -11,7 +11,7 @@
         [6, 5, 4, 8, 2, 1],
         [5, 4, 3, 2, 1, 0]
       ],
-      "contours": {"start": 4, "end": 6.5, "size": 1},
+      "contours": { "start": 4, "end": 6.5, "size": 1 },
       "type": "contour"
     },
     {
@@ -25,7 +25,7 @@
         [6, 5, 4, 8, 2, 1],
         [5, 4, 3, 2, 1, 0]
       ],
-      "contours": {"start": 4, "end": 6.5, "size": 1},
+      "contours": { "start": 4, "end": 6.5, "size": 1 },
       "type": "contour",
       "showscale": false,
       "xaxis": "x2"
@@ -41,7 +41,7 @@
         [6, 5, 4, 8, 2, 1],
         [5, 4, 3, 2, 1, 0]
       ],
-      "contours": {"start": 4, "end": 6.5, "size": 1},
+      "contours": { "start": 4, "end": 6.5, "size": 1 },
       "type": "contour",
       "showscale": false,
       "yaxis": "y2"
@@ -57,7 +57,7 @@
         [6, 5, 4, 8, 2, 1],
         [5, 4, 3, 2, 1, 0]
       ],
-      "contours": {"start": 4, "end": 6.5, "size": 1},
+      "contours": { "start": 4, "end": 6.5, "size": 1 },
       "type": "contour",
       "showscale": false,
       "xaxis": "x2",
@@ -65,11 +65,11 @@
     }
   ],
   "layout": {
-    "xaxis": {"domain": [0, 0.45]},
-    "xaxis2": {"domain": [0.55, 1], "type": "log"},
-    "yaxis": {"domain": [0, 0.45]},
-    "yaxis2": {"domain": [0.55, 1], "type": "log"},
-    "margin": {"l": 50, "b": 50, "r": 110, "t": 10},
+    "xaxis": { "domain": [0, 0.45] },
+    "xaxis2": { "domain": [0.55, 1], "type": "log" },
+    "yaxis": { "domain": [0, 0.45] },
+    "yaxis2": { "domain": [0.55, 1], "type": "log" },
+    "margin": { "l": 50, "b": 50, "r": 110, "t": 10 },
     "width": 500,
     "height": 400
   }

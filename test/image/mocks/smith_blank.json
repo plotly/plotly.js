@@ -1,40 +1,46 @@
 {
-  "data": [{
-    "type": "scattersmith",
-    "real": [],
-    "imag": []
-  }, {
-    "type": "scattersmith",
-    "real": [],
-    "imag": [],
-    "subplot": "smith2"
-  }, {
-    "type": "scattersmith",
-    "real": [],
-    "imag": [],
-    "subplot": "smith3"
-  }, {
-    "type": "scattersmith",
-    "mode": "markers+text",
-    "real": [0, 1, 1, 0],
-    "imag": [0, 0, 1, 1],
-    "marker": {
-      "size": 20,
-      "color": ["red", "green", "blue", "orange"]
+  "data": [
+    {
+      "type": "scattersmith",
+      "real": [],
+      "imag": []
     },
-    "text": ["red", "green", "blue", "orange"],
-    "textposition": ["right", "bottom", "left", "top"],
-    "textfont": {
-      "color": ["red", "green", "blue", "orange"]
+    {
+      "type": "scattersmith",
+      "real": [],
+      "imag": [],
+      "subplot": "smith2"
     },
-    "cliponaxis": false,
-    "subplot": "smith4"
-  }, {
-    "type": "scattersmith",
-    "real": [1],
-    "imag": [0],
-    "subplot": "smith5"
-  }],
+    {
+      "type": "scattersmith",
+      "real": [],
+      "imag": [],
+      "subplot": "smith3"
+    },
+    {
+      "type": "scattersmith",
+      "mode": "markers+text",
+      "real": [0, 1, 1, 0],
+      "imag": [0, 0, 1, 1],
+      "marker": {
+        "size": 20,
+        "color": ["red", "green", "blue", "orange"]
+      },
+      "text": ["red", "green", "blue", "orange"],
+      "textposition": ["right", "bottom", "left", "top"],
+      "textfont": {
+        "color": ["red", "green", "blue", "orange"]
+      },
+      "cliponaxis": false,
+      "subplot": "smith4"
+    },
+    {
+      "type": "scattersmith",
+      "real": [1],
+      "imag": [0],
+      "subplot": "smith5"
+    }
+  ],
   "layout": {
     "smith": {
       "domain": {
@@ -75,14 +81,14 @@
         "ticks": "top",
         "side": "bottom"
       },
-      "imaginaryaxis": {"visible": false}
+      "imaginaryaxis": { "visible": false }
     },
     "smith4": {
       "domain": {
         "x": [0.54, 1],
         "y": [0, 0.44]
       },
-      "realaxis": {"visible": false}
+      "realaxis": { "visible": false }
     },
     "smith5": {
       "domain": {

@@ -1,49 +1,29 @@
 {
   "data": [
     {
-      "x": [
-        1,
-        2,
-        3
-      ],
-      "y": [
-        40,
-        50,
-        60
-      ],
+      "x": [1, 2, 3],
+      "y": [40, 50, 60],
       "name": "yaxis data",
       "type": "scatter"
     },
     {
-      "x": [
-        2,
-        3,
-        null,
-        4,
-        5
-      ],
-      "y": [
-        4,
-        5,
-        null,
-        7,
-        8
-      ],
+      "x": [2, 3, null, 4, 5],
+      "y": [4, 5, null, 7, 8],
       "name": "yaxis2 data",
       "yaxis": "y2",
       "type": "scatter"
     }
   ],
   "layout": {
-    "title": {"text": "Double Y Axis Example"},
+    "title": { "text": "Double Y Axis Example" },
     "xaxis": {
-      "title": {"text": "Wavelength (nm)"},
+      "title": { "text": "Wavelength (nm)" },
       "rangeslider": {
         "thickness": 0.2
       }
     },
     "yaxis": {
-      "title": {"text": "yaxis title"}
+      "title": { "text": "yaxis title" }
     },
     "yaxis2": {
       "title": {

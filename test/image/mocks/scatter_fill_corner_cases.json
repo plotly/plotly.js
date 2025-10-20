@@ -21,7 +21,7 @@
     {
       "x": [0, 1, 2, 2.5, 3],
       "y": [0.5, 0.6, 0.5, null, 0.5],
-      "line": {"shape": "vh", "color": "black", "dash": "dot"},
+      "line": { "shape": "vh", "color": "black", "dash": "dot" },
       "fill": "tozeroy",
       "showlegend": false
     },
@@ -35,7 +35,7 @@
       "x": [1.5],
       "y": [1.25],
       "fill": "tozeroy",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false
     },
@@ -43,7 +43,7 @@
       "x": [0, 0.5, 1, 2, 3],
       "y": [1, null, 1, 1.1, 1],
       "fill": "tozeroy",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false
     },
@@ -51,7 +51,7 @@
       "x": [0, 0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3],
       "y": [0.75, 0.85, 0.75, null, 0.85, null, 0.75, 0.85, 0.75],
       "fill": "tozeroy",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false
     },
@@ -59,7 +59,7 @@
       "x": [0, 1, 2, 2.5, 3],
       "y": [0.5, 0.6, 0.5, null, 0.5],
       "fill": "tozeroy",
-      "line": {"shape": "vh", "color": "black", "dash": "dot"},
+      "line": { "shape": "vh", "color": "black", "dash": "dot" },
       "xaxis": "x2",
       "showlegend": false
     },
@@ -67,7 +67,7 @@
       "x": [0, 0.5, 1, 1.5, 2, 2.5, 3],
       "y": [0.25, null, 0.35, null, 0.15, null, 0.25],
       "fill": "tozeroy",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false
     },
@@ -95,7 +95,7 @@
     {
       "x": [0, 1, 2, 2.5, 3],
       "y": [0.5, 0.6, 0.5, null, 0.5],
-      "line": {"shape": "vh", "color": "black", "dash": "dot"},
+      "line": { "shape": "vh", "color": "black", "dash": "dot" },
       "fill": "tonexty",
       "showlegend": false,
       "yaxis": "y2"
@@ -110,7 +110,7 @@
     {
       "x": [1.5],
       "y": [1.25],
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false,
       "yaxis": "y2"
@@ -119,7 +119,7 @@
       "x": [0, 0.5, 1, 2, 3],
       "y": [1, null, 1, 1.1, 1],
       "fill": "tonexty",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false,
       "yaxis": "y2"
@@ -128,7 +128,7 @@
       "x": [0, 0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3],
       "y": [0.75, 0.85, 0.75, null, 0.85, null, 0.75, 0.85, 0.75],
       "fill": "tonexty",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false,
       "yaxis": "y2"
@@ -138,7 +138,7 @@
       "x": [0, 1, 2, 2.5, 3],
       "y": [0.5, 0.6, 0.5, null, 0.5],
       "fill": "tonexty",
-      "line": {"shape": "vh", "color": "black", "dash": "dot"},
+      "line": { "shape": "vh", "color": "black", "dash": "dot" },
       "xaxis": "x2",
       "yaxis": "y2"
     },
@@ -146,7 +146,7 @@
       "x": [0, 0.5, 1, 1.5, 2, 2.5, 3],
       "y": [0.25, null, 0.35, null, 0.15, null, 0.25],
       "fill": "tonexty",
-      "line": {"shape": "spline"},
+      "line": { "shape": "spline" },
       "xaxis": "x2",
       "showlegend": false,
       "yaxis": "y2"
@@ -155,19 +155,19 @@
   "layout": {
     "xaxis": {
       "domain": [0, 0.45],
-      "title": {"text": "linear"}
+      "title": { "text": "linear" }
     },
     "xaxis2": {
       "domain": [0.55, 1],
-      "title": {"text": "spline"}
+      "title": { "text": "spline" }
     },
     "yaxis": {
       "domain": [0.05, 0.475],
-      "title": {"text": "tozeroy"}
+      "title": { "text": "tozeroy" }
     },
     "yaxis2": {
       "domain": [0.525, 1],
-      "title": {"text": "tonexty"}
+      "title": { "text": "tonexty" }
     },
     "legend": {
       "orientation": "h"

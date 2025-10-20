@@ -4,19 +4,11 @@
       "type": "splom",
       "dimensions": [
         {
-          "values": [
-            1,
-            2,
-            3
-          ],
+          "values": [1, 2, 3],
           "label": "A"
         },
         {
-          "values": [
-            4,
-            5,
-            6
-          ],
+          "values": [4, 5, 6],
           "label": "B"
         }
       ]
@@ -31,19 +23,11 @@
           "visible": false
         },
         {
-          "values": [
-            1,
-            2,
-            3
-          ],
+          "values": [1, 2, 3],
           "label": "C"
         },
         {
-          "values": [
-            4,
-            5,
-            6
-          ],
+          "values": [4, 5, 6],
           "label": "D"
         }
       ]
@@ -51,6 +35,6 @@
   ],
   "layout": {
     "showlegend": false,
-    "title": {"text": "ragged sploms using visible false dimensions"}
+    "title": { "text": "ragged sploms using visible false dimensions" }
   }
 }

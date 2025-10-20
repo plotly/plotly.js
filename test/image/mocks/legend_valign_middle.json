@@ -1,5 +1,6 @@
 {
-  "data": [{
+  "data": [
+    {
       "y": [1, 5, 3, 4, 5],
       "name": "Super long name<br>Super long name<br>Super long name<br>Super long name",
       "type": "scatter",

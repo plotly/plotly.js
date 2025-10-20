@@ -73,7 +73,7 @@ module.exports = function nestedProperty(container, propStr) {
 };
 
 function npGet(cont, parts) {
-    return function() {
+    return function(retainNull) {
         var curCont = cont;
         var curPart;
         var allSame;
@@ -87,7 +87,7 @@ function npGet(cont, parts) {
                 allSame = true;
                 out = [];
                 for(j = 0; j < curCont.length; j++) {
-                    out[j] = npGet(curCont[j], parts.slice(i + 1))();
+                    out[j] = npGet(curCont[j], parts.slice(i + 1))(retainNull);
                     if(out[j] !== out[0]) allSame = false;
                 }
                 return allSame ? out[0] : out;
@@ -105,7 +105,7 @@ function npGet(cont, parts) {
         if(typeof curCont !== 'object' || curCont === null) return undefined;
 
         out = curCont[parts[i]];
-        if(out === null) return undefined;
+        if(!retainNull && (out === null)) return undefined;
         return out;
     };
 }

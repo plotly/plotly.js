@@ -49,10 +49,7 @@
       "autorange": "reversed"
     },
     "yaxis3": {
-      "range": [
-        "8",
-        "32"
-      ]
+      "range": ["8", "32"]
     },
     "yaxis4": {
       "autorange": true

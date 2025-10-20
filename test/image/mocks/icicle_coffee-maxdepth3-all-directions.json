@@ -1,6 +1,6 @@
 {
   "data": [
-{
+    {
       "type": "icicle",
       "pathbar": {
         "visible": false
@@ -11,14 +11,8 @@
       },
       "maxdepth": 3,
       "domain": {
-        "x": [
-          0,
-          0.5
-        ],
-        "y": [
-          0.05,
-          0.45
-        ]
+        "x": [0, 0.5],
+        "y": [0.05, 0.45]
       },
       "textinfo": "label+percent parent",
       "ids": [
@@ -326,14 +320,8 @@
       },
       "maxdepth": 3,
       "domain": {
-        "x": [
-          0.5,
-          1
-        ],
-        "y": [
-          0.05,
-          0.45
-        ]
+        "x": [0.5, 1],
+        "y": [0.05, 0.45]
       },
       "textinfo": "label+percent parent",
       "ids": [
@@ -642,14 +630,8 @@
       },
       "maxdepth": 3,
       "domain": {
-        "x": [
-          0,
-          0.5
-        ],
-        "y": [
-          0.55,
-          0.95
-        ]
+        "x": [0, 0.5],
+        "y": [0.55, 0.95]
       },
       "textinfo": "label+percent parent",
       "ids": [
@@ -957,14 +939,8 @@
       },
       "maxdepth": 3,
       "domain": {
-        "x": [
-          0.5,
-          1
-        ],
-        "y": [
-          0.55,
-          0.95
-        ]
+        "x": [0.5, 1],
+        "y": [0.55, 0.95]
       },
       "textinfo": "label+percent parent",
       "ids": [
@@ -1264,7 +1240,7 @@
     }
   ],
   "layout": {
-    "margin": {"l": 0, "r": 0, "b": 0, "t": 0},
+    "margin": { "l": 0, "r": 0, "b": 0, "t": 0 },
     "width": 1200,
     "height": 1200,
     "shapes": [

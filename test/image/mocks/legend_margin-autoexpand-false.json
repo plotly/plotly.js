@@ -14,6 +14,6 @@
   "layout": {
     "width": 400,
     "height": 400,
-    "margin": {"autoexpand": false}
+    "margin": { "autoexpand": false }
   }
 }

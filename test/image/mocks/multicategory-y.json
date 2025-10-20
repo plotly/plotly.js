@@ -5,7 +5,7 @@
       "orientation": "h",
       "y": [
         ["2017", "2017", "2017", "2017", "2018", "2018", "2018"],
-        ["q1", "q2", "q3", "q4", "q1", "q2", "q3" ]
+        ["q1", "q2", "q3", "q4", "q1", "q2", "q3"]
       ],
       "x": [1, 2, 3, 1, 3, 2, 3, 1]
     },
@@ -40,14 +40,14 @@
       "ygap": 0.2
     },
     "yaxis": {
-      "title": {"text": "MULTI-CATEGORY"},
-      "tickfont": {"size": 16},
+      "title": { "text": "MULTI-CATEGORY" },
+      "tickfont": { "size": 16 },
       "ticks": "outside",
       "tickson": "boundaries"
     },
     "yaxis2": {
-      "title": {"text": "MULTI-CATEGORY"},
-      "tickfont": {"size": 12},
+      "title": { "text": "MULTI-CATEGORY" },
+      "tickfont": { "size": 12 },
       "ticks": "outside",
       "tickson": "boundaries"
     },
@@ -61,17 +61,28 @@
     "hovermode": "y",
     "width": 600,
     "height": 700,
-    "annotations": [{
-      "text": "LOOK",
-      "xref": "x", "x": 3,
-      "yref": "y", "y": 6,
-      "ax": 50, "ay": -50
-    }],
-    "shapes": [{
-      "type": "line",
-      "xref": "paper", "x0": 0.05, "x1": 1,
-      "yref": "y", "y0": 7, "y1": 7,
-      "line": {"color": "red"}
-    }]
+    "annotations": [
+      {
+        "text": "LOOK",
+        "xref": "x",
+        "x": 3,
+        "yref": "y",
+        "y": 6,
+        "ax": 50,
+        "ay": -50
+      }
+    ],
+    "shapes": [
+      {
+        "type": "line",
+        "xref": "paper",
+        "x0": 0.05,
+        "x1": 1,
+        "yref": "y",
+        "y0": 7,
+        "y1": 7,
+        "line": { "color": "red" }
+      }
+    ]
   }
 }

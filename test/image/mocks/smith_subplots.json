@@ -1,38 +1,40 @@
 {
-  "data": [{
-    "type": "scattersmith",
-    "mode": "markers+lines+text",
-    "real": [0, 1, 1, 0],
-    "imag": [0, 0, 1, 1],
-    "text": ["A0", "B0", "C0"],
-    "hovertext": ["hover A0", "hover B0", "hover C0"],
-    "line": {"shape": "spline"},
-    "marker": {
-      "symbol": ["circle", "square", "x", "diamond"],
-      "gradient": {
-        "type": ["radial", "horizontal", "radial", "vertical"],
-        "color": ["white", "yellow", "orange", "red"]
+  "data": [
+    {
+      "type": "scattersmith",
+      "mode": "markers+lines+text",
+      "real": [0, 1, 1, 0],
+      "imag": [0, 0, 1, 1],
+      "text": ["A0", "B0", "C0"],
+      "hovertext": ["hover A0", "hover B0", "hover C0"],
+      "line": { "shape": "spline" },
+      "marker": {
+        "symbol": ["circle", "square", "x", "diamond"],
+        "gradient": {
+          "type": ["radial", "horizontal", "radial", "vertical"],
+          "color": ["white", "yellow", "orange", "red"]
+        },
+        "size": 30
       },
-      "size": 30
+      "textfont": {
+        "color": ["red", "green", "blue"],
+        "size": 20
+      },
+      "textposition": ["top left", "bottom right", "bottom right"]
     },
-    "textfont": {
-      "color": ["red", "green", "blue"],
-      "size": 20
-    },
-    "textposition": ["top left", "bottom right", "bottom right"]
-  }, {
-    "type": "scattersmith",
-    "mode": "markers+lines+text",
-    "real": [0, 1, 1, 0],
-    "imag": [0, 0, 1, 1],
-    "text": ["A1", "B1", "C1"],
-    "hovertext": ["hover A1", "hover B1", "hover C1"],
-    "line": {
-      "shape": "spline",
-      "dash": "dash",
-      "width": 4
-    },
-    "marker": {
+    {
+      "type": "scattersmith",
+      "mode": "markers+lines+text",
+      "real": [0, 1, 1, 0],
+      "imag": [0, 0, 1, 1],
+      "text": ["A1", "B1", "C1"],
+      "hovertext": ["hover A1", "hover B1", "hover C1"],
+      "line": {
+        "shape": "spline",
+        "dash": "dash",
+        "width": 4
+      },
+      "marker": {
         "symbol": "square",
         "size": 15,
         "color": [0, 2, 1, 3],
@@ -40,14 +42,15 @@
         "colorscale": "Portland",
         "reversescale": true,
         "showscale": true
-    },
-    "textfont": {
-      "color": "green",
-      "size": [20, 15, 10]
-    },
-    "textposition": ["top left", "bottom right", "bottom right"],
-    "subplot": "smith2"
-  }],
+      },
+      "textfont": {
+        "color": "green",
+        "size": [20, 15, 10]
+      },
+      "textposition": ["top left", "bottom right", "bottom right"],
+      "subplot": "smith2"
+    }
+  ],
   "layout": {
     "width": 800,
     "height": 400,

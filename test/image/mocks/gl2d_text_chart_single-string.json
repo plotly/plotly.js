@@ -1,16 +1,8 @@
 {
   "data": [
     {
-      "x": [
-        0,
-        1,
-        2
-      ],
-      "y": [
-        1,
-        1,
-        1
-      ],
+      "x": [0, 1, 2],
+      "y": [1, 1, 1],
       "mode": "lines+markers+text",
       "name": "Lines, Markers and (same) Text",
       "text": "(same) text",
@@ -18,16 +10,8 @@
       "type": "scattergl"
     },
     {
-      "x": [
-        0,
-        1,
-        2
-      ],
-      "y": [
-        2,
-        2,
-        2
-      ],
+      "x": [0, 1, 2],
+      "y": [2, 2, 2],
       "mode": "markers+text",
       "name": "Markers and Text (same)",
       "text": "text (same)",
@@ -35,16 +19,8 @@
       "type": "scattergl"
     },
     {
-      "x": [
-        0,
-        1,
-        2
-      ],
-      "y": [
-        3,
-        3,
-        3
-      ],
+      "x": [0, 1, 2],
+      "y": [3, 3, 3],
       "mode": "lines+text",
       "name": "Lines and Text",
       "text": "text",

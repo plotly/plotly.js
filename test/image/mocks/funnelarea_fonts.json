@@ -1,37 +1,19 @@
 {
   "data": [
     {
-      "values": [
-        3,
-        1
-      ],
-      "text": [
-        "inherit from<br><b>global...</b>",
-        "font"
-      ],
+      "values": [3, 1],
+      "text": ["inherit from<br><b>global...</b>", "font"],
       "type": "funnelarea",
       "domain": {
-        "x": [
-          0,
-          0.4
-        ]
+        "x": [0, 0.4]
       }
     },
     {
-      "values": [
-        3,
-        1
-      ],
-      "text": [
-        "a font of...",
-        "my own"
-      ],
+      "values": [3, 1],
+      "text": ["a font of...", "my own"],
       "type": "funnelarea",
       "domain": {
-        "x": [
-          0.6,
-          1
-        ]
+        "x": [0.6, 1]
       },
       "textfont": {
         "family": "Times New Roman, Times, serif",
@@ -39,7 +21,6 @@
         "color": "#700"
       }
     }
-
   ],
   "layout": {
     "height": 300,

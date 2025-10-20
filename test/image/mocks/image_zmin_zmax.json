@@ -27,11 +27,11 @@
       "xaxis": "x4"
     },
     {
-    "type": "image",
-    "colormodel": "hsl",
-    "z": [[[90, 50, 50], [180, 50, 50], [270, 50, 50]]],
-    "yaxis": "y5",
-    "xaxis": "x5"
+      "type": "image",
+      "colormodel": "hsl",
+      "z": [[[90, 50, 50], [180, 50, 50], [270, 50, 50]]],
+      "yaxis": "y5",
+      "xaxis": "x5"
     },
     {
       "type": "image",
@@ -42,11 +42,11 @@
       "xaxis": "x6"
     },
     {
-    "type": "image",
-    "colormodel": "hsla",
-    "z": [[[90, 50, 50, 0.5], [180, 50, 50, 0.5], [270, 50, 50, 0.5]]],
-    "yaxis": "y7",
-    "xaxis": "x7"
+      "type": "image",
+      "colormodel": "hsla",
+      "z": [[[90, 50, 50, 0.5], [180, 50, 50, 0.5], [270, 50, 50, 0.5]]],
+      "yaxis": "y7",
+      "xaxis": "x7"
     },
     {
       "type": "image",

@@ -8,7 +8,7 @@
     "xaxis": {
       "automargin": true,
       "nticks": 3,
-      "tickfont": {"size": 30},
+      "tickfont": { "size": 30 },
       "title": {
         "text": "Hello<br>Bonjour"
       },
@@ -18,12 +18,12 @@
       "automargin": true,
       "title": {
         "text": "Hello<br>Bonjour<br>Hola",
-        "font": {"size": 32}
+        "font": { "size": 32 }
       },
       "ticklen": 20
     },
     "width": 400,
     "height": 400,
-    "margin": {"l": 0, "t": 0, "r": 0, "b": 0}
+    "margin": { "l": 0, "t": 0, "r": 0, "b": 0 }
   }
 }

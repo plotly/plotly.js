@@ -10,7 +10,7 @@
         [-4, -8, -1, -2],
         [-8, -1, -2, -4]
       ],
-      "contours": {"showlabels": true, "labelfont": {"size": 4}},
+      "contours": { "showlabels": true, "labelfont": { "size": 4 } },
       "showscale": false
     },
     {
@@ -23,7 +23,7 @@
         [-4, -8, -1, -2],
         [-8, -1, -2, -4]
       ],
-      "contours": {"showlabels": true, "labelfont": {"size": 8}},
+      "contours": { "showlabels": true, "labelfont": { "size": 8 } },
       "showscale": false,
       "xaxis": "x2",
       "yaxis": "y2"
@@ -38,7 +38,7 @@
         [-4, -8, -1, -2],
         [-8, -1, -2, -4]
       ],
-      "contours": {"showlabels": true, "labelfont": {"size": 12}},
+      "contours": { "showlabels": true, "labelfont": { "size": 12 } },
       "showscale": false,
       "xaxis": "x3",
       "yaxis": "y3"
@@ -53,7 +53,7 @@
         [-4, -8, -1, -2],
         [-8, -1, -2, -4]
       ],
-      "contours": {"showlabels": true, "labelfont": {"size": 16}},
+      "contours": { "showlabels": true, "labelfont": { "size": 16 } },
       "showscale": false,
       "xaxis": "x4",
       "yaxis": "y4"
@@ -68,7 +68,7 @@
         [-4, -8, -1, -2],
         [-8, -1, -2, -4]
       ],
-      "contours": {"showlabels": true, "labelfont": {"size": 20}},
+      "contours": { "showlabels": true, "labelfont": { "size": 20 } },
       "showscale": false,
       "xaxis": "x5",
       "yaxis": "y5"
@@ -83,20 +83,22 @@
         [-4, -8, -1, -2],
         [-8, -1, -2, -4]
       ],
-      "contours": {"showlabels": true, "labelfont": {"size": 24}},
+      "contours": { "showlabels": true, "labelfont": { "size": 24 } },
       "showscale": false,
       "xaxis": "x6",
       "yaxis": "y6"
     }
   ],
   "layout": {
-    "grid": {"rows": 3, "columns": 2, "pattern": "independent"},
+    "grid": { "rows": 3, "columns": 2, "pattern": "independent" },
 
     "template": {
       "data": {
-        "contour": [{
-          "hoverlabel": {"namelength": -1}
-        }]
+        "contour": [
+          {
+            "hoverlabel": { "namelength": -1 }
+          }
+        ]
       }
     },
 
