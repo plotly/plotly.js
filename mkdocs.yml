@@ -106,6 +106,7 @@ nav:
     - Multiple Axes: examples/multiple-axes.md
     - Subplots: examples/subplots.md
   - Basic Charts:
+    - Overview: basic-charts.md
     - Scatter Plots: examples/line-and-scatter.md
     - Line Charts: examples/line-charts.md
     - Bar Charts: examples/bar-charts.md
@@ -122,6 +123,7 @@ nav:
     - Multiple Chart Types: examples/graphing-multiple-chart-types.md
     - WebGL vs SVG: examples/webgl-vs-svg.md
   - Statistical Charts:
+    - Overview: statistical-charts.md
     - Error Bars: examples/error-bars.md
     - Box Plots: examples/box-plots.md
     - Histograms: examples/histograms.md
@@ -133,19 +135,21 @@ nav:
     - Scatterplot Matrix: examples/splom.md
     - 2D Histogram Contour: examples/2d-histogram-contour.md
   - Scientific Charts:
+    - Overview: scientific-charts.md
     - Contour Plots: examples/contour-plots.md
     - Heatmaps: examples/heatmaps.md
     - Ternary Plots: examples/ternary-plots.md
     - Parallel Coordinates Plot: examples/parallel-coordinates-plot.md
     - Log Plots: examples/log-plot.md
     - Wind Rose and Polar Bar Charts: examples/wind-rose-charts.md
-    - Ternary contours: examples/ternary-contour.md
+    - Ternary Contours: examples/ternary-contour.md
     - Radar Charts: examples/radar-chart.md
     - Carpet Plots: examples/carpet-plot.md
     - Carpet Scatter Plot: examples/carpet-scatter.md
     - Carpet Contour Plot: examples/carpet-contour.md
     - Polar Charts: examples/polar-chart.md
   - Financial Charts:
+    - Overview: financial-charts.md
     - Waterfall Charts: examples/waterfall-charts.md
     - Indicators: examples/indicator.md
     - Candlestick Charts: examples/candlestick-charts.md
@@ -155,6 +159,7 @@ nav:
     - Gauge Charts: examples/gauge-charts.md
     - Bullet Charts: examples/bullet-charts.md
   - Maps:
+    - Overview: maps.md
     - Tile Map Layers: examples/tile-map-layers.md
     - Tile Density Heatmap: examples/tile-density-heatmaps.md
     - Tile Choropleth Maps: examples/tile-county-choropleth.md
@@ -165,6 +170,7 @@ nav:
     - Choropleth Maps: examples/choropleth-maps.md
     - Filled Area on Tile Maps: examples/filled-area-on-map.md
   - 3D Charts:
+    - Overview: 3d-charts.md
     - 3D Scatter Plots: examples/3d-scatter-plots.md
     - Ribbon Plots: examples/ribbon-plots.md
     - 3D Surface Plots: examples/3d-surface-plots.md
@@ -177,24 +183,29 @@ nav:
     - 3D Isosurface Plots: examples/3d-isosurface-plots.md
     - 3D Subplots: examples/3d-subplots.md
   - Multiple Axes:
+    - Overview: multiple-axes.md
     - Mixed Subplots: examples/mixed-subplots.md
     - Table and Chart Subplots: examples/table-subplots.md
   - Chart Events:
+    - Overview: chart-events.md
     - Click Events: examples/click-events.md
     - Hover Events: examples/hover-events.md
     - Zoom Events: examples/zoom-events.md
     - Disable Zoom Events: examples/disable-zoom.md
   - Animations:
+    - Overview: plotly-animations.md
     - Intro to Animations: examples/animations.md
     - Adding Sliders to Animations: examples/gapminder-example.md
     - Filled-Area Animation: examples/filled-area-animation.md
     - Map Animation: examples/map-animations.md
   - Advanced Options:
+    - Overview: advanced-opt.md
     - Plot CSV Data from an Ajax Call: examples/ajax-call.md
     - Streaming: examples/streaming.md
     - Remove Trace from Plot: examples/remove-trace.md
     - LaTeX: examples/LaTeX.md
   - Controls:
+    - Overview: controls.md
     - Dropdown Menus: examples/dropdowns.md
     - Custom Buttons: examples/custom-buttons.md
     - Sliders: examples/sliders.md
