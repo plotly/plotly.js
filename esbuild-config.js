@@ -24,6 +24,7 @@ const esbuildConfig = {
     logLevel: 'info'
 };
 
+// Config used when building bundle to serve test dashboard
 const devtoolsConfig = {
     entryPoints: [path.join(constants.pathToRoot, 'devtools', 'test_dashboard', 'devtools.js')],
     outfile: path.join(constants.pathToRoot, 'build', 'test_dashboard-bundle.js'),
@@ -38,11 +39,13 @@ const devtoolsConfig = {
     logLevel: 'info'
 };
 
+// Config used when building plotly.js for local development
 const localDevConfig = {
     ...esbuildConfig,
     outfile: './build/plotly.js'
 };
 
+// Config used when building bundle to serve regl
 const localDevReglCodegenConfig = {
     ...esbuildConfig,
     entryPoints: [path.join(constants.pathToRoot, 'devtools/regl_codegen', 'devtools.js')],
@@ -55,5 +58,5 @@ module.exports = {
     devtoolsConfig,
     esbuildConfig,
     localDevConfig,
-    localDevReglCodegenConfig,
+    localDevReglCodegenConfig
 };
