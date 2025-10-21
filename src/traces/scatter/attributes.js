@@ -225,7 +225,7 @@ module.exports = {
     },
 
     texttemplate: texttemplateAttrs(),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'calc' }),
     hovertext: {
         valType: 'string',
         dflt: '',

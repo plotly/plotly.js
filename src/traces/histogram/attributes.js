@@ -195,7 +195,7 @@ module.exports = {
     hovertemplatefallback: templatefallbackAttrs(),
 
     texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['label', 'value'] }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     textposition: extendFlat({}, barAttrs.textposition, {
         arrayOk: false

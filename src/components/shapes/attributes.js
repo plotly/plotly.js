@@ -331,7 +331,7 @@ module.exports = templatedArray('shape', {
             ].join(' ')
         },
         texttemplate: shapeTexttemplateAttrs({}, { keys: Object.keys(shapeLabelTexttemplateVars) }),
-        texttemplatefallback: templatefallbackAttrs(),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'arraydraw' }),
         font: fontAttrs({
             editType: 'calc+arraydraw',
             colorEditType: 'arraydraw',

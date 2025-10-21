@@ -146,7 +146,7 @@ var attrs = {
     },
 
     hovertemplate: hovertemplateAttrs({ editType: 'calc' }, { keys: ['norm'] }),
-    hovertemplatefallback: templatefallbackAttrs(),
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'calc' }),
     uhoverformat: axisHoverFormat('u', 1),
     vhoverformat: axisHoverFormat('v', 1),
     whoverformat: axisHoverFormat('w', 1),

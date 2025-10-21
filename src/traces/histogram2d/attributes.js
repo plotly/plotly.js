@@ -71,7 +71,7 @@ module.exports = extendFlat(
         hovertemplate: hovertemplateAttrs({}, { keys: ['z'] }),
         hovertemplatefallback: templatefallbackAttrs(),
         texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['z'] }),
-        texttemplatefallback: templatefallbackAttrs(),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
         textfont: heatmapAttrs.textfont,
         showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false })
     },

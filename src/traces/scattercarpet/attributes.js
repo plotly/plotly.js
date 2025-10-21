@@ -45,7 +45,7 @@ module.exports = {
         ].join(' ')
     }),
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['a', 'b', 'text'] }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
             'Sets hover text elements associated with each (a,b) point.',

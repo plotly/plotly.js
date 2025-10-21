@@ -94,7 +94,7 @@ module.exports = overrideAll(
             ].join(' ')
         }),
         texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['lat', 'lon', 'location', 'text'] }),
-        texttemplatefallback: templatefallbackAttrs(),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
         hovertext: extendFlat({}, scatterAttrs.hovertext, {
             description: [
                 'Sets hover text elements associated with each (lon,lat) pair',

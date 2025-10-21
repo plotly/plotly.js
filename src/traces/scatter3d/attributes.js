@@ -75,7 +75,7 @@ var attrs = (module.exports = overrideAll(
             ].join(' ')
         }),
         texttemplate: texttemplateAttrs(),
-        texttemplatefallback: templatefallbackAttrs(),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'calc' }),
         hovertext: extendFlat({}, scatterAttrs.hovertext, {
             description: [
                 'Sets text elements associated with each (x,y,z) triplet.',

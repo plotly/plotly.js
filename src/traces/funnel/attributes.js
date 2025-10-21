@@ -48,7 +48,7 @@ module.exports = {
     },
     // TODO: incorporate `label` and `value` in the eventData
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label', 'value']) }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     text: barAttrs.text,
     textposition: barAttrs.textposition,

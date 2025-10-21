@@ -30,7 +30,7 @@ var line = extendFlat({ editType: 'calc' }, colorScaleAttrs('line', { editTypeOv
             description: ['This value here applies when hovering over lines.'].join(' ')
         }
     ),
-    hovertemplatefallback: templatefallbackAttrs()
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'plot' })
 });
 
 module.exports = {
@@ -67,7 +67,7 @@ module.exports = {
             ].join(' ')
         }
     ),
-    hovertemplatefallback: templatefallbackAttrs(),
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     arrangement: {
         valType: 'enumerated',

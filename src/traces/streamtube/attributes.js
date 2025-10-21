@@ -119,7 +119,7 @@ var attrs = {
         { editType: 'calc' },
         { keys: ['tubex', 'tubey', 'tubez', 'tubeu', 'tubev', 'tubew', 'norm', 'divergence'] }
     ),
-    hovertemplatefallback: templatefallbackAttrs(),
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'calc' }),
     uhoverformat: axisHoverFormat('u', 1),
     vhoverformat: axisHoverFormat('v', 1),
     whoverformat: axisHoverFormat('w', 1),

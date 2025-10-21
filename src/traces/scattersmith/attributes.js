@@ -30,7 +30,7 @@ module.exports = {
 
     text: scatterAttrs.text,
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['real', 'imag', 'text'] }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: scatterAttrs.hovertext,
 
     line: {

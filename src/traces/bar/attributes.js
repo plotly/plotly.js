@@ -78,7 +78,7 @@ module.exports = {
 
     text: scatterAttrs.text,
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: scatterAttrs.hovertext,
     hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
     hovertemplatefallback: templatefallbackAttrs(),

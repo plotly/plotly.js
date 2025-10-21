@@ -47,7 +47,7 @@ module.exports = {
     }),
 
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['label', 'color', 'value', 'text', 'percent'] }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']

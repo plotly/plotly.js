@@ -141,7 +141,7 @@ module.exports = {
     hovertemplate: hovertemplateAttrs({}, { keys: ['label', 'color', 'value', 'percent', 'text'] }),
     hovertemplatefallback: templatefallbackAttrs(),
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['label', 'color', 'value', 'percent', 'text'] }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     textposition: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],

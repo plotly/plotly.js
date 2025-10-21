@@ -88,7 +88,7 @@ module.exports = extendFlat(
             description: 'Same as `text`.'
         },
         hovertemplate: hovertemplateAttrs({ editType: 'calc' }),
-        hovertemplatefallback: templatefallbackAttrs(),
+        hovertemplatefallback: templatefallbackAttrs({ editType: 'calc' }),
 
         xhoverformat: axisHoverFormat('x'),
         yhoverformat: axisHoverFormat('y'),

@@ -150,7 +150,7 @@ module.exports = overrideAll(
                     { newshape: true },
                     { keys: Object.keys(shapeLabelTexttemplateVars) }
                 ),
-                texttemplatefallback: templatefallbackAttrs(),
+                texttemplatefallback: templatefallbackAttrs({ editType: 'arraydraw' }),
                 font: fontAttrs({
                     description: 'Sets the new shape label text font.'
                 }),

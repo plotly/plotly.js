@@ -77,7 +77,7 @@ module.exports = {
     textinfo: sunburstAttrs.textinfo,
     // TODO: incorporate `label` and `value` in the eventData
     texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label', 'value']) }),
-    texttemplatefallback: templatefallbackAttrs(),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     hovertext: pieAttrs.hovertext,
     hoverinfo: sunburstAttrs.hoverinfo,

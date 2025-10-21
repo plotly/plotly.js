@@ -117,7 +117,7 @@ module.exports = extendFlat(
         hovertemplate: hovertemplateAttrs(),
         hovertemplatefallback: templatefallbackAttrs(),
         texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['x', 'y', 'z', 'text'] }),
-        texttemplatefallback: templatefallbackAttrs(),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
         textfont: fontAttrs({
             editType: 'plot',
             autoSize: true,
