@@ -42,7 +42,7 @@ exports.hovertemplateAttrs = ({ editType = 'none', arrayOk } = {}, extra = {}) =
         'Note that this will override `hoverinfo`.',
         templateFormatStringDescription({ supportOther: true }),
         'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
-        'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
+        'Additionally, all attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
         describeVariables(extra),
         'Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`.',
         'To hide the secondary box completely, use an empty tag `<extra></extra>`.'
@@ -58,7 +58,7 @@ exports.texttemplateAttrs = ({ editType = 'calc', arrayOk } = {}, extra = {}) =>
         'Template string used for rendering the information text that appears on points.',
         'Note that this will override `textinfo`.',
         templateFormatStringDescription(),
-        'Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
+        'All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
         describeVariables(extra)
     ].join(' '),
     ...(arrayOk !== false ? { arrayOk: true } : {})
