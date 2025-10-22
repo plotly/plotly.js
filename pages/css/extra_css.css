@@ -20,16 +20,16 @@
 }
 
 .nav-bottom-image a::after {
-  content: none !important;
+  font-size: 1em !important;
 }
 
 .bottom-dash-img img {
     margin-top: 20px;
 }
 
-.bottom-dash-img::after {
+/* .bottom-dash-img::after {
     display: none;
-}
+} */
 
 /* Footer Styling */
 
@@ -220,7 +220,7 @@ article {
     margin-left: 1.6rem;
 }
 
-.md-header__inner a::after {
+.md-header__inner ul a::after {
     display: none;
 }
 
@@ -245,6 +245,10 @@ article {
     text-align: center;
 }
 
+.md-header__source a.md-source::after {
+        color: white !important;
+}
+
 @media screen and (max-width: 415px){
     .md-header__inner ul{
         display: none;
@@ -254,9 +258,9 @@ article {
 
 /* Page Element Styling */
 
-.plotlyjs-download::after {
+/* .plotlyjs-download::after {
     display: none;
-}
+} */
 
 div.row {
     margin-left: 0;
@@ -351,6 +355,24 @@ fieldset.signatures legend {
   text-align: center;
 }
 
-.grid.cards > :is(ul, ol) > li a::after {
+/* .grid.cards > :is(ul, ol) > li a::after {
     display: none;
+} */
+
+/* Hamburger menu styling */
+
+@media screen and (max-width: 76.2344em) {
+    .md-nav--primary .md-nav__title[for=__drawer] {
+        background-color: var(--plotly-primary-light) !important;
+    }
+}
+
+@media screen and (max-width: 59.9844em) {
+    .md-nav__source {
+        background-color: #3D2B7A !important;
+    }
+
+    .md-nav__source a.md-source::after {
+        color: white !important;
+    }
 }

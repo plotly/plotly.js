@@ -13,6 +13,9 @@ validation:
 
 plugins:
   - search
+  - redirects:
+      redirect_maps:
+        'mapbox-layers.md': 'examples/tile-map-layers.md'
   - gen-files:
       scripts:
         - bin/generate_reference_pages.py

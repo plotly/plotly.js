@@ -17,4 +17,5 @@ dev_build = [
     "mkdocs-literate-nav",
     "markdown-include",
     "mkdocs-macros-plugin",
+    "mkdocs-redirects",
 ]
