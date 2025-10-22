@@ -71,7 +71,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     Drawing.setClipUrl(lines, plotinfo.layerClipId, gd);
 
-    // Create line segments for each arrow
+    // Create one path per data point (arrow)
     var lineSegments = lines.selectAll('path.js-line')
         .data(cdscatter);
 
@@ -82,26 +82,54 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     lineSegments.exit().remove();
 
     // Update line segments
-    lineSegments.each(function(d) {
+    lineSegments.each(function(cdi) {
         var path = d3.select(this);
-        var segment = d;
-        
-        if(segment.length === 0) return;
 
-        // Convert data coordinates to pixel coordinates
-        var pixelCoords = segment.map(function(point) {
-            return {
-                x: xa.c2p(point.x),
-                y: ya.c2p(point.y)
-            };
-        });
-
-        // Create SVG path from pixel coordinates
-        var pathData = 'M' + pixelCoords[0].x + ',' + pixelCoords[0].y;
-        for(var i = 1; i < pixelCoords.length; i++) {
-            pathData += 'L' + pixelCoords[i].x + ',' + pixelCoords[i].y;
+        // Skip invalid points
+        if(cdi.x === undefined || cdi.y === undefined) {
+            path.attr('d', null);
+            return;
         }
 
+        // Compute arrow in data space
+        var scale = trace.scale || 1;
+        var scaleRatio = trace.scaleratio || 1;
+        var arrowScale = trace.arrow_scale || 0.2;
+        var angle = trace.angle || Math.PI / 12; // small default
+
+        var u = (trace.u && trace.u[cdi.i]) || 0;
+        var v = (trace.v && trace.v[cdi.i]) || 0;
+
+        var dx = u * scale * scaleRatio;
+        var dy = v * scale;
+        var barbLen = Math.sqrt((dx * dx) / scaleRatio + dy * dy);
+        var arrowLen = barbLen * arrowScale;
+        var barbAng = Math.atan2(dy, dx / scaleRatio);
+
+        var ang1 = barbAng + angle;
+        var ang2 = barbAng - angle;
+
+        var x0 = cdi.x;
+        var y0 = cdi.y;
+        var x1 = x0 + dx;
+        var y1 = y0 + dy;
+
+        var xh1 = x1 - arrowLen * Math.cos(ang1) * scaleRatio;
+        var yh1 = y1 - arrowLen * Math.sin(ang1);
+        var xh2 = x1 - arrowLen * Math.cos(ang2) * scaleRatio;
+        var yh2 = y1 - arrowLen * Math.sin(ang2);
+
+        // Convert to pixels
+        var p0x = xa.c2p(x0);
+        var p0y = ya.c2p(y0);
+        var p1x = xa.c2p(x1);
+        var p1y = ya.c2p(y1);
+        var ph1x = xa.c2p(xh1);
+        var ph1y = ya.c2p(yh1);
+        var ph2x = xa.c2p(xh2);
+        var ph2y = ya.c2p(yh2);
+
+        var pathData = 'M' + p0x + ',' + p0y + 'L' + p1x + ',' + p1y + 'L' + ph1x + ',' + ph1y + 'L' + p1x + ',' + p1y + 'L' + ph2x + ',' + ph2y;
         path.attr('d', pathData);
     });
 
