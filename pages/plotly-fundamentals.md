@@ -2,22 +2,22 @@
 
 <div class="grid cards" markdown>
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/modebar-icons.png)](/examples/configuration-options.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/modebar-icons.png)](configuration-options.md)
 
     **Configuration Options**
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/uirevision.gif)](/examples/responsive-fluid-layout.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/uirevision.gif)](responsive-fluid-layout.md)
 
     **Responsive / Fluid Layouts**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/fluid-layout.gif)](/examples/uirevision.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/fluid-layout.gif)](uirevision.md)
 
     **uirevision in Plotly.react**
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/react.png)](/examples/react.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/react.png)](react.md)
 
     **React Plotly.js**
 
@@ -29,52 +29,52 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/colorway.jpg)](/examples/colorway.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/colorway.jpg)](colorway.md)
 
     **Colorway**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/images.png)](/examples/images.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/images.png)](images.md)
 
     **Images**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/theming-and-templates.png)](/examples/3d-axes.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/theming-and-templates.png)](3d-axes.md)
 
     **3D Axes**
 
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/subplots.jpg)](/examples/3d-hover.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/subplots.jpg)](3d-hover.md)
 
     **3D Hover Options**
 
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/3d-surface.jpg)](/examples/3d-surface-lighting.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/3d-surface.jpg)](3d-surface-lighting.md)
 
     **3D Surface Lighting**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/axes.png)](/examples/axes.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/axes.png)](axes.md)
 
     **Axes**
 
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/images.png)](/examples/horizontal-legend.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/images.png)](horizontal-legend.md)
     
     **Horizontal Legends**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/hover-text.png)](/examples/hover-text-and-formatting.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/hover-text.png)](hover-text-and-formatting.md)
 
     **Hover Text and Formatting**
 
@@ -82,7 +82,7 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/figure-labels.png)](/examples/figure-labels.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/figure-labels.png)](figure-labels.md)
 
     **Setting the Title, Legend Entries, and Axis Titles**
 
@@ -90,7 +90,7 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/plotly-express.png)](/examples/layout-template.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/plotly-express.png)](layout-template.md)
 
     **Layout Template Examples**
 
@@ -98,7 +98,7 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/legends.gif)](/examples/legend.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/legends.gif)](legend.md)
 
     **Legends**
 
@@ -106,41 +106,41 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/multiple-axes.jpg)](/examples/setting-graph-size.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/multiple-axes.jpg)](setting-graph-size.md)
 
     **Setting Graph Size**
 
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/hover.jpg)](/examples/tick-formatting.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/hover.jpg)](tick-formatting.md)
 
     **Formatting Ticks**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/shape.jpg)](/examples/shapes.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/shape.jpg)](shapes.md)
 
     **Shapes**
 
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/texttemplate.jpg)](/examples/texttemplate.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/texttemplate.jpg)](texttemplate.md)
 
     **Text Template**
 
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/text-and-annotations.png)](/examples/text-and-annotations.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/text-and-annotations.png)](text-and-annotations.md)
 
     **Text and Annotations**
 
 
 
 
--   [![]()](/examples/font.md)
+-   [![]()](font.md)
 
     **Text and Font Styling**
 
@@ -148,7 +148,7 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/multiple-axes.jpg)](/examples/multiple-axes.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/multiple-axes.jpg)](multiple-axes.md)
 
     **Multiple Axes**
 
@@ -156,7 +156,7 @@
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/subplots.jpg)](/examples/subplots.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/subplots.jpg)](subplots.md)
 
     **Subplots**
 

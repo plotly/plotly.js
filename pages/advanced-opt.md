@@ -3,24 +3,24 @@
 <div class="grid cards" markdown>
 
 
--   [![]()](examples/ajax-call.md)
+-   [![]()](ajax-call.md)
 
     **Plot CSV Data from an Ajax Call**
 
 
--   [![]()](examples/streaming.md)
+-   [![]()](streaming.md)
 
     **Streaming**
 
 
 
--   [![]()](examples/remove-trace.md)
+-   [![]()](remove-trace.md)
 
     **Remove Trace from Plot**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/venn.jpg)](examples/LaTeX.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/venn.jpg)](LaTeX.md)
 
     **LaTeX**
 

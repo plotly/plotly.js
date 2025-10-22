@@ -3,48 +3,48 @@
 <div class="grid cards" markdown>
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/waterfall-charts.jpg)](examples/waterfall-charts.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/waterfall-charts.jpg)](waterfall-charts.md)
 
     **Waterfall Charts**
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/indicator.jpg)](examples/indicator.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/indicator.jpg)](indicator.md)
 
     **Indicators**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/candlestick.jpg)](examples/candlestick-charts.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/candlestick.jpg)](candlestick-charts.md)
 
     **Candlestick Charts**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/funnel.jpg)](examples/funnel-charts.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/funnel.jpg)](funnel-charts.md)
 
     **Funnel Chart**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/time-series.jpg)](examples/time-series.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/time-series.jpg)](time-series.md)
 
     **Time Series and Date Axes**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/ohlc.jpg)](examples/ohlc-charts.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/ohlc.jpg)](ohlc-charts.md)
 
     **OHLC Charts**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/gauge.jpg)](examples/gauge-charts.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/gauge.jpg)](gauge-charts.md)
 
     **Gauge Charts**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/bullet.png)](examples/bullet-charts.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/bullet.png)](bullet-charts.md)
 
     **Bullet Charts**
 

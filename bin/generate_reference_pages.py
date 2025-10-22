@@ -34,7 +34,7 @@ ref_path = f"{parent}/tmp/reference"
 ref_output_dir = f"{parent}/pages/reference/"
 
 examples_path = f"{parent}/tmp/javascript"
-examples_output_dir = f"{parent}/pages/examples/"
+examples_output_dir = f"{parent}/pages/"
 
 os.makedirs(ref_output_dir, exist_ok=True)
 os.makedirs(examples_output_dir, exist_ok=True)
@@ -42,5 +42,5 @@ os.makedirs(examples_output_dir, exist_ok=True)
 generate_pages(ref_path, ref_output_dir, "reference", nav)
 generate_pages(examples_path, examples_output_dir, "javascript")
 
-with mkdocs_gen_files.open("reference/SUMMARY.md", "w") as nav_file:
-    nav_file.writelines(nav.build_literate_nav())
+# with mkdocs_gen_files.open("reference/SUMMARY.md", "w") as nav_file:
+#     nav_file.writelines(nav.build_literate_nav())

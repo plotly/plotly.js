@@ -14,11 +14,11 @@ The layout of the plot – non-data-related visual attributes such as the title,
 
 `config`
 
-High-level configuration options for the plot, such as the scroll/zoom/hover behaviour, is described in an object usually called `config`, as [documented here](examples/configuration-options.md). The difference between `config` and `layout` is that `layout` relates to the content of the plot, whereas `config` relates to the context in which the plot is being shown.
+High-level configuration options for the plot, such as the scroll/zoom/hover behaviour, is described in an object usually called `config`, as [documented here](configuration-options.md). The difference between `config` and `layout` is that `layout` relates to the content of the plot, whereas `config` relates to the context in which the plot is being shown.
 
 `frames`
 
-Animation frames are described in an object usually called `frames` as per the [example here](examples/gapminder-example.md). They can contain `data` and `layout` objects, which define any changes to be animated, and a `traces` object that defines which traces to animate. Additionally, frames containing `name` and/or `group` attributes can be referenced by [Plotly.animate](#plotlyanimate) after they are added by [Plotly.addFrames](#plotlyaddframes)
+Animation frames are described in an object usually called `frames` as per the [example here](gapminder-example.md). They can contain `data` and `layout` objects, which define any changes to be animated, and a `traces` object that defines which traces to animate. Additionally, frames containing `name` and/or `group` attributes can be referenced by [Plotly.animate](#plotlyanimate) after they are added by [Plotly.addFrames](#plotlyaddframes)
 
 
 ### Plotly.newPlot
@@ -46,7 +46,7 @@ Draws a new plot in an `<div>` element, *overwriting any existing plot*. To upda
     
   `config`
 
-  object, see [documentation](/examples/configuration-options.md)  
+  object, see [documentation](configuration-options.md)  
   (defaults to `{}`)
 
 `Plotly.newPlot(graphDiv, obj)`
@@ -546,7 +546,7 @@ Plotly.prependTraces(graphDiv, {y: [[rand()], [rand()]]}, [0, 1], 10)
 
 *This function has comparable performance to [`Plotly.react`](#plotlyreact) and is faster than redrawing the whole plot with [`Plotly.newPlot`](#plotlynewplot).*
 
-This allows you to add animation frames to a `graphDiv`. The `group` or `name` attribute of a frame can be used by [Plotly.animate](#plotlyanimate) in place of a frame object (or array of frame objects). See [example here](examples/gapminder-example.md).
+This allows you to add animation frames to a `graphDiv`. The `group` or `name` attribute of a frame can be used by [Plotly.animate](#plotlyanimate) in place of a frame object (or array of frame objects). See [example here](gapminder-example.md).
 
 
 ### Plotly.animate
@@ -572,7 +572,7 @@ Similarly, you can reference frames by an array of strings of frame `name` value
 
 `animationAttributes`
 
-An object, see [documentation](examples/animations.md) for examples.
+An object, see [documentation](animations.md) for examples.
 
 </fieldset>
 <br />
@@ -647,4 +647,4 @@ Plotly.downloadImage(graphDiv, {format: 'png', width: 800, height: 600, filename
 
 ### Using events
 
-Plots emit events prefixed with <code>plotly_</code> when clicked or hovered over, and event handlers can be bound to events using the <code>on</code> method that is exposed by the plot div object. For more information and examples of how to use Plotly events see: [https://plotly.com/javascript/plotlyjs-events/](examples/plotlyjs-events.md).
+Plots emit events prefixed with <code>plotly_</code> when clicked or hovered over, and event handlers can be bound to events using the <code>on</code> method that is exposed by the plot div object. For more information and examples of how to use Plotly events see: [https://plotly.com/javascript/plotlyjs-events/](plotlyjs-events.md).

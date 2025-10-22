@@ -3,24 +3,24 @@
 <div class="grid cards" markdown>
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/click.jpg)](examples/click-events.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/click.jpg)](click-events.md)
 
     **Click Events**
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/hover.jpg)](examples/hover-events.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/hover.jpg)](hover-events.md)
 
     **Hover Events**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/zoom.jpg)](examples/zoom-events.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/zoom.jpg)](zoom-events.md)
 
     **Zoom Events**
 
 
 
--   [![](https://images.plot.ly/plotly-documentation/thumbnail/zoom.jpg)](examples/disable-zoom.md)
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/zoom.jpg)](disable-zoom.md)
 
     **Disable Zoom Events**
 
