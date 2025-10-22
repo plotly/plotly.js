@@ -12,47 +12,47 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var xpx = xa.c2p(xval);
     var ypx = ya.c2p(yval);
 
-    // Find the closest arrow to the hover point
+    // Find the closest arrow base point to the hover point
     var minDistance = Infinity;
     var closestPoint = null;
     var closestIndex = -1;
 
-    // Check each arrow segment
+    // Each cd[i] is a calcdata point object with x/y
     for(var i = 0; i < cd.length; i++) {
-        var segment = cd[i];
-        if(segment.length < 2) continue;
+        var cdi = cd[i];
+        if(cdi.x === undefined || cdi.y === undefined) continue;
 
-        // Calculate distance to the start point of the arrow
-        var x1 = xa.c2p(segment[0].x);
-        var y1 = ya.c2p(segment[0].y);
-        
-        var distance = Math.sqrt((xpx - x1) * (xpx - x1) + (ypx - y1) * (ypx - y1));
-        
+        var px = xa.c2p(cdi.x);
+        var py = ya.c2p(cdi.y);
+
+        var distance = Math.sqrt((xpx - px) * (xpx - px) + (ypx - py) * (ypx - py));
+
         if(distance < minDistance) {
             minDistance = distance;
-            closestPoint = segment[0]; // Use the start point for hover data
+            closestPoint = cdi;
             closestIndex = i;
         }
     }
 
-    if(!closestPoint || minDistance > (trace.hoverdistance || 20)) return;
+    var maxHoverDist = pointData.distance === Infinity ? Infinity : (trace.hoverdistance || 20);
+    if(!closestPoint || minDistance > maxHoverDist) return;
 
     // Create hover point data with proper label values and spikeline support
     var hoverPoint = {
         x: closestPoint.x,
         y: closestPoint.y,
-        u: trace.u[closestIndex],
-        v: trace.v[closestIndex],
-        text: trace.text ? trace.text[closestIndex] : '',
+        u: trace.u ? trace.u[closestIndex] : undefined,
+        v: trace.v ? trace.v[closestIndex] : undefined,
+        text: Array.isArray(trace.text) ? trace.text[closestIndex] : trace.text,
         name: trace.name || '',
         trace: trace,
         index: closestIndex,
-        // Set label values for proper hover formatting
+        // Label values for formatting
         xLabelVal: closestPoint.x,
         yLabelVal: closestPoint.y,
-        uLabelVal: trace.u[closestIndex],
-        vLabelVal: trace.v[closestIndex],
-        // Add spikeline support
+        uLabelVal: trace.u ? trace.u[closestIndex] : undefined,
+        vLabelVal: trace.v ? trace.v[closestIndex] : undefined,
+        // Spikeline support
         xa: pointData.xa,
         ya: pointData.ya,
         x0: closestPoint.x,
