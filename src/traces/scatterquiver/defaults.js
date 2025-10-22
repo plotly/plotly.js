@@ -17,16 +17,24 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // Simple validation - check if we have the required arrays
     if(!x || !Array.isArray(x) || x.length === 0 ||
-       !y || !Array.isArray(y) || y.length === 0 ||
-       !u || !Array.isArray(u) || u.length === 0 ||
-       !v || !Array.isArray(v) || v.length === 0) {
+       !y || !Array.isArray(y) || y.length === 0) {
         traceOut.visible = false;
         return;
     }
 
+    // If u/v are missing, default to zeros so the trace participates in calc/category logic
+    var len = Math.min(x.length, y.length);
+    if(!Array.isArray(u) || u.length === 0) {
+        traceOut.u = new Array(len);
+        for(var i = 0; i < len; i++) traceOut.u[i] = 0;
+    }
+    if(!Array.isArray(v) || v.length === 0) {
+        traceOut.v = new Array(len);
+        for(var j = 0; j < len; j++) traceOut.v[j] = 0;
+    }
+
     // Set basic properties
     traceOut.type = 'scatterquiver';
-    traceOut.visible = true;
 
     // Set default values using coerce
     coerce('scale', 0.1);
@@ -64,5 +72,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('unselected.textfont.color');
 
     // Set the data length
-    traceOut._length = x.length;
+    traceOut._length = len;
 };
