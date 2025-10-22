@@ -1,55 +1,47 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
+var isNumeric = require('fast-isnumeric');
+var BADNUM = require('../../constants/numerical').BADNUM;
+var scatterCalc = require('../scatter/calc');
 
 /**
  * Main calculation function for scatterquiver trace
  * Creates calcdata with arrow path data for each vector
  */
 module.exports = function calc(gd, trace) {
-    var x = trace.x;
-    var y = trace.y;
-    var u = trace.u;
-    var v = trace.v;
-    var scale = trace.scale;
-    var arrowScale = trace.arrow_scale;
-    var angle = trace.angle;
-    var scaleRatio = trace.scaleratio;
+    // Map x/y through axes so category/date values become numeric calcdata
+    var xa = trace._xA = Axes.getFromId(gd, trace.xaxis || 'x', 'x');
+    var ya = trace._yA = Axes.getFromId(gd, trace.yaxis || 'y', 'y');
 
-    // Create calcdata - one complete arrow per entry
-    var calcdata = [];
-    var len = x.length;
-    
+    var xVals = xa.makeCalcdata(trace, 'x');
+    var yVals = ya.makeCalcdata(trace, 'y');
+
+    // u/v are read in plot using the original trace arrays via cdi.i
+
+    var len = Math.min(xVals.length, yVals.length);
+    trace._length = len;
+    var cd = new Array(len);
+
     for(var i = 0; i < len; i++) {
-        // Calculate arrow components
-        var dx = u[i] * scale * (scaleRatio || 1);
-        var dy = v[i] * scale;
-        var barbLen = Math.sqrt(dx * dx / (scaleRatio || 1) + dy * dy);
-        var arrowLen = barbLen * arrowScale;
-        var barbAng = Math.atan2(dy, dx / (scaleRatio || 1));
-        
-        var ang1 = barbAng + angle;
-        var ang2 = barbAng - angle;
-        
-        var endX = x[i] + dx;
-        var endY = y[i] + dy;
-        
-        var point1X = endX - arrowLen * Math.cos(ang1) * (scaleRatio || 1);
-        var point1Y = endY - arrowLen * Math.sin(ang1);
-        var point2X = endX - arrowLen * Math.cos(ang2) * (scaleRatio || 1);
-        var point2Y = endY - arrowLen * Math.sin(ang2);
+        var cdi = cd[i] = { i: i };
+        var xValid = isNumeric(xVals[i]);
+        var yValid = isNumeric(yVals[i]);
 
-        // Create complete arrow as one path: shaft + arrow head
-        var arrowPath = [
-            { x: x[i], y: y[i], i: i },                    // Start point
-            { x: endX, y: endY, i: i },                   // End of shaft
-            { x: point1X, y: point1Y, i: i },            // Arrow head point 1
-            { x: endX, y: endY, i: i },                   // Back to end
-            { x: point2X, y: point2Y, i: i }             // Arrow head point 2
-        ];
+        if(xValid && yValid) {
+            cdi.x = xVals[i];
+            cdi.y = yVals[i];
+        } else {
+            cdi.x = BADNUM;
+            cdi.y = BADNUM;
+        }
 
-        calcdata.push(arrowPath);
+        // No additional props; keep minimal to avoid collisions with generic fields (e.g. `v`)
     }
 
-    return calcdata;
+    // Ensure axes are expanded and categories registered like scatter traces do
+    scatterCalc.calcAxisExpansion(gd, trace, xa, ya, xVals, yVals);
+
+    return cd;
 };
