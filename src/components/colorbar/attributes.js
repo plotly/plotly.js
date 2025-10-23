@@ -226,6 +226,15 @@ module.exports = overrideAll({
                 'Defaults to *top* when `orientation` if *v* and ',
                 'defaults to *right* when `orientation` if *h*.',
             ].join(' ')
+        },
+        align: {
+            valType: 'enumerated',
+            values: ['start', 'middle', 'end'],
+            description: [
+                'Sets the alignment of the color bar\'s title.',
+                'Defaults to *start* when `orientation` if *v*.',
+                'Note: This only takes affect when `orientation` is *v*.'
+            ].join(' ')
         }
     },
 }, 'colorbars', 'from-root');
