@@ -2199,6 +2199,30 @@ describe('hover info', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should work when hoveron: fills and mode: lines', function(done) {
+            var gd = document.getElementById('graph');
+            Plotly.newPlot(gd, [{
+                'x': ['0', '390', '390', '0', '0'],
+                'y': ['0', '0', '390', '390', '0'],
+                'hovertemplate': 'Test<extra></extra>',
+                'markers': 'lines',
+                'type': 'scatter',
+                'mode': 'lines',
+                'fill': 'toself',
+                'hoveron': 'fills'
+            }], mockCopy.layout
+            )
+            .then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                assertHoverLabelContent({
+                    nums: 'Test',
+                    name: ''
+                });
+            })
+            .then(done, done.fail);
+        });
     });
 
     it('should work with trace.name linked to layout.meta', function(done) {
