@@ -1440,11 +1440,11 @@ describe('annotation effects', function() {
         .then(function() {
             expect(gd._fullLayout.annotations[0].hoverlabel).toEqual({
                 bgcolor: '#444',
-                bordercolor: '#fff',
+                bordercolor: 'rgb(255, 255, 255)',
                 font: {
                     family: 'Arial, sans-serif',
                     size: 13,
-                    color: '#fff',
+                    color: 'rgb(255, 255, 255)',
                     weight: 'normal',
                     style: 'normal',
                     variant: 'normal',

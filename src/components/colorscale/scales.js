@@ -1,6 +1,6 @@
 'use strict';
 
-var tinycolor = require('tinycolor2');
+const Color = require('../color');
 
 var scales = {
     Greys: [
@@ -170,7 +170,7 @@ function isValidScaleArray(scl) {
     for(var i = 0; i < scl.length; i++) {
         var si = scl[i];
 
-        if(si.length !== 2 || +si[0] < highestVal || !tinycolor(si[1]).isValid()) {
+        if(si.length !== 2 || +si[0] < highestVal || !Color.isValid(si[1])) {
             return false;
         }
 
