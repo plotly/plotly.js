@@ -1,6 +1,12 @@
 'use strict';
 const { DATE_FORMAT_LINK, FORMAT_LINK } = require('../constants/docs');
 
+const MISSING_UNDEFINED_DESCRIPTION = [
+    "Variables that can't be found will be replaced with the specifier.",
+    'For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing.',
+    'Variables with an undefined value will be replaced with the fallback value.'
+].join(' ');
+
 function templateFormatStringDescription({ supportOther } = {}) {
     const supportOtherText =
         ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.';
@@ -13,7 +19,8 @@ function templateFormatStringDescription({ supportOther } = {}) {
         'for details on the formatting syntax.',
         'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".',
         DATE_FORMAT_LINK,
-        'for details on the date formatting syntax.'
+        'for details on the date formatting syntax.',
+        MISSING_UNDEFINED_DESCRIPTION
     ].join(' ');
 }
 exports.templateFormatStringDescription = templateFormatStringDescription;
@@ -64,7 +71,7 @@ exports.texttemplateAttrs = ({ editType = 'calc', arrayOk } = {}, extra = {}) =>
     ...(arrayOk !== false ? { arrayOk: true } : {})
 });
 
-exports.shapeTexttemplateAttrs = ({ editType = 'arraydraw', newshape }, extra = {}) => ({
+exports.shapeTexttemplateAttrs = ({ editType = 'arraydraw', newshape } = {}, extra = {}) => ({
     valType: 'string',
     dflt: '',
     editType,
@@ -83,13 +90,14 @@ exports.shapeTexttemplateAttrs = ({ editType = 'arraydraw', newshape }, extra = 
         'd3 number formatting, for example "Length in cm: %{x0*2.54}", "%{slope*60:.1f} meters per second."',
         'For log axes, variable values are given in log units.',
         'For date axes, x/y coordinate variables and center variables use datetimes, while all other variable values use values in ms.',
-        describeVariables(extra)
+        describeVariables(extra),
+        MISSING_UNDEFINED_DESCRIPTION
     ].join(' ')
 });
 
 exports.templatefallbackAttrs = ({ editType = 'none' } = {}) => ({
     valType: 'string',
-    dflt: '',
+    dflt: '-',
     editType,
-    description: "Fallback value that's displayed when a variable referenced in a template can't be found."
+    description: "Fallback value that's displayed when a variable referenced in a template has an undefined value."
 });
