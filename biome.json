@@ -4,6 +4,7 @@
   "files": {
     "maxSize": 10000000,
     "includes": [
+      "**/esbuild-config.js",
       "**/src/**",
       "**/lib/**",
       "**/test/**",
@@ -122,7 +123,7 @@
     "formatter": {
       "enabled": true,
       "indentStyle": "space",
-      "indentWidth": 1,
+      "indentWidth": 2,
       "lineEnding": "lf",
       "lineWidth": 80
     }

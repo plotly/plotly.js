@@ -4,7 +4,7 @@ import prependFile from 'prepend-file';
 
 import { build } from 'esbuild';
 
-import esbuildConfig from '../../esbuild-config.js';
+import { esbuildConfig } from '../../esbuild-config.js';
 import esbuildPluginStripMeta from '../../tasks/compress_attributes.js';
 
 import common from './common.js';
@@ -35,17 +35,17 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     config.outfile = pathToBundle;
     config.minify = !!opts.minify;
 
-    if(!opts.noCompressAttributes) {
+    if (!opts.noCompressAttributes) {
         config.plugins = basePlugins.concat([esbuildPluginStripMeta]);
     }
 
-    if(opts.noPlugins) config.plugins = [];
+    if (opts.noPlugins) config.plugins = [];
 
     await build(config);
 
     addWrapper(pathToBundle);
 
-    if(cb) cb();
+    if (cb) cb();
 }
 
 // Until https://github.com/evanw/esbuild/pull/513 is merged
@@ -67,14 +67,5 @@ function addWrapper(path) {
         common.throwOnError
     );
 
-    fsExtra.appendFile(
-        path,
-        [
-            '',
-            'window.Plotly = Plotly;',
-            'return Plotly;',
-            '}));',
-        ].join('\n'),
-        common.throwOnError
-    );
+    fsExtra.appendFile(path, ['', 'window.Plotly = Plotly;', 'return Plotly;', '}));'].join('\n'), common.throwOnError);
 }

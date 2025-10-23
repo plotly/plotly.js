@@ -911,7 +911,7 @@ module.exports = {
     },
     exponentformat: {
         valType: 'enumerated',
-        values: ['none', 'e', 'E', 'power', 'SI', 'B'],
+        values: ['none', 'e', 'E', 'power', 'SI', 'B', 'SI extended'],
         dflt: 'B',
         editType: 'ticks',
         description: [
@@ -922,7 +922,12 @@ module.exports = {
             'If *E*, 1E+9.',
             'If *power*, 1x10^9 (with 9 in a super script).',
             'If *SI*, 1G.',
-            'If *B*, 1B.'
+            'If *B*, 1B.',
+            
+            '*SI* uses prefixes from "femto" f (10^-15) to "tera" T (10^12).',
+            '*SI extended* covers instead the full SI range from "quecto" q (10^-30) to "quetta" Q (10^30).',
+            'If *SI* or *SI extended* is used and the exponent is beyond the above ranges, the formatting rule',
+            'will automatically be switched to the power notation.'
         ].join(' ')
     },
     minexponent: {

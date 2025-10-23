@@ -20,10 +20,10 @@
     "width": 600,
     "xaxis": {
       "anchor": "y"
-     },
-     "xaxis2": {
+    },
+    "xaxis2": {
       "anchor": "y2"
-     },
+    },
     "yaxis": {
       "range": [0, 80],
       "dtick": 20,
@@ -39,6 +39,6 @@
       "ticklabelposition": "inside",
       "anchor": "x2",
       "domain": [0.55, 1]
-     }
+    }
   }
 }
