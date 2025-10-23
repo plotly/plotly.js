@@ -2706,10 +2706,21 @@ describe('Test lib.js:', function () {
         });
 
         // This test must come after the warning count since it will affect the count
-        it('replaces missing matches with fallback value', function () {
+        it('replaces template specifiers where the key is missing with the specifier', () => {
             expect(
                 Lib.hovertemplateString({
                     data: [{ group: 1 }],
+                    fallback: 'Planet Express',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 %{trace}');
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces template specifiers where the value is undefined with the fallback value', () => {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ group: 1, trace: undefined }],
                     fallback: 'Planet Express',
                     template: 'foo %{group} %{trace}'
                 })
@@ -2762,10 +2773,21 @@ describe('Test lib.js:', function () {
         });
 
         // This test must come after the warning count since it will affect the count
-        it('replaces missing matches with fallback value', function () {
+        it('replaces template specifiers where the key is missing with the specifier', () => {
             expect(
                 Lib.texttemplateString({
                     data: [{ group: 1 }],
+                    fallback: 'Zoidberg',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 %{trace}');
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces template specifiers where the value is undefined with the fallback value', () => {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ group: 1, trace: undefined }],
                     fallback: 'Zoidberg',
                     template: 'foo %{group} %{trace}'
                 })
