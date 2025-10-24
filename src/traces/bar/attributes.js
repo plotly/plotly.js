@@ -2,8 +2,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var constants = require('./constants');
@@ -21,38 +20,44 @@ var textFontAttrs = fontAttrs({
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-var markerLineWidth = extendFlat({},
-    scatterMarkerLineAttrs.width, { dflt: 0 });
+var markerLineWidth = extendFlat({}, scatterMarkerLineAttrs.width, { dflt: 0 });
 
-var markerLine = extendFlat({
-    width: markerLineWidth,
-    editType: 'calc'
-}, colorScaleAttrs('marker.line'));
+var markerLine = extendFlat(
+    {
+        width: markerLineWidth,
+        editType: 'calc'
+    },
+    colorScaleAttrs('marker.line')
+);
 
-var marker = extendFlat({
-    line: markerLine,
-    editType: 'calc'
-}, colorScaleAttrs('marker'), {
-    opacity: {
-        valType: 'number',
-        arrayOk: true,
-        dflt: 1,
-        min: 0,
-        max: 1,
-        editType: 'style',
-        description: 'Sets the opacity of the bars.'
+var marker = extendFlat(
+    {
+        line: markerLine,
+        editType: 'calc'
     },
-    pattern: pattern,
-    cornerradius: {
-        valType: 'any',
-        editType: 'calc',
-        description: [
-            'Sets the rounding of corners. May be an integer number of pixels,',
-            'or a percentage of bar width (as a string ending in %). Defaults to `layout.barcornerradius`.',
-            'In stack or relative barmode, the first trace to set cornerradius is used for the whole stack.'
-        ].join(' ')
-    },
-});
+    colorScaleAttrs('marker'),
+    {
+        opacity: {
+            valType: 'number',
+            arrayOk: true,
+            dflt: 1,
+            min: 0,
+            max: 1,
+            editType: 'style',
+            description: 'Sets the opacity of the bars.'
+        },
+        pattern: pattern,
+        cornerradius: {
+            valType: 'any',
+            editType: 'calc',
+            description: [
+                'Sets the rounding of corners. May be an integer number of pixels,',
+                'or a percentage of bar width (as a string ending in %). Defaults to `layout.barcornerradius`.',
+                'In stack or relative barmode, the first trace to set cornerradius is used for the whole stack.'
+            ].join(' ')
+        }
+    }
+);
 
 module.exports = {
     x: scatterAttrs.x,
@@ -72,13 +77,11 @@ module.exports = {
     yhoverformat: axisHoverFormat('y'),
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: scatterAttrs.hovertext,
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     textposition: {
         valType: 'enumerated',
@@ -198,9 +201,7 @@ module.exports = {
         min: 0,
         arrayOk: true,
         editType: 'calc',
-        description: [
-            'Sets the bar width (in position axis units).'
-        ].join(' ')
+        description: ['Sets the bar width (in position axis units).'].join(' ')
     },
 
     marker: marker,
@@ -226,5 +227,5 @@ module.exports = {
         textfont: scatterAttrs.unselected.textfont,
         editType: 'style'
     },
-    zorder: scatterAttrs.zorder,
+    zorder: scatterAttrs.zorder
 };

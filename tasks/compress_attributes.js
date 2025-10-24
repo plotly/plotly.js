@@ -1,31 +1,23 @@
 const fs = require('fs');
 
 /**
- * ESBuild plugin that strips out meta attributes
- * of the plotly.js bundles
+ * esbuild plugin that strips out meta attributes of the plotly.js
+ * bundles. This helps reduce the file size for the build.
  */
 
-var WHITESPACE_BEFORE = '\\s*';
-var OPTIONAL_COMMA = ',?';
+const WHITESPACE_BEFORE = '\\s*';
+const OPTIONAL_COMMA = ',?';
 
-// one line string with or without trailing comma
-function makeStringRegex(attr) {
-    return makeRegex(WHITESPACE_BEFORE + attr + ": '.*'" + OPTIONAL_COMMA);
-}
+// Match one line string
+const makeStringRegex = (attr) => makeRegex(attr + ": '.*'");
 
-// joined array of strings with or without trailing comma
-function makeJoinedArrayRegex(attr) {
-    return makeRegex(WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\(.*' + OPTIONAL_COMMA);
-}
+// Match joined array of strings
+const makeJoinedArrayRegex = (attr) => makeRegex(attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\([\\s\\S]*?\\)');
 
-// array with or without trailing comma
-function makeArrayRegex(attr) {
-    return makeRegex(WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + OPTIONAL_COMMA);
-}
+// Match array
+const makeArrayRegex = (attr) => makeRegex(attr + ': \\[[\\s\\S]*?\\]');
 
-function makeRegex(regexStr) {
-    return new RegExp(regexStr, 'g');
-}
+const makeRegex = (regexStr) => new RegExp(WHITESPACE_BEFORE + regexStr + OPTIONAL_COMMA, 'g');
 
 const allRegexes = [
     makeStringRegex('description'),
@@ -39,7 +31,6 @@ const allRegexes = [
 const esbuildPluginStripMeta = {
     name: 'strip-meta-attributes',
     setup(build) {
-        const loader = 'js';
         build.onLoad({ filter: /\.js$/ }, async (file) => ({
             contents: await fs.promises.readFile(file.path, 'utf-8').then((c) => {
                 allRegexes.forEach((r) => {
@@ -47,7 +38,7 @@ const esbuildPluginStripMeta = {
                 });
                 return c;
             }),
-            loader
+            loader: 'js'
         }));
     }
 };

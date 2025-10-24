@@ -1,7 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
@@ -30,9 +29,8 @@ module.exports = {
     },
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['real', 'imag', 'text']
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['real', 'imag', 'text'] }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: scatterAttrs.hovertext,
 
     line: {
@@ -49,7 +47,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, { dflt: false }),
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,
@@ -76,6 +74,7 @@ module.exports = {
     }),
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected

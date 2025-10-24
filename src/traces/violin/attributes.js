@@ -38,7 +38,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the bandwidth used to compute the kernel density estimate.',
-            'By default, the bandwidth is determined by Silverman\'s rule of thumb.'
+            "By default, the bandwidth is determined by Silverman's rule of thumb."
         ].join(' ')
     },
 
@@ -50,7 +50,7 @@ module.exports = {
             'If there are multiple violins that should be sized according to',
             'to some metric (see `scalemode`), link them by providing a non-empty group id here',
             'shared by every trace in the same group.',
-            'If a violin\'s `width` is undefined, `scalegroup` will default to the trace\'s name.',
+            "If a violin's `width` is undefined, `scalegroup` will default to the trace's name.",
             'In this case, violins with the same names will be linked together'
         ].join(' ')
     },
@@ -74,17 +74,17 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the method by which the span in data space where the density function will be computed.',
-            '*soft* means the span goes from the sample\'s minimum value minus two bandwidths',
-            'to the sample\'s maximum value plus two bandwidths.',
-            '*hard* means the span goes from the sample\'s minimum to its maximum value.',
+            "*soft* means the span goes from the sample's minimum value minus two bandwidths",
+            "to the sample's maximum value plus two bandwidths.",
+            "*hard* means the span goes from the sample's minimum to its maximum value.",
             'For custom span settings, use mode *manual* and fill in the `span` attribute.'
         ].join(' ')
     },
     span: {
         valType: 'info_array',
         items: [
-            {valType: 'any', editType: 'calc'},
-            {valType: 'any', editType: 'calc'}
+            { valType: 'any', editType: 'calc' },
+            { valType: 'any', editType: 'calc' }
         ],
         editType: 'calc',
         description: [
@@ -145,7 +145,7 @@ module.exports = {
         description: [
             'Sets the width of the violin in data coordinates.',
             'If *0* (default value) the width is automatically selected based on the positions',
-            'of other violin traces in the same subplot.',
+            'of other violin traces in the same subplot.'
         ].join(' ')
     }),
 
@@ -153,6 +153,7 @@ module.exports = {
     text: boxAttrs.text,
     hovertext: boxAttrs.hovertext,
     hovertemplate: boxAttrs.hovertemplate,
+    hovertemplatefallback: boxAttrs.hovertemplatefallback,
 
     quartilemethod: boxAttrs.quartilemethod,
 
@@ -161,9 +162,7 @@ module.exports = {
             valType: 'boolean',
             dflt: false,
             editType: 'plot',
-            description: [
-                'Determines if an miniature box plot is drawn inside the violins. '
-            ].join(' ')
+            description: ['Determines if an miniature box plot is drawn inside the violins. '].join(' ')
         },
         width: {
             valType: 'number',
@@ -173,7 +172,7 @@ module.exports = {
             editType: 'plot',
             description: [
                 'Sets the width of the inner box plots relative to',
-                'the violins\' width.',
+                "the violins' width.",
                 'For example, with 1, the inner box plots are as wide as the violins.'
             ].join(' ')
         },
@@ -205,7 +204,7 @@ module.exports = {
             dflt: false,
             editType: 'plot',
             description: [
-                'Determines if a line corresponding to the sample\'s mean is shown',
+                "Determines if a line corresponding to the sample's mean is shown",
                 'inside the violins.',
                 'If `box.visible` is turned on, the mean line is drawn inside the inner box.',
                 'Otherwise, the mean line is drawn from one side of the violin to other.'

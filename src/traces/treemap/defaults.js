@@ -20,13 +20,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var labels = coerce('labels');
     var parents = coerce('parents');
 
-    if(!labels || !labels.length || !parents || !parents.length) {
+    if (!labels || !labels.length || !parents || !parents.length) {
         traceOut.visible = false;
         return;
     }
 
     var vals = coerce('values');
-    if(vals && vals.length) {
+    if (vals && vals.length) {
         coerce('branchvalues');
     } else {
         coerce('count');
@@ -36,7 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('maxdepth');
 
     var packing = coerce('tiling.packing');
-    if(packing === 'squarify') {
+    if (packing === 'squarify') {
         coerce('tiling.squarifyratio');
     }
 
@@ -45,10 +45,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var text = coerce('text');
     coerce('texttemplate');
-    if(!traceOut.texttemplate) coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+label' : 'label');
+    coerce('texttemplatefallback');
+    if (!traceOut.texttemplate) coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+label' : 'label');
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var hasPathbar = coerce('pathbar.visible');
 
@@ -66,12 +68,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var bottomText = traceOut.textposition.indexOf('bottom') !== -1;
 
     handleMarkerDefaults(traceIn, traceOut, layout, coerce);
-    var withColorscale = traceOut._hasColorscale = (
-        hasColorscale(traceIn, 'marker', 'colors') ||
-        (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
-    );
-    if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
+    var withColorscale = (traceOut._hasColorscale =
+        hasColorscale(traceIn, 'marker', 'colors') || (traceIn.marker || {}).coloraxis); // N.B. special logic to consider "values" colorscales
+    if (withColorscale) {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: 'marker.', cLetter: 'c' });
     } else {
         coerce('marker.depthfade', !(traceOut.marker.colors || []).length);
     }
@@ -94,7 +94,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     };
 
-    if(hasPathbar) {
+    if (hasPathbar) {
         // This works even for multi-line labels as treemap pathbar trim out line breaks
         coerce('pathbar.thickness', traceOut.pathbar.textfont.size + 2 * TEXTPAD);
 
