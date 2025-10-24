@@ -96,8 +96,11 @@ exports.shapeTexttemplateAttrs = ({ editType = 'arraydraw', newshape } = {}, ext
 });
 
 exports.templatefallbackAttrs = ({ editType = 'none' } = {}) => ({
-    valType: 'string',
+    valType: 'any',
     dflt: '-',
     editType,
-    description: "Fallback value that's displayed when a variable referenced in a template has an undefined value."
+    description: [
+        "Fallback string that's displayed when a variable referenced in a template is missing.",
+        "If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed."
+    ].join(' ')
 });

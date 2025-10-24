@@ -2706,18 +2706,18 @@ describe('Test lib.js:', function () {
         });
 
         // This test must come after the warning count since it will affect the count
-        it('replaces template specifiers where the key is missing with the specifier', () => {
+        it('replaces template specifiers with the specifier when fallback is false', () => {
             expect(
                 Lib.hovertemplateString({
                     data: [{ group: 1 }],
-                    fallback: 'Planet Express',
+                    fallback: false,
                     template: 'foo %{group} %{trace}'
                 })
             ).toEqual('foo 1 %{trace}');
         });
 
         // This test must come after the warning count since it will affect the count
-        it('replaces template specifiers where the value is undefined with the fallback value', () => {
+        it('replaces template specifiers with the fallback value when fallback is provided', () => {
             expect(
                 Lib.hovertemplateString({
                     data: [{ group: 1, trace: undefined }],
@@ -2773,18 +2773,18 @@ describe('Test lib.js:', function () {
         });
 
         // This test must come after the warning count since it will affect the count
-        it('replaces template specifiers where the key is missing with the specifier', () => {
+        it('replaces template specifiers with the specifier when fallback is false', () => {
             expect(
                 Lib.texttemplateString({
                     data: [{ group: 1 }],
-                    fallback: 'Zoidberg',
+                    fallback: false,
                     template: 'foo %{group} %{trace}'
                 })
             ).toEqual('foo 1 %{trace}');
         });
 
         // This test must come after the warning count since it will affect the count
-        it('replaces template specifiers where the value is undefined with the fallback value', () => {
+        it('replaces template specifiers with the fallback value when fallback is provided', () => {
             expect(
                 Lib.texttemplateString({
                     data: [{ group: 1, trace: undefined }],

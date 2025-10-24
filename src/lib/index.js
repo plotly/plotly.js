@@ -1118,7 +1118,7 @@ var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
  *
  * @param {object}  options - Configuration object
  * @param {array}   options.data - Data objects containing substitution values
- * @param {string}  options.fallback - Fallback value when substitution fails
+ * @param {boolean|string}  options.fallback - Fallback value when substitution fails. If false, the specifier is used.
  * @param {object}  options.labels - Data object containing fallback text when no formatting is specified, ex.: {yLabel: 'formattedYValue'}
  * @param {object}  options.locale - D3 locale for formatting
  * @param {object}  options.opts - Additional options
@@ -1151,47 +1151,43 @@ function templateFormatString({ data = [], locale, fallback, labels = {}, opts, 
             parsedNumber = _match.number;
         }
 
-        let keyIsMissing = true;
         let value = undefined;
         if (hasOther) {
             // 'other' specifiers that are undefined return an empty string by design
             if (labels[key] === undefined) return '';
             value = labels[key];
-            keyIsMissing = false;
         } else {
             for (const obj of data) {
                 if (!obj) continue;
                 if (obj.hasOwnProperty(key)) {
                     value = obj[key];
-                    keyIsMissing = false;
                     break;
                 }
 
                 if (!SIMPLE_PROPERTY_REGEX.test(key)) {
                     // true here means don't convert null to undefined
                     value = lib.nestedProperty(obj, key).get(true);
-                    keyIsMissing = false;
                 }
                 if (value !== undefined) break;
             }
         }
 
-        if (keyIsMissing) {
+        if (value === undefined) {
             const { count, max, name } = opts;
-            if (count < max)
+            const fallbackValue = fallback === false ? match : fallback;
+            if (count < max) {
                 lib.warn(
                     [
                         `Variable '${key}' in ${name} could not be found!`,
-                        'Please verify that the template is correct.'
+                        'Please verify that the template is correct.',
+                        `Using value: '${fallbackValue}'.`
                     ].join(' ')
                 );
+            }
             if (count === max) lib.warn(`Too many '${name}' warnings - additional warnings will be suppressed.`);
             opts.count++;
 
-            return match;
-        } else if (value === undefined) {
-            // In this case, the actual value in the data set is 'undefined', so use fallback without warning
-            return fallback;
+            return fallbackValue;
         }
 
         if (parsedOp === '*') value *= parsedNumber;
