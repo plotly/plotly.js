@@ -3,6 +3,7 @@
     {
       "type": "treemap",
       "texttemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
+      "texttemplatefallback": false,
       "hovertemplate": "<sup>%{currentPath}<b>%{label}</b></sup><br><b>%{text}</b><br>%{value}<br>%{parent} <=> %{percentParent}<br>%{entry} <=> %{percentEntry}<br>%{root} <=> %{percentRoot}",
       "name": "without values",
       "level": "Oscar",
