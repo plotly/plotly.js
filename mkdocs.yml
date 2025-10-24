@@ -62,13 +62,14 @@ markdown_extensions:
 
 extra_css:
   - css/extra_css.css
+  - css/code-highlight.css
   - https://docs.plotly.com/css/plotly-style.css
   - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
-#   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
+  # - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
 
-# extra_javascript:
-#   - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js
-#   - javascript/highlight.js
+extra_javascript:
+  - javascript/highlight.js
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js
 
 nav:
 - Home: index.md
