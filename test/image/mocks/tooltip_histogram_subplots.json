@@ -1,0 +1,74 @@
+{
+  "data": [
+    {
+      "x": [15.2, 15.0, 17.2, 7.5, 9.7, 10.4, 13.8, 19.1, 6.9, 11.0, 13.3, 5.8, 9.3, 1.6, 18.6, 11.8, 16.3, 16.5, 18.5, 6.1],
+      "name": "H1",
+      "type": "histogram",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "x": [9.9, 6.9, 17.1, 3.7, 15.5, 3.2, 1.4, 15.6, 18.0, 4.9, 12.0, 14.7, 18.0, 9.4, 2.4, 9.1, 3.9, 9.8, 2.3, 13.0],
+      "name": "H2",
+      "type": "histogram",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "y": [8.4, 17.8, 7.4, 1.1, 9.4, 11.2, 9.5, 9.1, 10.5, 19.2, 2.4, 10.1, 0.8, 11.8, 3.8, 15.3, 16.8, 19.2, 16.9, 6.7],
+      "name": "H3",
+      "type": "histogram",
+      "xaxis": "x3",
+      "yaxis": "y3"
+    }
+  ],
+  "layout": {
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "pattern": "independent",
+      "ygap": 0.35
+    },
+    "xaxis": {
+      "title": {
+        "text": "X1 Axis"
+      }
+    },
+    "yaxis": {
+      "title": {
+        "text": "Y1 Axis"
+      }
+    },
+    "xaxis2": {
+      "title": {
+        "text": "X2 Axis"
+      }
+    },
+    "yaxis2": {
+      "title": {
+        "text": "Y2 Axis"
+      }
+    },
+    "xaxis3": {
+      "title": {
+        "text": "X3 Axis"
+      }
+    },
+    "yaxis3": {
+      "title": {
+        "text": "Y3 Axis"
+      }
+    }
+  },
+  "config": {
+    "editable": true,
+    "modeBarButtonsToAdd": [
+      "tooltip",
+      "hoverclosest",
+      "hovercompare",
+      "togglespikelines"
+    ],
+    "displaylogo": false,
+    "displayModeBar": true
+  }
+}

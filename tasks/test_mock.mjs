@@ -227,6 +227,8 @@ function notBlackListed(name) {
         'texttemplate',
         'texttemplate_scatter',
         'titles-avoid-labels',
+        'tooltip_candlestick_double-y-axis',
+        'tooltip_gl2d_pointcloud-basic',
         'trace_metatext',
         'updatemenus',
         'violin_non-linear',

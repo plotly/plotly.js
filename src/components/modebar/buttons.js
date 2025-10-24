@@ -7,6 +7,7 @@ var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
 var Lib = require('../../lib');
 var _ = Lib._;
+var lodash = require('lodash');  // Import lodash, not using default _
 
 var modeBarButtons = module.exports = {};
 
@@ -656,6 +657,211 @@ modeBarButtons.toggleSpikelines = {
         Registry.call('_guiRelayout', gd, setSpikelineVisibility(gd));
     }
 };
+
+// Define default template and style
+var DEFAULT_TEMPLATES = {
+    date_x: '%{x|%Y-%m-%d}', // xaxis.type == "date"
+    date_y: '%{y|%Y-%m-%d}',
+    multicategory_x: '%{x}', // xaxis.type == "multicategory"
+    multicategory_y: '%{y}',
+    category_x: '%{x}', // xaxis.type == "category"
+    category_y: '%{y}',
+    x: 'x: %{x:.4~g}',
+    y: 'y: %{y:.4~g}',
+    z: 'z: %{z}',
+};
+
+var DEFAULT_STYLE = {
+    align: 'left',
+    arrowcolor: 'black',
+    arrowhead: 3,
+    arrowsize: 1.8,
+    arrowwidth: 1,
+    font: {
+        color: 'black',
+        family: 'Arial',
+        size: 12
+    },
+    showarrow: true,
+    xanchor: 'left'
+};
+
+modeBarButtons.tooltip = {
+    name: 'tooltip',
+    title: function(gd) { return _(gd, 'Add Tooltip to Points'); },
+    icon: Icons.tooltip_annotate,
+    attr: '_tooltipEnabled',
+    val: 'on',
+    click: function(gd) {
+        var fullLayout = gd._fullLayout;
+        var tooltipEnabled = fullLayout._tooltipEnabled;
+
+        fullLayout._tooltipEnabled = tooltipEnabled === 'on' ? 'off' : 'on';
+
+        if(fullLayout._tooltipEnabled === 'on') {
+            gd._tooltipClickHandler = function(data) {
+                var traceIndex = data.points[0].curveNumber;
+                var trace = gd.data[traceIndex];
+                var pts = data.points[0];
+
+                // handle missing axis in data.points[0] (in scattercarpet)
+                if(pts.xaxis === undefined) pts.xaxis = fullLayout.xaxis;
+                if(pts.yaxis === undefined) pts.yaxis = fullLayout.yaxis;
+
+                // Build the default tooltip template dynamically based on available data fields
+                var defaultTemplateParts = [];
+                var xAxisType = pts.xaxis.type;
+                var yAxisType = pts.yaxis.type;
+                if(pts.x !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.hasOwnProperty(xAxisType + '_x') ? DEFAULT_TEMPLATES[xAxisType + '_x'] : DEFAULT_TEMPLATES.x);
+                if(pts.y !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.hasOwnProperty(yAxisType + '_y') ? DEFAULT_TEMPLATES[yAxisType + '_y'] : DEFAULT_TEMPLATES.y);
+                if(pts.z !== undefined) defaultTemplateParts.push(DEFAULT_TEMPLATES.z);
+                // not consistent:
+                // box: missing max, upper fence... in data.points[0]
+
+                var defaultTemplate = defaultTemplateParts.join('<br>');
+
+                var userTemplate = trace.tooltiptemplate || gd._fullData[traceIndex].tooltiptemplate || defaultTemplate; // Use user defined tooltiptemplate, or trace default if availabe
+                var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
+                addTooltip(gd, data, userTemplate, customStyle);
+            };
+            gd.on('plotly_click', gd._tooltipClickHandler);
+        } else {
+            gd.removeListener('plotly_click', gd._tooltipClickHandler);
+        }
+
+        if(!gd._relayoutHandlerAdded) {
+            gd._relayoutHandlerAdded = true;
+            gd.on('plotly_relayout', function(eventData) {
+                removeEmptyAnnotations(gd, eventData);
+            });
+        }
+    }
+};
+
+function clickPointToCoord(gd, data) {
+    var pts = data.points[0];
+    var xaxis = pts.xaxis;
+    var yaxis = pts.yaxis;
+    var bb = data.event.target.getBoundingClientRect();
+
+    // pixel to Cartesian coordinates
+    var x = xaxis.p2c(data.event.clientX - bb.left);
+    var y = yaxis.p2c(data.event.clientY - bb.top);
+
+    return {x: x, y: y};
+}
+
+function stackedCoord(gd, pts) {
+    // Retrieve coordinates of clicked point on stacked traces
+
+    // Get curve data
+    var cd = gd.calcdata[pts.curveNumber];
+
+    // Get clicked point
+    var clickedPoint = cd.filter(function(item) {
+        // cd[0] holds more information than next items
+        // for stacked scatter, orientation is found in cd[0].t.orientation
+        // for bar, orientation is found in pts.fullData.orientation
+        // string category coordinates are only found in pts.x, pts.y. cd[0].x, cd[0].y are numeric
+        // item.i and pts.pointIndex are null on interpolated data
+        // pts.xaxis.d2c gives category coordinate index
+        if(pts.pointIndex !== null) {
+            return item.i === pts.pointIndex;
+        }
+        if(pts.fullData.orientation === "v" || (cd[0] && cd[0].t && cd[0].t.orientation) === "v") {
+            return item.x === pts.xaxis.d2c(pts.x);
+        }
+        if(pts.fullData.orientation === "h" || (cd[0] && cd[0].t && cd[0].t.orientation) === "h") {
+            return item.y === pts.yaxis.d2c(pts.y);
+        }
+    });
+
+    if(clickedPoint.length) {
+        var x = clickedPoint[0].x;
+        var y = clickedPoint[0].y;
+        return {x: x, y: y};
+    } else {
+        return {x: pts.x, y: pts.y};
+    }
+}
+
+function addTooltip(gd, data, userTemplate, customStyle) {
+    var pts = data.points[0];
+    var fullLayout = gd._fullLayout;
+
+    if(pts && pts.xaxis && pts.yaxis && fullLayout) {
+        // Convert template to text using Plotly hovertemplate formatting method
+        var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
+
+        var x = pts.x;
+        var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
+
+        // Handle stacked traces
+        // not consistent:
+        // bar plots are stacked with barmode == "stack"
+        // scatter plotas are stacked when stackgroup is set
+        if(fullLayout.barmode == "stack" || (pts.fullData && pts.fullData.stackgroup && pts.fullData.stackgroup !== "")){
+            var {x, y} = stackedCoord(gd, pts);
+        }
+
+        // Handle histogram with more than one curve (bars displayed side to side)
+        // This ensures the tooltip is on the clicked bar and not always on the middle bar
+        if(pts.fullData && ['bar', 'box', 'histogram', 'violin', 'waterfall'].includes(pts.fullData.type) && fullLayout._dataLength) {
+            var clickCoord = clickPointToCoord(gd, data);
+            if(pts.fullData.orientation === 'v') {
+                x = clickCoord.x;
+            }
+            if(pts.fullData.orientation === 'h') {
+                y = clickCoord.y;
+            }
+        }
+
+        // Retrieve the proper axis ids for xref and yref
+        var xAxisName = 'x' + (pts.xaxis._id !== 'x' ? pts.xaxis._id.replace('x', '') : '');
+        var yAxisName = 'y' + (pts.yaxis._id !== 'y' ? pts.yaxis._id.replace('y', '') : '');
+
+        var newAnnotation = {
+            // Handle log axis https://plotly.com/javascript/text-and-annotations/#annotations-with-log-axes
+            x: pts.xaxis.type === 'log' ? Math.log10(x) : x,
+            y: pts.yaxis.type === 'log' ? Math.log10(y) : y,
+            xref: xAxisName,
+            yref: yAxisName,
+            text: text,
+            showarrow: true,
+            ax: 5,
+            ay: -20
+        };
+
+        lodash.defaults(newAnnotation, customStyle);
+
+        // Prevent having multiple tooltip annotations on the same point (useful when user wants to annotate nearby points)
+        // Does not prevent multiple tooltips on histogram (would not be useful on bars)
+        var existingIndex = fullLayout.annotations.findIndex(function(ann) {
+            return ann.x === x && ann.y === y && ann.xref === xAxisName && ann.yref === yAxisName;
+        });
+
+        if(existingIndex === -1) {
+            fullLayout.annotations.push(newAnnotation);
+            var aObj = { annotations: fullLayout.annotations };
+            Registry.call('_guiRelayout', gd, aObj);
+        }
+    }
+}
+
+function removeEmptyAnnotations(gd, eventData) {
+    for(var key in eventData) {
+        if(key.includes('annotations[') && key.includes('].text')) {
+            var index = key.match(/annotations\[(\d+)\]\.text/)[1];
+            if(eventData[key] === '') {
+                var updatedAnnotations = gd.layout.annotations || [];
+                updatedAnnotations.splice(index, 1);
+                var aObj = { annotations: updatedAnnotations };
+                Registry.call('_guiRelayout', gd, aObj);
+                break;
+            }
+        }
+    }
+}
 
 function setSpikelineVisibility(gd) {
     var fullLayout = gd._fullLayout;

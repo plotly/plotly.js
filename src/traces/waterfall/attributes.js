@@ -5,6 +5,7 @@ var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -85,6 +86,11 @@ module.exports = {
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['name', 'x', 'y', 'text', 'initial', 'delta', 'final']
     }),
+
+    tooltip: barAttrs.tooltip,
+    tooltiptemplate: extendFlat({}, tooltiptemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }), {dflt: 'initial: %{initial}<br>delta: %{delta}<br>final: %{final}'}),
 
     textinfo: {
         valType: 'flaglist',

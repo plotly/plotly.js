@@ -42,6 +42,8 @@ module.exports = extendFlat({
     yhoverformat: axisHoverFormat('y'),
     zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: heatmapAttrs.hovertemplate,
+    tooltip: heatmapAttrs.tooltip,
+    tooltiptemplate: heatmapAttrs.tooltiptemplate,
     texttemplate: extendFlat({}, heatmapAttrs.texttemplate, {
         description: [
             'For this trace it only has an effect if `coloring` is set to *heatmap*.',

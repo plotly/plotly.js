@@ -35,6 +35,8 @@ var attrs = module.exports = overrideAll({
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
+    tooltip: scatterAttrs.tooltip,
+    tooltiptemplate: scatterAttrs.tooltiptemplate,
 
     textposition: scatterAttrs.textposition,
     textfont: fontAttrs({
@@ -112,3 +114,5 @@ var attrs = module.exports = overrideAll({
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
 attrs.hovertemplate = scatterAttrs.hovertemplate;
 attrs.texttemplate = scatterAttrs.texttemplate;
+attrs.tooltip = scatterAttrs.tooltip;
+attrs.tooltiptemplate = scatterAttrs.tooltiptemplate;

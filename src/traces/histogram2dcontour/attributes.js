@@ -44,7 +44,9 @@ module.exports = extendFlat({
     zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: histogram2dAttrs.hovertemplate,
     texttemplate: contourAttrs.texttemplate,
-    textfont: contourAttrs.textfont
+    textfont: contourAttrs.textfont,
+    tooltip: histogram2dAttrs.tooltip,
+    tooltiptemplate: histogram2dAttrs.tooltiptemplate
 },
     colorScaleAttrs('', {
         cLetter: 'z',

@@ -3,6 +3,8 @@
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+var annotationAttrs = require('../../components/annotations/attributes');
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
@@ -217,6 +219,16 @@ module.exports = {
         textfont: scatterAttrs.selected.textfont,
         editType: 'style'
     },
+
+    tooltip: {values: extendFlat({}, annotationAttrs),
+        valType: 'any',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'calc'
+    },
+    tooltiptemplate: tooltiptemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
+
     unselected: {
         marker: {
             opacity: scatterAttrs.unselected.marker.opacity,

@@ -38,6 +38,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('texttemplate');
     coerce('hovertext');
 
+    coerce('tooltip');
+    coerce('tooltiptemplate');
+
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
     coerce('mode', defaultMode);
 

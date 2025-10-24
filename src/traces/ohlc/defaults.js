@@ -30,6 +30,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('tickwidth');
 
+    coerce('tooltip');
+    coerce('tooltiptemplate');
+
     layout._requestRangeslider[traceOut.xaxis] = true;
 
     coerce('zorder');
