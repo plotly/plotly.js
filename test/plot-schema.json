@@ -4817,10 +4817,10 @@
       "valType": "string"
      },
      "texttemplatefallback": {
-      "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+      "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
       "dflt": "-",
       "editType": "none",
-      "valType": "string"
+      "valType": "any"
      },
      "xanchor": {
       "description": "Sets the label's horizontal position anchor This anchor binds the specified `textposition` to the *left*, *center* or *right* of the label text. For example, if `textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the new shape.",
@@ -9618,10 +9618,10 @@
         "valType": "string"
        },
        "texttemplatefallback": {
-        "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+        "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
         "dflt": "-",
         "editType": "arraydraw",
-        "valType": "string"
+        "valType": "any"
        },
        "xanchor": {
         "description": "Sets the label's horizontal position anchor This anchor binds the specified `textposition` to the *left*, *center* or *right* of the label text. For example, if `textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the shape.",
@@ -16832,10 +16832,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -18484,10 +18484,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -19050,10 +19050,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -20655,10 +20655,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -25239,10 +25239,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -26533,10 +26533,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -27823,10 +27823,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -29146,10 +29146,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -30726,10 +30726,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -31092,10 +31092,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "transpose": {
      "description": "Transposes the z data.",
@@ -33563,10 +33563,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -34791,10 +34791,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -35468,10 +35468,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -36992,10 +36992,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -37515,10 +37515,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -38222,10 +38222,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -39371,10 +39371,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -39693,10 +39693,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "transpose": {
      "description": "Transposes the z data.",
@@ -40544,10 +40544,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -42028,10 +42028,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "type": "histogram",
     "uid": {
@@ -43205,10 +43205,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -43535,10 +43535,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "type": "histogram2d",
     "uid": {
@@ -44914,10 +44914,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -45289,10 +45289,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "type": "histogram2dcontour",
     "uid": {
@@ -45858,10 +45858,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -47594,10 +47594,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -47963,10 +47963,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -50503,10 +50503,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -52057,10 +52057,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -53512,10 +53512,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "labelfont": {
      "color": {
@@ -54393,10 +54393,10 @@
       "valType": "string"
      },
      "hovertemplatefallback": {
-      "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+      "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
       "dflt": "-",
       "editType": "plot",
-      "valType": "string"
+      "valType": "any"
      },
      "reversescale": {
       "description": "Reverses the color mapping if true. Has an effect only if in `line.color` is set to a numerical array. If true, `line.cmin` will correspond to the last color in the array and `line.cmax` will correspond to the first color.",
@@ -56372,10 +56372,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -57262,10 +57262,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -58260,10 +58260,10 @@
       "valType": "string"
      },
      "hovertemplatefallback": {
-      "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+      "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
       "dflt": "-",
       "editType": "calc",
-      "valType": "string"
+      "valType": "any"
      },
      "hovertemplatesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -58637,10 +58637,10 @@
       "valType": "string"
      },
      "hovertemplatefallback": {
-      "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+      "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
       "dflt": "-",
       "editType": "calc",
-      "valType": "string"
+      "valType": "any"
      },
      "hovertemplatesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -59533,10 +59533,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -61490,10 +61490,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -62281,10 +62281,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -64284,10 +64284,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -64754,10 +64754,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -66660,10 +66660,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -67048,10 +67048,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -68959,10 +68959,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -69509,10 +69509,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -71277,10 +71277,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -71851,10 +71851,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -72992,10 +72992,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -73407,10 +73407,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -74548,10 +74548,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -74917,10 +74917,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -76844,10 +76844,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -77237,10 +77237,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -79014,10 +79014,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -79409,10 +79409,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -81340,10 +81340,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -81737,10 +81737,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -83656,10 +83656,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -84057,10 +84057,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -86667,10 +86667,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -87490,10 +87490,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -89045,10 +89045,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -90309,10 +90309,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -92158,10 +92158,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -93928,10 +93928,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
@@ -94352,10 +94352,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -96465,10 +96465,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "calc",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -97428,10 +97428,10 @@
      "valType": "string"
     },
     "hovertemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "none",
-     "valType": "string"
+     "valType": "any"
     },
     "hovertemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
@@ -98207,10 +98207,10 @@
      "valType": "string"
     },
     "texttemplatefallback": {
-     "description": "Fallback value that's displayed when a variable referenced in a template has an undefined value.",
+     "description": "Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.",
      "dflt": "-",
      "editType": "plot",
-     "valType": "string"
+     "valType": "any"
     },
     "texttemplatesrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `texttemplate`.",
