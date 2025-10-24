@@ -1937,7 +1937,7 @@ describe('Test treemap texttemplate without `values` should work:', function () 
                     'Eve',
                     'label: Cain, text: fourteen',
                     'Seth',
-                    'value: ', // N.B. there is no `values` array
+                    'value: -', // N.B. there is no `values` array
                     '17% of Eve',
                     '17% of Eve',
                     'Awan',
