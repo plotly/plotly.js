@@ -45,8 +45,44 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     var shapesWithLegend = (layoutOut.shapes || []).filter(function(d) { return d.showlegend; });
 
+    function isPieWithLegendArray(trace) {
+        return Registry.traceIs(trace, 'pie-like')
+            && trace._length != null
+            && (Array.isArray(trace.legend) || Array.isArray(trace.showlegend));
+    };
+    fullData
+        .filter(isPieWithLegendArray)
+        .map(function (trace, idx) {
+            if (trace.visible) {
+                legendTraceCount++;
+            }
+            for(var index = 0; index < trace._length; index++) {
+                var legend = (Array.isArray(trace.legend) ? trace.legend[index] : trace.legend) || 'legend';
+                if(legend === legendId) {
+                    // showlegend can be undefined, boolean or a boolean array.
+                    // will fall back to default if undefined or if array index is out-of-range
+                    if(
+                        !Array.isArray(trace.showlegend)
+                        ? trace.showlegend || trace._dfltShowLegend
+                        : trace.showlegend[index] == null
+                        ? trace._dfltShowLegend
+                        : trace.showlegend[index]
+                    ) {
+                        legendReallyHasATrace = true;
+                        legendTraceCount++;
+                    }
+                }
+            }
+            if(legendId === 'legend' && trace._length > trace.legend.length) {
+                for(var idx = trace.legend.length; idx < trace._length; idx++) {
+                    legendReallyHasATrace = true;
+                    legendTraceCount++;
+                }
+            }
+        });
+
     var allLegendItems = fullData.concat(shapesWithLegend).filter(function(d) {
-        return legendId === (d.legend || 'legend');
+        return !isPieWithLegendArray(trace) && legendId === (d.legend || 'legend');
     });
 
     for(var i = 0; i < allLegendItems.length; i++) {
@@ -82,7 +118,6 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
             Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
         }
-
         if((!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
             ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({ traceorder: defaultOrder }) ?
@@ -95,9 +130,15 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         }
     }
 
-    var showLegend = Lib.coerce(layoutIn, layoutOut,
-        basePlotLayoutAttributes, 'showlegend',
-        legendReallyHasATrace && (legendTraceCount > (legendId === 'legend' ? 1 : 0)));
+    var showLegend = Lib.coerce(
+      layoutIn,
+      layoutOut,
+      basePlotLayoutAttributes,
+      'showlegend',
+      layoutOut.showlegend ||
+        (legendReallyHasATrace &&
+          legendTraceCount > (legendId === 'legend' ? 1 : 0))
+    );
 
     // delete legend
     if(showLegend === false) layoutOut[legendId] = undefined;
@@ -230,7 +271,11 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     var legends = ['legend'];
     for(i = 0; i < allLegendsData.length; i++) {
-        Lib.pushUnique(legends, allLegendsData[i].legend);
+        if (Array.isArray(allLegendsData[i].legend)) {
+            Lib.extendFlat(legends, allLegendsData[i].legend);
+        } else {
+            Lib.pushUnique(legends, allLegendsData[i].legend);
+        }
     }
 
     layoutOut._legends = [];
