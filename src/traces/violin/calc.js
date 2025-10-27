@@ -39,7 +39,7 @@ module.exports = function calc(gd, trace) {
             // step that well covers the bandwidth and is multiple of span distance
             var dist = span[1] - span[0];
             var n = Math.ceil(dist / (bandwidth / 3));
-            var step = (n > 1) ? dist / (n - 1) : 0;
+            var step = dist / n;
 
             if(!isFinite(step) || !isFinite(n)) {
                 Lib.error('Something went wrong with computing the violin span');
@@ -48,9 +48,10 @@ module.exports = function calc(gd, trace) {
             }
 
             var kde = helpers.makeKDE(cdi, trace, vals);
-            cdi.density = new Array(n);
+            // n is number of intervals, so we need n+1 sample points
+            cdi.density = new Array(n + 1);
 
-            for(var k = 0; k < n; k++) {
+            for(var k = 0; k <= n; k++) {
                 var t = span[0] + k * step;
                 var v = kde(t);
                 cdi.density[k] = {v: v, t: t};
