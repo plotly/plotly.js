@@ -39,7 +39,7 @@ module.exports = function calc(gd, trace) {
             // step that well covers the bandwidth and is multiple of span distance
             var dist = span[1] - span[0];
             var n = Math.ceil(dist / (bandwidth / 3));
-            var step = dist/ n;
+            var step = dist / n;
 
             if(!isFinite(step) || !isFinite(n)) {
                 Lib.error('Something went wrong with computing the violin span');
