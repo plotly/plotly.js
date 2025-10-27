@@ -337,7 +337,7 @@ function drawOne(gd, opts) {
                 legend.on('wheel', function() {
                     scrollBoxY = Lib.constrain(
                         legendObj._scrollY +
-                            ((d3.event.deltaY / scrollBarYMax) * scrollBoxYMax),
+                            ((d3.event.deltaY / scrollBoxYMax) * scrollBarYMax),
                         0, scrollBoxYMax);
                     scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
                     if(scrollBoxY !== 0 && scrollBoxY !== scrollBoxYMax) {
@@ -769,17 +769,24 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    
-    var { maxheight, orientation, yref } = legendObj;
-    var heightToBeScaled = orientation === "v" && yref === "paper" ? gs.h : fullLayout.height;
-    legendObj._maxHeight = maxheight > 1 ? maxheight : maxheight * heightToBeScaled;
+    const { orientation, yref } = legendObj;
+    let { maxheight } = legendObj;
 
-    if (legendObj.yref === 'paper') {
+    if (yref === 'paper') {
         isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
         isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
     } else {
         isBelowPlotArea = legendObj.y * fullLayout.height < gs.b || (legendObj.y * fullLayout.height === gs.b && yanchor === 'top');
         isAbovePlotArea = legendObj.y * fullLayout.height > gs.b + gs.h || (legendObj.y * fullLayout.height === gs.b + gs.h && yanchor === 'bottom');
+    }
+
+    const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v" || yref !== "paper";
+    // Set default maxheight here since it depends on values passed in by user
+    maxheight ||= useFullLayoutHeight ? 0.5 : 1;
+    const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
+    legendObj._maxHeight = maxheight > 1 ? maxheight : maxheight * heightToBeScaled;
+
+    if (yref === 'container') {
         var maxAvailableHeight;
         if (yanchor === 'top') {
             maxAvailableHeight = legendObj.y * fullLayout.height;
@@ -789,8 +796,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             // yanchor is 'middle' or 'auto'
             maxAvailableHeight = 2 * Math.min(1 - legendObj.y, legendObj.y) * fullLayout.height;
         }
-        legendObj._maxHeight = Math.min(legendObj._maxHeight, maxAvailableHeight)
+        legendObj._maxHeight = Math.min(legendObj._maxHeight, maxAvailableHeight);
     }
+
     legendObj._maxHeight = Math.max(legendObj._maxHeight, 30);
 
     var toggleRectWidth = 0;

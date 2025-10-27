@@ -428,8 +428,8 @@ exports.drawMainTitle = function(gd) {
     });
 
     if(title.text && title.automargin) {
-        var titleObj = d3.selectAll('.gtitle');
-        var titleHeight = Drawing.bBox(d3.selectAll('.g-gtitle').node()).height;
+        var titleObj = d3.select(gd).selectAll('.gtitle');
+        var titleHeight = Drawing.bBox(d3.select(gd).selectAll('.g-gtitle').node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
@@ -455,7 +455,7 @@ exports.drawMainTitle = function(gd) {
             }
 
             // If there is a subtitle
-            var subtitleObj = d3.selectAll('.gtitle-subtitle');
+            var subtitleObj = d3.select(gd).selectAll('.gtitle-subtitle');
             if(subtitleObj.node()) {
                 // Get bottom edge of title bounding box
                 var titleBB = titleObj.node().getBBox();

@@ -14,5 +14,6 @@ tags
 
 .*
 !.circleci
+!.github/
 !.gitignore
 !.npmignore

@@ -1,47 +1,47 @@
 {
- "data": [
-  {
-   "type": "choropleth",
-   "locations": ["CAN", "USA", "RUS", "AUS", "FRA"],
-   "z": [80, 20, 100, 60, 40],
-   "colorscale": "Portland",
-   "zmin": 0,
-   "zmax": 100
-  },
-  {
-   "type": "scattergeo",
-   "mode": "markers+text",
-   "name": "some marker trace",
-   "lon": [0, -75, 100],
-   "lat": [0, 45, -30],
-   "marker": {
-    "size": [20, 30, 15],
-    "symbol": ["square", "cross", "diamond"]
-   },
-   "text": ["A", "B", "C"],
-   "textfont": {
-    "size": 20
-   },
-   "textposition": "top right"
-  }
- ],
- "layout": {
-  "geo": {
-   "projection": {
-    "type": "orthographic",
-    "rotation": {
-     "lon": -75,
-     "lat": 45
+  "data": [
+    {
+      "type": "choropleth",
+      "locations": ["CAN", "USA", "RUS", "AUS", "FRA"],
+      "z": [80, 20, 100, 60, 40],
+      "colorscale": "Portland",
+      "zmin": 0,
+      "zmax": 100
+    },
+    {
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "name": "some marker trace",
+      "lon": [0, -75, 100],
+      "lat": [0, 45, -30],
+      "marker": {
+        "size": [20, 30, 15],
+        "symbol": ["square", "cross", "diamond"]
+      },
+      "text": ["A", "B", "C"],
+      "textfont": {
+        "size": 20
+      },
+      "textposition": "top right"
     }
-   },
-   "showcoastlines": true,
-   "showcountries": true,
-   "showland": true,
-   "showocean": true
-  },
-  "autosize": false,
-  "width": 500,
-  "height": 500,
-  "showlegend": false
- }
+  ],
+  "layout": {
+    "geo": {
+      "projection": {
+        "type": "orthographic",
+        "rotation": {
+          "lon": -75,
+          "lat": 45
+        }
+      },
+      "showcoastlines": true,
+      "showcountries": true,
+      "showland": true,
+      "showocean": true
+    },
+    "autosize": false,
+    "width": 500,
+    "height": 500,
+    "showlegend": false
+  }
 }

@@ -33,9 +33,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     };
 
     var globalFont = layoutOut.font || {};
-    var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', globalFont, { overrideDflt: {
-        size: Math.round(globalFont.size * 1.1)
-    }});
+    var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', globalFont, {
+        overrideDflt: {
+            size: Math.round(globalFont.size * 1.1)
+        }
+    });
 
     var legendTraceCount = 0;
     var legendReallyHasATrace = false;
@@ -82,13 +84,13 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         }
 
         if((!isShape && Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
-                ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
-            defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
+            ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
+            defaultOrder = helpers.isGrouped({ traceorder: defaultOrder }) ?
                 'grouped+reversed' : 'reversed';
         }
 
         if(trace.legendgroup !== undefined && trace.legendgroup !== '') {
-            defaultOrder = helpers.isReversed({traceorder: defaultOrder}) ?
+            defaultOrder = helpers.isReversed({ traceorder: defaultOrder }) ?
                 'reversed+grouped' : 'grouped';
         }
     }
@@ -188,7 +190,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     coerce('xanchor', defaultXAnchor);
     coerce('yanchor', defaultYAnchor);
-    coerce('maxheight', isHorizontal ? 0.5 : 1);
+    coerce('maxheight');
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
@@ -237,10 +239,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
         groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
 
-        if(
-            layoutOut[legendId] &&
-            layoutOut[legendId].visible
-        ) {
+        if(layoutOut[legendId]) {
             layoutOut[legendId]._id = legendId;
         }
 

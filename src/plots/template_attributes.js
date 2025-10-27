@@ -22,6 +22,7 @@ function templateFormatStringDescription(opts) {
         'for details on the date formatting syntax.'
     ].join(' ');
 }
+exports.templateFormatStringDescription = templateFormatStringDescription;
 
 function shapeTemplateFormatStringDescription() {
     return [
@@ -75,7 +76,7 @@ exports.hovertemplateAttrs = function(opts, extra) {
             'The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
             'Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
             descPart,
-            'Anything contained in tag `<extra>` is displayed in the secondary box, for example "<extra>{fullData.name}</extra>".',
+            'Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`.',
             'To hide the secondary box completely, use an empty tag `<extra></extra>`.'
         ].join(' ')
     };

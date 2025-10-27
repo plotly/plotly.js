@@ -1,12 +1,12 @@
 {
- "data": [
-  {
-   "values": [5, 4, 3, 2, 1],
-   "type": "funnelarea"
+  "data": [
+    {
+      "values": [5, 4, 3, 2, 1],
+      "type": "funnelarea"
+    }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 400
   }
- ],
- "layout": {
-  "height": 300,
-  "width": 400
- }
 }

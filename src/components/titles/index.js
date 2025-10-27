@@ -22,7 +22,7 @@ var SUBTITLE_PADDING_EM = 1.6;
  * @param {DOM element} gd - the graphDiv
  * @param {string} titleClass - the css class of this title
  * @param {object} options - how and what to draw
- *      propContainer - the layout object containing the `title` attribute that 
+ *      propContainer - the layout object containing the `title` attribute that
  *          applies to this title
  *      propName - the full name of the title property (for Plotly.relayout)
  *      [traceIndex] - include only if this property applies to one trace
@@ -81,7 +81,7 @@ function draw(gd, titleClass, options) {
     var subtitleEnabled = !!subtitleProp;
     var subtitlePlaceholder = options.subtitlePlaceholder;
     var subtitle = (cont.title || {}).subtitle || {text: '', font: {}};
-    var subtitleTxt = subtitle.text.trim();
+    var subtitleTxt = (subtitle.text || '').trim();
     var subtitleIsPlaceholder = false;
     var subtitleOpacity = 1;
 
@@ -102,7 +102,7 @@ function draw(gd, titleClass, options) {
     var editAttr;
     if(prop === 'title.text') editAttr = 'titleText';
     else if(prop.indexOf('axis') !== -1) editAttr = 'axisTitleText';
-    else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
+    else if(prop.indexOf('colorbar') !== -1) editAttr = 'colorbarTitleText';
     var editable = gd._context.edits[editAttr];
 
     function matchesPlaceholder(text, placeholder) {
@@ -160,7 +160,7 @@ function draw(gd, titleClass, options) {
     var subtitleClass = titleClass + '-subtitle';
     var subtitleElShouldExist = subtitleTxt || editable;
 
-    if(subtitleEnabled && subtitleElShouldExist) {
+    if(subtitleEnabled) {
         subtitleEl = group.selectAll('text.' + subtitleClass)
             .data(subtitleElShouldExist ? [0] : []);
         subtitleEl.enter().append('text');
@@ -231,7 +231,7 @@ function draw(gd, titleClass, options) {
         .attr(attributes)
             .call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
 
-        if(subtitleEl) {
+        if(subtitleEl && !subtitleEl.empty()) {
             // Set subtitle y position based on bottom of title
             // We need to check the Mathjax group as well, in case the Mathjax
             // has already rendered
@@ -405,7 +405,7 @@ function draw(gd, titleClass, options) {
     }
 
     el.classed('js-placeholder', titleIsPlaceholder);
-    if(subtitleEl) subtitleEl.classed('js-placeholder', subtitleIsPlaceholder);
+    if(subtitleEl && !subtitleEl.empty()) subtitleEl.classed('js-placeholder', subtitleIsPlaceholder);
 
     return group;
 }
