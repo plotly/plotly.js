@@ -1,8 +1,7 @@
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
@@ -15,16 +14,14 @@ module.exports = {
     labels: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-            'Sets the labels of each of the sectors.'
-        ].join(' ')
+        description: ['Sets the labels of each of the sectors.'].join(' ')
     },
     parents: {
         valType: 'data_array',
         editType: 'calc',
         description: [
             'Sets the parent sectors for each of the sectors.',
-            'Empty string items \'\' are understood to reference',
+            "Empty string items '' are understood to reference",
             'the root node in the hierarchy.',
             'If `ids` is filled, `parents` items are understood to be "ids" themselves.',
             'When `ids` is not set, plotly attempts to find matching items in `labels`,',
@@ -54,10 +51,7 @@ module.exports = {
     },
     count: {
         valType: 'flaglist',
-        flags: [
-            'branches',
-            'leaves'
-        ],
+        flags: ['branches', 'leaves'],
         dflt: 'leaves',
         editType: 'calc',
         description: [
@@ -72,7 +66,7 @@ module.exports = {
         anim: true,
         description: [
             'Sets the level from which this trace hierarchy is rendered.',
-            'Set `level` to `\'\'` to start from the root node in the hierarchy.',
+            "Set `level` to `''` to start from the root node in the hierarchy.",
             'Must be an "id" if `ids` is filled in, otherwise plotly attempts to find a matching',
             'item in `labels`.'
         ].join(' ')
@@ -87,36 +81,37 @@ module.exports = {
         ].join(' ')
     },
 
-    marker: extendFlat({
-        colors: {
-            valType: 'data_array',
-            editType: 'calc',
-            description: [
-                'Sets the color of each sector of this trace.',
-                'If not specified, the default trace color set is used',
-                'to pick the sector colors.'
-            ].join(' ')
-        },
-
-        // colorinheritance: {
-        //     valType: 'enumerated',
-        //     values: ['per-branch', 'per-label', false]
-        // },
-
-        line: {
-            color: extendFlat({}, pieAttrs.marker.line.color, {
-                dflt: null,
+    marker: extendFlat(
+        {
+            colors: {
+                valType: 'data_array',
+                editType: 'calc',
                 description: [
-                    'Sets the color of the line enclosing each sector.',
-                    'Defaults to the `paper_bgcolor` value.'
+                    'Sets the color of each sector of this trace.',
+                    'If not specified, the default trace color set is used',
+                    'to pick the sector colors.'
                 ].join(' ')
-            }),
-            width: extendFlat({}, pieAttrs.marker.line.width, {dflt: 1}),
+            },
+
+            // colorinheritance: {
+            //     valType: 'enumerated',
+            //     values: ['per-branch', 'per-label', false]
+            // },
+
+            line: {
+                color: extendFlat({}, pieAttrs.marker.line.color, {
+                    dflt: null,
+                    description: [
+                        'Sets the color of the line enclosing each sector.',
+                        'Defaults to the `paper_bgcolor` value.'
+                    ].join(' ')
+                }),
+                width: extendFlat({}, pieAttrs.marker.line.width, { dflt: 1 }),
+                editType: 'calc'
+            },
+            pattern: pattern,
             editType: 'calc'
         },
-        pattern: pattern,
-        editType: 'calc'
-    },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',
             anim: false // TODO: set to anim: true?
@@ -140,44 +135,23 @@ module.exports = {
     text: pieAttrs.text,
     textinfo: {
         valType: 'flaglist',
-        flags: [
-            'label',
-            'text',
-            'value',
-            'current path',
-            'percent root',
-            'percent entry',
-            'percent parent'
-        ],
+        flags: ['label', 'text', 'value', 'current path', 'percent root', 'percent entry', 'percent parent'],
         extras: ['none'],
         editType: 'plot',
-        description: [
-            'Determines which trace information appear on the graph.'
-        ].join(' ')
+        description: ['Determines which trace information appear on the graph.'].join(' ')
     },
 
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label', 'value'])
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label', 'value']) }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     hovertext: pieAttrs.hovertext,
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
-        flags: [
-            'label',
-            'text',
-            'value',
-            'name',
-            'current path',
-            'percent root',
-            'percent entry',
-            'percent parent'
-        ],
+        flags: ['label', 'text', 'value', 'name', 'current path', 'percent root', 'percent entry', 'percent parent'],
         dflt: 'label+text+value+name'
     }),
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     textfont: pieAttrs.textfont,
     insidetextorientation: pieAttrs.insidetextorientation,
@@ -188,7 +162,7 @@ module.exports = {
             'This option refers to the root of the hierarchy',
             'presented at the center of a sunburst graph.',
             'Please note that if a hierarchy has multiple root nodes,',
-            'this option won\'t have any effect and `insidetextfont` would be used.'
+            "this option won't have any effect and `insidetextfont` would be used."
         ].join(' ')
     }),
     rotation: {
@@ -197,7 +171,7 @@ module.exports = {
         editType: 'plot',
         description: [
             'Rotates the whole diagram counterclockwise by some angle.',
-            'By default the first slice starts at 3 o\'clock.'
+            "By default the first slice starts at 3 o'clock."
         ].join(' ')
     },
     sort: pieAttrs.sort,
@@ -215,5 +189,5 @@ module.exports = {
         editType: 'calc'
     },
 
-    domain: domainAttrs({name: 'sunburst', trace: true, editType: 'calc'})
+    domain: domainAttrs({ name: 'sunburst', trace: true, editType: 'calc' })
 };

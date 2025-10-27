@@ -2,7 +2,7 @@
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
 
@@ -45,23 +45,17 @@ var attrs = {
         x: {
             valType: 'data_array',
             editType: 'calc',
-            description: [
-                'Sets the x components of the starting position of the streamtubes',
-            ].join(' ')
+            description: ['Sets the x components of the starting position of the streamtubes'].join(' ')
         },
         y: {
             valType: 'data_array',
             editType: 'calc',
-            description: [
-                'Sets the y components of the starting position of the streamtubes',
-            ].join(' ')
+            description: ['Sets the y components of the starting position of the streamtubes'].join(' ')
         },
         z: {
             valType: 'data_array',
             editType: 'calc',
-            description: [
-                'Sets the z components of the starting position of the streamtubes',
-            ].join(' ')
+            description: ['Sets the z components of the starting position of the streamtubes'].join(' ')
         },
         editType: 'calc'
     },
@@ -71,9 +65,7 @@ var attrs = {
         min: 0,
         dflt: 1000,
         editType: 'calc',
-        description: [
-            'The maximum number of displayed segments in a streamtube.'
-        ].join(' ')
+        description: ['The maximum number of displayed segments in a streamtube.'].join(' ')
     },
 
     // TODO
@@ -123,13 +115,11 @@ var attrs = {
         editType: 'calc',
         description: 'Same as `text`.'
     },
-    hovertemplate: hovertemplateAttrs({editType: 'calc'}, {
-        keys: [
-            'tubex', 'tubey', 'tubez',
-            'tubeu', 'tubev', 'tubew',
-            'norm', 'divergence'
-        ]
-    }),
+    hovertemplate: hovertemplateAttrs(
+        { editType: 'calc' },
+        { keys: ['tubex', 'tubey', 'tubez', 'tubeu', 'tubev', 'tubew', 'norm', 'divergence'] }
+    ),
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'calc' }),
     uhoverformat: axisHoverFormat('u', 1),
     vhoverformat: axisHoverFormat('v', 1),
     whoverformat: axisHoverFormat('w', 1),
@@ -137,17 +127,20 @@ var attrs = {
     yhoverformat: axisHoverFormat('y'),
     zhoverformat: axisHoverFormat('z'),
 
-    showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
+    showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false })
 };
 
-extendFlat(attrs, colorScaleAttrs('', {
-    colorAttr: 'u/v/w norm',
-    showScaleDflt: true,
-    editTypeOverride: 'calc'
-}));
+extendFlat(
+    attrs,
+    colorScaleAttrs('', {
+        colorAttr: 'u/v/w norm',
+        showScaleDflt: true,
+        editTypeOverride: 'calc'
+    })
+);
 
 var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
-fromMesh3d.forEach(function(k) {
+fromMesh3d.forEach(function (k) {
     attrs[k] = mesh3dAttrs[k];
 });
 
