@@ -402,7 +402,7 @@ describe('Test violin calc:', function() {
         expect(cd[0].bandwidth).toBe(0, 'bandwidth');
     });
 
-    it('should produce exactly n + 1 density samples for tiny or near-equal spans', function() {
+    it('should produce exactly n density samples for tiny or near-equal spans', function() {
         var cd = _calc({
             type: 'violin',
             x: [0, 0],
@@ -413,7 +413,7 @@ describe('Test violin calc:', function() {
         var dist = cdi.span[1] - cdi.span[0];
         var n = Math.ceil(dist / (cdi.bandwidth / 3));
 
-        expect(cdi.density.length).toBe(n + 1);
+        expect(cdi.density.length).toBe(n);
     });
 });
 
