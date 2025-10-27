@@ -399,3 +399,15 @@ fieldset.signatures legend {
 [data-md-color-scheme="slate"] .subscribe-text {
     color: #a0aaba;
 }
+
+
+/* Edit button styling */
+
+.edit-btn a{
+    display: flex;
+    justify-content: right;
+}
+
+.edit-btn a span {
+    margin-left: 10px;
+}
