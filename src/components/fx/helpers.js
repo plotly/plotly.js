@@ -228,7 +228,7 @@ function getPointKey(astr) {
 
 function getPointData(val, pointNumber) {
     if (Array.isArray(pointNumber)) {
-        if (Array.isArray(val) && Array.isArray(val[pointNumber[0]])) {
+        if (Lib.isArrayOrTypedArray(val) && Lib.isArrayOrTypedArray(val[pointNumber[0]])) {
             return val[pointNumber[0]][pointNumber[1]];
         }
     } else {
