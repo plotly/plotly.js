@@ -1,21 +1,21 @@
 {
- "data": [
-  {
-   "values": [1, 2, 3, 4, 5],
-   "label0": 20,
-   "dlabel": 5,
-   "type": "pie",
-   "marker": {
-    "pattern": {
-     "fillmode": "replace",
-     "shape": ".",
-     "size": 3
+  "data": [
+    {
+      "values": [1, 2, 3, 4, 5],
+      "label0": 20,
+      "dlabel": 5,
+      "type": "pie",
+      "marker": {
+        "pattern": {
+          "fillmode": "replace",
+          "shape": ".",
+          "size": 3
+        }
+      }
     }
-   }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 400
   }
- ],
- "layout": {
-  "height": 300,
-  "width": 400
- }
 }

@@ -4,8 +4,7 @@ var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Color = require('../../components/color');
@@ -28,9 +27,8 @@ module.exports = {
     yhoverformat: axisHoverFormat('y'),
 
     hovertext: barAttrs.hovertext,
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['name', 'x', 'y', 'text', 'percent initial', 'percent previous', 'percent total']
@@ -49,14 +47,13 @@ module.exports = {
         ].join(' ')
     },
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label', 'value'])
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label', 'value']) }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     text: barAttrs.text,
     textposition: barAttrs.textposition,
-    insidetextanchor: extendFlat({}, barAttrs.insidetextanchor, {dflt: 'middle'}),
-    textangle: extendFlat({}, barAttrs.textangle, {dflt: 0}),
+    insidetextanchor: extendFlat({}, barAttrs.insidetextanchor, { dflt: 'middle' }),
+    textangle: extendFlat({}, barAttrs.textangle, { dflt: 0 }),
     textfont: barAttrs.textfont,
     insidetextfont: barAttrs.insidetextfont,
     outsidetextfont: barAttrs.outsidetextfont,
@@ -70,13 +67,13 @@ module.exports = {
             'along the vertical (horizontal).',
             'By default funnels are tend to be oriented horizontally;',
             'unless only *y* array is presented or orientation is set to *v*.',
-            'Also regarding graphs including only \'horizontal\' funnels,',
+            "Also regarding graphs including only 'horizontal' funnels,",
             '*autorange* on the *y-axis* are set to *reversed*.'
         ].join(' ')
     }),
 
-    offset: extendFlat({}, barAttrs.offset, {arrayOk: false}),
-    width: extendFlat({}, barAttrs.width, {arrayOk: false}),
+    offset: extendFlat({}, barAttrs.offset, { arrayOk: false }),
+    width: extendFlat({}, barAttrs.width, { arrayOk: false }),
 
     marker: funnelMarker(),
 
@@ -84,15 +81,13 @@ module.exports = {
         fillcolor: {
             valType: 'color',
             editType: 'style',
-            description: [
-                'Sets the fill color.'
-            ].join(' ')
+            description: ['Sets the fill color.'].join(' ')
         },
         line: {
-            color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
+            color: extendFlat({}, lineAttrs.color, { dflt: Color.defaultLine }),
             width: extendFlat({}, lineAttrs.width, {
                 dflt: 0,
-                editType: 'plot',
+                editType: 'plot'
             }),
             dash: lineAttrs.dash,
             editType: 'style'
@@ -101,9 +96,7 @@ module.exports = {
             valType: 'boolean',
             dflt: true,
             editType: 'plot',
-            description: [
-                'Determines if connector regions and lines are drawn.'
-            ].join(' ')
+            description: ['Determines if connector regions and lines are drawn.'].join(' ')
         },
         editType: 'plot'
     },

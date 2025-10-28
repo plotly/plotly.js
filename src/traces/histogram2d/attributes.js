@@ -5,8 +5,7 @@ var makeBinAttrs = require('../histogram/bin_attributes');
 var heatmapAttrs = require('../heatmap/attributes');
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -69,15 +68,12 @@ module.exports = extendFlat(
         xhoverformat: axisHoverFormat('x'),
         yhoverformat: axisHoverFormat('y'),
         zhoverformat: axisHoverFormat('z', 1),
-        hovertemplate: hovertemplateAttrs({}, {keys: 'z'}),
-        texttemplate: texttemplateAttrs({
-            arrayOk: false,
-            editType: 'plot'
-        }, {
-            keys: 'z'
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: ['z'] }),
+        hovertemplatefallback: templatefallbackAttrs(),
+        texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['z'] }),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
         textfont: heatmapAttrs.textfont,
-        showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
+        showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false })
     },
-    colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
+    colorScaleAttrs('', { cLetter: 'z', autoColorDflt: false })
 );

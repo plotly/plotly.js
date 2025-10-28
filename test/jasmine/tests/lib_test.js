@@ -10,37 +10,36 @@ var Plots = require('../../../src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-
-describe('Test lib.js:', function() {
+describe('Test lib.js:', function () {
     'use strict';
 
-    describe('interp() should', function() {
-        it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function() {
+    describe('interp() should', function () {
+        it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function () {
             var input = [1, 2, 3, 4, 5];
             var res = Lib.interp(input, 0.25);
             var res0 = 1.75;
             expect(res).toEqual(res0);
         });
-        it('return 4.25 as Q3 of [1, 2, 3, 4, 5]:', function() {
+        it('return 4.25 as Q3 of [1, 2, 3, 4, 5]:', function () {
             var input = [1, 2, 3, 4, 5];
             var res = Lib.interp(input, 0.75);
             var res0 = 4.25;
             expect(res).toEqual(res0);
         });
-        it('error if second input argument is a string:', function() {
+        it('error if second input argument is a string:', function () {
             var input = [1, 2, 3, 4, 5];
-            expect(function() {
+            expect(function () {
                 Lib.interp(input, 'apple');
             }).toThrow('n should be a finite number');
         });
-        it('error if second input argument is a date:', function() {
+        it('error if second input argument is a date:', function () {
             var in1 = [1, 2, 3, 4, 5];
             var in2 = new Date(2014, 11, 1);
-            expect(function() {
+            expect(function () {
                 Lib.interp(in1, in2);
             }).toThrow('n should be a finite number');
         });
-        it('return the right boundary on input [-Inf, Inf]:', function() {
+        it('return the right boundary on input [-Inf, Inf]:', function () {
             var input = [-Infinity, Infinity];
             var res = Lib.interp(input, 1);
             var res0 = Infinity;
@@ -48,13 +47,9 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('transposeRagged()', function() {
-        it('should transpose and return a rectangular array', function() {
-            var input = [
-                [1],
-                [2, 3, 4],
-                [5, 6],
-                [7]];
+    describe('transposeRagged()', function () {
+        it('should transpose and return a rectangular array', function () {
+            var input = [[1], [2, 3, 4], [5, 6], [7]];
             var output = [
                 [1, 2, 5, 7],
                 [undefined, 3, 6, undefined],
@@ -65,37 +60,72 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('dot()', function() {
+    describe('dot()', function () {
         var dot = Lib.dot;
 
-        it('should return null for empty or unequal-length inputs', function() {
+        it('should return null for empty or unequal-length inputs', function () {
             expect(dot([], [])).toBeNull();
             expect(dot([1], [2, 3])).toBeNull();
         });
 
-        it('should dot vectors to a scalar', function() {
+        it('should dot vectors to a scalar', function () {
             expect(dot([1, 2, 3], [4, 5, 6])).toEqual(32);
         });
 
-        it('should dot a vector and a matrix to a vector', function() {
-            expect(dot([1, 2], [[3, 4], [5, 6]])).toEqual([13, 16]);
-            expect(dot([[3, 4], [5, 6]], [1, 2])).toEqual([11, 17]);
+        it('should dot a vector and a matrix to a vector', function () {
+            expect(
+                dot(
+                    [1, 2],
+                    [
+                        [3, 4],
+                        [5, 6]
+                    ]
+                )
+            ).toEqual([13, 16]);
+            expect(
+                dot(
+                    [
+                        [3, 4],
+                        [5, 6]
+                    ],
+                    [1, 2]
+                )
+            ).toEqual([11, 17]);
         });
 
-        it('should dot two matrices to a matrix', function() {
-            expect(dot([[1, 2], [3, 4]], [[5, 6], [7, 8]]))
-                .toEqual([[19, 22], [43, 50]]);
+        it('should dot two matrices to a matrix', function () {
+            expect(
+                dot(
+                    [
+                        [1, 2],
+                        [3, 4]
+                    ],
+                    [
+                        [5, 6],
+                        [7, 8]
+                    ]
+                )
+            ).toEqual([
+                [19, 22],
+                [43, 50]
+            ]);
         });
     });
 
-    describe('aggNums()', function() {
+    describe('aggNums()', function () {
         var aggNums = Lib.aggNums;
 
-        function summation(a, b) { return a + b; }
+        function summation(a, b) {
+            return a + b;
+        }
 
-        it('should work with 1D and 2D inputs and ignore non-numerics', function() {
+        it('should work with 1D and 2D inputs and ignore non-numerics', function () {
             var in1D = [1, 2, 3, 4, 'goose!', 5, 6];
-            var in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
+            var in2D = [
+                [1, 2, 3],
+                ['', 4],
+                [5, 'hi!', 6]
+            ];
 
             expect(aggNums(Math.min, null, in1D)).toEqual(1);
             expect(aggNums(Math.min, null, in2D)).toEqual(1);
@@ -108,132 +138,132 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('mean() should', function() {
-        it('toss out non-numerics (strings)', function() {
+    describe('mean() should', function () {
+        it('toss out non-numerics (strings)', function () {
             var input = [1, 2, 'apple', 'orange'];
             var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
-        it('toss out non-numerics (NaN)', function() {
+        it('toss out non-numerics (NaN)', function () {
             var input = [1, 2, NaN];
             var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
-        it('evaluate numbers which are passed around as text strings:', function() {
+        it('evaluate numbers which are passed around as text strings:', function () {
             var input = ['1', '2'];
             var res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
     });
 
-    describe('geometricMean() should', function() {
-        it('toss out non-numerics (strings)', function() {
+    describe('geometricMean() should', function () {
+        it('toss out non-numerics (strings)', function () {
             var input = [1, 2, 'apple', 'orange'];
             var res = Lib.geometricMean(input);
             expect(res).toBeCloseTo(1.414, 3);
         });
-        it('toss out non-numerics (NaN)', function() {
+        it('toss out non-numerics (NaN)', function () {
             var input = [1, 2, NaN];
             var res = Lib.geometricMean(input);
             expect(res).toBeCloseTo(1.414, 3);
         });
-        it('evaluate numbers which are passed around as text strings:', function() {
+        it('evaluate numbers which are passed around as text strings:', function () {
             var input = ['1', '2'];
             var res = Lib.geometricMean(input);
             expect(res).toBeCloseTo(1.414, 3);
         });
     });
 
-    describe('midRange() should', function() {
-        it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function() {
+    describe('midRange() should', function () {
+        it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function () {
             var input = [1, 5.5, 6, 15, 10, 13];
             var res = Lib.midRange(input);
             expect(res).toEqual(8);
         });
-        it('toss out non-numerics (strings)', function() {
+        it('toss out non-numerics (strings)', function () {
             var input = [1, 2, 'apple', 'orange'];
             var res = Lib.midRange(input);
             expect(res).toEqual(1.5);
         });
-        it('toss out non-numerics (NaN)', function() {
+        it('toss out non-numerics (NaN)', function () {
             var input = [1, 2, NaN];
             var res = Lib.midRange(input);
             expect(res).toEqual(1.5);
         });
-        it('should be able to deal with array of length 1', function() {
+        it('should be able to deal with array of length 1', function () {
             var input = [10];
             var res = Lib.midRange(input);
             expect(res).toEqual(10);
         });
-        it('should return undefined for an empty array', function() {
+        it('should return undefined for an empty array', function () {
             var input = [];
             var res = Lib.midRange(input);
             expect(res).toBeUndefined();
         });
     });
 
-    describe('variance() should', function() {
-        it('return 0 on input [2, 2, 2, 2, 2]:', function() {
+    describe('variance() should', function () {
+        it('return 0 on input [2, 2, 2, 2, 2]:', function () {
             var input = [2, 2, 2, 2];
             var res = Lib.variance(input);
             expect(res).toEqual(0);
         });
-        it('return 2/3 on input [-1, 0, 1]:', function() {
+        it('return 2/3 on input [-1, 0, 1]:', function () {
             var input = [-1, 0, 1];
             var res = Lib.variance(input);
             expect(res).toEqual(2 / 3);
         });
-        it('toss out non-numerics (strings):', function() {
+        it('toss out non-numerics (strings):', function () {
             var input = [1, 2, 'apple', 'orange'];
             var res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
-        it('toss out non-numerics (NaN):', function() {
+        it('toss out non-numerics (NaN):', function () {
             var input = [1, 2, NaN];
             var res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
     });
 
-    describe('median() should', function() {
-        it('return the middle value exactly for odd number of observations:', function() {
+    describe('median() should', function () {
+        it('return the middle value exactly for odd number of observations:', function () {
             var input = [1, 8, 9, 2, 7, 6, 3];
             var res = Lib.median(input);
             expect(res).toEqual(6);
         });
 
-        it('return the mean of the two middle values for even number of observations', function() {
+        it('return the mean of the two middle values for even number of observations', function () {
             var input = [4, 3, 2, 1, 5, 6, 8, 9];
             var res = Lib.median(input);
             expect(res).toEqual(4.5);
         });
     });
 
-    describe('stdev() should', function() {
-        it('return 0 on input [2, 2, 2, 2, 2]:', function() {
+    describe('stdev() should', function () {
+        it('return 0 on input [2, 2, 2, 2, 2]:', function () {
             var input = [2, 2, 2, 2];
             var res = Lib.stdev(input);
             expect(res).toEqual(0);
         });
-        it('return sqrt(2/3) on input [-1, 0, 1]:', function() {
+        it('return sqrt(2/3) on input [-1, 0, 1]:', function () {
             var input = [-1, 0, 1];
             var res = Lib.stdev(input);
             expect(res).toEqual(Math.sqrt(2 / 3));
         });
-        it('toss out non-numerics (strings):', function() {
+        it('toss out non-numerics (strings):', function () {
             var input = [1, 2, 'apple', 'orange'];
             var res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
-        it('toss out non-numerics (NaN):', function() {
+        it('toss out non-numerics (NaN):', function () {
             var input = [1, 2, NaN];
             var res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
     });
 
-    describe('smooth()', function() {
-        it('should not alter the input for FWHM < 1.5', function() {
+    describe('smooth()', function () {
+        it('should not alter the input for FWHM < 1.5', function () {
             var input = [1, 2, 1, 2, 1];
             var output = Lib.smooth(input.slice(), 1.49);
 
@@ -244,7 +274,7 @@ describe('Test lib.js:', function() {
             expect(output).toEqual(input);
         });
 
-        it('should preserve the length and integral even with multiple bounces', function() {
+        it('should preserve the length and integral even with multiple bounces', function () {
             var input = [1, 2, 4, 8, 16, 8, 10, 12];
             var output2 = Lib.smooth(input.slice(), 2);
             var output30 = Lib.smooth(input.slice(), 30);
@@ -252,7 +282,7 @@ describe('Test lib.js:', function() {
             var sum2 = 0;
             var sum30 = 0;
 
-            for(var i = 0; i < input.length; i++) {
+            for (var i = 0; i < input.length; i++) {
                 sumIn += input[i];
                 sum2 += output2[i];
                 sum30 += output30[i];
@@ -264,48 +294,47 @@ describe('Test lib.js:', function() {
             expect(sum30).toBeCloseTo(sumIn, 6);
         });
 
-        it('should use a hann window and bounce', function() {
+        it('should use a hann window and bounce', function () {
             var input = [0, 0, 0, 7, 0, 0, 0];
             var out4 = Lib.smooth(input, 4);
             var out7 = Lib.smooth(input, 7);
             var expected4 = [
-                0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
-                1.493718433538229, 0.875, 0.25628156646177086
+                0.2562815664617711, 0.875, 1.4937184335382292, 1.75, 1.493718433538229, 0.875, 0.25628156646177086
             ];
             var expected7 = [1, 1, 1, 1, 1, 1, 1];
             var i;
 
-            for(i = 0; i < input.length; i++) {
+            for (i = 0; i < input.length; i++) {
                 expect(out4[i]).toBeCloseTo(expected4[i], 6);
                 expect(out7[i]).toBeCloseTo(expected7[i], 6);
             }
         });
     });
 
-    describe('nestedProperty', function() {
+    describe('nestedProperty', function () {
         var np = Lib.nestedProperty;
 
-        it('should access simple objects', function() {
-            var obj = {a: 'b', c: 'd'};
+        it('should access simple objects', function () {
+            var obj = { a: 'b', c: 'd' };
             var propA = np(obj, 'a');
             var propB = np(obj, 'b');
 
             expect(propA.get()).toBe('b');
             // making and reading nestedProperties shouldn't change anything
-            expect(obj).toEqual({a: 'b', c: 'd'});
+            expect(obj).toEqual({ a: 'b', c: 'd' });
             // only setting them should
             propA.set('cats');
-            expect(obj).toEqual({a: 'cats', c: 'd'});
+            expect(obj).toEqual({ a: 'cats', c: 'd' });
             expect(propA.get()).toBe('cats');
             propA.set('b');
 
             expect(propB.get()).toBe(undefined);
-            expect(obj).toEqual({a: 'b', c: 'd'});
-            propB.set({cats: true, dogs: false});
-            expect(obj).toEqual({a: 'b', c: 'd', b: {cats: true, dogs: false}});
+            expect(obj).toEqual({ a: 'b', c: 'd' });
+            propB.set({ cats: true, dogs: false });
+            expect(obj).toEqual({ a: 'b', c: 'd', b: { cats: true, dogs: false } });
         });
 
-        it('should access arrays', function() {
+        it('should access arrays', function () {
             var arr = [1, 2, 3];
             var prop1 = np(arr, 1);
             var prop5 = np(arr, '5');
@@ -330,52 +359,54 @@ describe('Test lib.js:', function() {
             expect(arr.length).toBe(3);
         });
 
-        it('should not access whole array elements with index -1', function() {
+        it('should not access whole array elements with index -1', function () {
             // for a lot of cases we could make this work,
             // but deleting the value is a mess, and anyway
             // we don't need this, it's better just to set the whole
             // array, ie np(obj, 'arr')
-            var obj = {arr: [1, 2, 3]};
-            expect(function() { np(obj, 'arr[-1]'); }).toThrow('bad property string');
+            var obj = { arr: [1, 2, 3] };
+            expect(function () {
+                np(obj, 'arr[-1]');
+            }).toThrow('bad property string');
         });
 
-        it('should access properties of objects in an array with index -1', function() {
-            var obj = {arr: [{a: 1}, {a: null}, {b: 3}]};
+        it('should access properties of objects in an array with index -1', function () {
+            var obj = { arr: [{ a: 1 }, { a: null }, { b: 3 }] };
             var prop = np(obj, 'arr[-1].a');
 
             expect(prop.get()).toEqual([1, undefined, undefined]);
             expect(prop.get(true)).toEqual([1, null, undefined]);
-            expect(obj).toEqual({arr: [{a: 1}, {a: null}, {b: 3}]});
+            expect(obj).toEqual({ arr: [{ a: 1 }, { a: null }, { b: 3 }] });
 
             prop.set(5);
             expect(prop.get()).toBe(5);
-            expect(obj).toEqual({arr: [{a: 5}, {a: 5}, {a: 5, b: 3}]});
+            expect(obj).toEqual({ arr: [{ a: 5 }, { a: 5 }, { a: 5, b: 3 }] });
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({arr: [{}, {}, {b: 3}]});
+            expect(obj).toEqual({ arr: [{}, {}, { b: 3 }] });
 
             prop.set([2, 3, 4]);
             expect(prop.get()).toEqual([2, 3, 4]);
-            expect(obj).toEqual({arr: [{a: 2}, {a: 3}, {a: 4, b: 3}]});
+            expect(obj).toEqual({ arr: [{ a: 2 }, { a: 3 }, { a: 4, b: 3 }] });
 
             prop.set([6, 7, undefined]);
             expect(prop.get()).toEqual([6, 7, undefined]);
-            expect(obj).toEqual({arr: [{a: 6}, {a: 7}, {b: 3}]});
+            expect(obj).toEqual({ arr: [{ a: 6 }, { a: 7 }, { b: 3 }] });
 
             // too short an array: wrap around
             prop.set([9, 10]);
             expect(prop.get()).toEqual([9, 10, 9]);
-            expect(obj).toEqual({arr: [{a: 9}, {a: 10}, {a: 9, b: 3}]});
+            expect(obj).toEqual({ arr: [{ a: 9 }, { a: 10 }, { a: 9, b: 3 }] });
 
             // too long an array: ignore extras
             prop.set([11, 12, 13, 14]);
             expect(prop.get()).toEqual([11, 12, 13]);
-            expect(obj).toEqual({arr: [{a: 11}, {a: 12}, {a: 13, b: 3}]});
+            expect(obj).toEqual({ arr: [{ a: 11 }, { a: 12 }, { a: 13, b: 3 }] });
         });
 
-        it('should remove a property only with undefined or null', function() {
-            var obj = {a: 'b', c: 'd'};
+        it('should remove a property only with undefined or null', function () {
+            var obj = { a: 'b', c: 'd' };
             var propA = np(obj, 'a');
             var propC = np(obj, 'c');
 
@@ -387,12 +418,12 @@ describe('Test lib.js:', function() {
             np(obj, 'b').set('');
             propC.set(0);
             np(obj, 'd').set(NaN);
-            expect(obj).toEqual({a: false, b: '', c: 0, d: NaN});
+            expect(obj).toEqual({ a: false, b: '', c: 0, d: NaN });
         });
 
-        it('should not remove arrays or empty objects inside container arrays', function() {
+        it('should not remove arrays or empty objects inside container arrays', function () {
             var obj = {
-                annotations: [{a: [1, 2, 3]}],
+                annotations: [{ a: [1, 2, 3] }],
                 c: [1, 2, 3],
                 domain: [1, 2],
                 range: [2, 3],
@@ -414,7 +445,7 @@ describe('Test lib.js:', function() {
 
             // 'a' and 'c' are both potentially data arrays so we need to keep them
             expect(obj).toEqual({
-                annotations: [{a: []}],
+                annotations: [{ a: [] }],
                 c: [],
                 domain: [],
                 range: [],
@@ -422,26 +453,25 @@ describe('Test lib.js:', function() {
             });
         });
 
-
-        it('should allow empty object sub-containers', function() {
+        it('should allow empty object sub-containers', function () {
             var obj = {};
             var prop = np(obj, 'a[1].b.c');
             // we never set a value into a[0] so it doesn't even get {}
-            var expectedArr = [undefined, {b: {c: 'pizza'}}];
+            var expectedArr = [undefined, { b: { c: 'pizza' } }];
 
             expect(prop.get()).toBe(undefined);
             expect(obj).toEqual({});
 
             prop.set('pizza');
-            expect(obj).toEqual({a: expectedArr});
+            expect(obj).toEqual({ a: expectedArr });
             expect(prop.get()).toBe('pizza');
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({a: [undefined, {b: {}}]});
+            expect(obj).toEqual({ a: [undefined, { b: {} }] });
         });
 
-        it('does not prune inside `args` arrays', function() {
+        it('does not prune inside `args` arrays', function () {
             var obj = {};
             var args = np(obj, 'args');
 
@@ -465,59 +495,61 @@ describe('Test lib.js:', function() {
             expect(obj.args).toEqual([null]);
         });
 
-        it('should get empty, and fail on set, with a bad input object', function() {
-            var badProps = [
-                np(5, 'a'),
-                np(undefined, 'a'),
-                np('cats', 'a'),
-                np(true, 'a')
-            ];
+        it('should get empty, and fail on set, with a bad input object', function () {
+            var badProps = [np(5, 'a'), np(undefined, 'a'), np('cats', 'a'), np(true, 'a')];
 
             function badSetter(i) {
-                return function() {
+                return function () {
                     badProps[i].set('cats');
                 };
             }
 
-            for(var i = 0; i < badProps.length; i++) {
+            for (var i = 0; i < badProps.length; i++) {
                 expect(badProps[i].get()).toBe(undefined);
                 expect(badSetter(i)).toThrow('bad container');
             }
         });
 
-        it('should fail on a bad property string', function() {
+        it('should fail on a bad property string', function () {
             var badStr = [
-                [], {}, false, undefined, null, NaN, Infinity,
+                [],
+                {},
+                false,
+                undefined,
+                null,
+                NaN,
+                Infinity,
                 // should guard against prototype pollution
-                'x.__proto__.polluted', 'x.y.__proto__.polluted'
+                'x.__proto__.polluted',
+                'x.y.__proto__.polluted'
             ];
 
             function badProp(i) {
-                return function() {
+                return function () {
                     np({}, badStr[i]);
                 };
             }
 
-            for(var i = 0; i < badStr.length; i++) {
+            for (var i = 0; i < badStr.length; i++) {
                 expect(badProp(i)).toThrow('bad property string');
             }
         });
     });
 
-    describe('objectFromPath', function() {
-        it('should return an object', function() {
+    describe('objectFromPath', function () {
+        it('should return an object', function () {
             var obj = Lib.objectFromPath('test', 'object');
 
             expect(obj).toEqual({ test: 'object' });
         });
 
-        it('should work for deep objects', function() {
+        it('should work for deep objects', function () {
             var obj = Lib.objectFromPath('deep.nested.test', 'object');
 
-            expect(obj).toEqual({ deep: { nested: { test: 'object' }}});
+            expect(obj).toEqual({ deep: { nested: { test: 'object' } } });
         });
 
-        it('should work for arrays', function() {
+        it('should work for arrays', function () {
             var obj = Lib.objectFromPath('nested[2].array', 'object');
 
             expect(Object.keys(obj)).toEqual(['nested']);
@@ -526,61 +558,61 @@ describe('Test lib.js:', function() {
             expect(obj.nested[2]).toEqual({ array: 'object' });
         });
 
-        it('should work for any given value', function() {
+        it('should work for any given value', function () {
             var obj = Lib.objectFromPath('test.type', { an: 'object' });
 
-            expect(obj).toEqual({ test: { type: { an: 'object' }}});
+            expect(obj).toEqual({ test: { type: { an: 'object' } } });
 
             obj = Lib.objectFromPath('test.type', [42]);
 
-            expect(obj).toEqual({ test: { type: [42] }});
+            expect(obj).toEqual({ test: { type: [42] } });
         });
     });
 
-    describe('expandObjectPaths', function() {
-        it('returns the original object', function() {
+    describe('expandObjectPaths', function () {
+        it('returns the original object', function () {
             var x = {};
             expect(Lib.expandObjectPaths(x)).toBe(x);
         });
 
-        it('unpacks top-level paths', function() {
-            var input = {'marker.color': 'red', 'marker.size': [1, 2, 3]};
-            var expected = {marker: {color: 'red', size: [1, 2, 3]}};
+        it('unpacks top-level paths', function () {
+            var input = { 'marker.color': 'red', 'marker.size': [1, 2, 3] };
+            var expected = { marker: { color: 'red', size: [1, 2, 3] } };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('unpacks recursively', function() {
-            var input = {'marker.color': {'red.certainty': 'definitely'}};
-            var expected = {marker: {color: {red: {certainty: 'definitely'}}}};
+        it('unpacks recursively', function () {
+            var input = { 'marker.color': { 'red.certainty': 'definitely' } };
+            var expected = { marker: { color: { red: { certainty: 'definitely' } } } };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('unpacks deep paths', function() {
-            var input = {'foo.bar.baz': 'red'};
-            var expected = {foo: {bar: {baz: 'red'}}};
+        it('unpacks deep paths', function () {
+            var input = { 'foo.bar.baz': 'red' };
+            var expected = { foo: { bar: { baz: 'red' } } };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('unpacks non-top-level deep paths', function() {
-            var input = {color: {'foo.bar.baz': 'red'}};
-            var expected = {color: {foo: {bar: {baz: 'red'}}}};
+        it('unpacks non-top-level deep paths', function () {
+            var input = { color: { 'foo.bar.baz': 'red' } };
+            var expected = { color: { foo: { bar: { baz: 'red' } } } };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('merges dotted properties into objects', function() {
-            var input = {marker: {color: 'red'}, 'marker.size': 8};
-            var expected = {marker: {color: 'red', size: 8}};
+        it('merges dotted properties into objects', function () {
+            var input = { marker: { color: 'red' }, 'marker.size': 8 };
+            var expected = { marker: { color: 'red', size: 8 } };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('merges objects into dotted properties', function() {
-            var input = {'marker.size': 8, marker: {color: 'red'}};
-            var expected = {marker: {color: 'red', size: 8}};
+        it('merges objects into dotted properties', function () {
+            var input = { 'marker.size': 8, marker: { color: 'red' } };
+            var expected = { marker: { color: 'red', size: 8 } };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('retains the identity of nested objects', function() {
-            var input = {marker: {size: 8}};
+        it('retains the identity of nested objects', function () {
+            var input = { marker: { size: 8 } };
             var origNested = input.marker;
             var expanded = Lib.expandObjectPaths(input);
             var newNested = expanded.marker;
@@ -589,8 +621,8 @@ describe('Test lib.js:', function() {
             expect(origNested).toBe(newNested);
         });
 
-        it('retains the identity of nested arrays', function() {
-            var input = {'marker.size': [1, 2, 3]};
+        it('retains the identity of nested arrays', function () {
+            var input = { 'marker.size': [1, 2, 3] };
             var origArray = input['marker.size'];
             var expanded = Lib.expandObjectPaths(input);
             var newArray = expanded.marker.size;
@@ -599,64 +631,64 @@ describe('Test lib.js:', function() {
             expect(origArray).toBe(newArray);
         });
 
-        it('expands bracketed array notation', function() {
-            var input = {'marker[1]': {color: 'red'}};
-            var expected = {marker: [undefined, {color: 'red'}]};
+        it('expands bracketed array notation', function () {
+            var input = { 'marker[1]': { color: 'red' } };
+            var expected = { marker: [undefined, { color: 'red' }] };
             expect(Lib.expandObjectPaths(input)).toLooseDeepEqual(expected);
         });
 
-        it('expands nested arrays', function() {
-            var input = {'marker[1].range[1]': 5};
-            var expected = {marker: [undefined, {range: [undefined, 5]}]};
+        it('expands nested arrays', function () {
+            var input = { 'marker[1].range[1]': 5 };
+            var expected = { marker: [undefined, { range: [undefined, 5] }] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('expands bracketed array with more nested attributes', function() {
-            var input = {'marker[1]': {'color.alpha': 2}};
-            var expected = {marker: [undefined, {color: {alpha: 2}}]};
+        it('expands bracketed array with more nested attributes', function () {
+            var input = { 'marker[1]': { 'color.alpha': 2 } };
+            var expected = { marker: [undefined, { color: { alpha: 2 } }] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('expands bracketed array notation without further nesting', function() {
-            var input = {'marker[1]': 8};
-            var expected = {marker: [undefined, 8]};
+        it('expands bracketed array notation without further nesting', function () {
+            var input = { 'marker[1]': 8 };
+            var expected = { marker: [undefined, 8] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('expands bracketed array notation with further nesting', function() {
-            var input = {'marker[1].size': 8};
-            var expected = {marker: [undefined, {size: 8}]};
+        it('expands bracketed array notation with further nesting', function () {
+            var input = { 'marker[1].size': 8 };
+            var expected = { marker: [undefined, { size: 8 }] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('expands bracketed array notation with further nesting', function() {
-            var input = {'marker[1].size.magnitude': 8};
-            var expected = {marker: [undefined, {size: {magnitude: 8}}]};
+        it('expands bracketed array notation with further nesting', function () {
+            var input = { 'marker[1].size.magnitude': 8 };
+            var expected = { marker: [undefined, { size: { magnitude: 8 } }] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('combines changes with single array nesting', function() {
-            var input = {'marker[1].foo': 5, 'marker[0].foo': 4};
-            var expected = {marker: [{foo: 4}, {foo: 5}]};
+        it('combines changes with single array nesting', function () {
+            var input = { 'marker[1].foo': 5, 'marker[0].foo': 4 };
+            var expected = { marker: [{ foo: 4 }, { foo: 5 }] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('does not skip over array container set to null values', function() {
-            var input = {title: 'clear annotations', annotations: null};
-            var expected = {title: 'clear annotations', annotations: null};
+        it('does not skip over array container set to null values', function () {
+            var input = { title: 'clear annotations', annotations: null };
+            var expected = { title: 'clear annotations', annotations: null };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
 
-        it('expands array containers', function() {
-            var input = {title: 'clear annotation 1', 'annotations[1]': { title: 'new' }};
-            var expected = {title: 'clear annotation 1', annotations: [null, { title: 'new' }]};
+        it('expands array containers', function () {
+            var input = { title: 'clear annotation 1', 'annotations[1]': { title: 'new' } };
+            var expected = { title: 'clear annotation 1', annotations: [null, { title: 'new' }] };
             var computed = Lib.expandObjectPaths(input);
             expect(computed).toLooseDeepEqual(expected);
         });
@@ -698,17 +730,17 @@ describe('Test lib.js:', function() {
         */
     });
 
-    describe('coerce', function() {
+    describe('coerce', function () {
         var coerce = Lib.coerce;
         var out;
 
         // TODO: I tested font and string because I changed them, but all the other types need tests still
 
-        it('should set a value and return the value it sets', function() {
+        it('should set a value and return the value it sets', function () {
             var aVal = 'aaaaah!';
-            var cVal = {1: 2, 3: 4};
-            var attrs = {a: {valType: 'any', dflt: aVal}, b: {c: {valType: 'any'}}};
-            var obj = {b: {c: cVal}};
+            var cVal = { 1: 2, 3: 4 };
+            var attrs = { a: { valType: 'any', dflt: aVal }, b: { c: { valType: 'any' } } };
+            var obj = { b: { c: cVal } };
             var outObj = {};
 
             var aOut = coerce(obj, outObj, attrs, 'a');
@@ -720,76 +752,71 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
-        describe('data_array valType', function() {
+        describe('data_array valType', function () {
             var attrs = {
-                d: {valType: 'data_array'}
+                d: { valType: 'data_array' }
             };
 
-            it('should pass ref to out object (plain array case)', function() {
+            it('should pass ref to out object (plain array case)', function () {
                 var arr = [1, 2, 3];
-                out = coerce({d: arr}, {}, attrs, 'd');
+                out = coerce({ d: arr }, {}, attrs, 'd');
                 expect(out).toBe(arr);
             });
 
-            it('should pass ref to out object (typed array case)', function() {
+            it('should pass ref to out object (typed array case)', function () {
                 var arr = new Float32Array([1, 2, 3]);
-                out = coerce({d: arr}, {}, attrs, 'd');
+                out = coerce({ d: arr }, {}, attrs, 'd');
                 expect(out).toBe(arr);
             });
         });
 
-        describe('string valType', function() {
+        describe('string valType', function () {
             var dflt = 'Jabberwock';
             var stringAttrs = {
-                s: {valType: 'string', dflt: dflt},
-                noBlank: {valType: 'string', dflt: dflt, noBlank: true}
+                s: { valType: 'string', dflt: dflt },
+                noBlank: { valType: 'string', dflt: dflt, noBlank: true }
             };
 
-            it('should insert the default if input is missing, or blank with noBlank', function() {
+            it('should insert the default if input is missing, or blank with noBlank', function () {
                 out = coerce(undefined, {}, stringAttrs, 's');
                 expect(out).toEqual(dflt);
 
                 out = coerce({}, {}, stringAttrs, 's');
                 expect(out).toEqual(dflt);
 
-                out = coerce({s: ''}, {}, stringAttrs, 's');
+                out = coerce({ s: '' }, {}, stringAttrs, 's');
                 expect(out).toEqual('');
 
-                out = coerce({noBlank: ''}, {}, stringAttrs, 'noBlank');
+                out = coerce({ noBlank: '' }, {}, stringAttrs, 'noBlank');
                 expect(out).toEqual(dflt);
             });
 
-            it('should always return a string for any input', function() {
-                expect(coerce({s: 'a string!!'}, {}, stringAttrs, 's'))
-                    .toEqual('a string!!');
+            it('should always return a string for any input', function () {
+                expect(coerce({ s: 'a string!!' }, {}, stringAttrs, 's')).toEqual('a string!!');
 
-                expect(coerce({s: 42}, {}, stringAttrs, 's'))
-                    .toEqual('42');
+                expect(coerce({ s: 42 }, {}, stringAttrs, 's')).toEqual('42');
 
-                expect(coerce({s: [1, 2, 3]}, {}, stringAttrs, 's'))
-                    .toEqual(dflt);
+                expect(coerce({ s: [1, 2, 3] }, {}, stringAttrs, 's')).toEqual(dflt);
 
-                expect(coerce({s: true}, {}, stringAttrs, 's'))
-                    .toEqual(dflt);
+                expect(coerce({ s: true }, {}, stringAttrs, 's')).toEqual(dflt);
 
-                expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
-                    .toEqual(dflt);
+                expect(coerce({ s: { 1: 2 } }, {}, stringAttrs, 's')).toEqual(dflt);
             });
         });
 
-        describe('coerce2', function() {
+        describe('coerce2', function () {
             var coerce2 = Lib.coerce2;
 
-            it('should set a value and return the value it sets when user input is valid', function() {
+            it('should set a value and return the value it sets when user input is valid', function () {
                 var colVal = 'red';
                 var sizeVal = 0; // 0 is valid but falsey
                 var attrs = {
                     testMarker: {
-                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}
+                        testColor: { valType: 'color', dflt: 'rgba(0, 0, 0, 0)' },
+                        testSize: { valType: 'number', dflt: 20 }
                     }
                 };
-                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var obj = { testMarker: { testColor: colVal, testSize: sizeVal } };
                 var outObj = {};
                 var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
                 var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
@@ -800,16 +827,16 @@ describe('Test lib.js:', function() {
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
             });
 
-            it('should set and return the default if the user input is not valid', function() {
+            it('should set and return the default if the user input is not valid', function () {
                 var colVal = 'r';
                 var sizeVal = 'aaaaah!';
                 var attrs = {
                     testMarker: {
-                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}
+                        testColor: { valType: 'color', dflt: 'rgba(0, 0, 0, 0)' },
+                        testSize: { valType: 'number', dflt: 20 }
                     }
                 };
-                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var obj = { testMarker: { testColor: colVal, testSize: sizeVal } };
                 var outObj = {};
                 var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
                 var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
@@ -820,16 +847,16 @@ describe('Test lib.js:', function() {
                 expect(sizeOut).toBe(outObj.testMarker.testSize);
             });
 
-            it('should return false if there is no user input', function() {
+            it('should return false if there is no user input', function () {
                 var colVal = null;
                 var sizeVal; // undefined
                 var attrs = {
                     testMarker: {
-                        testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                        testSize: {valType: 'number', dflt: 20}
+                        testColor: { valType: 'color', dflt: 'rgba(0, 0, 0, 0)' },
+                        testSize: { valType: 'number', dflt: 20 }
                     }
                 };
-                var obj = {testMarker: {testColor: colVal, testSize: sizeVal}};
+                var obj = { testMarker: { testColor: colVal, testSize: sizeVal } };
                 var outObj = {};
                 var colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor');
                 var sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
@@ -839,14 +866,11 @@ describe('Test lib.js:', function() {
             });
         });
 
-        describe('info_array valType', function() {
+        describe('info_array valType', function () {
             var infoArrayAttrs = {
                 range: {
                     valType: 'info_array',
-                    items: [
-                        { valType: 'number' },
-                        { valType: 'number' }
-                    ]
+                    items: [{ valType: 'number' }, { valType: 'number' }]
                 },
                 domain: {
                     valType: 'info_array',
@@ -858,154 +882,181 @@ describe('Test lib.js:', function() {
                 }
             };
 
-            it('should insert the default if input is missing', function() {
-                expect(coerce(undefined, {}, infoArrayAttrs, 'domain'))
-                    .toEqual([0, 1]);
-                expect(coerce(undefined, {}, infoArrayAttrs, 'domain', [0, 0.5]))
-                    .toEqual([0, 0.5]);
+            it('should insert the default if input is missing', function () {
+                expect(coerce(undefined, {}, infoArrayAttrs, 'domain')).toEqual([0, 1]);
+                expect(coerce(undefined, {}, infoArrayAttrs, 'domain', [0, 0.5])).toEqual([0, 0.5]);
             });
 
-            it('should dive into the items and coerce accordingly', function() {
-                expect(coerce({range: ['-10', 100]}, {}, infoArrayAttrs, 'range'))
-                    .toEqual([-10, 100]);
+            it('should dive into the items and coerce accordingly', function () {
+                expect(coerce({ range: ['-10', 100] }, {}, infoArrayAttrs, 'range')).toEqual([-10, 100]);
 
-                expect(coerce({domain: [0, 0.5]}, {}, infoArrayAttrs, 'domain'))
-                    .toEqual([0, 0.5]);
+                expect(coerce({ domain: [0, 0.5] }, {}, infoArrayAttrs, 'domain')).toEqual([0, 0.5]);
 
-                expect(coerce({domain: [-5, 0.5]}, {}, infoArrayAttrs, 'domain'))
-                    .toEqual([0, 0.5]);
+                expect(coerce({ domain: [-5, 0.5] }, {}, infoArrayAttrs, 'domain')).toEqual([0, 0.5]);
 
-                expect(coerce({domain: [0.5, 4.5]}, {}, infoArrayAttrs, 'domain'))
-                    .toEqual([0.5, 1]);
+                expect(coerce({ domain: [0.5, 4.5] }, {}, infoArrayAttrs, 'domain')).toEqual([0.5, 1]);
             });
 
-            it('should coerce unexpected input as best as it can', function() {
-                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range'))
-                    .toEqual([12]);
+            it('should coerce unexpected input as best as it can', function () {
+                expect(coerce({ range: [12] }, {}, infoArrayAttrs, 'range')).toEqual([12]);
 
-                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range', [-1, 20]))
-                    .toEqual([12, 20]);
+                expect(coerce({ range: [12] }, {}, infoArrayAttrs, 'range', [-1, 20])).toEqual([12, 20]);
 
-                expect(coerce({domain: [0.5]}, {}, infoArrayAttrs, 'domain'))
-                    .toEqual([0.5, 1]);
+                expect(coerce({ domain: [0.5] }, {}, infoArrayAttrs, 'domain')).toEqual([0.5, 1]);
 
-                expect(coerce({range: ['-10', 100, 12]}, {}, infoArrayAttrs, 'range'))
-                    .toEqual([-10, 100]);
+                expect(coerce({ range: ['-10', 100, 12] }, {}, infoArrayAttrs, 'range')).toEqual([-10, 100]);
 
-                expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
-                    .toEqual([0, 0.5]);
+                expect(coerce({ domain: [0, 0.5, 1] }, {}, infoArrayAttrs, 'domain')).toEqual([0, 0.5]);
             });
 
-            it('supports bounded freeLength attributes', function() {
+            it('supports bounded freeLength attributes', function () {
                 var attrs = {
                     x: {
                         valType: 'info_array',
                         freeLength: true,
                         items: [
-                            {valType: 'integer', min: 0},
-                            {valType: 'integer', max: -1}
+                            { valType: 'integer', min: 0 },
+                            { valType: 'integer', max: -1 }
                         ],
                         dflt: [1, -2]
-                    },
+                    }
                 };
                 expect(coerce({}, {}, attrs, 'x')).toEqual([1, -2]);
-                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, -2]);
-                expect(coerce({x: [5]}, {}, attrs, 'x')).toEqual([5, -2]);
-                expect(coerce({x: [-5]}, {}, attrs, 'x')).toEqual([1, -2]);
-                expect(coerce({x: [5, -5]}, {}, attrs, 'x')).toEqual([5, -5]);
-                expect(coerce({x: [3, -3, 3]}, {}, attrs, 'x')).toEqual([3, -3]);
+                expect(coerce({ x: [] }, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({ x: [5] }, {}, attrs, 'x')).toEqual([5, -2]);
+                expect(coerce({ x: [-5] }, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({ x: [5, -5] }, {}, attrs, 'x')).toEqual([5, -5]);
+                expect(coerce({ x: [3, -3, 3] }, {}, attrs, 'x')).toEqual([3, -3]);
             });
 
-            it('supports unbounded freeLength attributes', function() {
+            it('supports unbounded freeLength attributes', function () {
                 var attrs = {
                     x: {
                         valType: 'info_array',
                         freeLength: true,
-                        items: {valType: 'integer', min: 0, dflt: 1}
+                        items: { valType: 'integer', min: 0, dflt: 1 }
                     }
                 };
                 expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
-                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
-                expect(coerce({x: [3]}, {}, attrs, 'x')).toEqual([3]);
-                expect(coerce({x: [-3]}, {}, attrs, 'x')).toEqual([1]);
-                expect(coerce({x: [-1, 4, 'hi', 5]}, {}, attrs, 'x'))
-                    .toEqual([1, 4, 1, 5]);
+                expect(coerce({ x: [] }, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({ x: [3] }, {}, attrs, 'x')).toEqual([3]);
+                expect(coerce({ x: [-3] }, {}, attrs, 'x')).toEqual([1]);
+                expect(coerce({ x: [-1, 4, 'hi', 5] }, {}, attrs, 'x')).toEqual([1, 4, 1, 5]);
             });
 
-            it('supports 2D fixed-size arrays', function() {
+            it('supports 2D fixed-size arrays', function () {
                 var attrs = {
                     x: {
                         valType: 'info_array',
                         dimensions: 2,
                         items: [
-                            [{valType: 'integer', min: 0, max: 2}, {valType: 'integer', min: 3, max: 5}],
-                            [{valType: 'integer', min: 6, max: 8}, {valType: 'integer', min: 9, max: 11}]
+                            [
+                                { valType: 'integer', min: 0, max: 2 },
+                                { valType: 'integer', min: 3, max: 5 }
+                            ],
+                            [
+                                { valType: 'integer', min: 6, max: 8 },
+                                { valType: 'integer', min: 9, max: 11 }
+                            ]
                         ],
-                        dflt: [[1, 4], [7, 10]]
+                        dflt: [
+                            [1, 4],
+                            [7, 10]
+                        ]
                     }
                 };
-                expect(coerce({}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
-                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
-                expect(coerce({x: [[0, 3], [8, 11]]}, {}, attrs, 'x'))
-                    .toEqual([[0, 3], [8, 11]]);
-                expect(coerce({x: [[10, 5, 10], [6], [1, 2, 3]]}, {}, attrs, 'x'))
-                    .toEqual([[1, 5], [6, 10]]);
+                expect(coerce({}, {}, attrs, 'x')).toEqual([
+                    [1, 4],
+                    [7, 10]
+                ]);
+                expect(coerce({ x: [] }, {}, attrs, 'x')).toEqual([
+                    [1, 4],
+                    [7, 10]
+                ]);
+                expect(
+                    coerce(
+                        {
+                            x: [
+                                [0, 3],
+                                [8, 11]
+                            ]
+                        },
+                        {},
+                        attrs,
+                        'x'
+                    )
+                ).toEqual([
+                    [0, 3],
+                    [8, 11]
+                ]);
+                expect(coerce({ x: [[10, 5, 10], [6], [1, 2, 3]] }, {}, attrs, 'x')).toEqual([
+                    [1, 5],
+                    [6, 10]
+                ]);
             });
 
-            it('supports unbounded 2D freeLength arrays', function() {
+            it('supports unbounded 2D freeLength arrays', function () {
                 var attrs = {
                     x: {
                         valType: 'info_array',
                         freeLength: true,
                         dimensions: 2,
-                        items: {valType: 'integer', min: 0, dflt: 1}
+                        items: { valType: 'integer', min: 0, dflt: 1 }
                     }
                 };
                 expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
-                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
-                expect(coerce({x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]]}, {}, attrs, 'x'))
-                    .toEqual([[], [0], [1, 2], [5, 1, 4, 1]]);
+                expect(coerce({ x: [] }, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({ x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]] }, {}, attrs, 'x')).toEqual([
+                    [],
+                    [0],
+                    [1, 2],
+                    [5, 1, 4, 1]
+                ]);
             });
 
-            it('supports dimensions=\'1-2\' with 1D items array', function() {
+            it("supports dimensions='1-2' with 1D items array", function () {
                 var attrs = {
                     x: {
                         valType: 'info_array',
                         freeLength: true, // in this case only the outer length of 2D is free
                         dimensions: '1-2',
                         items: [
-                            {valType: 'integer', min: 0, max: 5, dflt: 1},
-                            {valType: 'integer', min: 10, max: 15, dflt: 11}
+                            { valType: 'integer', min: 0, max: 5, dflt: 1 },
+                            { valType: 'integer', min: 10, max: 15, dflt: 11 }
                         ]
                     }
                 };
                 expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
-                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, 11]);
-                expect(coerce({x: [4, 4, 4]}, {}, attrs, 'x')).toEqual([4, 11]);
-                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[1, 11]]);
-                expect(coerce({x: [[12, 12, 12]]}, {}, attrs, 'x')).toEqual([[1, 12]]);
-                expect(coerce({x: [[], 4, true]}, {}, attrs, 'x')).toEqual([[1, 11], [1, 11], [1, 11]]);
+                expect(coerce({ x: [] }, {}, attrs, 'x')).toEqual([1, 11]);
+                expect(coerce({ x: [4, 4, 4] }, {}, attrs, 'x')).toEqual([4, 11]);
+                expect(coerce({ x: [[]] }, {}, attrs, 'x')).toEqual([[1, 11]]);
+                expect(coerce({ x: [[12, 12, 12]] }, {}, attrs, 'x')).toEqual([[1, 12]]);
+                expect(coerce({ x: [[], 4, true] }, {}, attrs, 'x')).toEqual([
+                    [1, 11],
+                    [1, 11],
+                    [1, 11]
+                ]);
             });
 
-            it('supports dimensions=\'1-2\' with single item', function() {
+            it("supports dimensions='1-2' with single item", function () {
                 var attrs = {
                     x: {
                         valType: 'info_array',
                         freeLength: true,
                         dimensions: '1-2',
-                        items: {valType: 'integer', min: 0, max: 5, dflt: 1}
+                        items: { valType: 'integer', min: 0, max: 5, dflt: 1 }
                     }
                 };
                 expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
-                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
-                expect(coerce({x: [-3, 3, 6, 'a']}, {}, attrs, 'x')).toEqual([1, 3, 1, 1]);
-                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[]]);
-                expect(coerce({x: [[-1, 0, 10]]}, {}, attrs, 'x')).toEqual([[1, 0, 1]]);
-                expect(coerce({x: [[], 4, [3], [-1, 10]]}, {}, attrs, 'x')).toEqual([[], [], [3], [1, 1]]);
+                expect(coerce({ x: [] }, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({ x: [-3, 3, 6, 'a'] }, {}, attrs, 'x')).toEqual([1, 3, 1, 1]);
+                expect(coerce({ x: [[]] }, {}, attrs, 'x')).toEqual([[]]);
+                expect(coerce({ x: [[-1, 0, 10]] }, {}, attrs, 'x')).toEqual([[1, 0, 1]]);
+                expect(coerce({ x: [[], 4, [3], [-1, 10]] }, {}, attrs, 'x')).toEqual([[], [], [3], [1, 1]]);
             });
         });
 
-        describe('subplotid valtype', function() {
+        describe('subplotid valtype', function () {
             var dflt = 'slice';
             var idAttrs = {
                 pizza: {
@@ -1016,10 +1067,9 @@ describe('Test lib.js:', function() {
 
             var goodVals = ['slice', 'slice2', 'slice1492'];
 
-            goodVals.forEach(function(goodVal) {
-                it('should allow "' + goodVal + '"', function() {
-                    expect(coerce({pizza: goodVal}, {}, idAttrs, 'pizza'))
-                        .toEqual(goodVal);
+            goodVals.forEach(function (goodVal) {
+                it('should allow "' + goodVal + '"', function () {
+                    expect(coerce({ pizza: goodVal }, {}, idAttrs, 'pizza')).toEqual(goodVal);
                 });
             });
 
@@ -1037,16 +1087,15 @@ describe('Test lib.js:', function() {
                 'slice01'
             ];
 
-            badVals.forEach(function(badVal) {
-                it('should not allow "' + badVal + '"', function() {
-                    expect(coerce({pizza: badVal}, {}, idAttrs, 'pizza'))
-                        .toEqual(dflt);
+            badVals.forEach(function (badVal) {
+                it('should not allow "' + badVal + '"', function () {
+                    expect(coerce({ pizza: badVal }, {}, idAttrs, 'pizza')).toEqual(dflt);
                 });
             });
         });
     });
 
-    describe('coerceFont', function() {
+    describe('coerceFont', function () {
         var fontAttrs = Plots.fontAttrs({});
         var extendFlat = Lib.extendFlat;
         var coerceFont = Lib.coerceFont;
@@ -1060,20 +1109,20 @@ describe('Test lib.js:', function() {
             variant: 'small-caps',
             textcase: 'word caps',
             lineposition: 'under',
-            shadow: 'auto',
+            shadow: 'auto'
         };
 
         var attributes = {
             fontWithDefault: {
-                family: extendFlat({}, fontAttrs.family, {dflt: defaultFont.family}),
-                size: extendFlat({}, fontAttrs.size, {dflt: defaultFont.size}),
-                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color}),
-                weight: extendFlat({}, fontAttrs.weight, {dflt: defaultFont.weight}),
-                style: extendFlat({}, fontAttrs.style, {dflt: defaultFont.style}),
-                variant: extendFlat({}, fontAttrs.variant, {dflt: defaultFont.variant}),
-                textcase: extendFlat({}, fontAttrs.textcase, {dflt: defaultFont.textcase}),
-                lineposition: extendFlat({}, fontAttrs.lineposition, {dflt: defaultFont.lineposition}),
-                shadow: extendFlat({}, fontAttrs.shadow, {dflt: defaultFont.shadow})
+                family: extendFlat({}, fontAttrs.family, { dflt: defaultFont.family }),
+                size: extendFlat({}, fontAttrs.size, { dflt: defaultFont.size }),
+                color: extendFlat({}, fontAttrs.color, { dflt: defaultFont.color }),
+                weight: extendFlat({}, fontAttrs.weight, { dflt: defaultFont.weight }),
+                style: extendFlat({}, fontAttrs.style, { dflt: defaultFont.style }),
+                variant: extendFlat({}, fontAttrs.variant, { dflt: defaultFont.variant }),
+                textcase: extendFlat({}, fontAttrs.textcase, { dflt: defaultFont.textcase }),
+                lineposition: extendFlat({}, fontAttrs.lineposition, { dflt: defaultFont.lineposition }),
+                shadow: extendFlat({}, fontAttrs.shadow, { dflt: defaultFont.shadow })
             },
             fontNoDefault: fontAttrs
         };
@@ -1084,21 +1133,18 @@ describe('Test lib.js:', function() {
             return Lib.coerce(containerIn, {}, attributes, attr, dflt);
         }
 
-        it('should insert the full default if no or empty input', function() {
+        it('should insert the full default if no or empty input', function () {
             containerIn = undefined;
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual(defaultFont);
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual(defaultFont);
 
             containerIn = {};
-            expect(coerceFont(coerce, 'fontNoDefault', defaultFont))
-                .toEqual(defaultFont);
+            expect(coerceFont(coerce, 'fontNoDefault', defaultFont)).toEqual(defaultFont);
 
-            containerIn = {fontWithDefault: {}};
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual(defaultFont);
+            containerIn = { fontWithDefault: {} };
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual(defaultFont);
         });
 
-        it('should fill in defaults for bad inputs', function() {
+        it('should fill in defaults for bad inputs', function () {
             containerIn = {
                 fontWithDefault: {
                     family: '',
@@ -1109,14 +1155,13 @@ describe('Test lib.js:', function() {
                     variant: false,
                     textcase: true,
                     lineposition: false,
-                    shadow: false,
+                    shadow: false
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual(defaultFont);
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual(defaultFont);
         });
 
-        it('should pass through individual valid pieces', function() {
+        it('should pass through individual valid pieces', function () {
             var goodFamily = 'A fish'; // for now any non-blank string is OK
             var badFamily = 42;
             var goodSize = 123.456;
@@ -1150,18 +1195,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: goodFamily,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: goodFamily,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1176,18 +1220,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: goodSize,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: goodSize,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1202,18 +1245,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: goodColor,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: goodColor,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1228,18 +1270,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: goodWeight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: goodWeight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1254,18 +1295,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: goodStyle,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: goodStyle,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1280,18 +1320,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: goodVariant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: goodVariant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1306,18 +1345,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: goodTextcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: goodTextcase,
+                lineposition: defaultFont.lineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1332,18 +1370,17 @@ describe('Test lib.js:', function() {
                     shadow: badShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: goodLineposition,
-                    shadow: defaultFont.shadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: goodLineposition,
+                shadow: defaultFont.shadow
+            });
 
             containerIn = {
                 fontWithDefault: {
@@ -1358,23 +1395,22 @@ describe('Test lib.js:', function() {
                     shadow: goodShadow
                 }
             };
-            expect(coerceFont(coerce, 'fontWithDefault'))
-                .toEqual({
-                    family: defaultFont.family,
-                    size: defaultFont.size,
-                    color: defaultFont.color,
-                    weight: defaultFont.weight,
-                    style: defaultFont.style,
-                    variant: defaultFont.variant,
-                    textcase: defaultFont.textcase,
-                    lineposition: defaultFont.lineposition,
-                    shadow: goodShadow
-                });
+            expect(coerceFont(coerce, 'fontWithDefault')).toEqual({
+                family: defaultFont.family,
+                size: defaultFont.size,
+                color: defaultFont.color,
+                weight: defaultFont.weight,
+                style: defaultFont.style,
+                variant: defaultFont.variant,
+                textcase: defaultFont.textcase,
+                lineposition: defaultFont.lineposition,
+                shadow: goodShadow
+            });
         });
     });
 
-    describe('init2dArray', function() {
-        it('should initialize a 2d array with the correct dimenstions', function() {
+    describe('init2dArray', function () {
+        it('should initialize a 2d array with the correct dimenstions', function () {
             var array = Lib.init2dArray(4, 5);
             expect(array.length).toEqual(4);
             expect(array[0].length).toEqual(5);
@@ -1382,20 +1418,20 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('validate', function() {
+    describe('validate', function () {
         function assert(shouldPass, shouldFail, valObject) {
-            shouldPass.forEach(function(v) {
+            shouldPass.forEach(function (v) {
                 var res = Lib.validate(v, valObject);
                 expect(res).toBe(true, JSON.stringify(v) + ' should pass');
             });
 
-            shouldFail.forEach(function(v) {
+            shouldFail.forEach(function (v) {
                 var res = Lib.validate(v, valObject);
                 expect(res).toBe(false, JSON.stringify(v) + ' should fail');
             });
         }
 
-        it('should work for valType \'data_array\' where', function() {
+        it("should work for valType 'data_array' where", function () {
             var shouldPass = [[20], []];
             var shouldFail = ['a', {}, 20, undefined, null];
 
@@ -1409,7 +1445,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'enumerated\' where', function() {
+        it("should work for valType 'enumerated' where", function () {
             assert(['a', 'b'], ['c', 1, null, undefined, ''], {
                 valType: 'enumerated',
                 values: ['a', 'b'],
@@ -1437,7 +1473,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'boolean\' where', function() {
+        it("should work for valType 'boolean' where", function () {
             var shouldPass = [true, false];
             var shouldFail = ['a', 1, {}, [], null, undefined, ''];
 
@@ -1452,7 +1488,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'number\' where', function() {
+        it("should work for valType 'number' where", function () {
             var shouldPass = [20, '20', 1e6];
             var shouldFail = ['a', [], {}, null, undefined, ''];
 
@@ -1479,7 +1515,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'integer\' where', function() {
+        it("should work for valType 'integer' where", function () {
             assert([1, 2, '3', '4'], ['a', 1.321321, {}, [], null, 2 / 3, undefined, null], {
                 valType: 'integer',
                 dflt: 1
@@ -1492,7 +1528,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'string\' where', function() {
+        it("should work for valType 'string' where", function () {
             var date = new Date(2016, 1, 1);
 
             assert(['3', '4', 'a', 3, 1.2113, ''], [undefined, {}, [], null, date, false], {
@@ -1520,7 +1556,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'color\' where', function() {
+        it("should work for valType 'color' where", function () {
             var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'];
             var shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
 
@@ -1529,7 +1565,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'colorlist\' where', function() {
+        it("should work for valType 'colorlist' where", function () {
             var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']];
             var shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
 
@@ -1538,11 +1574,17 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'colorscale\' where', function() {
-            var good = [ [0, 'red'], [1, 'blue'] ];
-            var bad = [ [0.1, 'red'], [1, 'blue'] ];
-            var bad2 = [ [0], [1] ];
-            var bad3 = [ ['red'], ['blue']];
+        it("should work for valType 'colorscale' where", function () {
+            var good = [
+                [0, 'red'],
+                [1, 'blue']
+            ];
+            var bad = [
+                [0.1, 'red'],
+                [1, 'blue']
+            ];
+            var bad2 = [[0], [1]];
+            var bad3 = [['red'], ['blue']];
             var bad4 = ['red', 'blue'];
 
             var shouldPass = ['Viridis', 'Greens', good];
@@ -1553,7 +1595,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'angle\' where', function() {
+        it("should work for valType 'angle' where", function () {
             var shouldPass = ['auto', '120', 270];
             var shouldFail = [{}, [], 'red', null, undefined, ''];
 
@@ -1563,7 +1605,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'subplotid\' where', function() {
+        it("should work for valType 'subplotid' where", function () {
             var shouldPass = ['sp', 'sp4', 'sp10'];
             var shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
 
@@ -1573,7 +1615,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'flaglist\' where', function() {
+        it("should work for valType 'flaglist' where", function () {
             var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'];
             var shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
 
@@ -1584,7 +1626,7 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'any\' where', function() {
+        it("should work for valType 'any' where", function () {
             var shouldPass = ['', '120', null, false, {}, []];
             var shouldFail = [undefined];
 
@@ -1593,25 +1635,29 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('should work for valType \'info_array\' where', function() {
-            var shouldPass = [[1, 2], [-20, '20']];
-            var shouldFail = [
-                {}, [], [10], [null, 10], ['aads', null],
-                'red', null, undefined, '',
-                [1, 10, null]
+        it("should work for valType 'info_array' where", function () {
+            var shouldPass = [
+                [1, 2],
+                [-20, '20']
             ];
+            var shouldFail = [{}, [], [10], [null, 10], ['aads', null], 'red', null, undefined, '', [1, 10, null]];
 
             assert(shouldPass, shouldFail, {
                 valType: 'info_array',
-                items: [{
-                    valType: 'number', dflt: -20
-                }, {
-                    valType: 'number', dflt: 20
-                }]
+                items: [
+                    {
+                        valType: 'number',
+                        dflt: -20
+                    },
+                    {
+                        valType: 'number',
+                        dflt: 20
+                    }
+                ]
             });
         });
 
-        it('should work for valType \'info_array\' (freeLength case)', function() {
+        it("should work for valType 'info_array' (freeLength case)", function () {
             var shouldPass = [
                 ['marker.color', 'red'],
                 [{ 'marker.color': 'red' }, [1, 2]]
@@ -1624,31 +1670,35 @@ describe('Test lib.js:', function() {
             assert(shouldPass, shouldFail, {
                 valType: 'info_array',
                 freeLength: true,
-                items: [{
-                    valType: 'any'
-                }, {
-                    valType: 'any'
-                }, {
-                    valType: 'number'
-                }]
+                items: [
+                    {
+                        valType: 'any'
+                    },
+                    {
+                        valType: 'any'
+                    },
+                    {
+                        valType: 'number'
+                    }
+                ]
             });
         });
     });
 
-    describe('setCursor', function() {
-        beforeEach(function() {
+    describe('setCursor', function () {
+        beforeEach(function () {
             this.el3 = d3Select(createGraphDiv());
         });
 
         afterEach(destroyGraphDiv);
 
-        it('should assign cursor- class', function() {
+        it('should assign cursor- class', function () {
             setCursor(this.el3, 'one');
 
             expect(this.el3.attr('class')).toEqual('cursor-one');
         });
 
-        it('should assign cursor- class while present non-cursor- classes', function() {
+        it('should assign cursor- class while present non-cursor- classes', function () {
             this.el3.classed('one', true);
             this.el3.classed('two', true);
             this.el3.classed('three', true);
@@ -1657,14 +1707,14 @@ describe('Test lib.js:', function() {
             expect(this.el3.attr('class')).toEqual('one two three cursor-one');
         });
 
-        it('should update class from one cursor- class to another', function() {
+        it('should update class from one cursor- class to another', function () {
             this.el3.classed('cursor-one', true);
             setCursor(this.el3, 'two');
 
             expect(this.el3.attr('class')).toEqual('cursor-two');
         });
 
-        it('should update multiple cursor- classes', function() {
+        it('should update multiple cursor- classes', function () {
             this.el3.classed('cursor-one', true);
             this.el3.classed('cursor-two', true);
             this.el3.classed('cursor-three', true);
@@ -1673,7 +1723,7 @@ describe('Test lib.js:', function() {
             expect(this.el3.attr('class')).toEqual('cursor-four');
         });
 
-        it('should remove cursor- if no new class is given', function() {
+        it('should remove cursor- if no new class is given', function () {
             this.el3.classed('cursor-one', true);
             this.el3.classed('cursor-two', true);
             this.el3.classed('cursor-three', true);
@@ -1683,18 +1733,15 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('overrideCursor', function() {
-        beforeEach(function() {
+    describe('overrideCursor', function () {
+        beforeEach(function () {
             this.el3 = d3Select(createGraphDiv());
         });
 
         afterEach(destroyGraphDiv);
 
-        it('should apply the new cursor(s) and revert to the original when removed', function() {
-            this.el3
-                .classed('cursor-before', true)
-                .classed('not-a-cursor', true)
-                .classed('another', true);
+        it('should apply the new cursor(s) and revert to the original when removed', function () {
+            this.el3.classed('cursor-before', true).classed('not-a-cursor', true).classed('another', true);
 
             overrideCursor(this.el3, 'after');
             expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-after');
@@ -1706,10 +1753,8 @@ describe('Test lib.js:', function() {
             expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-before');
         });
 
-        it('should apply the new cursor(s) and revert to the none when removed', function() {
-            this.el3
-                .classed('not-a-cursor', true)
-                .classed('another', true);
+        it('should apply the new cursor(s) and revert to the none when removed', function () {
+            this.el3.classed('not-a-cursor', true).classed('another', true);
 
             overrideCursor(this.el3, 'after');
             expect(this.el3.attr('class')).toBe('not-a-cursor another cursor-after');
@@ -1721,10 +1766,8 @@ describe('Test lib.js:', function() {
             expect(this.el3.attr('class')).toBe('not-a-cursor another');
         });
 
-        it('should do nothing if no existing or new override is present', function() {
-            this.el3
-                .classed('cursor-before', true)
-                .classed('not-a-cursor', true);
+        it('should do nothing if no existing or new override is present', function () {
+            this.el3.classed('cursor-before', true).classed('not-a-cursor', true);
 
             overrideCursor(this.el3);
 
@@ -1732,20 +1775,20 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('pushUnique', function() {
-        beforeEach(function() {
+    describe('pushUnique', function () {
+        beforeEach(function () {
             this.obj = { a: 'A' };
             this.array = ['a', 'b', 'c', this.obj];
         });
 
-        it('should fill new items in array', function() {
+        it('should fill new items in array', function () {
             var out = Lib.pushUnique(this.array, 'd');
 
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 'd']);
             expect(this.array).toBe(out);
         });
 
-        it('should ignore falsy items except 0', function() {
+        it('should ignore falsy items except 0', function () {
             Lib.pushUnique(this.array, false);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
@@ -1762,7 +1805,7 @@ describe('Test lib.js:', function() {
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 0]);
         });
 
-        it('should ignore item already in array', function() {
+        it('should ignore item already in array', function () {
             Lib.pushUnique(this.array, 'a');
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
@@ -1770,7 +1813,7 @@ describe('Test lib.js:', function() {
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
         });
 
-        it('should recognize matching RegExps', function() {
+        it('should recognize matching RegExps', function () {
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             var r1 = /a/;
@@ -1783,85 +1826,78 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('filterUnique', function() {
-        it('should return array containing unique values', function() {
-            expect(
-                Lib.filterUnique(['a', 'a', 'b', 'b'])
-            )
-            .toEqual(['a', 'b']);
+    describe('filterUnique', function () {
+        it('should return array containing unique values', function () {
+            expect(Lib.filterUnique(['a', 'a', 'b', 'b'])).toEqual(['a', 'b']);
 
-            expect(
-                Lib.filterUnique(['1', ['1'], 1])
-            )
-            .toEqual(['1']);
+            expect(Lib.filterUnique(['1', ['1'], 1])).toEqual(['1']);
 
-            expect(
-                Lib.filterUnique([1, '1', [1]])
-            )
-            .toEqual([1]);
+            expect(Lib.filterUnique([1, '1', [1]])).toEqual([1]);
 
-            expect(
-                Lib.filterUnique([ { a: 1 }, { b: 2 }])
-            )
-            .toEqual([{ a: 1 }]);
+            expect(Lib.filterUnique([{ a: 1 }, { b: 2 }])).toEqual([{ a: 1 }]);
 
-            expect(
-                Lib.filterUnique([null, undefined, null, null, undefined])
-            )
-            .toEqual([null, undefined]);
+            expect(Lib.filterUnique([null, undefined, null, null, undefined])).toEqual([null, undefined]);
         });
     });
 
-    describe('numSeparate', function() {
-        it('should work on numbers and strings', function() {
+    describe('numSeparate', function () {
+        it('should work on numbers and strings', function () {
             expect(Lib.numSeparate(12345.67, '.,')).toBe('12,345.67');
             expect(Lib.numSeparate('12345.67', '.,')).toBe('12,345.67');
         });
 
-        it('should ignore years', function() {
+        it('should ignore years', function () {
             expect(Lib.numSeparate(2016, '.,')).toBe('2016');
         });
 
-        it('should work even for 4-digit integer if third argument is true', function() {
+        it('should work even for 4-digit integer if third argument is true', function () {
             expect(Lib.numSeparate(3000, '.,', true)).toBe('3,000');
         });
 
-        it('should work for multiple thousands', function() {
+        it('should work for multiple thousands', function () {
             expect(Lib.numSeparate(1000000000, '.,')).toBe('1,000,000,000');
         });
 
-        it('should work when there\'s only one separator', function() {
+        it("should work when there's only one separator", function () {
             expect(Lib.numSeparate(12.34, '|')).toBe('12|34');
             expect(Lib.numSeparate(1234.56, '|')).toBe('1234|56');
         });
 
-        it('should throw an error when no separator is provided', function() {
-            expect(function() {
+        it('should throw an error when no separator is provided', function () {
+            expect(function () {
                 Lib.numSeparate(1234);
             }).toThrowError('Separator string required for formatting!');
 
-            expect(function() {
+            expect(function () {
                 Lib.numSeparate(1234, '');
             }).toThrowError('Separator string required for formatting!');
         });
     });
 
-    describe('cleanNumber', function() {
-        it('should return finite numbers untouched', function() {
+    describe('cleanNumber', function () {
+        it('should return finite numbers untouched', function () {
             var vals = [
-                0, 1, 2, 1234.567, -1, -100, -999.999,
-                Number.MAX_VALUE, Number.MIN_VALUE,
-                -Number.MAX_VALUE, -Number.MIN_VALUE
+                0,
+                1,
+                2,
+                1234.567,
+                -1,
+                -100,
+                -999.999,
+                Number.MAX_VALUE,
+                Number.MIN_VALUE,
+                -Number.MAX_VALUE,
+                -Number.MIN_VALUE
             ];
 
             vals.push(Number.EPSILON, -Number.EPSILON);
 
-            vals.forEach(function(v) {
+            vals.forEach(function (v) {
                 expect(Lib.cleanNumber(v)).toBe(v);
             });
         });
 
-        it('should accept number strings with arbitrary cruft on the outside', function() {
+        it('should accept number strings with arbitrary cruft on the outside', function () {
             [
                 ['0', 0],
                 ['1', 1],
@@ -1869,46 +1905,61 @@ describe('Test lib.js:', function() {
                 ['-100.001', -100.001],
                 ['  $4.325  #%\t', 4.325],
                 [' " #1" ', 1],
-                [' \'\n \r -9.2e7   \t\' ', -9.2e7],
+                [" '\n \r -9.2e7   \t' ", -9.2e7],
                 ['1,690,000', 1690000],
                 ['1 690 000', 1690000],
                 ['2 2', 22],
                 ['$5,162,000.00', 5162000],
-                [' $1,410,000.00 ', 1410000],
-            ].forEach(function(v) {
+                [' $1,410,000.00 ', 1410000]
+            ].forEach(function (v) {
                 expect(Lib.cleanNumber(v[0])).toBe(v[1], v[0]);
             });
         });
 
-        it('should not accept other objects or cruft in the middle', function() {
+        it('should not accept other objects or cruft in the middle', function () {
             [
-                NaN, Infinity, -Infinity, null, undefined, new Date(), '',
-                ' ', '\t', '2\t2', '2%2', '2$2', {1: 2}, [1], ['1'], {}, []
-            ].forEach(function(v) {
+                NaN,
+                Infinity,
+                -Infinity,
+                null,
+                undefined,
+                new Date(),
+                '',
+                ' ',
+                '\t',
+                '2\t2',
+                '2%2',
+                '2$2',
+                { 1: 2 },
+                [1],
+                ['1'],
+                {},
+                []
+            ].forEach(function (v) {
                 expect(Lib.cleanNumber(v)).toBeUndefined(v);
             });
         });
     });
 
-    describe('isPlotDiv', function() {
-        it('should work on plain objects', function() {
+    describe('isPlotDiv', function () {
+        it('should work on plain objects', function () {
             expect(Lib.isPlotDiv({})).toBe(false);
         });
     });
 
-    describe('isD3Selection', function() {
+    describe('isD3Selection', function () {
         var gd;
 
-        beforeEach(function() {
+        beforeEach(function () {
             gd = createGraphDiv();
         });
 
-        afterEach(function() {
+        afterEach(function () {
             destroyGraphDiv();
             Plotly.setPlotConfig({ queueLength: 0 });
         });
 
-        it('recognizes real and duck typed selections', function() {
+        it('recognizes real and duck typed selections', function () {
             var yesSelections = [
                 d3Select(gd),
                 // this is what got us into trouble actually - d3 selections can
@@ -1917,36 +1968,29 @@ describe('Test lib.js:', function() {
                 d3Select(1)
             ];
 
-            yesSelections.forEach(function(v) {
+            yesSelections.forEach(function (v) {
                 expect(Lib.isD3Selection(v)).toBe(true, v);
             });
         });
 
-        it('rejects non-selections', function() {
-            var notSelections = [
-                1,
-                'path',
-                [1, 2],
-                [[1, 2]],
-                {classed: 1},
-                gd
-            ];
+        it('rejects non-selections', function () {
+            var notSelections = [1, 'path', [1, 2], [[1, 2]], { classed: 1 }, gd];
 
-            notSelections.forEach(function(v) {
+            notSelections.forEach(function (v) {
                 expect(Lib.isD3Selection(v)).toBe(false, v);
             });
         });
     });
 
-    describe('loggers', function() {
+    describe('loggers', function () {
         var stashConsole;
         var stashLogLevel;
         var stashOnGraphLogLevel;
 
         function consoleFn(name, messages) {
-            var out = function() {
+            var out = function () {
                 var args = [];
-                for(var i = 0; i < arguments.length; i++) args.push(arguments[i]);
+                for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
                 messages.push([name, args]);
             };
 
@@ -1966,35 +2010,35 @@ describe('Test lib.js:', function() {
             return out;
         }
 
-        beforeEach(function() {
+        beforeEach(function () {
             stashConsole = window.console;
             stashLogLevel = config.logging;
             stashOnGraphLogLevel = config.notifyOnLogging;
         });
 
-        afterEach(function() {
+        afterEach(function () {
             window.console = stashConsole;
             config.logging = stashLogLevel;
             config.notifyOnLogging = stashOnGraphLogLevel;
         });
 
-        it('emits one console message', function() {
-            var c = window.console = mockConsole();
+        it('emits one console message', function () {
+            var c = (window.console = mockConsole());
             config.logging = 2;
 
             Lib.log('tick', 'tock', 'tick', 'tock', 1);
-            Lib.warn('I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]);
-            Lib.error('cuckoo!', 'cuckoo!!!', {a: 1, b: 2});
+            Lib.warn("I'm", 'a', 'little', 'cuckoo', 'clock', [1, 2]);
+            Lib.error('cuckoo!', 'cuckoo!!!', { a: 1, b: 2 });
 
             expect(c.MESSAGES).toEqual([
                 ['trace', ['LOG:', 'tick', 'tock', 'tick', 'tock', 1]],
-                ['trace', ['WARN:', 'I\'m', 'a', 'little', 'cuckoo', 'clock', [1, 2]]],
-                ['error', ['ERROR:', 'cuckoo!', 'cuckoo!!!', {a: 1, b: 2}]]
+                ['trace', ['WARN:', "I'm", 'a', 'little', 'cuckoo', 'clock', [1, 2]]],
+                ['error', ['ERROR:', 'cuckoo!', 'cuckoo!!!', { a: 1, b: 2 }]]
             ]);
         });
 
-        it('omits .log at log level 1', function() {
-            var c = window.console = mockConsole();
+        it('omits .log at log level 1', function () {
+            var c = (window.console = mockConsole());
             config.logging = 1;
 
             Lib.log(1);
@@ -2007,8 +2051,8 @@ describe('Test lib.js:', function() {
             ]);
         });
 
-        it('logs nothing at log level 0', function() {
-            var c = window.console = mockConsole();
+        it('logs nothing at log level 0', function () {
+            var c = (window.console = mockConsole());
             config.logging = 0;
 
             Lib.log(1);
@@ -2018,11 +2062,11 @@ describe('Test lib.js:', function() {
             expect(c.MESSAGES).toEqual([]);
         });
 
-        describe('should log message in notifier div in accordance notifyOnLogging config option', function() {
+        describe('should log message in notifier div in accordance notifyOnLogging config option', function () {
             var query = '.notifier-note';
 
-            beforeEach(function(done) {
-                d3SelectAll(query).each(function() {
+            beforeEach(function (done) {
+                d3SelectAll(query).each(function () {
                     d3Select(this).select('button').node().click();
                 });
                 setTimeout(done, 1000);
@@ -2040,32 +2084,32 @@ describe('Test lib.js:', function() {
                 expect(notes.size()).toBe(exp.length, '# of notifier notes');
 
                 var actual = [];
-                notes.each(function() {
+                notes.each(function () {
                     actual.push(d3Select(this).select('p').text());
                 });
                 expect(actual).toEqual(exp);
             }
 
-            it('with level 2', function() {
+            it('with level 2', function () {
                 config.notifyOnLogging = 2;
                 _run(['log', 'warn', 'error!']);
             });
 
-            it('with level 1', function() {
+            it('with level 1', function () {
                 config.notifyOnLogging = 1;
                 _run(['warn', 'error!']);
             });
 
-            it('with level 0', function() {
+            it('with level 0', function () {
                 config.notifyOnLogging = 0;
                 _run([]);
             });
         });
     });
 
-    describe('keyedContainer', function() {
-        describe('with no existing container', function() {
-            it('creates a named container only when setting a value', function() {
+    describe('keyedContainer', function () {
+        describe('with no existing container', function () {
+            it('creates a named container only when setting a value', function () {
                 var container = {};
                 var kCont = Lib.keyedContainer(container, 'styles');
 
@@ -2077,15 +2121,15 @@ describe('Test lib.js:', function() {
 
                 kCont.set('name1', 'value1');
                 expect(container).toEqual({
-                    styles: [{name: 'name1', value: 'value1'}]
+                    styles: [{ name: 'name1', value: 'value1' }]
                 });
                 expect(kCont.get('name1')).toBe('value1');
                 expect(kCont.get('name2')).toBeUndefined();
             });
         });
 
-        describe('with no path', function() {
-            it('adds elements just like when there is a path', function() {
+        describe('with no path', function () {
+            it('adds elements just like when there is a path', function () {
                 var arr = [];
                 var kCont = Lib.keyedContainer(arr);
 
@@ -2096,12 +2140,12 @@ describe('Test lib.js:', function() {
                 expect(arr).toEqual([]);
 
                 kCont.set('name1', 'value1');
-                expect(arr).toEqual([{name: 'name1', value: 'value1'}]);
+                expect(arr).toEqual([{ name: 'name1', value: 'value1' }]);
                 expect(kCont.get('name1')).toBe('value1');
                 expect(kCont.get('name2')).toBeUndefined();
             });
 
-            it('does not barf if the array is missing', function() {
+            it('does not barf if the array is missing', function () {
                 var kCont = Lib.keyedContainer();
                 kCont.set('name1', null);
                 kCont.set('name1', 'value1');
@@ -2109,43 +2153,47 @@ describe('Test lib.js:', function() {
             });
         });
 
-        describe('with a filled container', function() {
+        describe('with a filled container', function () {
             var container, carr;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 container = {
                     styles: [
-                        {name: 'name1', value: 'value1'},
-                        {name: 'name2', value: 'value2'}
+                        { name: 'name1', value: 'value1' },
+                        { name: 'name2', value: 'value2' }
                     ]
                 };
 
                 carr = Lib.keyedContainer(container, 'styles');
             });
 
-            describe('modifying the object', function() {
-                it('adds and updates items', function() {
+            describe('modifying the object', function () {
+                it('adds and updates items', function () {
                     carr.set('foo', 'bar');
                     carr.set('name1', 'value3');
 
-                    expect(container).toEqual({styles: [
-                        {name: 'name1', value: 'value3'},
-                        {name: 'name2', value: 'value2'},
-                        {name: 'foo', value: 'bar'}
-                    ]});
+                    expect(container).toEqual({
+                        styles: [
+                            { name: 'name1', value: 'value3' },
+                            { name: 'name2', value: 'value2' },
+                            { name: 'foo', value: 'bar' }
+                        ]
+                    });
                 });
 
-                it('removes items', function() {
+                it('removes items', function () {
                     carr.set('foo', 'bar');
                     carr.remove('name1');
 
-                    expect(container).toEqual({styles: [
-                        {name: 'name2', value: 'value2'},
-                        {name: 'foo', value: 'bar'}
-                    ]});
+                    expect(container).toEqual({
+                        styles: [
+                            { name: 'name2', value: 'value2' },
+                            { name: 'foo', value: 'bar' }
+                        ]
+                    });
                 });
 
-                it('gets items', function() {
+                it('gets items', function () {
                     expect(carr.get('foo')).toBe(undefined);
                     expect(carr.get('name1')).toEqual('value1');
 
@@ -2158,18 +2206,20 @@ describe('Test lib.js:', function() {
                     expect(carr.get('name3')).toEqual('value2');
                 });
 
-                it('renames items', function() {
+                it('renames items', function () {
                     carr.rename('name2', 'name3');
 
-                    expect(container).toEqual({styles: [
-                        {name: 'name1', value: 'value1'},
-                        {name: 'name3', value: 'value2'}
-                    ]});
+                    expect(container).toEqual({
+                        styles: [
+                            { name: 'name1', value: 'value1' },
+                            { name: 'name3', value: 'value2' }
+                        ]
+                    });
                 });
             });
 
-            describe('constructing updates', function() {
-                it('constructs updates for addition and modification', function() {
+            describe('constructing updates', function () {
+                it('constructs updates for addition and modification', function () {
                     carr.set('foo', 'bar');
                     carr.set('name1', 'value3');
 
@@ -2180,7 +2230,7 @@ describe('Test lib.js:', function() {
                     });
                 });
 
-                it('constructs updates for removal', function() {
+                it('constructs updates for removal', function () {
                     carr.set('foo', 'bar');
                     carr.remove('name1');
 
@@ -2193,7 +2243,7 @@ describe('Test lib.js:', function() {
                     });
                 });
 
-                it('constructs updates for renaming', function() {
+                it('constructs updates for renaming', function () {
                     carr.rename('name2', 'name3');
 
                     expect(carr.constructUpdate()).toEqual({
@@ -2203,12 +2253,14 @@ describe('Test lib.js:', function() {
             });
         });
 
-        describe('with custom named properties', function() {
-            it('performs all of the operations', function() {
-                var container = {styles: [
-                    {foo: 'name1', bar: 'value1'},
-                    {foo: 'name2', bar: 'value2'}
-                ]};
+        describe('with custom named properties', function () {
+            it('performs all of the operations', function () {
+                var container = {
+                    styles: [
+                        { foo: 'name1', bar: 'value1' },
+                        { foo: 'name2', bar: 'value2' }
+                    ]
+                };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar');
 
@@ -2216,11 +2268,13 @@ describe('Test lib.js:', function() {
 
                 carr.set('name3', 'value3');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name1', bar: 'value1'},
-                    {foo: 'name2', bar: 'value2'},
-                    {foo: 'name3', bar: 'value3'}
-                ]});
+                expect(container).toEqual({
+                    styles: [
+                        { foo: 'name1', bar: 'value1' },
+                        { foo: 'name2', bar: 'value2' },
+                        { foo: 'name3', bar: 'value3' }
+                    ]
+                });
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[2].foo': 'name3',
@@ -2231,10 +2285,12 @@ describe('Test lib.js:', function() {
 
                 carr.remove('name2');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name1', bar: 'value1'},
-                    {foo: 'name3', bar: 'value3'}
-                ]});
+                expect(container).toEqual({
+                    styles: [
+                        { foo: 'name1', bar: 'value1' },
+                        { foo: 'name3', bar: 'value3' }
+                    ]
+                });
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[1].foo': 'name3',
@@ -2246,10 +2302,12 @@ describe('Test lib.js:', function() {
 
                 carr.rename('name1', 'name2');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name2', bar: 'value1'},
-                    {foo: 'name3', bar: 'value3'}
-                ]});
+                expect(container).toEqual({
+                    styles: [
+                        { foo: 'name2', bar: 'value1' },
+                        { foo: 'name3', bar: 'value3' }
+                    ]
+                });
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[0].foo': 'name2',
@@ -2262,10 +2320,12 @@ describe('Test lib.js:', function() {
 
                 carr.set('name2', 'value2');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name2', bar: 'value2'},
-                    {foo: 'name3', bar: 'value3'}
-                ]});
+                expect(container).toEqual({
+                    styles: [
+                        { foo: 'name2', bar: 'value2' },
+                        { foo: 'name3', bar: 'value3' }
+                    ]
+                });
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[0].foo': 'name2',
@@ -2277,42 +2337,40 @@ describe('Test lib.js:', function() {
             });
         });
 
-        describe('with nested valueName', function() {
-            it('gets and sets values', function() {
-                var container = {styles: []};
+        describe('with nested valueName', function () {
+            it('gets and sets values', function () {
+                var container = { styles: [] };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
 
                 carr.set('name1', 'value1');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name1', bar: {value: 'value1'}}
-                ]});
+                expect(container).toEqual({ styles: [{ foo: 'name1', bar: { value: 'value1' } }] });
 
                 expect(carr.get('name1')).toEqual('value1');
             });
 
-            it('renames values', function() {
-                var container = {styles: []};
+            it('renames values', function () {
+                var container = { styles: [] };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
 
                 carr.set('name1', 'value1');
                 carr.rename('name1', 'name2');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name2', bar: {value: 'value1'}}
-                ]});
+                expect(container).toEqual({ styles: [{ foo: 'name2', bar: { value: 'value1' } }] });
 
                 expect(carr.get('name2')).toEqual('value1');
                 expect(carr.get('name1')).toBeUndefined();
             });
 
-            it('constructs updates', function() {
-                var container = {styles: [
-                    {foo: 'name1', bar: {value: 'value1'}},
-                    {foo: 'name2', bar: {value: 'value2'}}
-                ]};
+            it('constructs updates', function () {
+                var container = {
+                    styles: [
+                        { foo: 'name1', bar: { value: 'value1' } },
+                        { foo: 'name2', bar: { value: 'value2' } }
+                    ]
+                };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
 
@@ -2320,42 +2378,44 @@ describe('Test lib.js:', function() {
                 carr.remove('name2');
                 carr.rename('name1', 'name4');
 
-                expect(container).toEqual({styles: [
-                    {foo: 'name4', bar: {value: 'value1'}},
-                    {foo: 'name2', bar: {}},
-                    {foo: 'name3', bar: {value: 'value3'}}
-                ]});
+                expect(container).toEqual({
+                    styles: [
+                        { foo: 'name4', bar: { value: 'value1' } },
+                        { foo: 'name2', bar: {} },
+                        { foo: 'name3', bar: { value: 'value3' } }
+                    ]
+                });
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[0].foo': 'name4',
                     'styles[1].bar.value': null,
                     'styles[2].foo': 'name3',
-                    'styles[2].bar.value': 'value3',
+                    'styles[2].bar.value': 'value3'
                 });
             });
 
-            it('unsets but does not remove items with extra top-level data', function() {
-                var container = {styles: [
-                    {foo: 'name', bar: {value: 'value'}, extra: 'data'}
-                ]};
+            it('unsets but does not remove items with extra top-level data', function () {
+                var container = { styles: [{ foo: 'name', bar: { value: 'value' }, extra: 'data' }] };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
 
                 carr.remove('name');
 
-                expect(container.styles).toEqual([{foo: 'name', bar: {}, extra: 'data'}]);
+                expect(container.styles).toEqual([{ foo: 'name', bar: {}, extra: 'data' }]);
 
                 expect(carr.constructUpdate()).toEqual({
-                    'styles[0].bar.value': null,
+                    'styles[0].bar.value': null
                 });
             });
 
-            it('unsets but does not remove items with extra value data', function() {
-                var container = {styles: [
-                    {foo: 'name1', bar: {value: 'value1', extra: 'data'}},
-                    {foo: 'name2', bar: {value: 'value2'}},
-                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
-                ]};
+            it('unsets but does not remove items with extra value data', function () {
+                var container = {
+                    styles: [
+                        { foo: 'name1', bar: { value: 'value1', extra: 'data' } },
+                        { foo: 'name2', bar: { value: 'value2' } },
+                        { foo: 'name3', bar: { value: 'value3', extra: 'data' } }
+                    ]
+                };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
 
@@ -2364,9 +2424,9 @@ describe('Test lib.js:', function() {
                 carr.remove('name1');
 
                 expect(container.styles).toEqual([
-                    {foo: 'name1', bar: {extra: 'data'}},
-                    {foo: 'name2', bar: {value: 'value2'}},
-                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                    { foo: 'name1', bar: { extra: 'data' } },
+                    { foo: 'name2', bar: { value: 'value2' } },
+                    { foo: 'name3', bar: { value: 'value3', extra: 'data' } }
                 ]);
 
                 expect(carr.constructUpdate()).toEqual({
@@ -2377,9 +2437,9 @@ describe('Test lib.js:', function() {
                 carr.remove('name2');
 
                 expect(container.styles).toEqual([
-                    {foo: 'name1', bar: {extra: 'data'}},
-                    {foo: 'name2', bar: {}},
-                    {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
+                    { foo: 'name1', bar: { extra: 'data' } },
+                    { foo: 'name2', bar: {} },
+                    { foo: 'name3', bar: { value: 'value3', extra: 'data' } }
                 ]);
 
                 expect(carr.constructUpdate()).toEqual({
@@ -2388,11 +2448,13 @@ describe('Test lib.js:', function() {
                 });
             });
 
-            it('does not compress nested attributes *sigh*', function() {
-                var container = {styles: [
-                    {foo: 'name1', bar: {value: 'value1'}},
-                    {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
-                ]};
+            it('does not compress nested attributes *sigh*', function () {
+                var container = {
+                    styles: [
+                        { foo: 'name1', bar: { value: 'value1' } },
+                        { foo: 'name2', bar: { value: 'value2', extra: 'data2' } }
+                    ]
+                };
 
                 var carr = Lib.keyedContainer(container, 'styles', 'foo', 'bar.value');
 
@@ -2401,8 +2463,8 @@ describe('Test lib.js:', function() {
                 carr.remove('name1');
 
                 expect(container.styles).toEqual([
-                    {foo: 'name1', bar: {}},
-                    {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
+                    { foo: 'name1', bar: {} },
+                    { foo: 'name2', bar: { value: 'value2', extra: 'data2' } }
                 ]);
 
                 expect(carr.constructUpdate()).toEqual({
@@ -2412,209 +2474,378 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('templateString', function() {
-        it('evaluates attributes', function() {
-            expect(Lib.templateString('foo %{bar}', {bar: 'baz'})).toEqual('foo baz');
+    describe('templateString', function () {
+        it('evaluates attributes', function () {
+            expect(Lib.templateString('foo %{bar}', { bar: 'baz' })).toEqual('foo baz');
         });
 
-        it('evaluates nested properties', function() {
-            expect(Lib.templateString('foo %{bar.baz}', {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        it('evaluates nested properties', function () {
+            expect(Lib.templateString('foo %{bar.baz}', { bar: { baz: 'asdf' } })).toEqual('foo asdf');
         });
 
-        it('evaluates array nested properties', function() {
-            expect(Lib.templateString('foo %{bar[0].baz}', {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        it('evaluates array nested properties', function () {
+            expect(Lib.templateString('foo %{bar[0].baz}', { bar: [{ baz: 'asdf' }] })).toEqual('foo asdf');
         });
 
-        it('subtitutes multiple matches', function() {
-            expect(Lib.templateString('foo %{group} %{trace}', {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        it('subtitutes multiple matches', function () {
+            expect(Lib.templateString('foo %{group} %{trace}', { group: 'asdf', trace: 'jkl;' })).toEqual(
+                'foo asdf jkl;'
+            );
         });
 
-        it('replaces missing matches with empty string', function() {
+        it('replaces missing matches with empty string', function () {
             expect(Lib.templateString('foo %{group} %{trace}', {})).toEqual('foo  ');
         });
 
-        it('replaces empty key with empty string', function() {
+        it('replaces empty key with empty string', function () {
             expect(Lib.templateString('foo %{} %{}', {})).toEqual('foo  ');
         });
 
-        it('should work with the number *0*', function() {
-            expect(Lib.templateString('%{group}', {group: 0})).toEqual('0');
+        it('should work with the number *0*', function () {
+            expect(Lib.templateString('%{group}', { group: 0 })).toEqual('0');
         });
 
-        it('should work with the number *0* (nested case)', function() {
-            expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
+        it('should work with the number *0* (nested case)', function () {
+            expect(Lib.templateString('%{x.y}', { x: { y: 0 } })).toEqual('0');
         });
 
-        it('preserves null and NaN', function() {
-            expect(Lib.templateString(
-                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
-                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
-            ))
-            .toEqual('null NaN null NaN null NaN');
+        it('preserves null and NaN', function () {
+            expect(
+                Lib.templateString('%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}', {
+                    a: null,
+                    b: NaN,
+                    c: { d: null, e: NaN },
+                    f: [null, NaN]
+                })
+            ).toEqual('null NaN null NaN null NaN');
         });
     });
 
-    describe('hovertemplateString', function() {
-        var locale = false;
-        it('evaluates attributes', function() {
-            expect(Lib.hovertemplateString('foo %{bar}', {}, locale, {bar: 'baz'})).toEqual('foo baz');
+    describe('hovertemplateString', function () {
+        it('evaluates attributes', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ bar: 'baz' }],
+                    fallback: '',
+                    template: 'foo %{bar}'
+                })
+            ).toEqual('foo baz');
         });
 
-        it('evaluates attributes with a dot in their name', function() {
-            expect(Lib.hovertemplateString('%{marker.size}', {}, locale, {'marker.size': 12}, {marker: {size: 14}})).toEqual('12');
+        it('evaluates attributes with a dot in their name', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ 'marker.size': 12 }, { marker: { size: 14 } }],
+                    fallback: '',
+                    template: '%{marker.size}'
+                })
+            ).toEqual('12');
         });
 
-        it('evaluates nested properties', function() {
-            expect(Lib.hovertemplateString('foo %{bar.baz}', {}, locale, {bar: {baz: 'asdf'}})).toEqual('foo asdf');
+        it('evaluates nested properties', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ bar: { baz: 'asdf' } }],
+                    fallback: '',
+                    template: 'foo %{bar.baz}'
+                })
+            ).toEqual('foo asdf');
         });
 
-        it('evaluates array nested properties', function() {
-            expect(Lib.hovertemplateString('foo %{bar[0].baz}', {}, locale, {bar: [{baz: 'asdf'}]})).toEqual('foo asdf');
+        it('evaluates array nested properties', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ bar: [{ baz: 'asdf' }] }],
+                    fallback: '',
+                    template: 'foo %{bar[0].baz}'
+                })
+            ).toEqual('foo asdf');
         });
 
-        it('should work with the number *0*', function() {
-            expect(Lib.hovertemplateString('%{group}', {}, locale, {group: 0})).toEqual('0');
+        it('should work with the number *0*', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ group: 0 }],
+                    fallback: '',
+                    template: '%{group}'
+                })
+            ).toEqual('0');
         });
 
-        it('should work with the number *0* (nested case)', function() {
-            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
+        it('should work with the number *0* (nested case)', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ x: { y: 0 } }],
+                    fallback: '',
+                    template: '%{x.y}'
+                })
+            ).toEqual('0');
         });
 
-        it('preserves null and NaN', function() {
-            expect(Lib.hovertemplateString(
-                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
-                {},
-                locale,
-                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
-            ))
-            .toEqual('null NaN null NaN null NaN');
+        it('preserves null and NaN', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
+                    fallback: '',
+                    template: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
+                })
+            ).toEqual('null NaN null NaN null NaN');
         });
 
-        it('subtitutes multiple matches', function() {
-            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, {group: 'asdf', trace: 'jkl;'})).toEqual('foo asdf jkl;');
+        it('subtitutes multiple matches', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ group: 'asdf', trace: 'jkl;' }],
+                    fallback: '',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo asdf jkl;');
         });
 
-        it('replaces missing matches with template string', function() {
-            expect(Lib.hovertemplateString('foo %{group} %{trace}', {}, locale, {group: 1})).toEqual('foo 1 %{trace}');
-        });
-
-        it('uses the value from the first object with the specified key', function() {
-            var obj1 = {a: 'first'};
-            var obj2 = {a: 'second', foo: {bar: 'bar'}};
+        it('uses the value from the first object with the specified key', function () {
+            var obj1 = { a: 'first' };
+            var obj2 = { a: 'second', foo: { bar: 'bar' } };
 
             // Simple key
-            expect(Lib.hovertemplateString('foo %{a}', {}, locale, obj1, obj2)).toEqual('foo first');
-            expect(Lib.hovertemplateString('foo %{a}', {}, locale, obj2, obj1)).toEqual('foo second');
+            expect(
+                Lib.hovertemplateString({
+                    data: [obj1, obj2],
+                    fallback: '',
+                    template: 'foo %{a}'
+                })
+            ).toEqual('foo first');
+            expect(
+                Lib.hovertemplateString({
+                    data: [obj2, obj1],
+                    fallback: '',
+                    template: 'foo %{a}'
+                })
+            ).toEqual('foo second');
 
             // Nested Keys
-            expect(Lib.hovertemplateString('foo %{foo.bar}', {}, locale, obj1, obj2)).toEqual('foo bar');
+            expect(
+                Lib.hovertemplateString({
+                    data: [obj1, obj2],
+                    fallback: '',
+                    template: 'foo %{foo.bar}'
+                })
+            ).toEqual('foo bar');
 
             // Nested keys with 0
-            expect(Lib.hovertemplateString('y: %{y}', {}, locale, {y: 0}, {y: 1})).toEqual('y: 0');
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ y: 0 }, { y: 1 }],
+                    fallback: '',
+                    template: 'y: %{y}'
+                })
+            ).toEqual('y: 0');
         });
 
-        it('formats numbers using d3-format mini-language when `:`', function() {
-            expect(Lib.hovertemplateString('a: %{a:.0%}', {}, locale, {a: 0.123})).toEqual('a: 12%');
-            expect(Lib.hovertemplateString('a: %{a:0.2%}', {}, locale, {a: 0.123})).toEqual('a: 12.30%');
-            expect(Lib.hovertemplateString('b: %{b:2.2f}', {}, locale, {b: 43})).toEqual('b: 43.00');
+        it('formats numbers using d3-format mini-language when `:`', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ a: 0.123 }],
+                    fallback: '',
+                    template: 'a: %{a:.0%}'
+                })
+            ).toEqual('a: 12%');
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ a: 0.123 }],
+                    fallback: '',
+                    template: 'a: %{a:0.2%}'
+                })
+            ).toEqual('a: 12.30%');
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ b: 43 }],
+                    fallback: '',
+                    template: 'b: %{b:2.2f}'
+                })
+            ).toEqual('b: 43.00');
         });
 
-        it('formats date using d3-time-format mini-language `|`', function() {
-            expect(Lib.hovertemplateString('a: %{a|%A}', {}, locale, {a: '2019-05-22'})).toEqual('a: Wednesday');
-            expect(Lib.hovertemplateString('%{x|%b %-d, %Y}', {}, locale, {x: '2019-01-01'})).toEqual('Jan 1, 2019');
+        it('formats date using d3-time-format mini-language `|`', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ a: '2019-05-22' }],
+                    fallback: '',
+                    template: 'a: %{a|%A}'
+                })
+            ).toEqual('a: Wednesday');
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ x: '2019-01-01' }],
+                    fallback: '',
+                    template: '%{x|%b %-d, %Y}'
+                })
+            ).toEqual('Jan 1, 2019');
         });
 
-        it('looks for default label if no format is provided', function() {
-            expect(Lib.hovertemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
+        it('looks for default label if no format is provided', function () {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ y: 0.123 }],
+                    fallback: '',
+                    labels: { yLabel: '0.1' },
+                    template: 'y: %{y}'
+                })
+            ).toEqual('y: 0.1');
         });
 
-        it('warns user up to 10 times if a variable cannot be found', function() {
+        it('warns user up to 10 times if a variable cannot be found', function () {
             spyOn(Lib, 'warn').and.callThrough();
-            Lib.hovertemplateString('%{idontexist}', {});
+            Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             expect(Lib.warn.calls.count()).toBe(1);
 
-            for(var i = 0; i < 15; i++) {
-                Lib.hovertemplateString('%{idontexist}', {});
+            for (var i = 0; i < 15; i++) {
+                Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             }
-            expect(Lib.warn.calls.count()).toBe(10);
-        });
-
-        it('does not error out when arguments are undefined', function() {
-            expect(function() {
-                Lib.hovertemplateString('y: %{y}', undefined, locale, undefined);
-            }).not.toThrow();
-        });
-    });
-
-    describe('texttemplateString', function() {
-        var locale = false;
-        it('evaluates attributes', function() {
-            expect(Lib.texttemplateString('foo %{bar}', {}, locale, {bar: 'baz'})).toEqual('foo baz');
-        });
-
-        it('looks for default label if no format is provided', function() {
-            expect(Lib.texttemplateString('y: %{y}', {yLabel: '0.1'}, locale, {y: 0.123})).toEqual('y: 0.1');
-        });
-
-        it('preserves null and NaN', function() {
-            expect(Lib.texttemplateString(
-                '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}',
-                {},
-                locale,
-                {a: null, b: NaN, c: {d: null, e: NaN}, f: [null, NaN]}
-            ))
-            .toEqual('null NaN null NaN null NaN');
-        });
-
-        it('warns user up to 10 times if a variable cannot be found', function() {
-            spyOn(Lib, 'warn').and.callThrough();
-            Lib.texttemplateString('%{idontexist}', {});
-            expect(Lib.warn.calls.count()).toBe(1);
-
-            for(var i = 0; i < 15; i++) {
-                Lib.texttemplateString('%{idontexist}', {});
-            }
+            // Expect 11 since the suppression warning also calls Lib.warn
             expect(Lib.warn.calls.count()).toBe(11);
         });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces template specifiers with the specifier when fallback is false', () => {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ group: 1 }],
+                    fallback: false,
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 %{trace}');
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces template specifiers with the fallback value when fallback is provided', () => {
+            expect(
+                Lib.hovertemplateString({
+                    data: [{ group: 1, trace: undefined }],
+                    fallback: 'Planet Express',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 Planet Express');
+        });
     });
 
-    describe('relativeAttr()', function() {
-        it('replaces the last part always', function() {
+    describe('texttemplateString', function () {
+        it('evaluates attributes', function () {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ bar: 'baz' }],
+                    fallback: '',
+                    template: 'foo %{bar}'
+                })
+            ).toEqual('foo baz');
+        });
+
+        it('looks for default label if no format is provided', function () {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ y: 0.123 }],
+                    fallback: '',
+                    labels: { yLabel: '0.1' },
+                    template: 'y: %{y}'
+                })
+            ).toEqual('y: 0.1');
+        });
+
+        it('preserves null and NaN', function () {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ a: null, b: NaN, c: { d: null, e: NaN }, f: [null, NaN] }],
+                    fallback: '',
+                    template: '%{a} %{b} %{c.d} %{c.e} %{f[0]} %{f[1]}'
+                })
+            ).toEqual('null NaN null NaN null NaN');
+        });
+
+        it('warns user up to 10 times if a variable cannot be found', function () {
+            spyOn(Lib, 'warn').and.callThrough();
+            Lib.texttemplateString({ fallback: '', template: '%{idontexist}' });
+            expect(Lib.warn.calls.count()).toBe(1);
+
+            for (var i = 0; i < 15; i++) {
+                Lib.texttemplateString({ fallback: '', template: '%{idontexist}' });
+            }
+            // Expect 11 since the suppression warning also calls Lib.warn
+            expect(Lib.warn.calls.count()).toBe(11);
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces template specifiers with the specifier when fallback is false', () => {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ group: 1 }],
+                    fallback: false,
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 %{trace}');
+        });
+
+        // This test must come after the warning count since it will affect the count
+        it('replaces template specifiers with the fallback value when fallback is provided', () => {
+            expect(
+                Lib.texttemplateString({
+                    data: [{ group: 1, trace: undefined }],
+                    fallback: 'Zoidberg',
+                    template: 'foo %{group} %{trace}'
+                })
+            ).toEqual('foo 1 Zoidberg');
+        });
+    });
+
+    describe('relativeAttr()', function () {
+        it('replaces the last part always', function () {
             expect(Lib.relativeAttr('annotations[3].x', 'y')).toBe('annotations[3].y');
             expect(Lib.relativeAttr('x', 'z')).toBe('z');
             expect(Lib.relativeAttr('marker.line.width', 'colorbar.x')).toBe('marker.line.colorbar.x');
         });
 
-        it('ascends with ^', function() {
+        it('ascends with ^', function () {
             expect(Lib.relativeAttr('annotations[3].x', '^[2].z')).toBe('annotations[2].z');
             expect(Lib.relativeAttr('annotations[3].x', '^^margin')).toBe('margin');
             expect(Lib.relativeAttr('annotations[3].x', '^^margin.r')).toBe('margin.r');
             expect(Lib.relativeAttr('marker.line.width', '^colorbar.x')).toBe('marker.colorbar.x');
         });
 
-        it('fails on ascending too far', function() {
-            expect(function() { return Lib.relativeAttr('x', '^y'); }).toThrow();
-            expect(function() { return Lib.relativeAttr('marker.line.width', '^^^colorbar.x'); }).toThrow();
+        it('fails on ascending too far', function () {
+            expect(function () {
+                return Lib.relativeAttr('x', '^y');
+            }).toThrow();
+            expect(function () {
+                return Lib.relativeAttr('marker.line.width', '^^^colorbar.x');
+            }).toThrow();
         });
 
-        it('fails with malformed baseAttr', function() {
-            expect(function() { return Lib.relativeAttr('x[]', 'z'); }).toThrow();
-            expect(function() { return Lib.relativeAttr('x.a]', 'z'); }).toThrow();
-            expect(function() { return Lib.relativeAttr('x[a]', 'z'); }).toThrow();
-            expect(function() { return Lib.relativeAttr('x[3].', 'z'); }).toThrow();
-            expect(function() { return Lib.relativeAttr('x.y.', 'z'); }).toThrow();
+        it('fails with malformed baseAttr', function () {
+            expect(function () {
+                return Lib.relativeAttr('x[]', 'z');
+            }).toThrow();
+            expect(function () {
+                return Lib.relativeAttr('x.a]', 'z');
+            }).toThrow();
+            expect(function () {
+                return Lib.relativeAttr('x[a]', 'z');
+            }).toThrow();
+            expect(function () {
+                return Lib.relativeAttr('x[3].', 'z');
+            }).toThrow();
+            expect(function () {
+                return Lib.relativeAttr('x.y.', 'z');
+            }).toThrow();
         });
     });
 
-    describe('subplotSort', function() {
-        it('puts xy subplots in the right order', function() {
+    describe('subplotSort', function () {
+        it('puts xy subplots in the right order', function () {
             var a = ['x10y', 'x10y20', 'x10y12', 'x10y2', 'xy', 'x2y12', 'xy2', 'xy15'];
             a.sort(Lib.subplotSort);
             expect(a).toEqual(['xy', 'xy2', 'xy15', 'x2y12', 'x10y', 'x10y2', 'x10y12', 'x10y20']);
         });
 
-        it('puts simple subplots in the right order', function() {
-            ['scene', 'geo', 'ternary', 'mapbox', 'map'].forEach(function(v) {
+        it('puts simple subplots in the right order', function () {
+            ['scene', 'geo', 'ternary', 'mapbox', 'map'].forEach(function (v) {
                 var a = [v + '100', v + '43', v, v + '10', v + '2'];
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
@@ -2622,9 +2853,9 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('sort', function() {
+    describe('sort', function () {
         var callCount;
-        beforeEach(function() {
+        beforeEach(function () {
             callCount = 0;
         });
 
@@ -2640,7 +2871,7 @@ describe('Test lib.js:', function() {
 
         function ascending(n) {
             var out = new Array(n);
-            for(var i = 0; i < n; i++) {
+            for (var i = 0; i < n; i++) {
                 out[i] = i;
             }
             assertAscending(out);
@@ -2649,7 +2880,7 @@ describe('Test lib.js:', function() {
 
         function descending(n) {
             var out = new Array(n);
-            for(var i = 0; i < n; i++) {
+            for (var i = 0; i < n; i++) {
                 out[i] = n - 1 - i;
             }
             assertDescending(out);
@@ -2659,15 +2890,15 @@ describe('Test lib.js:', function() {
         function rand(n) {
             Lib.seedPseudoRandom();
             var out = new Array(n);
-            for(var i = 0; i < n; i++) {
+            for (var i = 0; i < n; i++) {
                 out[i] = Lib.pseudoRandom();
             }
             return out;
         }
 
         function assertAscending(array) {
-            for(var i = 1; i < array.length; i++) {
-                if(array[i] < array[i - 1]) {
+            for (var i = 1; i < array.length; i++) {
+                if (array[i] < array[i - 1]) {
                     // we already know this expect will fail,
                     // just want to format the message nicely and then
                     // quit so we don't get a million messages
@@ -2678,8 +2909,8 @@ describe('Test lib.js:', function() {
         }
 
         function assertDescending(array) {
-            for(var i = 1; i < array.length; i++) {
-                if(array[i] < array[i - 1]) {
+            for (var i = 1; i < array.length; i++) {
+                if (array[i] < array[i - 1]) {
                     expect(array[i]).not.toBeGreaterThan(array[i - 1]);
                     break;
                 }
@@ -2692,31 +2923,31 @@ describe('Test lib.js:', function() {
             return array;
         }
 
-        it('sorts ascending arrays ascending in N-1 calls', function() {
+        it('sorts ascending arrays ascending in N-1 calls', function () {
             var arrayIn = _sort(ascending(100000), sortCounter);
             expect(callCount).toBe(99999);
             assertAscending(arrayIn);
         });
 
-        it('sorts descending arrays ascending in N-1 calls', function() {
+        it('sorts descending arrays ascending in N-1 calls', function () {
             var arrayIn = _sort(descending(100000), sortCounter);
             expect(callCount).toBe(99999);
             assertAscending(arrayIn);
         });
 
-        it('sorts ascending arrays descending in N-1 calls', function() {
+        it('sorts ascending arrays descending in N-1 calls', function () {
             var arrayIn = _sort(ascending(100000), sortCounterReversed);
             expect(callCount).toBe(99999);
             assertDescending(arrayIn);
         });
 
-        it('sorts descending arrays descending in N-1 calls', function() {
+        it('sorts descending arrays descending in N-1 calls', function () {
             var arrayIn = _sort(descending(100000), sortCounterReversed);
             expect(callCount).toBe(99999);
             assertDescending(arrayIn);
         });
 
-        it('sorts random arrays ascending in a few more calls than bare sort', function() {
+        it('sorts random arrays ascending in a few more calls than bare sort', function () {
             var arrayIn = _sort(rand(100000), sortCounter);
             assertAscending(arrayIn);
 
@@ -2732,7 +2963,7 @@ describe('Test lib.js:', function() {
             expect(ourCallCount - callCount).toBe(2);
         });
 
-        it('sorts random arrays descending in a few more calls than bare sort', function() {
+        it('sorts random arrays descending in a few more calls than bare sort', function () {
             var arrayIn = _sort(rand(100000), sortCounterReversed);
             assertDescending(arrayIn);
 
@@ -2743,7 +2974,7 @@ describe('Test lib.js:', function() {
             expect(ourCallCount - callCount).toBe(2);
         });
 
-        it('supports short arrays', function() {
+        it('supports short arrays', function () {
             expect(_sort([], sortCounter)).toEqual([]);
             expect(_sort([1], sortCounter)).toEqual([1]);
             expect(callCount).toBe(0);
@@ -2757,30 +2988,28 @@ describe('Test lib.js:', function() {
             return [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 7, 8, 9];
         }
 
-        it('still short-circuits in order with duplicates', function() {
-            expect(_sort(dupes(), sortCounter))
-                .toEqual(dupes());
+        it('still short-circuits in order with duplicates', function () {
+            expect(_sort(dupes(), sortCounter)).toEqual(dupes());
 
             expect(callCount).toEqual(18);
         });
 
-        it('still short-circuits reversed with duplicates', function() {
-            expect(_sort(dupes(), sortCounterReversed))
-                .toEqual(dupes().reverse());
+        it('still short-circuits reversed with duplicates', function () {
+            expect(_sort(dupes(), sortCounterReversed)).toEqual(dupes().reverse());
 
             expect(callCount).toEqual(18);
         });
     });
 
-    describe('relinkPrivateKeys', function() {
-        it('ignores customdata and ids', function() {
+    describe('relinkPrivateKeys', function () {
+        it('ignores customdata and ids', function () {
             var fromContainer = {
-                customdata: [{_x: 1, _y: 2, a: 3}],
-                ids: [{_i: 4, j: 5}]
+                customdata: [{ _x: 1, _y: 2, a: 3 }],
+                ids: [{ _i: 4, j: 5 }]
             };
             var toContainer = {
-                customdata: [{a: 6}],
-                ids: [{j: 7}]
+                customdata: [{ a: 6 }],
+                ids: [{ j: 7 }]
             };
 
             Lib.relinkPrivateKeys(toContainer, fromContainer);
@@ -2790,12 +3019,17 @@ describe('Test lib.js:', function() {
             expect(toContainer.ids[0]._i).toBeUndefined();
         });
 
-        it('ignores any values that are ===', function() {
+        it('ignores any values that are ===', function () {
             var accesses = 0;
 
             var obj = {
-                get _x() { accesses++; return 1; },
-                set _x(v) { accesses++; }
+                get _x() {
+                    accesses++;
+                    return 1;
+                },
+                set _x(v) {
+                    accesses++;
+                }
             };
             var array = [obj];
             var array2 = [obj];
@@ -2820,11 +3054,15 @@ describe('Test lib.js:', function() {
             expect(accesses).toBe(2);
         });
 
-        it('reinserts other private keys if they\'re not already there', function() {
-            var obj1 = {a: 10, _a: 11};
-            var obj2 = {a: 12, _a: 13};
-            function f1() { return 1; }
-            function f2() { return 2; }
+        it("reinserts other private keys if they're not already there", function () {
+            var obj1 = { a: 10, _a: 11 };
+            var obj2 = { a: 12, _a: 13 };
+            function f1() {
+                return 1;
+            }
+            function f2() {
+                return 2;
+            }
 
             var fromContainer = {
                 a: 1,
@@ -2834,10 +3072,10 @@ describe('Test lib.js:', function() {
                 _d: obj1,
                 f: f1, // functions are private even without _
                 g: f1,
-                array: [{a: 3, _a: 4, _b: 5, f: f1, g: f1}],
-                o: {a: 6, _a: 7, _b: 8},
-                array2: [{a: 9, _a: 10}],
-                o2: {a: 11, _a: 12}
+                array: [{ a: 3, _a: 4, _b: 5, f: f1, g: f1 }],
+                o: { a: 6, _a: 7, _b: 8 },
+                array2: [{ a: 9, _a: 10 }],
+                o2: { a: 11, _a: 12 }
             };
             fromContainer._circular = fromContainer;
             fromContainer._circular2 = fromContainer;
@@ -2846,8 +3084,8 @@ describe('Test lib.js:', function() {
                 _a: 22,
                 _c: obj2,
                 f: f2,
-                array: [{a: 23, _a: 24, f: f2}],
-                o: {a: 26, _a: 27},
+                array: [{ a: 23, _a: 24, f: f2 }],
+                o: { a: 26, _a: 27 },
                 x: [28],
                 _x: 29
             };
@@ -2865,8 +3103,8 @@ describe('Test lib.js:', function() {
                 _d: obj1,
                 f: f2,
                 g: f1,
-                array: [{a: 23, _a: 24, _b: 5, f: f2, g: f1}],
-                o: {a: 26, _a: 27, _b: 8},
+                array: [{ a: 23, _a: 24, _b: 5, f: f2, g: f1 }],
+                o: { a: 26, _a: 27, _b: 8 },
                 x: [28],
                 _x: 29
             };
@@ -2875,24 +3113,24 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('concat', function() {
+    describe('concat', function () {
         var concat = Lib.concat;
 
-        beforeEach(function() {
+        beforeEach(function () {
             spyOn(Array.prototype, 'concat').and.callThrough();
         });
 
-        it('works with multiple Arrays', function() {
-            var res = concat([1], [[2], 3], [{a: 4}, 5, 6]);
+        it('works with multiple Arrays', function () {
+            var res = concat([1], [[2], 3], [{ a: 4 }, 5, 6]);
             expect(Array.prototype.concat.calls.count()).toBe(1);
 
             // note: can't `concat` in the `expect` if we want to count native
             // `Array.concat calls`, because `toEqual` calls `Array.concat`
             // profusely itself.
-            expect(res).toEqual([1, [2], 3, {a: 4}, 5, 6]);
+            expect(res).toEqual([1, [2], 3, { a: 4 }, 5, 6]);
         });
 
-        it('works with some empty arrays', function() {
+        it('works with some empty arrays', function () {
             var a1 = [1];
             var res = concat(a1, [], [2, 3]);
             expect(Array.prototype.concat.calls.count()).toBe(1);
@@ -2922,8 +3160,8 @@ describe('Test lib.js:', function() {
             expect(f1).toEqual(new Float32Array([1, 2]));
         });
 
-        it('works with all empty arrays', function() {
-            [[], [[]], [[], []], [[], [], [], []]].forEach(function(empties) {
+        it('works with all empty arrays', function () {
+            [[], [[]], [[], []], [[], [], [], []]].forEach(function (empties) {
                 Array.prototype.concat.calls.reset();
                 var res = concat.apply(null, empties);
                 expect(Array.prototype.concat.calls.count()).toBe(0);
@@ -2931,12 +3169,12 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('converts mismatched types to Array', function() {
+        it('converts mismatched types to Array', function () {
             [
                 [[1, 2], new Float64Array([3, 4])],
                 [new Float64Array([1, 2]), [3, 4]],
                 [new Float64Array([1, 2]), new Float32Array([3, 4])]
-            ].forEach(function(mismatch) {
+            ].forEach(function (mismatch) {
                 Array.prototype.concat.calls.reset();
                 var res = concat.apply(null, mismatch);
                 // no concat - all entries moved over individually
@@ -2945,8 +3183,8 @@ describe('Test lib.js:', function() {
             });
         });
 
-        it('concatenates matching TypedArrays preserving type', function() {
-            [Float32Array, Float64Array, Int16Array, Int32Array].forEach(function(Type, i) {
+        it('concatenates matching TypedArrays preserving type', function () {
+            [Float32Array, Float64Array, Int16Array, Int32Array].forEach(function (Type, i) {
                 var v = i * 10;
                 Array.prototype.concat.calls.reset();
                 var res = concat([], new Type([v]), new Type([v + 1, v]), new Type([v + 2, v, v]));
@@ -2957,168 +3195,171 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe("User agent", () => {
+    describe('User agent', () => {
         const userAgentStrings = {
-            iOSSafari: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Mobile/15E148 Safari/604.1",
-            iOSChrome: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/138.0.7204.156 Mobile/15E148 Safari/604.1",
-            macChrome: "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-            macSafari: "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15",
-            macWKWebView: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)",
-            winFirefox: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
-        }
+            iOSSafari:
+                'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Mobile/15E148 Safari/604.1',
+            iOSChrome:
+                'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/138.0.7204.156 Mobile/15E148 Safari/604.1',
+            macChrome:
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+            macSafari:
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15',
+            macWKWebView: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)',
+            winFirefox: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0'
+        };
 
         describe('isIOS', () => {
-            [userAgentStrings.iOSChrome, userAgentStrings.iOSSafari].forEach(uaString => {
+            [userAgentStrings.iOSChrome, userAgentStrings.iOSSafari].forEach((uaString) => {
                 it('matches an iOS user agent string', () => {
-                    spyOnProperty(navigator, 'userAgent').and.returnValue(uaString)
-                    expect(Lib.isIOS()).toBe(true)
-                })
-            })
-    
+                    spyOnProperty(navigator, 'userAgent').and.returnValue(uaString);
+                    expect(Lib.isIOS()).toBe(true);
+                });
+            });
+
             it("doesn't match a non-iOS user agent string", () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
-                expect(Lib.isIOS()).toBe(false)
-            })
-        })
-    
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari);
+                expect(Lib.isIOS()).toBe(false);
+            });
+        });
+
         describe('isSafari', () => {
             it('matches a Safari user agent string', () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
-                expect(Lib.isSafari()).toBe(true)
-            })
-            
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari);
+                expect(Lib.isSafari()).toBe(true);
+            });
+
             it("doesn't match a non-Safari user agent string", () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macChrome)
-                expect(Lib.isSafari()).toBe(false)
-            })
-        })
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macChrome);
+                expect(Lib.isSafari()).toBe(false);
+            });
+        });
 
         describe('isMacWKWebView', () => {
             it('matches a Safari user agent string', () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macWKWebView)
-                expect(Lib.isMacWKWebView()).toBe(true)
-            })
-            
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macWKWebView);
+                expect(Lib.isMacWKWebView()).toBe(true);
+            });
+
             it("doesn't match a non-Safari user agent string", () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
-                expect(Lib.isMacWKWebView()).toBe(false)
-            })
-        })
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari);
+                expect(Lib.isMacWKWebView()).toBe(false);
+            });
+        });
 
         describe('getFirefoxVersion', () => {
             it('gets the Firefox version from the user agent string', () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.winFirefox)
-                expect(Lib.getFirefoxVersion()).toBe(140)
-            })
-            
-            it("returns null for a non-Firefox user agent string", () => {
-                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari)
-                expect(Lib.getFirefoxVersion()).toBe(null)
-            })
-        })
-    })
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.winFirefox);
+                expect(Lib.getFirefoxVersion()).toBe(140);
+            });
+
+            it('returns null for a non-Firefox user agent string', () => {
+                spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari);
+                expect(Lib.getFirefoxVersion()).toBe(null);
+            });
+        });
+    });
 });
 
-describe('Queue', function() {
+describe('Queue', function () {
     'use strict';
 
     var gd;
 
-    beforeEach(function() {
+    beforeEach(function () {
         gd = createGraphDiv();
     });
 
-    afterEach(function() {
+    afterEach(function () {
         destroyGraphDiv();
         Plotly.setPlotConfig({ queueLength: 0 });
     });
 
-    it('should not fill in undoQueue by default', function(done) {
-        Plotly.newPlot(gd, [{
-            y: [2, 1, 2]
-        }]).then(function() {
-            expect(gd.undoQueue).toBeUndefined();
+    it('should not fill in undoQueue by default', function (done) {
+        Plotly.newPlot(gd, [
+            {
+                y: [2, 1, 2]
+            }
+        ])
+            .then(function () {
+                expect(gd.undoQueue).toBeUndefined();
 
-            return Plotly.restyle(gd, 'marker.color', 'red');
-        }).then(function() {
-            expect(gd.undoQueue.index).toEqual(0);
-            expect(gd.undoQueue.queue).toEqual([]);
+                return Plotly.restyle(gd, 'marker.color', 'red');
+            })
+            .then(function () {
+                expect(gd.undoQueue.index).toEqual(0);
+                expect(gd.undoQueue.queue).toEqual([]);
 
-            return Plotly.relayout(gd, 'title', 'A title');
-        }).then(function() {
-            expect(gd.undoQueue.index).toEqual(0);
-            expect(gd.undoQueue.queue).toEqual([]);
-        })
-        .then(done, done.fail);
+                return Plotly.relayout(gd, 'title', 'A title');
+            })
+            .then(function () {
+                expect(gd.undoQueue.index).toEqual(0);
+                expect(gd.undoQueue.queue).toEqual([]);
+            })
+            .then(done, done.fail);
     });
 
-    it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
+    it('should fill in undoQueue up to value found in *queueLength* config', function (done) {
         Plotly.setPlotConfig({ queueLength: 2 });
 
-        Plotly.newPlot(gd, [{
-            y: [2, 1, 2]
-        }])
-        .then(function() {
-            expect(gd.undoQueue).toBeUndefined();
+        Plotly.newPlot(gd, [
+            {
+                y: [2, 1, 2]
+            }
+        ])
+            .then(function () {
+                expect(gd.undoQueue).toBeUndefined();
 
-            return Plotly.restyle(gd, 'marker.color', 'red');
-        })
-        .then(function() {
-            expect(gd.undoQueue.index).toEqual(1);
-            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
-            expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
+                return Plotly.restyle(gd, 'marker.color', 'red');
+            })
+            .then(function () {
+                expect(gd.undoQueue.index).toEqual(1);
+                expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([null]);
+                expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
 
-            return Plotly.relayout(gd, 'title.text', 'A title');
-        })
-        .then(function() {
-            expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[1].undo.args[0][1]['title.text']).toEqual(null);
-            expect(gd.undoQueue.queue[1].redo.args[0][1]['title.text']).toEqual('A title');
+                return Plotly.relayout(gd, 'title.text', 'A title');
+            })
+            .then(function () {
+                expect(gd.undoQueue.index).toEqual(2);
+                expect(gd.undoQueue.queue[1].undo.args[0][1]['title.text']).toEqual(null);
+                expect(gd.undoQueue.queue[1].redo.args[0][1]['title.text']).toEqual('A title');
 
-            return Plotly.restyle(gd, 'mode', 'markers');
-        })
-        .then(function() {
-            expect(gd.undoQueue.index).toEqual(2);
-            expect(gd.undoQueue.queue[2]).toBeUndefined();
+                return Plotly.restyle(gd, 'mode', 'markers');
+            })
+            .then(function () {
+                expect(gd.undoQueue.index).toEqual(2);
+                expect(gd.undoQueue.queue[2]).toBeUndefined();
 
-            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
-            expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
+                expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([null]);
+                expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
 
-            expect(gd.undoQueue.queue[0].undo.args[0][1]['title.text']).toEqual(null);
-            expect(gd.undoQueue.queue[0].redo.args[0][1]['title.text']).toEqual('A title');
+                expect(gd.undoQueue.queue[0].undo.args[0][1]['title.text']).toEqual(null);
+                expect(gd.undoQueue.queue[0].redo.args[0][1]['title.text']).toEqual('A title');
 
-            return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });
-        })
-        .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'transforms[0]': null });
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
-                .toEqual({ 'transforms[0]': { type: 'filter' } });
+                return Plotly.restyle(gd, 'transforms[0]', { type: 'filter' });
+            })
+            .then(function () {
+                expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'transforms[0]': null });
+                expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'transforms[0]': { type: 'filter' } });
 
-            return Plotly.relayout(gd, 'updatemenus[0]', { buttons: [] });
-        })
-        .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'updatemenus[0]': null });
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
-                .toEqual({ 'updatemenus[0]': { buttons: [] } });
+                return Plotly.relayout(gd, 'updatemenus[0]', { buttons: [] });
+            })
+            .then(function () {
+                expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'updatemenus[0]': null });
+                expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'updatemenus[0]': { buttons: [] } });
 
-            return Plotly.relayout(gd, 'updatemenus[0]', null);
-        })
-        .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'updatemenus[0]': { buttons: [] } });
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
-                .toEqual({ 'updatemenus[0]': null });
+                return Plotly.relayout(gd, 'updatemenus[0]', null);
+            })
+            .then(function () {
+                expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'updatemenus[0]': { buttons: [] } });
+                expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'updatemenus[0]': null });
 
-            return Plotly.restyle(gd, 'transforms[0]', null);
-        })
-        .then(function() {
-            expect(gd.undoQueue.queue[1].undo.args[0][1])
-                .toEqual({ 'transforms[0]': [ { type: 'filter' } ]});
-            expect(gd.undoQueue.queue[1].redo.args[0][1])
-                .toEqual({ 'transforms[0]': null });
-        })
-        .then(done, done.fail);
+                return Plotly.restyle(gd, 'transforms[0]', null);
+            })
+            .then(function () {
+                expect(gd.undoQueue.queue[1].undo.args[0][1]).toEqual({ 'transforms[0]': [{ type: 'filter' }] });
+                expect(gd.undoQueue.queue[1].redo.args[0][1]).toEqual({ 'transforms[0]': null });
+            })
+            .then(done, done.fail);
     });
 });

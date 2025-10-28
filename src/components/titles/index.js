@@ -81,7 +81,7 @@ function draw(gd, titleClass, options) {
     var subtitleEnabled = !!subtitleProp;
     var subtitlePlaceholder = options.subtitlePlaceholder;
     var subtitle = (cont.title || {}).subtitle || {text: '', font: {}};
-    var subtitleTxt = subtitle.text.trim();
+    var subtitleTxt = (subtitle.text || '').trim();
     var subtitleIsPlaceholder = false;
     var subtitleOpacity = 1;
 
@@ -160,7 +160,7 @@ function draw(gd, titleClass, options) {
     var subtitleClass = titleClass + '-subtitle';
     var subtitleElShouldExist = subtitleTxt || editable;
 
-    if(subtitleEnabled && subtitleElShouldExist) {
+    if(subtitleEnabled) {
         subtitleEl = group.selectAll('text.' + subtitleClass)
             .data(subtitleElShouldExist ? [0] : []);
         subtitleEl.enter().append('text');
@@ -231,7 +231,7 @@ function draw(gd, titleClass, options) {
         .attr(attributes)
             .call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
 
-        if(subtitleEl) {
+        if(subtitleEl && !subtitleEl.empty()) {
             // Set subtitle y position based on bottom of title
             // We need to check the Mathjax group as well, in case the Mathjax
             // has already rendered
@@ -405,7 +405,7 @@ function draw(gd, titleClass, options) {
     }
 
     el.classed('js-placeholder', titleIsPlaceholder);
-    if(subtitleEl) subtitleEl.classed('js-placeholder', subtitleIsPlaceholder);
+    if(subtitleEl && !subtitleEl.empty()) subtitleEl.classed('js-placeholder', subtitleIsPlaceholder);
 
     return group;
 }

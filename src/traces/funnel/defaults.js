@@ -15,7 +15,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -24,7 +24,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('xhoverformat');
     coerce('yhoverformat');
 
-    coerce('orientation', (traceOut.y && !traceOut.x) ? 'v' : 'h');
+    coerce('orientation', traceOut.y && !traceOut.x ? 'v' : 'h');
     coerce('offset');
     coerce('width');
 
@@ -32,6 +32,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -43,7 +44,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         moduleHasInsideanchor: true
     });
 
-    if(traceOut.textposition !== 'none' && !traceOut.texttemplate) {
+    if (traceOut.textposition !== 'none' && !traceOut.texttemplate) {
         coerce('textinfo', Lib.isArrayOrTypedArray(text) ? 'text+value' : 'value');
     }
 
@@ -52,11 +53,11 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('marker.line.width');
 
     var connectorVisible = coerce('connector.visible');
-    if(connectorVisible) {
+    if (connectorVisible) {
         coerce('connector.fillcolor', defaultFillColor(markerColor));
 
         var connectorLineWidth = coerce('connector.line.width');
-        if(connectorLineWidth) {
+        if (connectorLineWidth) {
             coerce('connector.line.color');
             coerce('connector.line.dash');
         }
@@ -77,9 +78,9 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr);
     }
 
-    for(var i = 0; i < fullData.length; i++) {
+    for (var i = 0; i < fullData.length; i++) {
         traceOut = fullData[i];
-        if(traceOut.type === 'funnel') {
+        if (traceOut.type === 'funnel') {
             traceIn = traceOut._input;
             handleGroupingDefaults(traceIn, traceOut, fullLayout, coerce, fullLayout.funnelmode);
         }

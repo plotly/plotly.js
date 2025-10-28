@@ -1,7 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
@@ -57,7 +56,7 @@ module.exports = {
         editType: 'calc',
         description: [
             'Sets the theta coordinate step.',
-            'By default, the `dtheta` step equals the subplot\'s period divided',
+            "By default, the `dtheta` step equals the subplot's period divided",
             'by the length of the `r` coordinates.'
         ].join(' ')
     },
@@ -74,9 +73,8 @@ module.exports = {
     },
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['r', 'theta', 'text']
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['r', 'theta', 'text'] }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: scatterAttrs.hovertext,
 
     line: {
@@ -93,7 +91,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, { dflt: false }),
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,
@@ -125,6 +123,7 @@ module.exports = {
     }),
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected

@@ -51,9 +51,9 @@ describe('legend defaults', function() {
 
     it('hides by default if there is only one legend item by default', function() {
         fullData = allShown([
-            {type: 'scatter'},
-            {type: 'scatter', visible: false}, // ignored
-            {type: 'contour', _dfltShowLegend: false, showlegend: false} // hidden by default
+            { type: 'scatter' },
+            { type: 'scatter', visible: false }, // ignored
+            { type: 'contour', _dfltShowLegend: false, showlegend: false } // hidden by default
         ]);
 
         supplyLayoutDefaults({}, layoutOut, fullData);
@@ -62,8 +62,8 @@ describe('legend defaults', function() {
 
     it('shows if there are two legend items by default but only one is shown', function() {
         fullData = allShown([
-            {type: 'scatter'},
-            {type: 'scatter', showlegend: false} // not shown but still triggers legend
+            { type: 'scatter' },
+            { type: 'scatter', showlegend: false } // not shown but still triggers legend
         ]);
 
         supplyLayoutDefaults({}, layoutOut, fullData);
@@ -72,8 +72,8 @@ describe('legend defaults', function() {
 
     it('hides if no items are actually shown', function() {
         fullData = allShown([
-            {type: 'scatter', showlegend: false},
-            {type: 'scatter', showlegend: false}
+            { type: 'scatter', showlegend: false },
+            { type: 'scatter', showlegend: false }
         ]);
 
         supplyLayoutDefaults({}, layoutOut, fullData);
@@ -82,7 +82,7 @@ describe('legend defaults', function() {
 
     it('shows with one visible pie', function() {
         fullData = allShown([
-            {type: 'pie'}
+            { type: 'pie' }
         ]);
 
         supplyLayoutDefaults({}, layoutOut, fullData);
@@ -91,7 +91,7 @@ describe('legend defaults', function() {
 
     it('does not show with a hidden pie', function() {
         fullData = allShown([
-            {type: 'pie', showlegend: false}
+            { type: 'pie', showlegend: false }
         ]);
 
         supplyLayoutDefaults({}, layoutOut, fullData);
@@ -100,7 +100,7 @@ describe('legend defaults', function() {
 
     it('shows if even a default hidden single item is explicitly shown', function() {
         fullData = allShown([
-            {type: 'contour', _dfltShowLegend: false, _input: {showlegend: true}}
+            { type: 'contour', _dfltShowLegend: false, _input: { showlegend: true } }
         ]);
 
         supplyLayoutDefaults({}, layoutOut, fullData);
@@ -109,9 +109,9 @@ describe('legend defaults', function() {
 
     it('should default traceorder to reversed for stack bar charts', function() {
         fullData = allShown([
-            {type: 'bar', visible: 'legendonly'},
-            {type: 'bar', visible: 'legendonly'},
-            {type: 'scatter'}
+            { type: 'bar', visible: 'legendonly' },
+            { type: 'bar', visible: 'legendonly' },
+            { type: 'scatter' }
         ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -125,11 +125,11 @@ describe('legend defaults', function() {
 
     it('should default traceorder to reversed for stack bar charts | multi-legend case', function() {
         fullData = allShown([
-            {type: 'scatter'},
-            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
-            {legend: 'legend2', type: 'bar', visible: 'legendonly'},
-            {legend: 'legend2', type: 'scatter'},
-            {legend: 'legend3', type: 'scatter'}
+            { type: 'scatter' },
+            { legend: 'legend2', type: 'bar', visible: 'legendonly' },
+            { legend: 'legend2', type: 'bar', visible: 'legendonly' },
+            { legend: 'legend2', type: 'scatter' },
+            { legend: 'legend3', type: 'scatter' }
         ]);
 
         layoutOut.legend2 = {};
@@ -150,8 +150,8 @@ describe('legend defaults', function() {
 
     it('should default traceorder to reversed for filled tonext scatter charts', function() {
         fullData = allShown([
-            {type: 'scatter'},
-            {type: 'scatter', fill: 'tonexty'}
+            { type: 'scatter' },
+            { type: 'scatter', fill: 'tonexty' }
         ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -160,8 +160,8 @@ describe('legend defaults', function() {
 
     it('should default traceorder to grouped when a group is present', function() {
         fullData = allShown([
-            {type: 'scatter', legendgroup: 'group'},
-            {type: 'scatter'}
+            { type: 'scatter', legendgroup: 'group' },
+            { type: 'scatter' }
         ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -175,10 +175,10 @@ describe('legend defaults', function() {
 
     it('should default traceorder to grouped when a group is present | multi-legend case', function() {
         fullData = allShown([
-            {type: 'scatter'},
-            {legend: 'legend2', type: 'scatter', legendgroup: 'group'},
-            {legend: 'legend2', type: 'scatter'},
-            {legend: 'legend3', type: 'scatter'}
+            { type: 'scatter' },
+            { legend: 'legend2', type: 'scatter', legendgroup: 'group' },
+            { legend: 'legend2', type: 'scatter' },
+            { legend: 'legend3', type: 'scatter' }
         ]);
 
         layoutOut.legend2 = {};
@@ -199,9 +199,9 @@ describe('legend defaults', function() {
 
     it('does not consider invisible traces for traceorder default', function() {
         fullData = allShown([
-            {type: 'bar', visible: false},
-            {type: 'bar', visible: false},
-            {type: 'scatter'}
+            { type: 'bar', visible: false },
+            { type: 'bar', visible: false },
+            { type: 'scatter' }
         ]);
 
         layoutOut.barmode = 'stack';
@@ -210,8 +210,8 @@ describe('legend defaults', function() {
         expect(layoutOut.legend.traceorder).toEqual('normal');
 
         fullData = allShown([
-            {type: 'scatter', legendgroup: 'group', visible: false},
-            {type: 'scatter'}
+            { type: 'scatter', legendgroup: 'group', visible: false },
+            { type: 'scatter' }
         ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -220,11 +220,11 @@ describe('legend defaults', function() {
 
     it('does not consider invisible traces for traceorder default | multi-legend case', function() {
         fullData = allShown([
-            {type: 'scatter'},
-            {legend: 'legend2', type: 'bar', visible: false},
-            {legend: 'legend2', type: 'bar', visible: false},
-            {legend: 'legend2', type: 'scatter'},
-            {legend: 'legend3', type: 'scatter'},
+            { type: 'scatter' },
+            { legend: 'legend2', type: 'bar', visible: false },
+            { legend: 'legend2', type: 'bar', visible: false },
+            { legend: 'legend2', type: 'scatter' },
+            { legend: 'legend3', type: 'scatter' },
         ]);
 
         layoutOut.legend2 = {};
@@ -238,10 +238,10 @@ describe('legend defaults', function() {
         expect(layoutOut.legend3.traceorder).toEqual('normal');
 
         fullData = allShown([
-            {type: 'scatter'},
-            {legend: 'legend2', type: 'scatter', legendgroup: 'group', visible: false},
-            {legend: 'legend2', type: 'scatter'},
-            {legend: 'legend3', type: 'scatter'}
+            { type: 'scatter' },
+            { legend: 'legend2', type: 'scatter', legendgroup: 'group', visible: false },
+            { legend: 'legend2', type: 'scatter' },
+            { legend: 'legend3', type: 'scatter' }
         ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -337,27 +337,33 @@ describe('legend getLegendData user-defined legendrank', function() {
 
     it('should group legendgroup traces', function() {
         calcdata = [
-            [{trace: {
-                legendrank: 3,
-                type: 'scatter',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 2,
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 1,
-                type: 'scatter',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 1,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'grouped'
@@ -367,29 +373,35 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{_preSort: 1, trace: {
-                    legendrank: 1,
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}],
-                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
-                    legendrank: 3,
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}]
+                [{
+                    _preSort: 1, trace: {
+                        legendrank: 1,
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                        legendrank: 3,
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }]
             ],
             [
-                [{_groupMinRank: 2, _preGroupSort: 1, _preSort: 0, trace: {
-                    legendrank: 2,
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: 2, _preGroupSort: 1, _preSort: 0, trace: {
+                        legendrank: 2,
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -399,27 +411,33 @@ describe('legend getLegendData user-defined legendrank', function() {
 
     it('should collapse when data has only one group', function() {
         calcdata = [
-            [{trace: {
-                legendrank: 3,
-                type: 'scatter',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 2,
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 1,
-                type: 'scatter',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 1,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'grouped'
@@ -429,27 +447,33 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{_preSort: 2, trace: {
-                    legendrank: 1,
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_preSort: 1, trace: {
-                    legendrank: 2,
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
-                    legendrank: 3,
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _preSort: 2, trace: {
+                        legendrank: 1,
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 1, trace: {
+                        legendrank: 2,
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                        legendrank: 3,
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -459,26 +483,32 @@ describe('legend getLegendData user-defined legendrank', function() {
 
     it('should return empty array when legend data has no traces', function() {
         calcdata = [
-            [{trace: {
-                legendrank: 3,
-                type: 'histogram',
-                visible: true,
-                legendgroup: '',
-                showlegend: false
-            }}],
-            [{trace: {
-                legendrank: 2,
-                type: 'box',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: false
-            }}],
-            [{trace: {
-                legendrank: 1,
-                type: 'heatmap',
-                visible: true,
-                legendgroup: ''
-            }}]
+            [{
+                trace: {
+                    legendrank: 3,
+                    type: 'histogram',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: false
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 2,
+                    type: 'box',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: false
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 1,
+                    type: 'heatmap',
+                    visible: true,
+                    legendgroup: ''
+                }
+            }]
         ];
         opts = {
             _main: true,
@@ -491,27 +521,33 @@ describe('legend getLegendData user-defined legendrank', function() {
 
     it('should reverse the order when legend.traceorder is set', function() {
         calcdata = [
-            [{trace: {
-                legendrank: 3,
-                type: 'scatter',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 2,
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 1,
-                type: 'box',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 1,
+                    type: 'box',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'reversed'
@@ -521,27 +557,33 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
-                    legendrank: 3,
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_preSort: 1, trace: {
-                    legendrank: 2,
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_preSort: 2, trace: {
-                    legendrank: 1,
-                    type: 'box',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                        legendrank: 3,
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 1, trace: {
+                        legendrank: 2,
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 2, trace: {
+                        legendrank: 1,
+                        type: 'box',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -551,27 +593,33 @@ describe('legend getLegendData user-defined legendrank', function() {
 
     it('should reverse the trace order within groups when reversed+grouped', function() {
         calcdata = [
-            [{trace: {
-                legendrank: 3,
-                type: 'scatter',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 2,
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                legendrank: 1,
-                type: 'box',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    legendrank: 1,
+                    type: 'box',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'reversed+grouped'
@@ -581,29 +629,35 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
-                    legendrank: 3,
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}],
-                [{_preSort: 1, trace: {
-                    legendrank: 1,
-                    type: 'box',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                        legendrank: 3,
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 1, trace: {
+                        legendrank: 1,
+                        type: 'box',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }]
             ],
             [
-                [{_groupMinRank: 2, _preGroupSort: 1, _preSort: 0, trace: {
-                    legendrank: 2,
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: 2, _preGroupSort: 1, _preSort: 0, trace: {
+                        legendrank: 2,
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -619,24 +673,30 @@ describe('legend getLegendData default legendrank', function() {
 
     it('should group legendgroup traces', function() {
         calcdata = [
-            [{trace: {
-                type: 'scatter',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'scatter',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'grouped'
@@ -646,26 +706,32 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}],
-                [{_preSort: 1, trace: {
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 1, trace: {
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }]
             ],
             [
-                [{_groupMinRank: Infinity, _preGroupSort: 1, _preSort: 0, trace: {
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: Infinity, _preGroupSort: 1, _preSort: 0, trace: {
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -675,24 +741,30 @@ describe('legend getLegendData default legendrank', function() {
 
     it('should collapse when data has only one group', function() {
         calcdata = [
-            [{trace: {
-                type: 'scatter',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'scatter',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'grouped'
@@ -702,24 +774,30 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_preSort: 1, trace: {
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_preSort: 2, trace: {
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 1, trace: {
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 2, trace: {
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -729,23 +807,29 @@ describe('legend getLegendData default legendrank', function() {
 
     it('should return empty array when legend data has no traces', function() {
         calcdata = [
-            [{trace: {
-                type: 'histogram',
-                visible: true,
-                legendgroup: '',
-                showlegend: false
-            }}],
-            [{trace: {
-                type: 'box',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: false
-            }}],
-            [{trace: {
-                type: 'heatmap',
-                visible: true,
-                legendgroup: ''
-            }}]
+            [{
+                trace: {
+                    type: 'histogram',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: false
+                }
+            }],
+            [{
+                trace: {
+                    type: 'box',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: false
+                }
+            }],
+            [{
+                trace: {
+                    type: 'heatmap',
+                    visible: true,
+                    legendgroup: ''
+                }
+            }]
         ];
         opts = {
             _main: true,
@@ -758,24 +842,30 @@ describe('legend getLegendData default legendrank', function() {
 
     it('should reverse the order when legend.traceorder is set', function() {
         calcdata = [
-            [{trace: {
-                type: 'scatter',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'box',
-                visible: true,
-                legendgroup: '',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'box',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'reversed'
@@ -785,24 +875,30 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{_preSort: 2, trace: {
-                    type: 'box',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_preSort: 1, trace: {
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}],
-                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _preSort: 2, trace: {
+                        type: 'box',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _preSort: 1, trace: {
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -812,24 +908,30 @@ describe('legend getLegendData default legendrank', function() {
 
     it('should reverse the trace order within groups when reversed+grouped', function() {
         calcdata = [
-            [{trace: {
-                type: 'scatter',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'bar',
-                visible: 'legendonly',
-                legendgroup: '',
-                showlegend: true
-            }}],
-            [{trace: {
-                type: 'box',
-                visible: true,
-                legendgroup: 'group',
-                showlegend: true
-            }}]
+            [{
+                trace: {
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }
+            }],
+            [{
+                trace: {
+                    type: 'box',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }
+            }]
         ];
         opts = {
             traceorder: 'reversed+grouped'
@@ -839,26 +941,32 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{_preSort: 1, trace: {
-                    type: 'box',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}],
-                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
-                    type: 'scatter',
-                    visible: true,
-                    legendgroup: 'group',
-                    showlegend: true
-                }}]
+                [{
+                    _preSort: 1, trace: {
+                        type: 'box',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }],
+                [{
+                    _groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
+                        type: 'scatter',
+                        visible: true,
+                        legendgroup: 'group',
+                        showlegend: true
+                    }
+                }]
             ],
             [
-                [{_groupMinRank: Infinity, _preGroupSort: 1, _preSort: 0, trace: {
-                    type: 'bar',
-                    visible: 'legendonly',
-                    legendgroup: '',
-                    showlegend: true
-                }}]
+                [{
+                    _groupMinRank: Infinity, _preGroupSort: 1, _preSort: 0, trace: {
+                        type: 'bar',
+                        visible: 'legendonly',
+                        legendgroup: '',
+                        showlegend: true
+                    }
+                }]
             ]
         ];
 
@@ -994,34 +1102,36 @@ describe('legend relayout update', function() {
     afterEach(destroyGraphDiv);
 
     it('should hide and show the legend', function(done) {
-        var mockCopy = Lib.extendDeep({}, require('../../image/mocks/0.json'), {layout: {
-            legend: {x: 1.1, xanchor: 'left'},
-            margin: {l: 50, r: 50, pad: 0},
-            width: 500
-        }});
+        var mockCopy = Lib.extendDeep({}, require('../../image/mocks/0.json'), {
+            layout: {
+                legend: { x: 1.1, xanchor: 'left' },
+                margin: { l: 50, r: 50, pad: 0 },
+                width: 500
+            }
+        });
 
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-        .then(function() {
-            expect(d3SelectAll('g.legend').size()).toBe(1);
-            // check that the margins changed
-            assertPlotSize({widthLessThan: 400});
-            return Plotly.relayout(gd, {showlegend: false});
-        })
-        .then(function() {
-            expect(d3SelectAll('g.legend').size()).toBe(0);
-            assertPlotSize({width: 400});
-            return Plotly.relayout(gd, {showlegend: true});
-        })
-        .then(function() {
-            expect(d3SelectAll('g.legend').size()).toBe(1);
-            assertPlotSize({widthLessThan: 400});
-            return Plotly.relayout(gd, {'legend.x': 0.7});
-        })
-        .then(function() {
-            expect(d3SelectAll('g.legend').size()).toBe(1);
-            assertPlotSize({width: 400});
-        })
-        .then(done, done.fail);
+            .then(function() {
+                expect(d3SelectAll('g.legend').size()).toBe(1);
+                // check that the margins changed
+                assertPlotSize({ widthLessThan: 400 });
+                return Plotly.relayout(gd, { showlegend: false });
+            })
+            .then(function() {
+                expect(d3SelectAll('g.legend').size()).toBe(0);
+                assertPlotSize({ width: 400 });
+                return Plotly.relayout(gd, { showlegend: true });
+            })
+            .then(function() {
+                expect(d3SelectAll('g.legend').size()).toBe(1);
+                assertPlotSize({ widthLessThan: 400 });
+                return Plotly.relayout(gd, { 'legend.x': 0.7 });
+            })
+            .then(function() {
+                expect(d3SelectAll('g.legend').size()).toBe(1);
+                assertPlotSize({ width: 400 });
+            })
+            .then(done, done.fail);
     });
 
     it('should update border styling', function(done) {
@@ -1057,7 +1167,7 @@ describe('legend relayout update', function() {
         }).then(function() {
             assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
         })
-        .then(done, done.fail);
+            .then(done, done.fail);
     });
 
     describe('should update legend valign', function() {
@@ -1071,20 +1181,20 @@ describe('legend relayout update', function() {
 
             var top, middle, bottom;
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
-            .then(function() {
-                top = markerOffsetY();
-                return Plotly.relayout(gd, 'legend.valign', 'middle');
-            })
-            .then(function() {
-                middle = markerOffsetY();
-                expect(middle).toBeGreaterThan(top);
-                return Plotly.relayout(gd, 'legend.valign', 'bottom');
-            })
-            .then(function() {
-                bottom = markerOffsetY();
-                expect(bottom).toBeGreaterThan(middle);
-            })
-            .then(done, done.fail);
+                .then(function() {
+                    top = markerOffsetY();
+                    return Plotly.relayout(gd, 'legend.valign', 'middle');
+                })
+                .then(function() {
+                    middle = markerOffsetY();
+                    expect(middle).toBeGreaterThan(top);
+                    return Plotly.relayout(gd, 'legend.valign', 'bottom');
+                })
+                .then(function() {
+                    bottom = markerOffsetY();
+                    expect(bottom).toBeGreaterThan(middle);
+                })
+                .then(done, done.fail);
         });
     });
 
@@ -1092,18 +1202,18 @@ describe('legend relayout update', function() {
         it('changes the margin size to fit tracegroupgap', function(done) {
             var mockCopy = Lib.extendDeep({}, require('../../image/mocks/legendgroup_horizontal_wrapping.json'));
             Plotly.newPlot(gd, mockCopy)
-            .then(function() {
-                expect(gd._fullLayout._size.b).toBe(113);
-                return Plotly.relayout(gd, 'legend.tracegroupgap', 70);
-            })
-            .then(function() {
-                expect(gd._fullLayout._size.b).toBe(167);
-                return Plotly.relayout(gd, 'legend.tracegroupgap', 10);
-            })
-            .then(function() {
-                expect(gd._fullLayout._size.b).toBe(113);
-            })
-            .then(done, done.fail);
+                .then(function() {
+                    expect(gd._fullLayout._size.b).toBe(113);
+                    return Plotly.relayout(gd, 'legend.tracegroupgap', 70);
+                })
+                .then(function() {
+                    expect(gd._fullLayout._size.b).toBe(167);
+                    return Plotly.relayout(gd, 'legend.tracegroupgap', 10);
+                })
+                .then(function() {
+                    expect(gd._fullLayout._size.b).toBe(113);
+                })
+                .then(done, done.fail);
         });
     });
 
@@ -1128,10 +1238,10 @@ describe('legend relayout update', function() {
         }
 
         Plotly.newPlot(gd, fig)
-        .then(_assert('base', [5, 4.4], [512, 29]))
-        .then(function() { return Plotly.relayout(gd, 'legend.x', 0.8); })
-        .then(_assert('after relayout almost to right edge', [188, 4.4], [512, 29]))
-        .then(done, done.fail);
+            .then(_assert('base', [5, 4.4], [512, 29]))
+            .then(function() { return Plotly.relayout(gd, 'legend.x', 0.8); })
+            .then(_assert('after relayout almost to right edge', [188, 4.4], [512, 29]))
+            .then(done, done.fail);
     });
 
     it('should fit in graph viewport when changing legend.title.side', function(done) {
@@ -1161,12 +1271,12 @@ describe('legend relayout update', function() {
         }
 
         Plotly.newPlot(gd, fig)
-        .then(_assert('base', [667.72, 60], [120, 83]))
-        .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'left'); })
-        .then(_assert('after relayout to *left*', [607.54, 60], [180, 67]))
-        .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'top'); })
-        .then(_assert('after relayout to *top*', [667.72, 60], [120, 83]))
-        .then(done, done.fail);
+            .then(_assert('base', [667.72, 60], [120, 83]))
+            .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'left'); })
+            .then(_assert('after relayout to *left*', [607.54, 60], [180, 67]))
+            .then(function() { return Plotly.relayout(gd, 'legend.title.side', 'top'); })
+            .then(_assert('after relayout to *top*', [667.72, 60], [120, 83]))
+            .then(done, done.fail);
     });
 
     it('should be able to clear legend title using react', function(done) {
@@ -1187,51 +1297,51 @@ describe('legend relayout update', function() {
                 }
             }
         })
-        .then(function() {
-            expect(d3SelectAll('.legendtitletext')[0].length).toBe(1);
-        })
-        .then(function() {
-            return Plotly.react(gd, {
-                data: data,
-                layout: {
-                    showlegend: true
-                }
-            });
-        })
-        .then(function() {
-            expect(d3SelectAll('.legendtitletext')[0].length).toBe(0);
-        })
-        .then(done, done.fail);
+            .then(function() {
+                expect(d3SelectAll('.legendtitletext')[0].length).toBe(1);
+            })
+            .then(function() {
+                return Plotly.react(gd, {
+                    data: data,
+                    layout: {
+                        showlegend: true
+                    }
+                });
+            })
+            .then(function() {
+                expect(d3SelectAll('.legendtitletext')[0].length).toBe(0);
+            })
+            .then(done, done.fail);
     });
 
     it('should clear an empty legend & add legend using react', function(done) {
         var fig1 = {
-            data: [{y: [1, 2]}],
-            layout: {showlegend: true}
+            data: [{ y: [1, 2] }],
+            layout: { showlegend: true }
         };
 
         var fig2 = {
             data: [],
-            layout: {showlegend: true}
+            layout: { showlegend: true }
         };
 
         Plotly.newPlot(gd, fig1)
-        .then(function() {
-            expect(d3SelectAll('.legend')[0].length).toBe(1);
-        })
-        .then(function() {
-            return Plotly.react(gd, fig2);
-        })
-        .then(function() {
-            expect(d3SelectAll('.legend')[0].length).toBe(0);
-        })
-        .then(function() {
-            return Plotly.react(gd, fig1);
-        })
-        .then(function() {
-            expect(d3SelectAll('.legend')[0].length).toBe(1);
-        })
-        .then(done, done.fail);
+            .then(function() {
+                expect(d3SelectAll('.legend')[0].length).toBe(1);
+            })
+            .then(function() {
+                return Plotly.react(gd, fig2);
+            })
+            .then(function() {
+                expect(d3SelectAll('.legend')[0].length).toBe(0);
+            })
+            .then(function() {
+                return Plotly.react(gd, fig1);
+            })
+            .then(function() {
+                expect(d3SelectAll('.legend')[0].length).toBe(1);
+            })
+            .then(done, done.fail);
     });
 
     it('should be able to add & clear multiple legends using react', function(done) {
@@ -1249,27 +1359,27 @@ describe('legend relayout update', function() {
                 legend: 'legend2'
             }],
             layout: {
-                legend2: {y: 0.5}
+                legend2: { y: 0.5 }
             }
         };
 
         Plotly.newPlot(gd, fig1)
-        .then(function() {
-            expect(d3SelectAll('.legend2')[0].length).toBe(0);
-        })
-        .then(function() {
-            return Plotly.react(gd, fig2);
-        })
-        .then(function() {
-            expect(d3SelectAll('.legend2')[0].length).toBe(1);
-        })
-        .then(function() {
-            return Plotly.react(gd, fig1);
-        })
-        .then(function() {
-            expect(d3SelectAll('.legend2')[0].length).toBe(0);
-        })
-        .then(done, done.fail);
+            .then(function() {
+                expect(d3SelectAll('.legend2')[0].length).toBe(0);
+            })
+            .then(function() {
+                return Plotly.react(gd, fig2);
+            })
+            .then(function() {
+                expect(d3SelectAll('.legend2')[0].length).toBe(1);
+            })
+            .then(function() {
+                return Plotly.react(gd, fig1);
+            })
+            .then(function() {
+                expect(d3SelectAll('.legend2')[0].length).toBe(0);
+            })
+            .then(done, done.fail);
     });
 });
 
@@ -1292,7 +1402,7 @@ describe('legend orientation change:', function() {
         }).then(function() {
             expect(gd._fullLayout.legend.bgcolor).toBe(initialLegendBGColor);
         })
-        .then(done, done.fail);
+            .then(done, done.fail);
     });
 });
 
@@ -1343,7 +1453,7 @@ describe('legend restyle update', function() {
             expect(countLegendItems()).toEqual(1);
             assertTraceToggleRect();
         })
-        .then(done, done.fail);
+            .then(done, done.fail);
     });
 });
 
@@ -1583,23 +1693,23 @@ describe('legend interaction', function() {
             Plotly.newPlot(gd, _mock).then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
-            .then(_click(0))
-            .then(function() {
-                assertVisible(gd, [true, 'legendonly', true, true]);
-            })
-            .then(_click(0))
-            .then(function() {
-                assertVisible(gd, [true, true, true, true]);
-            })
-            .then(_dblclick(0))
-            .then(function() {
-                assertVisible(gd, [true, true, 'legendonly', 'legendonly']);
-            })
-            .then(_dblclick(0))
-            .then(function() {
-                assertVisible(gd, [true, true, true, true]);
-            })
-            .then(done, done.fail);
+                .then(_click(0))
+                .then(function() {
+                    assertVisible(gd, [true, 'legendonly', true, true]);
+                })
+                .then(_click(0))
+                .then(function() {
+                    assertVisible(gd, [true, true, true, true]);
+                })
+                .then(_dblclick(0))
+                .then(function() {
+                    assertVisible(gd, [true, true, 'legendonly', 'legendonly']);
+                })
+                .then(_dblclick(0))
+                .then(function() {
+                    assertVisible(gd, [true, true, true, true]);
+                })
+                .then(done, done.fail);
         });
     });
 
@@ -1610,14 +1720,14 @@ describe('legend interaction', function() {
             data: [],
             layout: {
                 shapes: [
-                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1},
-                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3},
-                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5},
-                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.7, y0: 0.8, x1: 0.8, y1: 0.7},
-                    {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.9, y0: 1.0, x1: 1.0, y1: 0.9}
+                    { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1 },
+                    { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3 },
+                    { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5 },
+                    { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.7, y0: 0.8, x1: 0.8, y1: 0.7 },
+                    { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.9, y0: 1.0, x1: 1.0, y1: 0.9 }
                 ]
             },
-            config: {editable: true}
+            config: { editable: true }
         };
 
         beforeEach(function(done) {
@@ -1714,9 +1824,9 @@ describe('legend interaction', function() {
         afterEach(destroyGraphDiv);
 
         var data = [
-            {y: [1, 2, 1]},
-            {y: [2, 1, 2]},
-            {y: [2, 3, 4]}
+            { y: [1, 2, 1] },
+            { y: [2, 1, 2] },
+            { y: [2, 3, 4] }
         ];
 
         // we need to click on the drag cover to truly test this,
@@ -1724,7 +1834,7 @@ describe('legend interaction', function() {
             return function() {
                 return new Promise(function(resolve) {
                     var el = d3Select('g.legend').node();
-                    var opts = {element: el};
+                    var opts = { element: el };
                     mouseEvent('mousedown', p[0], p[1], opts);
                     mouseEvent('mouseup', p[0], p[1], opts);
                     setTimeout(resolve, DBLCLICKDELAY + 20);
@@ -1741,19 +1851,19 @@ describe('legend interaction', function() {
 
         var specs = [{
             orientation: 'h',
-            edits: {legendPosition: true},
+            edits: { legendPosition: true },
             clickPos: [[118, 469], [212, 469], [295, 469]]
         }, {
             orientation: 'h',
-            edits: {legendPosition: true, legendText: true},
+            edits: { legendPosition: true, legendText: true },
             clickPos: [[118, 469], [212, 469], [295, 469]]
         }, {
             orientation: 'v',
-            edits: {legendPosition: true},
+            edits: { legendPosition: true },
             clickPos: [[430, 114], [430, 131], [430, 153]]
         }, {
             orientation: 'v',
-            edits: {legendPosition: true, legendText: true},
+            edits: { legendPosition: true, legendText: true },
             clickPos: [[430, 114], [430, 131], [430, 153]]
         }];
 
@@ -1763,17 +1873,17 @@ describe('legend interaction', function() {
             it('should find correct bounding box (case ' + msg + ')', function(done) {
                 Plotly.newPlot(gd,
                     Lib.extendDeep([], data),
-                    {legend: {orientation: s.orientation}, width: 500, height: 500},
-                    {edits: s.edits}
+                    { legend: { orientation: s.orientation }, width: 500, height: 500 },
+                    { edits: s.edits }
                 )
-                .then(assertVisible([true, true, true]))
-                .then(clickAt(s.clickPos[0]))
-                .then(assertVisible(['legendonly', true, true]))
-                .then(clickAt(s.clickPos[1]))
-                .then(assertVisible(['legendonly', 'legendonly', true]))
-                .then(clickAt(s.clickPos[2]))
-                .then(assertVisible(['legendonly', 'legendonly', 'legendonly']))
-                .then(done, done.fail);
+                    .then(assertVisible([true, true, true]))
+                    .then(clickAt(s.clickPos[0]))
+                    .then(assertVisible(['legendonly', true, true]))
+                    .then(clickAt(s.clickPos[1]))
+                    .then(assertVisible(['legendonly', 'legendonly', true]))
+                    .then(clickAt(s.clickPos[2]))
+                    .then(assertVisible(['legendonly', 'legendonly', 'legendonly']))
+                    .then(done, done.fail);
             });
         });
     });
@@ -1821,9 +1931,9 @@ describe('legend interaction', function() {
         describe('for regular traces', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
-                    {x: [1, 2], y: [0, 1], visible: false},
-                    {x: [1, 2], y: [1, 2], visible: 'legendonly'},
-                    {x: [1, 2], y: [2, 3]}
+                    { x: [1, 2], y: [0, 1], visible: false },
+                    { x: [1, 2], y: [1, 2], visible: 'legendonly' },
+                    { x: [1, 2], y: [2, 3] }
                 ]).then(done);
             });
 
@@ -1863,12 +1973,12 @@ describe('legend interaction', function() {
         describe('for regular traces in different legends', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
-                    {x: [1, 2], y: [0, 1], visible: false},
-                    {x: [1, 2], y: [1, 2], visible: 'legendonly'},
-                    {x: [1, 2], y: [2, 3]},
-                    {x: [1, 2], y: [0, 1], yaxis: 'y2', legend: 'legend2', visible: false},
-                    {x: [1, 2], y: [1, 2], yaxis: 'y2', legend: 'legend2', visible: 'legendonly'},
-                    {x: [1, 2], y: [2, 3], yaxis: 'y2', legend: 'legend2'}
+                    { x: [1, 2], y: [0, 1], visible: false },
+                    { x: [1, 2], y: [1, 2], visible: 'legendonly' },
+                    { x: [1, 2], y: [2, 3] },
+                    { x: [1, 2], y: [0, 1], yaxis: 'y2', legend: 'legend2', visible: false },
+                    { x: [1, 2], y: [1, 2], yaxis: 'y2', legend: 'legend2', visible: 'legendonly' },
+                    { x: [1, 2], y: [2, 3], yaxis: 'y2', legend: 'legend2' }
                 ], {
                     yaxis: {
                         domain: [0.55, 1]
@@ -1928,9 +2038,9 @@ describe('legend interaction', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [], {
                     shapes: [
-                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1, visible: false},
-                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3, visible: 'legendonly'},
-                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5}
+                        { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1, visible: false },
+                        { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3, visible: 'legendonly' },
+                        { showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5 }
                     ]
                 }).then(done);
             });
@@ -2053,11 +2163,11 @@ describe('legend interaction', function() {
         describe('legend visibility with *showlegend:false* traces', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
-                    {y: [1, 2, 3]},
-                    {y: [2, 3, 1]},
-                    {type: 'heatmap', z: [[1, 2], [3, 4]], showscale: false}
+                    { y: [1, 2, 3] },
+                    { y: [2, 3, 1] },
+                    { type: 'heatmap', z: [[1, 2], [3, 4]], showscale: false }
                 ])
-                .then(done);
+                    .then(done);
             });
 
             it('isolate trace in legend, ignore trace that is not in legend', function(done) {
@@ -2129,8 +2239,8 @@ describe('legend interaction', function() {
                     });
                     setupFail();
                 })
-                .then(click(1, 1))
-                .catch(failTest);
+                    .then(click(1, 1))
+                    .catch(failTest);
             });
 
             it('should call custom doubleclick handler before default handler', function(done) {
@@ -2148,8 +2258,8 @@ describe('legend interaction', function() {
                     });
                     setupFail();
                 })
-                .then(click(1, 2))
-                .catch(failTest);
+                    .then(click(1, 2))
+                    .catch(failTest);
             });
 
             it('should not call default click handler if custom handler return *false*', function(done) {
@@ -2168,8 +2278,8 @@ describe('legend interaction', function() {
                     });
                     setupFail();
                 })
-                .then(click(2, 1))
-                .catch(failTest);
+                    .then(click(2, 1))
+                    .catch(failTest);
             });
 
             it('should not call default doubleclick handle if custom handler return *false*', function(done) {
@@ -2188,8 +2298,8 @@ describe('legend interaction', function() {
                     });
                     setupFail();
                 })
-                .then(click(0, 2))
-                .catch(failTest);
+                    .then(click(0, 2))
+                    .catch(failTest);
             });
         });
 
@@ -2259,19 +2369,19 @@ describe('legend interaction', function() {
                 }], {
                     showlegend: true
                 })
-                .then(function() {
-                    return clickAndCheck([0, 1], {
-                        curveNumber: 0,
-                        expandedIndex: 0
-                    });
-                })
-                .then(function() {
-                    return clickAndCheck([0, 2], {
-                        curveNumber: 0,
-                        expandedIndex: 0
-                    });
-                })
-                .then(done, done.fail);
+                    .then(function() {
+                        return clickAndCheck([0, 1], {
+                            curveNumber: 0,
+                            expandedIndex: 0
+                        });
+                    })
+                    .then(function() {
+                        return clickAndCheck([0, 2], {
+                            curveNumber: 0,
+                            expandedIndex: 0
+                        });
+                    })
+                    .then(done, done.fail);
             });
 
             it('should have correct keys (pie case)', function(done) {
@@ -2280,21 +2390,21 @@ describe('legend interaction', function() {
                     labels: ['A', 'B', 'C', 'D'],
                     values: [1, 2, 1, 3]
                 }])
-                .then(function() {
-                    return clickAndCheck([0, 1], {
-                        curveNumber: 0,
-                        expandedIndex: 0,
-                        label: 'D'
-                    });
-                })
-                .then(function() {
-                    return clickAndCheck([2, 2], {
-                        curveNumber: 0,
-                        expandedIndex: 0,
-                        label: 'A'
-                    });
-                })
-                .then(done, done.fail);
+                    .then(function() {
+                        return clickAndCheck([0, 1], {
+                            curveNumber: 0,
+                            expandedIndex: 0,
+                            label: 'D'
+                        });
+                    })
+                    .then(function() {
+                        return clickAndCheck([2, 2], {
+                            curveNumber: 0,
+                            expandedIndex: 0,
+                            label: 'A'
+                        });
+                    })
+                    .then(done, done.fail);
             });
         });
 
@@ -2337,8 +2447,8 @@ describe('legend interaction', function() {
                     { y: [2, 1, 2] },
                     { y: [3, 5, 0] }
                 ])
-                .then(run)
-                .then(done, done.fail);
+                    .then(run)
+                    .then(done, done.fail);
             }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
             it('- pie case', function(done) {
@@ -2357,8 +2467,8 @@ describe('legend interaction', function() {
                     labels: ['A', 'B', 'C'],
                     values: [1, 2, 3]
                 }])
-                .then(run)
-                .then(done, done.fail);
+                    .then(run)
+                    .then(done, done.fail);
             }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
         });
 
@@ -2429,8 +2539,8 @@ describe('legend interaction', function() {
                     width: 500,
                     height: 500
                 })
-                .then(run)
-                .then(done, done.fail);
+                    .then(run)
+                    .then(done, done.fail);
             }, 2 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
         });
     });
@@ -2444,19 +2554,19 @@ describe('legend DOM', function() {
     it('draws `legendtoggle` last to make sure it is unobstructed', function(done) {
         var gd = createGraphDiv();
         Plotly.newPlot(gd, mock)
-        .then(function() {
-            // Find legend in figure
-            var legend = document.getElementsByClassName('legend')[0];
+            .then(function() {
+                // Find legend in figure
+                var legend = document.getElementsByClassName('legend')[0];
 
-            // For each legend item
-            var legendItems = legend.getElementsByClassName('traces');
-            Array.prototype.slice.call(legendItems).forEach(function(legendItem) {
-                // Check that the last element is our `legendtoggle`
-                var lastEl = legendItem.children[legendItem.children.length - 1];
-                expect(lastEl.getAttribute('class')).toBe('legendtoggle');
-            });
-        })
-        .then(done, done.fail);
+                // For each legend item
+                var legendItems = legend.getElementsByClassName('traces');
+                Array.prototype.slice.call(legendItems).forEach(function(legendItem) {
+                    // Check that the last element is our `legendtoggle`
+                    var lastEl = legendItem.children[legendItem.children.length - 1];
+                    expect(lastEl.getAttribute('class')).toBe('legendtoggle');
+                });
+            })
+            .then(done, done.fail);
     });
 });
 
@@ -2501,39 +2611,39 @@ describe('legend with custom doubleClickDelay', function() {
 
         newPlot({
             data: [
-                {y: [1, 2, 1]},
-                {y: [2, 1, 2]}
+                { y: [1, 2, 1] },
+                { y: [2, 1, 2] }
             ],
             layout: {},
             config: {
                 doubleClickDelay: tLong
             }
         })
-        .then(click(0)).then(delay(tLong / 2))
-        .then(_assert('[long] after click + (t/2) delay', 1, 0))
-        .then(delay(tLong + 10))
-        .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
-        .then(_assert('[long] after click + (DBLCLICKDELAY+1) delay + click', 2, 1))
-        .then(delay(tLong + 10))
-        .then(click(0)).then(delay(1.1 * tLong)).then(click(0))
-        .then(_assert('[long] after click + (1.1*t) delay + click', 2, 0))
-        .then(delay(tLong + 10))
-        .then(function() {
-            return newPlot({
-                data: gd.data,
-                layout: gd.layout,
-                config: {doubleClickDelay: tShort}
-            });
-        })
-        .then(click(0)).then(delay(tShort / 2))
-        .then(_assert('[short] after click + (t/2) delay', 1, 0))
-        .then(delay(tShort + 10))
-        .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
-        .then(_assert('[short] after click + (DBLCLICKDELAY+1) delay + click', 2, 0))
-        .then(delay(tShort + 10))
-        .then(click(0)).then(delay(1.1 * tShort)).then(click(0))
-        .then(_assert('[short] after click + (1.1*t) delay + click', 2, 0))
-        .then(done, done.fail);
+            .then(click(0)).then(delay(tLong / 2))
+            .then(_assert('[long] after click + (t/2) delay', 1, 0))
+            .then(delay(tLong + 10))
+            .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
+            .then(_assert('[long] after click + (DBLCLICKDELAY+1) delay + click', 2, 1))
+            .then(delay(tLong + 10))
+            .then(click(0)).then(delay(1.1 * tLong)).then(click(0))
+            .then(_assert('[long] after click + (1.1*t) delay + click', 2, 0))
+            .then(delay(tLong + 10))
+            .then(function() {
+                return newPlot({
+                    data: gd.data,
+                    layout: gd.layout,
+                    config: { doubleClickDelay: tShort }
+                });
+            })
+            .then(click(0)).then(delay(tShort / 2))
+            .then(_assert('[short] after click + (t/2) delay', 1, 0))
+            .then(delay(tShort + 10))
+            .then(click(0)).then(delay(DBLCLICKDELAY + 1)).then(click(0))
+            .then(_assert('[short] after click + (DBLCLICKDELAY+1) delay + click', 2, 0))
+            .then(delay(tShort + 10))
+            .then(click(0)).then(delay(1.1 * tShort)).then(click(0))
+            .then(_assert('[short] after click + (1.1*t) delay + click', 2, 0))
+            .then(done, done.fail);
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('custom plotly_legenddoubleclick handler should fire even when plotly_legendclick has been cancelled', function(done) {
@@ -2555,17 +2665,17 @@ describe('legend with custom doubleClickDelay', function() {
 
         newPlot({
             data: [
-                {y: [1, 2, 1]},
-                {y: [2, 1, 2]}
+                { y: [1, 2, 1] },
+                { y: [2, 1, 2] }
             ],
             layout: {},
             config: {}
         })
-        .then(click(0))
-        .then(delay(tShort))
-        .then(click(0))
-        .then(_assert('Double click increases count', 1))
-        .then(done);
+            .then(click(0))
+            .then(delay(tShort))
+            .then(click(0))
+            .then(_assert('Double click increases count', 1))
+            .then(done);
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
@@ -2573,9 +2683,9 @@ describe('legend with custom legendwidth', function() {
     var gd;
 
     var data = [
-        {x: [1, 2, 1], y: [1, 2, 1], name: 'legend text 1'},
-        {x: [2, 1, 2], y: [2, 1, 2], name: 'legend text 12'},
-        {x: [2, 3, 4], y: [2, 3, 4], name: 'legend text 123'}
+        { x: [1, 2, 1], y: [1, 2, 1], name: 'legend text 1' },
+        { x: [2, 1, 2], y: [2, 1, 2], name: 'legend text 12' },
+        { x: [2, 3, 4], y: [2, 3, 4], name: 'legend text 123' }
     ];
 
     var layout = {
@@ -2609,7 +2719,7 @@ describe('legend with custom legendwidth', function() {
 
         var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
 
-        Plotly.newPlot(gd, {data: extendedData, layout: layout}).then(function() {
+        Plotly.newPlot(gd, { data: extendedData, layout: layout }).then(function() {
             assertLegendTextWidth([50 + textGap, 100 + textGap, 150 + textGap]);
         }).then(done);
     });
@@ -2621,7 +2731,7 @@ describe('legend with custom legendwidth', function() {
 
         var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
 
-        Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
+        Plotly.newPlot(gd, { data: data, layout: extendedLayout }).then(function() {
             assertLegendTextWidth([width + textGap, width + textGap, width + textGap]);
         }).then(done);
     });
@@ -2637,7 +2747,7 @@ describe('legend with custom legendwidth', function() {
 
         var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
 
-        Plotly.newPlot(gd, {data: extendedData, layout: extendedLayout}).then(function() {
+        Plotly.newPlot(gd, { data: extendedData, layout: extendedLayout }).then(function() {
             assertLegendTextWidth([100 + textGap, 100 + textGap, undefined]);
         }).then(done);
     });
@@ -2647,8 +2757,40 @@ describe('legend with custom legendwidth', function() {
         extendedLayout.legend.entrywidthmode = 'fraction';
         extendedLayout.legend.entrywidth = 0.3;
 
-        Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
+        Plotly.newPlot(gd, { data: data, layout: extendedLayout }).then(function() {
             assertLegendTextWidth([162, 162, 162]);
         }).then(done);
+    });
+
+    it('should not hide other legends when one legend is set to visible=false (issue #7559)', function(done) {
+        var data = [
+            { legend: 'legend', name: 'Left legend entry', x: ['A', 'B'], y: [15, 20] },
+            { legend: 'legend2', name: 'Right legend entry', x: ['A', 'B'], y: [15, 25] },
+            { legend: 'legend3', name: 'Hidden legend entry', x: ['A', 'B'], y: [10, 20] }
+        ];
+
+        var layout = {
+            showlegend: true,
+            legend: { title: { text: 'Left legend' }, x: 0.0, y: -0.4 },
+            legend2: { title: { text: 'Right legend' }, x: 0.5, y: -0.4 },
+            legend3: { visible: false, title: { text: 'Third legend' }, x: 0.25, y: 1.2 }
+        };
+
+        Plotly.newPlot(gd, data, layout).then(function() {
+            // legend and legend2 should be visible
+            var legend1 = document.querySelector('.legend');
+            var legend2 = document.querySelector('.legend2');
+            var legend3 = document.querySelector('.legend3');
+
+            expect(legend1).toBeTruthy();
+            expect(legend2).toBeTruthy();
+            expect(legend3).toBeFalsy(); // legend3 should not exist in DOM
+
+            // Verify legends have correct data
+            expect(gd._fullLayout.legend).toBeDefined();
+            expect(gd._fullLayout.legend.visible).toBe(true);
+            expect(gd._fullLayout.legend2).toBeDefined();
+            expect(gd._fullLayout.legend2.visible).toBe(true);
+        }).then(done, done.fail);
     });
 });

@@ -1,13 +1,13 @@
 {
   "name": "plotly.js",
-  "version": "3.1.0",
+  "version": "3.1.2",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
   "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/plotly/plotly.js.git"
+    "url": "git+https://github.com/plotly/plotly.js.git"
   },
   "bugs": {
     "url": "https://github.com/plotly/plotly.js/issues"
@@ -133,7 +133,6 @@
     "deep-equal": "^2.2.3",
     "ecstatic": "^4.1.4",
     "esbuild": "^0.25.5",
-    "esbuild-plugin-browserify-adapter": "^0.1.4",
     "esbuild-plugin-environment": "^0.4.0",
     "esbuild-plugin-glsl": "^1.2.2",
     "esbuild-plugin-inline-css": "^0.0.1",
