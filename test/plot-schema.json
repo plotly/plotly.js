@@ -1653,6 +1653,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -17630,6 +17640,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -19693,6 +19713,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -24795,6 +24825,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -26095,6 +26135,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -27385,6 +27435,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -28714,6 +28774,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -30072,6 +30142,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -31908,6 +31988,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -33135,6 +33225,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -34363,6 +34463,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -36265,6 +36375,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -38914,6 +39034,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -41287,6 +41417,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -42751,6 +42891,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -44268,6 +44418,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -46660,6 +46820,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -50045,6 +50215,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "calc",
       "font": {
        "color": {
@@ -51578,6 +51758,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -54199,6 +54389,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -55489,6 +55689,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -60275,6 +60485,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -62924,6 +63144,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -63634,6 +63864,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -65480,6 +65720,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -67786,6 +68036,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -70207,6 +70467,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -72548,6 +72818,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -74104,6 +74384,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -75643,6 +75933,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -77922,6 +78222,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "calc",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "calc",
        "font": {
         "color": {
@@ -80145,6 +80455,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -82463,6 +82783,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -84712,6 +85042,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -86234,6 +86574,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "colorbars",
       "font": {
        "color": {
@@ -88304,6 +88654,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -89592,6 +89952,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "calc",
       "font": {
        "color": {
@@ -92949,6 +93319,16 @@
        "valType": "number"
       },
       "title": {
+       "align": {
+        "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+        "editType": "colorbars",
+        "valType": "enumerated",
+        "values": [
+         "start",
+         "middle",
+         "end"
+        ]
+       },
        "editType": "colorbars",
        "font": {
         "color": {
@@ -96007,6 +96387,16 @@
       "valType": "number"
      },
      "title": {
+      "align": {
+       "description": "Sets the alignment of the color bar's title. Defaults to *start* when `orientation` if *v*. Note: This only takes affect when `orientation` is *v*.",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "start",
+        "middle",
+        "end"
+       ]
+      },
       "editType": "calc",
       "font": {
        "color": {
