@@ -763,43 +763,39 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var endPad = 2 * (bw + itemGap);
 
     var yanchor = getYanchor(legendObj);
-    var isBelowPlotArea;
-    var isAbovePlotArea;
+    let isBelowPlotArea, isAbovePlotArea;
 
     var traceGroupGap = legendObj.tracegroupgap;
     var legendGroupWidths = {};
 
-    const { orientation, yref } = legendObj;
+    const { orientation, yref, y } = legendObj;
     let { maxheight } = legendObj;
 
     if (yref === 'paper') {
-        isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
-        isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
+        isBelowPlotArea = y < 0 || (y === 0 && yanchor === 'top');
+        isAbovePlotArea = y > 1 || (y === 1 && yanchor === 'bottom');
     } else {
-        isBelowPlotArea = legendObj.y * fullLayout.height < gs.b || (legendObj.y * fullLayout.height === gs.b && yanchor === 'top');
-        isAbovePlotArea = legendObj.y * fullLayout.height > gs.b + gs.h || (legendObj.y * fullLayout.height === gs.b + gs.h && yanchor === 'bottom');
+        const yPixels = legendObj.y * fullLayout.height;
+        isBelowPlotArea = yPixels < gs.b || (yPixels === gs.b && yanchor === 'top');
+        isAbovePlotArea = yPixels > gs.b + gs.h || (yPixels === gs.b + gs.h && yanchor === 'bottom');
     }
 
     const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v" || yref !== "paper";
     // Set default maxheight here since it depends on values passed in by user
     maxheight ||= useFullLayoutHeight ? 0.5 : 1;
     const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
-    legendObj._maxHeight = maxheight > 1 ? maxheight : maxheight * heightToBeScaled;
+    maxheight = maxheight > 1 ? maxheight : maxheight * heightToBeScaled;
 
     if (yref === 'container') {
-        var maxAvailableHeight;
-        if (yanchor === 'top') {
-            maxAvailableHeight = legendObj.y * fullLayout.height;
-        } else if (yanchor === 'bottom') {
-            maxAvailableHeight = (1 - legendObj.y) * fullLayout.height;
-        } else {
-            // yanchor is 'middle' or 'auto'
-            maxAvailableHeight = 2 * Math.min(1 - legendObj.y, legendObj.y) * fullLayout.height;
-        }
-        legendObj._maxHeight = Math.min(legendObj._maxHeight, maxAvailableHeight);
+        const maxAvailableHeight = yanchor === 'top'
+            ? y * fullLayout.height
+            : yanchor === 'bottom'
+                ? (1 - y) * fullLayout.height
+                : 2 * Math.min(1 - y, y) * fullLayout.height; // yanchor is 'middle' or 'auto'
+        maxheight = Math.min(maxheight, maxAvailableHeight);
     }
 
-    legendObj._maxHeight = Math.max(legendObj._maxHeight, 30);
+    legendObj._maxHeight = Math.max(maxheight, 30);
 
     var toggleRectWidth = 0;
     legendObj._width = 0;
