@@ -21,3 +21,5 @@ tags
 !.npmignore
 
 tmp
+
+docs
