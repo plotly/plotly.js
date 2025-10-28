@@ -1,0 +1,42 @@
+---
+name: Animating the Layout
+plot_url: https://codepen.io/plotly/embed/GjkZNk/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: animations
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The example below transitions to a new axis range each time the button is pressed. A present limitation of the animate API is that only one of either data or layout may be smoothly transitioned at a time. If both are provided, the data will be updated instantaneously after the layout is transitioned.
+---
+var n = 500;
+var x = [], y = [];
+for (var i = 0; i < n; i++) {
+  x[i] = i / (n - 1);
+  y[i] = x[i] + 0.2 * (Math.random() - 0.5);
+}
+
+Plotly.newPlot('myDiv', [{
+  x: x,
+  y: y,
+  mode: 'markers'
+}], {
+  xaxis: {range: [0, 1]},
+  yaxis: {range: [0, 1]}
+});
+
+function zoom() {
+  var min = 0.45 * Math.random();
+  var max = 0.55 + 0.45 * Math.random();
+  Plotly.animate('myDiv', {
+    layout: {
+      xaxis: {range: [min, max]},
+      yaxis: {range: [min, max]}
+    }
+  }, {
+    transition: {
+      duration: 500,
+      easing: 'cubic-in-out'
+    }
+  })
+}

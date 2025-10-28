@@ -1,0 +1,17 @@
+---
+name: Additional Events
+plot_url:
+language: plotly_js
+suite: events
+order: 10
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The following Plotly events do not emit additional data or update information: [`plotly_webglcontextlost`](#webgl-context-lost-event), [`plotly_afterplot`](#afterplot-event), [`plotly_autosize`](), [`plotly_deselect`](), [`plotly_doubleclick`](#double-click-event), [`plotly_redraw`](), and [`plotly_animated`](). These event handlers can be used to notify or trigger an additional event with the following syntax:
+---
+
+function eventTriggeredHandler() {
+   /*  add your event triggered handler here */
+}
+
+myDiv.on('plotly_event', eventTriggeredHandler);

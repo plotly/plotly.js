@@ -1,0 +1,20 @@
+---
+name: Setting Marker Size and Color
+language: plotly_js
+suite: funnel
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+var gd = document.getElementById('myDiv');
+
+var data = [{type: 'funnel',
+             y: ["Sales person A", "Sales person B", "Sales person C", "Sales person D", "Sales person E"],
+             x: [1200, 909.4, 600.6, 300, 80], textposition: "inside", textinfo: "value+percent initial",
+             hoverinfo: 'percent total+x', opacity: 0.65, marker: {color: ["59D4E8", "DDB6C6", "A696C8", "67EACA", "94D2E6"],
+             line: {"width": [4, 2, 2, 3, 1, 1], color: ["3E4E88", "606470", "3E4E88", "606470", "3E4E88"]}},
+             connector: {line: {color: "royalblue", dash: "dot", width: 3}}}];
+
+var layout = {margin: {l: 100}, width: 600, height: 500}
+
+Plotly.newPlot('myDiv', data, layout);

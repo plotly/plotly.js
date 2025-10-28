@@ -1,0 +1,17 @@
+---
+name: Reversed Axes
+language: plotly_js
+suite: axes
+order: 4
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: [1, 2],
+    y: [1, 2],
+    type: 'scatter'
+  }
+];
+var layout = {xaxis: {autorange: 'reversed'}};
+Plotly.newPlot('myDiv', data, layout);

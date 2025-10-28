@@ -1,0 +1,36 @@
+---
+name: Categorical Axes
+language: plotly_js
+suite: axes
+order: 7
+sitemap: false
+arrangement: horizontal
+---
+var trace1 = {
+  x: ['A12', 'BC2', 109, '12F', 215, 304],
+  y: [1, 6, 3, 5, 1, 4],
+  mode: 'markers',
+  type: 'bar',
+  name: 'Team A',
+  text: ['Apples', 'Pears', 'Peaches', 'Bananas', 'Pineapples', 'Cherries'],
+};
+
+var data = [ trace1 ];
+
+var layout = {
+  xaxis: {
+    type: 'category',
+    title: {
+        text: 'Product Code'
+    }
+    },
+    yaxis: {
+        range: [0, 7],
+        title: {
+            text: 'Number of Items in Stock'
+        }
+    },
+  title: {text: 'Inventory'}
+};
+
+Plotly.newPlot('myDiv', data, layout);

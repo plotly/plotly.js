@@ -1,0 +1,20 @@
+---
+name:
+language: plotly_js
+suite: treemap
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  This example uses `treemapcolorway` attribute, which should be set in layout.
+---
+var labels = ["A1", "A2", "A3", "A4", "A5", "B1", "B2"];
+var parents = ["", "A1", "A2", "A3", "A4", "", "B1"];
+var data = [{
+  type: 'treemap',
+  labels: labels,
+  parents: parents
+}]
+var layout = {treemapcolorway: ["pink", "lightgray"]}
+
+Plotly.newPlot('myDiv', data, layout)

@@ -1,0 +1,30 @@
+---
+description: Implement WebGL for increased speed, improved interactivity, and the
+  ability to plot even more data!
+display_as: basic
+language: plotly_js
+layout: base
+name: WebGL vs SVG
+order: 14
+permalink: javascript/webgl-vs-svg/
+thumbnail: thumbnail/webgl.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","webgl-vs-svg"| sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}
+<div>
+  <h3>
+    Multiple WebGL Contexts
+  </h3>
+  <p>
+Most browsers have a limit of between 8 and 16 WebGL contexts per page. A Plotly WebGL-based figure may use multiple WebGL contexts, but generally you'll be able to render between 4 and 8 figures on one page.
+
+If you exceed the browser limit on WebGL contexts, some figures won't render and you'll see an error. In the console in Chrome, for example, you'll see the error: "Too many active WebGL contexts. Oldest context will be lost".
+
+If you encounter WebGL context limits when using WebGL-based figures, you can use [Virtual WebGL](https://github.com/greggman/virtual-webgl), which virtualizes a single WebGL context into multiple contexts.
+
+To use it, add the following script on your page:
+    <pre>&lt;script src="https://unpkg.com/virtual-webgl@1.0.6/src/virtual-webgl.js"&gt;&lt;/script&gt;</pre>
+  </p>
+</div>
+

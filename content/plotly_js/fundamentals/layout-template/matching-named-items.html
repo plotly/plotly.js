@@ -1,0 +1,66 @@
+---
+name: Matching Named Template Container Items
+language: plotly_js
+suite: layout_template
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  A container item in your new plot with the attribute `templateitemname` matching one of the named
+  container items in the template will inherit attributes from item with the corresponding name.
+  If an item in the plot using the template has the `templateitemname` attribute but there is no
+  corresponding template container item by the same name, it will be marked as invisible in your new plot.
+---
+var x = [0, 1, 2, 3, 4, 5];
+var y = [2, 4, 3, 0, 5, 6];
+
+var baseData = [{
+    mode: 'lines',
+    error_y: {visible: true, width: 0},
+    line: {color: 'teal'}
+}];
+
+var baseLayout = {
+    title: {
+      text: 'Template Title'
+    },
+    annotations: [{
+      text: 'First point',
+      name:'first',
+      yref: 'y', xref: 'x',
+      ay: 40, ax: 30,
+      font: {size: 16}
+    }],
+    showlegend: false
+};
+
+// use Plotly.makeTemplate to generate the template object
+var template = Plotly.makeTemplate({data: baseData, layout: baseLayout});
+
+var data = [{
+    x: x,
+    y: y,
+}];
+
+var annotations = [
+
+  // plotly will look for an annotation with `name` matching `templateitemname`
+  // and use insert that annotation into the new plot.
+  {
+    templateitemname:'first',
+    x: x[0],
+    y: y[0],
+  },
+  {
+    templateitemname: 'fourth', //since there is no template item with this name,
+                                //this annotation will be set to invisible.
+    text: 'Fourth point',
+    x: x[3],
+    y: y[3],
+    showarrow: true,
+    yref: 'y', xref: 'x',
+  }
+ ];
+var layoutWithTemplate = {template: template, annotations: annotations};
+
+Plotly.newPlot("myDiv", data, layoutWithTemplate);

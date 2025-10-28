@@ -1,0 +1,25 @@
+---
+name: Tickmode - Linear (Date)
+language: plotly_js
+suite: tick-formatting
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+
+var x = ['2000-01', '2000-02', '2000-03', '2000-04', '2000-05', '2000-06', '2000-07', '2000-08', '2000-09', '2000-10', '2000-11', '2000-12', '2001-01'];
+var y = [-36.5, -26.6, -43.6, -52.3, -71.5, -81.4, -80.5, -82.2, -76, -67.3, -46.1, -35, -40];
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter'
+}];
+var layout = {
+  xaxis: {
+    tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+    tick0: '1999-12-15',
+    dtick: 30 * 24 * 60 * 60 * 1000 // milliseconds
+  }
+}
+
+Plotly.newPlot('myDiv', data, layout);

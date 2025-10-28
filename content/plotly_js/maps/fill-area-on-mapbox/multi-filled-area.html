@@ -1,0 +1,25 @@
+---
+name: Multiple Filled Areas with a Scattermap trace
+language: plotly_js
+suite: filled-area-on-map
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    The following example shows how to use `null` in your data to draw multiple filled areas. Such gaps in trace data are unconnected by default, but this can be controlled via the [connectgaps](https://plotly.com/javascript/reference/scattermap/#scattermap-connectgaps) attribute.
+---
+var data = [{
+		type: "scattermap",
+		mode: "lines",
+		fill: "toself",
+		lon: [-10, -10, 8, 8, -10, null, 30, 30, 50, 50, 30, null, 100, 100, 80, 80, 100],
+		lat: [30, 6, 6, 30, 30,    null, 20, 30, 30, 20, 20, null, 40, 50, 50, 40, 40]
+		}]
+
+var layout = {
+	map: {style: "stamen-terrain", center: {lon: 40, lat: 20}, 'zoom': 1.5},
+	showlegend: false,
+	width:700, height: 700}
+
+Plotly.newPlot("myDiv", data, layout)

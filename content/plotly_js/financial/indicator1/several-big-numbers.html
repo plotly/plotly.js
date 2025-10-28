@@ -1,0 +1,47 @@
+---
+name:
+language: plotly_js
+suite: indicator
+order: 7
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    It's possible to display several numbers
+---
+var data = [
+  {
+    type: "indicator",
+    mode: "number+delta",
+    value: 200,
+    domain: { x: [0, 0.5], y: [0, 0.5] },
+    delta: { reference: 400, relative: true, position: "top" }
+  },
+  {
+    type: "indicator",
+    mode: "number+delta",
+    value: 350,
+    delta: { reference: 400, relative: true },
+    domain: { x: [0, 0.5], y: [0.5, 1] }
+  },
+  {
+    type: "indicator",
+    mode: "number+delta",
+    value: 450,
+    title: {
+      text:
+        "Accounts<br><span style='font-size:0.8em;color:gray'>Subtitle</span><br><span style='font-size:0.8em;color:gray'>Subsubtitle</span>"
+    },
+    delta: { reference: 400, relative: true },
+    domain: { x: [0.6, 1], y: [0, 1] }
+  }
+];
+
+var layout = {
+  width: 600,
+  height: 400,
+  margin: { t: 25, r: 25, l: 25, b: 25 }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+

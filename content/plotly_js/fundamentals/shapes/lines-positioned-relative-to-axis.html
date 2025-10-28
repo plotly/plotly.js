@@ -1,0 +1,79 @@
+---
+name: Vertical and Horizontal Lines Positioned Relative to the Axes
+language: plotly_js
+suite: shape
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: [2, 3.5, 6],
+  y: [1, 1.5, 1],
+  text: ['Vertical Line', 'Horizontal Dashed Line', 'Diagonal dotted Line'],
+  mode: 'text'
+};
+
+var layout = {
+  title: {
+    text: 'Vertical and Horizontal Lines Positioned Relative to the Axes'
+  },
+  xaxis: {
+    range: [0, 7]
+  },
+  yaxis: {
+    range: [0, 2.5]
+  },
+  width: 500,
+  height: 500,
+  shapes: [
+
+    //line vertical
+
+    {
+      type: 'line',
+      x0: 1,
+      y0: 0,
+      x1: 1,
+      y1: 2,
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 3
+      }
+    },
+
+    //Line Horizontal
+
+    {
+      type: 'line',
+      x0: 2,
+      y0: 2,
+      x1: 5,
+      y1: 2,
+      line: {
+        color: 'rgb(50, 171, 96)',
+        width: 4,
+        dash: 'dashdot'
+      }
+    },
+
+    //Line Diagonal
+
+    {
+      type: 'line',
+      x0: 4,
+      y0: 0,
+      x1: 6,
+      y1: 2,
+      line: {
+        color: 'rgb(128, 0, 128)',
+        width: 4,
+        dash: 'dot'
+      }
+    }
+  ]
+};
+
+var data = [trace1];
+
+Plotly.newPlot('myDiv', data, layout);

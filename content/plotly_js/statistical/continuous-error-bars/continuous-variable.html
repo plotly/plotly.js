@@ -1,0 +1,81 @@
+---
+name: Asymmetric Error Bars with a Constant Offset
+language: plotly_js
+suite: continuous-error-bar
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+
+function random_date(start, end, mul)
+  {
+    return new Date(start.getTime() + mul * (end.getTime() - start.getTime()));
+  }
+
+function date_list(y1,m1,d1,y2,m2,d2,count)
+  {
+    var a =[];
+    for(i=0;i<count;i++)
+    {
+      a.push(random_date(new Date(y1, m1, d1), new Date(y2,m2,d2),i));
+    }
+      return a;
+  }
+
+function random_number(num , mul)
+  {
+     var value = [ ];
+     for(i=0;i<=num;i++)
+      {
+        var rand = Math.random() * mul;
+        value.push(rand);
+      }
+     return value;
+  }
+
+var trace1 = {
+  x: date_list(2001,01,01,2001,02,01,50),
+  y: random_number(50,20),
+  line: {width: 0},
+  marker: {color: "444"},
+  mode: "lines",
+  name: "Lower Bound",
+  type: "scatter"
+};
+
+var trace2 = {
+  x: date_list(2001,01,01,2001,02,01,50),
+  y: random_number(50,21),
+  fill: "tonexty",
+  fillcolor: "rgba(68, 68, 68, 0.3)",
+  line: {color: "rgb(31, 119, 180)"},
+  mode: "lines",
+  name: "Measurement",
+  type: "scatter"
+};
+
+var trace3 = {
+  x: date_list(2001,01,01,2001,02,01,50),
+  y: random_number(50,22),
+  fill: "tonexty",
+  fillcolor: "rgba(68, 68, 68, 0.3)",
+  line: {width: 0},
+  marker: {color: "444"},
+  mode: "lines",
+  name: "Upper Bound",
+  type: "scatter"
+}
+
+var data = [trace1, trace2, trace3];
+var layout = {
+  showlegend: false,
+  title: {
+    text: "Continuous, variable value error bars<br>Notice the hover text!"
+  },
+  yaxis: {
+    title: {
+      text: "Wind speed (m/s)"
+    }
+  }
+};
+Plotly.newPlot('myDiv', data, layout);

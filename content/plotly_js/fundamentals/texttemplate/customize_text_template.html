@@ -1,0 +1,23 @@
+---
+name: Customize Text Template
+language: plotly_js
+suite: texttemplate
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+   The following example uses [textfont](https://plotly.com/javascript/reference/scatterternary/#scatterternary-textfont) to customize the added text.
+---
+var data = [{
+      type: "scatterternary",
+      a: [3, 2, 5],
+      b: [2, 5, 2],
+      c: [5, 2, 2],
+      mode: "markers+text",
+      text: ["A", "B", "C"],
+      texttemplate: "%{text}<br>(%{a:.2f}, %{b:.2f}, %{c:.2f})",
+      textposition: "bottom center",
+      textfont:{'family': "Times", 'size': [18, 21, 20], 'color': ["IndianRed", "MediumPurple", "DarkOrange"]}
+}];
+
+Plotly.newPlot("myDiv", data)

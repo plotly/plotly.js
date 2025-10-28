@@ -1,0 +1,32 @@
+---
+name: Display the `Edit Chart` Link
+language: plotly_js
+suite: configuration
+order: 6
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Note: <code>showLink</code> now defaults to false.
+---
+
+var trace1 = {
+  x: [0, 1, 2, 3, 4, 5, 6],
+  y: [1, 9, 4, 7, 5, 2, 4],
+  mode: 'lines+markers',
+  type: 'scatter'
+};
+
+var data = [trace1];
+
+var layout = {
+  title: {
+      text: 'Display the Edit Chart Link'
+  }
+};
+
+var config = {
+  showLink: true,
+  plotlyServerURL: "https://chart-studio.plotly.com"
+};
+
+Plotly.newPlot('myDiv', data, layout, config);

@@ -1,0 +1,13 @@
+---
+description: How to make parallel categories diagrams in JavaScript
+display_as: statistical
+language: plotly_js
+layout: base
+name: Parallel Categories Diagram
+order: 9
+permalink: javascript/parallel-categories-diagram/
+thumbnail: thumbnail/parcats.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","parcats" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

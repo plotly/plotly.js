@@ -1,0 +1,34 @@
+---
+name: Branchvalues
+language: plotly_js
+suite: sunburst
+order: 1.5
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  With branchvalues "total", the value of the parent represents the width of its wedge. In the example below,
+  "Enoch" is 4 and "Awan" is 6 and so Enoch's width is 4/6ths of Awans. With branchvalues "remainder", the
+  parent's width is determined by its own value plus those of its children. So, Enoch's width is 4/10ths of
+  Awan's (4 / (6 + 4)).<br><br>Note that this means that the sum of the values of the children cannot exceed the
+  value of their parent when branchvalues "total". When branchvalues "relative" (the default), children will not take
+  up all of the space below their parent (unless the parent is the root and it has a value of 0).
+---
+var data = [
+{
+  "type": "sunburst",
+  "labels": ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+  "parents": ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+  "values":  [65, 14, 12, 10, 2, 6, 6, 4, 4],
+  "leaf": {"opacity": 0.4},
+  "marker": {"line": {"width": 2}},
+  "branchvalues": 'total'
+}];
+
+var layout = {
+  "margin": {"l": 0, "r": 0, "b": 0, "t": 0},
+};
+
+
+Plotly.newPlot('myDiv', data, layout, {showSendToCloud: true})
+
+myPlot = document.getElementById("myDiv");

@@ -1,0 +1,136 @@
+---
+name: Bar Chart with Line Plot
+language: plotly_js
+suite: horizontal-bar
+order: 4
+sitemap: false
+arrangement: horizontal
+---
+var xSavings = [1.3586, 2.2623000000000002, 4.9821999999999997, 6.5096999999999996,
+  7.4812000000000003, 7.5133000000000001, 15.2148, 17.520499999999998
+];
+
+var xNetworth = [93453.919999999998, 81666.570000000007, 69889.619999999995, 78381.529999999999, 141395.29999999999, 92969.020000000004, 66090.179999999993, 122379.3];
+
+var ySavings = ['Japan', 'United Kingdom', 'Canada', 'Netherlands', 'United States', 'Belgium', 'Sweden', 'Switzerland'];
+
+var yNetworth = ['Japan', 'United Kingdom', 'Canada', 'Netherlands', 'United States', 'Belgium', 'Sweden', 'Switzerland'];
+
+var trace1 = {
+  x: xSavings,
+  y: ySavings,
+  xaxis: 'x1',
+  yaxis: 'y1',
+  type: 'bar',
+  marker: {
+    color: 'rgba(50,171,96,0.6)',
+    line: {
+      color: 'rgba(50,171,96,1.0)',
+      width: 1
+    }
+  },
+  name: 'Household savings, percentage of household disposable income',
+  orientation: 'h'
+};
+
+var trace2 = {
+  x: xNetworth,
+  y: yNetworth,
+  xaxis: 'x2',
+  yaxis: 'y1',
+  mode: 'lines+markers',
+  line: {
+    color: 'rgb(128,0,128)'
+  },
+  name: 'Household net worth, Million USD/capita'
+};
+
+var data = [trace1, trace2];
+
+var layout = {
+  title: {
+    text: 'Household Savings & Net Worth for Eight OECD Countries'
+  },
+  xaxis1: {
+    range: [0, 20],
+    domain: [0, 0.5],
+    zeroline: false,
+    showline: false,
+    showticklabels: true,
+    showgrid: true
+  },
+  xaxis2: {
+    range: [25000, 150000],
+    domain: [0.5, 1],
+    zeroline: false,
+    showline: false,
+    showticklabels: true,
+    showgrid: true,
+    side: 'top',
+    dtick: 25000
+  },
+  legend: {
+    x: 0.029,
+    y: 1.238,
+    font: {
+      size: 10
+    }
+  },
+  margin: {
+    l: 100,
+    r: 20,
+    t: 200,
+    b: 70
+  },
+  width: 600,
+  height: 600,
+  paper_bgcolor: 'rgb(248,248,255)',
+  plot_bgcolor: 'rgb(248,248,255)',
+  annotations: [
+    {
+      xref: 'paper',
+      yref: 'paper',
+      x: -0.2,
+      y: -0.109,
+      text: 'OECD ' + '(2015), Household savings (indicator), ' + 'Household net worth (indicator). doi: ' + '10.1787/cfc6f499-en (Accessed on 05 June 2015)',
+      showarrow: false,
+      font:{
+        family: 'Arial',
+        size: 10,
+        color: 'rgb(150,150,150)'
+      }
+    }
+  ]
+};
+
+for ( var i = 0 ; i < xSavings.length ; i++ ) {
+  var result = {
+    xref: 'x1',
+    yref: 'y1',
+    x: xSavings[i]+2.3,
+    y: ySavings[i],
+    text: xSavings[i] + '%',
+    font: {
+      family: 'Arial',
+      size: 12,
+      color: 'rgb(50, 171, 96)'
+    },
+     showarrow: false,
+  };
+  var result2 = {
+    xref: 'x2',
+    yref: 'y1',
+    x: xNetworth[i] - 20000,
+    y: yNetworth[i],
+    text: xNetworth[i] + ' M',
+    font: {
+      family: 'Arial',
+      size: 12,
+      color: 'rgb(128, 0, 128)'
+    },
+     showarrow: false
+  };
+  layout.annotations.push(result, result2);
+}
+
+Plotly.newPlot('myDiv', data, layout);

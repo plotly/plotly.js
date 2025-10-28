@@ -1,0 +1,53 @@
+---
+name: Basic Parallel Coordinates Plot
+language: plotly_js
+suite: parcoords
+order: 2
+sitemap: false
+arrangement: horizontal
+description:
+---
+
+d3.csv('https://raw.githubusercontent.com/bcdunbar/datasets/master/iris.csv', function(err, rows){
+
+function unpack(rows, key) {
+  return rows.map(function(row) {
+    return row[key];
+  });
+}
+
+var data = [{
+  type: 'parcoords',
+  pad: [80,80,80,80],
+  line: {
+    color: unpack(rows, 'species_id'),
+    colorscale: [[0, 'red'], [0.5, 'green'], [1, 'blue']]
+  },
+
+  dimensions: [{
+    range: [2, 4.5],
+    label: 'sepal_width',
+    values: unpack(rows, 'sepal_width')
+  }, {
+    constraintrange: [5, 6],
+    range: [4,8],
+    label: 'sepal_length',
+    values: unpack(rows, 'sepal_length')
+  }, {
+    label: 'petal_width',
+    range: [0, 2.5],
+    values: unpack(rows, 'petal_width')
+  }, {
+    label: 'petal_length',
+    range: [1, 7],
+    values: unpack(rows, 'petal_length')
+  }]
+}];
+
+var layout = {
+  width: 800
+};
+
+Plotly.newPlot('myDiv', data, layout);
+
+});

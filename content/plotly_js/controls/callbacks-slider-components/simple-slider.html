@@ -1,0 +1,38 @@
+---
+name: Basic Slider
+plot_url: https://codepen.io/plotly/embed/pNzBYJ/?height=558&theme-id=15263&default-tab=result
+language: plotly_js
+suite: slider-components-events
+sitemap: false
+order: 2
+arrangement: horizontal
+---
+Plotly.newPlot('myDiv', [{
+  x: [1, 2, 3],
+  y: [2, 1, 3]
+}], {
+  sliders: [{
+    pad: {t: 30},
+    currentvalue: {
+      xanchor: 'right',
+      prefix: 'color: ',
+      font: {
+        color: '#888',
+        size: 20
+      }
+    },
+    steps: [{
+      label: 'red',
+      method: 'restyle',
+      args: ['line.color', 'red']
+    }, {
+      label: 'green',
+      method: 'restyle',
+      args: ['line.color', 'green']
+    }, {
+      label: 'blue',
+      method: 'restyle',
+      args: ['line.color', 'blue']
+    }]
+  }]
+});

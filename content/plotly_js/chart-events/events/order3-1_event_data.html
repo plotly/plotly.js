@@ -1,0 +1,77 @@
+---
+name: Event Data
+plot_url:
+language: plotly_js
+suite: events
+order: 3
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Many Plotly events emit event data when the event is triggered. Event data is information about the data point related to the event (i.e. the point clicked).<br>
+  The following events emit event data: [`plotly_click`](), [`plotly_hover`](), [`plotly_unhover`](), [`plotly_selecting`](), and [`plotly_selected`]().
+  <br>Event data differs depending on the type of plot the user is interacting with. The event data structure for Cartesian (2D) plots, 3D plots, and maps can be found below, along with examples of each event.
+---
+// Cartesian
+{
+  points: [{
+    curveNumber: 1,  // index in data of the trace associated with the selected point
+    pointNumber: 1,  // index of the selected point
+    x: 1,        // x value
+    y: 1,      // y value
+    data: {/* */},       // ref to the trace as sent to Plotly.newPlot associated with the selected point
+    fullData: {/* */},   // ref to the trace including all of the default attributes
+   xaxis: {/* */},   // ref to x-axis object (i.e layout.xaxis) associated with the selected point
+   yaxis: {/* */}    // ref to y-axis object " "
+  }, {
+    /* similarly for other selected points */
+  }]
+}
+
+// Cartesian Histograms
+{
+  points: [{
+    curveNumber: 1,  // index in data of the trace associated with the selected point
+    pointNumbers: [1, 5, 28, 33, 41, ...],  // Array of indices of the points aggregated into selected bin
+    x: 1,        // x value
+    y: 45,      // y value
+    data: {/* */},       // ref to the trace as sent to Plotly.newPlot associated with the selected point
+    fullData: {/* */},   // ref to the trace including all of the default attributes
+   xaxis: {/* */},   // ref to x-axis object (i.e layout.xaxis) associated with the selected point
+   yaxis: {/* */}    // ref to y-axis object " "
+  }, {
+    /* similarly for other selected points */
+  }]
+}
+
+// 3D
+{
+  points: [{
+    curveNumber: 2,  // index in data of the trace associated with the selected point
+    pointNumber: 2,  // index of the selected point
+    x: 5,        // x value
+    y: 600,      // y value
+    z: 12,       // z value
+    data: {/* */},       // ref to the trace as sent to Plotly.newPlot associated with the selected point
+    fullData: {/* */},   // ref to the trace including all of the default attributes
+   xaxis: {/* */},   // ref to x-axis object (i.e layout.xaxis) associated with the selected point
+   yaxis: {/* */}    // ref to y-axis object " "
+   zaxis: {/* */}    // ref to z-axis object " "
+  }, {
+    /* similarly for other selected points */
+  }]
+}
+
+// Maps
+{
+  points: [{
+    curveNumber: 2,  // index in data of the trace associated with the selected point
+    pointNumber: 2,  // index of the selected point
+    lat: 50,        // latitude value
+    lon: -12,      // longitude value
+    data: {/* */},       // ref to the trace as sent to Plotly.newPlot associated with the selected point
+    fullData: {/* */},   // ref to the trace including all of the default attributes
+    location:       //
+  }, {
+    /* similarly for other selected points */
+  }]
+}

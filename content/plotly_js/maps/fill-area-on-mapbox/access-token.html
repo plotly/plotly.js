@@ -1,0 +1,39 @@
+---
+name: Overview
+language: plotly_js
+suite: filled-area-on-map
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+    There are three different ways to show a filled area in a tile-based map.
+    <ol>
+        <li> Use a [scattermap](https://plotly.com/javascript/reference/scattermap/) trace and set `fill` attribute to 'toself' </li>
+        <li> Use a map layout (i.e. by minimally using an empty Scattermap trace) and add a GeoJSON layer </li>
+        <li> Use the [Choroplethmap](https://plotly.com/javascript/map-county-choropleth/) trace type </li>
+    </ol>
+    <h6> Filled `Scattermap` Trace </h6>
+    The following example uses `Scattermap` and sets `fill = 'toself'`.
+---
+var data = [
+	{
+		type: "scattermap",
+		fill: "toself",
+		lon: [-74, -70, -70, -74],
+		lat: [47, 47, 45, 45],
+		marker: { size: 10, color: "orange" }
+	}
+];
+
+var layout = {
+	map: {
+		style: "stamen-terrain",
+		center: { lon: -73, lat: 46 },
+		zoom: 5
+	},
+	showlegend: false,
+	height: 450,
+	width: 600
+};
+
+Plotly.newPlot("myDiv", data, layout);

@@ -1,0 +1,16 @@
+---
+description: How to make arbitrary D3.js-based SVG shapes in JavaScript. Examples
+  of lines, circle, rectangle, and path.
+display_as: file_settings
+language: plotly_js
+layout: base
+name: Shapes
+order: 23
+page_type: u-guide
+permalink: javascript/shapes/
+redirect_from: javascript-graphing-library/shapes/
+thumbnail: thumbnail/shape.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","shape" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

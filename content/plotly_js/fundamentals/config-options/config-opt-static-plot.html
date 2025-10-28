@@ -1,0 +1,27 @@
+---
+name: Making a Static Chart
+language: plotly_js
+suite: configuration
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+var trace1 = {
+    x: [0, 1, 2, 3, 4, 5, 6],
+    y: [1, 9, 4, 7, 5, 2, 4],
+    mode: 'markers',
+    marker: {
+        size: [20, 40, 25, 10, 60, 90, 30],
+    }
+};
+
+var data = [trace1];
+
+var layout = {
+    title: {
+        text: 'Create a Static Chart'
+    },
+    showlegend: false
+};
+
+Plotly.newPlot('myDiv', data, layout, {staticPlot: true});

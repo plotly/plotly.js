@@ -1,0 +1,42 @@
+---
+name: Plotting CSV Data from Ajax Call
+plot_url: https://codepen.io/plotly/embed/9a091a6dd0486ff8de95982bc23a3467/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: ajax
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+function makeplot() {
+  d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv", function(data){ processData(data) } );
+
+};
+
+function processData(allRows) {
+
+  console.log(allRows);
+  var x = [], y = [], standard_deviation = [];
+
+  for (var i=0; i<allRows.length; i++) {
+    row = allRows[i];
+    x.push( row['AAPL_x'] );
+    y.push( row['AAPL_y'] );
+  }
+  console.log( 'X',x, 'Y',y, 'SD',standard_deviation );
+  makePlotly( x, y, standard_deviation );
+}
+
+function makePlotly( x, y, standard_deviation ){
+  var plotDiv = document.getElementById("plot");
+  var traces = [{
+    x: x,
+    y: y
+  }];
+
+  Plotly.newPlot('myDiv', traces, {
+    title: {
+        text: 'Plotting CSV data from AJAX call'
+    }
+});
+};
+  makeplot();

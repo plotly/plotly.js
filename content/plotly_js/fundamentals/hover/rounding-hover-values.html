@@ -1,0 +1,44 @@
+---
+name: Rounding X and Y Hover Values
+language: plotly_js
+suite: hover
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+// Round x and y hover values by setting hoverformat in layout.xaxis and/or layout.yaxis
+// using D3 number formatting ( https://github.com/mbostock/d3/wiki/Formatting )
+
+var N = 40,
+    x = d3.range(N).map( d3.random.normal() ),
+    y1 = d3.range(N).map( d3.random.normal() ),
+    y2 = d3.range(N).map( d3.random.normal() ),
+    data = [{ x:x, y:y1, type:'scatter', mode:'markers',
+              marker:{color:'rgba(200, 50, 100, .7)', size:16},
+              hoverinfo:"x+y"
+             },
+            { x:x, y:y2, type:'scatter', mode:'markers',
+             marker:{color:'rgba(10, 180, 180, .8)', size:16},
+             hoverinfo:"x+y"}];
+    layout = {
+    hovermode: 'closest',
+    title: {
+        text: 'Formatting X & Y Hover Values'
+    },
+    xaxis: {
+        zeroline: false,
+        hoverformat: '.2f',
+        title: {
+            text: 'Rounded: 2 values after the decimal point on hover'
+        }
+    },
+    yaxis: {
+        zeroline: false,
+        hoverformat: '.2r',
+        title: {
+            text: 'Rounded: 2 significant values on hover'
+        }
+    }
+};
+
+Plotly.newPlot('myDiv', data, layout);

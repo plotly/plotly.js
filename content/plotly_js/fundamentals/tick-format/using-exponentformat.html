@@ -1,0 +1,24 @@
+---
+name: Using Exponentformat
+language: plotly_js
+suite: tick-formatting
+order: 3.0
+sitemap: false
+arrangement: horizontal
+---
+
+var x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+var y = [68000, 52000, 60000, 20000, 95000, 40000, 60000, 79000, 74000, 42000, 20000, 90000];
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter'
+}];
+var layout = {
+  yaxis: {
+    showexponent: 'all',
+    exponentformat: 'e'
+  }
+}
+
+Plotly.newPlot('myDiv', data, layout);

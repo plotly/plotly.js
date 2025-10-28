@@ -1,0 +1,16 @@
+---
+description: How to make an area on Map using a D3.js-based scattermap.
+display_as: maps
+has_thumbnail: true
+language: plotly_js
+layout: base
+name: Filled Area on Tile Maps
+order: 10
+page_type: u-guide
+permalink: javascript/filled-area-on-map/
+redirect_from: javascript/filled-area-on-mapbox/
+thumbnail: thumbnail/area.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","filled-area-on-map" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

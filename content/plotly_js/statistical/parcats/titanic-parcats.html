@@ -1,0 +1,65 @@
+---
+name: Mutli-Color Parallel Categories Diagram
+arrangement: horizontal
+language: plotly_js
+suite: parcats
+order: 3
+sitemap: false
+markdown_content: |
+  The color of the ribbons can be specified with the `line.color` property.  Similar to other trace types, this
+  property may be set to an array of numbers, which are then mapped to colors according to the the colorscale
+  specified in the `line.colorscale` property.
+
+  Here is an example of visualizing the survival rate of passengers in the titanic dataset, where the ribbons are
+  colored based on survival outcome.
+
+  By setting the `hoveron` property to `'color'` and the `hoverinfo` property to `'count+probability'` the tooltips
+  now display count and probability information for each color (outcome) per category.
+
+  By setting the `arrangement` property to `'freeform'` it is now possible to drag categories horizontally to
+  reorder dimensions as well as vertically to reorder categories within the dimension.
+---
+var gd = document.getElementById('myDiv');
+
+d3.csv(
+  "https://raw.githubusercontent.com/plotly/datasets/master/titanic.csv",
+  function(titanicData) {
+    var classDim = {
+      values: titanicData.map(function(row) {return row['Pclass']}),
+      categoryorder: 'category ascending',
+      label: "Class"
+    };
+
+    var genderDim = {
+      values: titanicData.map(function(row) {return row['Sex']}),
+      label: "Gender"
+    };
+
+    var survivalDim = {
+      values: titanicData.map(function(row) {return row['Survived']}),
+      label: "Outcome",
+      categoryarray: [0, 1],
+      ticktext: ['perished', 'survived'],
+    };
+
+    var color = survivalDim.values;
+    var colorscale = [[0, 'lightsteelblue'], [1, 'mediumseagreen']];
+
+    // Build Traces
+    var traces = [
+      {type: 'parcats',
+       dimensions: [classDim, genderDim, survivalDim],
+       line: {color: color,
+              colorscale: colorscale},
+       hoveron: 'color',
+       hoverinfo: 'count+probability',
+       labelfont: {size: 14},
+       arrangement: 'freeform'
+      }
+    ];
+
+    var layout = {width: 600};
+
+    // Make plot
+    Plotly.newPlot('myDiv', traces, layout);
+  });

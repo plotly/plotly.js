@@ -1,0 +1,34 @@
+---
+name: Overlaid Area Chart Without Boundary Lines
+language: plotly_js
+suite: area
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [0, 2, 3, 5],
+  fill: 'tozeroy',
+  type: 'scatter',
+  mode: 'none'
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4],
+  y: [3, 5, 1, 7],
+  fill: 'tonexty',
+  type: 'scatter',
+  mode: 'none'
+};
+
+var layout = {
+  title: {
+    text: 'Overlaid Chart Without Boundary Lines'
+  }
+};
+
+var data = [trace1, trace2];
+
+Plotly.newPlot('myDiv', data, layout);

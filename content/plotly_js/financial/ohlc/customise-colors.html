@@ -1,0 +1,51 @@
+---
+name: Customise OHLC Chart Colors
+language: plotly_js
+suite: ohlc
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv', function(err, rows){
+
+function unpack(rows, key) {
+  return rows.map(function(row) {
+    return row[key];
+  });
+}
+
+var trace = {
+  x: unpack(rows, 'Date'),
+  close: unpack(rows, 'AAPL.Close'),
+  high: unpack(rows, 'AAPL.High'),
+  low: unpack(rows, 'AAPL.Low'),
+  open: unpack(rows, 'AAPL.Open'),
+
+  // cutomise colors
+  increasing: {line: {color: 'black'}},
+  decreasing: {line: {color: 'red'}},
+
+  type: 'ohlc',
+  xaxis: 'x',
+  yaxis: 'y'
+};
+
+var data = [trace];
+
+var layout = {
+  dragmode: 'zoom',
+  showlegend: false,
+  xaxis: {
+    autorange: true,
+    title: {
+      text: 'Date'
+    },
+  },
+  yaxis: {
+    autorange: true,
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+});

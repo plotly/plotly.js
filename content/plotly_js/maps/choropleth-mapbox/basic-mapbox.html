@@ -1,0 +1,27 @@
+---
+name: Basic Tile using Mapbox
+language: plotly_js
+suite: tile-county-choropleth
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    <strong>> Mapbox traces are deprecated and may be removed in a future version of Plotly.js.</strong>
+
+    Earlier examples use traces that render with [Maplibre GL JS](https://maplibre.org/maplibre-gl-js/docs/).
+    These traces were introduced in Plotly.js 2.35.0 and replace Mapbox-based tile maps,
+    which are now deprecated. Here's one of the earlier examples using the Mapbox-based `choroplethmapbox` trace
+---
+
+var data = [{
+  type: "choroplethmapbox", locations: ["NY", "MA", "VT"], z: [-50, -10, -20],
+  geojson: "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json"
+}];
+
+var layout = {mapbox: {center: {lon: -74, lat: 43}, zoom: 3.5},
+              width: 600, height:400};
+
+var config = {mapboxAccessToken: "your access token"};
+
+Plotly.newPlot('myDiv', data, layout, config);

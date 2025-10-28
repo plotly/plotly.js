@@ -1,0 +1,42 @@
+---
+name: Multi-Category Axes
+language: plotly_js
+suite: axes
+order: 7.4
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: [
+    ['SF Zoo','SF Zoo','SF Zoo'],
+    ['giraffes', 'orangutans', 'monkeys']
+  ],
+  y: [20, 14, 23],
+  name: 'SF Zoo',
+  type: 'bar'
+};
+
+var trace2 = {
+  x: [
+    ['LA Zoo','LA Zoo','LA Zoo'],
+    ['giraffes', 'orangutans', 'monkeys']
+  ],
+  y: [12, 18, 29],
+  name: 'LA Zoo',
+  type: 'bar'
+};
+
+var data = [trace1, trace2];
+var layout = {
+  showlegend: false,
+  xaxis: {
+    tickson: "boundaries",
+    ticklen: 15,
+    showdividers: true,
+    dividercolor: 'grey',
+    dividerwidth: 2
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

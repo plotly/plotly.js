@@ -1,0 +1,42 @@
+---
+name: Multi Category Waterfall Chart
+language: plotly_js
+suite: waterfall
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+var gd = document.getElementById('myDiv');
+var data = [
+    {
+      type: "waterfall",
+      x: [
+        ["2016", "2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
+        ["initial", "q1", "q2", "q3", "total", "q1", "q2", "q3", "total" ]
+      ],
+      measure: ["absolute", "relative", "relative", "relative", "total", "relative", "relative", "relative", "total"],
+      y: [1, 2, 3, -1, null, 1, 2, -4, null],
+      base: 1000
+    },
+    {
+      type: "waterfall",
+      x: [
+        ["2016", "2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
+        ["initial", "q1", "q2", "q3", "total", "q1", "q2", "q3", "total" ]
+      ],
+      measure: ["absolute", "relative", "relative", "relative", "total", "relative", "relative", "relative", "total"],
+      y: [1.1, 2.2, 3.3, -1.1, null, 1.1, 2.2, -4.4, null],
+      base: 1000
+    }
+  ];
+var layout = {
+    waterfallgroupgap : 0.5,
+    xaxis: {
+      title: {
+        text: "MULTI-CATEGORY",
+      },
+      tickfont: {size: 16},
+      ticks: "outside"
+    }
+  }
+Plotly.newPlot('myDiv', data, layout);

@@ -1,0 +1,32 @@
+---
+name: Customizing Size and Range of a Contour Plot's Contours
+language: plotly_js
+suite: contour
+order: 5
+sitemap: false
+arrangement: horizontal
+---
+
+var data = [ {
+  z: [[10, 10.625, 12.5, 15.625, 20],
+       [5.625, 6.25, 8.125, 11.25, 15.625],
+       [2.5, 3.125, 5., 8.125, 12.5],
+       [0.625, 1.25, 3.125, 6.25, 10.625],
+       [0, 0.625, 2.5, 5.625, 10]],
+  type: 'contour',
+  colorscale: 'Jet',
+  autocontour: false,
+  contours: {
+    start: 0,
+    end: 8,
+    size: 2
+  }
+}];
+
+var layout = {
+  title: {
+    text: 'Customizing Size and Range of Contours'
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

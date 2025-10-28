@@ -1,0 +1,49 @@
+---
+name: Choropleth Map of Florida Counties Colored by Political Party
+language: plotly_js
+suite: choropleth-maps
+order: 6
+sitemap: false
+arrangement: horizontal
+---
+
+d3.json('https://raw.githubusercontent.com/plotly/datasets/master/florida-red-data.json', function(redjson) {
+
+  d3.json('https://raw.githubusercontent.com/plotly/datasets/master/florida-blue-data.json', function(bluejson) {
+
+    Plotly.newPlot('myDiv', [{
+      type: 'scattermap',
+      lat: [46],
+      lon: [-74]
+    }], {
+      title: {text: "Florida Counties"},
+      height: 600,
+      width: 600,
+      map: {
+        center: {
+          lat: 28,
+          lon: -84
+        },
+        style: 'light',
+        zoom: 4.8,
+        layers: [
+          {
+            sourcetype: 'geojson',
+            source: redjson,
+            type: 'fill',
+            color: 'rgba(163,22,19,0.8)'
+          },
+          {
+            sourcetype: 'geojson',
+            source: bluejson,
+            type: 'fill',
+            color: 'rgba(40,0,113,0.8)'
+          },
+        ]
+      }
+    });
+
+
+});
+
+});

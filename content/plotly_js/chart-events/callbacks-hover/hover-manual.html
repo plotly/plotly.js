@@ -1,0 +1,40 @@
+---
+name: Triggering Hover Events
+plot_url: https://codepen.io/plotly/embed/bdmMQN/?height=550&theme-id=15263&default-tab=result
+language: plotly_js
+suite: hover-events
+sitemap: false
+arrangement: horizontal
+order: 2
+---
+var myPlot = document.getElementById('myDiv'),
+    hoverButton = document.getElementById('hoverbutton'),
+    N = 16,
+    x = d3.range(N),
+    y1 = d3.range(N).map( d3.random.normal() ),
+    y2 = d3.range(N).map( d3.random.normal() ),
+    data = [ { x:x, y:y1, type:'scatter', name:'Trial 1',
+        mode:'markers', marker:{size:16} },
+        { x:x, y:y2, type:'scatter', name:'Trial 2',
+        mode:'markers', marker:{size:16} } ];
+    layout = {
+        hovermode:'closest',
+        title: {text: 'Click "Go" button to trigger hover'}
+     };
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_beforehover',function(){
+    return false;
+});
+
+hoverButton.addEventListener('click', function(){
+    var curve1 = Math.floor(Math.random()*2),
+        curve2 = Math.floor(Math.random()*2),
+        point1 = Math.floor(Math.random()*14),
+        point2 = Math.floor(Math.random()*14);
+    Plotly.Fx.hover('myDiv',[
+        {curveNumber:curve1, pointNumber:point1},
+        {curveNumber:curve2, pointNumber:point2}
+    ]);
+});

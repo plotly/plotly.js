@@ -1,0 +1,21 @@
+---
+name: Error Bars as a Percentage of the y-Value
+language: plotly_js
+suite: error-bar
+order: 6
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: [0, 1, 2],
+    y: [6, 10, 2],
+    error_y: {
+      type: 'percent',
+      value: 50,
+      visible: true
+    },
+    type: 'scatter'
+  }
+];
+Plotly.newPlot('myDiv', data);

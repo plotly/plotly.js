@@ -1,0 +1,34 @@
+---
+name: Disabling Buttons for Specific Axes
+language: plotly_js
+suite: configuration
+order: 5.8
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+     *New in 3.1*
+     
+     Disabling the zoom in, zoom out, and autoscale buttons for specific axes is supported on cartesian axes using the `modebardisable` attribute. In the following example, the zoom in and zoom out buttons are disabled on the `xaxis`, meaning these buttons only zoom in and out on the `yaxis`. Disable the autoscale button using `modebardisable='autoscale'`. You can also disable both autoscaling and zoom buttons using `modebardisable='zoominout+autoscale'`.
+---
+var data = [{
+  type: "scatter",
+  mode: "lines+markers",
+  x: ["2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01"],
+  y: [150, 160, 155, 170, 165, 180],
+  name: "Google Stock Price"
+}];
+
+var layout = {
+  title: "Google Stock Price Over Time with Mode Bar Disabled",
+  xaxis: {
+    title: "Date",
+    type: "date",
+    // Try zooming in or out using the modebar buttons. These only apply to the yaxis in this example.
+    modebardisable: "zoominout"
+  },
+  yaxis: {
+    title: "Stock Price (USD)"
+  }
+};
+
+Plotly.newPlot("myDiv", data, layout);

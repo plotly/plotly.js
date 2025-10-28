@@ -1,0 +1,17 @@
+---
+name: How Layers work in Tile-based Maps
+language: plotly_js
+suite: map-layers
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    If your figure contains one or more traces of type `Scattermap`, `Choroplethmap` or `Densitymap`, the `layout` object in your figure contains configuration information for the map itself. The map is composed of various layers, of three different types.
+    <ol>
+        <li> `layout.map.style` defines the lowest layers, also known as your "base map"</li>
+        <li> The various traces in `data` are by default rendered above the base map (although this can be controlled via the `below` attribute).</li>
+        <li> `layout.map.layers` is an array that defines more layers that are by default rendered above the traces in `data` (although this can also be controlled via the `below` attribute).</li>
+    </ol>
+
+---

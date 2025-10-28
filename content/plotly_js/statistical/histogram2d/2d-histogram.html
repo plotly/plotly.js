@@ -1,0 +1,23 @@
+---
+name: 2D Histogram of a Bivariate Normal Distribution
+language: plotly_js
+suite: histogram2d
+order: 0
+sitemap: false
+arrangement: horizontal
+---
+var x = [];
+var y = [];
+for (var i = 0; i < 500; i ++) {
+	x[i] = Math.random();
+	y[i] = Math.random() + 1;
+}
+
+var data = [
+  {
+    x: x,
+    y: y,
+    type: 'histogram2d'
+  }
+];
+Plotly.newPlot('myDiv', data);

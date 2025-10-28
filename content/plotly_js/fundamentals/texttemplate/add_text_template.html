@@ -1,0 +1,19 @@
+---
+name: Add Text Template in Pie Chart
+language: plotly_js
+suite: texttemplate
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+   To show an arbitrary text in your chart you can use [texttemplate](https://plotly.com/javascript/reference/pie/#pie-texttemplate), which is a template string used for rendering the information, and will override [textinfo](https://plotly.com/javascript/reference/treemap/#treemap-textinfo).
+---
+var data = [{
+  type: "pie",
+  values: [2, 5, 3, 2.5],
+  labels: ["R", "Python", "Java Script", "Matlab"],
+  texttemplate: "%{label}: %{value} (%{percent})",
+  textposition: "inside"
+}];
+
+Plotly.newPlot("myDiv", data)

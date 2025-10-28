@@ -1,0 +1,25 @@
+---
+name: Tickmode - Array
+language: plotly_js
+suite: tick-formatting
+order: 1.5
+sitemap: false
+arrangement: horizontal
+---
+
+var x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+var y = [28.8, 28.5, 37, 56.8, 69.7, 79.7, 78.5, 77.8, 74.1, 62.6, 45.3, 39.9];
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter'
+}];
+var layout = {
+  xaxis: {
+    tickmode: "array", // If "array", the placement of the ticks is set via `tickvals` and the tick text is `ticktext`.
+    tickvals: [1, 3, 5, 7, 9, 11],
+    ticktext: ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
+  }
+}
+
+Plotly.newPlot('myDiv', data, layout);

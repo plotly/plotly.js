@@ -1,0 +1,142 @@
+---
+name: Webgl Polar Chart
+language: plotly_js
+suite: scatterpolar
+order: 7
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/hobbs-pearson-trials.csv', function(err, rows){
+      function unpack(rows, key) {
+          return rows.map(function(row) { return row[key]; });
+      }
+
+var data = [
+    {
+      type: "scatterpolargl",
+      r: unpack(rows, 'trial_1_r'),
+      theta: unpack(rows, 'trial_1_theta'),
+      mode: "markers",
+      name: "Trial 1",
+      marker: {
+        color: "rgb(27,158,119)",
+        size: 15,
+        line: {
+          color: "white"
+        },
+        opacity: 0.7
+      },
+      cliponaxis: false
+    },
+    {
+      type: "scatterpolargl",
+      r: unpack(rows, "trial_2_r"),
+      theta: unpack(rows, "trial_2_theta"),
+      mode: "markers",
+      name: "Trial 2",
+      marker: {
+        color: "rgb(217,95,2)",
+        size: 20,
+        line: {
+          color: "white"
+        },
+        "opacity": 0.7
+      },
+      "cliponaxis": false
+    },
+    {
+      type: "scatterpolargl",
+      r: unpack(rows, "trial_3_r"),
+      theta: unpack(rows, "trial_3_theta"),
+      mode: "markers",
+      name: "Trial 3",
+      marker: {
+        color: "rgb(117,112,179)",
+        size: 12,
+        line: {
+          color: "white"
+        },
+        opacity: 0.7
+      },
+      cliponaxis: false
+    },
+    {
+      type: "scatterpolargl",
+      r: unpack(rows, "trial_4_r"),
+      theta: unpack(rows, "trial_4_theta"),
+      mode: "markers",
+      name: "Trial 4",
+      marker: {
+        color: "rgb(231,41,138)",
+        size: 22,
+        line: {
+          color: "white"
+        },
+        opacity: 0.7
+      },
+      cliponaxis: false
+    },
+    {
+      type: "scatterpolargl",
+      r: unpack(rows, "trial_5_r"),
+      theta: unpack(rows, "trial_5_theta"),
+      mode: "markers",
+      name: "Trial 5",
+      marker: {
+        color: "rgb(102,166,30)",
+        size: 19,
+        line: {
+          color: "white"
+        },
+        opacity: 0.7
+      },
+      cliponaxis: false
+    },
+    {
+      type: "scatterpolargl",
+      r: unpack(rows, "trial_6_r"),
+      theta: unpack(rows, "trial_6_theta"),
+      mode: "markers",
+      name: "Trial 6",
+      marker: {
+        color: "rgb(230,171,2)",
+        size: 10,
+        line: {
+          color: "white"
+        },
+        opacity: 0.7
+      },
+      cliponaxis: false
+    }
+  ]
+
+var layout = {
+    title: {
+      text: "Hobbs-Pearson Trials"
+    },
+    font: {
+      size: 15
+    },
+    showlegend: false,
+    polar: {
+      bgcolor: "rgb(223, 223, 223)",
+      angularaxis: {
+        tickwidth: 2,
+        linewidth: 3,
+        layer: "below traces"
+      },
+      radialaxis: {
+        side: "counterclockwise",
+        showline: true,
+        linewidth: 2,
+        tickwidth: 2,
+        gridcolor: "white",
+        gridwidth: 2
+      }
+    },
+    paper_bgcolor: "rgb(223, 223, 223)",
+  }
+
+Plotly.newPlot('myDiv', data, layout);
+})

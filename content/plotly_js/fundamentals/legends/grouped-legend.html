@@ -1,0 +1,52 @@
+---
+name: Grouped Legend
+language: plotly_js
+suite: legends
+order: 10
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: [1, 2, 3],
+  y: [2, 1, 3],
+  legendgroup: 'group',
+  marker: {color: 'rgb(164, 194, 244)'},
+  mode: 'markers',
+  name: 'first legend group',
+  type: 'scatter'
+};
+
+var trace2 = {
+  x: [1, 2, 3],
+  y: [2, 2, 2],
+  legendgroup: 'group',
+  line: {color: 'rgb(164, 194, 244)'},
+  mode: 'lines',
+  name: 'first legend group - average',
+  type: 'scatter'
+};
+
+var trace3 = {
+  x: [1, 2, 3],
+  y: [4, 9, 2],
+  legendgroup: 'group2',
+  marker: {color: 'rgb(142, 124, 195)'},
+  mode: 'markers',
+  name: 'second legend group',
+  type: 'scatter'
+};
+
+var trace4 = {
+  x: [1, 2, 3],
+  y: [5, 5, 5],
+  legendgroup: 'group2',
+  line: {color: 'rgb(142, 124, 195)'},
+  mode: 'lines',
+  name: 'second legend group - average',
+  type: 'scatter'
+};
+
+data = [trace1, trace2, trace3, trace4];
+
+Plotly.newPlot('myDiv', data);

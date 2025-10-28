@@ -1,0 +1,54 @@
+---
+name: Customize Hover for Spikelines
+language: plotly_js
+suite: 3d-hover
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  By default, Plotly's 3D plots display lines called "spikelines" while hovering over a point.
+  These lines project from the hover point to each of the three axes' normal planes and
+  then extend from those projection data points to the planes' wall boundaries.
+---
+
+function getrandom(num , mul) 
+	{
+	 var value = [ ];
+	 for(i=0;i<=num;i++)
+	 {
+	  var rand = Math.random() * mul;
+	  value.push(rand);
+	 }
+	 return value;
+	}
+
+
+var data=[
+    {
+     opacity:0.4,
+     type: 'scatter3d',
+     x: getrandom(50 , -75),
+     y: getrandom(50 , -75),
+     z: getrandom(50 , -75),
+    },
+];
+var layout = {
+  scene:{
+    xaxis: {
+		 spikecolor: '#1fe5bd',
+		 spikesides: false,
+		 spikethickness: 6
+  	 	},
+  	 yaxis: {
+		 spikecolor: '#1fe5bd',
+		 spikesides: false,
+		 spikethickness: 6
+  		},
+  	 zaxis: {
+		 spikecolor: '#1fe5bd',
+		 spikethickness: 6
+  		}
+  },
+};
+Plotly.newPlot('myDiv', data, layout);
+  

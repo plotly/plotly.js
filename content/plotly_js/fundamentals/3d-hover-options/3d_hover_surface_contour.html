@@ -1,0 +1,46 @@
+---
+name: Customize Hover for Surface Contours
+language: plotly_js
+suite: 3d-hover
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  In addition to spikelines, Plotly 3D Surface plots also display surface contours on hover by default.
+  These are customized by styling the [`contours`](https://plotly.com/javascript/reference/surface/#surface-contours)
+  attribute in the surface trace.
+---
+
+x = [10,20,30,40]
+y = [0,1,2,3]
+z = [
+	[2,2,2,3],
+	[1,1,1,1],
+	[1,1,0,0],
+	[0,0,0,0]
+];
+
+var data=[
+    {
+     opacity:0.9,
+     type: 'surface',
+     x:x, y:y, z:z,
+	  contours: {
+		 x: {
+			 highlight: true,
+			 highlightcolor: "#41a7b3"
+         },
+		 y: { highlight: false },
+		 z: { highlight: false}
+	}
+    },
+];
+var layout = {
+  scene:{
+    xaxis: { showspikes: false },
+    yaxis: { showspikes: false },
+    zaxis: { showspikes: false }
+  },
+};
+Plotly.newPlot('myDiv', data, layout);
+  

@@ -1,0 +1,64 @@
+---
+name: Rectangle Positioned Relative to the Axes
+language: plotly_js
+suite: shape
+order: 5
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: [1.5, 4.5],
+  y: [0.75, 0.75],
+  text: ['Unfilled Rectangle', 'Filled Rectangle'],
+  mode: 'text'
+};
+
+var layout = {
+  title: {
+    text: 'Rectangle Positioned Relative to the Axes'
+  },
+  xaxis: {
+    range: [0, 7],
+    showgrid: false
+  },
+  yaxis: {
+    range: [0, 3.5]
+  },
+  width: 500,
+  height: 500,
+  shapes: [
+
+    //Unfilled Rectangle
+
+    {
+      type: 'rect',
+      x0: 1,
+      y0: 1,
+      x1: 2,
+      y1: 3,
+      line: {
+        color: 'rgba(128, 0, 128, 1)'
+      }
+    },
+
+    //Filled Rectangle
+
+    {
+      type: 'rect',
+      x0: 3,
+      y0: 1,
+      x1: 6,
+      y1: 2,
+      line: {
+        color: 'rgba(128, 0, 128, 1)',
+        width: 2
+      },
+      fillcolor: 'rgba(128, 0, 128, 0.7)'
+    }
+  ]
+};
+
+var data = [trace1];
+
+Plotly.newPlot('myDiv', data, layout);

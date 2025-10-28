@@ -1,0 +1,37 @@
+---
+name: Capturing Hover Events&#58; Pixels
+plot_url: https://codepen.io/plotly/embed/xgaEaR/?height=550&theme-id=15263&default-tab=result
+language: plotly_js
+suite: hover-events
+order: 1.5
+sitemap: false
+arrangement: horizontal
+---
+
+var myPlot = document.getElementById('myDiv'),
+    hoverInfo = document.getElementById('hoverinfo'),
+    N = 16,
+    x = d3.range(N),
+    y1 = d3.range(N).map(d3.random.normal()),
+    y2 = d3.range(N).map(d3.random.normal()),
+    data = [{x:x, y:y1, type:'scatter', name:'Trial 1',
+        mode:'markers', marker:{size:16}},
+        {x:x, y:y2, type:'scatter', name:'Trial 2',
+        mode:'markers', marker:{size:16}}],
+    layout = {hovermode:'closest',
+              title: {text: 'Hover on Points to see<br>Pixel Coordinates'}};
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_hover', function(data){
+    var xaxis = data.points[0].xaxis,
+        yaxis = data.points[0].yaxis;
+    var infotext = data.points.map(function(d){
+      return ('width: '+xaxis.l2p(d.x)+', height: '+yaxis.l2p(d.y));
+    });
+
+    hoverInfo.innerHTML = infotext.join('<br/>');
+})
+ .on('plotly_unhover', function(data){
+    hoverInfo.innerHTML = '';
+});

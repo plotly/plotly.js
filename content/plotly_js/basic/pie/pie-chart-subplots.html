@@ -1,0 +1,92 @@
+---
+name: Pie Chart Subplots
+language: plotly_js
+suite: pie
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  In order to create pie chart subplots, you need to use the [domain](https://plotly.com/javascript/reference/pie/#pie-domain) attribute. `domain` allows you to place each trace on a [grid](https://plotly.com/javascript/reference/layout/#layout-grid) of rows and columns defined in the layout or within a rectangle defined by `X` and `Y` arrays. The example below uses the `grid` method (with a 2 x 2 grid defined in the layout) for the first three traces and the X and Y method for the fourth trace.
+---
+
+var allLabels = ['1st', '2nd', '3rd', '4th', '5th'];
+
+var allValues = [
+  [38, 27, 18, 10, 7],
+  [28, 26, 21, 15, 10],
+  [38, 19, 16, 14, 13],
+  [31, 24, 19, 18, 8]
+];
+
+var ultimateColors = [
+  ['rgb(56, 75, 126)', 'rgb(18, 36, 37)', 'rgb(34, 53, 101)', 'rgb(36, 55, 57)', 'rgb(6, 4, 4)'],
+  ['rgb(177, 127, 38)', 'rgb(205, 152, 36)', 'rgb(99, 79, 37)', 'rgb(129, 180, 179)', 'rgb(124, 103, 37)'],
+  ['rgb(33, 75, 99)', 'rgb(79, 129, 102)', 'rgb(151, 179, 100)', 'rgb(175, 49, 35)', 'rgb(36, 73, 147)'],
+  ['rgb(146, 123, 21)', 'rgb(177, 180, 34)', 'rgb(206, 206, 40)', 'rgb(175, 51, 21)', 'rgb(35, 36, 21)']
+];
+
+var data = [{
+  values: allValues[0],
+  labels: allLabels,
+  type: 'pie',
+  name: 'Starry Night',
+  marker: {
+    colors: ultimateColors[0]
+  },
+  domain: {
+    row: 0,
+    column: 0
+  },
+  hoverinfo: 'label+percent+name',
+  textinfo: 'none'
+},{
+  values: allValues[1],
+  labels: allLabels,
+  type: 'pie',
+  name: 'Sunflowers',
+  marker: {
+    colors: ultimateColors[1]
+  },
+  domain: {
+    row: 1,
+    column: 0
+  },
+  hoverinfo: 'label+percent+name',
+  textinfo: 'none'
+},{
+  values: allValues[2],
+  labels: allLabels,
+  type: 'pie',
+  name: 'Irises',
+  marker: {
+    colors: ultimateColors[2]
+  },
+  domain: {
+    row: 0,
+    column: 1
+  },
+  hoverinfo: 'label+percent+name',
+  textinfo: 'none'
+},{
+  values: allValues[3],
+  labels: allLabels,
+  type: 'pie',
+  name: 'The Night Cafe',
+  marker: {
+    colors: ultimateColors[3]
+  },
+  domain: {
+    x: [0.52,1],
+    y: [0, 0.48]
+  },
+  hoverinfo: 'label+percent+name',
+  textinfo: 'none'
+}];
+
+var layout = {
+  height: 400,
+  width: 500,
+  grid: {rows: 2, columns: 2}
+};
+
+Plotly.newPlot('myDiv', data, layout);

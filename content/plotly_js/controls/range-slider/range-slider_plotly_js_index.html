@@ -1,0 +1,14 @@
+---
+name: Range Slider and Selector
+permalink: javascript/range-slider/
+description: How to add range sliders to a D3.js-based line or scatter chart. Examples of Range Sliders
+layout: base
+thumbnail: thumbnail/sliders.jpg
+language: plotly_js
+page_type: example_index
+display_as: controls
+order: 5
+redirect_from: javascript-graphing-library/range-slider/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","range-slider" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

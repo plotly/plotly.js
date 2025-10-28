@@ -1,0 +1,25 @@
+---
+name: Stacked Funnel
+language: plotly_js
+suite: funnel
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+var gd = document.getElementById('myDiv');
+var data = [{type: 'funnel', name: 'Montreal',
+  y: ["Website visit", "Downloads", "Potential customers", "Requested price"],
+  x: [120, 60, 30, 20],
+  textinfo: "value+percent initial"},
+  {
+     type: 'funnel',name: 'Toronto',
+    y: ["Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent"],
+    x: [100, 60, 40, 30, 20], textposition: "inside", textinfo: "value+percent previous"},
+  {
+    type: 'funnel',name: 'Vancouver',
+    y: ["Website visit", "Downloads", "Potential customers", "Requested price", "invoice sent", "closed deals"],
+    x: [90, 70, 50, 30, 10, 5], textposition: "outside", textinfo: "value+percent total"}];
+
+var layout = {margin: {l: 130, r: 0}, width: 600, funnelmode: "stack", showlegend: 'true'}
+
+Plotly.newPlot('myDiv', data, layout);

@@ -1,0 +1,41 @@
+---
+name: Object Constancy
+plot_url: https://codepen.io/plotly/embed/LRNaWw/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: animations
+order: 6
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  For scatter traces, you may wish to retain a marker's identity as it is updated. If you include an array of string ids with the trace, the marker identity will be retained. By shuffling the ids, the example below shuffles the markers each time the button is pressed.
+---
+function shuffleInPlace(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+}
+
+var ids = ['1', '2', '3', '4', '5', '6'];
+
+Plotly.newPlot('myDiv', [{
+  x: [1, 0.5, -0.5, -1, -0.5, 0.5],
+  y: [0, 0.866, 0.866, 0, -0.866, -0.866],
+  marker:{size:14,
+			 color:['#631357', '#880E4F', '#AD1457',
+					  '#F06292', '#F48FB1']},
+  ids: ids,
+  mode: 'markers'
+}], {
+  xaxis: {range: [-3, 3]},
+  yaxis: {range: [-2, 2]}
+});
+
+function animateShuffle() {
+  shuffleInPlace(ids);
+  Plotly.animate('myDiv', [{
+    data: [{ids: ids}]
+  }]);
+}

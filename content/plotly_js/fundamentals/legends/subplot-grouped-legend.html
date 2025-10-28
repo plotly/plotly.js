@@ -1,0 +1,135 @@
+---
+name: Subplot Grouped Legend
+language: plotly_js
+suite: legends
+order: 11
+sitemap: false
+arrangement: horizontal
+---
+
+var trace1 = {
+  x: ['a'],
+  y: [2],
+  legendgroup: 'a',
+  marker: {
+    color: 'rgba(102,194,165,1)',
+    line: {color: 'transparent'}
+  },
+  name: 'a',
+  type: 'bar',
+  xaxis: 'x',
+  yaxis: 'y'
+};
+
+var trace2 = {
+  x: ['b'],
+  y: [3],
+  legendgroup: 'b',
+  marker: {
+    color: 'rgba(252,141,98,1)',
+    line: {color: 'transparent'}
+  },
+  name: 'b',
+  type: 'bar',
+  xaxis: 'x',
+  yaxis: 'y'
+};
+
+var trace3 = {
+  x: ['c'],
+  y: [2],
+  legendgroup: 'c',
+  marker: {
+    color: 'rgba(141,160,203,1)',
+    line: {color: 'transparent'}
+  },
+  name: 'c',
+  type: 'bar',
+  xaxis: 'x',
+  yaxis: 'y'
+};
+
+var trace4 = {
+  x: ['a'],
+  y: [4],
+  legendgroup: 'a',
+  marker: {
+    color: 'rgba(102,194,165,1)',
+    line: {color: 'transparent'}
+  },
+  name: 'a',
+  showlegend: false,
+  type: 'bar',
+  xaxis: 'x2',
+  yaxis: 'y2'
+};
+
+var trace5 = {
+  x: ['b'],
+  y: [2],
+  legendgroup: 'b',
+  marker: {
+    color: 'rgba(252,141,98,1)',
+    line: {color: 'transparent'}
+  },
+  name: 'b',
+  showlegend: false,
+  type: 'bar',
+  xaxis: 'x2',
+  yaxis: 'y2'
+};
+
+var trace6 = {
+  x: ['c'],
+  y: [4],
+  legendgroup: 'c',
+  marker: {
+    color: 'rgba(141,160,203,1)',
+    line: {color: 'transparent'}
+  },
+  name: 'c',
+  showlegend: false,
+  type: 'bar',
+  xaxis: 'x2',
+  yaxis: 'y2'
+};
+
+var data = [trace1, trace2, trace3, trace4, trace5, trace6];
+
+var layout = {
+  hovermode: 'closest',
+  margin: {
+    r: 10,
+    t: 25,
+    b: 40,
+    l: 60
+  },
+  showlegend: true,
+  xaxis: {
+    anchor: 'y',
+    categoryorder: 'array',
+    domain: [0, 1],
+    type: 'category',
+	 showgrid: false,
+	 showticklabels: false
+  },
+  xaxis2: {
+    anchor: 'y2',
+    categoryorder: 'array',
+    domain: [0, 1],
+    type: 'category',
+	 showgrid: false
+  },
+  yaxis: {
+    anchor: 'x',
+    domain: [0.52, 1],
+	 showgrid: false
+  },
+  yaxis2: {
+    anchor: 'x2',
+    domain: [0, 0.48],
+	 showgrid: false
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

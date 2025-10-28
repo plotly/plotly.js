@@ -1,0 +1,19 @@
+---
+name: Customizing Individual Bar Widths
+language: plotly_js
+suite: bar
+order: 8
+sitemap: false
+arrangement: horizontal
+---
+
+var trace0 = {
+  type: 'bar',
+  x: [1, 2, 3, 5.5, 10],
+  y: [10, 8, 6, 4, 2],
+  width: [0.8, 0.8, 0.8, 3.5, 4]
+}
+
+var data = [trace0]
+
+Plotly.newPlot('myDiv', data);

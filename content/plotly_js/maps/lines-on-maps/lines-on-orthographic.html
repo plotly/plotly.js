@@ -1,0 +1,72 @@
+---
+name: Lines on an Orthographic Map
+language: plotly_js
+suite: lines-on-maps
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/globe_contours.csv', function(err, rows){
+
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+    }
+
+    var data = [];
+    var scl =['rgb(213,62,79)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(230,245,152)','rgb(171,221,164)','rgb(102,194,165)','rgb(50,136,189)'];
+    var allLats = [];
+    var allLons = [];
+
+    for ( var i = 0 ; i < scl.length; i++){
+        var latHead = 'lat-'+i;
+        var lonHead = 'lon-'+i;
+        var lat = unpack(rows, latHead);
+        var lon = unpack(rows, lonHead);
+        allLats.push(lat);
+        allLons.push(lon);
+    }
+
+    for ( var i = 0 ; i < scl.length; i++) {
+        var current = {
+            type:'scattergeo',
+            lon: allLons[i],
+            lat: allLats[i],
+            mode: 'lines',
+            line: {
+                width: 2,
+                color: scl[i]
+            }
+        }
+        data.push(current);
+    };
+
+
+    var layout = {
+        geo: {
+            projection: {
+                type: 'orthographic',
+                rotation: {
+                    lon: -100,
+                    lat: 40
+                },
+            },
+            showocean: true,
+            oceancolor: 'rgb(0, 255, 255)',
+            showland: true,
+            landcolor: 'rgb(230, 145, 56)',
+            showlakes: true,
+            lakecolor: 'rgb(0, 255, 255)',
+            showcountries: true,
+            lonaxis: {
+                showgrid: true,
+                gridcolor: 'rgb(102, 102, 102)'
+            },
+            lataxis: {
+                showgrid: true,
+                gridcolor: 'rgb(102, 102, 102)'
+            }
+        }
+    };
+
+    Plotly.newPlot("myDiv", data, layout, {showLink: false});
+});

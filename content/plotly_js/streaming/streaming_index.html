@@ -1,0 +1,14 @@
+---
+name: Streaming
+permalink: javascript/streaming/
+description: How to create D3.js-based streaming plots in Plotly.js.
+layout: base
+thumbnail: thumbnail/streaming-thumb-square.gif
+language: plotly_js
+page_type: example_index
+display_as: streaming
+order: 1
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","streaming" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

@@ -1,0 +1,27 @@
+---
+name: Showing Information above Your Chart
+language: plotly_js
+suite: indicator
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    Another interesting feature is that indicator trace sits above the other traces (even the 3d ones). This way, it can be easily used as an overlay as demonstrated below:
+---
+var data = [
+  {
+    type: "indicator",
+    mode: "number+delta",
+    value: 492,
+    delta: { reference: 512, valueformat: ".0f" },
+    domain: { y: [0, 1], x: [0.25, 0.75] },
+    title: { text: "Users online" }
+  },
+  {
+    y: [325, 324, 405, 400, 424, 404, 417, 432, 419, 394, 410, 426, 413, 419, 404, 408, 401, 377, 368, 361, 356, 359, 375, 397, 394, 418, 437, 450, 430, 442, 424, 443, 420, 418, 423, 423, 426, 440, 437, 436, 447, 460, 478, 472, 450, 456, 436, 418, 429, 412, 429, 442, 464, 447, 434, 457, 474, 480, 499, 497, 480, 502, 512, 492]
+  }
+];
+
+var layout = { width: 600, height: 450, xaxis: { range: [0, 62] } };
+Plotly.newPlot('myDiv', data, layout);

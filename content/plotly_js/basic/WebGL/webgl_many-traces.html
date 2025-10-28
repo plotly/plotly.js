@@ -1,0 +1,42 @@
+---
+name: WebGL with many traces
+language: plotly_js
+suite: webgl-vs-svg
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+function gaussianRand() {
+  var rand = 0;
+  for (var i = 0; i < 6; i += 1) {
+    rand += Math.random();
+  }
+  return (rand / 6)-0.5;
+}
+
+
+var start_value = 0,
+     stop_value = 1,
+     point_num = 5000,
+     trace_num = 10;
+var curr_value = start_value;
+var step = (stop_value - start_value) / (point_num - 1);
+
+var data = [];
+for (var j = 0; j < trace_num; j++) {
+    var X = [],
+         Y = [];
+    for (var i = 0; i < point_num; i++) {
+        X.push(curr_value + (step * i));
+        Y.push((gaussianRand()*8)+(j*5));
+    }
+    data.push({
+        type: "scattergl",
+        mode: "line",
+        x: X,
+        y: Y
+    })
+}
+var layout = {showlegend: false}
+Plotly.newPlot('myDiv', data = data, layout = layout)

@@ -1,0 +1,55 @@
+---
+name: Specular
+language: plotly_js
+suite: 3d-surface-lighting
+order: 4
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/michaelbabyn/plot_data/master/sin_saddle.csv', function(err, rows){
+function unpack(rows, key) {
+  return rows.map(function(row) { return row[key]; });
+}
+
+var z_data = [];
+for(i=0;i<100;i++)
+{
+  z_data.push(unpack(rows,i));
+}
+
+var data = [{
+  z: z_data,
+  type: 'surface',
+  colorscale:'Viridis',
+  lighting: {specular: 0.1}
+        },
+   {
+  z: z_data,
+  type: 'surface',
+  scene: 'scene2',
+  colorscale:'Viridis',
+  lighting: {specular: 2}
+  }
+];
+
+var layout = {
+  title: {
+    text: 'Specular Reflection'
+  },
+  grid: {
+    rows: 1,
+    columns: 2,
+    pattern: 'independent',
+  },
+  	scene:{
+		aspectmode:'cube',
+		domain:{row:0, column:0}
+	},
+	scene2:{
+		aspectmode:'cube',
+		domain:{row:0, column:1}
+  },
+};
+Plotly.newPlot('myDiv', data, layout);
+});

@@ -1,0 +1,15 @@
+---
+description: How to make a tile-based maps in JavaScript with various base layers.
+display_as: maps
+language: plotly_js
+layout: base
+name: Tile Map Layers
+order: 2
+page_type: example_index
+permalink: javascript/tile-map-layers/
+redirect_from: javascript/mapbox-layers/
+thumbnail: thumbnail/mapbox-layers.png
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","map-layers" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

@@ -1,0 +1,13 @@
+---
+name: Slider Events
+permalink: javascript/sliders/
+description: Use Plotly to create custom sliders in D3.js-based JavaScript charts.
+layout: base
+thumbnail: thumbnail/slider-component.jpg
+language: plotly_js
+page_type: example_index
+display_as: controls
+order: 3
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","slider-components-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

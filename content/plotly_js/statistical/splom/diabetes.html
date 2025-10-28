@@ -1,0 +1,97 @@
+---
+name: Splom of Diabetes Dataset
+language: plotly_js
+suite: splom
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Diabetes dataset is downloaded from [kaggle](https://www.kaggle.com/uciml/pima-indians-diabetes-database/data). It is used to predict the onset of diabetes based on 8 diagnostic measures. The diabetes file contains the diagnostic measures for 768 patients, that are labeled as non-diabetic (Outcome=0), respectively diabetic (Outcome=1). The splom associated to the 8 variables can illustrate the strength of the relationship between pairs of measures for diabetic/nondiabetic patients.
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/diabetes.csv', function(err, rows){
+
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+    }
+
+    text = []
+    for (i=0; i < unpack(rows, 'Outcome').length; i++) {
+      if (unpack(rows, 'Outcome')[i] == "0") {
+        text.push("Diabetic")
+      } else {
+        text.push("Non-Diabetic")
+      }
+    }
+
+    var pl_colorscale=[
+      [0.0, '#119dff'],
+      [0.5, '#119dff'],
+      [0.5, '#ef553b'],
+      [1, '#ef553b']
+    ]
+
+    var axis = () => ({
+      showline:false,
+      zeroline:false,
+      gridcolor:'#ffff',
+      ticklen:2,
+      tickfont:{size:10},
+      title:{font:{size:12}}
+    })
+
+    var data = [{
+      type: 'splom',
+      dimensions: [
+        {label:'Pregnancies', values:unpack(rows, 'Pregnancies')},
+        {label:'Glucose', values:unpack(rows, 'Glucose')},
+        {label:'BloodPressure', values:unpack(rows, 'BloodPressure')},
+        {label:'SkinThickness', values:unpack(rows, 'SkinThickness')},
+        {label:'Insulin', values:unpack(rows, 'Insulin')},
+        {label:'BMI', values:unpack(rows, 'BMI')},
+        {label:'DiabPedigreeFun', values:unpack(rows, 'DiabetesPedigreeFunction')},
+        {label:'Age', values:unpack(rows, 'Age')}
+      ],
+      text:text,
+      marker: {
+        color: unpack(rows, 'Outcome'),
+        colorscale:pl_colorscale,
+        size: 5,
+        line: {
+          color: 'white',
+          width: 0.5
+        }
+      }
+    }]
+
+    var layout = {
+      title: {
+        text: "Scatterplot Matrix (SPLOM) for Diabetes Dataset<br>Data source: <a href='https://www.kaggle.com/uciml/pima-indians-diabetes-database/data'>[1]</a>"
+      },
+      height: 1000,
+      width: 1000,
+      autosize: false,
+      hovermode:'closest',
+      dragmode:'select',
+      plot_bgcolor:'rgba(240,240,240, 0.95)',
+      xaxis:axis(),
+      yaxis:axis(),
+      xaxis2:axis(),
+      xaxis3:axis(),
+      xaxis4:axis(),
+      xaxis5:axis(),
+      xaxis6:axis(),
+      xaxis7:axis(),
+      xaxis8:axis(),
+      yaxis2:axis(),
+      yaxis3:axis(),
+      yaxis4:axis(),
+      yaxis5:axis(),
+      yaxis6:axis(),
+      yaxis7:axis(),
+      yaxis8:axis()
+    }
+
+    Plotly.react('myDiv', data, layout);
+
+});

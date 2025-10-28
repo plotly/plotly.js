@@ -1,0 +1,61 @@
+/* Light mode (Material default) */
+[data-md-color-scheme="default"] {
+  --code-bg: #f6f8fa;
+  --code-fg: #24292e;
+  --code-keyword: #f34705;
+  --code-string: #5caaff;
+  --code-number: #72a125;
+  --code-comment: #7f7f7f;
+  --code-function: #6f42c1;
+  --code-operator: #d73a49;
+}
+
+/* Dark mode (Material “slate”) */
+[data-md-color-scheme="slate"] {
+  --code-bg: #1e1e1e;
+  --code-fg: #d4d4d4;
+  --code-keyword: #c586c0;
+  --code-string: #ce9178;
+  --code-number: #b5cea8;
+  --code-comment: #6a9955;
+  --code-function: #dcdcaa;
+  --code-operator: #569cd6;
+}
+
+/* Token styling */
+.hljs-keyword,
+.language-python .keyword,
+.language-js .keyword {
+  color: var(--code-keyword);
+}
+
+.hljs-string,
+.language-python .string,
+.language-js .string {
+  color: var(--code-string);
+}
+
+.hljs-number,
+.language-python .number,
+.language-js .number {
+  color: var(--code-number);
+}
+
+.hljs-comment,
+.language-python .comment,
+.language-js .comment {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.hljs-function,
+.language-python .function,
+.language-js .function {
+  color: var(--code-function);
+}
+
+.hljs-operator,
+.language-python .operator,
+.language-js .operator {
+  color: var(--code-operator);
+}

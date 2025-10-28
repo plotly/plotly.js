@@ -1,0 +1,98 @@
+---
+name: Styling and Formatting Annotations
+plot_url: https://codepen.io/plotly/embed/mVLQLK
+language: plotly_js
+suite: annotations
+order: 7
+sitemap: false
+arrangement: horizontal
+---
+var myPlot = document.getElementById('myDiv'),
+   N = 12,
+    x = d3.range(N).map( d3.random.normal(3) ),
+    y1 = d3.range(N).map( d3.random.normal(4) ),
+    y2 = d3.range(N).map( d3.random.normal(4) ),
+    y3 = d3.range(N).map( d3.random.normal(4) ),
+    months = ['Jan', 'Feb', 'Mar',
+          'Apr', 'May', 'June',
+          'July', 'Aug', 'Sept',
+          'Oct', 'Nov', 'Dec'],
+    data = [{ x:x, y:y1,
+             type:'scatter', mode:'markers',
+         name:'2014', text: months,
+             marker:{color:'rgba(200, 50, 100, .7)',
+                      size:16}
+             },
+            { x:x, y:y2,
+             type:'scatter', mode:'markers',
+         name:'2015', text:months,
+             marker:{color:'rgba(120, 20, 130, .7)',
+                     size:16}
+             },
+            { x:x, y:y3,
+             type:'scatter', mode:'markers',
+         name: '2016', text:months,
+             marker:{color:'rgba(10, 180, 180, .8)',
+                     size:16}}];
+    layout = {
+        hovermode:'closest',
+        title: {text: '<b>Formatting Annotations</b> <br> click on a point to plot an annotation'},
+        xaxis: {
+          zeroline: false,
+          title: {
+              text: 'Value A'
+          }
+        },
+        yaxis: {
+            zeroline: false,
+            title: {
+                text: 'Value B'
+            }
+        }
+     };
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_click',
+    function(data){
+      var point = data.points[0],
+          newAnnotation = {
+            x: point.xaxis.d2l(point.x),
+            y: point.yaxis.d2l(point.y),
+            arrowhead: 6,
+            ax: 0,
+            ay: -80,
+            bgcolor: 'rgba(255, 255, 255, 0.9)',
+            arrowcolor: point.fullData.marker.color,
+            font: {size:12},
+            bordercolor: point.fullData.marker.color,
+            borderwidth: 3,
+            borderpad: 4,
+            text: '<i>Series Identification</i>' + <br>
+                  '<b>Year</b>       '+(point.data.name) + '<br>' +
+                  '<i>Point Identification</i><br>' +
+                  '<b>Month</b>      '+ (months[point.pointNumber]) +
+                  '<br><i>Point Values</i><br>' +
+                  '<b>A</b>     '+(point.x).toPrecision(4) +
+                  '<br><b>B</b>     '+(point.y).toPrecision(4)
+
+        },
+        divid = document.getElementById('myDiv'),
+        newIndex = (divid.layout.annotations || []).length;
+    console.log(point.pointNumber)
+     // delete instead if clicked twice
+    if(newIndex) {
+       var foundCopy = false;
+       divid.layout.annotations.forEach(function(ann, sameIndex) {
+         if(ann.text === newAnnotation.text ) {
+           Plotly.relayout('myDiv', 'annotations[' + sameIndex + ']', 'remove');
+           foundCopy = true;
+         }
+       });
+       if(foundCopy) return;
+     }
+     Plotly.relayout('myDiv', 'annotations[' + newIndex + ']', newAnnotation);
+  })
+  .on('plotly_clickannotation', function(event, data) {
+    Plotly.relayout('myDiv', 'annotations[' + data.index + ']', 'remove');
+  });

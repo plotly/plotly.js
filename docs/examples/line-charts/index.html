@@ -1,0 +1,6037 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://plotly.com/javascript/examples/line-charts/">
+      
+      
+        <link rel="prev" href="../line-and-scatter/">
+      
+      
+        <link rel="next" href="../bar-charts/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Line Charts - Plotly.js Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra_css.css">
+    
+      <link rel="stylesheet" href="https://docs.plotly.com/css/plotly-style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#line-charts" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Plotly.js Docs" class="md-header__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Plotly.js Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Line Charts
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+
+  <!-- Main navigation -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--primary"
+      data-md-component="sidebar"
+      data-md-type="navigation"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Plotly.js Docs" class="md-nav__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Plotly.js Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotlyjs-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Event Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Fundamentals
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Fundamentals
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responsive-fluid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Responsive / Fluid Layouts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uirevision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    uirevision in Plotly.react
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    React Plotly.js
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://dash.plotly.com/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Analytical Apps with Dash
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colorway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Colorway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-hover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Hover Options
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-surface-lighting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Lighting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizontal-legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hover-text-and-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Text and Formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figure-labels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting the Title, Legend Entries, and Axis Titles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layout-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Layout Template Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setting-graph-size/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting Graph Size
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tick-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatting Ticks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Shapes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../texttemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-and-annotations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Annotations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../font/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Font Styling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiple-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Basic Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../line-and-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Line Charts
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pie-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pie Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bubble-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dot-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dot Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../insets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inset Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizontal-bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sunburst-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sunburst Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sankey-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sankey Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treemaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Treemap Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../graphing-multiple-chart-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Chart Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../webgl-vs-svg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    WebGL vs SVG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Statistical Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Statistical Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Box Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histograms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../continuous-error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Continuous Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2D-Histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spc-control-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SPC Control Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Violin Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel-categories-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Categories Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatterplot Matrix
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2d-histogram-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histogram Contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Scientific Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Scientific Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contour-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contour Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ternary-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel-coordinates-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Coordinates Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../log-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Log Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wind-rose-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wind Rose and Polar Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ternary-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary contours
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../radar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Radar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Scatter Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Contour Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Financial Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Financial Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waterfall-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Waterfall Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../candlestick-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Candlestick Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnel-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Funnel Chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../time-series/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Time Series and Date Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlc-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OHLC Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gauge-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gauge Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bullet-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bullet Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Maps
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Maps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-map-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Map Layers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-density-heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Density Heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-county-choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lines-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lines on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bubble-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter-plots-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter-tile-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choropleth-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-on-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3D Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            3D Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-scatter-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ribbon-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ribbon Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-surface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Mesh Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-line-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Line Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trisurf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trisurf Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-point-clustering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cluster Graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cone-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cone Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamtube-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Streamtube Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-isosurface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Isosurface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Multiple Axes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mixed-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mixed Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Table and Chart Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Chart Events
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Chart Events
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../click-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Click Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hover-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zoom-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disable-zoom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Disable Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Animations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Animations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gapminder-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adding Sliders to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-animation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled-Area Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../map-animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Options
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Options
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ajax-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plot CSV Data from an Ajax Call
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streaming
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remove-trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Remove Trace from Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LaTeX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LaTeX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Controls
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            Controls
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dropdowns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dropdown Menus
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-buttons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Buttons
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sliders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sliders
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lasso-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lasso Selection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../range-slider/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Range Slider and Selector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/bar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/barpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    barpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/box/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/candlestick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/carpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choroplethmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choroplethmapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contourcarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contourcarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/densitymap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/densitymapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/funnel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/funnelarea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnelarea
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/heatmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram2dcontour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2dcontour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/icicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    icicle
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isosurface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    isosurface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/mesh3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mesh3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ohlc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/parcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/parcoords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcoords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/pie/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/sankey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatter3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattercarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattercarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattergeo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergeo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattergl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattermap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattermapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterpolargl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolargl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattersmith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattersmith
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterternary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterternary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/streamtube/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/sunburst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/treemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/volume/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    volume
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/waterfall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+
+        <div class="nav-bottom-image">
+            <a href="https://plotly.com/webinars/data-apps-publishing-playbook/?utm_medium=graphing_libraries&utm_campaign=plotly_publishing_playbook&utm_content=sidebar" target="_blank">
+                <img src="https://images.prismic.io/plotly-marketing-website-2/aNMW2J5xUNkB1CWg_PlotlyPublishingPlaybook.jpg?auto=format,compress" alt="plotly-studio-banner" type="image/avif">
+            </a>
+        </div>
+      </div>
+    </div>
+  
+
+  <!-- Table of contents -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--secondary"
+      data-md-component="sidebar"
+      data-md-type="toc"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="line-charts">line-charts</h1>
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="basic-line-plot">
+        <a class="no_underline plot-blue" href="#basic-line-plot">basic-line-plot</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  type: &#x27;scatter&#x27;
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4],
+  y: [16, 5, 11, 9],
+  type: &#x27;scatter&#x27;
+};
+
+var data = [trace1, trace2];
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Basic Line Plot&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4],\n  y: [10, 15, 13, 17],\n  type: &#x27;scatter&#x27;\n};\n\nvar trace2 = {\n  x: [1, 2, 3, 4],\n  y: [16, 5, 11, 9],\n  type: &#x27;scatter&#x27;\n};\n\nvar data = [trace1, trace2];\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_0"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  type: 'scatter'
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4],
+  y: [16, 5, 11, 9],
+  type: 'scatter'
+};
+
+var data = [trace1, trace2];
+
+Plotly.newPlot('myDiv_0', data);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="line-and-scatter-plot">
+        <a class="no_underline plot-blue" href="#line-and-scatter-plot">line-and-scatter-plot</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: &#x27;markers&#x27;
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: &#x27;lines&#x27;
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: &#x27;lines+markers&#x27;
+};
+
+var data = [ trace1, trace2, trace3 ];
+
+var layout = {
+  title: {text: &#x27;Line and Scatter Plot&#x27;}
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Line and Scatter Plot&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4],\n  y: [10, 15, 13, 17],\n  mode: &#x27;markers&#x27;\n};\n\nvar trace2 = {\n  x: [2, 3, 4, 5],\n  y: [16, 5, 11, 9],\n  mode: &#x27;lines&#x27;\n};\n\nvar trace3 = {\n  x: [1, 2, 3, 4],\n  y: [12, 9, 15, 12],\n  mode: &#x27;lines+markers&#x27;\n};\n\nvar data = [ trace1, trace2, trace3 ];\n\nvar layout = {\n  title: {text: &#x27;Line and Scatter Plot&#x27;}\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_1"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: 'markers'
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: 'lines'
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: 'lines+markers'
+};
+
+var data = [ trace1, trace2, trace3 ];
+
+var layout = {
+  title: {text: 'Line and Scatter Plot'}
+};
+
+Plotly.newPlot('myDiv_1', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="adding-names-to-line-and-scatter-plot">
+        <a class="no_underline plot-blue" href="#adding-names-to-line-and-scatter-plot">adding-names-to-line-and-scatter-plot</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: &#x27;markers&#x27;,
+  name: &#x27;Scatter&#x27;
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;Lines&#x27;
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;Scatter + Lines&#x27;
+};
+
+var data = [ trace1, trace2, trace3 ];
+
+var layout = {
+  title: {text: &#x27;Adding Names to Line and Scatter Plot&#x27;}
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Adding Names to Line and Scatter Plot&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4],\n  y: [10, 15, 13, 17],\n  mode: &#x27;markers&#x27;,\n  name: &#x27;Scatter&#x27;\n};\n\nvar trace2 = {\n  x: [2, 3, 4, 5],\n  y: [16, 5, 11, 9],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;Lines&#x27;\n};\n\nvar trace3 = {\n  x: [1, 2, 3, 4],\n  y: [12, 9, 15, 12],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;Scatter + Lines&#x27;\n};\n\nvar data = [ trace1, trace2, trace3 ];\n\nvar layout = {\n  title: {text: &#x27;Adding Names to Line and Scatter Plot&#x27;}\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_2"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: 'markers',
+  name: 'Scatter'
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: 'lines',
+  name: 'Lines'
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: 'lines+markers',
+  name: 'Scatter + Lines'
+};
+
+var data = [ trace1, trace2, trace3 ];
+
+var layout = {
+  title: {text: 'Adding Names to Line and Scatter Plot'}
+};
+
+Plotly.newPlot('myDiv_2', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="line-and-scatter-styling">
+        <a class="no_underline plot-blue" href="#line-and-scatter-styling">line-and-scatter-styling</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: &#x27;markers&#x27;,
+  marker: {
+    color: &#x27;rgb(219, 64, 82)&#x27;,
+    size: 12
+  }
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: &#x27;lines&#x27;,
+  line: {
+    color: &#x27;rgb(55, 128, 191)&#x27;,
+    width: 3
+  }
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: &#x27;lines+markers&#x27;,
+  marker: {
+    color: &#x27;rgb(128, 0, 128)&#x27;,
+    size: 8
+  },
+  line: {
+    color: &#x27;rgb(128, 0, 128)&#x27;,
+    width: 1
+  }
+};
+
+var data = [trace1, trace2, trace3];
+
+var layout = {
+  title: {
+    text: &#x27;Line and Scatter Styling&#x27;
+  }
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Line and Scatter Styling&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4],\n  y: [10, 15, 13, 17],\n  mode: &#x27;markers&#x27;,\n  marker: {\n    color: &#x27;rgb(219, 64, 82)&#x27;,\n    size: 12\n  }\n};\n\nvar trace2 = {\n  x: [2, 3, 4, 5],\n  y: [16, 5, 11, 9],\n  mode: &#x27;lines&#x27;,\n  line: {\n    color: &#x27;rgb(55, 128, 191)&#x27;,\n    width: 3\n  }\n};\n\nvar trace3 = {\n  x: [1, 2, 3, 4],\n  y: [12, 9, 15, 12],\n  mode: &#x27;lines+markers&#x27;,\n  marker: {\n    color: &#x27;rgb(128, 0, 128)&#x27;,\n    size: 8\n  },\n  line: {\n    color: &#x27;rgb(128, 0, 128)&#x27;,\n    width: 1\n  }\n};\n\nvar data = [trace1, trace2, trace3];\n\nvar layout = {\n  title: {\n    text: &#x27;Line and Scatter Styling&#x27;\n  }\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_3"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: 'markers',
+  marker: {
+    color: 'rgb(219, 64, 82)',
+    size: 12
+  }
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: 'lines',
+  line: {
+    color: 'rgb(55, 128, 191)',
+    width: 3
+  }
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: 'lines+markers',
+  marker: {
+    color: 'rgb(128, 0, 128)',
+    size: 8
+  },
+  line: {
+    color: 'rgb(128, 0, 128)',
+    width: 1
+  }
+};
+
+var data = [trace1, trace2, trace3];
+
+var layout = {
+  title: {
+    text: 'Line and Scatter Styling'
+  }
+};
+
+Plotly.newPlot('myDiv_3', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="colored-and-styled-scatter-plot">
+        <a class="no_underline plot-blue" href="#colored-and-styled-scatter-plot">colored-and-styled-scatter-plot</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [52698, 43117],
+  y: [53, 31],
+  mode: &#x27;markers&#x27;,
+  name: &#x27;North America&#x27;,
+  text: [&#x27;United States&#x27;, &#x27;Canada&#x27;],
+  marker: {
+    color: &#x27;rgb(164, 194, 244)&#x27;,
+    size: 12,
+    line: {
+      color: &#x27;white&#x27;,
+      width: 0.5
+    }
+  },
+  type: &#x27;scatter&#x27;
+};
+
+var trace2 = {
+  x: [39317, 37236, 35650, 30066, 29570, 27159, 23557, 21046, 18007],
+  y: [33, 20, 13, 19, 27, 19, 49, 44, 38],
+  mode: &#x27;markers&#x27;,
+  name: &#x27;Europe&#x27;,
+  text: [&#x27;Germany&#x27;, &#x27;Britain&#x27;, &#x27;France&#x27;, &#x27;Spain&#x27;, &#x27;Italy&#x27;, &#x27;Czech Rep.&#x27;, &#x27;Greece&#x27;, &#x27;Poland&#x27;],
+  marker: {
+    color: &#x27;rgb(255, 217, 102)&#x27;,
+    size: 12
+  },
+  type: &#x27;scatter&#x27;
+};
+
+var trace3 = {
+  x: [42952, 37037, 33106, 17478, 9813, 5253, 4692, 3899],
+  y: [23, 42, 54, 89, 14, 99, 93, 70],
+  mode: &#x27;markers&#x27;,
+  name: &#x27;Asia/Pacific&#x27;,
+  text: [&#x27;Australia&#x27;, &#x27;Japan&#x27;, &#x27;South Korea&#x27;, &#x27;Malaysia&#x27;, &#x27;China&#x27;, &#x27;Indonesia&#x27;, &#x27;Philippines&#x27;, &#x27;India&#x27;],
+  marker: {
+    color: &#x27;rgb(234, 153, 153)&#x27;,
+    size: 12
+  },
+  type: &#x27;scatter&#x27;
+};
+
+var trace4 = {
+  x: [19097, 18601, 15595, 13546, 12026, 7434, 5419],
+  y: [43, 47, 56, 80, 86, 93, 80],
+  mode: &#x27;markers&#x27;,
+  name: &#x27;Latin America&#x27;,
+  text: [&#x27;Chile&#x27;, &#x27;Argentina&#x27;, &#x27;Mexico&#x27;, &#x27;Venezuela&#x27;, &#x27;Venezuela&#x27;, &#x27;El Salvador&#x27;, &#x27;Bolivia&#x27;],
+  marker: {
+    color: &#x27;rgb(142, 124, 195)&#x27;,
+    size: 12
+  },
+  type: &#x27;scatter&#x27;
+};
+
+var data = [trace1, trace2, trace3, trace4];
+
+var layout = {
+  title: {
+    text: &#x27;Quarter 1 Growth&#x27;
+  },
+  xaxis: {
+    title: {
+      text: &#x27;GDP per Capita&#x27;
+    },
+    showgrid: false,
+    zeroline: false
+  },
+  yaxis: {
+    title: {
+      text: &#x27;Percent&#x27;
+    },
+    showline: false
+  }
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Colored and Styled Scatter Plot&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [52698, 43117],\n  y: [53, 31],\n  mode: &#x27;markers&#x27;,\n  name: &#x27;North America&#x27;,\n  text: [&#x27;United States&#x27;, &#x27;Canada&#x27;],\n  marker: {\n    color: &#x27;rgb(164, 194, 244)&#x27;,\n    size: 12,\n    line: {\n      color: &#x27;white&#x27;,\n      width: 0.5\n    }\n  },\n  type: &#x27;scatter&#x27;\n};\n\nvar trace2 = {\n  x: [39317, 37236, 35650, 30066, 29570, 27159, 23557, 21046, 18007],\n  y: [33, 20, 13, 19, 27, 19, 49, 44, 38],\n  mode: &#x27;markers&#x27;,\n  name: &#x27;Europe&#x27;,\n  text: [&#x27;Germany&#x27;, &#x27;Britain&#x27;, &#x27;France&#x27;, &#x27;Spain&#x27;, &#x27;Italy&#x27;, &#x27;Czech Rep.&#x27;, &#x27;Greece&#x27;, &#x27;Poland&#x27;],\n  marker: {\n    color: &#x27;rgb(255, 217, 102)&#x27;,\n    size: 12\n  },\n  type: &#x27;scatter&#x27;\n};\n\nvar trace3 = {\n  x: [42952, 37037, 33106, 17478, 9813, 5253, 4692, 3899],\n  y: [23, 42, 54, 89, 14, 99, 93, 70],\n  mode: &#x27;markers&#x27;,\n  name: &#x27;Asia/Pacific&#x27;,\n  text: [&#x27;Australia&#x27;, &#x27;Japan&#x27;, &#x27;South Korea&#x27;, &#x27;Malaysia&#x27;, &#x27;China&#x27;, &#x27;Indonesia&#x27;, &#x27;Philippines&#x27;, &#x27;India&#x27;],\n  marker: {\n    color: &#x27;rgb(234, 153, 153)&#x27;,\n    size: 12\n  },\n  type: &#x27;scatter&#x27;\n};\n\nvar trace4 = {\n  x: [19097, 18601, 15595, 13546, 12026, 7434, 5419],\n  y: [43, 47, 56, 80, 86, 93, 80],\n  mode: &#x27;markers&#x27;,\n  name: &#x27;Latin America&#x27;,\n  text: [&#x27;Chile&#x27;, &#x27;Argentina&#x27;, &#x27;Mexico&#x27;, &#x27;Venezuela&#x27;, &#x27;Venezuela&#x27;, &#x27;El Salvador&#x27;, &#x27;Bolivia&#x27;],\n  marker: {\n    color: &#x27;rgb(142, 124, 195)&#x27;,\n    size: 12\n  },\n  type: &#x27;scatter&#x27;\n};\n\nvar data = [trace1, trace2, trace3, trace4];\n\nvar layout = {\n  title: {\n    text: &#x27;Quarter 1 Growth&#x27;\n  },\n  xaxis: {\n    title: {\n      text: &#x27;GDP per Capita&#x27;\n    },\n    showgrid: false,\n    zeroline: false\n  },\n  yaxis: {\n    title: {\n      text: &#x27;Percent&#x27;\n    },\n    showline: false\n  }\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_4"></div>
+              <script>
+                var trace1 = {
+  x: [52698, 43117],
+  y: [53, 31],
+  mode: 'markers',
+  name: 'North America',
+  text: ['United States', 'Canada'],
+  marker: {
+    color: 'rgb(164, 194, 244)',
+    size: 12,
+    line: {
+      color: 'white',
+      width: 0.5
+    }
+  },
+  type: 'scatter'
+};
+
+var trace2 = {
+  x: [39317, 37236, 35650, 30066, 29570, 27159, 23557, 21046, 18007],
+  y: [33, 20, 13, 19, 27, 19, 49, 44, 38],
+  mode: 'markers',
+  name: 'Europe',
+  text: ['Germany', 'Britain', 'France', 'Spain', 'Italy', 'Czech Rep.', 'Greece', 'Poland'],
+  marker: {
+    color: 'rgb(255, 217, 102)',
+    size: 12
+  },
+  type: 'scatter'
+};
+
+var trace3 = {
+  x: [42952, 37037, 33106, 17478, 9813, 5253, 4692, 3899],
+  y: [23, 42, 54, 89, 14, 99, 93, 70],
+  mode: 'markers',
+  name: 'Asia/Pacific',
+  text: ['Australia', 'Japan', 'South Korea', 'Malaysia', 'China', 'Indonesia', 'Philippines', 'India'],
+  marker: {
+    color: 'rgb(234, 153, 153)',
+    size: 12
+  },
+  type: 'scatter'
+};
+
+var trace4 = {
+  x: [19097, 18601, 15595, 13546, 12026, 7434, 5419],
+  y: [43, 47, 56, 80, 86, 93, 80],
+  mode: 'markers',
+  name: 'Latin America',
+  text: ['Chile', 'Argentina', 'Mexico', 'Venezuela', 'Venezuela', 'El Salvador', 'Bolivia'],
+  marker: {
+    color: 'rgb(142, 124, 195)',
+    size: 12
+  },
+  type: 'scatter'
+};
+
+var data = [trace1, trace2, trace3, trace4];
+
+var layout = {
+  title: {
+    text: 'Quarter 1 Growth'
+  },
+  xaxis: {
+    title: {
+      text: 'GDP per Capita'
+    },
+    showgrid: false,
+    zeroline: false
+  },
+  yaxis: {
+    title: {
+      text: 'Percent'
+    },
+    showline: false
+  }
+};
+
+Plotly.newPlot('myDiv_4', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="styling-line-plot">
+        <a class="no_underline plot-blue" href="#styling-line-plot">styling-line-plot</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">trace1 = {
+  type: &#x27;scatter&#x27;,
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;Red&#x27;,
+  line: {
+    color: &#x27;rgb(219, 64, 82)&#x27;,
+    width: 3
+  }
+};
+
+trace2 = {
+  type: &#x27;scatter&#x27;,
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;Blue&#x27;,
+  line: {
+    color: &#x27;rgb(55, 128, 191)&#x27;,
+    width: 1
+  }
+};
+
+var layout = {
+  width: 500,
+  height: 500
+};
+
+var data = [trace1, trace2];
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Styling Line Plot&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;trace1 = {\n  type: &#x27;scatter&#x27;,\n  x: [1, 2, 3, 4],\n  y: [10, 15, 13, 17],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;Red&#x27;,\n  line: {\n    color: &#x27;rgb(219, 64, 82)&#x27;,\n    width: 3\n  }\n};\n\ntrace2 = {\n  type: &#x27;scatter&#x27;,\n  x: [1, 2, 3, 4],\n  y: [12, 9, 15, 12],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;Blue&#x27;,\n  line: {\n    color: &#x27;rgb(55, 128, 191)&#x27;,\n    width: 1\n  }\n};\n\nvar layout = {\n  width: 500,\n  height: 500\n};\n\nvar data = [trace1, trace2];\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_5"></div>
+              <script>
+                trace1 = {
+  type: 'scatter',
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: 'lines',
+  name: 'Red',
+  line: {
+    color: 'rgb(219, 64, 82)',
+    width: 3
+  }
+};
+
+trace2 = {
+  type: 'scatter',
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: 'lines',
+  name: 'Blue',
+  line: {
+    color: 'rgb(55, 128, 191)',
+    width: 1
+  }
+};
+
+var layout = {
+  width: 500,
+  height: 500
+};
+
+var data = [trace1, trace2];
+
+Plotly.newPlot('myDiv_5', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="line-shape-options-for-interpolation">
+        <a class="no_underline plot-blue" href="#line-shape-options-for-interpolation">line-shape-options-for-interpolation</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4, 5],
+  y: [1, 3, 2, 3, 1],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;linear&#x27;,
+  line: {shape: &#x27;linear&#x27;},
+  type: &#x27;scatter&#x27;
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5],
+  y: [6, 8, 7, 8, 6],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;spline&#x27;,
+  text: [&#x27;tweak line smoothness&lt;br&gt;with &quot;smoothing&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with &quot;smoothing&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with &quot;smoothing&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with &quot;smoothing&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with &quot;smoothing&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with &quot;smoothing&quot; in line object&#x27;],
+  line: {shape: &#x27;spline&#x27;},
+  type: &#x27;scatter&#x27;
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4, 5],
+  y: [11, 13, 12, 13, 11],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;vhv&#x27;,
+  line: {shape: &#x27;vhv&#x27;},
+  type: &#x27;scatter&#x27;
+};
+
+var trace4 = {
+  x: [1, 2, 3, 4, 5],
+  y: [16, 18, 17, 18, 16],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;hvh&#x27;,
+  line: {shape: &#x27;hvh&#x27;},
+  type: &#x27;scatter&#x27;
+};
+
+var trace5 = {
+  x: [1, 2, 3, 4, 5],
+  y: [21, 23, 22, 23, 21],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;vh&#x27;,
+  line: {shape: &#x27;vh&#x27;},
+  type: &#x27;scatter&#x27;
+};
+
+var trace6 = {
+  x: [1, 2, 3, 4, 5],
+  y: [26, 28, 27, 28, 26],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;hv&#x27;,
+  line: {shape: &#x27;hv&#x27;},
+  type: &#x27;scatter&#x27;
+};
+
+var data = [trace1, trace2, trace3, trace4, trace5, trace6];
+
+var layout = {
+  legend: {
+    y: 0.5,
+    traceorder: &#x27;reversed&#x27;,
+    font: {size: 16},
+    yref: &#x27;paper&#x27;
+  }};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Line Shape Options for Interpolation&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4, 5],\n  y: [1, 3, 2, 3, 1],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;linear&#x27;,\n  line: {shape: &#x27;linear&#x27;},\n  type: &#x27;scatter&#x27;\n};\n\nvar trace2 = {\n  x: [1, 2, 3, 4, 5],\n  y: [6, 8, 7, 8, 6],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;spline&#x27;,\n  text: [&#x27;tweak line smoothness&lt;br&gt;with \&quot;smoothing\&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with \&quot;smoothing\&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with \&quot;smoothing\&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with \&quot;smoothing\&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with \&quot;smoothing\&quot; in line object&#x27;, &#x27;tweak line smoothness&lt;br&gt;with \&quot;smoothing\&quot; in line object&#x27;],\n  line: {shape: &#x27;spline&#x27;},\n  type: &#x27;scatter&#x27;\n};\n\nvar trace3 = {\n  x: [1, 2, 3, 4, 5],\n  y: [11, 13, 12, 13, 11],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;vhv&#x27;,\n  line: {shape: &#x27;vhv&#x27;},\n  type: &#x27;scatter&#x27;\n};\n\nvar trace4 = {\n  x: [1, 2, 3, 4, 5],\n  y: [16, 18, 17, 18, 16],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;hvh&#x27;,\n  line: {shape: &#x27;hvh&#x27;},\n  type: &#x27;scatter&#x27;\n};\n\nvar trace5 = {\n  x: [1, 2, 3, 4, 5],\n  y: [21, 23, 22, 23, 21],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;vh&#x27;,\n  line: {shape: &#x27;vh&#x27;},\n  type: &#x27;scatter&#x27;\n};\n\nvar trace6 = {\n  x: [1, 2, 3, 4, 5],\n  y: [26, 28, 27, 28, 26],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;hv&#x27;,\n  line: {shape: &#x27;hv&#x27;},\n  type: &#x27;scatter&#x27;\n};\n\nvar data = [trace1, trace2, trace3, trace4, trace5, trace6];\n\nvar layout = {\n  legend: {\n    y: 0.5,\n    traceorder: &#x27;reversed&#x27;,\n    font: {size: 16},\n    yref: &#x27;paper&#x27;\n  }};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_6"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4, 5],
+  y: [1, 3, 2, 3, 1],
+  mode: 'lines+markers',
+  name: 'linear',
+  line: {shape: 'linear'},
+  type: 'scatter'
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5],
+  y: [6, 8, 7, 8, 6],
+  mode: 'lines+markers',
+  name: 'spline',
+  text: ['tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object', 'tweak line smoothness<br>with "smoothing" in line object'],
+  line: {shape: 'spline'},
+  type: 'scatter'
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4, 5],
+  y: [11, 13, 12, 13, 11],
+  mode: 'lines+markers',
+  name: 'vhv',
+  line: {shape: 'vhv'},
+  type: 'scatter'
+};
+
+var trace4 = {
+  x: [1, 2, 3, 4, 5],
+  y: [16, 18, 17, 18, 16],
+  mode: 'lines+markers',
+  name: 'hvh',
+  line: {shape: 'hvh'},
+  type: 'scatter'
+};
+
+var trace5 = {
+  x: [1, 2, 3, 4, 5],
+  y: [21, 23, 22, 23, 21],
+  mode: 'lines+markers',
+  name: 'vh',
+  line: {shape: 'vh'},
+  type: 'scatter'
+};
+
+var trace6 = {
+  x: [1, 2, 3, 4, 5],
+  y: [26, 28, 27, 28, 26],
+  mode: 'lines+markers',
+  name: 'hv',
+  line: {shape: 'hv'},
+  type: 'scatter'
+};
+
+var data = [trace1, trace2, trace3, trace4, trace5, trace6];
+
+var layout = {
+  legend: {
+    y: 0.5,
+    traceorder: 'reversed',
+    font: {size: 16},
+    yref: 'paper'
+  }};
+
+Plotly.newPlot('myDiv_6', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="graph-and-axes-titles">
+        <a class="no_underline plot-blue" href="#graph-and-axes-titles">graph-and-axes-titles</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: &#x27;markers&#x27;,
+  name: &#x27;Scatter&#x27;
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;Lines&#x27;
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: &#x27;lines+markers&#x27;,
+  name: &#x27;Scatter and Lines&#x27;
+};
+
+var data = [trace1, trace2, trace3];
+
+var layout = {
+  title: {
+    text: &#x27;Title of the Graph&#x27;
+  },
+  xaxis: {
+    title: {
+      text: &#x27;x-axis title&#x27;
+    }
+  },
+  yaxis: {
+    title: {
+      text: &#x27;y-axis title&#x27;
+    }
+  }
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Graph and Axes Titles&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4],\n  y: [10, 15, 13, 17],\n  mode: &#x27;markers&#x27;,\n  name: &#x27;Scatter&#x27;\n};\n\nvar trace2 = {\n  x: [2, 3, 4, 5],\n  y: [16, 5, 11, 9],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;Lines&#x27;\n};\n\nvar trace3 = {\n  x: [1, 2, 3, 4],\n  y: [12, 9, 15, 12],\n  mode: &#x27;lines+markers&#x27;,\n  name: &#x27;Scatter and Lines&#x27;\n};\n\nvar data = [trace1, trace2, trace3];\n\nvar layout = {\n  title: {\n    text: &#x27;Title of the Graph&#x27;\n  },\n  xaxis: {\n    title: {\n      text: &#x27;x-axis title&#x27;\n    }\n  },\n  yaxis: {\n    title: {\n      text: &#x27;y-axis title&#x27;\n    }\n  }\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_7"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4],
+  y: [10, 15, 13, 17],
+  mode: 'markers',
+  name: 'Scatter'
+};
+
+var trace2 = {
+  x: [2, 3, 4, 5],
+  y: [16, 5, 11, 9],
+  mode: 'lines',
+  name: 'Lines'
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4],
+  y: [12, 9, 15, 12],
+  mode: 'lines+markers',
+  name: 'Scatter and Lines'
+};
+
+var data = [trace1, trace2, trace3];
+
+var layout = {
+  title: {
+    text: 'Title of the Graph'
+  },
+  xaxis: {
+    title: {
+      text: 'x-axis title'
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'y-axis title'
+    }
+  }
+};
+
+Plotly.newPlot('myDiv_7', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="line-dash">
+        <a class="no_underline plot-blue" href="#line-dash">line-dash</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4, 5],
+  y: [1, 3, 2, 3, 1],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;Solid&#x27;,
+  line: {
+    dash: &#x27;solid&#x27;,
+    width: 4
+  }
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5],
+  y: [6, 8, 7, 8, 6],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;dashdot&#x27;,
+  line: {
+    dash: &#x27;dashdot&#x27;,
+    width: 4
+  }
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4, 5],
+  y: [11, 13, 12, 13, 11],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;Solid&#x27;,
+  line: {
+    dash: &#x27;solid&#x27;,
+    width: 4
+  }
+};
+
+var trace4 = {
+  x: [1, 2, 3, 4, 5],
+  y: [16, 18, 17, 18, 16],
+  mode: &#x27;lines&#x27;,
+  name: &#x27;dot&#x27;,
+  line: {
+    dash: &#x27;dot&#x27;,
+    width: 4
+  }
+};
+
+var data = [trace1, trace2, trace3, trace4];
+
+var layout = {
+  title: {
+    text: &#x27;Line Dash&#x27;
+  },
+  xaxis: {
+    range: [0.75, 5.25],
+    autorange: false
+  },
+  yaxis: {
+    range: [0, 18.5],
+    autorange: false
+  },
+  legend: {
+    y: 0.5,
+    traceorder: &#x27;reversed&#x27;,
+    font: {
+      size: 16
+    }
+  }
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Line Dash&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4, 5],\n  y: [1, 3, 2, 3, 1],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;Solid&#x27;,\n  line: {\n    dash: &#x27;solid&#x27;,\n    width: 4\n  }\n};\n\nvar trace2 = {\n  x: [1, 2, 3, 4, 5],\n  y: [6, 8, 7, 8, 6],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;dashdot&#x27;,\n  line: {\n    dash: &#x27;dashdot&#x27;,\n    width: 4\n  }\n};\n\nvar trace3 = {\n  x: [1, 2, 3, 4, 5],\n  y: [11, 13, 12, 13, 11],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;Solid&#x27;,\n  line: {\n    dash: &#x27;solid&#x27;,\n    width: 4\n  }\n};\n\nvar trace4 = {\n  x: [1, 2, 3, 4, 5],\n  y: [16, 18, 17, 18, 16],\n  mode: &#x27;lines&#x27;,\n  name: &#x27;dot&#x27;,\n  line: {\n    dash: &#x27;dot&#x27;,\n    width: 4\n  }\n};\n\nvar data = [trace1, trace2, trace3, trace4];\n\nvar layout = {\n  title: {\n    text: &#x27;Line Dash&#x27;\n  },\n  xaxis: {\n    range: [0.75, 5.25],\n    autorange: false\n  },\n  yaxis: {\n    range: [0, 18.5],\n    autorange: false\n  },\n  legend: {\n    y: 0.5,\n    traceorder: &#x27;reversed&#x27;,\n    font: {\n      size: 16\n    }\n  }\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_8"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4, 5],
+  y: [1, 3, 2, 3, 1],
+  mode: 'lines',
+  name: 'Solid',
+  line: {
+    dash: 'solid',
+    width: 4
+  }
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5],
+  y: [6, 8, 7, 8, 6],
+  mode: 'lines',
+  name: 'dashdot',
+  line: {
+    dash: 'dashdot',
+    width: 4
+  }
+};
+
+var trace3 = {
+  x: [1, 2, 3, 4, 5],
+  y: [11, 13, 12, 13, 11],
+  mode: 'lines',
+  name: 'Solid',
+  line: {
+    dash: 'solid',
+    width: 4
+  }
+};
+
+var trace4 = {
+  x: [1, 2, 3, 4, 5],
+  y: [16, 18, 17, 18, 16],
+  mode: 'lines',
+  name: 'dot',
+  line: {
+    dash: 'dot',
+    width: 4
+  }
+};
+
+var data = [trace1, trace2, trace3, trace4];
+
+var layout = {
+  title: {
+    text: 'Line Dash'
+  },
+  xaxis: {
+    range: [0.75, 5.25],
+    autorange: false
+  },
+  yaxis: {
+    range: [0, 18.5],
+    autorange: false
+  },
+  legend: {
+    y: 0.5,
+    traceorder: 'reversed',
+    font: {
+      size: 16
+    }
+  }
+};
+
+Plotly.newPlot('myDiv_8', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="connect-gaps-between-data">
+        <a class="no_underline plot-blue" href="#connect-gaps-between-data">connect-gaps-between-data</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var trace1 = {
+  x: [1, 2, 3, 4, 5, 6, 7, 8],
+  y: [10, 15, null, 17, 14, 12, 10, null, 15],
+  mode: &#x27;lines+markers&#x27;,
+  connectgaps: true
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5, 6, 7, 8],
+  y: [16, null, 13, 10, 8, null, 11, 12],
+  mode: &#x27;lines&#x27;,
+  connectgaps: true
+};
+
+var data = [trace1, trace2];
+
+var layout = {
+  title: {
+    text: &#x27;Connect the Gaps Between Data&#x27;
+  },
+  showlegend: false
+};
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Connect Gaps Between Data&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var trace1 = {\n  x: [1, 2, 3, 4, 5, 6, 7, 8],\n  y: [10, 15, null, 17, 14, 12, 10, null, 15],\n  mode: &#x27;lines+markers&#x27;,\n  connectgaps: true\n};\n\nvar trace2 = {\n  x: [1, 2, 3, 4, 5, 6, 7, 8],\n  y: [16, null, 13, 10, 8, null, 11, 12],\n  mode: &#x27;lines&#x27;,\n  connectgaps: true\n};\n\nvar data = [trace1, trace2];\n\nvar layout = {\n  title: {\n    text: &#x27;Connect the Gaps Between Data&#x27;\n  },\n  showlegend: false\n};\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_9"></div>
+              <script>
+                var trace1 = {
+  x: [1, 2, 3, 4, 5, 6, 7, 8],
+  y: [10, 15, null, 17, 14, 12, 10, null, 15],
+  mode: 'lines+markers',
+  connectgaps: true
+};
+
+var trace2 = {
+  x: [1, 2, 3, 4, 5, 6, 7, 8],
+  y: [16, null, 13, 10, 8, null, 11, 12],
+  mode: 'lines',
+  connectgaps: true
+};
+
+var data = [trace1, trace2];
+
+var layout = {
+  title: {
+    text: 'Connect the Gaps Between Data'
+  },
+  showlegend: false
+};
+
+Plotly.newPlot('myDiv_9', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="labelling-lines-with-annotations">
+        <a class="no_underline plot-blue" href="#labelling-lines-with-annotations">labelling-lines-with-annotations</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var xData = [
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013]
+];
+
+var yData = [
+  [74, 82, 80, 74, 73, 72, 74, 70, 70, 66, 66, 69],
+  [45, 42, 50, 46, 36, 36, 34, 35, 32, 31, 31, 28],
+  [13, 14, 20, 24, 20, 24, 24, 40, 35, 41, 43, 50],
+  [18, 21, 18, 21, 16, 14, 13, 18, 17, 16, 19, 23]
+];
+
+var colors = [&#x27;rgba(67,67,67,1)&#x27;, &#x27;rgba(115,115,115,1)&#x27;, &#x27;rgba(49,130,189, 1)&#x27;,
+  &#x27;rgba(189,189,189,1)&#x27;
+];
+
+var lineSize = [2, 2, 4, 2];
+
+var labels = [&#x27;Television&#x27;, &#x27;Newspaper&#x27;, &#x27;Internet&#x27;, &#x27;Radio&#x27;];
+
+var data = [];
+
+for ( var i = 0 ; i &lt; xData.length ; i++ ) {
+  var result = {
+    x: xData[i],
+    y: yData[i],
+    type: &#x27;scatter&#x27;,
+    mode: &#x27;lines&#x27;,
+    line: {
+      color: colors[i],
+      width: lineSize[i]
+    }
+  };
+  var result2 = {
+    x: [xData[i][0], xData[i][11]],
+    y: [yData[i][0], yData[i][11]],
+    type: &#x27;scatter&#x27;,
+    mode: &#x27;markers&#x27;,
+    marker: {
+      color: colors[i],
+      size: 12
+    }
+  };
+  data.push(result, result2);
+}
+
+var layout = {
+  showlegend: false,
+  height: 600,
+  width: 600,
+  xaxis: {
+    showline: true,
+    showgrid: false,
+    showticklabels: true,
+    linecolor: &#x27;rgb(204,204,204)&#x27;,
+    linewidth: 2,
+    tickmode: &#x27;linear&#x27;,
+    ticks: &#x27;outside&#x27;,
+    tickcolor: &#x27;rgb(204,204,204)&#x27;,
+    tickwidth: 2,
+    ticklen: 5,
+    tickfont: {
+      family: &#x27;Arial&#x27;,
+      size: 12,
+      color: &#x27;rgb(82, 82, 82)&#x27;
+    }
+  },
+  yaxis: {
+    showgrid: false,
+    zeroline: false,
+    showline: false,
+    showticklabels: false
+  },
+  autosize: false,
+  margin: {
+    autoexpand: false,
+    l: 100,
+    r: 20,
+    t: 100
+  },
+  annotations: [
+    {
+      xref: &#x27;paper&#x27;,
+      yref: &#x27;paper&#x27;,
+      x: 0.0,
+      y: 1.05,
+      xanchor: &#x27;left&#x27;,
+      yanchor: &#x27;bottom&#x27;,
+      text: &#x27;Main Source for News&#x27;,
+      font:{
+        family: &#x27;Arial&#x27;,
+        size: 30,
+        color: &#x27;rgb(37,37,37)&#x27;
+      },
+      showarrow: false
+    },
+    {
+      xref: &#x27;paper&#x27;,
+      yref: &#x27;paper&#x27;,
+      x: 0.5,
+      y: -0.1,
+      xanchor: &#x27;center&#x27;,
+      yanchor: &#x27;top&#x27;,
+      text: &#x27;Source: Pew Research Center &amp; Storytelling with data&#x27;,
+      showarrow: false,
+      font: {
+        family: &#x27;Arial&#x27;,
+        size: 12,
+        color: &#x27;rgb(150,150,150)&#x27;
+      }
+    }
+  ]
+};
+
+for( var i = 0 ; i &lt; xData.length ; i++ ) {
+  var result = {
+    xref: &#x27;paper&#x27;,
+    x: 0.05,
+    y: yData[i][0],
+    xanchor: &#x27;right&#x27;,
+    yanchor: &#x27;middle&#x27;,
+    text: labels[i] + &#x27; &#x27; + yData[i][0] +&#x27;%&#x27;,
+    showarrow: false,
+    font: {
+      family: &#x27;Arial&#x27;,
+      size: 16,
+      color: &#x27;black&#x27;
+    }
+  };
+  var result2 = {
+    xref: &#x27;paper&#x27;,
+    x: 0.95,
+    y: yData[i][11],
+    xanchor: &#x27;left&#x27;,
+    yanchor: &#x27;middle&#x27;,
+    text: yData[i][11] +&#x27;%&#x27;,
+    font: {
+      family: &#x27;Arial&#x27;,
+      size: 16,
+      color: &#x27;black&#x27;
+    },
+    showarrow: false
+  };
+
+  layout.annotations.push(result, result2);
+}
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Labelling Lines with Annotations&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var xData = [\n  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],\n  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],\n  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],\n  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013]\n];\n\nvar yData = [\n  [74, 82, 80, 74, 73, 72, 74, 70, 70, 66, 66, 69],\n  [45, 42, 50, 46, 36, 36, 34, 35, 32, 31, 31, 28],\n  [13, 14, 20, 24, 20, 24, 24, 40, 35, 41, 43, 50],\n  [18, 21, 18, 21, 16, 14, 13, 18, 17, 16, 19, 23]\n];\n\nvar colors = [&#x27;rgba(67,67,67,1)&#x27;, &#x27;rgba(115,115,115,1)&#x27;, &#x27;rgba(49,130,189, 1)&#x27;,\n  &#x27;rgba(189,189,189,1)&#x27;\n];\n\nvar lineSize = [2, 2, 4, 2];\n\nvar labels = [&#x27;Television&#x27;, &#x27;Newspaper&#x27;, &#x27;Internet&#x27;, &#x27;Radio&#x27;];\n\nvar data = [];\n\nfor ( var i = 0 ; i &lt; xData.length ; i++ ) {\n  var result = {\n    x: xData[i],\n    y: yData[i],\n    type: &#x27;scatter&#x27;,\n    mode: &#x27;lines&#x27;,\n    line: {\n      color: colors[i],\n      width: lineSize[i]\n    }\n  };\n  var result2 = {\n    x: [xData[i][0], xData[i][11]],\n    y: [yData[i][0], yData[i][11]],\n    type: &#x27;scatter&#x27;,\n    mode: &#x27;markers&#x27;,\n    marker: {\n      color: colors[i],\n      size: 12\n    }\n  };\n  data.push(result, result2);\n}\n\nvar layout = {\n  showlegend: false,\n  height: 600,\n  width: 600,\n  xaxis: {\n    showline: true,\n    showgrid: false,\n    showticklabels: true,\n    linecolor: &#x27;rgb(204,204,204)&#x27;,\n    linewidth: 2,\n    tickmode: &#x27;linear&#x27;,\n    ticks: &#x27;outside&#x27;,\n    tickcolor: &#x27;rgb(204,204,204)&#x27;,\n    tickwidth: 2,\n    ticklen: 5,\n    tickfont: {\n      family: &#x27;Arial&#x27;,\n      size: 12,\n      color: &#x27;rgb(82, 82, 82)&#x27;\n    }\n  },\n  yaxis: {\n    showgrid: false,\n    zeroline: false,\n    showline: false,\n    showticklabels: false\n  },\n  autosize: false,\n  margin: {\n    autoexpand: false,\n    l: 100,\n    r: 20,\n    t: 100\n  },\n  annotations: [\n    {\n      xref: &#x27;paper&#x27;,\n      yref: &#x27;paper&#x27;,\n      x: 0.0,\n      y: 1.05,\n      xanchor: &#x27;left&#x27;,\n      yanchor: &#x27;bottom&#x27;,\n      text: &#x27;Main Source for News&#x27;,\n      font:{\n        family: &#x27;Arial&#x27;,\n        size: 30,\n        color: &#x27;rgb(37,37,37)&#x27;\n      },\n      showarrow: false\n    },\n    {\n      xref: &#x27;paper&#x27;,\n      yref: &#x27;paper&#x27;,\n      x: 0.5,\n      y: -0.1,\n      xanchor: &#x27;center&#x27;,\n      yanchor: &#x27;top&#x27;,\n      text: &#x27;Source: Pew Research Center &amp; Storytelling with data&#x27;,\n      showarrow: false,\n      font: {\n        family: &#x27;Arial&#x27;,\n        size: 12,\n        color: &#x27;rgb(150,150,150)&#x27;\n      }\n    }\n  ]\n};\n\nfor( var i = 0 ; i &lt; xData.length ; i++ ) {\n  var result = {\n    xref: &#x27;paper&#x27;,\n    x: 0.05,\n    y: yData[i][0],\n    xanchor: &#x27;right&#x27;,\n    yanchor: &#x27;middle&#x27;,\n    text: labels[i] + &#x27; &#x27; + yData[i][0] +&#x27;%&#x27;,\n    showarrow: false,\n    font: {\n      family: &#x27;Arial&#x27;,\n      size: 16,\n      color: &#x27;black&#x27;\n    }\n  };\n  var result2 = {\n    xref: &#x27;paper&#x27;,\n    x: 0.95,\n    y: yData[i][11],\n    xanchor: &#x27;left&#x27;,\n    yanchor: &#x27;middle&#x27;,\n    text: yData[i][11] +&#x27;%&#x27;,\n    font: {\n      family: &#x27;Arial&#x27;,\n      size: 16,\n      color: &#x27;black&#x27;\n    },\n    showarrow: false\n  };\n\n  layout.annotations.push(result, result2);\n}\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_10"></div>
+              <script>
+                var xData = [
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+  [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013]
+];
+
+var yData = [
+  [74, 82, 80, 74, 73, 72, 74, 70, 70, 66, 66, 69],
+  [45, 42, 50, 46, 36, 36, 34, 35, 32, 31, 31, 28],
+  [13, 14, 20, 24, 20, 24, 24, 40, 35, 41, 43, 50],
+  [18, 21, 18, 21, 16, 14, 13, 18, 17, 16, 19, 23]
+];
+
+var colors = ['rgba(67,67,67,1)', 'rgba(115,115,115,1)', 'rgba(49,130,189, 1)',
+  'rgba(189,189,189,1)'
+];
+
+var lineSize = [2, 2, 4, 2];
+
+var labels = ['Television', 'Newspaper', 'Internet', 'Radio'];
+
+var data = [];
+
+for ( var i = 0 ; i < xData.length ; i++ ) {
+  var result = {
+    x: xData[i],
+    y: yData[i],
+    type: 'scatter',
+    mode: 'lines',
+    line: {
+      color: colors[i],
+      width: lineSize[i]
+    }
+  };
+  var result2 = {
+    x: [xData[i][0], xData[i][11]],
+    y: [yData[i][0], yData[i][11]],
+    type: 'scatter',
+    mode: 'markers',
+    marker: {
+      color: colors[i],
+      size: 12
+    }
+  };
+  data.push(result, result2);
+}
+
+var layout = {
+  showlegend: false,
+  height: 600,
+  width: 600,
+  xaxis: {
+    showline: true,
+    showgrid: false,
+    showticklabels: true,
+    linecolor: 'rgb(204,204,204)',
+    linewidth: 2,
+    tickmode: 'linear',
+    ticks: 'outside',
+    tickcolor: 'rgb(204,204,204)',
+    tickwidth: 2,
+    ticklen: 5,
+    tickfont: {
+      family: 'Arial',
+      size: 12,
+      color: 'rgb(82, 82, 82)'
+    }
+  },
+  yaxis: {
+    showgrid: false,
+    zeroline: false,
+    showline: false,
+    showticklabels: false
+  },
+  autosize: false,
+  margin: {
+    autoexpand: false,
+    l: 100,
+    r: 20,
+    t: 100
+  },
+  annotations: [
+    {
+      xref: 'paper',
+      yref: 'paper',
+      x: 0.0,
+      y: 1.05,
+      xanchor: 'left',
+      yanchor: 'bottom',
+      text: 'Main Source for News',
+      font:{
+        family: 'Arial',
+        size: 30,
+        color: 'rgb(37,37,37)'
+      },
+      showarrow: false
+    },
+    {
+      xref: 'paper',
+      yref: 'paper',
+      x: 0.5,
+      y: -0.1,
+      xanchor: 'center',
+      yanchor: 'top',
+      text: 'Source: Pew Research Center & Storytelling with data',
+      showarrow: false,
+      font: {
+        family: 'Arial',
+        size: 12,
+        color: 'rgb(150,150,150)'
+      }
+    }
+  ]
+};
+
+for( var i = 0 ; i < xData.length ; i++ ) {
+  var result = {
+    xref: 'paper',
+    x: 0.05,
+    y: yData[i][0],
+    xanchor: 'right',
+    yanchor: 'middle',
+    text: labels[i] + ' ' + yData[i][0] +'%',
+    showarrow: false,
+    font: {
+      family: 'Arial',
+      size: 16,
+      color: 'black'
+    }
+  };
+  var result2 = {
+    xref: 'paper',
+    x: 0.95,
+    y: yData[i][11],
+    xanchor: 'left',
+    yanchor: 'middle',
+    text: yData[i][11] +'%',
+    font: {
+      family: 'Arial',
+      size: 16,
+      color: 'black'
+    },
+    showarrow: false
+  };
+
+  layout.annotations.push(result, result2);
+}
+
+Plotly.newPlot('myDiv_10', data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

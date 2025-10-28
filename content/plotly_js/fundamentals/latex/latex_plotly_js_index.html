@@ -1,0 +1,15 @@
+---
+description: How to add LaTeX to javascript D3.js-based graphs.
+display_as: file_settings
+language: plotly_js
+layout: base
+name: LaTeX
+order: 10
+page_type: u-guide
+permalink: javascript/LaTeX/
+redirect_from: javascript-graphing-library/LaTeX/
+thumbnail: thumbnail/venn.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","latex" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

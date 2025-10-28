@@ -1,0 +1,24 @@
+---
+name: Adding Hover Text to Data in Line and Scatter Plots
+language: plotly_js
+suite: hover
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: [0, .5, 1, 1.5, 2],
+    y: [1, 3, 2, 4, 2],
+    mode: 'markers',
+    marker: {size:16},
+    text: ['Text A', 'Text B', 'Text C', 'Text D', 'Text E'],
+    type: 'scatter'
+  }
+];
+var layout = {
+  title: {
+      text: 'Hover over the points to see the text'
+  }
+};
+Plotly.newPlot('myDiv', data, layout);

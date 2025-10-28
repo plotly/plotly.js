@@ -1,0 +1,27 @@
+---
+name: Afterplot Event
+plot_url: https://codepen.io/plotly/embed/YeGGdy/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: events
+order: 10.2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The event handler: `plotly_afterplot`, can be used to trigger an event each time a chart is plotted. This also includes re-plotting after the restyling or relayout of a plot.
+  Users also have the option of adding a post-plot handler to the plot call with the following syntax: `Plotly.newPlot('myDiv', data, layout, config).then(postPlotHandler);`
+
+  The simple example below logs a console message each time the chart is plotted. Zoom or pan on the graph below to trigger the `plotly_afterplot` handler.
+---
+var myPlot = document.getElementById('myDiv'),
+    N = 20,
+    x = d3.range(N),
+    y = d3.range(N).map( d3.random.normal() ),
+    data = [{x:x, y:y, type:'scatter',
+            mode:'markers', marker:{size:14}}
+           ];
+
+Plotly.newPlot('myDiv', data);
+
+myPlot.on('plotly_afterplot', function(){
+    console.log('done plotting');
+});

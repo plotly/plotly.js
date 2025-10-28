@@ -1,0 +1,5270 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://plotly.com/javascript/examples/scatter-tile-maps/">
+      
+      
+        <link rel="prev" href="../scatter-plots-on-maps/">
+      
+      
+        <link rel="next" href="../choropleth-maps/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Scatter Plots on Tile Maps - Plotly.js Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra_css.css">
+    
+      <link rel="stylesheet" href="https://docs.plotly.com/css/plotly-style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scatter-tile-maps" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Plotly.js Docs" class="md-header__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Plotly.js Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scatter Plots on Tile Maps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+
+  <!-- Main navigation -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--primary"
+      data-md-component="sidebar"
+      data-md-type="navigation"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Plotly.js Docs" class="md-nav__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Plotly.js Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plotlyjs-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Event Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Fundamentals
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Fundamentals
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../responsive-fluid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Responsive / Fluid Layouts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uirevision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    uirevision in Plotly.react
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    React Plotly.js
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://dash.plotly.com/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Analytical Apps with Dash
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../colorway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Colorway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-hover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Hover Options
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-surface-lighting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Lighting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizontal-legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hover-text-and-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Text and Formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../figure-labels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting the Title, Legend Entries, and Axis Titles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layout-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Layout Template Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setting-graph-size/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting Graph Size
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tick-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatting Ticks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Shapes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../texttemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-and-annotations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Annotations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../font/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Font Styling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiple-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Basic Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../line-and-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../line-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Line Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pie-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pie Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bubble-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dot-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dot Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../insets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inset Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizontal-bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sunburst-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sunburst Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sankey-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sankey Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treemaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Treemap Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../graphing-multiple-chart-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Chart Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../webgl-vs-svg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    WebGL vs SVG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Statistical Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Statistical Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Box Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histograms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../continuous-error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Continuous Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2D-Histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spc-control-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SPC Control Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Violin Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel-categories-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Categories Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatterplot Matrix
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2d-histogram-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histogram Contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Scientific Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Scientific Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contour-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contour Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ternary-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parallel-coordinates-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Coordinates Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../log-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Log Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wind-rose-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wind Rose and Polar Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ternary-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary contours
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../radar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Radar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Scatter Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Contour Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../polar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Financial Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Financial Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waterfall-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Waterfall Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../candlestick-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Candlestick Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnel-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Funnel Chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../time-series/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Time Series and Date Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlc-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OHLC Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gauge-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gauge Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bullet-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bullet Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Maps
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Maps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-map-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Map Layers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-density-heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Density Heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tile-county-choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lines-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lines on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bubble-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter-plots-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Tile Maps
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choropleth-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-on-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3D Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            3D Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-scatter-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ribbon-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ribbon Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-surface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Mesh Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-line-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Line Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trisurf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trisurf Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-point-clustering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cluster Graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cone-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cone Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamtube-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Streamtube Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-isosurface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Isosurface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3d-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Multiple Axes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mixed-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mixed Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Table and Chart Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Chart Events
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Chart Events
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../click-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Click Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hover-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zoom-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disable-zoom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Disable Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Animations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Animations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gapminder-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adding Sliders to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../filled-area-animation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled-Area Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../map-animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Options
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Options
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ajax-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plot CSV Data from an Ajax Call
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streaming
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remove-trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Remove Trace from Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LaTeX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LaTeX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Controls
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            Controls
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dropdowns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dropdown Menus
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-buttons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Buttons
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sliders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sliders
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lasso-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lasso Selection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../range-slider/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Range Slider and Selector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/bar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/barpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    barpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/box/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/candlestick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/carpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choroplethmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/choroplethmapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contourcarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contourcarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/densitymap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/densitymapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/funnel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/funnelarea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnelarea
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/heatmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/histogram2dcontour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2dcontour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/icicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    icicle
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/isosurface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    isosurface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/mesh3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mesh3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ohlc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/parcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/parcoords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcoords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/pie/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/sankey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatter3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattercarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattercarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattergeo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergeo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattergl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattermap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattermapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterpolargl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolargl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scattersmith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattersmith
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scatterternary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterternary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/streamtube/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/sunburst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/treemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/volume/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    volume
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/waterfall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+
+        <div class="nav-bottom-image">
+            <a href="https://plotly.com/webinars/data-apps-publishing-playbook/?utm_medium=graphing_libraries&utm_campaign=plotly_publishing_playbook&utm_content=sidebar" target="_blank">
+                <img src="https://images.prismic.io/plotly-marketing-website-2/aNMW2J5xUNkB1CWg_PlotlyPublishingPlaybook.jpg?auto=format,compress" alt="plotly-studio-banner" type="image/avif">
+            </a>
+        </div>
+      </div>
+    </div>
+  
+
+  <!-- Table of contents -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--secondary"
+      data-md-component="sidebar"
+      data-md-type="toc"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="scatter-tile-maps">scatter-tile-maps</h1>
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="basic-example">
+        <a class="no_underline plot-blue" href="#basic-example">basic-example</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+  type:&#x27;scattermap&#x27;,
+  lat:[&#x27;45.5017&#x27;],
+  lon:[&#x27;-73.5673&#x27;],
+  mode:&#x27;markers&#x27;,
+  marker: {
+    size:14
+  },
+  text:[&#x27;Montreal&#x27;]
+}]
+
+var layout = {
+  autosize: true,
+  hovermode:&#x27;closest&#x27;,
+  map: {
+    bearing:0,
+    center: {
+      lat:45,
+      lon:-73
+    },
+    pitch:0,
+    zoom:5
+  },
+}
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout)</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Basic Example&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n  type:&#x27;scattermap&#x27;,\n  lat:[&#x27;45.5017&#x27;],\n  lon:[&#x27;-73.5673&#x27;],\n  mode:&#x27;markers&#x27;,\n  marker: {\n    size:14\n  },\n  text:[&#x27;Montreal&#x27;]\n}]\n\nvar layout = {\n  autosize: true,\n  hovermode:&#x27;closest&#x27;,\n  map: {\n    bearing:0,\n    center: {\n      lat:45,\n      lon:-73\n    },\n    pitch:0,\n    zoom:5\n  },\n}\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout)&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_0"></div>
+              <script>
+                var data = [{
+  type:'scattermap',
+  lat:['45.5017'],
+  lon:['-73.5673'],
+  mode:'markers',
+  marker: {
+    size:14
+  },
+  text:['Montreal']
+}]
+
+var layout = {
+  autosize: true,
+  hovermode:'closest',
+  map: {
+    bearing:0,
+    center: {
+      lat:45,
+      lon:-73
+    },
+    pitch:0,
+    zoom:5
+  },
+}
+
+Plotly.newPlot('myDiv_0', data, layout)
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="multiple-markers">
+        <a class="no_underline plot-blue" href="#multiple-markers">multiple-markers</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">d3.csv(&#x27;https://raw.githubusercontent.com/bcdunbar/datasets/master/meteorites_subset.csv&#x27;, function(err, rows){
+
+  var classArray = unpack(rows, &#x27;class&#x27;);
+  var classes = [...new Set(classArray)];
+
+  function unpack(rows, key) {
+    return rows.map(function(row) { return row[key]; });
+  }
+
+  var data = classes.map(function(classes) {
+    var rowsFiltered = rows.filter(function(row) {
+        return (row.class === classes);
+    });
+    return {
+       type: &#x27;scattermap&#x27;,
+       name: classes,
+       lat: unpack(rowsFiltered, &#x27;reclat&#x27;),
+       lon: unpack(rowsFiltered, &#x27;reclong&#x27;)
+    };
+  });
+
+  var layout = {
+     title: {text: &#x27;Meteorite Landing Locations&#x27;},
+     font: {
+         color: &#x27;white&#x27;
+     },
+    dragmode: &#x27;zoom&#x27;,
+    map: {
+      center: {
+        lat: 38.03697222,
+        lon: -90.70916722
+      },
+      domain: {
+        x: [0, 1],
+        y: [0, 1]
+      },
+      style: &#x27;dark&#x27;,
+      zoom: 1
+    },
+    margin: {
+      r: 20,
+      t: 40,
+      b: 20,
+      l: 20,
+      pad: 0
+    },
+    paper_bgcolor: &#x27;#191A1A&#x27;,
+    plot_bgcolor: &#x27;#191A1A&#x27;,
+    showlegend: true,
+     annotations: [{
+         x: 0,
+       y: 0,
+       xref: &#x27;paper&#x27;,
+       yref: &#x27;paper&#x27;,
+         text: &#x27;Source: &lt;a href=&quot;https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh&quot; style=&quot;color: rgb(255,255,255)&quot;&gt;NASA&lt;/a&gt;&#x27;,
+         showarrow: false
+     }]
+  };
+
+  Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);
+});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Multiple Markers&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+    &lt;script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;d3.csv(&#x27;https://raw.githubusercontent.com/bcdunbar/datasets/master/meteorites_subset.csv&#x27;, function(err, rows){\n\n  var classArray = unpack(rows, &#x27;class&#x27;);\n  var classes = [...new Set(classArray)];\n\n  function unpack(rows, key) {\n    return rows.map(function(row) { return row[key]; });\n  }\n\n  var data = classes.map(function(classes) {\n    var rowsFiltered = rows.filter(function(row) {\n        return (row.class === classes);\n    });\n    return {\n       type: &#x27;scattermap&#x27;,\n       name: classes,\n       lat: unpack(rowsFiltered, &#x27;reclat&#x27;),\n       lon: unpack(rowsFiltered, &#x27;reclong&#x27;)\n    };\n  });\n\n  var layout = {\n\t title: {text: &#x27;Meteorite Landing Locations&#x27;},\n\t font: {\n\t\t color: &#x27;white&#x27;\n\t },\n    dragmode: &#x27;zoom&#x27;,\n    map: {\n      center: {\n        lat: 38.03697222,\n        lon: -90.70916722\n      },\n      domain: {\n        x: [0, 1],\n        y: [0, 1]\n      },\n      style: &#x27;dark&#x27;,\n      zoom: 1\n    },\n    margin: {\n      r: 20,\n      t: 40,\n      b: 20,\n      l: 20,\n      pad: 0\n    },\n    paper_bgcolor: &#x27;#191A1A&#x27;,\n    plot_bgcolor: &#x27;#191A1A&#x27;,\n    showlegend: true,\n\t annotations: [{\n\t\t x: 0,\n       y: 0,\n       xref: &#x27;paper&#x27;,\n       yref: &#x27;paper&#x27;,\n\t\t text: &#x27;Source: &lt;a href=\&quot;https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh\&quot; style=\&quot;color: rgb(255,255,255)\&quot;&gt;NASA&lt;/a&gt;&#x27;,\n\t\t showarrow: false\n\t }]\n  };\n\n  Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);\n});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_1"></div>
+              <script>
+                d3.csv('https://raw.githubusercontent.com/bcdunbar/datasets/master/meteorites_subset.csv', function(err, rows){
+
+  var classArray = unpack(rows, 'class');
+  var classes = [...new Set(classArray)];
+
+  function unpack(rows, key) {
+    return rows.map(function(row) { return row[key]; });
+  }
+
+  var data = classes.map(function(classes) {
+    var rowsFiltered = rows.filter(function(row) {
+        return (row.class === classes);
+    });
+    return {
+       type: 'scattermap',
+       name: classes,
+       lat: unpack(rowsFiltered, 'reclat'),
+       lon: unpack(rowsFiltered, 'reclong')
+    };
+  });
+
+  var layout = {
+     title: {text: 'Meteorite Landing Locations'},
+     font: {
+         color: 'white'
+     },
+    dragmode: 'zoom',
+    map: {
+      center: {
+        lat: 38.03697222,
+        lon: -90.70916722
+      },
+      domain: {
+        x: [0, 1],
+        y: [0, 1]
+      },
+      style: 'dark',
+      zoom: 1
+    },
+    margin: {
+      r: 20,
+      t: 40,
+      b: 20,
+      l: 20,
+      pad: 0
+    },
+    paper_bgcolor: '#191A1A',
+    plot_bgcolor: '#191A1A',
+    showlegend: true,
+     annotations: [{
+         x: 0,
+       y: 0,
+       xref: 'paper',
+       yref: 'paper',
+         text: 'Source: <a href="https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh" style="color: rgb(255,255,255)">NASA</a>',
+         showarrow: false
+     }]
+  };
+
+  Plotly.newPlot('myDiv_1', data, layout);
+});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="adding-colorscale-to-maps">
+        <a class="no_underline plot-blue" href="#adding-colorscale-to-maps">adding-colorscale-to-maps</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">d3.csv(&#x27;https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv&#x27;, function(err, rows){
+      function unpack(rows, key) {
+          return rows.map(function(row) { return row[key]; });
+      }
+
+ scl = [[0, &#x27;rgb(150,0,90)&#x27;],[0.125, &#x27;rgb(0, 0, 200)&#x27;],[0.25,&#x27;rgb(0, 25, 255)&#x27;],[0.375,&#x27;rgb(0, 152, 255)&#x27;],[0.5,&#x27;rgb(44, 255, 150)&#x27;],[0.625,&#x27;rgb(151, 255, 0)&#x27;],[0.75,&#x27;rgb(255, 234, 0)&#x27;],[0.875,&#x27;rgb(255, 111, 0)&#x27;],[1,&#x27;rgb(255, 0, 0)&#x27;]];
+
+    var data = [{
+        type: &#x27;scattermap&#x27;,
+        mode: &#x27;markers&#x27;,
+        text: unpack(rows, &#x27;Globvalue&#x27;),
+        lon: unpack(rows, &#x27;Lon&#x27;),
+        lat: unpack(rows, &#x27;Lat&#x27;),
+        marker: {
+          color: unpack(rows, &#x27;Globvalue&#x27;),
+          colorscale: scl,
+          cmin: 0,
+          cmax: 1.4,
+          reversescale: true,
+          opacity: 0.5,
+          size: 3,
+          colorbar:{
+            thickness: 10,
+            title: {side:
+              &#x27;right&#x27;
+            },
+            outlinecolor: &#x27;rgba(68,68,68,0)&#x27;,
+            ticks: &#x27;outside&#x27;,
+            ticklen: 3,
+            shoticksuffix: &#x27;last&#x27;,
+            ticksuffix: &#x27;inches&#x27;,
+            dtick: 0.1
+          }
+        },
+        name: &#x27;NA Precipitation&#x27;
+    }];
+
+    layout = {
+      dragmode: &#x27;zoom&#x27;,
+      map: {
+        center: {
+          lat: 38.03697222,
+          lon: -90.70916722
+        },
+        domain: {
+          x: [0, 1],
+          y: [0, 1]
+        },
+        style: &#x27;light&#x27;,
+        zoom: 3
+      },
+      margin: {
+        r: 0,
+        t: 0,
+        b: 0,
+        l: 0,
+        pad: 0
+      },
+      showlegend: false
+   };
+
+    Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);
+  });</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Adding Colorscale to Maps&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+    &lt;script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;d3.csv(&#x27;https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv&#x27;, function(err, rows){\n      function unpack(rows, key) {\n          return rows.map(function(row) { return row[key]; });\n      }\n\n scl = [[0, &#x27;rgb(150,0,90)&#x27;],[0.125, &#x27;rgb(0, 0, 200)&#x27;],[0.25,&#x27;rgb(0, 25, 255)&#x27;],[0.375,&#x27;rgb(0, 152, 255)&#x27;],[0.5,&#x27;rgb(44, 255, 150)&#x27;],[0.625,&#x27;rgb(151, 255, 0)&#x27;],[0.75,&#x27;rgb(255, 234, 0)&#x27;],[0.875,&#x27;rgb(255, 111, 0)&#x27;],[1,&#x27;rgb(255, 0, 0)&#x27;]];\n\n    var data = [{\n        type: &#x27;scattermap&#x27;,\n        mode: &#x27;markers&#x27;,\n        text: unpack(rows, &#x27;Globvalue&#x27;),\n        lon: unpack(rows, &#x27;Lon&#x27;),\n        lat: unpack(rows, &#x27;Lat&#x27;),\n        marker: {\n          color: unpack(rows, &#x27;Globvalue&#x27;),\n          colorscale: scl,\n          cmin: 0,\n          cmax: 1.4,\n          reversescale: true,\n          opacity: 0.5,\n          size: 3,\n          colorbar:{\n            thickness: 10,\n            title: {side:\n              &#x27;right&#x27;\n            },\n            outlinecolor: &#x27;rgba(68,68,68,0)&#x27;,\n            ticks: &#x27;outside&#x27;,\n            ticklen: 3,\n            shoticksuffix: &#x27;last&#x27;,\n            ticksuffix: &#x27;inches&#x27;,\n            dtick: 0.1\n          }\n        },\n        name: &#x27;NA Precipitation&#x27;\n    }];\n\n    layout = {\n      dragmode: &#x27;zoom&#x27;,\n      map: {\n        center: {\n          lat: 38.03697222,\n          lon: -90.70916722\n        },\n        domain: {\n          x: [0, 1],\n          y: [0, 1]\n        },\n        style: &#x27;light&#x27;,\n        zoom: 3\n      },\n      margin: {\n        r: 0,\n        t: 0,\n        b: 0,\n        l: 0,\n        pad: 0\n      },\n      showlegend: false\n   };\n\n    Plotly.newPlot(&#x27;myDiv&#x27;, data, layout);\n  });&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_2"></div>
+              <script>
+                d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv', function(err, rows){
+      function unpack(rows, key) {
+          return rows.map(function(row) { return row[key]; });
+      }
+
+ scl = [[0, 'rgb(150,0,90)'],[0.125, 'rgb(0, 0, 200)'],[0.25,'rgb(0, 25, 255)'],[0.375,'rgb(0, 152, 255)'],[0.5,'rgb(44, 255, 150)'],[0.625,'rgb(151, 255, 0)'],[0.75,'rgb(255, 234, 0)'],[0.875,'rgb(255, 111, 0)'],[1,'rgb(255, 0, 0)']];
+
+    var data = [{
+        type: 'scattermap',
+        mode: 'markers',
+        text: unpack(rows, 'Globvalue'),
+        lon: unpack(rows, 'Lon'),
+        lat: unpack(rows, 'Lat'),
+        marker: {
+          color: unpack(rows, 'Globvalue'),
+          colorscale: scl,
+          cmin: 0,
+          cmax: 1.4,
+          reversescale: true,
+          opacity: 0.5,
+          size: 3,
+          colorbar:{
+            thickness: 10,
+            title: {side:
+              'right'
+            },
+            outlinecolor: 'rgba(68,68,68,0)',
+            ticks: 'outside',
+            ticklen: 3,
+            shoticksuffix: 'last',
+            ticksuffix: 'inches',
+            dtick: 0.1
+          }
+        },
+        name: 'NA Precipitation'
+    }];
+
+    layout = {
+      dragmode: 'zoom',
+      map: {
+        center: {
+          lat: 38.03697222,
+          lon: -90.70916722
+        },
+        domain: {
+          x: [0, 1],
+          y: [0, 1]
+        },
+        style: 'light',
+        zoom: 3
+      },
+      margin: {
+        r: 0,
+        t: 0,
+        b: 0,
+        l: 0,
+        pad: 0
+      },
+      showlegend: false
+   };
+
+    Plotly.newPlot('myDiv_2', data, layout);
+  });
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="adding-lines-to-maps">
+        <a class="no_underline plot-blue" href="#adding-lines-to-maps">adding-lines-to-maps</a>
+      </h3>
+    <div class="row">
+
+          <div class="z-depth-1">
+        <pre><code class="javascript">d3.csv(&#x27;https://raw.githubusercontent.com/plotly/datasets/c34aaa0b1b3cddad335173cb7bc0181897201ee6/2011_february_aa_flight_paths.csv&#x27;, function(err, rows){
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });}
+
+    function getMaxOfArray(numArray) {
+        return Math.max.apply(null, numArray);
+    }
+
+    var data = [];
+    var count = unpack(rows, &#x27;cnt&#x27;);
+    var startLongitude = unpack(rows, &#x27;start_lon&#x27;);
+    var endLongitude = unpack(rows, &#x27;end_lon&#x27;);
+    var startLat = unpack(rows, &#x27;start_lat&#x27;);
+    var endLat = unpack(rows, &#x27;end_lat&#x27;);
+
+    for ( var i = 0 ; i &lt; count.length; i++ ) {
+        var opacityValue = count[i]/getMaxOfArray(count);
+
+        var result = {
+            type: &#x27;scattermap&#x27;,
+            lon: [ startLongitude[i] , endLongitude[i] ],
+            lat: [ startLat[i] , endLat[i] ],
+            mode: &#x27;lines&#x27;,
+            line: {
+                width: 1,
+                color: &#x27;red&#x27;
+            },
+            opacity: opacityValue
+        };
+
+        data.push(result);
+    };
+
+    layout = {
+      dragmode: &#x27;zoom&#x27;,
+      map: {
+        center: {
+          lat: 38.03697222,
+          lon: -90.70916722
+        },
+        domain: {
+          x: [0, 1],
+          y: [0, 1]
+        },
+        style: &#x27;dark&#x27;,
+        zoom: 2
+      },
+      margin: {
+        r: 0,
+        t: 0,
+        b: 0,
+        l: 0,
+        pad: 0
+      },
+      paper_bgcolor: &#x27;#191A1A&#x27;,
+      plot_bgcolor: &#x27;#191A1A&#x27;,
+      showlegend: false
+   };
+
+  Plotly.newPlot(&quot;myDiv&quot;, data, layout, {showLink: false});
+
+});</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Adding Lines to Maps&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+    &lt;script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;d3.csv(&#x27;https://raw.githubusercontent.com/plotly/datasets/c34aaa0b1b3cddad335173cb7bc0181897201ee6/2011_february_aa_flight_paths.csv&#x27;, function(err, rows){\n    function unpack(rows, key) {\n        return rows.map(function(row) { return row[key]; });}\n\n    function getMaxOfArray(numArray) {\n        return Math.max.apply(null, numArray);\n    }\n\n    var data = [];\n    var count = unpack(rows, &#x27;cnt&#x27;);\n    var startLongitude = unpack(rows, &#x27;start_lon&#x27;);\n    var endLongitude = unpack(rows, &#x27;end_lon&#x27;);\n    var startLat = unpack(rows, &#x27;start_lat&#x27;);\n    var endLat = unpack(rows, &#x27;end_lat&#x27;);\n\n    for ( var i = 0 ; i &lt; count.length; i++ ) {\n        var opacityValue = count[i]/getMaxOfArray(count);\n\n        var result = {\n            type: &#x27;scattermap&#x27;,\n            lon: [ startLongitude[i] , endLongitude[i] ],\n            lat: [ startLat[i] , endLat[i] ],\n            mode: &#x27;lines&#x27;,\n            line: {\n                width: 1,\n                color: &#x27;red&#x27;\n            },\n            opacity: opacityValue\n        };\n\n        data.push(result);\n    };\n\n    layout = {\n      dragmode: &#x27;zoom&#x27;,\n      map: {\n        center: {\n          lat: 38.03697222,\n          lon: -90.70916722\n        },\n        domain: {\n          x: [0, 1],\n          y: [0, 1]\n        },\n        style: &#x27;dark&#x27;,\n        zoom: 2\n      },\n      margin: {\n        r: 0,\n        t: 0,\n        b: 0,\n        l: 0,\n        pad: 0\n      },\n      paper_bgcolor: &#x27;#191A1A&#x27;,\n      plot_bgcolor: &#x27;#191A1A&#x27;,\n      showlegend: false\n   };\n\n  Plotly.newPlot(\&quot;myDiv\&quot;, data, layout, {showLink: false});\n\n});&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_3"></div>
+              <script>
+                d3.csv('https://raw.githubusercontent.com/plotly/datasets/c34aaa0b1b3cddad335173cb7bc0181897201ee6/2011_february_aa_flight_paths.csv', function(err, rows){
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });}
+
+    function getMaxOfArray(numArray) {
+        return Math.max.apply(null, numArray);
+    }
+
+    var data = [];
+    var count = unpack(rows, 'cnt');
+    var startLongitude = unpack(rows, 'start_lon');
+    var endLongitude = unpack(rows, 'end_lon');
+    var startLat = unpack(rows, 'start_lat');
+    var endLat = unpack(rows, 'end_lat');
+
+    for ( var i = 0 ; i < count.length; i++ ) {
+        var opacityValue = count[i]/getMaxOfArray(count);
+
+        var result = {
+            type: 'scattermap',
+            lon: [ startLongitude[i] , endLongitude[i] ],
+            lat: [ startLat[i] , endLat[i] ],
+            mode: 'lines',
+            line: {
+                width: 1,
+                color: 'red'
+            },
+            opacity: opacityValue
+        };
+
+        data.push(result);
+    };
+
+    layout = {
+      dragmode: 'zoom',
+      map: {
+        center: {
+          lat: 38.03697222,
+          lon: -90.70916722
+        },
+        domain: {
+          x: [0, 1],
+          y: [0, 1]
+        },
+        style: 'dark',
+        zoom: 2
+      },
+      margin: {
+        r: 0,
+        t: 0,
+        b: 0,
+        l: 0,
+        pad: 0
+      },
+      paper_bgcolor: '#191A1A',
+      plot_bgcolor: '#191A1A',
+      showlegend: false
+   };
+
+  Plotly.newPlot("myDiv_3", data, layout, {showLink: false});
+
+});
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="set-marker-symbols">
+        <a class="no_underline plot-blue" href="#set-marker-symbols">set-marker-symbols</a>
+      </h3>
+    <div class="row">
+    <p>This example uses <a href="https://plotly.com/javascript/reference/scattermap/#scattermap-marker-symbol">symbol attribute</a> to set the marker symbol.</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [
+    {
+        type: &quot;scattermap&quot;,
+        mode: &quot;markers+text+lines&quot;,
+        lon: [-75, -80, -50],
+        lat: [45, 20, -20],
+        marker: { size: 20, symbol: [&quot;bus&quot;, &quot;harbor&quot;, &quot;airport&quot;] },
+        text: [&quot;Bus&quot;, &quot;Harbor&quot;, &quot;Airport&quot;],
+        textposition: &quot;bottom right&quot;
+    }
+];
+
+var layout = {
+    map: { style: &quot;outdoors&quot;, zoom: 0.7 },
+    showlegend: false, height: 500, width: 700
+};
+
+Plotly.newPlot(&quot;myDiv&quot;, data, layout);</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Set Marker Symbols&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [\n\t{\n\t\ttype: \&quot;scattermap\&quot;,\n\t\tmode: \&quot;markers+text+lines\&quot;,\n\t\tlon: [-75, -80, -50],\n\t\tlat: [45, 20, -20],\n\t\tmarker: { size: 20, symbol: [\&quot;bus\&quot;, \&quot;harbor\&quot;, \&quot;airport\&quot;] },\n\t\ttext: [\&quot;Bus\&quot;, \&quot;Harbor\&quot;, \&quot;Airport\&quot;],\n\t\ttextposition: \&quot;bottom right\&quot;\n\t}\n];\n\nvar layout = {\n\tmap: { style: \&quot;outdoors\&quot;, zoom: 0.7 },\n\tshowlegend: false, height: 500, width: 700\n};\n\nPlotly.newPlot(\&quot;myDiv\&quot;, data, layout);&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_4"></div>
+              <script>
+                var data = [
+    {
+        type: "scattermap",
+        mode: "markers+text+lines",
+        lon: [-75, -80, -50],
+        lat: [45, 20, -20],
+        marker: { size: 20, symbol: ["bus", "harbor", "airport"] },
+        text: ["Bus", "Harbor", "Airport"],
+        textposition: "bottom right"
+    }
+];
+
+var layout = {
+    map: { style: "outdoors", zoom: 0.7 },
+    showlegend: false, height: 500, width: 700
+};
+
+Plotly.newPlot("myDiv_4", data, layout);
+              </script>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row auto-eg-padding">
+      <h3 id="basic-example-(mapbox)">
+        <a class="no_underline plot-blue" href="#basic-example-(mapbox)">basic-example-(mapbox)</a>
+      </h3>
+    <div class="row">
+    <p><strong>&gt; Mapbox traces are deprecated and may be removed in a future version of Plotly.js.</strong></p>
+<p>Earlier examples use traces that render with <a href="https://maplibre.org/maplibre-gl-js/docs/">Maplibre GL JS</a>.
+  These traces were introduced in Plotly.js 2.35.0 and replace Mapbox-based tile maps,
+  which are now deprecated. Here's one of the earlier examples using the Mapbox-based <code>choroplethmapbox</code> trace</p>
+          <div class="z-depth-1">
+        <pre><code class="javascript">var data = [{
+  type:&#x27;scattermapbox&#x27;,
+  lat:[&#x27;45.5017&#x27;],
+  lon:[&#x27;-73.5673&#x27;],
+  mode:&#x27;markers&#x27;,
+  marker: {
+    size:14
+  },
+  text:[&#x27;Montreal&#x27;]
+}]
+
+var layout = {
+  autosize: true,
+  hovermode:&#x27;closest&#x27;,
+  mapbox: {
+    bearing:0,
+    center: {
+      lat:45,
+      lon:-73
+    },
+    pitch:0,
+    zoom:5
+  },
+}
+
+Plotly.setPlotConfig({
+  mapboxAccessToken: &quot;your access token&quot;
+})
+
+Plotly.newPlot(&#x27;myDiv&#x27;, data, layout)</code></pre>
+      </div>
+
+
+              <form style="margin-bottom: 35px; font-weight: 'Open Sans', sans-serif;"
+                    action="https://codepen.io/pen/define" method="POST" target="_blank">
+                <input type="hidden" name="data"
+                  value="{&quot;title&quot;:&quot;Plotly.js Basic Example (Mapbox)&quot;,&quot;html&quot;:&quot;&lt;head&gt;
+    &lt;!-- Load plotly.js into the DOM --&gt;
+    &lt;script src='https://cdn.plot.ly/plotly-3.2.1.min.js'>&lt;/script&gt;
+&lt;/head>
+
+&lt;body&gt;
+    &lt;div id='myDiv'&gt;&lt;!-- Plotly chart will be drawn inside this DIV --&gt;&lt;/div&gt;
+&lt;/body&gt;&quot;,&quot;js&quot;:&quot;var data = [{\n  type:&#x27;scattermapbox&#x27;,\n  lat:[&#x27;45.5017&#x27;],\n  lon:[&#x27;-73.5673&#x27;],\n  mode:&#x27;markers&#x27;,\n  marker: {\n    size:14\n  },\n  text:[&#x27;Montreal&#x27;]\n}]\n\nvar layout = {\n  autosize: true,\n  hovermode:&#x27;closest&#x27;,\n  mapbox: {\n    bearing:0,\n    center: {\n      lat:45,\n      lon:-73\n    },\n    pitch:0,\n    zoom:5\n  },\n}\n\nPlotly.setPlotConfig({\n  mapboxAccessToken: \&quot;your access token\&quot;\n})\n\nPlotly.newPlot(&#x27;myDiv&#x27;, data, layout)&quot;}">
+                <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
+              </form>
+              <div style="max-width: 100%; margin: auto" id="myDiv_5"></div>
+              <script>
+                var data = [{
+  type:'scattermapbox',
+  lat:['45.5017'],
+  lon:['-73.5673'],
+  mode:'markers',
+  marker: {
+    size:14
+  },
+  text:['Montreal']
+}]
+
+var layout = {
+  autosize: true,
+  hovermode:'closest',
+  mapbox: {
+    bearing:0,
+    center: {
+      lat:45,
+      lon:-73
+    },
+    pitch:0,
+    zoom:5
+  },
+}
+
+Plotly.setPlotConfig({
+  mapboxAccessToken: "your access token"
+})
+
+Plotly.newPlot('myDiv_5', data, layout)
+              </script>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

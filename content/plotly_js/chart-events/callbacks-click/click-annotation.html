@@ -1,0 +1,44 @@
+---
+name: Create annotation on click event
+plot_url: https://codepen.io/plotly/embed/Kzjamd/?height=465&theme-id=15263&default-tab=result
+arrangement: horizontal
+language: plotly_js
+suite: click-events
+sitemap: false
+order: 2
+---
+
+var myPlot = document.getElementById('myDiv'),
+    N = 100,
+    x = d3.range(N),
+    y1 = d3.range(N).map( d3.random.normal() ),
+    y2 = d3.range(N).map( d3.random.normal(-2) ),
+    y3 = d3.range(N).map( d3.random.normal(2) ),
+    trace1 = { x:x, y:y1, type:'scatter', mode:'lines', name:'Jeff' },
+    trace2 = { x:x, y:y2, type:'scatter', mode:'lines', name:'Terren' },
+    trace3 = { x:x, y:y3, type:'scatter', mode:'lines', name:'Arthur' },
+    data = [ trace1, trace2, trace3 ],
+    layout = {
+        hovermode:'closest',
+        title: {text: 'Click on Points to add an Annotation on it'}
+     };
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_click', function(data){
+    var pts = '';
+    for(var i=0; i < data.points.length; i++){
+        annotate_text = 'x = '+data.points[i].x +
+                      'y = '+data.points[i].y.toPrecision(4);
+
+        annotation = {
+          text: annotate_text,
+          x: data.points[i].x,
+          y: parseFloat(data.points[i].y.toPrecision(4))
+        }
+
+        annotations = self.layout.annotations || [];
+        annotations.push(annotation);
+        Plotly.relayout('myDiv',{annotations: annotations})
+    }
+});

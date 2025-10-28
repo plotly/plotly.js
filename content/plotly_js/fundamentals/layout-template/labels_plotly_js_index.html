@@ -1,0 +1,14 @@
+---
+description: Plotly's template attribute and how to use it with Container arrays.
+display_as: file_settings
+language: plotly_js
+layout: base
+name: Layout Template Examples
+order: 19
+page_type: u-guide
+permalink: javascript/layout-template/
+thumbnail: thumbnail/plotly-express.png
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","layout_template" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

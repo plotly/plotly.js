@@ -1,0 +1,16 @@
+---
+description: How to make D3.js-based line and scatter plots in JavaScript. Examples
+  of basic and colored line and scatter plots.
+display_as: basic
+language: plotly_js
+layout: base
+name: Scatter Plots
+order: 1
+page_type: example_index
+permalink: javascript/line-and-scatter/
+redirect_from: javascript-graphing-library/line-and-scatter/
+thumbnail: thumbnail/line-and-scatter.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","line_and_scatter" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

@@ -1,0 +1,63 @@
+---
+permalink: /javascript/reference/index/
+layout: langindex
+page_type: reference
+language: plotly_js
+name: Reference Index
+description: Figure attribute reference for Plotly's JavaScript open-source graphing library.
+redirect_from: /javascript-graphing-library/reference/
+---
+<h2>JavaScript Figure Reference</h2>
+
+<br />
+<p>The pages linked in the sidebar together form the exhaustive reference for all of the attributes in the core figure data structure
+that the <code>plotly</code> library operates on. They are automatically-generated from the
+ <a href="https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plot-schema.json">machine-readable Plotly.js schema reference</a>.</p>
+
+<h3>How are Plotly attributes organized?</h3>
+    <div class="row">
+        <p>
+            <code>plotly.js</code> charts are described declaratively as JSON objects. Every aspect of a plotly chart (the colors, the grids, the data, and so on) has a corresponding JSON attribute. This page contains an extensive list of these attributes.<br><br>
+
+            Plotly's graph description places attributes into two categories: traces (objects that describe a single series of data in a graph) and layout (attributes that apply to the rest of the chart, like the <code>title</code>, <code>xaxis</code>, or <code>annotations</code>). Traces are categorized by chart type (e.g. <code>scatter</code>, <code>heatmap</code>).<br><br>
+
+            Here is a simple example of a plotly chart inlined with links to each attribute's reference section.
+
+    <pre>
+    data = [
+        {
+            type: 'scatter',  // all "scatter" attributes: <a href="#scatter">https://plotly.com/javascript/reference/#scatter</a>
+            x: [1, 2, 3],     // more about "x": <a href="#scatter-x">#scatter-x</a>
+            y: [3, 1, 6],     // <a href="#scatter-y">#scatter-y</a>
+            marker: {         // marker is an object, valid marker keys: <a href="#scatter-marker">#scatter-marker</a>
+                color: 'rgb(16, 32, 77)' // more about "marker.color": <a href="#scatter-marker-color">#scatter-marker-color</a>
+            }
+        },
+        {
+            type: 'bar',      // all "bar" chart attributes: <a href="#bar">#bar</a>
+            x: [1, 2, 3],     // more about "x": <a href="#bar-x">#bar-x</a>
+            y: [3, 1, 6],     // <a href="#bar-y">#bar-y</a>
+            name: 'bar chart example' // <a href="#bar-name">#bar-name</a>
+        }
+    ];
+
+    layout = {                     // all "layout" attributes: <a href="#layout">#layout</a>
+        title: 'simple example',  // more about "layout.title": <a href="#layout-title">#layout-title</a>
+        xaxis: {                  // all "layout.xaxis" attributes: <a href="#layout-xaxis">#layout-xaxis</a>
+            title: 'time'         // more about "layout.xaxis.title": <a href="#layout-xaxis-title">#layout-xaxis-title</a>
+        },
+        annotations: [            // all "annotation" attributes: <a href="#layout-annotations">#layout-annotations</a>
+            {
+                text: 'simple annotation',    // <a href="#layout-annotations-text">#layout-annotations-text</a>
+                x: 0,                         // <a href="#layout-annotations-x">#layout-annotations-x</a>
+                xref: 'paper',                // <a href="#layout-annotations-xref">#layout-annotations-xref</a>
+                y: 0,                         // <a href="#layout-annotations-y">#layout-annotations-y</a>
+                yref: 'paper'                 // <a href="#layout-annotations-yref">#layout-annotations-yref</a>
+            }
+        ]
+    }</pre>
+        </p>
+        <hr>
+    </div>
+
+

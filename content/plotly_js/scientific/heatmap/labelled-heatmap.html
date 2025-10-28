@@ -1,0 +1,22 @@
+---
+name: Heatmap with Categorical Axis Labels
+language: plotly_js
+suite: heatmap
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    In this example we also show how to ignore [hovertext](https://plotly.com/javascript/hover-text-and-formatting/) when we have missing values in the data by setting the [hoverongaps](https://plotly.com/javascript/reference/heatmap/#heatmap-hoverongaps) to False.
+---
+var data = [
+  {
+    z: [[1, null, 30, 50, 1], [20, 1, 60, 80, 30], [30, 60, 1, -10, 20]],
+    x: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    y: ['Morning', 'Afternoon', 'Evening'],
+    type: 'heatmap',
+    hoverongaps: false
+  }
+];
+
+Plotly.newPlot('myDiv', data);

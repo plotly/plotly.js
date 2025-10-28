@@ -1,0 +1,65 @@
+---
+name: Creating Default Item Values
+language: plotly_js
+suite: layout_template
+order: 3
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Add an attribute called `annotationdefaults` to your template to set a default annotation object. Each
+  item in the plot using the template without a `templateitemname` attribute will have the default applied
+  to it. `annotationdefaults` can be manually added to a template or, if makeTemplate is used, the first un-named
+  item in annotations will be used as the default.
+
+  Note, this behaviour works for all container array objects. E.g for `images`, you would create `imagedefaults` in
+  your layout containing the default image item.
+---
+var x = [0, 1, 2, 3, 4, 5];
+var y = [2, 4, 3, 0, 5, 6];
+
+var baseData = [{
+    mode: 'lines',
+    error_y: {visible: true, width: 0},
+    line: {color: 'teal'}
+}];
+
+var baseLayout = {
+
+  // Plotly.makeTemplate will use the first annotation without a `name` attribute
+  // in the annotations array as the annotationdefaults for the template.
+  annotations: [
+  {
+      text: 'DEFAULT ANNOTATION',
+      x: 0.1,
+      y: 1.1,
+      yref: 'paper', xref: 'paper',
+      showarrow: false,
+      font: {color:'teal', size: 14}
+    }
+  ],
+    showlegend: false
+};
+
+// use Plotly.makeTemplate to generate the template object
+var template = Plotly.makeTemplate({data: baseData, layout: baseLayout});
+
+var data = [{
+    x: x,
+    y: y
+}];
+
+var annotations = [
+  {}, // An empty annotation object will copy annotationdefaults
+  {
+    text: 'Third point',
+    x: x[2],
+    y: y[2],
+    showarrow: true,
+    yref: 'y', xref: 'x',
+    font: {size: 20} // since there is no font.color attribute for this object,
+                     // it will use the annotationdefaults' color
+  }
+];
+var layoutWithTemplate = {template: template, annotations: annotations};
+
+Plotly.newPlot("myDiv", data, layoutWithTemplate);

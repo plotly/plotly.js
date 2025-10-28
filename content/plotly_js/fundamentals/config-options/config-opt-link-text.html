@@ -1,0 +1,27 @@
+---
+name: Customize The `Edit Chart` Link Text
+language: plotly_js
+suite: configuration
+order: 7
+sitemap: false
+arrangement: horizontal
+---
+var data = [{
+  z: [[0, 1, 2, 3, 4, 5, 6],
+      [1, 9, 4, 7, 5, 2, 4],
+      [2, 4, 2, 1, 6, 9, 3]],
+  type: 'heatmap'}]
+
+var layout = {
+  title: {
+      text: 'Customize The Edit Chart Link Text'
+  }
+};
+
+var config = {
+  showLink: true,
+  plotlyServerURL: "https://chart-studio.plotly.com",
+  linkText: 'This text is custom!'
+};
+
+Plotly.newPlot('myDiv', data, layout, config)

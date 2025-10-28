@@ -1,0 +1,79 @@
+---
+name: Advanced Parallel Coordinates Plot
+language: plotly_js
+suite: parcoords
+order: 3
+sitemap: false
+arrangement: horizontal
+description:
+---
+
+d3.csv('https://raw.githubusercontent.com/bcdunbar/datasets/master/parcoords_data.csv', function(err, rows){
+
+function unpack(rows, key) {
+  return rows.map(function(row) {
+    return row[key];
+  });
+}
+
+var data = [{
+  type: 'parcoords',
+  line: {
+    showscale: true,
+    reversescale: true,
+    colorscale: 'Jet',
+    cmin: -4000,
+    cmax: -100,
+    color: unpack(rows, 'colorVal')
+  },
+
+  dimensions: [{
+    constraintrange: [100000, 150000],
+    range: [32000, 227900],
+    label: 'Block height',
+    values: unpack(rows, 'blockHeight')
+  }, {
+    range: [0, 700000],
+    label: 'Block width',
+    values: unpack(rows, 'blockWidth')
+  }, {
+    label: 'Cylinder material',
+    tickvals: [0, 0.5, 1, 2, 3],
+    ticktext: ['A', 'AB', 'B', 'Y', 'Z'],
+    values: unpack(rows, 'cycMaterial')
+  }, {
+    label: 'Block material',
+    tickvals: [0, 1, 2, 3],
+    range: [-1, 4],
+    values: unpack(rows, 'blockMaterial')
+  }, {
+    range: [134, 3154],
+    label: 'Total weight',
+    visible: true,
+    values: unpack(rows, 'totalWeight')
+  }, {
+    range: [9, 19984],
+    label: 'Assembly penalty weight',
+    values: unpack(rows, 'assemblyPW')
+  }, {
+    range: [49000, 568000],
+    label: 'Height st width',
+    values: unpack(rows, 'HstW')
+  }, {
+    range: [-28000, 196430],
+    label: 'Min height width',
+    values: unpack(rows, 'minHW')
+  }, {
+     range: [98453, 501789],
+     label: 'Min width diameter',
+     values: unpack(rows, 'minWD')
+  }, {
+    range: [1417, 107154],
+    label: 'RF block',
+    values: unpack(rows, 'rfBlock')
+  }]
+}];
+
+Plotly.newPlot('myDiv', data);
+
+});

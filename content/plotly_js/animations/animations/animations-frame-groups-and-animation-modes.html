@@ -1,0 +1,94 @@
+---
+name: Frame Groups and Animation Modes
+plot_url: https://codepen.io/plotly/embed/rrZRmA/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: animations
+order: 7
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The following example combines many of these concepts to draw a glass filling with water.
+
+  The first row of buttons animates a different set of predefined frames by changing the second argument of `Plotly.animate`. Passing `null` or `undefined` animates all defined frames in sequence, while passing an array of strings (here, the frames in reverse) animates a specific sequence of frames. By passing a plain string (here, `lower` or `upper`), it filters the animated frames to those with a `group` property equal to that name. The stop button is accomplished by interrupting the current animation with an empty list of frames, therefore simply stopping the animation at the end of the current frame.
+
+  The second row of buttons animates all frames with different animation modes. The `mode` option defines whether an animation either interrupts or follows the current animation. `immediate` mode discards all queued frames and begins a new sequence immediately. The `next` mode is very similar but doesn't begin the new animation until the *end* of the current frame. Finally, `afterall` queues the new frames so that the new animation begins only after all previous animations have completed.
+---
+var i, j, t, x, y, name;
+var frames = [];
+var nFrames = 10;
+var n = 80;
+var reverseFrames = [];
+
+for (i = 0; i < nFrames; i++) {
+  var fill = 0.1 + 0.9 * i / (nFrames - 1);
+  x = [-1];
+  y = [0];
+
+  // A wave across the top:
+  for (j = 0; j < n; j++) {
+    t = j / (n - 1);
+    x.push(-1 - fill + (2 + 2 * fill) * t);
+    y.push(fill + 0.05 * Math.sin(t * Math.PI * 2 * i));
+  }
+
+  // Close the loop to draw the water:
+  x.push(1, -1);
+  y.push(0, 0);
+
+  // Choose a name:
+  name = 'frame' + i;
+
+  // Store it in an array so we can animate in reverse order:
+  reverseFrames.unshift(name);
+
+  // Create the frame:
+  frames.push({
+    name: name,
+    data: [{x: x, y: y}],
+    group: i < nFrames / 2 ? 'lower' : 'upper'
+  })
+}
+
+Plotly.newPlot('myDiv', [{
+  // Set up the initial water:
+  x: frames[0].data[0].x,
+  y: frames[0].data[0].y,
+  mode: 'lines',
+  fill: 'toself',
+  showlegend: false,
+  line: {simplify: false}
+}, {
+  // Draw a glass:
+  x: [-1, 1, 2.1, -2.1, -1],
+  y: [0, 0, 1.1, 1.1, 0],
+  mode: 'lines',
+  fill: 'toself',
+  showlegend: false,
+  fillcolor: 'rgba(0, 0, 0, 0.1)',
+  line: {color: 'rgba(100,100,100,0.2)'}
+}], {
+  xaxis: {range: [-3, 3]},
+  yaxis: {range: [-0.1, 1.5]}
+}).then(function() {
+  // Add the frames so we can animate them:
+  Plotly.addFrames('myDiv', frames);
+});
+
+// Stop the animation by animating to an empty set of frames:
+function stopAnimation () {
+  Plotly.animate('myDiv', [], {mode: 'next'});
+}
+
+function startAnimation (groupOrFrames, mode) {
+  Plotly.animate('myDiv', groupOrFrames, {
+    transition: {
+      duration: 500,
+      easing: 'linear'
+    },
+    frame: {
+      duration: 500,
+      redraw: false,
+    },
+    mode: mode
+  });
+}

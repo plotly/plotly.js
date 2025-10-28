@@ -1,0 +1,23 @@
+---
+name: Hover Event Data
+language: plotly_js
+suite: hover-events
+sitemap: false
+arrangement: horizontal
+order: 0
+---
+
+{
+  points: [{
+    curveNumber: 2,  // index in data of the trace associated with the selected point 
+    pointNumber: 2,  // index of the selected point
+    x: 5,        // x value
+    y: 600,      // y value
+    data: {/* */},       // ref to the trace as sent to Plotly.newPlot associated with the selected point
+    fullData: {/* */},   // ref to the trace including all the defaults
+   xaxis: {/* */},   // ref to x-axis object (i.e layout.xaxis) associated with the selected point
+   yaxis: {/* */}    // ref to y-axis object " "
+  }, {
+    /* similarly for other selected points */
+  }]
+}

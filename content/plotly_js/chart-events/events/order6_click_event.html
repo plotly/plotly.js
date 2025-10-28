@@ -1,0 +1,39 @@
+---
+name: Click Event
+plot_url: https://codepen.io/plotly/embed/Obxbdv/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: events
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Here's a simple example of using the data returned from the `plotly_click` event to restyle the graph. After creating a plot, we can change the color of the point clicked on by updating the `marker.color` array at the index of the point we clicked on then using `Plotly.restyle()` to apply the update. For more examples of using `plotly_click` events, see: [https://plotly.com/javascript/click-events/]()
+---
+var myPlot = document.getElementById('myDiv'),
+    x = [1, 2, 3, 4, 5, 6],
+    y = [1, 2, 3, 2, 3, 4],
+    colors = ['#00000','#00000','#00000',
+              '#00000','#00000','#00000'],
+    data = [{x:x, y:y, type:'scatter',
+             mode:'markers', marker:{size:16, color:colors}}],
+    layout = {
+        hovermode:'closest',
+        title: {text: 'Click on a Point to Change Color<br>Double Click (anywhere) to Change it Back'}
+     };
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_click', function(data){
+  var pn='',
+      tn='',
+      colors=[];
+  for(var i=0; i < data.points.length; i++){
+    pn = data.points[i].pointNumber;
+    tn = data.points[i].curveNumber;
+    colors = data.points[i].data.marker.color;
+  };
+  colors[pn] = '#C54C82';
+
+  var update = {'marker':{color: colors, size:16}};
+  Plotly.restyle('myDiv', update, [tn]);
+});

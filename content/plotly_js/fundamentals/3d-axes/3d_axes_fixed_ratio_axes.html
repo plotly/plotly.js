@@ -1,0 +1,65 @@
+---
+name: Fixed Ratio Axes
+language: plotly_js
+suite: 3d-axes
+order: 1.1
+sitemap: false
+arrangement: horizontal
+---
+
+function getrandom(num , mul) 
+	{
+	   var value = [ ]
+		var i;
+		for(i=0;i<=num;i++)
+	   {
+		 rand = Math.random() * mul;
+	    value.push(rand);
+	   }
+		return value;
+	}
+
+var i;
+traces = [];
+names = ['cube', 'data', 'auto', 'manual'];
+for (i=1; i<5; i++){
+	traces.push({
+		x: getrandom(20, 4),
+		y: getrandom(20, 3),
+		z: getrandom(20, 5),
+		opacity:0.5,
+		mode: "markers",
+		type: "mesh3d",
+		scene: "scene" + i,
+		name: names[i-1]
+		}
+	)
+}
+
+var layout = {
+	scene:{
+		aspectmode:'cube',
+		domain:{row:0, column:0}
+	},
+	scene2:{
+		aspectmode:'data',
+		domain:{row:1, column:0}
+	},
+	scene3:{
+		aspectmode:'auto',
+		domain:{row:0, column:1}
+	},
+	scene4:{
+		aspectmode:'manual',
+		aspectratio: {x:1, y:1, z:2},
+		domain: {row:1, column:1}
+	},
+	grid:{
+		pattern: 'independent',
+		rows:2,
+		columns:2
+	},
+
+};
+
+Plotly.newPlot('myDiv', traces, layout);

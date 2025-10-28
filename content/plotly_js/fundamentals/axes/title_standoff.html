@@ -1,0 +1,36 @@
+---
+name: Set Axis Title Position
+language: plotly_js
+suite: axes
+order: 3.5
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+   This example sets `standoff` attribute to cartesian axes to determine the distance between the tick labels and the axis title.
+   Note that the axis title position is always constrained within the margins, so the actual standoff distance is always less than the set or default value.
+   By setting standoff and turning [automargin](https://plotly.com/javascript/setting-graph-size/#automatically-adjust-margins) on, plotly.js will push the margins to fit the axis title at given standoff distance.
+---
+var data = [{
+      mode: "lines+markers",
+      x:["December", "January", "February"],
+      y:[4,1,3]
+    }]
+
+ var layout = {
+      margin: {t:0,r:0,b:0,l:20},
+      xaxis: {
+        automargin: true,
+        tickangle: 90,
+        title: {
+          text: "Month",
+          standoff: 20
+        }},
+      yaxis: {
+        automargin: true,
+        tickangle: 90,
+        title: {
+          text: "Temperature",
+          standoff: 40
+        }}}
+
+Plotly.newPlot('myDiv', data, layout)

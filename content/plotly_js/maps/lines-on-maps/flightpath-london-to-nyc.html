@@ -1,0 +1,50 @@
+---
+name: London to NYC Great Circle
+language: plotly_js
+suite: lines-on-maps
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+var data = [{
+    type: 'scattergeo',
+    lat: [ 40.7127, 51.5072 ],
+    lon: [ -74.0059, 0.1275 ],
+    mode: 'lines',
+    line:{
+        width: 2,
+        color: 'blue'
+    }
+  }];
+
+var layout = {
+  title: {text: 'London to NYC Great Circle'},
+  showlegend: false,
+  geo: {
+      resolution: 50,
+      showland: true,
+      showlakes: true,
+      landcolor: 'rgb(204, 204, 204)',
+      countrycolor: 'rgb(204, 204, 204)',
+      lakecolor: 'rgb(255, 255, 255)',
+      projection: {
+        type: 'equirectangular'
+      },
+      coastlinewidth: 2,
+      lataxis: {
+        range: [ 20, 60 ],
+        showgrid: true,
+        tickmode: 'linear',
+        dtick: 10
+      },
+      lonaxis:{
+        range: [-100, 20],
+        showgrid: true,
+        tickmode: 'linear',
+        dtick: 20
+      }
+    }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+

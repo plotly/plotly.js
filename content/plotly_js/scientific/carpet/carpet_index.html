@@ -1,0 +1,14 @@
+---
+description: How to make D3.js-based carpet plots in Plotly.js.
+display_as: scientific
+language: plotly_js
+layout: base
+name: Carpet Plot
+order: 9
+permalink: javascript/carpet-plot/
+redirect_from: javascript/carpet-plots/
+thumbnail: thumbnail/carpet.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","carpet" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

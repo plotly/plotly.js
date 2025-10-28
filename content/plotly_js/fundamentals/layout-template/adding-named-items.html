@@ -1,0 +1,66 @@
+---
+name: Add Named Container Array Items
+language: plotly_js
+suite: layout_template
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Container array items in a template with a `name` attribute will be added to any plot using that template.
+  We can use this feature to create a template that adds watermarks to our chart by including named image items in `images`.
+  The example below also shows how to make one of these images invisible using the `templateitemname` attribute
+  if you don't want it to display for this specific chart.
+---
+var baseLayout = {
+    title: {
+      text: 'Watermark Template'
+  },
+    // items with a `name` attribute in template.images will be added to any
+    // plot using this template
+    images: [{
+        name: 'watermark_1',
+        source: "https://raw.githubusercontent.com/michaelbabyn/plot_data/master/benzene.png",
+        xref: "paper",
+        yref: "paper",
+        x: 0.40,
+        y: 0.9,
+        sizex: 0.7,
+        sizey: 0.7,
+        opacity: 0.1,
+        layer: "below"
+      },
+      {
+          name: 'watermark_2',
+          source: "https://raw.githubusercontent.com/michaelbabyn/plot_data/master/naphthalene.png",
+          xref: "paper",
+          yref: "paper",
+          x: .75,
+          y: 0.3,
+          sizex: 0.25,
+          sizey: 0.25,
+          sizing: "stretch",
+          opacity: 0.2,
+          layer: "below"
+        }],
+    showlegend: false
+};
+
+var template = {data: {}, layout: baseLayout};
+
+var data = [{
+    x: [0, 1, 2, 3, 4, 5],
+    y: [2, 4, 3, 0, 5, 6],
+}];
+
+var layoutUsingTemplate = {
+  template: template,
+  images: [
+    {
+      // set the second watermark in the template to be invisible
+      templateitemname: 'watermark_2',
+      visible: false
+    }
+  ]
+};
+
+Plotly.newPlot("myDiv", data, layoutUsingTemplate);

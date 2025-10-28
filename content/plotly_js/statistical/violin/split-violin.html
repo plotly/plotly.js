@@ -1,0 +1,67 @@
+---
+name: Split Violin Plot
+language: plotly_js
+suite: violin
+order: 5
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/violin_data.csv", function(err, rows){
+
+  function unpack(rows, key) {
+  return rows.map(function(row) { return row[key]; });
+  }
+
+var data = [{
+  type: 'violin',
+  x: unpack(rows, 'day'),
+  y: unpack(rows, 'total_bill'),
+  legendgroup: 'Yes',
+  scalegroup: 'Yes',
+  name: 'Yes',
+  side: 'negative',
+  box: {
+    visible: true
+  },
+  line: {
+    color: 'blue',
+    width: 2
+  },
+  meanline: {
+    visible: true
+  }
+}, {
+  type: 'violin',
+  x: unpack(rows, 'day'),
+  y: unpack(rows, 'total_bill'),
+  legendgroup: 'No',
+  scalegroup: 'No',
+  name: 'No',
+  side: 'positive',
+  box: {
+    visible: true
+  },
+  line: {
+    color: 'green',
+    width: 2
+  },
+  meanline: {
+    visible: true
+  }
+}]
+
+var layout = {
+  title: {
+    text: "Split Violin Plot"
+  },
+  yaxis: {
+    zeroline: false
+  },
+  violingap: 0,
+  violingroupgap: 0,
+  violinmode: "overlay",
+}
+
+Plotly.newPlot('myDiv', data, layout);
+});

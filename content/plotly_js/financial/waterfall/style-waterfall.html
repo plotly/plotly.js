@@ -1,0 +1,34 @@
+---
+name: Style Waterfall Chart
+language: plotly_js
+suite: waterfall
+order: 4
+sitemap: false
+arrangement: horizontal
+---
+var gd = document.getElementById('myDiv');
+var data = [
+    {
+      type: "waterfall",
+      x: [
+        ["2016", "2017", "2017", "2017", "2017", "2018", "2018", "2018", "2018"],
+        ["initial", "q1", "q2", "q3", "total", "q1", "q2", "q3", "total" ]
+      ],
+      measure: ["absolute", "relative", "relative", "relative", "total", "relative", "relative", "relative", "total"],
+      y: [10, 20, 30, -10, null, 10, 20, -40, null],
+      base: 300,
+    decreasing: { marker: { color: "Maroon" , line:{color : "red", width :2}}},
+    increasing: { marker: { color: "Teal"} },
+    totals: { marker: { color: "deep sky blue", line:{color:'blue',width:3}} }
+    }];
+var layout = {title: {
+            text: "Profit and loss statement"
+        },
+    waterfallgap : 0.3,
+    xaxis: {
+      title: { text: ""},
+      tickfont: {size: 15},
+      ticks: "outside"
+    }
+  }
+Plotly.newPlot('myDiv', data, layout);

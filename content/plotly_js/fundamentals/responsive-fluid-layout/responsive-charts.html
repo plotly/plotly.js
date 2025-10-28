@@ -1,0 +1,34 @@
+---
+name: Responsive Plots
+language: plotly_js
+suite: responsive-fluid-layout
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  If you set the `responsive` attribute equal to `true` (using the `config` object), then your figures will be automatically resized when the browser window size changes. This is an especially useful feature for charts which are going to viewed on mobile devices!
+---
+var trace1 = {
+  type: 'bar',
+  x: [1, 2, 3, 4],
+  y: [5, 10, 2, 8],
+  marker: {
+      color: '#C8A2C8',
+      line: {
+          width: 2.5
+      }
+  }
+};
+
+var data = [ trace1 ];
+
+var layout = {
+  title: {
+    text: 'Responsive to window\'s size!'
+  },
+  font: {size: 18}
+};
+
+var config = {responsive: true}
+
+Plotly.newPlot('myDiv', data, layout, config );

@@ -1,0 +1,20 @@
+---
+name: Add Parameter Values
+language: plotly_js
+suite: carpet
+order: 2
+sitemap: false
+arrangement: horizontal
+description:
+---
+
+var data = {
+    type: 'carpet',
+    a: [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6],
+    b: [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3],
+    y: [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10]
+}
+
+var data = [data]
+
+Plotly.newPlot('myDiv', data);

@@ -1,0 +1,26 @@
+---
+name: Global Font Properties
+language: plotly_js
+suite: font
+order: 0
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    y: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    type: 'scatter'
+  }
+];
+var layout = {
+  title: {
+    text: 'Global Font'
+  },
+  font: {
+    family: 'Courier New, monospace',
+    size: 18,
+    color: '#7f7f7f'
+  }
+};
+Plotly.newPlot('myDiv', data, layout);

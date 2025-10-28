@@ -1,0 +1,17 @@
+---
+name: Basic Horizontal Bar Chart
+language: plotly_js
+suite: horizontal-bar
+order: 0
+sitemap: false
+arrangement: horizontal
+---
+
+var data = [{
+  type: 'bar',
+  x: [20, 14, 23],
+  y: ['giraffes', 'orangutans', 'monkeys'],
+  orientation: 'h'
+}];
+
+Plotly.newPlot('myDiv', data);

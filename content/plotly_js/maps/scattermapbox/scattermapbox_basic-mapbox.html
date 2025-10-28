@@ -1,0 +1,46 @@
+---
+name: Basic Example (Mapbox)
+language: plotly_js
+suite: scatter-tile-maps
+order: 10
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  <strong>> Mapbox traces are deprecated and may be removed in a future version of Plotly.js.</strong>
+
+    Earlier examples use traces that render with [Maplibre GL JS](https://maplibre.org/maplibre-gl-js/docs/).
+    These traces were introduced in Plotly.js 2.35.0 and replace Mapbox-based tile maps,
+    which are now deprecated. Here's one of the earlier examples using the Mapbox-based `choroplethmapbox` trace
+---
+
+var data = [{
+  type:'scattermapbox',
+  lat:['45.5017'],
+  lon:['-73.5673'],
+  mode:'markers',
+  marker: {
+    size:14
+  },
+  text:['Montreal']
+}]
+
+var layout = {
+  autosize: true,
+  hovermode:'closest',
+  mapbox: {
+    bearing:0,
+    center: {
+      lat:45,
+      lon:-73
+    },
+    pitch:0,
+    zoom:5
+  },
+}
+
+Plotly.setPlotConfig({
+  mapboxAccessToken: "your access token"
+})
+
+Plotly.newPlot('myDiv', data, layout)

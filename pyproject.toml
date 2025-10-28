@@ -1,0 +1,21 @@
+[project]
+name = "plotly.js"
+description = "Plotly JavaScript charting library"
+version = "3.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "markdown",
+    "python-frontmatter",
+    "ruff"
+]
+
+[project.optional-dependencies]
+dev_build = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "markdown-include",
+    "mkdocs-macros-plugin",
+    "mkdocs-redirects",
+]

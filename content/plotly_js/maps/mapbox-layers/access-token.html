@@ -1,0 +1,29 @@
+---
+name: Mapbox Maps and Access Tokens
+language: plotly_js
+suite: map-layers
+order: 10
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    <strong>> Mapbox traces are deprecated and may be removed in a future version of Plotly.js.</strong>
+
+    The word "mapbox" in the trace names and `layout.mapbox` refers to the Mapbox GL JS open-source library.
+    If your basemap in `layout.mapbox.style` uses data from the Mapbox *service*,
+    then you will need to register for a free account at https://mapbox.com/ and obtain a Mapbox Access token.
+    If your basemap uses data from the [Stadia Maps service](https://www.stadiamaps.com) (see below for details), you'll need to register for a Stadia Maps account and token.
+
+    To use a token, provide it as `mapboxAccessToken` in the `setPlotConfig` function, or as a variable that would be passed as an argument of `newPlot`.
+    If your `layout.mapbox.style` does not use data from the Mapbox service, you do *not* need to register for a Mapbox account.
+    <h6>Base Maps in `layout.mapbox.style`</h6>
+    The accepted values for `layout.mapbox.style` are one of the following tiles.
+    <ol>
+        <li> `"white-bg"` yields an empty white canvas which results in no external HTTP requests </li>
+        <li> `"open-street-map"`, `"carto-positron"`, or `"carto-darkmatter"` yield maps composed of *raster* tiles from various public tile servers which do not require signups or access tokens </li>
+        <li> `"stamen-terrain"`, `"stamen-toner"` or `"stamen-watercolor"` yield maps composed of *raster* tiles from the [Stadia Maps service](https://stadiamaps.com/) and require a Stadia Maps account and token.</li>
+        <li> `"basic"`, `"streets"`, `"outdoors"`, `"light"`, `"dark"`, `"satellite"`, or `"satellite-streets"` yield maps composed of *vector* tiles from the Mapbox service, and *do* require a Mapbox Access Token or an on-premise Mapbox installation. </li>
+        <li> A Mapbox service style URL, which requires a Mapbox Access Token or an on-premise Mapbox installation. </li>
+        <li> A Mapbox Style object as defined at https://docs.mapbox.com/mapbox-gl-js/style-spec/ </li>
+    </ol>
+---

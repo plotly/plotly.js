@@ -1,0 +1,80 @@
+---
+name: Line Polar Plot
+language: plotly_js
+suite: scatterpolar
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/polar_dataset.csv', function(err, rows){
+      function unpack(rows, key) {
+          return rows.map(function(row) { return row[key]; });
+      }
+
+var trace1 = {
+  r: unpack(rows, 'x1'),
+  theta: unpack(rows, 'y'),
+  mode: 'lines',
+  name: 'Figure8',
+  line: {color: 'peru'},
+  type: 'scatterpolar'
+};
+
+var trace2 = {
+  r: unpack(rows, 'x2'),
+  theta: unpack(rows, 'y'),
+  mode: 'lines',
+  name: 'Cardioid',
+  line: {color: 'darkviolet'},
+  type: 'scatterpolar'
+};
+
+var trace3 = {
+  r: unpack(rows, 'x3'),
+  theta: unpack(rows, 'y'),
+  mode: 'lines',
+  name: 'Hypercardioid',
+  line: {color: 'deepskyblue'},
+  type: 'scatterpolar'
+};
+
+var trace4 = {
+
+  r: unpack(rows, 'x4'),
+  theta: unpack(rows, 'y'),
+  mode: 'lines',
+  name: 'Subcardioid',
+  line: {color: 'orangered'},
+  type: 'scatterpolar'
+};
+
+var trace5 = {
+
+  r: unpack(rows, 'x5'),
+  theta: unpack(rows, 'y'),
+  mode: 'lines',
+  name: 'Supercardioid',
+  marker: {
+    color: 'none',
+    line: {color: 'green'}
+  },
+  type: 'scatterpolar'
+};
+
+var data = [trace1, trace2, trace3, trace4, trace5];
+
+var layout = {
+  title: {
+    text: 'Mic Patterns'
+  },
+  font: {
+    family: 'Arial, sans-serif;',
+    size: 12,
+    color: '#000'
+  },
+  showlegend: true,
+  orientation: -90
+};
+Plotly.newPlot('myDiv', data, layout);
+});

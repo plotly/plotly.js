@@ -1,0 +1,21 @@
+---
+name: Basic Symmetric Error Bars
+language: plotly_js
+suite: error-bar
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: [0, 1, 2],
+    y: [6, 10, 2],
+    error_y: {
+      type: 'data',
+      array: [1, 2, 3],
+      visible: true
+    },
+    type: 'scatter'
+  }
+];
+Plotly.newPlot('myDiv', data);

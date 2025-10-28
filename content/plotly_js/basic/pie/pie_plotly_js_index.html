@@ -1,0 +1,18 @@
+---
+description: How to graph D3.js-based pie charts in javascript with D3.js. Examples
+  of pie charts, donut charts and pie chart subplots.
+display_as: basic
+language: plotly_js
+layout: base
+name: Pie Charts
+order: 4
+page_type: example_index
+permalink: javascript/pie-charts/
+redirect_from:
+- javascript-graphing-library/pie-chart/
+- javascript/pie-chart/
+thumbnail: thumbnail/pie-chart.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","pie" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

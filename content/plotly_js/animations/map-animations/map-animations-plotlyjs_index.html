@@ -1,0 +1,13 @@
+---
+name: Map Animation
+permalink: javascript/map-animations/
+description: How to make an animated map with Plotly JS
+layout: base
+thumbnail: thumbnail/map-animation.gif
+language: plotly_js
+page_type: example_index
+display_as: animations
+order: 4
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","map-animations" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

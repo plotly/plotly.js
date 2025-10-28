@@ -1,0 +1,88 @@
+---
+name: Overview
+language: plotly_js
+suite: indicator
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  In this tutorial we introduce a new trace named "Indicator". The purpose of "indicator" is to visualize a single value specified by the "value" attribute.
+  Three distinct visual elements are available to represent that value: number, delta and gauge. Any combination of them can be specified via the "mode" attribute.
+  Top-level attributes are:
+    <ol>
+      <li>value: the value to visualize</li>
+      <li> mode: which visual elements to draw</li>
+      <li> align: how to align number and delta (left, center, right)</li>
+      <li> domain: the extent of the figure</li>
+    </ol>
+
+  Then we can configure the 3 different visual elements via their respective container:
+    <ol>
+      <li> number is simply a representation of the number in text. It has attributes:
+      <li> valueformat: to format the number</li>
+      <li> prefix: a string before the number</li>
+      <li> suffix: a string after the number </li>
+      <li> font.(family|size): to control the font</li>
+    </ol>
+   "delta" simply displays the difference between the value with respect to a reference. It has attributes:
+    <ol>
+      <li> reference: the number to compare the value with</li>
+      <li> relative: whether that difference is absolute or relative</li>
+      <li> valueformat: to format the delta</li>
+      <li> (increasing|decreasing).color: color to be used for positive or decreasing delta</li>
+      <li> (increasing|decreasing).symbol: symbol displayed on the left of the delta</li>
+      <li> font.(family|size): to control the font</li>
+      <li> position: position relative to `number` (either top, left, bottom, right)</li>
+    </ol>
+    Finally, we can have a simple title for the indicator via `title` with 'text' attribute which is a string, and 'align' which can be set to left, center, and right.
+    There are two gauge types: [angular](https://plotly.com/javascript/gauge-charts/) and [bullet](https://plotly.com/javascript/bullet-charts/). Here is a combination of both shapes (angular, bullet), and different modes (guage, delta, and value):
+---
+var data = [
+  {
+    type: "indicator",
+    value: 200,
+    delta: { reference: 160 },
+    gauge: { axis: { visible: false, range: [0, 250] } },
+    domain: { row: 0, column: 0 }
+  },
+  {
+    type: "indicator",
+    value: 120,
+    gauge: {
+      shape: "bullet",
+      axis: {
+        visible: false,
+        range: [-200, 200]
+      }
+    },
+    domain: { x: [0.1, 0.5], y: [0.15, 0.35] }
+  },
+  {
+    type: "indicator",
+    mode: "number+delta",
+    value: 300,
+    domain: { row: 0, column: 1 }
+  },
+  { type: "indicator", mode: "delta", value: 40, domain: { row: 1, column: 1 } }
+];
+
+var layout = {
+  width: 600,
+  height: 400,
+  margin: { t: 25, b: 25, l: 25, r: 25 },
+  grid: { rows: 2, columns: 2, pattern: "independent" },
+  template: {
+    data: {
+      indicator: [
+        {
+          title: { text: "Speed" },
+          mode: "number+delta+gauge",
+          delta: { reference: 90 }
+        }
+      ]
+    }
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

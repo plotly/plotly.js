@@ -1,0 +1,35 @@
+---
+name: Automatically Adjust Margins
+language: plotly_js
+suite: sizing
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Set `automargin=true` ([reference](https://plotly.com/python/reference/layout/xaxis/#layout-xaxis-automargin)) and Plotly will automatically increase the margin size to prevent ticklabels from being cut off or overlapping with axis titles.
+---
+var data = [
+  {
+    x: ['Apples', 'Oranges', 'Watermelon', 'Pears'],
+    y: [3, 2, 1, 4],
+    type: 'bar'
+  }
+];
+var layout = {
+  autosize: false,
+  width: 500,
+  height: 500,
+  yaxis: {
+    title: {
+      text: 'Y-axis Title',
+      font: { size: 30 }
+    },
+    ticktext: ['long label','Very long label','3','label'],
+    tickvals: [1, 2, 3, 4],
+    tickmode: 'array',
+    automargin: true,
+  },
+  paper_bgcolor: '#7f7f7f',
+  plot_bgcolor: '#c7c7c7'
+};
+Plotly.newPlot('myDiv', data, layout);

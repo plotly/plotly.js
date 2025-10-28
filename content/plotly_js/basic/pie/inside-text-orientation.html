@@ -1,0 +1,24 @@
+---
+name: Control Text Orientation Inside Pie Chart Sectors
+language: plotly_js
+suite: pie
+order: 5
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The `insidetextorientation` attribute controls the orientation of the text inside chart sectors. When set to *auto*, text may be oriented in any direction in order to be as big as possible in the middle of a sector. The *horizontal* option orients text to be parallel with the bottom of the chart, and may make text smaller in order to achieve that goal. The *radial* option orients text along the radius of the sector. The *tangential* option orients text perpendicular to the radius of the sector.
+---
+var data = [{
+  type: "pie",
+  values: [2, 3, 4, 4],
+  labels: ["Wages", "Operating expenses", "Cost of sales", "Insurance"],
+  textinfo: "label+percent",
+  insidetextorientation: "radial"
+}]
+
+var layout = [{
+  height: 700,
+  width: 700
+}]
+
+Plotly.newPlot('myDiv', data, layout)

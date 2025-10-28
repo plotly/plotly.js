@@ -1,0 +1,14 @@
+---
+description: How to make D3.js-based dot plots in JavaScript. Example of a styled,
+  categorical dot plot.
+display_as: basic
+language: plotly_js
+layout: base
+name: Dot Plots
+order: 6
+permalink: javascript/dot-plots/
+thumbnail: thumbnail/dot-plot.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","dot" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

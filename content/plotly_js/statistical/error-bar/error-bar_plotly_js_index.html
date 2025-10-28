@@ -1,0 +1,16 @@
+---
+description: How to add error bars to a D3.js-based line, scatter, or bar chart. Seven
+  examples of symmetric, asymmetric, horizontal, and colored error bars.
+display_as: statistical
+language: plotly_js
+layout: base
+name: Error Bars
+order: 1
+page_type: example_index
+permalink: javascript/error-bars/
+redirect_from: javascript-graphing-library/error-bars/
+thumbnail: thumbnail/error-bar.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","error-bar" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

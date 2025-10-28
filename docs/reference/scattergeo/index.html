@@ -1,0 +1,6434 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://plotly.com/javascript/reference/scattergeo/">
+      
+      
+        <link rel="prev" href="../scattercarpet/">
+      
+      
+        <link rel="next" href="../scattergl/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>scattergeo - Plotly.js Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra_css.css">
+    
+      <link rel="stylesheet" href="https://docs.plotly.com/css/plotly-style.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scattergeo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Plotly.js Docs" class="md-header__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Plotly.js Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              scattergeo
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+
+  <!-- Main navigation -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--primary"
+      data-md-component="sidebar"
+      data-md-type="navigation"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Plotly.js Docs" class="md-nav__button md-logo" aria-label="Plotly.js Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Plotly.js Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/plotlyjs-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Event Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Fundamentals
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Fundamentals
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/configuration-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/responsive-fluid-layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Responsive / Fluid Layouts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/uirevision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    uirevision in Plotly.react
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/react/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    React Plotly.js
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://dash.plotly.com/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Analytical Apps with Dash
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/colorway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Colorway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Images
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-hover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Hover Options
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-surface-lighting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Lighting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/horizontal-legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hover-text-and-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Text and Formatting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/figure-labels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting the Title, Legend Entries, and Axis Titles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/layout-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Layout Template Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/legend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Legends
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/setting-graph-size/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting Graph Size
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tick-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatting Ticks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Shapes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/texttemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/text-and-annotations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Annotations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/font/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Text and Font Styling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/multiple-axes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Basic Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/line-and-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/line-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Line Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/pie-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pie Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bubble-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dot-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dot Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/insets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inset Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/horizontal-bar-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Horizontal Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sunburst-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sunburst Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sankey-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sankey Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/treemaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Treemap Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/graphing-multiple-chart-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Multiple Chart Types
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/webgl-vs-svg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    WebGL vs SVG
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Statistical Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Statistical Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/box-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Box Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/histograms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/continuous-error-bars/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Continuous Error Bars
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/2D-Histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histograms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/spc-control-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SPC Control Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Violin Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/parallel-categories-diagram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Categories Diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatterplot Matrix
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/2d-histogram-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2D Histogram Contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Scientific Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Scientific Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/contour-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contour Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Heatmaps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ternary-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/parallel-coordinates-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parallel Coordinates Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/log-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Log Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/wind-rose-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wind Rose and Polar Bar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ternary-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ternary contours
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/radar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Radar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Scatter Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/carpet-contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Carpet Contour Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/polar-chart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polar Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Financial Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Financial Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/waterfall-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Waterfall Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indicators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/candlestick-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Candlestick Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/funnel-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Funnel Chart
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/time-series/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Time Series and Date Axes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ohlc-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    OHLC Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gauge-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gauge Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bullet-charts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bullet Charts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Maps
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Maps
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-map-layers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Map Layers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-density-heatmaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Density Heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/tile-county-choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tile Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/lines-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lines on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bubble-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bubble Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/scatter-plots-on-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/scatter-tile-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scatter Plots on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/choropleth-maps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Choropleth Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-on-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled Area on Tile Maps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    3D Charts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            3D Charts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-scatter-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Scatter Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ribbon-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ribbon Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-surface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Surface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-mesh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Mesh Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-line-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Line Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/trisurf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trisurf Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-point-clustering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cluster Graph
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cone-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Cone Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streamtube-plot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Streamtube Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-isosurface-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Isosurface Plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/3d-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    3D Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Multiple Axes
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Multiple Axes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/mixed-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mixed Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/table-subplots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Table and Chart Subplots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Chart Events
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Chart Events
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/click-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Click Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/hover-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hover Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/zoom-events/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/disable-zoom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Disable Zoom Events
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Animations
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Animations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intro to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/gapminder-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Adding Sliders to Animations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/filled-area-animation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Filled-Area Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/map-animations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Map Animation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Options
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Options
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ajax-call/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plot CSV Data from an Ajax Call
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streaming
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/remove-trace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Remove Trace from Plot
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/LaTeX/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LaTeX
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Controls
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            Controls
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/dropdowns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dropdown Menus
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/custom-buttons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Custom Buttons
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sliders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sliders
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/lasso-selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lasso Selection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/range-slider/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Range Slider and Selector
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    bar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../barpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    barpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../box/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    box
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../candlestick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    candlestick
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../carpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    carpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choropleth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choropleth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choroplethmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../choroplethmapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    choroplethmapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cone
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contourcarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    contourcarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../densitymap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../densitymapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    densitymapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../funnelarea/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    funnelarea
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../heatmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    heatmap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram2d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../histogram2dcontour/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    histogram2dcontour
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../icicle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    icicle
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    image
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../indicator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    indicator
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../isosurface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    isosurface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../layout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    layout
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mesh3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ohlc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ohlc
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parcats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parcoords/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    parcoords
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pie/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pie
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sankey/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sankey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatter3d/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatter3d
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattercarpet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattercarpet
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergeo
+    
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattergl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattergl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattermap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattermapbox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattermapbox
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterpolar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolar
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterpolargl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterpolargl
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scattersmith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scattersmith
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scatterternary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    scatterternary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splom/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    splom
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamtube/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    streamtube
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sunburst/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    sunburst
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../surface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    surface
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    table
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../treemap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    treemap
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../violin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    violin
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../volume/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    volume
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../waterfall/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    waterfall
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+
+        <div class="nav-bottom-image">
+            <a href="https://plotly.com/webinars/data-apps-publishing-playbook/?utm_medium=graphing_libraries&utm_campaign=plotly_publishing_playbook&utm_content=sidebar" target="_blank">
+                <img src="https://images.prismic.io/plotly-marketing-website-2/aNMW2J5xUNkB1CWg_PlotlyPublishingPlaybook.jpg?auto=format,compress" alt="plotly-studio-banner" type="image/avif">
+            </a>
+        </div>
+      </div>
+    </div>
+  
+
+  <!-- Table of contents -->
+  
+    
+    <div
+      class="md-sidebar md-sidebar--secondary"
+      data-md-component="sidebar"
+      data-md-type="toc"
+      
+    >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="scattergeo">scattergeo</h1>
+<div class="description">
+  A <code>scattergeo</code> trace is an object with the key <code>"type"</code> equal to <code>"scattergeo"</code>
+  (i.e. <code>{"type": "scattergeo"}</code>) and any of the keys listed below.
+  <br><br>The data visualized as scatter point or lines on a geographic map is provided either by longitude/latitude pairs in `lon` and `lat` respectively or by geographic location IDs or names in `locations`.<br><br>
+</div>
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-connectgaps" href="#scattergeo-connectgaps">
+    connectgaps
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> boolean<p>Determines whether or not gaps (i.e. {nan} or missing values) in the provided data arrays are connected.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-customdata" href="#scattergeo-customdata">
+    customdata
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, "scatter" traces also appends customdata items in the markers DOM elements</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-featureidkey" href="#scattergeo-featureidkey">
+    featureidkey
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"id"</code>
+<p>Sets the key in GeoJSON features which is used as id to match the items included in the `locations` array. Only has an effect when `geojson` is set. Support nested property, for example "properties.name".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-fill" href="#scattergeo-fill">
+    fill
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"none"</code>| <code>"toself"</code>                    )
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the area to fill with a solid color. Use with `fillcolor` if not "none". "toself" connects the endpoints of the trace (or each segment of the trace if it has gaps) into a closed shape.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-fillcolor" href="#scattergeo-fillcolor">
+    fillcolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> color<p>Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-geo" href="#scattergeo-geo">
+    geo
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> subplotid
+                <br><em>Default:</em> <code>geo</code>
+<p>Sets a reference between this trace&#x27;s geospatial coordinates and a geographic map. If "geo" (the default value), the geospatial coordinates refer to `layout.geo`. If "geo2", the geospatial coordinates refer to `layout.geo2`, and so on.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-geojson" href="#scattergeo-geojson">
+    geojson
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Sets optional GeoJSON data associated with this trace. If not given, the features on the base map are used when `locations` is set. It can be set as a valid GeoJSON object or as a URL string. Note that we only accept GeoJSONs of type "FeatureCollection" or "Feature" with geometries of type "Polygon" or "MultiPolygon".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-hoverinfo" href="#scattergeo-hoverinfo">
+    hoverinfo
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "lon", "lat", "location", "text", "name" joined with a <code>"+"</code>
+                    OR "all", "none", "skip".
+
+                    <br><em>Examples:</em> <code>"lon"</code>, <code>"lat"</code>, <code>"lon+lat"</code>, <code>"lon+lat+location"</code>, <code>"all"</code>
+
+                <br><em>Default:</em> <code>"all"</code>
+<p>Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-hoverlabel" href="#scattergeo-hoverlabel">
+    hoverlabel
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-align" href="#scattergeo-align">
+    align
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"left"</code>| <code>"right"</code>| <code>"auto"</code>                    )
+                <br><em>Default:</em> <code>"auto"</code>
+<p>Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-bgcolor" href="#scattergeo-bgcolor">
+    bgcolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the background color of the hover labels for this trace</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-bordercolor" href="#scattergeo-bordercolor">
+    bordercolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the border color of the hover labels for this trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-font" href="#scattergeo-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the font used in hover labels.</p>
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="scattergeo-family" href="#scattergeo-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lineposition" href="#scattergeo-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-shadow" href="#scattergeo-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-style" href="#scattergeo-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textcase" href="#scattergeo-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-variant" href="#scattergeo-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-weight" href="#scattergeo-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel.font</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-namelength" href="#scattergeo-namelength">
+    namelength
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].hoverlabel</code>
+<br>
+                    <em>Type:</em> integer or array of integers greater than or equal to -1
+                <br><em>Default:</em> <code>15</code>
+<p>Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer &gt;3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-hovertemplate" href="#scattergeo-hovertemplate">
+    hovertemplate
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example &quot;y: %{y}&quot; as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, "xother" will be added to those with different x positions from the first point. An underscore before or after "(x|y)other" will add a space on that side, only when this field is shown. Numbers are formatted using d3-format&#x27;s syntax %{variable:d3-format}, for example &quot;Price: %{y:$.2f}&quot;. https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format&#x27;s syntax %{variable|d3-time-format}, for example &quot;Day: %{2019-01-01|%A}&quot;. https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `&lt;extra&gt;` is displayed in the secondary box, for example `&lt;extra&gt;%{fullData.name}&lt;/extra&gt;`. To hide the secondary box completely, use an empty tag `&lt;extra&gt;&lt;/extra&gt;`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-hovertext" href="#scattergeo-hovertext">
+    hovertext
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Sets hover text elements associated with each (lon,lat) pair or item in `locations`. If a single string, the same string appears over all the data points. If an array of string, the items are mapped in order to the this trace&#x27;s (lon,lat) or `locations` coordinates. To be seen, trace `hoverinfo` must contain a "text" flag.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ids" href="#scattergeo-ids">
+    ids
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lat" href="#scattergeo-lat">
+    lat
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the latitude coordinates (in degrees North).</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-legend" href="#scattergeo-legend">
+    legend
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> subplotid
+                <br><em>Default:</em> <code>legend</code>
+<p>Sets the reference to a legend to show this trace in. References to these legends are "legend", "legend2", "legend3", etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-legendgroup" href="#scattergeo-legendgroup">
+    legendgroup
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string<p>Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-legendgrouptitle" href="#scattergeo-legendgrouptitle">
+    legendgrouptitle
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-font" href="#scattergeo-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets this legend group&#x27;s title font.</p>
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> color</li>
+<li>
+<a class="attribute-name" id="scattergeo-family" href="#scattergeo-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> string<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lineposition" href="#scattergeo-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-shadow" href="#scattergeo-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> number greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-style" href="#scattergeo-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textcase" href="#scattergeo-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-variant" href="#scattergeo-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-weight" href="#scattergeo-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle.font</code>
+<br>
+                    <em>Type:</em> integer between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-text" href="#scattergeo-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].legendgrouptitle</code>
+<br>
+                    <em>Type:</em> string<p>Sets the title of the legend group.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-legendrank" href="#scattergeo-legendrank">
+    legendrank
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1000</code>
+<p>Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with "reversed" `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-legendwidth" href="#scattergeo-legendwidth">
+    legendwidth
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number<p>Sets the width (in px or fraction) of the legend for this trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-line" href="#scattergeo-line">
+    line
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].line</code>
+<br>
+                    <em>Type:</em> color<p>Sets the line color.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-dash" href="#scattergeo-dash">
+    dash
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].line</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"solid"</code>
+<p>Sets the dash style of lines. Set to a dash type string ("solid", "dot", "dash", "longdash", "dashdot", or "longdashdot") or a dash length list in px (eg "5px,10px,2px,2px").</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-width" href="#scattergeo-width">
+    width
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].line</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>2</code>
+<p>Sets the line width (in px).</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-locationmode" href="#scattergeo-locationmode">
+    locationmode
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"ISO-3"</code>| <code>"USA-states"</code>| <code>"country names"</code>| <code>"geojson-id"</code>                    )
+                <br><em>Default:</em> <code>"ISO-3"</code>
+<p>Determines the set of locations used to match entries in `locations` to regions on the map. Values "ISO-3", "USA-states", "country names" correspond to features on the base map and value "geojson-id" corresponds to features from a custom GeoJSON linked to the `geojson` attribute.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-locations" href="#scattergeo-locations">
+    locations
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the coordinates via location IDs or names. Coordinates correspond to the centroid of each location given. See `locationmode` for more info.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lon" href="#scattergeo-lon">
+    lon
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the longitude coordinates (in degrees East).</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-marker" href="#scattergeo-marker">
+    marker
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-angle" href="#scattergeo-angle">
+    angle
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> angle
+<p>Sets the marker angle in respect to `angleref`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-angleref" href="#scattergeo-angleref">
+    angleref
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"previous"</code>| <code>"up"</code>| <code>"north"</code>                    )
+                <br><em>Default:</em> <code>"up"</code>
+<p>Sets the reference for marker angle. With "previous", angle 0 points along the line from the previous point to this one. With "up", angle 0 points toward the top of the screen. With "north", angle 0 points north based on the current map projection.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-autocolorscale" href="#scattergeo-autocolorscale">
+    autocolorscale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cauto" href="#scattergeo-cauto">
+    cauto
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not the color domain is computed with respect to the input data (here in `marker.color`) or the bounds set in `marker.cmin` and `marker.cmax` Has an effect only if in `marker.color` is set to a numerical array. Defaults to `false` when `marker.cmin` and `marker.cmax` are set by the user.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cmax" href="#scattergeo-cmax">
+    cmax
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number<p>Sets the upper bound of the color domain. Has an effect only if in `marker.color` is set to a numerical array. Value should have the same units as in `marker.color` and if set, `marker.cmin` must be set as well.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cmid" href="#scattergeo-cmid">
+    cmid
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number<p>Sets the mid-point of the color domain by scaling `marker.cmin` and/or `marker.cmax` to be equidistant to this point. Has an effect only if in `marker.color` is set to a numerical array. Value should have the same units as in `marker.color`. Has no effect when `marker.cauto` is `false`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cmin" href="#scattergeo-cmin">
+    cmin
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number<p>Sets the lower bound of the color domain. Has an effect only if in `marker.color` is set to a numerical array. Value should have the same units as in `marker.color` and if set, `marker.cmax` must be set as well.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-coloraxis" href="#scattergeo-coloraxis">
+    coloraxis
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> subplotid
+<p>Sets a reference to a shared color axis. References to these shared color axes are "coloraxis", "coloraxis2", "coloraxis3", etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-colorbar" href="#scattergeo-colorbar">
+    colorbar
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-bgcolor" href="#scattergeo-bgcolor">
+    bgcolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> color                <br><em>Default:</em> <code>"rgba(0,0,0,0)"</code>
+<p>Sets the color of padded area.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-bordercolor" href="#scattergeo-bordercolor">
+    bordercolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> color                <br><em>Default:</em> <code>"#444"</code>
+<p>Sets the axis line color.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-borderwidth" href="#scattergeo-borderwidth">
+    borderwidth
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number<p>Sets the width (in px) or the border enclosing this color bar.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-dtick" href="#scattergeo-dtick">
+    dtick
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to "log" and "date" axes. If the axis `type` is "log", then ticks are set every 10^(n"dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. "log" has several special values; "L&lt;f&gt;", where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = "L0.5" will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use "D1" (all digits) or "D2" (only 2 and 5). `tick0` is ignored for "D1" and "D2". If the axis `type` is "date", then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. "date" also has special values "M&lt;n&gt;" gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to "2000-01-15" and `dtick` to "M3". To set ticks every 4 years, set `dtick` to "M48"</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-exponentformat" href="#scattergeo-exponentformat">
+    exponentformat
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"none"</code>| <code>"e"</code>| <code>"E"</code>| <code>"power"</code>| <code>"SI"</code>| <code>"B"</code>                    )
+                <br><em>Default:</em> <code>"B"</code>
+<p>Determines a formatting rule for the tick exponents. For example, consider the number 1,000,000,000. If "none", it appears as 1,000,000,000. If "e", 1e+9. If "E", 1E+9. If "power", 1x10^9 (with 9 in a super script). If "SI", 1G. If "B", 1B.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-labelalias" href="#scattergeo-labelalias">
+    labelalias
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Replacement text for specific tick or hover labels. For example using {US: &#x27;USA&#x27;, CA: &#x27;Canada&#x27;} changes US to USA and CA to Canada. The labels we would have shown must match the keys exactly, after adding any tickprefix or ticksuffix. For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash. That means you need to use −1 instead of -1. labelalias can be used with any axis type, and both keys (if needed) and values (if desired) can include html-like tags or MathJax.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-len" href="#scattergeo-len">
+    len
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Sets the length of the color bar This measure excludes the padding of both ends. That is, the color bar length is this length minus the padding on both ends.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lenmode" href="#scattergeo-lenmode">
+    lenmode
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"fraction"</code>| <code>"pixels"</code>                    )
+                <br><em>Default:</em> <code>"fraction"</code>
+<p>Determines whether this color bar&#x27;s length (i.e. the measure in the color variation direction) is set in units of plot "fraction" or in "pixels. Use `len` to set the value.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-minexponent" href="#scattergeo-minexponent">
+    minexponent
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>3</code>
+<p>Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is "SI" or "B".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-nticks" href="#scattergeo-nticks">
+    nticks
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> integer<p>Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to "auto".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-orientation" href="#scattergeo-orientation">
+    orientation
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"h"</code>| <code>"v"</code>                    )
+                <br><em>Default:</em> <code>"v"</code>
+<p>Sets the orientation of the colorbar.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-outlinecolor" href="#scattergeo-outlinecolor">
+    outlinecolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> color                <br><em>Default:</em> <code>"#444"</code>
+<p>Sets the axis line color.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-outlinewidth" href="#scattergeo-outlinewidth">
+    outlinewidth
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Sets the width (in px) of the axis line.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-separatethousands" href="#scattergeo-separatethousands">
+    separatethousands
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> boolean<p>If &quot;true&quot;, even 4-digit integers are separated</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-showexponent" href="#scattergeo-showexponent">
+    showexponent
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"all"</code>| <code>"first"</code>| <code>"last"</code>| <code>"none"</code>                    )
+                <br><em>Default:</em> <code>"all"</code>
+<p>If "all", all exponents are shown besides their significands. If "first", only the exponent of the first tick is shown. If "last", only the exponent of the last tick is shown. If "none", no exponents appear.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-showticklabels" href="#scattergeo-showticklabels">
+    showticklabels
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not the tick labels are drawn.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-showtickprefix" href="#scattergeo-showtickprefix">
+    showtickprefix
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"all"</code>| <code>"first"</code>| <code>"last"</code>| <code>"none"</code>                    )
+                <br><em>Default:</em> <code>"all"</code>
+<p>If "all", all tick labels are displayed with a prefix. If "first", only the first tick is displayed with a prefix. If "last", only the last tick is displayed with a suffix. If "none", tick prefixes are hidden.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-showticksuffix" href="#scattergeo-showticksuffix">
+    showticksuffix
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"all"</code>| <code>"first"</code>| <code>"last"</code>| <code>"none"</code>                    )
+                <br><em>Default:</em> <code>"all"</code>
+<p>Same as `showtickprefix` but for tick suffixes.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-thickness" href="#scattergeo-thickness">
+    thickness
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>30</code>
+<p>Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-thicknessmode" href="#scattergeo-thicknessmode">
+    thicknessmode
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"fraction"</code>| <code>"pixels"</code>                    )
+                <br><em>Default:</em> <code>"pixels"</code>
+<p>Determines whether this color bar&#x27;s thickness (i.e. the measure in the constant color direction) is set in units of plot "fraction" or in "pixels". Use `thickness` to set the value.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tick0" href="#scattergeo-tick0">
+    tick0
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is "log", then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`="L&lt;f&gt;" (see `dtick` for more info). If the axis `type` is "date", it should be a date string, like date data. If the axis `type` is "category", it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickangle" href="#scattergeo-tickangle">
+    tickangle
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> angle
+                <br><em>Default:</em> <code>"auto"</code>
+<p>Sets the angle of the tick labels with respect to the horizontal. For example, a `tickangle` of -90 draws the tick labels vertically.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickcolor" href="#scattergeo-tickcolor">
+    tickcolor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> color                <br><em>Default:</em> <code>"#444"</code>
+<p>Sets the tick color.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickfont" href="#scattergeo-tickfont">
+    tickfont
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the color bar&#x27;s tick label font</p>
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+                    <em>Type:</em> color</li>
+<li>
+<a class="attribute-name" id="scattergeo-family" href="#scattergeo-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+                    <em>Type:</em> string<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lineposition" href="#scattergeo-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-shadow" href="#scattergeo-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+                    <em>Type:</em> number greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-style" href="#scattergeo-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textcase" href="#scattergeo-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-variant" href="#scattergeo-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-weight" href="#scattergeo-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickfont</code>
+<br>
+                    <em>Type:</em> integer between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickformat" href="#scattergeo-tickformat">
+    tickformat
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> string<p>Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. And for dates see: https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format. We add two items to d3&#x27;s date formatter: "%h" for half of the year as a decimal number as well as "%{n}f" for fractional seconds with n digits. For example, "2016-10-13 09:15:23.456" with tickformat "%H~%M~%S.%2f" would display "09~15~23.46"</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickformatstops" href="#scattergeo-tickformatstops">
+    tickformatstops
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+            <br><em>Type:</em> array of object where
+            each object has one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-dtickrange" href="#scattergeo-dtickrange">
+    dtickrange
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickformatstops</code>
+<br>
+{inner}<em>Type:</em> {array}
+<p>range ["min", "max"], where "min", "max" - dtick values which describe some zoom level, it is possible to omit "min" or "max" value by passing "null"</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-enabled" href="#scattergeo-enabled">
+    enabled
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickformatstops</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not this stop is used. If `false`, this stop is ignored even within its `dtickrange`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-name" href="#scattergeo-name">
+    name
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickformatstops</code>
+<br>
+                    <em>Type:</em> string<p>When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-templateitemname" href="#scattergeo-templateitemname">
+    templateitemname
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickformatstops</code>
+<br>
+                    <em>Type:</em> string<p>Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-value" href="#scattergeo-value">
+    value
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.tickformatstops</code>
+<br>
+                    <em>Type:</em> string<p>string - dtickformat for described zoom level, the same as "tickformat"</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticklabeloverflow" href="#scattergeo-ticklabeloverflow">
+    ticklabeloverflow
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"allow"</code>| <code>"hide past div"</code>| <code>"hide past domain"</code>                    )
+<p>Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is "hide past domain". In other cases the default is "hide past div".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticklabelposition" href="#scattergeo-ticklabelposition">
+    ticklabelposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"outside"</code>| <code>"inside"</code>| <code>"outside top"</code>| <code>"inside top"</code>| <code>"outside left"</code>| <code>"inside left"</code>| <code>"outside right"</code>| <code>"inside right"</code>| <code>"outside bottom"</code>| <code>"inside bottom"</code>                    )
+                <br><em>Default:</em> <code>"outside"</code>
+<p>Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is "h", top and bottom when `orientation` is "v".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticklabelstep" href="#scattergeo-ticklabelstep">
+    ticklabelstep
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> integer greater than or equal to 1
+                <br><em>Default:</em> <code>1</code>
+<p>Sets the spacing between tick labels as compared to the spacing between ticks. A value of 1 (default) means each tick gets a label. A value of 2 means shows every 2nd label. A larger value n means only every nth tick is labeled. `tick0` determines which labels are shown. Not implemented for axes with `type` "log" or "multicategory", or when `tickmode` is "array".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticklen" href="#scattergeo-ticklen">
+    ticklen
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>5</code>
+<p>Sets the tick length (in px).</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickmode" href="#scattergeo-tickmode">
+    tickmode
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"auto"</code>| <code>"linear"</code>| <code>"array"</code>                    )
+<p>Sets the tick mode for this axis. If "auto", the number of ticks is set via `nticks`. If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` ("linear" is the default value if `tick0` and `dtick` are provided). If "array", the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. ("array" is the default value if `tickvals` is provided).</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickprefix" href="#scattergeo-tickprefix">
+    tickprefix
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> string<p>Sets a tick label prefix.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticks" href="#scattergeo-ticks">
+    ticks
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"outside"</code>| <code>"inside"</code>| <code>""</code>                    )
+<p>Determines whether ticks are drawn or not. If "", this axis&#x27; ticks are not drawn. If "outside" ("inside"), this axis&#x27; are drawn outside (inside) the axis lines.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticksuffix" href="#scattergeo-ticksuffix">
+    ticksuffix
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> string<p>Sets a tick label suffix.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ticktext" href="#scattergeo-ticktext">
+    ticktext
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the text displayed at the ticks position via `tickvals`. Only has an effect if `tickmode` is set to "array". Used with `tickvals`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickvals" href="#scattergeo-tickvals">
+    tickvals
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> data_array
+<p>Sets the values at which ticks on this axis appear. Only has an effect if `tickmode` is set to "array". Used with `ticktext`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-tickwidth" href="#scattergeo-tickwidth">
+    tickwidth
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Sets the tick width (in px).</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-title" href="#scattergeo-title">
+    title
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-font" href="#scattergeo-font">
+    font
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets this color bar&#x27;s title font.</p>
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+                    <em>Type:</em> color</li>
+<li>
+<a class="attribute-name" id="scattergeo-family" href="#scattergeo-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+                    <em>Type:</em> string<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lineposition" href="#scattergeo-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-shadow" href="#scattergeo-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+                    <em>Type:</em> string                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+                    <em>Type:</em> number greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-style" href="#scattergeo-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textcase" href="#scattergeo-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-variant" href="#scattergeo-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-weight" href="#scattergeo-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title.font</code>
+<br>
+                    <em>Type:</em> integer between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-side" href="#scattergeo-side">
+    side
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"right"</code>| <code>"top"</code>| <code>"bottom"</code>                    )
+<p>Determines the location of color bar&#x27;s title with respect to the color bar. Defaults to "top" when `orientation` if "v" and  defaults to "right" when `orientation` if "h".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-text" href="#scattergeo-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar.title</code>
+<br>
+                    <em>Type:</em> string<p>Sets the title of the color bar.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-x" href="#scattergeo-x">
+    x
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number<p>Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is "paper", defaults to 1.02 when `orientation` is "v" and 0.5 when `orientation` is "h". When `xref` is "container", defaults to "1" when `orientation` is "v" and 0.5 when `orientation` is "h". Must be between "0" and "1" if `xref` is "container" and between "-2" and "3" if `xref` is "paper".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-xanchor" href="#scattergeo-xanchor">
+    xanchor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"left"</code>| <code>"center"</code>| <code>"right"</code>                    )
+<p>Sets this color bar&#x27;s horizontal position anchor. This anchor binds the `x` position to the "left", "center" or "right" of the color bar. Defaults to "left" when `orientation` is "v" and "center" when `orientation` is "h".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-xpad" href="#scattergeo-xpad">
+    xpad
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>10</code>
+<p>Sets the amount of padding (in px) along the x direction.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-xref" href="#scattergeo-xref">
+    xref
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"container"</code>| <code>"paper"</code>                    )
+                <br><em>Default:</em> <code>"paper"</code>
+<p>Sets the container `x` refers to. "container" spans the entire `width` of the plot. "paper" refers to the width of the plotting area only.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-y" href="#scattergeo-y">
+    y
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number<p>Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is "paper", defaults to 0.5 when `orientation` is "v" and 1.02 when `orientation` is "h". When `yref` is "container", defaults to 0.5 when `orientation` is "v" and 1 when `orientation` is "h". Must be between "0" and "1" if `yref` is "container" and between "-2" and "3" if `yref` is "paper".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-yanchor" href="#scattergeo-yanchor">
+    yanchor
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"top"</code>| <code>"middle"</code>| <code>"bottom"</code>                    )
+<p>Sets this color bar&#x27;s vertical position anchor This anchor binds the `y` position to the "top", "middle" or "bottom" of the color bar. Defaults to "middle" when `orientation` is "v" and "bottom" when `orientation` is "h".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-ypad" href="#scattergeo-ypad">
+    ypad
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>10</code>
+<p>Sets the amount of padding (in px) along the y direction.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-yref" href="#scattergeo-yref">
+    yref
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.colorbar</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"container"</code>| <code>"paper"</code>                    )
+                <br><em>Default:</em> <code>"paper"</code>
+<p>Sets the container `y` refers to. "container" spans the entire `height` of the plot. "paper" refers to the height of the plotting area only.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-colorscale" href="#scattergeo-colorscale">
+    colorscale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> colorscale
+<p>Sets the colorscale. Has an effect only if in `marker.color` is set to a numerical array. The colorscale must be an array containing arrays mapping a normalized value to an rgb, rgba, hex, hsl, hsv, or named color string. At minimum, a mapping for the lowest (0) and highest (1) values are required. For example, `[[0, &#x27;rgb(0,0,255)&#x27;], [1, &#x27;rgb(255,0,0)&#x27;]]`. To control the bounds of the colorscale in color space, use `marker.cmin` and `marker.cmax`. Alternatively, `colorscale` may be a palette name string of the following list: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-gradient" href="#scattergeo-gradient">
+    gradient
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.gradient</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the final color of the gradient fill: the center color for radial, the right for horizontal, or the bottom for vertical.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-type" href="#scattergeo-type">
+    type
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.gradient</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"radial"</code>| <code>"horizontal"</code>| <code>"vertical"</code>| <code>"none"</code>                    )
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the type of gradient used to fill the markers</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-line" href="#scattergeo-line">
+    line
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-autocolorscale" href="#scattergeo-autocolorscale">
+    autocolorscale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.line.colorscale`. Has an effect only if in `marker.line.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cauto" href="#scattergeo-cauto">
+    cauto
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not the color domain is computed with respect to the input data (here in `marker.line.color`) or the bounds set in `marker.line.cmin` and `marker.line.cmax` Has an effect only if in `marker.line.color` is set to a numerical array. Defaults to `false` when `marker.line.cmin` and `marker.line.cmax` are set by the user.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cmax" href="#scattergeo-cmax">
+    cmax
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> number<p>Sets the upper bound of the color domain. Has an effect only if in `marker.line.color` is set to a numerical array. Value should have the same units as in `marker.line.color` and if set, `marker.line.cmin` must be set as well.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cmid" href="#scattergeo-cmid">
+    cmid
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> number<p>Sets the mid-point of the color domain by scaling `marker.line.cmin` and/or `marker.line.cmax` to be equidistant to this point. Has an effect only if in `marker.line.color` is set to a numerical array. Value should have the same units as in `marker.line.color`. Has no effect when `marker.line.cauto` is `false`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-cmin" href="#scattergeo-cmin">
+    cmin
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> number<p>Sets the lower bound of the color domain. Has an effect only if in `marker.line.color` is set to a numerical array. Value should have the same units as in `marker.line.color` and if set, `marker.line.cmax` must be set as well.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> color or array of colors<p>Sets the marker.line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.line.cmin` and `marker.line.cmax` if set.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-coloraxis" href="#scattergeo-coloraxis">
+    coloraxis
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> subplotid
+<p>Sets a reference to a shared color axis. References to these shared color axes are "coloraxis", "coloraxis2", "coloraxis3", etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-colorscale" href="#scattergeo-colorscale">
+    colorscale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> colorscale
+<p>Sets the colorscale. Has an effect only if in `marker.line.color` is set to a numerical array. The colorscale must be an array containing arrays mapping a normalized value to an rgb, rgba, hex, hsl, hsv, or named color string. At minimum, a mapping for the lowest (0) and highest (1) values are required. For example, `[[0, &#x27;rgb(0,0,255)&#x27;], [1, &#x27;rgb(255,0,0)&#x27;]]`. To control the bounds of the colorscale in color space, use `marker.line.cmin` and `marker.line.cmax`. Alternatively, `colorscale` may be a palette name string of the following list: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-reversescale" href="#scattergeo-reversescale">
+    reversescale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> boolean<p>Reverses the color mapping if true. Has an effect only if in `marker.line.color` is set to a numerical array. If true, `marker.line.cmin` will correspond to the last color in the array and `marker.line.cmax` will correspond to the first color.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-width" href="#scattergeo-width">
+    width
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker.line</code>
+<br>
+                    <em>Type:</em> number or array of numbers<p>Sets the width (in px) of the lines bounding the marker points.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-opacity" href="#scattergeo-opacity">
+    opacity
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number or array of numbers less than or equal to 1
+<p>Sets the marker opacity.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-reversescale" href="#scattergeo-reversescale">
+    reversescale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> boolean<p>Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-showscale" href="#scattergeo-showscale">
+    showscale
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> boolean<p>Determines whether or not a colorbar is displayed for this trace. Has an effect only if in `marker.color` is set to a numerical array.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number or array of numbers                <br><em>Default:</em> <code>6</code>
+<p>Sets the marker size (in px).</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-sizemin" href="#scattergeo-sizemin">
+    sizemin
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number<p>Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-sizemode" href="#scattergeo-sizemode">
+    sizemode
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>"diameter"</code>| <code>"area"</code>                    )
+                <br><em>Default:</em> <code>"diameter"</code>
+<p>Has an effect only if `marker.size` is set to a numerical array. Sets the rule for which the data in `size` is converted to pixels.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-sizeref" href="#scattergeo-sizeref">
+    sizeref
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number                <br><em>Default:</em> <code>1</code>
+<p>Has an effect only if `marker.size` is set to a numerical array. Sets the scale factor used to determine the rendered size of marker points. Use with `sizemin` and `sizemode`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-standoff" href="#scattergeo-standoff">
+    standoff
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+                    <em>Type:</em> number or array of numbers<p>Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-symbol" href="#scattergeo-symbol">
+    symbol
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].marker</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"0"</code>| <code>"0"</code>| <code>"circle"</code>| <code>"100"</code>| <code>"100"</code>| <code>"circle-open"</code>| <code>"200"</code>| <code>"200"</code>| <code>"circle-dot"</code>| <code>"300"</code>| <code>"300"</code>| <code>"circle-open-dot"</code>| <code>"1"</code>| <code>"1"</code>| <code>"square"</code>| <code>"101"</code>| <code>"101"</code>| <code>"square-open"</code>| <code>"201"</code>| <code>"201"</code>| <code>"square-dot"</code>| <code>"301"</code>| <code>"301"</code>| <code>"square-open-dot"</code>| <code>"2"</code>| <code>"2"</code>| <code>"diamond"</code>| <code>"102"</code>| <code>"102"</code>| <code>"diamond-open"</code>| <code>"202"</code>| <code>"202"</code>| <code>"diamond-dot"</code>| <code>"302"</code>| <code>"302"</code>| <code>"diamond-open-dot"</code>| <code>"3"</code>| <code>"3"</code>| <code>"cross"</code>| <code>"103"</code>| <code>"103"</code>| <code>"cross-open"</code>| <code>"203"</code>| <code>"203"</code>| <code>"cross-dot"</code>| <code>"303"</code>| <code>"303"</code>| <code>"cross-open-dot"</code>| <code>"4"</code>| <code>"4"</code>| <code>"x"</code>| <code>"104"</code>| <code>"104"</code>| <code>"x-open"</code>| <code>"204"</code>| <code>"204"</code>| <code>"x-dot"</code>| <code>"304"</code>| <code>"304"</code>| <code>"x-open-dot"</code>| <code>"5"</code>| <code>"5"</code>| <code>"triangle-up"</code>| <code>"105"</code>| <code>"105"</code>| <code>"triangle-up-open"</code>| <code>"205"</code>| <code>"205"</code>| <code>"triangle-up-dot"</code>| <code>"305"</code>| <code>"305"</code>| <code>"triangle-up-open-dot"</code>| <code>"6"</code>| <code>"6"</code>| <code>"triangle-down"</code>| <code>"106"</code>| <code>"106"</code>| <code>"triangle-down-open"</code>| <code>"206"</code>| <code>"206"</code>| <code>"triangle-down-dot"</code>| <code>"306"</code>| <code>"306"</code>| <code>"triangle-down-open-dot"</code>| <code>"7"</code>| <code>"7"</code>| <code>"triangle-left"</code>| <code>"107"</code>| <code>"107"</code>| <code>"triangle-left-open"</code>| <code>"207"</code>| <code>"207"</code>| <code>"triangle-left-dot"</code>| <code>"307"</code>| <code>"307"</code>| <code>"triangle-left-open-dot"</code>| <code>"8"</code>| <code>"8"</code>| <code>"triangle-right"</code>| <code>"108"</code>| <code>"108"</code>| <code>"triangle-right-open"</code>| <code>"208"</code>| <code>"208"</code>| <code>"triangle-right-dot"</code>| <code>"308"</code>| <code>"308"</code>| <code>"triangle-right-open-dot"</code>| <code>"9"</code>| <code>"9"</code>| <code>"triangle-ne"</code>| <code>"109"</code>| <code>"109"</code>| <code>"triangle-ne-open"</code>| <code>"209"</code>| <code>"209"</code>| <code>"triangle-ne-dot"</code>| <code>"309"</code>| <code>"309"</code>| <code>"triangle-ne-open-dot"</code>| <code>"10"</code>| <code>"10"</code>| <code>"triangle-se"</code>| <code>"110"</code>| <code>"110"</code>| <code>"triangle-se-open"</code>| <code>"210"</code>| <code>"210"</code>| <code>"triangle-se-dot"</code>| <code>"310"</code>| <code>"310"</code>| <code>"triangle-se-open-dot"</code>| <code>"11"</code>| <code>"11"</code>| <code>"triangle-sw"</code>| <code>"111"</code>| <code>"111"</code>| <code>"triangle-sw-open"</code>| <code>"211"</code>| <code>"211"</code>| <code>"triangle-sw-dot"</code>| <code>"311"</code>| <code>"311"</code>| <code>"triangle-sw-open-dot"</code>| <code>"12"</code>| <code>"12"</code>| <code>"triangle-nw"</code>| <code>"112"</code>| <code>"112"</code>| <code>"triangle-nw-open"</code>| <code>"212"</code>| <code>"212"</code>| <code>"triangle-nw-dot"</code>| <code>"312"</code>| <code>"312"</code>| <code>"triangle-nw-open-dot"</code>| <code>"13"</code>| <code>"13"</code>| <code>"pentagon"</code>| <code>"113"</code>| <code>"113"</code>| <code>"pentagon-open"</code>| <code>"213"</code>| <code>"213"</code>| <code>"pentagon-dot"</code>| <code>"313"</code>| <code>"313"</code>| <code>"pentagon-open-dot"</code>| <code>"14"</code>| <code>"14"</code>| <code>"hexagon"</code>| <code>"114"</code>| <code>"114"</code>| <code>"hexagon-open"</code>| <code>"214"</code>| <code>"214"</code>| <code>"hexagon-dot"</code>| <code>"314"</code>| <code>"314"</code>| <code>"hexagon-open-dot"</code>| <code>"15"</code>| <code>"15"</code>| <code>"hexagon2"</code>| <code>"115"</code>| <code>"115"</code>| <code>"hexagon2-open"</code>| <code>"215"</code>| <code>"215"</code>| <code>"hexagon2-dot"</code>| <code>"315"</code>| <code>"315"</code>| <code>"hexagon2-open-dot"</code>| <code>"16"</code>| <code>"16"</code>| <code>"octagon"</code>| <code>"116"</code>| <code>"116"</code>| <code>"octagon-open"</code>| <code>"216"</code>| <code>"216"</code>| <code>"octagon-dot"</code>| <code>"316"</code>| <code>"316"</code>| <code>"octagon-open-dot"</code>| <code>"17"</code>| <code>"17"</code>| <code>"star"</code>| <code>"117"</code>| <code>"117"</code>| <code>"star-open"</code>| <code>"217"</code>| <code>"217"</code>| <code>"star-dot"</code>| <code>"317"</code>| <code>"317"</code>| <code>"star-open-dot"</code>| <code>"18"</code>| <code>"18"</code>| <code>"hexagram"</code>| <code>"118"</code>| <code>"118"</code>| <code>"hexagram-open"</code>| <code>"218"</code>| <code>"218"</code>| <code>"hexagram-dot"</code>| <code>"318"</code>| <code>"318"</code>| <code>"hexagram-open-dot"</code>| <code>"19"</code>| <code>"19"</code>| <code>"star-triangle-up"</code>| <code>"119"</code>| <code>"119"</code>| <code>"star-triangle-up-open"</code>| <code>"219"</code>| <code>"219"</code>| <code>"star-triangle-up-dot"</code>| <code>"319"</code>| <code>"319"</code>| <code>"star-triangle-up-open-dot"</code>| <code>"20"</code>| <code>"20"</code>| <code>"star-triangle-down"</code>| <code>"120"</code>| <code>"120"</code>| <code>"star-triangle-down-open"</code>| <code>"220"</code>| <code>"220"</code>| <code>"star-triangle-down-dot"</code>| <code>"320"</code>| <code>"320"</code>| <code>"star-triangle-down-open-dot"</code>| <code>"21"</code>| <code>"21"</code>| <code>"star-square"</code>| <code>"121"</code>| <code>"121"</code>| <code>"star-square-open"</code>| <code>"221"</code>| <code>"221"</code>| <code>"star-square-dot"</code>| <code>"321"</code>| <code>"321"</code>| <code>"star-square-open-dot"</code>| <code>"22"</code>| <code>"22"</code>| <code>"star-diamond"</code>| <code>"122"</code>| <code>"122"</code>| <code>"star-diamond-open"</code>| <code>"222"</code>| <code>"222"</code>| <code>"star-diamond-dot"</code>| <code>"322"</code>| <code>"322"</code>| <code>"star-diamond-open-dot"</code>| <code>"23"</code>| <code>"23"</code>| <code>"diamond-tall"</code>| <code>"123"</code>| <code>"123"</code>| <code>"diamond-tall-open"</code>| <code>"223"</code>| <code>"223"</code>| <code>"diamond-tall-dot"</code>| <code>"323"</code>| <code>"323"</code>| <code>"diamond-tall-open-dot"</code>| <code>"24"</code>| <code>"24"</code>| <code>"diamond-wide"</code>| <code>"124"</code>| <code>"124"</code>| <code>"diamond-wide-open"</code>| <code>"224"</code>| <code>"224"</code>| <code>"diamond-wide-dot"</code>| <code>"324"</code>| <code>"324"</code>| <code>"diamond-wide-open-dot"</code>| <code>"25"</code>| <code>"25"</code>| <code>"hourglass"</code>| <code>"125"</code>| <code>"125"</code>| <code>"hourglass-open"</code>| <code>"26"</code>| <code>"26"</code>| <code>"bowtie"</code>| <code>"126"</code>| <code>"126"</code>| <code>"bowtie-open"</code>| <code>"27"</code>| <code>"27"</code>| <code>"circle-cross"</code>| <code>"127"</code>| <code>"127"</code>| <code>"circle-cross-open"</code>| <code>"28"</code>| <code>"28"</code>| <code>"circle-x"</code>| <code>"128"</code>| <code>"128"</code>| <code>"circle-x-open"</code>| <code>"29"</code>| <code>"29"</code>| <code>"square-cross"</code>| <code>"129"</code>| <code>"129"</code>| <code>"square-cross-open"</code>| <code>"30"</code>| <code>"30"</code>| <code>"square-x"</code>| <code>"130"</code>| <code>"130"</code>| <code>"square-x-open"</code>| <code>"31"</code>| <code>"31"</code>| <code>"diamond-cross"</code>| <code>"131"</code>| <code>"131"</code>| <code>"diamond-cross-open"</code>| <code>"32"</code>| <code>"32"</code>| <code>"diamond-x"</code>| <code>"132"</code>| <code>"132"</code>| <code>"diamond-x-open"</code>| <code>"33"</code>| <code>"33"</code>| <code>"cross-thin"</code>| <code>"133"</code>| <code>"133"</code>| <code>"cross-thin-open"</code>| <code>"34"</code>| <code>"34"</code>| <code>"x-thin"</code>| <code>"134"</code>| <code>"134"</code>| <code>"x-thin-open"</code>| <code>"35"</code>| <code>"35"</code>| <code>"asterisk"</code>| <code>"135"</code>| <code>"135"</code>| <code>"asterisk-open"</code>| <code>"36"</code>| <code>"36"</code>| <code>"hash"</code>| <code>"136"</code>| <code>"136"</code>| <code>"hash-open"</code>| <code>"236"</code>| <code>"236"</code>| <code>"hash-dot"</code>| <code>"336"</code>| <code>"336"</code>| <code>"hash-open-dot"</code>| <code>"37"</code>| <code>"37"</code>| <code>"y-up"</code>| <code>"137"</code>| <code>"137"</code>| <code>"y-up-open"</code>| <code>"38"</code>| <code>"38"</code>| <code>"y-down"</code>| <code>"138"</code>| <code>"138"</code>| <code>"y-down-open"</code>| <code>"39"</code>| <code>"39"</code>| <code>"y-left"</code>| <code>"139"</code>| <code>"139"</code>| <code>"y-left-open"</code>| <code>"40"</code>| <code>"40"</code>| <code>"y-right"</code>| <code>"140"</code>| <code>"140"</code>| <code>"y-right-open"</code>| <code>"41"</code>| <code>"41"</code>| <code>"line-ew"</code>| <code>"141"</code>| <code>"141"</code>| <code>"line-ew-open"</code>| <code>"42"</code>| <code>"42"</code>| <code>"line-ns"</code>| <code>"142"</code>| <code>"142"</code>| <code>"line-ns-open"</code>| <code>"43"</code>| <code>"43"</code>| <code>"line-ne"</code>| <code>"143"</code>| <code>"143"</code>| <code>"line-ne-open"</code>| <code>"44"</code>| <code>"44"</code>| <code>"line-nw"</code>| <code>"144"</code>| <code>"144"</code>| <code>"line-nw-open"</code>| <code>"45"</code>| <code>"45"</code>| <code>"arrow-up"</code>| <code>"145"</code>| <code>"145"</code>| <code>"arrow-up-open"</code>| <code>"46"</code>| <code>"46"</code>| <code>"arrow-down"</code>| <code>"146"</code>| <code>"146"</code>| <code>"arrow-down-open"</code>| <code>"47"</code>| <code>"47"</code>| <code>"arrow-left"</code>| <code>"147"</code>| <code>"147"</code>| <code>"arrow-left-open"</code>| <code>"48"</code>| <code>"48"</code>| <code>"arrow-right"</code>| <code>"148"</code>| <code>"148"</code>| <code>"arrow-right-open"</code>| <code>"49"</code>| <code>"49"</code>| <code>"arrow-bar-up"</code>| <code>"149"</code>| <code>"149"</code>| <code>"arrow-bar-up-open"</code>| <code>"50"</code>| <code>"50"</code>| <code>"arrow-bar-down"</code>| <code>"150"</code>| <code>"150"</code>| <code>"arrow-bar-down-open"</code>| <code>"51"</code>| <code>"51"</code>| <code>"arrow-bar-left"</code>| <code>"151"</code>| <code>"151"</code>| <code>"arrow-bar-left-open"</code>| <code>"52"</code>| <code>"52"</code>| <code>"arrow-bar-right"</code>| <code>"152"</code>| <code>"152"</code>| <code>"arrow-bar-right-open"</code>| <code>"53"</code>| <code>"53"</code>| <code>"arrow"</code>| <code>"153"</code>| <code>"153"</code>| <code>"arrow-open"</code>| <code>"54"</code>| <code>"54"</code>| <code>"arrow-wide"</code>| <code>"154"</code>| <code>"154"</code>| <code>"arrow-wide-open"</code>                    )
+                <br><em>Default:</em> <code>"circle"</code>
+<p>Sets the marker symbol type. Adding 100 is equivalent to appending "-open" to a symbol name. Adding 200 is equivalent to appending "-dot" to a symbol name. Adding 300 is equivalent to appending "-open-dot" or "dot-open" to a symbol name.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-meta" href="#scattergeo-meta">
+    meta
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-mode" href="#scattergeo-mode">
+    mode
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "lines", "markers", "text" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"lines"</code>, <code>"markers"</code>, <code>"lines+markers"</code>, <code>"lines+markers+text"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"markers"</code>
+<p>Determines the drawing mode for this scatter trace. If the provided `mode` includes "text" then the `text` elements appear at the coordinates. Otherwise, the `text` elements appear on hover. If there are less than 20 points and the trace is not stacked then the default is "lines+markers". Otherwise, "lines".</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-name" href="#scattergeo-name">
+    name
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string<p>Sets the trace name. The trace name appears as the legend item and on hover.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-opacity" href="#scattergeo-opacity">
+    opacity
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+                <br><em>Default:</em> <code>1</code>
+<p>Sets the opacity of the trace.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-selected" href="#scattergeo-selected">
+    selected
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-marker" href="#scattergeo-marker">
+    marker
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].selected</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].selected.marker</code>
+<br>
+                    <em>Type:</em> color<p>Sets the marker color of selected points.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-opacity" href="#scattergeo-opacity">
+    opacity
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].selected.marker</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+<p>Sets the marker opacity of selected points.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].selected.marker</code>
+<br>
+                    <em>Type:</em> number<p>Sets the marker size of selected points.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textfont" href="#scattergeo-textfont">
+    textfont
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].selected</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].selected.textfont</code>
+<br>
+                    <em>Type:</em> color<p>Sets the text font color of selected points.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-selectedpoints" href="#scattergeo-selectedpoints">
+    selectedpoints
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Array containing integer indices of selected points. Has an effect only for traces that support selections. Note that an empty array means an empty selection where the `unselected` are turned on for all points, whereas, any other non-array values means no selection all where the `selected` and `unselected` styles have no effect.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-showlegend" href="#scattergeo-showlegend">
+    showlegend
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> boolean                <br><em>Default:</em> <code>true</code>
+<p>Determines whether or not an item corresponding to this trace is shown in the legend.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-text" href="#scattergeo-text">
+    text
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Sets text elements associated with each (lon,lat) pair or item in `locations`. If a single string, the same string appears over all the data points. If an array of string, the items are mapped in order to the this trace&#x27;s (lon,lat) or `locations` coordinates. If trace `hoverinfo` contains a "text" flag and "hovertext" is not set, these elements will be seen in the hover labels.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textfont" href="#scattergeo-textfont">
+    textfont
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<p>Sets the text font.</p>
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+                    <em>Type:</em> color or array of colors</li>
+<li>
+<a class="attribute-name" id="scattergeo-family" href="#scattergeo-family">
+    family
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren&#x27;t available.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-lineposition" href="#scattergeo-lineposition">
+    lineposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+                    <em>Type:</em> flaglist string.
+
+                    Any combination of "under", "over", "through" joined with a <code>"+"</code>
+                    OR "none".
+
+                    <br><em>Examples:</em> <code>"under"</code>, <code>"over"</code>, <code>"under+over"</code>, <code>"under+over+through"</code>, <code>"none"</code>
+
+                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the kind of decoration line(s) with text, such as an "under", "over" or "through" as well as combinations e.g. "under+over", etc.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-shadow" href="#scattergeo-shadow">
+    shadow
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+                    <em>Type:</em> string or array of strings                <br><em>Default:</em> <code>"none"</code>
+<p>Sets the shape and color of the shadow behind text. "auto" places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+                    <em>Type:</em> number or array of numbers greater than or equal to 1
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-style" href="#scattergeo-style">
+    style
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"italic"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets whether a font should be styled with a normal or italic face from its family.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textcase" href="#scattergeo-textcase">
+    textcase
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"word caps"</code>| <code>"upper"</code>| <code>"lower"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-variant" href="#scattergeo-variant">
+    variant
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"normal"</code>| <code>"small-caps"</code>| <code>"all-small-caps"</code>| <code>"all-petite-caps"</code>| <code>"petite-caps"</code>| <code>"unicase"</code>                    )
+                <br><em>Default:</em> <code>"normal"</code>
+<p>Sets the variant of the font.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-weight" href="#scattergeo-weight">
+    weight
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].textfont</code>
+<br>
+                    <em>Type:</em> integer or array of integers between or equal to 1 and 1000
+                <br><em>Default:</em> <code>normal</code>
+<p>Sets the weight (or boldness) of the font.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textposition" href="#scattergeo-textposition">
+    textposition
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+            <em>Type:</em>
+                    enumerated or array of enumerateds
+                    , one of (
+<code>"top left"</code>| <code>"top center"</code>| <code>"top right"</code>| <code>"middle left"</code>| <code>"middle center"</code>| <code>"middle right"</code>| <code>"bottom left"</code>| <code>"bottom center"</code>| <code>"bottom right"</code>                    )
+                <br><em>Default:</em> <code>"middle center"</code>
+<p>Sets the positions of the `text` elements with respects to the (x,y) coordinates.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-texttemplate" href="#scattergeo-texttemplate">
+    texttemplate
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string or array of strings<p>Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example &quot;y: %{y}&quot;. Numbers are formatted using d3-format&#x27;s syntax %{variable:d3-format}, for example &quot;Price: %{y:$.2f}&quot;. https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format&#x27;s syntax %{variable|d3-time-format}, for example &quot;Day: %{2019-01-01|%A}&quot;. https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon`, `location` and `text`.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-type" href="#scattergeo-type">
+    type
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br />
+<em>Type:</em> "scattergeo"
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-uid" href="#scattergeo-uid">
+    uid
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> string<p>Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-uirevision" href="#scattergeo-uirevision">
+    uirevision
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+                    <em>Type:</em> number or categorical coordinate string
+<p>Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-unselected" href="#scattergeo-unselected">
+    unselected
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-marker" href="#scattergeo-marker">
+    marker
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].unselected</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].unselected.marker</code>
+<br>
+                    <em>Type:</em> color<p>Sets the marker color of unselected points, applied only when a selection exists.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-opacity" href="#scattergeo-opacity">
+    opacity
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].unselected.marker</code>
+<br>
+                    <em>Type:</em> number less than or equal to 1
+<p>Sets the marker opacity of unselected points, applied only when a selection exists.</p>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-size" href="#scattergeo-size">
+    size
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].unselected.marker</code>
+<br>
+                    <em>Type:</em> number<p>Sets the marker size of unselected points, applied only when a selection exists.</p>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-textfont" href="#scattergeo-textfont">
+    textfont
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].unselected</code>
+<br><em>Type:</em> object containing one or more of the keys listed below.
+<ul>
+<li>
+<a class="attribute-name" id="scattergeo-color" href="#scattergeo-color">
+    color
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo].unselected.textfont</code>
+<br>
+                    <em>Type:</em> color<p>Sets the text font color of unselected points, applied only when a selection exists.</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a class="attribute-name" id="scattergeo-visible" href="#scattergeo-visible">
+    visible
+</a>
+<br><em>Parent:</em> <code>data[type=scattergeo]</code>
+<br>
+            <em>Type:</em>
+                    enumerated                    , one of (
+<code>true</code>| <code>false</code>| <code>"legendonly"</code>                    )
+                <br><em>Default:</em> <code>"True"</code>
+<p>Determines whether or not this trace is visible. If "legendonly", the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

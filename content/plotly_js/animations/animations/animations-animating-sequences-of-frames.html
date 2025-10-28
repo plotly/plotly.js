@@ -1,0 +1,44 @@
+---
+name: Animating Sequences of Frames
+plot_url: https://codepen.io/plotly/embed/qakvRz/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: animations
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The above examples have used one frame at a time. Whether passing objects as frames or referring to frames by name, you may pass multiple frames together in an array. If `null` or `undefined` is passed as the second argument (i.e. `Plotly.animate('myDiv')`), then all defined frames will be animated in sequence.
+
+  The third argument of `Plotly.animate` contains animation options. The transition duration defines the amount of time spent interpolating a trace from one state to another (currently limited to scatter traces), while the frame duration defines the total time spent in that state, including time spent transitioning. The example below has two frames, each with their own transition and frame timing.
+---
+Plotly.newPlot('myDiv', [{
+  x: [0, 0],
+  y: [-1, 1],
+}], {
+  xaxis: {range: [-Math.PI, Math.PI]},
+  yaxis: {range: [-1.3, 1.3]}
+}).then(function () {
+  Plotly.addFrames('myDiv', [
+    {
+      data: [{x: [1, -1], y: [0, 0]}],
+      name: 'frame1'
+    }, {
+      data: [{x: [0, 0], y: [-1, 1]}],
+      name: 'frame2'
+    }
+  ]);
+})
+
+function startAnimation() {
+  Plotly.animate('myDiv', ['frame1', 'frame2'], {
+    frame: [
+      {duration: 1500},
+      {duration: 500},
+    ],
+    transition: [
+      {duration: 800, easing: 'elastic-in'},
+      {duration: 100, easing: 'cubic-in'},
+    ],
+    mode: 'afterall'
+  })
+}
