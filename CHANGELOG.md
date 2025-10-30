@@ -9,6 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.2.0] -- 2025-10-30
+
+### Added
+- Add `hovertemplatefallback` and `texttemplatefallback` attributes [[#7577](https://github.com/plotly/plotly.js/pull/7577)]
+
+### Fixed
+- Fix wrong scrolling behavior for legend [[#7067](https://github.com/plotly/plotly.js/pull/7067)], with thanks to @Lexachoc for the contribution!
+- Fix bug affecting use of `customdata` with typed arrays [[#7608](https://github.com/plotly/plotly.js/pull/7608)]
+
+
 ## [3.1.2] -- 2025-10-16
 
 ### Added
