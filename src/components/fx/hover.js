@@ -1079,7 +1079,17 @@ function createHoverText(hoverData, opts) {
                 );
 
             lx = xa._offset + (c0.x0 + c0.x1) / 2;
-            ly = ya._offset + (xa.side === 'top' ? 0 : ya._length);
+
+            // show the common label at the bottom subplot if hoversubplots is set to axis
+            if (fullLayout.hoversubplots === 'axis')
+            {
+                var bottom_ya = fullLayout._plots.xy.yaxis;
+                ly = bottom_ya._offset + (xa.side === 'top' ? 0 : bottom_ya._length);
+            }
+            else
+            {
+                ly = ya._offset + (xa.side === 'top' ? 0 : ya._length);
+            }
 
             var halfWidth = tbb.width / 2 + HOVERTEXTPAD;
 
