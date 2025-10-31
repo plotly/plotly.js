@@ -79123,6 +79123,864 @@
    },
    "type": "scatterpolargl"
   },
+  "scatterquiver": {
+   "animatable": true,
+   "attributes": {
+    "angle": {
+     "description": "Angle of arrowhead in radians. Default = π/9",
+     "dflt": 0.3490658503988659,
+     "editType": "calc",
+     "max": 1.5707963267948966,
+     "min": 0,
+     "valType": "number"
+    },
+    "arrow_scale": {
+     "description": "Value multiplied to length of barb to get length of arrowhead. Default = 0.3",
+     "dflt": 0.3,
+     "editType": "calc",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "customdata": {
+     "description": "Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "customdatasrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `customdata`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hoverdistance": {
+     "description": "Maximum distance (in pixels) to look for nearby arrows on hover.",
+     "dflt": 20,
+     "editType": "calc",
+     "min": -1,
+     "valType": "number"
+    },
+    "hoverinfo": {
+     "arrayOk": true,
+     "description": "Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
+     "dflt": "all",
+     "editType": "none",
+     "extras": [
+      "all",
+      "none",
+      "skip"
+     ],
+     "flags": [
+      "x",
+      "y",
+      "u",
+      "v",
+      "text",
+      "name"
+     ],
+     "valType": "flaglist"
+    },
+    "hoverinfosrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hoverinfo`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hoverlabel": {
+     "align": {
+      "arrayOk": true,
+      "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+      "dflt": "auto",
+      "editType": "none",
+      "valType": "enumerated",
+      "values": [
+       "left",
+       "right",
+       "auto"
+      ]
+     },
+     "alignsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `align`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "bgcolor": {
+      "arrayOk": true,
+      "description": "Sets the background color of the hover labels for this trace",
+      "editType": "none",
+      "valType": "color"
+     },
+     "bgcolorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `bgcolor`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "bordercolor": {
+      "arrayOk": true,
+      "description": "Sets the border color of the hover labels for this trace.",
+      "editType": "none",
+      "valType": "color"
+     },
+     "bordercolorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `bordercolor`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "editType": "none",
+     "font": {
+      "color": {
+       "arrayOk": true,
+       "editType": "none",
+       "valType": "color"
+      },
+      "colorsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "description": "Sets the font used in hover labels.",
+      "editType": "none",
+      "family": {
+       "arrayOk": true,
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
+       "editType": "none",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "familysrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "lineposition": {
+       "arrayOk": true,
+       "description": "Sets the kind of decoration line(s) with text, such as an *under*, *over* or *through* as well as combinations e.g. *under+over*, etc.",
+       "dflt": "none",
+       "editType": "none",
+       "extras": [
+        "none"
+       ],
+       "flags": [
+        "under",
+        "over",
+        "through"
+       ],
+       "valType": "flaglist"
+      },
+      "linepositionsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `lineposition`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "role": "object",
+      "shadow": {
+       "arrayOk": true,
+       "description": "Sets the shape and color of the shadow behind text. *auto* places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.",
+       "dflt": "none",
+       "editType": "none",
+       "valType": "string"
+      },
+      "shadowsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `shadow`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "size": {
+       "arrayOk": true,
+       "editType": "none",
+       "min": 1,
+       "valType": "number"
+      },
+      "sizesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "style": {
+       "arrayOk": true,
+       "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+       "dflt": "normal",
+       "editType": "none",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "italic"
+       ]
+      },
+      "stylesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "textcase": {
+       "arrayOk": true,
+       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
+       "dflt": "normal",
+       "editType": "none",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "word caps",
+        "upper",
+        "lower"
+       ]
+      },
+      "textcasesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `textcase`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "variant": {
+       "arrayOk": true,
+       "description": "Sets the variant of the font.",
+       "dflt": "normal",
+       "editType": "none",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "small-caps",
+        "all-small-caps",
+        "all-petite-caps",
+        "petite-caps",
+        "unicase"
+       ]
+      },
+      "variantsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "weight": {
+       "arrayOk": true,
+       "description": "Sets the weight (or boldness) of the font.",
+       "dflt": "normal",
+       "editType": "none",
+       "extras": [
+        "normal",
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
+      },
+      "weightsrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+       "editType": "none",
+       "valType": "string"
+      }
+     },
+     "namelength": {
+      "arrayOk": true,
+      "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
+      "dflt": 15,
+      "editType": "none",
+      "min": -1,
+      "valType": "integer"
+     },
+     "namelengthsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `namelength`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "showarrow": {
+      "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
+      "dflt": true,
+      "editType": "none",
+      "valType": "boolean"
+     }
+    },
+    "hovertemplate": {
+     "arrayOk": true,
+     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `u`, `v`, `text` and `name`. Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`.",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string"
+    },
+    "hovertemplatesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `hovertemplate`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "ids": {
+     "anim": true,
+     "description": "Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "idssrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
+     "editType": "style",
+     "valType": "subplotid"
+    },
+    "legendgroup": {
+     "description": "Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items.",
+     "dflt": "",
+     "editType": "style",
+     "valType": "string"
+    },
+    "legendgrouptitle": {
+     "editType": "style",
+     "font": {
+      "color": {
+       "editType": "style",
+       "valType": "color"
+      },
+      "description": "Sets this legend group's title font.",
+      "editType": "style",
+      "family": {
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
+       "editType": "style",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "lineposition": {
+       "description": "Sets the kind of decoration line(s) with text, such as an *under*, *over* or *through* as well as combinations e.g. *under+over*, etc.",
+       "dflt": "none",
+       "editType": "style",
+       "extras": [
+        "none"
+       ],
+       "flags": [
+        "under",
+        "over",
+        "through"
+       ],
+       "valType": "flaglist"
+      },
+      "role": "object",
+      "shadow": {
+       "description": "Sets the shape and color of the shadow behind text. *auto* places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.",
+       "dflt": "none",
+       "editType": "style",
+       "valType": "string"
+      },
+      "size": {
+       "editType": "style",
+       "min": 1,
+       "valType": "number"
+      },
+      "style": {
+       "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+       "dflt": "normal",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "italic"
+       ]
+      },
+      "textcase": {
+       "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
+       "dflt": "normal",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "word caps",
+        "upper",
+        "lower"
+       ]
+      },
+      "variant": {
+       "description": "Sets the variant of the font.",
+       "dflt": "normal",
+       "editType": "style",
+       "valType": "enumerated",
+       "values": [
+        "normal",
+        "small-caps",
+        "all-small-caps",
+        "all-petite-caps",
+        "petite-caps",
+        "unicase"
+       ]
+      },
+      "weight": {
+       "description": "Sets the weight (or boldness) of the font.",
+       "dflt": "normal",
+       "editType": "style",
+       "extras": [
+        "normal",
+        "bold"
+       ],
+       "max": 1000,
+       "min": 1,
+       "valType": "integer"
+      }
+     },
+     "role": "object",
+     "text": {
+      "description": "Sets the title of the legend group.",
+      "dflt": "",
+      "editType": "style",
+      "valType": "string"
+     }
+    },
+    "legendrank": {
+     "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.",
+     "dflt": 1000,
+     "editType": "style",
+     "valType": "number"
+    },
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
+    "line": {
+     "color": {
+      "description": "Sets the color of the arrow lines.",
+      "dflt": "#000",
+      "editType": "style",
+      "valType": "color"
+     },
+     "dash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "solid",
+      "editType": "style",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
+     "editType": "style",
+     "role": "object",
+     "shape": {
+      "description": "Determines the line shape.",
+      "dflt": "linear",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "linear",
+       "spline",
+       "hv",
+       "vh",
+       "hvh",
+       "vhv"
+      ]
+     },
+     "simplify": {
+      "description": "Simplifies lines by removing nearly-overlapping points.",
+      "dflt": true,
+      "editType": "plot",
+      "valType": "boolean"
+     },
+     "smoothing": {
+      "description": "Has an effect only if `shape` is set to *spline*. Sets the amount of smoothing.",
+      "dflt": 1,
+      "editType": "plot",
+      "max": 1.3,
+      "min": 0,
+      "valType": "number"
+     },
+     "width": {
+      "description": "Sets the width (in px) of the arrow lines.",
+      "dflt": 1,
+      "editType": "style",
+      "min": 0,
+      "valType": "number"
+     }
+    },
+    "meta": {
+     "arrayOk": true,
+     "description": "Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.",
+     "editType": "plot",
+     "valType": "any"
+    },
+    "metasrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `meta`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "name": {
+     "description": "Sets the trace name. The trace name appears as the legend item and on hover.",
+     "editType": "style",
+     "valType": "string"
+    },
+    "opacity": {
+     "description": "Sets the opacity of the trace.",
+     "dflt": 1,
+     "editType": "style",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "scale": {
+     "description": "Scales size of the arrows (ideally to avoid overlap). Default = 0.1",
+     "dflt": 0.1,
+     "editType": "calc",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "scaleratio": {
+     "description": "The ratio between the scale of the y-axis and the scale of the x-axis (scale_y / scale_x). Default = null, the scale ratio is not fixed.",
+     "editType": "calc",
+     "min": 0,
+     "valType": "number"
+    },
+    "selected": {
+     "editType": "style",
+     "line": {
+      "color": {
+       "description": "Sets the line color of selected points.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "editType": "style",
+      "role": "object",
+      "width": {
+       "description": "Sets the line width of selected points.",
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      }
+     },
+     "role": "object",
+     "textfont": {
+      "color": {
+       "description": "Sets the text font color of selected points, applied only when a selection exists.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "editType": "style",
+      "role": "object"
+     }
+    },
+    "selectedpoints": {
+     "description": "Array containing integer indices of selected points. Has an effect only for traces that support selections. Note that an empty array means an empty selection where the `unselected` are turned on for all points, whereas, any other non-array values means no selection all where the `selected` and `unselected` styles have no effect.",
+     "editType": "calc",
+     "valType": "any"
+    },
+    "showlegend": {
+     "description": "Determines whether or not an item corresponding to this trace is shown in the legend.",
+     "dflt": true,
+     "editType": "style",
+     "valType": "boolean"
+    },
+    "stream": {
+     "editType": "calc",
+     "maxpoints": {
+      "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot.",
+      "dflt": 500,
+      "editType": "calc",
+      "max": 10000,
+      "min": 0,
+      "valType": "number"
+     },
+     "role": "object",
+     "token": {
+      "description": "The stream id number links a data trace on a plot with a stream. See https://chart-studio.plotly.com/settings for more details.",
+      "editType": "calc",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     }
+    },
+    "text": {
+     "anim": true,
+     "description": "Sets text elements associated with each (x,y) pair.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "textfont": {
+     "color": {
+      "arrayOk": true,
+      "editType": "style",
+      "valType": "color"
+     },
+     "colorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "description": "Sets the text font.",
+     "editType": "calc",
+     "family": {
+      "arrayOk": true,
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
+      "editType": "calc",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "familysrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "lineposition": {
+      "arrayOk": true,
+      "description": "Sets the kind of decoration line(s) with text, such as an *under*, *over* or *through* as well as combinations e.g. *under+over*, etc.",
+      "dflt": "none",
+      "editType": "calc",
+      "extras": [
+       "none"
+      ],
+      "flags": [
+       "under",
+       "over",
+       "through"
+      ],
+      "valType": "flaglist"
+     },
+     "linepositionsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `lineposition`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "shadow": {
+      "arrayOk": true,
+      "description": "Sets the shape and color of the shadow behind text. *auto* places minimal shadow and applies contrast text font color. See https://developer.mozilla.org/en-US/docs/Web/CSS/text-shadow for additional options.",
+      "dflt": "none",
+      "editType": "calc",
+      "valType": "string"
+     },
+     "shadowsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `shadow`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "size": {
+      "arrayOk": true,
+      "editType": "calc",
+      "min": 1,
+      "valType": "number"
+     },
+     "sizesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "style": {
+      "arrayOk": true,
+      "description": "Sets whether a font should be styled with a normal or italic face from its family.",
+      "dflt": "normal",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "italic"
+      ]
+     },
+     "stylesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `style`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "textcase": {
+      "arrayOk": true,
+      "description": "Sets capitalization of text. It can be used to make text appear in all-uppercase or all-lowercase, or with each word capitalized.",
+      "dflt": "normal",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "word caps",
+       "upper",
+       "lower"
+      ]
+     },
+     "textcasesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `textcase`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "variant": {
+      "arrayOk": true,
+      "description": "Sets the variant of the font.",
+      "dflt": "normal",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "normal",
+       "small-caps",
+       "all-small-caps",
+       "all-petite-caps",
+       "petite-caps",
+       "unicase"
+      ]
+     },
+     "variantsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `variant`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "weight": {
+      "arrayOk": true,
+      "description": "Sets the weight (or boldness) of the font.",
+      "dflt": "normal",
+      "editType": "calc",
+      "extras": [
+       "normal",
+       "bold"
+      ],
+      "max": 1000,
+      "min": 1,
+      "valType": "integer"
+     },
+     "weightsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `weight`.",
+      "editType": "none",
+      "valType": "string"
+     }
+    },
+    "textposition": {
+     "description": "Sets the positions of the `text` elements with respects to the (x,y) coordinates.",
+     "dflt": "middle center",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "top left",
+      "top center",
+      "top right",
+      "middle left",
+      "middle center",
+      "middle right",
+      "bottom left",
+      "bottom center",
+      "bottom right"
+     ]
+    },
+    "textsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `text`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "type": "scatterquiver",
+    "u": {
+     "anim": true,
+     "description": "Sets the x components of the arrow vectors.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "uid": {
+     "anim": true,
+     "description": "Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions.",
+     "editType": "plot",
+     "valType": "string"
+    },
+    "uirevision": {
+     "description": "Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves.",
+     "editType": "none",
+     "valType": "any"
+    },
+    "unselected": {
+     "editType": "style",
+     "line": {
+      "color": {
+       "description": "Sets the line color of unselected points.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "editType": "style",
+      "role": "object",
+      "width": {
+       "description": "Sets the line width of unselected points.",
+       "editType": "style",
+       "min": 0,
+       "valType": "number"
+      }
+     },
+     "role": "object",
+     "textfont": {
+      "color": {
+       "description": "Sets the text font color of unselected points, applied only when a selection exists.",
+       "editType": "style",
+       "valType": "color"
+      },
+      "editType": "style",
+      "role": "object"
+     }
+    },
+    "usrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `u`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "v": {
+     "anim": true,
+     "description": "Sets the y components of the arrow vectors.",
+     "editType": "calc",
+     "valType": "data_array"
+    },
+    "visible": {
+     "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
+     "dflt": true,
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      true,
+      false,
+      "legendonly"
+     ]
+    },
+    "vsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `v`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "x": {
+     "anim": true,
+     "description": "Sets the x coordinates of the arrow locations.",
+     "editType": "calc+clearAxisTypes",
+     "valType": "data_array"
+    },
+    "xaxis": {
+     "description": "Sets a reference between this trace's x coordinates and a 2D cartesian x axis. If *x* (the default value), the x coordinates refer to `layout.xaxis`. If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.",
+     "dflt": "x",
+     "editType": "calc+clearAxisTypes",
+     "valType": "subplotid"
+    },
+    "xsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `x`.",
+     "editType": "none",
+     "valType": "string"
+    },
+    "y": {
+     "anim": true,
+     "description": "Sets the y coordinates of the arrow locations.",
+     "editType": "calc+clearAxisTypes",
+     "valType": "data_array"
+    },
+    "yaxis": {
+     "description": "Sets a reference between this trace's y coordinates and a 2D cartesian y axis. If *y* (the default value), the y coordinates refer to `layout.yaxis`. If *y2*, the y coordinates refer to `layout.yaxis2`, and so on.",
+     "dflt": "y",
+     "editType": "calc+clearAxisTypes",
+     "valType": "subplotid"
+    },
+    "ysrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `y`.",
+     "editType": "none",
+     "valType": "string"
+    }
+   },
+   "categories": [
+    "cartesian",
+    "svg",
+    "showLegend",
+    "scatter-like",
+    "zoomScale"
+   ],
+   "meta": {
+    "description": "The scatterquiver trace type visualizes vector fields using arrows. Specify a vector field using 4 1D arrays: 2 position arrays `x`, `y` and 2 vector component arrays `u`, `v`. The arrows are drawn exactly at the positions given by `x` and `y`. Arrow length and direction are determined by `u` and `v` components."
+   },
+   "type": "scatterquiver"
+  },
   "scattersmith": {
    "animatable": false,
    "attributes": {
