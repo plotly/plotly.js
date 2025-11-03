@@ -36,8 +36,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Set basic properties
     traceOut.type = 'quiver';
 
+    // Sizing API similar to cone
+    var sizemode = coerce('sizemode');
+    coerce('sizeref', sizemode === 'raw' ? 1 : 0.5);
+    coerce('anchor');
+
     // Set default values using coerce
-    coerce('scale', 0.1);
     coerce('arrow_scale', 0.3);
     coerce('angle', Math.PI / 9);
     coerce('scaleratio');
