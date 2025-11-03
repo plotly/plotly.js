@@ -81,6 +81,20 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     lineSegments.exit().remove();
 
+    // Precompute norms for sizing
+    var uArr = trace.u || [];
+    var vArr = trace.v || [];
+    var maxNorm = 0;
+    for (var ni = 0; ni < trace._length; ni++) {
+        var uu = uArr[ni] || 0;
+        var vv = vArr[ni] || 0;
+        var nrm = Math.sqrt(uu * uu + vv * vv);
+        if (nrm > maxNorm) maxNorm = nrm;
+    }
+    var sizemode = trace.sizemode || 'scaled';
+    var sizeref = (trace.sizeref !== undefined) ? trace.sizeref : (sizemode === 'raw' ? 1 : 0.5);
+    var anchor = trace.anchor || 'tail';
+
     // Update line segments
     lineSegments.each(function(cdi) {
         var path = d3.select(this);
@@ -92,7 +106,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         // Compute arrow in data space
-        var scale = trace.scale || 1;
         var scaleRatio = trace.scaleratio || 1;
         var arrowScale = trace.arrow_scale || 0.2;
         var angle = trace.angle || Math.PI / 12; // small default
@@ -100,8 +113,21 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var u = (trace.u && trace.u[cdi.i]) || 0;
         var v = (trace.v && trace.v[cdi.i]) || 0;
 
-        var dx = u * scale * scaleRatio;
-        var dy = v * scale;
+        var norm = Math.sqrt(u * u + v * v);
+        var unitx = norm ? (u / norm) : 0;
+        var unity = norm ? (v / norm) : 0;
+        var baseLen;
+        if (sizemode === 'scaled') {
+            var n = maxNorm ? (norm / maxNorm) : 0;
+            baseLen = n * sizeref;
+        } else {
+            baseLen = norm * sizeref;
+        }
+
+        var dxBase = unitx * baseLen;
+        var dyBase = unity * baseLen;
+        var dx = dxBase * scaleRatio;
+        var dy = dyBase;
         var barbLen = Math.sqrt((dx * dx) / scaleRatio + dy * dy);
         var arrowLen = barbLen * arrowScale;
         var barbAng = Math.atan2(dy, dx / scaleRatio);
@@ -109,10 +135,23 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var ang1 = barbAng + angle;
         var ang2 = barbAng - angle;
 
-        var x0 = cdi.x;
-        var y0 = cdi.y;
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
+        var x0, y0, x1, y1;
+        if (anchor === 'tip') {
+            x1 = cdi.x;
+            y1 = cdi.y;
+            x0 = x1 - dx;
+            y0 = y1 - dy;
+        } else if (anchor === 'cm' || anchor === 'center' || anchor === 'middle') {
+            x0 = cdi.x - dx / 2;
+            y0 = cdi.y - dy / 2;
+            x1 = cdi.x + dx / 2;
+            y1 = cdi.y + dy / 2;
+        } else { // tail
+            x0 = cdi.x;
+            y0 = cdi.y;
+            x1 = x0 + dx;
+            y1 = y0 + dy;
+        }
 
         var xh1 = x1 - arrowLen * Math.cos(ang1) * scaleRatio;
         var yh1 = y1 - arrowLen * Math.sin(ang1);

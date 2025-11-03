@@ -32,13 +32,38 @@ var attrs = {
         anim: true,
         description: 'Sets the y components of the arrow vectors.'
     },
-    scale: {
-        valType: 'number',
-        dflt: 0.1,
-        min: 0,
-        max: 1,
+    sizemode: {
+        valType: 'enumerated',
+        values: ['scaled', 'absolute', 'raw'],
         editType: 'calc',
-        description: 'Scales size of the arrows (ideally to avoid overlap). Default = 0.1'
+        dflt: 'scaled',
+        description: [
+            'Determines whether `sizeref` is set as a *scaled* (unitless) scalar',
+            '(normalized by the max u/v norm in the vector field), as an *absolute*',
+            'value (in the same units as the vector field), or *raw* to use the',
+            'raw vector lengths.'
+        ].join(' ')
+    },
+    sizeref: {
+        valType: 'number',
+        min: 0,
+        editType: 'calc',
+        description: [
+            'Adjusts the arrow size scaling.',
+            'The arrow length is determined by the vector norm multiplied by `sizeref`,',
+            'optionally normalized when `sizemode` is *scaled*.'
+        ].join(' ')
+    },
+    anchor: {
+        valType: 'enumerated',
+        values: ['tip', 'tail', 'cm', 'center', 'middle'],
+        dflt: 'tail',
+        editType: 'calc',
+        description: [
+            'Sets the arrows\' anchor with respect to their (x,y) positions.',
+            'Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head,',
+            'or *cm*/*center*/*middle* to center the arrow on (x,y).'
+        ].join(' ')
     },
     arrow_scale: {
         valType: 'number',
