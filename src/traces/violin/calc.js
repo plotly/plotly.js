@@ -51,7 +51,7 @@ module.exports = function calc(gd, trace) {
             // n intervals means n + 1 sample points to include both endpoints
             cdi.density = new Array(n + 1);
 
-            for(var k = 0; k <= n; k++) {
+            for(var k = 0; k < cdi.density.length; k++) {
                 var t = span[0] + k * step;
                 var v = kde(t);
                 cdi.density[k] = {v: v, t: t};
