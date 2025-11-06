@@ -19,8 +19,6 @@ plugins:
   - gen-files:
       scripts:
         - bin/generate_reference_pages.py
-  - literate-nav:
-      nav_file: SUMMARY.md
   - macros
 
 theme:
@@ -65,7 +63,6 @@ extra_css:
   - css/code-highlight.css
   - https://docs.plotly.com/css/plotly-style.css
   - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
-  # - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css
 
 extra_javascript:
   - javascript/highlight.js
@@ -277,6 +274,3 @@ nav:
 
 extra:
   js_version: "3.1.0"
-
-exclude_docs: |
-  reference/SUMMARY.md
