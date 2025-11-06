@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev_build = [
+docs = [
     "mkdocs",
     "mkdocs-material",
     "mkdocs-gen-files",
