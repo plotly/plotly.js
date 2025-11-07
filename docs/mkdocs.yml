@@ -3,7 +3,7 @@ site_url: 'https://plotly.com/javascript/'
 repo_url: https://github.com/plotly/plotly.js
 repo_name: plotly/plotly.js
 docs_dir: pages
-site_dir: docs
+site_dir: build
 
 validation:
   absolute_links: relative_to_docs
@@ -55,7 +55,7 @@ markdown_extensions:
   - pymdownx.snippets:
       base_path: ["tmp"]
   - markdown_include.include:
-      base_path: docs
+      base_path: pages
   - md_in_html
 
 extra_css:

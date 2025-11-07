@@ -1,0 +1,10 @@
+markdown
+python-frontmatter
+ruff
+mkdocs
+mkdocs-material
+mkdocs-gen-files
+mkdocs-literate-nav
+markdown-include
+mkdocs-macros-plugin
+mkdocs-redirects

@@ -21,6 +21,4 @@ tags
 !.gitignore
 !.npmignore
 
-tmp
-
-docs/
+docs/tmp/

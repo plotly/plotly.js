@@ -1,7 +1,7 @@
 # Manage plotly.js documentation.
 
 RUN = uv run
-SCHEMA_SRC = test/plot-schema.json
+SCHEMA_SRC = ../test/plot-schema.json
 HANDWRITTEN = content
 TMP = tmp
 
