@@ -189,10 +189,16 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     if (trace._hasColorscale) {
         var colorFunc = Colorscale.makeColorScaleFuncFromTrace(trace);
         lineSegments.style('stroke', function(cdi) {
-            var uVal = (trace.u && trace.u[cdi.i]) || 0;
-            var vVal = (trace.v && trace.v[cdi.i]) || 0;
-            var nVal = Math.sqrt(uVal * uVal + vVal * vVal);
-            return colorFunc(nVal);
+            var cArr = trace.c;
+            var value;
+            if (Array.isArray(cArr) && cArr.length > cdi.i && isFinite(cArr[cdi.i])) {
+                value = cArr[cdi.i];
+            } else {
+                var uVal = (trace.u && trace.u[cdi.i]) || 0;
+                var vVal = (trace.v && trace.v[cdi.i]) || 0;
+                value = Math.sqrt(uVal * uVal + vVal * vVal);
+            }
+            return colorFunc(value);
         });
     }
 

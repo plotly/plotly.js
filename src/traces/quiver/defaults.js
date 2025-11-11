@@ -64,23 +64,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // traceOut.hoverinfo will be set by Lib.coerceHoverinfo in plots.js
     traceOut.hovertemplate = traceIn.hovertemplate;
 
-    // Colorscale for magnitude coloring: compute cmin/cmax from |(u,v)|
-    var cmin = Infinity;
-    var cmax = -Infinity;
-    for (var k = 0; k < len; k++) {
-        var uu = (traceOut.u && traceOut.u[k]) || (traceIn.u && traceIn.u[k]) || 0;
-        var vv = (traceOut.v && traceOut.v[k]) || (traceIn.v && traceIn.v[k]) || 0;
-        var nrm = Math.sqrt(uu * uu + vv * vv);
-        if (isFinite(nrm)) {
-            if (nrm < cmin) cmin = nrm;
-            if (nrm > cmax) cmax = nrm;
-        }
-    }
-    if (!isFinite(cmin)) cmin = 0;
-    if (!isFinite(cmax)) cmax = 1;
-    if (traceIn.cmin === undefined && traceOut.cmin === undefined) traceOut.cmin = cmin;
-    if (traceIn.cmax === undefined && traceOut.cmax === undefined) traceOut.cmax = cmax;
-    // Flag colorscale and apply defaults (adds colorscale, showscale, colorbar, etc.)
+    // Colorscale defaults (adds colorscale, showscale, colorbar, etc.)
+    // Keep colorscale enabled by default for quiver
     traceOut._hasColorscale = hasColorscale(traceIn) || true;
     colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
 
