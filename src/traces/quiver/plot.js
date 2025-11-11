@@ -114,7 +114,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var arrowScale = (trace.arrowsize !== undefined)
             ? (baseHeadScale * trace.arrowsize)
             : (trace.arrow_scale !== undefined ? trace.arrow_scale : baseHeadScale);
-        var angle = trace.angle || Math.PI / 12; // small default
+        // Fixed arrowhead wedge angle (radians).
+        // Arrow direction is fully determined by u,v (see barbAng below);
+        // this constant only controls the opening of the head.
+        var headAngle = Math.PI / 12;
 
         var u = (trace.u && trace.u[cdi.i]) || 0;
         var v = (trace.v && trace.v[cdi.i]) || 0;
@@ -138,8 +141,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var arrowLen = barbLen * arrowScale;
         var barbAng = Math.atan2(dy, dx / scaleRatio);
 
-        var ang1 = barbAng + angle;
-        var ang2 = barbAng - angle;
+        var ang1 = barbAng + headAngle;
+        var ang2 = barbAng - headAngle;
 
         var x0, y0, x1, y1;
         if (anchor === 'tip') {
