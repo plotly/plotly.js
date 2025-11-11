@@ -6,6 +6,7 @@ var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var attrs = {
     x: {
@@ -222,6 +223,16 @@ var attrs = {
 
 // Extend with base attributes (includes hoverinfo, etc.)
 extendFlat(attrs, baseAttrs);
+
+// Colorscale attributes to color arrows by |(u,v)| magnitude
+extendFlat(
+    attrs,
+    colorScaleAttrs('', {
+        colorAttr: 'u/v norm',
+        showScaleDflt: true,
+        editTypeOverride: 'calc'
+    })
+);
 
 // Add hoverinfo with proper flags for quiver
 // We need to create a new object to avoid mutating the shared base attributes
