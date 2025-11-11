@@ -65,14 +65,6 @@ var attrs = {
             'or *cm*/*center*/*middle* to center the arrow on (x,y).'
         ].join(' ')
     },
-    angle: {
-        valType: 'number',
-        dflt: Math.PI / 9,
-        min: 0,
-        max: Math.PI / 2,
-        editType: 'calc',
-        description: 'Angle of arrowhead in radians. Default = π/9'
-    },
     hoverdistance: {
         valType: 'number',
         min: -1,
