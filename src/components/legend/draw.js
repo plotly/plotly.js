@@ -751,6 +751,9 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         legendObj = fullLayout[legendId];
     }
     var gs = fullLayout._size;
+    const plotBottom = gs.b;
+    const plotTop = gs.b + gs.h;
+    const plotHeight = gs.h;
 
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
@@ -770,31 +773,52 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
 
     const { orientation, yref, y } = legendObj;
     let { maxheight } = legendObj;
+    let yPixels;
 
     if (yref === 'paper') {
-        isBelowPlotArea = y < 0 || (y === 0 && yanchor === 'top');
-        isAbovePlotArea = y > 1 || (y === 1 && yanchor === 'bottom');
+        // Calculate pixel value of y position
+        yPixels = (y * plotHeight) + plotBottom;
+        // Check if legend anchor point is below or above plot area
+        isBelowPlotArea = yPixels < plotBottom || (yPixels === plotBottom && yanchor === 'top');
+        isAbovePlotArea = yPixels > plotTop || (yPixels === plotTop && yanchor === 'bottom');
+        console.log(yPixels, plotBottom,isBelowPlotArea, isAbovePlotArea);
+        
+        const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v";
+        // Set default maxheight if not provided by user
+        maxheight ||= useFullLayoutHeight ? 0.5 : 1;
+        // Convert maxheight to pixels if it's a ratio (≤1), otherwise use as-is
+        if (maxheight <= 1) {
+            const referenceHeight = useFullLayoutHeight ? fullLayout.height : plotHeight;
+            maxheight = maxheight * referenceHeight;
+        }
+    }
+    else {
+        // Calculate pixel value of y position
+        yPixels = y * fullLayout.height;
+        // Check if legend anchor point is below or above plot area
+        isBelowPlotArea = yPixels < plotBottom || (yPixels === plotBottom && yanchor === 'top');
+        isAbovePlotArea = yPixels > plotTop || (yPixels === plotTop && yanchor === 'bottom');
+        
+        // Set default maxheight if not provided by user
+        maxheight ||= 0.5;
+        // If maxheight is greater than 1 (pixel value), use as is, otherwise multiply by the full layout height
+        if (maxheight <= 1) {
+            maxheight = maxheight * fullLayout.height;
+        }
+    }
+    
+    // Calculate the maximum available height based on the anchor point
+    let maxAvailableHeight;
+    if (yanchor === 'top') {
+        maxAvailableHeight = yPixels;
+    } else if (yanchor === 'bottom') {
+        maxAvailableHeight = fullLayout.height - yPixels;
     } else {
-        const yPixels = legendObj.y * fullLayout.height;
-        isBelowPlotArea = yPixels < gs.b || (yPixels === gs.b && yanchor === 'top');
-        isAbovePlotArea = yPixels > gs.b + gs.h || (yPixels === gs.b + gs.h && yanchor === 'bottom');
+        // If yanchor is 'middle'
+        maxAvailableHeight = 2 * Math.min(yPixels, fullLayout.height - yPixels);
     }
 
-    const useFullLayoutHeight = isBelowPlotArea || isAbovePlotArea || orientation !== "v" || yref !== "paper";
-    // Set default maxheight here since it depends on values passed in by user
-    maxheight ||= useFullLayoutHeight ? 0.5 : 1;
-    const heightToBeScaled = useFullLayoutHeight ? fullLayout.height : gs.h;
-    maxheight = maxheight > 1 ? maxheight : maxheight * heightToBeScaled;
-
-    if (yref === 'container') {
-        const maxAvailableHeight = yanchor === 'top'
-            ? y * fullLayout.height
-            : yanchor === 'bottom'
-                ? (1 - y) * fullLayout.height
-                : 2 * Math.min(1 - y, y) * fullLayout.height; // yanchor is 'middle' or 'auto'
-        maxheight = Math.min(maxheight, maxAvailableHeight);
-    }
-
+    maxheight = Math.min(maxheight, maxAvailableHeight);
     legendObj._maxHeight = Math.max(maxheight, 30);
 
     var toggleRectWidth = 0;
