@@ -107,7 +107,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         // Compute arrow in data space
         var scaleRatio = trace.scaleratio || 1;
-        var arrowScale = trace.arrow_scale || 0.2;
+        var baseHeadScale = 0.2;
+        var arrowScale = (trace.arrowsize !== undefined)
+            ? (baseHeadScale * trace.arrowsize)
+            : (trace.arrow_scale !== undefined ? trace.arrow_scale : baseHeadScale);
         var angle = trace.angle || Math.PI / 12; // small default
 
         var u = (trace.u && trace.u[cdi.i]) || 0;
