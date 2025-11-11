@@ -5,6 +5,7 @@ var Axes = require('../../plots/cartesian/axes');
 var isNumeric = require('fast-isnumeric');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var scatterCalc = require('../scatter/calc');
+var colorscaleCalc = require('../../components/colorscale/calc');
 
 /**
  * Main calculation function for quiver trace
@@ -24,6 +25,12 @@ module.exports = function calc(gd, trace) {
     trace._length = len;
     var cd = new Array(len);
 
+    var normMin = Infinity;
+    var normMax = -Infinity;
+    var cMin = Infinity;
+    var cMax = -Infinity;
+    var hasC = Array.isArray(trace.c);
+
     for(var i = 0; i < len; i++) {
         var cdi = cd[i] = { i: i };
         var xValid = isNumeric(xVals[i]);
@@ -36,10 +43,35 @@ module.exports = function calc(gd, trace) {
             cdi.x = BADNUM;
             cdi.y = BADNUM;
         }
+
+        // track ranges for colorscale
+        if(hasC) {
+            var ci = trace.c[i];
+            if(isNumeric(ci)) {
+                if(ci < cMin) cMin = ci;
+                if(ci > cMax) cMax = ci;
+            }
+        } else {
+            var ui = (trace.u && trace.u[i]) || 0;
+            var vi = (trace.v && trace.v[i]) || 0;
+            var n = Math.sqrt(ui * ui + vi * vi);
+            if(isFinite(n)) {
+                if(n < normMin) normMin = n;
+                if(n > normMax) normMax = n;
+            }
+        }
     }
 
     // Ensure axes are expanded and categories registered like scatter traces do
     scatterCalc.calcAxisExpansion(gd, trace, xa, ya, xVals, yVals);
+
+    // Colorscale cmin/cmax computation: prefer provided c, else magnitude
+    var vals = hasC ? [cMin, cMax] : [normMin, normMax];
+    colorscaleCalc(gd, trace, {
+        vals: vals,
+        containerStr: '',
+        cLetter: 'c'
+    });
 
     return cd;
 };

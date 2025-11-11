@@ -33,6 +33,13 @@ var attrs = {
         anim: true,
         description: 'Sets the y components of the arrow vectors.'
     },
+    // Optional scalar field used for colorscale mapping. If omitted, |(u,v)| is used.
+    c: {
+        valType: 'data_array',
+        editType: 'calc',
+        anim: true,
+        description: 'Sets the scalar values used to map colors via the colorscale. If not provided, the magnitude sqrt(u^2 + v^2) is used.'
+    },
     sizemode: {
         valType: 'enumerated',
         values: ['scaled', 'absolute', 'raw'],
