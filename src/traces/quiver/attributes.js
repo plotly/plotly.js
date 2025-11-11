@@ -73,12 +73,6 @@ var attrs = {
         editType: 'calc',
         description: 'Angle of arrowhead in radians. Default = π/9'
     },
-    scaleratio: {
-        valType: 'number',
-        min: 0,
-        editType: 'calc',
-        description: 'The ratio between the scale of the y-axis and the scale of the x-axis (scale_y / scale_x). Default = null, the scale ratio is not fixed.'
-    },
     hoverdistance: {
         valType: 'number',
         min: -1,
