@@ -2,6 +2,9 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var Colorscale = require('../../components/colorscale');
+var colorscaleDefaults = Colorscale.handleDefaults;
+var hasColorscale = Colorscale.hasColorscale;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     // Selection styling - use coerce to set proper defaults
@@ -60,6 +63,26 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Hover and interaction - let the plots module handle hoverinfo defaults
     // traceOut.hoverinfo will be set by Lib.coerceHoverinfo in plots.js
     traceOut.hovertemplate = traceIn.hovertemplate;
+
+    // Colorscale for magnitude coloring: compute cmin/cmax from |(u,v)|
+    var cmin = Infinity;
+    var cmax = -Infinity;
+    for (var k = 0; k < len; k++) {
+        var uu = (traceOut.u && traceOut.u[k]) || (traceIn.u && traceIn.u[k]) || 0;
+        var vv = (traceOut.v && traceOut.v[k]) || (traceIn.v && traceIn.v[k]) || 0;
+        var nrm = Math.sqrt(uu * uu + vv * vv);
+        if (isFinite(nrm)) {
+            if (nrm < cmin) cmin = nrm;
+            if (nrm > cmax) cmax = nrm;
+        }
+    }
+    if (!isFinite(cmin)) cmin = 0;
+    if (!isFinite(cmax)) cmax = 1;
+    if (traceIn.cmin === undefined && traceOut.cmin === undefined) traceOut.cmin = cmin;
+    if (traceIn.cmax === undefined && traceOut.cmax === undefined) traceOut.cmax = cmax;
+    // Flag colorscale and apply defaults (adds colorscale, showscale, colorbar, etc.)
+    traceOut._hasColorscale = hasColorscale(traceIn) || true;
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
 
     // Text
     traceOut.text = traceIn.text;
