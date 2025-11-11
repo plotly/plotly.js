@@ -65,14 +65,6 @@ var attrs = {
             'or *cm*/*center*/*middle* to center the arrow on (x,y).'
         ].join(' ')
     },
-    arrow_scale: {
-        valType: 'number',
-        dflt: 0.3,
-        min: 0,
-        max: 1,
-        editType: 'calc',
-        description: 'Value multiplied to length of barb to get length of arrowhead. Default = 0.3'
-    },
     angle: {
         valType: 'number',
         dflt: Math.PI / 9,
@@ -93,6 +85,26 @@ var attrs = {
         dflt: 20,
         editType: 'calc',
         description: 'Maximum distance (in pixels) to look for nearby arrows on hover.'
+    },
+
+    // Arrowhead sizing, consistent with annotations API naming
+    arrowsize: {
+        valType: 'number',
+        min: 0.3,
+        dflt: 1,
+        editType: 'calc',
+        description: [
+            'Scales the size of the arrow head relative to a base size.',
+            'Higher values produce larger heads.'
+        ].join(' ')
+    },
+    // Back-compat alias
+    arrow_scale: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        editType: 'calc',
+        description: 'Deprecated alias for `arrowsize`-based sizing. Prefer using `arrowsize`.'
     },
 
     // Line styling for arrows
@@ -133,6 +145,14 @@ var attrs = {
             description: 'Simplifies lines by removing nearly-overlapping points.'
         },
         editType: 'style'
+    },
+
+    // Alias consistent with annotations; maps to line.width
+    arrowwidth: {
+        valType: 'number',
+        min: 0.1,
+        editType: 'style',
+        description: 'Sets the width (in px) of the arrow line (alias of `line.width`).'
     },
 
     // Text and labels

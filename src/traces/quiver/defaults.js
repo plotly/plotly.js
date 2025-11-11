@@ -42,7 +42,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('anchor');
 
     // Set default values using coerce
-    coerce('arrow_scale', 0.3);
+    coerce('arrowsize', 1);
+    // back-compat
+    coerce('arrow_scale');
     coerce('angle', Math.PI / 9);
     coerce('scaleratio');
     coerce('hoverdistance', 20);
@@ -50,7 +52,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Line styling
     traceOut.line = {
         color: traceIn.line && traceIn.line.color ? traceIn.line.color : defaultColor,
-        width: traceIn.line && traceIn.line.width ? traceIn.line.width : 1,
+        width: (traceIn.arrowwidth !== undefined) ? traceIn.arrowwidth : (traceIn.line && traceIn.line.width ? traceIn.line.width : 1),
         dash: traceIn.line && traceIn.line.dash ? traceIn.line.dash : 'solid',
         shape: traceIn.line && traceIn.line.shape ? traceIn.line.shape : 'linear',
         smoothing: traceIn.line && traceIn.line.smoothing ? traceIn.line.smoothing : 1,
