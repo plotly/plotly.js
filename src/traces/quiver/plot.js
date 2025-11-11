@@ -106,7 +106,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         // Compute arrow in data space
-        var scaleRatio = trace.scaleratio || 1;
+        // Derive pixel-per-data scaling from axes at this point
+        var pxPerX = Math.abs(xa.c2p(cdi.x + 1) - xa.c2p(cdi.x));
+        var pxPerY = Math.abs(ya.c2p(cdi.y + 1) - ya.c2p(cdi.y));
+        var scaleRatio = (pxPerX && pxPerY) ? (pxPerY / pxPerX) : 1;
         var baseHeadScale = 0.2;
         var arrowScale = (trace.arrowsize !== undefined)
             ? (baseHeadScale * trace.arrowsize)
