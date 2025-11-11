@@ -46,7 +46,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // back-compat
     coerce('arrow_scale');
     coerce('angle', Math.PI / 9);
-    coerce('scaleratio');
     coerce('hoverdistance', 20);
 
     // Line styling
