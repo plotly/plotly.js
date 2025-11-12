@@ -2,11 +2,11 @@
 
 Plotly welcomes contributions to its [open-source JavaScript graphing libraries documentation](https://plotly.com/javascript) from its community of users.
 
-Our JavaScript tutorials are written in HTML files in the `_posts/plotly_js` directory of this repository. 
+Our JavaScript tutorials are written in HTML files in the `docs/content/` directory of this repository. 
 
 ## Contribute Quickly to Plotly's JavaScript Graphing Library Documentation
   
-To quickly make a contribution to Plotly's JavaScript graphing libraries documentation, simply submit a pull request with the change you would like to suggest. This can be done using the GitHub graphical user interface at https://github.com/plotly/graphing-library-docs. 
+To quickly make a contribution to Plotly's JavaScript graphing libraries documentation, simply submit a pull request with the change you would like to suggest. This can be done using the GitHub graphical user interface at https://github.com/plotly/plotly.js/. 
 
 The easiest way to do this is to follow the `Edit this page on GitHub` link at the top right of the page you are interested in contributing to:
 
@@ -14,138 +14,78 @@ The easiest way to do this is to follow the `Edit this page on GitHub` link at t
 
 **You don't have to worry about breaking the site when you submit a pull request!** This is because your change will not be merged to production immediately. A Plotly team member will first perform a code review on your pull request in order to ensure that it definitely increases the health of Plotly's graphing libraries codebase.
 
-## Develop Locally
+## Mkdocs Setup
 
-For contributions such as new example posts, we recommend setting up a local development environment so that you can test your changes as you work on them. 
+Before proceeding, make sure you are working in the `docs` directory. This is where all of the files needed
+to build the site using Mkdocs are.
 
-**See the `How To Get The Application Working Locally` section of the [Contributing Guide](https://github.com/plotly/graphing-library-docs/blob/master/Contributing.md)  to learn how to clone this repository to your local development environment and install its dependencies.**
+### Create a Virtual Environment
 
-Then follow these instructions to create or modify a new post. If the post is the first of its chart type, you need to create an index page for it first. 
+Create a *virtual environment* for the project so that packages you install won't affect other projects you are working on.
+We recommend using [`uv`](https://docs.astral.sh/uv/) for this:
 
-## Create An Index Page For A New Chart Type:
-
-If you are documenting a new chart type, then you need to create an index page for it before creating the actual example page.  
-
-1. In `documentation/_posts/plotly_js`, create a folder titled with the chart type or topic you're adding to the documentation (i.e. `bar`). 
-
-2. `cd` into the folder you created and create an HTML index file for the chart type named: `yyyy-mm-dd-chart_type_plotly_js_index.html`. Copy the index file template below. Make sure to replace placeholder text!
-```
----
-name: Add-Chart-Type-or-Topic
-permalink: javascript/add-chart-type-or-topic/
-description: How to make a D3.js-based add-chart-type-or-topic in javascript. Add an additional sentence summarizing chart-type or topic.
-layout: langindex
-thumbnail: thumbnail/mixed.jpg 
-language: plotly_js
-page_type: example_index
-display_as: **SEE BELOW
-order: 5
----
-  {% assign examples = site.posts | where:"language","plotly_js" | where:"suite","add-chart-type-or-topic"| sort: "order" %}
-  {% include posts/auto_examples.html examples=examples %}
-```
-  - Make sure to update `_includes/posts/documentation_eg.html`, `_includes/layouts/side-bar.html`, and `_data/display_as_py_r_js.yml` and the CI python scripts with the new chart type!
-
-  - Index pages for chart categories must have `order: 5`.
-
-## Create A New Example Post:
-
-1. In the folder containing the examples for the chart type you are writing documentation for, create a file named: `yyyy-mm-dd-example-title.html`. 
-
-2. Copy the example post template below and write JavaScript code to demonstrate the feature you are documenting. 
-  - If `plot_url` front-matter is not present, then the resulting chart will be displayed inline and a `Try It Codepen` button will be automatically generated. 
-  - If `plot_url` front-matter is present, then the URL given will be embedded in an `iframe` below the example.
-```
----
-description: How to make a D3.js-based bar chart in javascript. Seven examples of
-grouped, stacked, overlaid, and colored bar charts.
-display_as: basic
-language: plotly_js
-layout: base
-name: Bar Charts
-order: 3
-page_type: example_index
-permalink: javascript/bar-charts/
-redirect_from: javascript-graphing-library/bar-charts/
-thumbnail: thumbnail/bar.jpg **MORE INFO ON ADDING THUMBNAILS BELOW
-markdown_content: |
-  indented content in markdown format which will prefix an example ****SEE BELOW
----
-var data = [
-  {
-    x: ['giraffes', 'orangutans', 'monkeys'],
-    y: [20, 14, 23],
-    type: 'bar'
-  }The
-];
-
-Plotly.newPlot('myDiv', data);
+```bash
+uv venv --python 3.12
+source .venv/bin/activate
 ```
 
-- `display_as` sets where your tutorial is displayed. Make sure to update `_includes/posts/documentation_eg.html` with the new chart type!:
-  - 'file_settings' = https://plotly.com/javascript/plotly-fundamentals
-  - 'basic' = https://plotly.com/javascript/basic-charts
-  - 'statistical' = https://plotly.com/javascript/statistical-charts
-  - 'scientific' = https://plotly.com/javascript/scientific-charts
-  - 'financial' = https://plotly.com/javascript/financial-charts
-  - 'maps' = https://plotly.com/javascript/maps
-  - '3d_charts' = https://plotly.com/javascript/3d-charts
-  - See additional options [HERE](https://github.com/plotly/graphing-library-docs/blob/master/_includes/posts/documentation_eg.html#L1)
+Alternatively,
+you can use [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands)
+or [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+to create and manage your virtual environment;
+see those tools' documentation for more information.
 
-  - `order` defines the order in which the tutorials appear in each section on plot.ly/javascript. 
-    - <b>Note</b> The `order` of posts within a `display_as` must be a set of consecutive integers (i.e. [1, 2, 3, 4, 5, 6, ...]). 
-    - If a post has an `order` less than 5, it **MUST** also have the `page_type: example_index` front-matter so that it gets displayed on the index page.
- 
- - `markdown_content` is rendered directly above the examples. In general, it is best to *avoid* paragraph-formatted explanation and let the simplicity of the example speak for itself, but that's not always possible. Take note that headings in this block *are* reflected in the sidebar.
+### Install Packages
 
-  - Thumbnail images should named `your-tutorial-chart.jpg` and be *EXACTLY* 160px X 160px.
-    - posts in the following `display_as` categories **MUST** have a thumbnail
-      - 'file_settings' = https://plotly.com/javascript/plotly-fundamentals
-      - 'basic' = https://plotly.com/javascript/basic-charts
-      - 'statistical' = https://plotly.com/javascript/statistical-charts
-      - 'scientific' = https://plotly.com/javascript/scientific-charts
-      - 'financial' = https://plotly.com/javascript/financial-charts
-      - 'maps' = https://plotly.com/javascript/maps
-      - '3d_charts' = https://plotly.com/javascript/3d-charts
-    - Thumbnail images should be clear and interesting. You do not need to capture the ENTIRE chart, but rather focus on the most interesting part of the chart.
-    - Use images.plot.ly for adding new images. The password is in the Plotly 1Password Engineering Vault. 
-      - Log-in here: https://661924842005.signin.aws.amazon.com/console
-      - From the <b>Amazon Web Services Console</b> select <b>S3 (Scalable Storage in the Cloud)</b> then select <b>plotly-tutorials</b> -> <b>plotly-documentation</b> -> <b>thumbnail</b>
-      - Now from <b>All Buckets /plotly-tutorials/plotly-documentation/thumbnail</b> select the <b>Actions</b> dropdown and <b>upload</b> your .jpg file
+If you are using `uv`, you can install the dependencies using this command:
 
-## Modify An Existing Post:
+```bash
+uv pip install -r requirements.txt
+```
 
-1. Find the post you want to modify in `_posts/plotly_js`. Then, open the HTML file that contains that post and modify either the front-matter or the JavaScript.
+If you are using `conda` or `virtualenv`, you can install all dependencies with:
 
-# Best Practices:
-  - `order` examples from basic to advanced
-  - avoid the use of global JavaScript variables for `data` and `layout`. 
-  - make the chart display in a DOM element named `myDiv`
-  - use the `.newPlot()` function 
-  - use "real" data to make the examples realistic and useful for users. 
-    - avoid using random or dummy data as much as humanly possible! Should only be a last resort. 
-  - upload data files to https://github.com/plotly/datasets as importing data rather than pasting a large chunk of data in the tutorial creates a cleaner example. 
-   - use `var config = {mapboxAccessToken: "your access token"};` if your chart requires Mapbox authentication. `"your access token` will replaced by Plotly's private token at build time. In development mode, you will need to create a `_data/mapboxtoken.yml` file and paste Plotly's non-URL restricted Mapbox key into it. This is available in 1Password.
-       
-## Make a Pull Request
-  - Ready for your changes to be reviewed? Make a pull request!
+```bash
+pip install -r requirements.txt
+```
 
-    - Create a feature branch and use `git status` to list changed files.
-    ```
-    git checkout -b your_feature_branch
-    git status
-    ```
-    - Add, commit, and push the files that you'd like to add to your PR:
-    ```
-    git add file-a
-    git add file-b
-    git commit -m 'message about your changes'
-    git push origin your_feature_branch
-    ```
-    - Visit the [documentation repo](https://github.com/plotly/graphing-library-docs) and open a pull request!. You can then tag **@jdamiba** for a review.
+### File Structure
 
-## Style Edits
+- `build/` is where Mkdocs builds the local copy of the site. This is only updated if you run `mkdocs build`.
+- `tmp/` includes the generated HTML snippets for examples and reference pages. `make examples` builds the HTML files in `tmp/javascript/` while `make reference` builds the HTML files in `tmp/reference/`.
+- `pages/` is where Mkdocs looks for content to build the site. It includes markdown files that uses `pymdownx.snippets` syntax to insert the HTML snippets from `tmp/` and handwritten files such as `pages/plotlyjs-function-reference.md` for the Quick Reference section in the navigation. It also includes the custom css files used for styling (`pages/css/`), extra javascript files (`pages/javascript`), and HTML files that override Mkdocs templates to add custom functionality (`pages/overrides/`). There is one special case in `static-image-export.md` that uses `img.show()`. To insert the images into the markdown file, `bin/run_markdown.py` saves the images into `pages/imgs/`.
+- `mkdocs.yml` contains the configuration for the Mkdocs build such as extensions, site name and navigation.
 
-Please refer to our [Styles README](https://github.com/plotly/graphing-library-docs/blob/master/style_README.md)
 
-Thanks for contributing to our documentation!!
+### Building the Site
+
+Before building the site, you need to generate the HTML snippets found in `tmp/` that the mkdocs build depends on. This can be done by running both `make examples` and `make reference` which will create HTML snippets in `tmp/javascript/` and `tmp/reference/` respectively.
+
+If you ever add more HTML snippets generated into any of those folders, you may need to add more markdown files to `pages/` to add a new page. To do this, you can rerun the script that generates each markdown file with the `pyxmdown.snippets` syntax to insert the HTML snippets. You can do this by running the `bin/generate_reference_pages.py` script.
+
+Run `mkdocs build` to rebuild the local copy of the site in `build/` or `mkdocs serve` to run the site on local host.
+
+
+### Macros
+
+In `mkdocs.yml`, the `extra` section defines configuration values used across the documentation. For example, you can specify the Plotly.js version in `extra.js_version`. The `macros` plugin makes `js_version` accessible in scripts such as `bin/examples_pages.py` when CodePen examples are being embedded into the HTML snippets generated into `tmp/javascript`.
+
+
+## Overriding Mkdocs material themes
+
+To modify the HTML components of the Mkdocs site, copy the template from the [`mkdocs-material` repository](https://github.com/squidfunk/mkdocs-material/tree/master/material/templates). Then, make these changes in `pages/overrides`.
+
+You can either modify the existing files in `pages/overrides` or add a new file, paste the template for the component you are modifying and make your changes. Make sure to use the same file structure as the `mkdocs-material` default theme.
+
+For example, to change the footer, copy the `footer.html` template from the [`mkdocs-material` repository](https://github.com/squidfunk/mkdocs-material/blob/master/material/templates/partials/footer.html), then create a `footer.html` file under `pages/overrides/partials/`, paste and modify it.
+
+See [the official documentation](https://squidfunk.github.io/mkdocs-material/customization/) for more details.
+
+
+## Mkdocs Validation
+
+In `mkdocs.yml`, there is a section `validation` that defines how Mkdocs presents any issues and resolves links. When you build the site, there are some `INFO` logs that can be ignored.
+
+`Doc file <source_file_name>.md contains an unrecognized relative link '../<target_file_name>/', it was left as is` is an `INFO` log that happens because Mkdocs cannot resolve the link during build, but when the site is running, the redirects defined in `mkdocs.yml` will make sure these links redirect to the proper page. If a redirect does not exist for the page referenced in the link, then it is a regular missing page error and needs to be fixed.
+
+Any internal references in the markdown files, are resolved by Mkdocs relative to `docs/`. So, absolute links will be correctly resolved when the site is running. This is configured `mkdocs.yml` with the line `absolute_links: relative_to_docs`.
