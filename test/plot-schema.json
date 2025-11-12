@@ -22186,7 +22186,7 @@
       "valType": "boolean"
      },
      "split": {
-      "description": "Show hover information (open, close, high, low) in separate labels.",
+      "description": "Show hover information (open, close, high, low) in separate labels, rather than a single unified label. Default: *false*. When set to *true*, `hovertemplate` is ignored.",
       "dflt": false,
       "editType": "style",
       "valType": "boolean"
@@ -52906,7 +52906,7 @@
       "valType": "boolean"
      },
      "split": {
-      "description": "Show hover information (open, close, high, low) in separate labels.",
+      "description": "Show hover information (open, close, high, low) in separate labels, rather than a single unified label. Default: *false*. When set to *true*, `hovertemplate` is ignored.",
       "dflt": false,
       "editType": "style",
       "valType": "boolean"

@@ -129,7 +129,10 @@ module.exports = {
             valType: 'boolean',
             dflt: false,
             editType: 'style',
-            description: ['Show hover information (open, close, high, low) in', 'separate labels.'].join(' ')
+            description: [
+                'Show hover information (open, close, high, low) in separate labels, rather than a single unified label.',
+                'Default: *false*. When set to *true*, `hovertemplate` is ignored.'
+            ].join(' ')
         }
     }),
 
