@@ -1,0 +1,1 @@
+- Turn off borders for plot container in CSS reset [[#7617](https://github.com/plotly/plotly.js/pull/7617)]
