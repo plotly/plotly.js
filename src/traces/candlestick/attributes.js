@@ -8,7 +8,7 @@ var boxAttrs = require('../box/attributes');
 function directionAttrs(lineColorDefault) {
     return {
         line: {
-            color: extendFlat({}, boxAttrs.line.color, {dflt: lineColorDefault}),
+            color: extendFlat({}, boxAttrs.line.color, { dflt: lineColorDefault }),
             width: boxAttrs.line.width,
             editType: 'style'
         },
