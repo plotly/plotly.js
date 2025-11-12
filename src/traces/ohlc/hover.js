@@ -99,16 +99,11 @@ function hoverSplit(pointData, xval, yval, hovermode) {
     // skip the rest (for this trace) if we didn't find a close point
     if(!closestPoint) return [];
 
-    var cdIndex = closestPoint.index;
-    var di = cd[cdIndex];
-    var hoverinfo = di.hi || trace.hoverinfo;
-    var hoverParts = hoverinfo.split('+');
-    var isAll = hoverinfo === 'all';
-    var hasY = isAll || hoverParts.indexOf('y') !== -1;
+    var di = cd[closestPoint.index];
+    var hoverinfo = di.hi || trace.hoverinfo || '';
 
-    // similar to hoverOnPoints, we return nothing
-    // if all or y is not present.
-    if(!hasY) return [];
+    // If hoverinfo is 'none' or 'skip', we don't show any hover labels
+    if (hoverinfo === 'none' || hoverinfo === 'skip') return [];
 
     var attrs = ['high', 'open', 'close', 'low'];
 
