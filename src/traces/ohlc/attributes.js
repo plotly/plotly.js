@@ -37,7 +37,7 @@ module.exports = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: ['Sets the x coordinates.', 'If absent, linear coordinate will be generated.'].join(' ')
+        description: 'Sets the x coordinates. If absent, linear coordinate will be generated.'
     },
 
     open: {
@@ -121,7 +121,7 @@ module.exports = {
         max: 0.5,
         dflt: 0.3,
         editType: 'calc',
-        description: ['Sets the width of the open/close tick marks', 'relative to the *x* minimal interval.'].join(' ')
+        description: 'Sets the width of the open/close tick marks relative to the *x* minimal interval.'
     },
 
     hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
