@@ -31,6 +31,20 @@ function getJsonFile(filename) {
     }
 }
 
+function createCountriesList(geojsonPath, outputPath) {
+    const geojson = getJsonFile(geojsonPath);
+    if (!geojson.features) return;
+
+    const countryData = geojson.features
+        .map((feature) => {
+            const { iso3cd, nam_en } = feature.properties;
+            return { iso3cd, name: nam_en };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    fs.writeFileSync(outputPath, JSON.stringify(countryData));
+}
+
 function addCentroidsToGeojson(geojsonPath) {
     const geojson = getJsonFile(geojsonPath);
     if (!geojson.features) return;
@@ -374,6 +388,9 @@ const commandsCountries50m = [
 ].join(' ');
 await mapshaper.runCommands(commandsCountries50m);
 clampToAntimeridian(outputFilePathCountries50m);
+
+// Build list of countries, ISO codes for documentation
+createCountriesList(outputFilePathCountries50m, `${outputDirTopojson}/country_names_iso_codes.json`);
 
 // Get land from all polygon features
 const inputFilePathLand50m = outputFilePathCountries50m;
