@@ -1298,5 +1298,37 @@ describe('finance trace hover via Fx.hover():', function () {
                 })
                 .then(done, done.fail);
         });
+
+        it('should use hovertemplate (when provided) for ' + type, function (done) {
+            Plotly.newPlot(
+                gd,
+                [
+                    {
+                        x: [1, 2, 3],
+                        open: [10, 20, 15],
+                        high: [15, 25, 20],
+                        low: [8, 18, 13],
+                        close: [12, 22, 17],
+                        type: type,
+                        hovertemplate: 'O:%{open} H:%{high}<br>L:%{low} C:%{close}<extra></extra>'
+                    }
+                ],
+                {
+                    xaxis: { rangeslider: { visible: false } },
+                    width: 500,
+                    height: 500
+                }
+            )
+                .then(function () {
+                    hover(251, 178);
+                })
+                .then(function () {
+                    assertHoverLabelContent({
+                        nums: 'O:20 H:25\nL:18 C:22',
+                        name: ''
+                    });
+                })
+                .then(done, done.fail);
+        });
     });
 });
