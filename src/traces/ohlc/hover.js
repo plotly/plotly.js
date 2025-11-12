@@ -165,7 +165,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
         return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i], trace.yhoverformat);
     }
 
-    var hoverinfo = di.hi || trace.hoverinfo;
+    var hoverinfo = di.hi || trace.hoverinfo || '';
     var hoverParts = hoverinfo.split('+');
     var isAll = hoverinfo === 'all';
     var hasY = isAll || hoverParts.indexOf('y') !== -1;

@@ -2,7 +2,10 @@
 
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
+var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var templatefallbackAttrs = require('../../plots/template_attributes').templatefallbackAttrs;
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
 var delta = require('../../constants/delta.js');
@@ -105,7 +108,13 @@ module.exports = {
         editType: 'calc',
         description: 'Same as `text`.'
     },
-
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: ['open', 'high', 'low', 'close']
+        }
+    ),
+    hovertemplatefallback: templatefallbackAttrs(),
     tickwidth: {
         valType: 'number',
         min: 0,

@@ -1662,7 +1662,11 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         text = name;
     }
 
-    // hovertemplate
+    // Ignore hovertemplate if hoverlabel.split is set
+    // This ensures correct behavior of hoverlabel.split for candlestick and OHLC traces
+    // Not very elegant but it works
+    if (d.trace?.hoverlabel?.split) d.hovertemplate = false;
+
     const { hovertemplate = false } = d;
     if (hovertemplate) {
         const labels = d.hovertemplateLabels || d;

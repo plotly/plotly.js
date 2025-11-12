@@ -2,6 +2,8 @@
 
 var extendFlat = require('../../lib').extendFlat;
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
+var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+var templatefallbackAttrs = require('../../plots/template_attributes').templatefallbackAttrs;
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 
@@ -49,6 +51,8 @@ module.exports = {
 
     text: OHLCattrs.text,
     hovertext: OHLCattrs.hovertext,
+    hovertemplate: OHLCattrs.hovertemplate,
+    hovertemplatefallback: OHLCattrs.hovertemplatefallback,
 
     whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
 
