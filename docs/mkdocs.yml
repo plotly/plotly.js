@@ -31,6 +31,7 @@ theme:
     - content.code.copy
     - content.code.annotate
   logo: https://docs.plotly.com/assets/plotly_logo_square.png
+  favicon: https://dash.plotly.com/assets/favicon.ico
   palette:
     # Auto (follows system)
     - media: "(prefers-color-scheme)"
