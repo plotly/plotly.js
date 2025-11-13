@@ -1381,6 +1381,58 @@ describe('legend relayout update', function() {
             })
             .then(done, done.fail);
     });
+
+    it('should constrain legend height when yref is container', function(done) {
+        var fig = {
+            data: Array.from({length: 20}, () => ({
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            })),
+            layout: {
+                legend: {
+                    xref: 'container',
+                    yref: 'container',
+                    x:0.9
+                }
+            }
+        }
+
+        function _assert(msg, xy, wh) {
+            return function() {
+                var fullLayout = gd._fullLayout;
+                var legend3 = d3Select('g.legend');
+                var bg3 = legend3.select('rect.bg');
+                var translate = Drawing.getTranslate(legend3);
+                var x = translate.x;
+                var y = translate.y;
+                var w = +bg3.attr('width');
+                var h = +bg3.attr('height');
+
+                console.log();
+                console.log("msg: ", msg);
+                console.log("x: ", x, "      y: ", y);
+                console.log("w: ", w, "      h: ", h);
+                console.log("xy: ", xy);
+                console.log("wh: ", wh);
+                console.log("fullLayout.width:", fullLayout.width, "fullLayout.height:", fullLayout.height);
+
+                expect([x, y]).toBeWithinArray(xy, 25, msg + '| legend x,y');
+                expect([w, h]).toBeWithinArray(wh, 25, msg + '| legend w,h');
+                expect(x + w <= fullLayout.width).toBe(true, msg + '| fits in x');
+                expect(y + h <= fullLayout.height).toBe(true, msg + '| fits in y');
+            };
+        }
+
+        Plotly.newPlot(gd, fig)
+            .then(_assert('base', [539, 0], [91, 390]))
+            .then(function() { return Plotly.relayout(gd, 'legend.y', 0.6); })
+            .then(function() { return Plotly.relayout(gd, 'legend.yanchor', 'bottom'); })
+            .then(_assert('after moving legend towards the top edge', [539, 0], [101, 180]))
+            .then(function() { return Plotly.relayout(gd, 'legend.y', 0.4); })
+            .then(function() { return Plotly.relayout(gd, 'legend.yanchor', 'top'); })
+            .then(_assert('after moving legend towards the bottom edge', [539, 270], [101, 180]))
+            .then(done, done.fail);
+    });
 });
 
 describe('legend orientation change:', function() {
