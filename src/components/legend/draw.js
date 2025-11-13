@@ -794,11 +794,12 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         isBelowPlotArea = yPixels < plotBottom || (yPixels === plotBottom && yanchor === 'top');
         isAbovePlotArea = yPixels > plotTop || (yPixels === plotTop && yanchor === 'bottom');
         // Use the container height as the reference height
+        useFullLayoutHeight = false;
         referenceHeight = fullLayout.height;
     }
     
     // Set default maxheight if not provided by user
-    maxheight ||= (yref === 'paper' && !useFullLayoutHeight) ? 1 : 0.5;
+    maxheight ||= (useFullLayoutHeight) ? 0.5 : 1;
     // Convert maxheight to pixels if it's a ratio (≤1), otherwise use as-is
     if (maxheight <= 1) {
         maxheight = maxheight * referenceHeight;
