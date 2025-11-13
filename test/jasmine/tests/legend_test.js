@@ -1408,14 +1408,6 @@ describe('legend relayout update', function() {
                 var w = +bg3.attr('width');
                 var h = +bg3.attr('height');
 
-                console.log();
-                console.log("msg: ", msg);
-                console.log("x: ", x, "      y: ", y);
-                console.log("w: ", w, "      h: ", h);
-                console.log("xy: ", xy);
-                console.log("wh: ", wh);
-                console.log("fullLayout.width:", fullLayout.width, "fullLayout.height:", fullLayout.height);
-
                 expect([x, y]).toBeWithinArray(xy, 25, msg + '| legend x,y');
                 expect([w, h]).toBeWithinArray(wh, 25, msg + '| legend w,h');
                 expect(x + w <= fullLayout.width).toBe(true, msg + '| fits in x');
