@@ -9,6 +9,19 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.3.0] -- 2025-11-14
+
+### Added
+- Add `hovertemplate` for `candlestick` and `ohlc` traces [[#7619](https://github.com/plotly/plotly.js/pull/7619)]
+- Generate list of ISO codes for provided topojson maps, update info for some disputed territories [[#7622](https://github.com/plotly/plotly.js/pull/7622)]
+
+### Changed
+- Turn off borders for plot container in CSS reset [[#7617](https://github.com/plotly/plotly.js/pull/7617)]
+
+### Fixed
+- Fix KDE sampling precision in violin trace to eliminate floating-point drift and prevent density underrun/overrun [[#7581](https://github.com/plotly/plotly.js/pull/7581)], with thanks to @Koookadooo for the contribution!
+
+
 ## [3.2.0] -- 2025-10-30
 
 ### Added
