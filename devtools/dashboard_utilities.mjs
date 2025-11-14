@@ -40,20 +40,24 @@ export function createMocksList(files) {
     const jsonFiles = files.filter((file) => file.name.substr(-5) === '.json');
 
     const mocksList = jsonFiles.map((file) => {
-        const contents = JSON.parse(file.contents);
+        try {
+            const contents = JSON.parse(file.contents);
 
-        // get plot type keywords from mocks
-        const types = contents.data
-            .map((trace) => trace.type || 'scatter')
-            .reduce((acc, type, i, arr) => (arr.lastIndexOf(type) === i ? [...acc, type] : acc), []);
+            // get plot type keywords from mocks
+            const types = contents.data
+                .map((trace) => trace.type || 'scatter')
+                .reduce((acc, type, i, arr) => (arr.lastIndexOf(type) === i ? [...acc, type] : acc), []);
 
-        const filename = file.name.split(path.sep).pop();
+            const filename = file.name.split(path.sep).pop();
 
-        return {
-            name: filename.slice(0, -5),
-            file: filename,
-            keywords: types.join(', ')
-        };
+            return {
+                name: filename.slice(0, -5),
+                file: filename,
+                keywords: types.join(', ')
+            };
+        } catch {
+            console.log(`Couldn't parse ${file.name} as JSON. Excluding from mocks list.`);
+        }
     });
 
     return mocksList;
