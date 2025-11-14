@@ -19,7 +19,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 - Turn off borders for plot container in CSS reset [[#7617](https://github.com/plotly/plotly.js/pull/7617)]
 
 ### Fixed
-- Fix KDE sampling precision in violin trace to eliminate floating-point drift and prevent density underrun/overrun [[#7581](https://github.com/plotly/plotly.js/pull/7581)]
+- Fix KDE sampling precision in violin trace to eliminate floating-point drift and prevent density underrun/overrun [[#7581](https://github.com/plotly/plotly.js/pull/7581)], with thanks to @Koookadooo for the contribution!
 
 
 ## [3.2.0] -- 2025-10-30
