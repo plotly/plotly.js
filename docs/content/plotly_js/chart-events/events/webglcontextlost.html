@@ -1,0 +1,12 @@
+---
+name: Webgl Context Lost Event
+language: plotly_js
+suite: events
+order: 10.1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Plotly graphs which use WebGL receive a "WebGL context" from the browser which gives them access to gpu resources.
+  A program may lose its WebGL context if the browser is overloaded with them and is forced to shut one down.
+  The event handler: `plotly_webglcontextlost`, can be used to trigger an event after a graph loses it's WebGL context.
+---

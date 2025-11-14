@@ -1,0 +1,26 @@
+---
+name: Simple Event Example
+plot_url: https://codepen.io/plotly/embed/NbvPLa/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: events
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Here's a simple example using a Plotly event. Click on a point on the chart below to see an alert triggered by the `plotly_click` event.
+---
+var myPlot = document.getElementById('myDiv'),
+    x = [1, 2, 3, 4, 5],
+    y = [10, 20, 30, 20, 10],
+    data = [{x:x, y:y, type:'scatter',
+             mode:'markers', marker:{size:20}
+            }],
+    layout = {hovermode:'closest',
+              title: {text: 'Click on Points'}
+     };
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_click', function(){
+    alert('You clicked this Plotly chart!');
+});

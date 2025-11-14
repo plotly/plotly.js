@@ -1,0 +1,105 @@
+---
+name: Getting Started
+permalink: javascript/getting-started/
+description: Getting Started with plotly
+layout: base
+language: plotly_js
+redirect_from: javascript-graphing-library/getting-started/
+---
+
+
+    <section class="section">
+        <h2>NPM</h2>
+        <div class="content-box">
+            <p>
+                You can <a href="https://www.npmjs.com/package/plotly.js" target="_blank">install Plotly.js from NPM</a> via <code>npm install plotly.js-dist</code> or <code>yarn add plotly.js-dist</code>
+            </p>
+
+    </section>
+
+    <section class="section">
+        <h2 >plotly.js CDN</h2>
+        <div class="content-box" >
+            <p >
+                You can also use the ultrafast plotly.js CDN link. This CDN is graciously provided by the incredible team at <a href="https://fastly.com">Fastly</a>.
+            </p>
+
+        <pre><code class="hljs html">&lt;head&gt;
+               &lt;script src="https://cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js" charset="utf-8"&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Download</h2>
+        <div class="content-box">
+            <p>
+                Download the minified plotly.js source code and dependencies.
+            </p>
+
+            <p>
+                Include the downloaded scripts before the end of the &lt;/head&gt; tag in your HTML document:
+            </p>
+
+<pre><code class="hljs html">&lt;head&gt;
+	&lt;script src="plotly-{{site.data.jsversion.version}}.min.js" charset="utf-8"&gt;&lt;/script&gt;
+&lt;/head&gt;
+</code></pre>
+
+        </div>
+
+        <p style="text-align: center;">
+  			<a class="button plotlyjs-download" href="https://cdn.plot.ly/plotly-{{site.data.jsversion.version}}.min.js"
+  			 style="display: inline-block;" download>
+				<i class="fa fa-download fa-lg"></i> Download&nbsp;plotly.js</a>
+		</p>
+
+    </section>
+
+    <section class="section">
+        <h2 >Start plotting!</h2>
+        <div class="content-box">
+            <p>
+                In your HTML document, create an empty DIV to draw the graph in:
+            </p>
+
+            <pre><code class="hljs html">&lt;div id="tester" style="width:600px;height:250px;"&gt;&lt;/div&gt;</code></pre>
+
+            <p>
+                Now you can make interactive plotly.js charts  using <code class="no-padding">Plotly.newPlot()</code>.
+            </p>
+<pre><code class="hljs javascript">&lt;script&gt;
+	TESTER = document.getElementById('tester');
+	Plotly.newPlot( TESTER, [{
+	x: [1, 2, 3, 4, 5],
+	y: [1, 2, 4, 8, 16] }], {
+	margin: { t: 0 } } );
+&lt;/script&gt;</code></pre>
+
+            <p>
+                Now you can pass Plotly.newPlot() either the ID of the DIV ("tester") or the DIV DOM element (<code class="no-padding">TESTER</code>).
+            </p>
+
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Hello World Example</h2>
+        <div class="content-box">
+            <iframe width="100%" height="300" src="https://codepen.io/plotly/embed/PPVeer/?theme-id=15263&default-tab=result" allowfullscreen="allowfullscreen" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+        </div>
+    </section>
+
+<div class="row centered btnrow">
+	<a href="/javascript/" class="button no_underline">more examples</a>
+</div>
+
+<section class="sponsor--wrap">
+    <div class="sponsor--desc">Distribution powered by</div>
+    <div class="sponsor--title">
+        <a target="_blank" href="https://www.fastly.com/open-source">
+            <img src="https://www.fastly.com/sites/default/files/fastly_logo.png" alt="Fastly">
+        </a>
+    </div>
+</section>

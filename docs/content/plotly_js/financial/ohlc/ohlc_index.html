@@ -1,0 +1,14 @@
+---
+description: How to graph D3.js-based OHLC charts in javascript. Examples of OHCL
+  charts.
+display_as: financial
+language: plotly_js
+layout: base
+name: OHLC Charts
+order: 6
+permalink: javascript/ohlc-charts/
+thumbnail: thumbnail/ohlc.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","ohlc" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

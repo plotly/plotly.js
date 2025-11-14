@@ -1,0 +1,27 @@
+---
+name: Automatically Adjust Margins
+language: plotly_js
+suite: pie
+order: 4
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  The following example sets [automargin](https://plotly.com/javascript/setting-graph-size/#automatically-adjust-margins) attribute to true, which automatically increases the margin size.
+---
+var data = [{
+  type: "pie",
+  values: [2, 3, 4, 4],
+  labels: ["Wages", "Operating expenses", "Cost of sales", "Insurance"],
+  textinfo: "label+percent",
+  textposition: "outside",
+  automargin: true
+}]
+
+var layout = {
+  height: 400,
+  width: 400,
+  margin: {"t": 0, "b": 0, "l": 0, "r": 0},
+  showlegend: false
+  }
+
+Plotly.newPlot('myDiv', data, layout)

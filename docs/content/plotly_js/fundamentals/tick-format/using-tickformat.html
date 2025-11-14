@@ -1,0 +1,23 @@
+---
+name: Using Tickformat
+language: plotly_js
+suite: tick-formatting
+order: 2.0
+sitemap: false
+arrangement: horizontal
+---
+
+var x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+var y = [0.18, 0.38, 0.56, 0.46, 0.59, 0.4, 0.78, 0.77, 0.74, 0.42, 0.45, 0.39];
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter'
+}];
+var layout = {
+  yaxis: {
+    tickformat: '%' // For more formatting types, see: https://github.com/d3/d3-format/blob/master/README.md#locale_format
+  }
+}
+
+Plotly.newPlot('myDiv', data, layout);

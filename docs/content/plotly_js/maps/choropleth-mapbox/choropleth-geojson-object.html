@@ -1,0 +1,26 @@
+---
+name: Streets Tile
+language: plotly_js
+suite: tile-county-choropleth
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+    The following example sets `geojson object` of type `feature` and geometries of type 'Polygon'. For more information see [geojson attribute](https://plotly.com/javascript/reference/choroplethmap/#choroplethmap-geojson) in the reference page.
+    As you see, the scattermap trace is above the Choropleth map trace. To set the Choropleth map trace above all the other traces you should set [below attribute](https://plotly.com/javascript/reference/choroplethmap/#choroplethmap-below).
+---
+var data = [
+   {type: "scattermap", lon: [-86], lat: [34], marker: {size: 20, color: 'purple'}},
+   {
+    type: "choroplethmap",locations: ["AL"], z: [10], coloraxis: "coloraxis",           geojson: {type: "Feature", id: "AL", geometry: {type: "Polygon", coordinates: [[
+    [-86, 35], [-85, 34], [-85, 32], [-85, 32], [-85, 32], [-85, 32], [-85, 31],
+    [-86, 31], [-87, 31], [-87, 31], [-88, 30], [-88, 30], [-88, 30], [-88, 30],
+    [-88, 34], [-88, 35]]]
+   }}}];
+
+var layout = {width: 600, height: 400, map: {style: 'streets',
+    center: {lon: -86, lat: 33}, zoom: 5}, marker: {line: {color: "blue"}},
+    coloraxis: {showscale: false, colorscale: "Viridis"}};
+
+Plotly.newPlot('myDiv', data, layout);

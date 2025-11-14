@@ -1,0 +1,13 @@
+---
+description: How to make D3.js-based radar charts in Plotly.js.
+display_as: scientific
+language: plotly_js
+layout: base
+name: Radar Charts
+order: 8
+permalink: javascript/radar-chart/
+thumbnail: thumbnail/radar.gif
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","radar" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

@@ -1,0 +1,26 @@
+---
+name: Stacked Histograms
+arrangement: horizontal
+language: plotly_js
+suite: histogram
+order: 7
+sitemap: false
+---
+var x1 = [];
+var x2 = [];
+for (var i = 0; i < 500; i ++) {
+	x1[i] = Math.random();
+	x2[i] = Math.random();
+}
+
+var trace1 = {
+  x: x1,
+  type: "histogram",
+};
+var trace2 = {
+  x: x2,
+  type: "histogram",
+};
+var data = [trace1, trace2];
+var layout = {barmode: "stack"};
+Plotly.newPlot('myDiv', data, layout);

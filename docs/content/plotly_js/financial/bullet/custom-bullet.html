@@ -1,0 +1,42 @@
+---
+name: Custom Bullet Chart
+language: plotly_js
+suite: bullet-charts
+order: 3
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+
+  The following example shows how to customize your charts. For more information about all possible options check our [reference page](https://plotly.com/javascript/reference/indicator/).
+---
+var data = [
+  {
+    type: "indicator",
+    mode: "number+gauge+delta",
+    value: 220,
+    domain: { x: [0, 1], y: [0, 1] },
+    delta: { reference: 280, position: "top" },
+    title: {
+      text:
+        "<b>Profit</b><br><span style='color: gray; font-size:0.8em'>U.S. $</span>",
+      font: { size: 14 }
+    },
+    gauge: {
+      shape: "bullet",
+      axis: { range: [null, 300] },
+      threshold: {
+        line: { color: "red", width: 2, gradient: { yanchor: "vertical" } },
+        thickness: 0.75,
+        value: 270
+      },
+      bgcolor: "white",
+      steps: [{ range: [0, 150], color: "cyan" }],
+      bar: { color: "darkblue" }
+    }
+  }
+];
+
+var layout = { width: 400, height: 230 };
+var config = { responsive: true };
+
+Plotly.newPlot('myDiv', data, layout, config);

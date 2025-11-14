@@ -1,0 +1,13 @@
+---
+description: How to make D3.js-based carpet contour plots in Plotly.js.
+display_as: scientific
+language: plotly_js
+layout: base
+name: Carpet Contour Plot
+order: 11
+permalink: javascript/carpet-contour/
+thumbnail: thumbnail/contourcarpet.jpg
+---
+
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","contourcarpet" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

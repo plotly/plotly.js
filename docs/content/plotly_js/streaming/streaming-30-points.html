@@ -1,0 +1,40 @@
+---
+name: 30 Points Using Update
+plot_url: https://codepen.io/plotly/embed/xLwQPr/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: streaming
+order: 5
+sitemap: false
+arrangement: horizontal
+---
+
+var arrayLength = 30
+var newArray = []
+
+for(var i = 0; i < arrayLength; i++) {
+  var y = Math.round(Math.random()*10) + 1
+  newArray[i] = y
+}
+
+Plotly.newPlot('myDiv', [{
+  y: newArray,
+  mode: 'lines',
+  line: {color: '#80CAF6'}
+}]);
+
+var cnt = 0;
+
+var interval = setInterval(function() {
+
+  var y = Math.round(Math.random()*10) + 1
+  newArray = newArray.concat(y)
+  newArray.splice(0, 1)
+
+  var data_update = {
+    y: [newArray]
+  };
+
+  Plotly.update('myDiv', data_update)
+
+  if(++cnt === 100) clearInterval(interval);
+}, 1000); 

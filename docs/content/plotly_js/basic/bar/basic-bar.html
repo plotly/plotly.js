@@ -1,0 +1,17 @@
+---
+name: Basic Bar Chart
+language: plotly_js
+suite: bar
+order: 1
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: ['giraffes', 'orangutans', 'monkeys'],
+    y: [20, 14, 23],
+    type: 'bar'
+  }
+];
+
+Plotly.newPlot('myDiv', data);

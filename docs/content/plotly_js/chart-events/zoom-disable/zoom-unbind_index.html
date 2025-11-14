@@ -1,0 +1,14 @@
+---
+name: Disable Zoom Events
+permalink: javascript/disable-zoom/
+description: How to disable zoom events in JavaScript charts. 
+layout: base
+thumbnail: thumbnail/zoom.jpg
+language: plotly_js
+page_type: example_index
+display_as: chart_events
+order: 4.75
+redirect_from: javascript-graphing-library/disable-zoom/
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","unbind-zoom-events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

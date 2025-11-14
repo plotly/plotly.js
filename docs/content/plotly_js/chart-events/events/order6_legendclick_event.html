@@ -1,0 +1,51 @@
+---
+name: Legend Click Events
+plot_url: https://codepen.io/plotly/embed/vazxKv/?height=500&theme-id=15263&default-tab=result
+language: plotly_js
+suite: events
+order: 4.1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  `plotly_legendclick` and `plotly_legenddoubleclick` allow customization of the plotly legend. The default behaviour of `plotly_legendclick` is to hide a trace and the default behavior of `plotly_legenddoubleclick` is to select one trace and hide all the others.
+  We can add to the default behaviour by creating a new `plotly_legendclick` event with a function of our choice. We can also disable the default behaviour by creating a function that returns `false`. In the example below, we do both in order to create a `plotly_legendclick` event which changes the marker color back to black instead of erasing the trace.
+---
+var myPlot = document.getElementById('myDiv'),
+    x = [1, 2, 3, 4, 5, 6],
+    y = [1, 2, 3, 2, 3, 4],
+    y2 = [1, 4, 7, 6, 1, 5],
+    colors = [['#5C636E','#5C636E','#5C636E','#5C636E','#5C636E','#5C636E'],
+              ['#393e46','#393e46','#393e46','#393e46','#393e46','#393e46']],
+    data = [{x:x, y:y, type:'scatter',
+             mode:'line', line:{ color:'#5C636E'},marker:{size:16, color:colors[0]}},
+            {x:x, y:y2, type:'scatter',
+             mode:'line',line:{ color:'#393e46'}, marker:{size:16, color:colors[1]}}],
+    layout = {
+        showlegend: true,
+        hovermode:'closest',
+        title: {text: 'Click on a Point to Change Color<br>Click on a Trace in the Legend to Change Back One Trace Only'}
+     };
+
+Plotly.newPlot('myDiv', data, layout);
+
+myPlot.on('plotly_click', function(data){
+  var pn='',
+      tn='',
+      colors=[];
+  for(var i=0; i < data.points.length; i++){
+    pn = data.points[i].pointNumber;
+    tn = data.points[i].curveNumber;
+    colors = data.points[i].data.marker.color;
+  };
+  colors[pn] = '#C54C82';
+  var update = {'marker':{color: colors, size:16}};
+  Plotly.restyle('myDiv', update,[tn]);
+});
+
+myPlot.on('plotly_legendclick', function(data){
+  var trColors = [['#5C636E','#5C636E','#5C636E','#5C636E','#5C636E','#5C636E'],
+              ['#393e46','#393e46','#393e46','#393e46','#393e46','#393e46']];
+  var update = {'marker':{color: trColors[data.curveNumber], size:16}};
+  Plotly.restyle('myDiv', update,[data.curveNumber]);
+  return false;
+});

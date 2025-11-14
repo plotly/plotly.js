@@ -1,0 +1,17 @@
+---
+name: Stamen Terrain Tile
+language: plotly_js
+suite: tile-density-heatmaps
+order: 5
+sitemap: false
+layout: base
+arrangement: horizontal
+markdown_content: |
+
+
+---
+var data = [{type: 'densitymapbox', lon: [10, 20, 30], lat: [15, 25, 35], z: [1, 3, 2]}];
+
+var layout = {width: 600, height: 400, mapbox: {style: 'https://tiles.stadiamaps.com/styles/stamen_watercolor.json?api_key=YOUR-API-KEY'}};
+
+Plotly.newPlot('myDiv', data, layout);

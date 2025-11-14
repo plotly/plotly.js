@@ -1,0 +1,277 @@
+site_name: "Plotly.js Docs"
+site_url: 'https://plotly.com/javascript/'
+repo_url: https://github.com/plotly/plotly.js
+repo_name: plotly/plotly.js
+docs_dir: pages
+site_dir: build
+
+validation:
+  absolute_links: relative_to_docs
+  anchors: info
+  unrecognized_links: info
+  not_found: info
+
+plugins:
+  - search
+  - redirects:
+      redirect_maps:
+        'mapbox-layers.md': 'tile-map-layers.md'
+  - gen-files:
+      scripts:
+        - bin/generate_reference_pages.py
+  - macros
+
+theme:
+  name: "material"
+  custom_dir: "pages/overrides"
+  font:
+  text: Inter
+  features:
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+  logo: https://docs.plotly.com/assets/plotly_logo_square.png
+  favicon: https://dash.plotly.com/assets/favicon.ico
+  palette:
+    # Auto (follows system)
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+markdown_extensions:
+  - footnotes
+  - pymdownx.snippets:
+      base_path: ["tmp"]
+  - markdown_include.include:
+      base_path: pages
+  - md_in_html
+
+extra_css:
+  - css/extra_css.css
+  - css/code-highlight.css
+  - https://docs.plotly.com/css/plotly-style.css
+  - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
+
+extra_javascript:
+  - javascript/highlight.js
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js
+
+nav:
+- Home: index.md
+- Quick Reference:
+  - Getting Started: getting-started.md
+  - Is Plotly Free?: is-plotly-free.md
+  - Figure Reference: reference/index/index.md # To match link to existing ploty.com/javascript
+  - Function Reference: plotlyjs-function-reference.md
+  - Event Reference: plotlyjs-events.md
+  - Configuration Options: configuration-options.md
+  - GitHub: https://github.com/plotly/plotly.js/
+  - Plotly Community Forum: https://community.plotly.com/
+- Examples:
+  - Fundamentals:
+    - Overview: plotly-fundamentals.md
+    - Configuration: configuration-options.md
+    - Responsive / Fluid Layouts: responsive-fluid-layout.md
+    - uirevision in Plotly.react: uirevision.md
+    - React Plotly.js: react.md
+    - Analytical Apps with Dash: https://dash.plotly.com/
+    - Colorway: colorway.md
+    - Images: images.md
+    - 3D Axes: 3d-axes.md
+    - 3D Hover Options: 3d-hover.md
+    - 3D Surface Lighting: 3d-surface-lighting.md
+    - Axes: axes.md
+    - Horizontal Legends: horizontal-legend.md
+    - Hover Text and Formatting: hover-text-and-formatting.md
+    - Setting the Title, Legend Entries, and Axis Titles: figure-labels.md
+    - Layout Template Examples: layout-template.md
+    - Legends: legend.md
+    - Setting Graph Size: setting-graph-size.md
+    - Formatting Ticks: tick-formatting.md
+    - Shapes: shapes.md
+    - Text Template: texttemplate.md
+    - Text and Annotations: text-and-annotations.md
+    - Text and Font Styling: font.md
+    - Multiple Axes: multiple-axes.md
+    - Subplots: subplots.md
+  - Basic Charts:
+    - Overview: basic-charts.md
+    - Scatter Plots: line-and-scatter.md
+    - Line Charts: line-charts.md
+    - Bar Charts: bar-charts.md
+    - Pie Charts: pie-charts.md
+    - Bubble Charts: bubble-charts.md
+    - Dot Plots: dot-plots.md
+    - Inset Plots: insets.md
+    - Filled Area Plots: filled-area-plots.md
+    - Horizontal Bar Charts: horizontal-bar-charts.md
+    - Sunburst Charts: sunburst-charts.md
+    - Sankey Diagram: sankey-diagram.md
+    - Treemap Charts: treemaps.md
+    - Tables: table.md
+    - Multiple Chart Types: graphing-multiple-chart-types.md
+    - WebGL vs SVG: webgl-vs-svg.md
+  - Statistical Charts:
+    - Overview: statistical-charts.md
+    - Error Bars: error-bars.md
+    - Box Plots: box-plots.md
+    - Histograms: histograms.md
+    - Continuous Error Bars: continuous-error-bars.md
+    - 2D Histograms: 2D-Histogram.md
+    - SPC Control Charts: spc-control-charts.md
+    - Violin Plots: violin.md
+    - Parallel Categories Diagram: parallel-categories-diagram.md
+    - Scatterplot Matrix: splom.md
+    - 2D Histogram Contour: 2d-histogram-contour.md
+  - Scientific Charts:
+    - Overview: scientific-charts.md
+    - Contour Plots: contour-plots.md
+    - Heatmaps: heatmaps.md
+    - Ternary Plots: ternary-plots.md
+    - Parallel Coordinates Plot: parallel-coordinates-plot.md
+    - Log Plots: log-plot.md
+    - Wind Rose and Polar Bar Charts: wind-rose-charts.md
+    - Ternary Contours: ternary-contour.md
+    - Radar Charts: radar-chart.md
+    - Carpet Plots: carpet-plot.md
+    - Carpet Scatter Plot: carpet-scatter.md
+    - Carpet Contour Plot: carpet-contour.md
+    - Polar Charts: polar-chart.md
+  - Financial Charts:
+    - Overview: financial-charts.md
+    - Waterfall Charts: waterfall-charts.md
+    - Indicators: indicator.md
+    - Candlestick Charts: candlestick-charts.md
+    - Funnel Chart: funnel-charts.md
+    - Time Series and Date Axes: time-series.md
+    - OHLC Charts: ohlc-charts.md
+    - Gauge Charts: gauge-charts.md
+    - Bullet Charts: bullet-charts.md
+  - Maps:
+    - Overview: maps.md
+    - Tile Map Layers: tile-map-layers.md
+    - Tile Density Heatmap: tile-density-heatmaps.md
+    - Tile Choropleth Maps: tile-county-choropleth.md
+    - Lines on Maps: lines-on-maps.md
+    - Bubble Maps: bubble-maps.md
+    - Scatter Plots on Maps: scatter-plots-on-maps.md
+    - Scatter Plots on Tile Maps: scatter-tile-maps.md
+    - Choropleth Maps: choropleth-maps.md
+    - Filled Area on Tile Maps: filled-area-on-map.md
+  - 3D Charts:
+    - Overview: 3d-charts.md
+    - 3D Scatter Plots: 3d-scatter-plots.md
+    - Ribbon Plots: ribbon-plots.md
+    - 3D Surface Plots: 3d-surface-plots.md
+    - 3D Mesh Plots: 3d-mesh.md
+    - 3D Line Plots: 3d-line-plots.md
+    - Trisurf Plots: trisurf.md
+    - 3D Cluster Graph: 3d-point-clustering.md
+    - 3D Cone Plots: cone-plot.md
+    - 3D Streamtube Plots: streamtube-plot.md
+    - 3D Isosurface Plots: 3d-isosurface-plots.md
+    - 3D Subplots: 3d-subplots.md
+  - Multiple Axes:
+    - Overview: multiple-axes.md
+    - Mixed Subplots: mixed-subplots.md
+    - Table and Chart Subplots: table-subplots.md
+  - Chart Events:
+    - Overview: chart-events.md
+    - Click Events: click-events.md
+    - Hover Events: hover-events.md
+    - Zoom Events: zoom-events.md
+    - Disable Zoom Events: disable-zoom.md
+  - Animations:
+    - Overview: plotly-animations.md
+    - Intro to Animations: animations.md
+    - Adding Sliders to Animations: gapminder-example.md
+    - Filled-Area Animation: filled-area-animation.md
+    - Map Animation: map-animations.md
+  - Advanced Options:
+    - Overview: advanced-opt.md
+    - Plot CSV Data from an Ajax Call: ajax-call.md
+    - Streaming: streaming.md
+    - Remove Trace from Plot: remove-trace.md
+    - LaTeX: LaTeX.md
+  - Controls:
+    - Overview: controls.md
+    - Dropdown Menus: dropdowns.md
+    - Custom Buttons: custom-buttons.md
+    - Sliders: sliders.md
+    - Lasso Selection: lasso-selection.md
+    - Range Slider and Selector: range-slider.md
+- API Reference: 
+    - Overview: reference/index.md
+    - Core Objects: 
+      - Layout: reference/layout.md
+    - Simple Traces:
+      - Bar: reference/bar.md
+      - Contour: reference/contour.md
+      - Heatmap: reference/heatmap.md
+      - Image: reference/image.md
+      - Pie: reference/pie.md
+      - Scatter: reference/scatter.md
+      - Scatter GL: reference/scattergl.md
+      - Table: reference/table.md
+    - Distribution Traces:
+      - Box: reference/box.md
+      - Histogram: reference/histogram.md
+      - Histogram 2D: reference/histogram2d.md
+      - Histogram 2D Contour: reference/histogram2dcontour.md
+      - Violin: reference/violin.md
+    - Finance Traces:
+      - Candlestick: reference/candlestick.md
+      - Funnel: reference/funnel.md
+      - Funnel Area: reference/funnelarea.md
+      - Indicator: reference/indicator.md
+      - Ohlc: reference/ohlc.md
+      - Waterfall: reference/waterfall.md
+    - 3D Traces:
+      - Cone: reference/cone.md
+      - Isosurface: reference/isosurface.md
+      - Mesh 3D: reference/mesh3d.md
+      - Scatter 3D: reference/scatter3d.md
+      - Streamtube: reference/streamtube.md
+      - Surface: reference/surface.md
+      - Volume: reference/volume.md
+    - Map Traces:
+      - Choropleth: reference/choropleth.md
+      - Choropleth Map: reference/choroplethmap.md
+      - Choropleth Mapbox: reference/choroplethmapbox.md
+      - Density Map: reference/densitymap.md
+      - Density Mapbox: reference/densitymapbox.md
+      - Scatter Geo: reference/scattergeo.md
+      - Scatter Map: reference/scattermap.md
+      - Scatter Mapbox: reference/scattermapbox.md
+    - Specialized Traces:
+      - Bar Polar: reference/barpolar.md
+      - Carpet: reference/carpet.md
+      - Contour Carpet: reference/contourcarpet.md
+      - Icicle: reference/icicle.md
+      - Parallel Categories: reference/parcats.md
+      - Parallel Coordinates: reference/parcoords.md
+      - Sankey: reference/sankey.md
+      - Scatter Carpet: reference/scattercarpet.md
+      - Scatter Polar: reference/scatterpolar.md
+      - Scatter Polar GL: reference/scatterpolargl.md
+      - Scatter Smith: reference/scattersmith.md
+      - Scatter Ternary: reference/scatterternary.md
+      - SPLOM: reference/splom.md
+      - Sunburst: reference/sunburst.md
+      - Treemap: reference/treemap.md
+
+extra:
+  js_version: "3.1.0"

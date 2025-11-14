@@ -1,0 +1,27 @@
+---
+name: <code>nonnegative</code>, <code>tozero</code>, and <code>normal</code> Rangemode
+language: plotly_js
+suite: axes
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+var data = [
+  {
+    x: [2, 4, 6],
+    y: [-3, 0, 3],
+    type: 'scatter'
+  }
+];
+var layout = {
+  showlegend: false,
+  xaxis: {
+    rangemode: 'tozero',
+    autorange: true
+  },
+  yaxis: {
+    rangemode: 'nonnegative',
+    autorange: true
+  }
+};
+Plotly.newPlot('myDiv', data, layout);

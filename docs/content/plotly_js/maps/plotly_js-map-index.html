@@ -1,0 +1,27 @@
+---
+permalink: javascript/maps/
+description: Plotly.js makes interactive, publication-quality graphs online. Examples of how to make maps.
+name: Maps
+layout: langindex
+language: plotly_js
+display_as: maps
+thumbnail: thumbnail/mixed.jpg
+---
+
+
+<header class="--welcome">
+	<div class="--welcome-body">
+		<!--div.--wrap-inner-->
+		<div class="--title">
+
+			<div class="--body">
+				<h1>Plotly.js Maps</h1>
+				<p>{{page.description}}</p>
+				{% include layouts/dashplug.html %}
+			</div>
+		</div>
+	</div>
+</header>
+
+		{% assign languagelist = site.posts | where:"language","plotly_js" | where:"display_as","maps" | where: "layout","base" | sort: "order" %}
+        {% include posts/documentation_eg.html %}

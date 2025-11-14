@@ -1,0 +1,48 @@
+---
+name: Select Hover Points
+language: plotly_js
+suite: area
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+var data = [
+  {
+    x: [0,0.5,1,1.5,2],
+    y: [0,1,2,1,0],
+    fill: 'toself',
+    fillcolor: '#ab63fa',
+    hoveron: 'points+fills',
+    line: {
+      color: '#ab63fa'
+    },
+    text: "Points + Fills",
+    hoverinfo: 'text'
+  },
+  {
+    x: [3,3.5,4,4.5,5],
+    y: [0,1,2,1,0],
+    fill: 'toself',
+    fillcolor: '#e763fa',
+    hoveron: 'points',
+    line: {
+      color: '#e763fa'
+    },
+    text: "Points only",
+    hoverinfo: 'text'
+  }]
+
+var layout = {
+  title: {
+    text: 'Hover on <i>points</i> or <i>fill</i>'
+  },
+  xaxis: {
+    range: [0,5]
+  },
+  yaxis: {
+    range: [0,3]
+  }
+}
+
+Plotly.newPlot('myDiv', data, layout)

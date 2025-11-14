@@ -1,0 +1,63 @@
+---
+name: Trace Opacity
+language: plotly_js
+suite: marker-style
+order: 3
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Setting opacity outside the marker will set the opacity of the trace. Thus, it will allow greater visbility of additional traces but like fully opaque it is hard to distinguish density.
+---
+
+var x = Array.from({length: 500}, () => Math.random()*(6-3)+3);
+var y = Array.from({length: 500}, () => Math.random()*(4.5-3)+3);
+var x2 = Array.from({length: 500}, () => Math.random()*(6-3)+3);
+var y2 = Array.from({length: 500}, () => Math.random()*(6-4.5)+4.5);
+
+var data = [{
+  x: x,
+  y: y,
+  type: 'scatter',
+  mode: 'markers',
+  opacity: 0.5,
+  marker: {
+    color: 'rgb(17, 157, 255)',
+    size: 20,
+    line: {
+      color: 'rgb(231, 99, 250)',
+      width: 2
+    }
+  },
+  name: 'Opacity 0.5'
+  }, {
+  x: x2,
+  y: y2,
+  type: 'scatter',
+  mode: 'markers',
+  marker: {
+    color: 'rgb(17, 157, 255)',
+    size: 20,
+    line: {
+      color: 'rgb(231, 99, 250)',
+      width: 2
+    }
+  },
+  name: 'Opacity 1.0'
+  }, {
+  x: [2,2],
+  y: [4.25,4.75],
+  type: 'scatter',
+  mode: 'markers',
+  opacity: 0.5,
+  marker: {
+    color: 'rgb(17, 157, 255)',
+    size: 60,
+    line: {
+      color: 'rgb(231, 99, 250)',
+      width: 6
+    }
+  },
+  showlegend: false
+}]
+
+Plotly.newPlot('myDiv', data)

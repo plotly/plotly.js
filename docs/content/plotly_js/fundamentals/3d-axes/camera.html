@@ -1,0 +1,143 @@
+---
+name: Camera Controls
+language: plotly_js
+suite: 3d-axes
+order: 5
+sitemap: false
+arrangement: horizontal
+---
+
+function getrandom(num , mul) 
+  {
+     var value = [ ];
+     for(i=0;i<=num;i++)
+     {
+      var rand = Math.random() * mul;
+      value.push(rand);
+     }
+    return value;
+  }
+var data = [
+  {
+    x: getrandom(20, 4), 
+    y: getrandom(20, 3), 
+    z: getrandom(20, 5),
+    opacity:0.5,
+    mode: "markers",
+    type: "scatter3d",
+    scene: "scene1",
+    name: "Lower the view point"
+  },
+   {
+    x:getrandom(20, 4), 
+    y:getrandom(20, 3), 
+    z:getrandom(20, 5),
+    opacity:0.5,
+    mode: "markers",
+    type: "scatter3d",
+    scene: "scene2",
+    name: "x-z plane"
+  },
+  {
+    x:getrandom(20, 4), 
+    y:getrandom(20, 3), 
+    z:getrandom(20, 5), 
+    opacity:0.5,
+    mode: "markers",
+    type: "scatter3d",
+    scene: "scene3",
+    name: "y-z plane"
+  },
+   {
+    x:getrandom(10, 4), 
+    y:getrandom(10, 3), 
+    z:getrandom(10, 5), 
+    opacity:0.5,
+    mode: "markers",
+    type: "scatter3d",
+    scene: "scene4",
+    name: "View from above"
+  },
+   {
+    x:getrandom(20, 4), 
+    y:getrandom(20, 3), 
+    z:getrandom(20, 5), 
+    opacity:0.5,
+    mode: "markers",
+    type: "scatter3d",
+    scene: "scene5",
+    name: "Zooming in"
+  },
+];
+var layout = {
+    scene1: {
+      domain: {
+            x: [0.00,  0.33], 
+            y: [0.5, 1]
+        },
+      camera: {
+          center: {
+                x: 0, y: 0, z: 0 }, 
+          eye: { 
+                x: 2, y: 2, z: 0.1 }, 
+           up: {
+                x: 0, y: 0, z: 1 }
+        },},
+  
+    scene2: {
+      domain: {
+             x: [0.33,  0.66], 
+             y: [0.5, 1.0]
+            },
+      camera: {
+          center: {
+                x: 0, y: 0, z: 0}, 
+          eye: { 
+                x:0.1, y:2.5, z:0.1}, 
+          up: {
+                x: 0, y: 0, z: 1}
+        },},
+  
+  scene3: {
+      domain: {
+             x: [0.66,  0.99], 
+             y: [0.5, 1]
+            },
+      camera: {
+          center: {
+                x: 0, y: 0, z: 0}, 
+          eye: { 
+                 x:2.5, y:0.1, z:0.1}, 
+          up: {
+                 x: 0, y: 0, z: 1}
+    },},    
+  
+  scene4: {
+      domain: {
+             x: [0.15,  0.5], 
+             y: [-0.25, 0.4]
+            },
+      camera: {
+        center: {
+              x: 0, y: 0, z: 0}, 
+        eye: { 
+              x:0.1, y:0.1, z:2.5}, 
+        up: {
+              x: 0, y: 0, z: 1}
+    },},
+  
+  scene5: {
+        domain: {
+               x: [0.62,  0.7], 
+               y: [-0.2, 0.4]
+            },
+      camera: {
+        center: {
+              x: 0, y: 0, z: 0}, 
+        eye: { 
+              x:0.1, y:0.1, z:1}, 
+        up: {
+              x: 0, y: 0, z: 1}
+    },},
+};
+Plotly.newPlot('myDiv', data, layout);

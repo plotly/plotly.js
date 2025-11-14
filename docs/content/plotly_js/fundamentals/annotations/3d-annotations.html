@@ -1,0 +1,81 @@
+---
+name: 3D Annotations
+language: plotly_js
+suite: annotations
+order: 4.75
+sitemap: false
+arrangement: horizontal
+---
+
+var data = [{
+    type: "scatter3d",
+    x: ["2017-01-01", "2017-02-10", "2017-03-20"],
+    y: ["A", "B", "C"],
+    z: [1, 1e3, 1e5]
+ }]
+
+var layout = {
+    scene: {
+      camera: {
+        eye: {x: 2.1, y: 0.1, z: 0.9}
+      },
+      xaxis: {
+        title: {
+            text: ""
+        }
+      },
+      yaxis: {
+          title: {
+              text: ""
+          }
+      },
+      zaxis: {
+          type: "log",
+          title: {
+              text: ""
+          }
+      },
+      annotations: [{
+        showarrow: false,
+        x: "2017-01-01",
+        y: "A",
+        z: 0,
+        text: "Point 1",
+        font: {
+          color: "black",
+          size: 12
+        },
+        xanchor: "left",
+        xshift: 10,
+        opacity: 0.7
+      }, {
+        x: "2017-02-10",
+        y: "B",
+        z: 4,
+        text: "Point 2",
+        textangle: 0,
+        ax: 0,
+        ay: -75,
+        font: {
+          color: "black",
+          size: 12
+        },
+        arrowcolor: "black",
+        arrowsize: 3,
+        arrowwidth: 1,
+        arrowhead: 1
+      }, {
+        x: "2017-03-20",
+        y: "C",
+        z: 5,
+        ax: 50,
+        ay: 0,
+        text: "Point 3",
+        arrowhead: 1,
+        xanchor: "left",
+        yanchor: "bottom"
+      }]
+}
+}
+
+Plotly.newPlot('myDiv', data, layout);

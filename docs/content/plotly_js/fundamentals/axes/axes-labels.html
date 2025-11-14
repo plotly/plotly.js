@@ -1,0 +1,75 @@
+---
+name: Set and Style Axes Title Labels and Ticks
+language: plotly_js
+suite: axes
+order: 0
+sitemap: false
+arrangement: horizontal
+---
+
+
+
+
+d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
+  function unpack(rows, key) {
+  return rows.map(function(row) { return row[key]; });
+}
+
+  var x = unpack(rows, 'Date')
+  var y = unpack(rows, 'AAPL.Volume')
+
+  var trace = {
+    type: "scatter",
+    mode: "lines",
+    name: 'AAPL Volume',
+    x: x,
+    y: y,
+    line: {color: 'grey'}
+  }
+
+  var data = [trace];
+
+var layout = {
+  title: {text: 'Volume of Apple Shares Traded'},
+  xaxis: {
+    title: {
+      text: 'AXIS TITLE',
+      font: {
+          family: 'Arial, sans-serif',
+          size: 18,
+          color: 'lightgrey'
+      }
+    },
+    showticklabels: true,
+    tickangle: 'auto',
+    tickfont: {
+      family: 'Old Standard TT, serif',
+      size: 14,
+      color: 'black'
+    },
+    exponentformat: 'e',
+    showexponent: 'all'
+  },
+  yaxis: {
+    title: {
+      text: 'AXIS TITLE',
+      font: {
+        family: 'Arial, sans-serif',
+        size: 18,
+        color: 'lightgrey'
+      }
+    },
+    showticklabels: true,
+    tickangle: 45,
+    tickfont: {
+      family: 'Old Standard TT, serif',
+      size: 14,
+      color: 'black'
+    },
+    exponentformat: 'e',
+    showexponent: 'all'
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+})

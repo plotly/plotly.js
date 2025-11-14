@@ -1,0 +1,63 @@
+---
+name: Grouped Violin Plot
+language: plotly_js
+suite: violin
+order: 3
+sitemap: false
+arrangement: horizontal
+---
+
+// need to fix data
+
+d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/violin_data.csv", function(err, rows){
+
+  function unpack(rows, key) {
+  return rows.map(function(row) { return row[key]; });
+  }
+
+var data = [{
+  type: 'violin',
+  x: unpack(rows, 'day'),
+  y: unpack(rows, 'total_bill'),
+  legendgroup: 'M',
+  scalegroup: 'M',
+  name: 'M',
+  box: {
+    visible: true
+  },
+  line: {
+    color: 'blue',
+  },
+  meanline: {
+    visible: true
+  }
+}, {
+  type: 'violin',
+  x: unpack(rows, 'day'),
+  y: unpack(rows, 'total_bill'),
+  legendgroup: 'F',
+  scalegroup: 'F',
+  name: 'F',
+  box: {
+    visible: true
+  },
+  line: {
+    color: 'pink',
+  },
+  meanline: {
+    visible: true
+  }
+}]
+
+var layout = {
+  title: {
+    text: "Grouped Violin Plot"
+  },
+  yaxis: {
+    zeroline: false
+  },
+  violinmode: 'group'
+}
+
+Plotly.newPlot('myDiv', data, layout);
+});

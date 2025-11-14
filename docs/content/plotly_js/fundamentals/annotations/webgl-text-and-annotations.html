@@ -1,0 +1,77 @@
+---
+name: WebGL Text and Annotations
+language: plotly_js
+suite: annotations
+order: 8
+sitemap: false
+arrangement: horizontal
+---
+
+var n = 250;
+var t = 12;
+var x = [];
+var y = [];
+var z = [];
+var text = [];
+var arr = ["A","T","G", "C"];
+
+for (var j = 0; j < t; j++){
+  ztemp = [];
+  for (var i = 0; i < n; i++) {
+    x.push(i);
+    y.push(j);
+    ztemp.push(Math.floor(Math.random() * 10));
+    text.push(arr[Math.floor(Math.random() * 4)])
+  }
+  z.push(ztemp)
+}
+
+var steps = [];
+for (var e = 0; e < n-30; e++){
+  steps.push({
+      label: e,
+      value: e,
+      method: 'relayout',
+      args: ['xaxis', {range: [-0.5 + e, 30.5 + e]}]
+    })
+}
+
+data1 = {
+  x: x,
+  y: y,
+  mode: "text",
+  text: text,
+  type: "scattergl",
+  textfont: {
+    size: 20
+    }
+  }
+       
+data2 = {
+  z: z,
+  type: "heatmap"
+  }
+
+sliders = [{
+      active: 0,
+      steps: steps
+    }]
+
+layout = {
+  sliders: sliders,
+  xaxis: {
+    range: [-0.5, 30.5],
+    showline: false,
+    zeroline: false,
+     showgrid: false
+  },
+  yaxis: {
+    showline: false,
+    zeroline: false,
+     showgrid: false
+  }  
+  }
+
+data = [data1, data2]
+Plotly.newPlot('myDiv', {data:data,
+                     layout:layout});

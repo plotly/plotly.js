@@ -1,0 +1,10 @@
+---
+name: Event Handlers
+permalink: javascript/plotlyjs-events/
+description: Definitions and examples of how to use Plotly.js event handlers to add additional interactive capabilities to Plotly charts.
+layout: base
+language: plotly_js
+page_type: example_index
+---
+{% assign examples = site.posts | where:"language","plotly_js" | where:"suite","events" | sort: "order" %}
+{% include posts/auto_examples.html examples=examples %}

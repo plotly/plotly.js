@@ -1,0 +1,37 @@
+---
+name: Customize Download Plot Options
+language: plotly_js
+suite: configuration
+order: 3.1
+sitemap: false
+arrangement: horizontal
+---
+var trace1 = {
+    x: [0, 1, 2, 3, 4, 5, 6],
+    y: [1, 9, 4, 7, 5, 2, 4],
+    mode: 'markers',
+    marker: {
+        size: [20, 40, 25, 10, 60, 90, 30],
+    }
+};
+
+var data = [trace1];
+
+var layout = {
+  title: {
+      text: 'Download Chart as SVG instead of PNG'
+  },
+  showlegend: false
+};
+
+var config = {
+  toImageButtonOptions: {
+    format: 'svg', // one of png, svg, jpeg, webp
+    filename: 'custom_image',
+    height: 500,
+    width: 700,
+    scale: 1 // Multiply title/legend/axis/canvas sizes by this factor
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout, config);

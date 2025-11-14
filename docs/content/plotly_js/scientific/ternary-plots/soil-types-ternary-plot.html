@@ -1,0 +1,66 @@
+---
+name: Soil Types Ternary Plot
+language: plotly_js
+suite: ternary-plot
+order: 2
+sitemap: false
+arrangement: horizontal
+description: Inspired from Daven Quinn's <a href="http://bl.ocks.org/davenquinn/988167471993bc2ece29">block</a>
+---
+
+var url = 'https://gist.githubusercontent.com/davenquinn/988167471993bc2ece29/raw/f38d9cb3dd86e315e237fde5d65e185c39c931c2/data.json';
+
+d3.json(url, function(err, rawData) {
+    if(err) throw err;
+
+    plot(rawData);
+});
+
+function plot(rawData) {
+    var data = Object.keys(rawData).map(function(k) {
+        var pts = rawData[k];
+
+        return {
+            type: 'scatterternary',
+            mode: 'lines',
+            name: k,
+            a: pts.map(function(d) { return d.clay }),
+            b: pts.map(function(d) { return d.sand }),
+            c: pts.map(function(d) { return d.silt }),
+            line: { color: '#c00' }
+        };
+    });
+
+    var layout = {
+        ternary: {
+            sum: 100,
+            aaxis: makeAxis('Clay'),
+            baxis: makeAxis('Sand'),
+            caxis: makeAxis('Silt')
+        },
+        showlegend: false,
+        width: 700,
+        annotations: [{
+            showarrow: false,
+            text: 'Replica of Daven Quinn\'s <a href="http://bl.ocks.org/davenquinn/988167471993bc2ece29">block</a>',
+            x: 0.15,
+            y: 1.1
+        }]
+    };
+
+    Plotly.newPlot('myDiv', data, layout);
+}
+
+function makeAxis(title) {
+  return {
+      title: {
+         text: title
+      },
+      ticksuffix: '%',
+      min: 0.01,
+      linewidth: 2,
+      ticks: 'outside',
+      ticklen: 8,
+      showgrid: true,
+  };
+}

@@ -1,4 +1,7 @@
 node_modules
+_site
+
+__pycache__
 
 build/*
 !build/plotcss.js
@@ -17,3 +20,6 @@ tags
 !.github/
 !.gitignore
 !.npmignore
+
+docs/tmp/
+docs/build/

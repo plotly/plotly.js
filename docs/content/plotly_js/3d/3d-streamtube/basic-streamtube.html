@@ -1,0 +1,43 @@
+---
+name: Basic Streamtube Plot
+language: plotly_js
+suite: streamtube
+order: 2
+sitemap: false
+arrangement: horizontal
+---
+
+d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/streamtube-basic.csv', function(err, rows){
+
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+    }
+
+    var data = [{
+      type: "streamtube",
+      x: unpack(rows, 'x'),
+      y: unpack(rows, 'y'),
+      z: unpack(rows, 'z'),
+      u: unpack(rows, 'u'),
+      v: unpack(rows, 'v'),
+      w: unpack(rows, 'w'),
+      sizeref: 0.5,
+      cmin: 0,
+      cmax: 3
+    }]
+
+    var layout = {
+      scene: {
+        camera: {
+          eye: {
+          	x: -0.7243612458865182,
+          	y: 1.9269804254717962,
+          	z: 0.6704828299861716
+          }
+        }
+      }
+    }
+
+    Plotly.newPlot('myDiv', data, layout)
+
+});
