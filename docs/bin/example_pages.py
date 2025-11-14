@@ -133,6 +133,7 @@ MYDIV = """\
                 <input style=" float: right; border-radius: 4px;" class="codepen-submit" type="submit" value="Try It On CodePen!">
               </form>
               <div style="max-width: 100%; margin: auto" id="{unique_mydiv}"></div>
+              <script src="https://cdn.plot.ly/plotly-{jsversion}.min.js" charset="utf-8"></script>
               <script>
                 {content_mydiv}
               </script>
