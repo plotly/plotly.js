@@ -45,7 +45,7 @@ close:                                                 // traces/ohlc/calc.js:10
 concentration:                                         // traces/sankey/plot.js:176
 high:                                                  // traces/ohlc/calc.js:106
 incoming flow count:                                   // traces/sankey/plot.js:177
-kde:                                                   // traces/violin/calc.js:86
+kde:                                                   // traces/violin/calc.js:88
 lat:                                                   // traces/scattergeo/calc.js:51
 lon:                                                   // traces/scattergeo/calc.js:52
 low:                                                   // traces/ohlc/calc.js:107
