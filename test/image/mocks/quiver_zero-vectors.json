@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "Mixed vectors",
+      "x": [0, 1, 2, 3, 4],
+      "y": [1, 1, 1, 1, 1],
+      "u": [1, 0, 0, 1, 2],
+      "v": [1, 0, 0, 1, 2],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "line": {
+        "color": "purple",
+        "width": 2
+      },
+      "showscale": false
+    }
+  ],
+  "layout": {
+    "title": {"text": "Quiver with Zero-Length Vectors"},
+    "width": 600,
+    "height": 400,
+    "xaxis": {
+      "range": [-0.5, 4.5]
+    },
+    "yaxis": {
+      "range": [0, 2]
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
-var Registry = require('../../registry');
+var getTraceColor = require('../scatter/get_trace_color');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -12,64 +12,53 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var xpx = xa.c2p(xval);
     var ypx = ya.c2p(yval);
 
-    // Find the closest arrow base point to the hover point
-    var minDistance = Infinity;
-    var closestPoint = null;
-    var closestIndex = -1;
-
-    // Each cd[i] is a calcdata point object with x/y
-    for(var i = 0; i < cd.length; i++) {
-        var cdi = cd[i];
-        if(cdi.x === undefined || cdi.y === undefined) continue;
-
-        var px = xa.c2p(cdi.x);
-        var py = ya.c2p(cdi.y);
-
-        var distance = Math.sqrt((xpx - px) * (xpx - px) + (ypx - py) * (ypx - py));
-
-        if(distance < minDistance) {
-            minDistance = distance;
-            closestPoint = cdi;
-            closestIndex = i;
-        }
-    }
-
-    var maxHoverDist = pointData.distance === Infinity ? Infinity : (trace.hoverdistance || 20);
-    if(!closestPoint || minDistance > maxHoverDist) return;
-
-    // Create hover point data with proper label values and spikeline support
-    var hoverPoint = {
-        x: closestPoint.x,
-        y: closestPoint.y,
-        u: trace.u ? trace.u[closestIndex] : undefined,
-        v: trace.v ? trace.v[closestIndex] : undefined,
-        text: Array.isArray(trace.text) ? trace.text[closestIndex] : trace.text,
-        name: trace.name || '',
-        trace: trace,
-        index: closestIndex,
-        // Label values for formatting
-        xLabelVal: closestPoint.x,
-        yLabelVal: closestPoint.y,
-        uLabelVal: trace.u ? trace.u[closestIndex] : undefined,
-        vLabelVal: trace.v ? trace.v[closestIndex] : undefined,
-        // Spikeline support
-        xa: pointData.xa,
-        ya: pointData.ya,
-        x0: closestPoint.x,
-        x1: closestPoint.x,
-        y0: closestPoint.y,
-        y1: closestPoint.y,
-        distance: minDistance,
-        spikeDistance: minDistance,
-        curveNumber: trace.index,
-        color: trace.line ? trace.line.color : 'blue'
+    var distfn = function(di) {
+        var x = xa.c2p(di.x) - xpx;
+        var y = ya.c2p(di.y) - ypx;
+        return Math.max(Math.sqrt(x * x + y * y), 1 - 3 / Math.max(3, di.mrc || 0));
     };
 
-    // Set hover text
-    var hovertext = trace.hovertext || trace.text;
-    if(hovertext && hovertext[closestIndex]) {
-        hoverPoint.hovertext = hovertext[closestIndex];
-    }
+    Fx.getClosest(cd, distfn, pointData);
 
-    return [hoverPoint];
+    // skip if we didn't find a close point
+    if(pointData.index === false) return;
+
+    // the closest data point
+    var di = cd[pointData.index];
+    var xc = xa.c2p(di.x, true);
+    var yc = ya.c2p(di.y, true);
+
+    // now we're done using the whole `calcdata` array, replace the
+    // index with the original index
+    pointData.index = di.i;
+
+    var u = trace.u ? trace.u[di.i] : 0;
+    var v = trace.v ? trace.v[di.i] : 0;
+
+    // Build extraText to show u and v values
+    var extraText = 'u: ' + u + ', v: ' + v;
+
+    Lib.extendFlat(pointData, {
+        color: getTraceColor(trace, di),
+
+        x0: xc - 3,
+        x1: xc + 3,
+        xLabelVal: di.x,
+
+        y0: yc - 3,
+        y1: yc + 3,
+        yLabelVal: di.y,
+
+        uLabelVal: u,
+        vLabelVal: v,
+        
+        extraText: extraText,
+
+        spikeDistance: Math.sqrt((xpx - xc) * (xpx - xc) + (ypx - yc) * (ypx - yc)),
+        hovertemplate: trace.hovertemplate
+    });
+
+    Lib.fillText(di, trace, pointData);
+
+    return [pointData];
 };
