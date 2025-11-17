@@ -55,8 +55,12 @@ export function createMocksList(files) {
                 file: filename,
                 keywords: types.join(', ')
             };
-        } catch {
-            console.log(`Couldn't parse ${file.name} as JSON. Excluding from mocks list.`);
+        } catch (error) {
+            if (error instanceof SyntaxError) {
+                console.log(`Couldn't parse ${file.name} as JSON. Excluding from mocks list.`);
+            } else {
+                throw error;
+            }
         }
     });
 
