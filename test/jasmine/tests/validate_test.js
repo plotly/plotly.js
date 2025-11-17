@@ -173,7 +173,7 @@ describe('Plotly.validate', function () {
                 {
                     x: [1, 2, 3],
                     mode: 'markers',
-                    marker: { color: 10 }
+                    marker: { color: '10' }
                 }
             ],
             {}
