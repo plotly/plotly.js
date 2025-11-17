@@ -1,8 +1,7 @@
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 
-
-describe('Plotly.validate', function() {
+describe('Plotly.validate', function () {
     function assertErrorContent(obj, code, cont, trace, path, astr, msg) {
         expect(obj.code).toEqual(code);
         expect(obj.container).toEqual(cont);
@@ -12,20 +11,25 @@ describe('Plotly.validate', function() {
         expect(obj.msg).toEqual(msg);
     }
 
-    it('should return undefined when no errors are found', function() {
-        var out = Plotly.validate([{
-            type: 'scatter',
-            x: [1, 2, 3]
-        }], {
-            title: {
-                text: 'my simple graph'
+    it('should return undefined when no errors are found', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    type: 'scatter',
+                    x: [1, 2, 3]
+                }
+            ],
+            {
+                title: {
+                    text: 'my simple graph'
+                }
             }
-        });
+        );
 
         expect(out).toBeUndefined();
     });
 
-    it('should report when data is not an array', function() {
+    it('should report when data is not an array', function () {
         var out = Plotly.validate({
             type: 'scatter',
             x: [1, 2, 3]
@@ -33,181 +37,271 @@ describe('Plotly.validate', function() {
 
         expect(out.length).toEqual(1);
         assertErrorContent(
-            out[0], 'array', 'data', null, '', '',
+            out[0],
+            'array',
+            'data',
+            null,
+            '',
+            '',
             'The data argument must be linked to an array container'
         );
     });
 
-    it('should report when a data trace is not an object', function() {
-        var out = Plotly.validate([{
-            type: 'bar',
-            x: [1, 2, 3]
-        }, [1, 2, 3]]);
+    it('should report when a data trace is not an object', function () {
+        var out = Plotly.validate([
+            {
+                type: 'bar',
+                x: [1, 2, 3]
+            },
+            [1, 2, 3]
+        ]);
 
         expect(out.length).toEqual(1);
         assertErrorContent(
-            out[0], 'object', 'data', 1, '', '',
+            out[0],
+            'object',
+            'data',
+            1,
+            '',
+            '',
             'Trace 1 in the data argument must be linked to an object container'
         );
     });
 
-    it('should report when layout is not an object', function() {
+    it('should report when layout is not an object', function () {
         var out = Plotly.validate([], [1, 2, 3]);
 
         expect(out.length).toEqual(1);
         assertErrorContent(
-            out[0], 'object', 'layout', null, '', '',
+            out[0],
+            'object',
+            'layout',
+            null,
+            '',
+            '',
             'The layout argument must be linked to an object container'
         );
     });
 
-    it('should report when trace is defaulted to not be visible', function() {
-        var out = Plotly.validate([{
-            type: 'scattergeo'
-            // missing 'x' and 'y
-        }], {});
+    it('should report when trace is defaulted to not be visible', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    type: 'scattergeo'
+                    // missing 'x' and 'y
+                }
+            ],
+            {}
+        );
 
         expect(out.length).toEqual(1);
-        assertErrorContent(
-            out[0], 'invisible', 'data', 0, '', '',
-            'Trace 0 got defaulted to be not visible'
-        );
+        assertErrorContent(out[0], 'invisible', 'data', 0, '', '', 'Trace 0 got defaulted to be not visible');
     });
 
-    it('should report when trace contains keys not part of the schema', function() {
-        var out = Plotly.validate([{
-            x: [1, 2, 3],
-            markerColor: 'blue'
-        }], {});
+    it('should report when trace contains keys not part of the schema', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    x: [1, 2, 3],
+                    markerColor: 'blue'
+                }
+            ],
+            {}
+        );
 
         expect(out.length).toEqual(1);
         assertErrorContent(
-            out[0], 'schema', 'data', 0, ['markerColor'], 'markerColor',
+            out[0],
+            'schema',
+            'data',
+            0,
+            ['markerColor'],
+            'markerColor',
             'In data trace 0, key markerColor is not part of the schema'
         );
     });
 
-    it('should report when trace contains keys that are not coerced', function() {
-        var out = Plotly.validate([{
-            x: [1, 2, 3],
-            mode: 'lines',
-            marker: { color: 'blue' }
-        }, {
-            x: [1, 2, 3],
-            mode: 'markers',
-            marker: {
-                color: 'blue',
-                cmin: 10
-            }
-        }], {});
+    it('should report when trace contains keys that are not coerced', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    x: [1, 2, 3],
+                    mode: 'lines',
+                    marker: { color: 'blue' }
+                },
+                {
+                    x: [1, 2, 3],
+                    mode: 'markers',
+                    marker: {
+                        color: 'blue',
+                        cmin: 10
+                    }
+                }
+            ],
+            {}
+        );
 
         expect(out.length).toEqual(2);
         assertErrorContent(
-            out[0], 'unused', 'data', 0, ['marker'], 'marker',
+            out[0],
+            'unused',
+            'data',
+            0,
+            ['marker'],
+            'marker',
             'In data trace 0, container marker did not get coerced'
         );
         assertErrorContent(
-            out[1], 'unused', 'data', 1, ['marker', 'cmin'], 'marker.cmin',
+            out[1],
+            'unused',
+            'data',
+            1,
+            ['marker', 'cmin'],
+            'marker.cmin',
             'In data trace 1, key marker.cmin did not get coerced'
         );
     });
 
-    it('should report when trace contains keys set to invalid values', function() {
-        var out = Plotly.validate([{
-            x: [1, 2, 3],
-            mode: 'lines',
-            line: { width: 'a big number' }
-        }, {
-            x: [1, 2, 3],
-            mode: 'markers',
-            marker: { color: 10 }
-        }], {});
+    it('should report when trace contains keys set to invalid values', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    x: [1, 2, 3],
+                    mode: 'lines',
+                    line: { width: 'a big number' }
+                },
+                {
+                    x: [1, 2, 3],
+                    mode: 'markers',
+                    marker: { color: 10 }
+                }
+            ],
+            {}
+        );
 
         expect(out.length).toEqual(2);
         assertErrorContent(
-            out[0], 'value', 'data', 0, ['line', 'width'], 'line.width',
+            out[0],
+            'value',
+            'data',
+            0,
+            ['line', 'width'],
+            'line.width',
             'In data trace 0, key line.width is set to an invalid value (a big number)'
         );
         assertErrorContent(
-            out[1], 'value', 'data', 1, ['marker', 'color'], 'marker.color',
+            out[1],
+            'value',
+            'data',
+            1,
+            ['marker', 'color'],
+            'marker.color',
             'In data trace 1, key marker.color is set to an invalid value (10)'
         );
     });
 
-    it('should work with info arrays', function() {
-        var out = Plotly.validate([{
-            y: [1, 2, 2]
-        }], {
-            xaxis: { range: [0, 10] },
-            yaxis: { range: 'not-gonna-work' },
-        });
+    it('should work with info arrays', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    y: [1, 2, 2]
+                }
+            ],
+            {
+                xaxis: { range: [0, 10] },
+                yaxis: { range: 'not-gonna-work' }
+            }
+        );
 
         expect(out.length).toEqual(1);
         assertErrorContent(
-            out[0], 'value', 'layout', null, ['yaxis', 'range'], 'yaxis.range',
+            out[0],
+            'value',
+            'layout',
+            null,
+            ['yaxis', 'range'],
+            'yaxis.range',
             'In layout, key yaxis.range is set to an invalid value (not-gonna-work)'
         );
     });
 
-    it('should work with colorscale attributes', function() {
-        var out = Plotly.validate([{
-            x: [1, 2, 3],
-            marker: {
-                color: [20, 10, 30],
-                colorscale: 'Reds'
+    it('should work with colorscale attributes', function () {
+        var out = Plotly.validate([
+            {
+                x: [1, 2, 3],
+                marker: {
+                    color: [20, 10, 30],
+                    colorscale: 'Reds'
+                }
+            },
+            {
+                x: [1, 2, 3],
+                marker: {
+                    color: [20, 10, 30],
+                    colorscale: 'not-gonna-work'
+                }
+            },
+            {
+                x: [1, 2, 3],
+                marker: {
+                    color: [20, 10, 30],
+                    colorscale: [
+                        [0, 'red'],
+                        [1, 'blue']
+                    ]
+                }
             }
-        }, {
-            x: [1, 2, 3],
-            marker: {
-                color: [20, 10, 30],
-                colorscale: 'not-gonna-work'
-            }
-        }, {
-            x: [1, 2, 3],
-            marker: {
-                color: [20, 10, 30],
-                colorscale: [[0, 'red'], [1, 'blue']]
-            }
-        }]);
+        ]);
 
         expect(out.length).toEqual(1);
         assertErrorContent(
-            out[0], 'value', 'data', 1, ['marker', 'colorscale'], 'marker.colorscale',
+            out[0],
+            'value',
+            'data',
+            1,
+            ['marker', 'colorscale'],
+            'marker.colorscale',
             'In data trace 1, key marker.colorscale is set to an invalid value (not-gonna-work)'
         );
     });
 
-    it('should work with isLinkedToArray attributes', function() {
-        var out = Plotly.validate([
-            {y: [1, 2]},
-            {y: [1, 2], xaxis: 'x2'},
-            {y: [1, 2], xaxis: 'x3'}
-        ], {
-            annotations: [{
-                text: 'some text'
-            }, {
-                arrowSymbol: 'cat'
-            }, {
-                font: { color: 'wont-work' }
-            }],
+    it('should work with isLinkedToArray attributes', function () {
+        var out = Plotly.validate([{ y: [1, 2] }, { y: [1, 2], xaxis: 'x2' }, { y: [1, 2], xaxis: 'x3' }], {
+            annotations: [
+                {
+                    text: 'some text'
+                },
+                {
+                    arrowSymbol: 'cat'
+                },
+                {
+                    font: { color: 'wont-work' }
+                }
+            ],
             xaxis: {
                 type: 'date',
                 rangeselector: {
-                    buttons: [{
-                        label: '1 month',
-                        step: 'all',
-                        count: 10
-                    }, 'wont-work', {
-                        title: '1 month'
-                    }]
+                    buttons: [
+                        {
+                            label: '1 month',
+                            step: 'all',
+                            count: 10
+                        },
+                        'wont-work',
+                        {
+                            title: '1 month'
+                        }
+                    ]
                 }
             },
             xaxis2: {
                 type: 'date',
                 rangeselector: {
-                    buttons: [{
-                        title: '1 month'
-                    }]
+                    buttons: [
+                        {
+                            title: '1 month'
+                        }
+                    ]
                 }
             },
             xaxis3: {
@@ -216,95 +310,150 @@ describe('Plotly.validate', function() {
                     buttons: 'wont-work'
                 }
             },
-            shapes: [{
-                opacity: 'none'
-            }],
-            updatemenus: [{
-                buttons: [{
-                    method: 'restyle',
-                    args: ['marker.color', 'red']
-                }]
-            }, 'wont-work', {
-                buttons: [{
-                    method: 'restyle',
-                    args: null
-                }, {
-                    method: 'relayout',
-                    args: ['marker.color', 'red'],
-                    title: 'not-gonna-work'
-                }, 'wont-work']
-            }]
+            shapes: [
+                {
+                    opacity: 'none'
+                }
+            ],
+            updatemenus: [
+                {
+                    buttons: [
+                        {
+                            method: 'restyle',
+                            args: ['marker.color', 'red']
+                        }
+                    ]
+                },
+                'wont-work',
+                {
+                    buttons: [
+                        {
+                            method: 'restyle',
+                            args: null
+                        },
+                        {
+                            method: 'relayout',
+                            args: ['marker.color', 'red'],
+                            title: 'not-gonna-work'
+                        },
+                        'wont-work'
+                    ]
+                }
+            ]
         });
 
         expect(out.length).toEqual(12);
         assertErrorContent(
-            out[0], 'schema', 'layout', null,
-            ['annotations', 1, 'arrowSymbol'], 'annotations[1].arrowSymbol',
+            out[0],
+            'schema',
+            'layout',
+            null,
+            ['annotations', 1, 'arrowSymbol'],
+            'annotations[1].arrowSymbol',
             'In layout, key annotations[1].arrowSymbol is not part of the schema'
         );
         assertErrorContent(
-            out[1], 'value', 'layout', null,
-            ['annotations', 2, 'font', 'color'], 'annotations[2].font.color',
+            out[1],
+            'value',
+            'layout',
+            null,
+            ['annotations', 2, 'font', 'color'],
+            'annotations[2].font.color',
             'In layout, key annotations[2].font.color is set to an invalid value (wont-work)'
         );
         assertErrorContent(
-            out[2], 'unused', 'layout', null,
+            out[2],
+            'unused',
+            'layout',
+            null,
             ['xaxis', 'rangeselector', 'buttons', 0, 'count'],
             'xaxis.rangeselector.buttons[0].count',
             'In layout, key xaxis.rangeselector.buttons[0].count did not get coerced'
         );
         assertErrorContent(
-            out[3], 'schema', 'layout', null,
+            out[3],
+            'schema',
+            'layout',
+            null,
             ['xaxis', 'rangeselector', 'buttons', 2, 'title'],
             'xaxis.rangeselector.buttons[2].title',
             'In layout, key xaxis.rangeselector.buttons[2].title is not part of the schema'
         );
         assertErrorContent(
-            out[4], 'object', 'layout', null,
+            out[4],
+            'object',
+            'layout',
+            null,
             ['xaxis', 'rangeselector', 'buttons', 1],
             'xaxis.rangeselector.buttons[1]',
             'In layout, key xaxis.rangeselector.buttons[1] must be linked to an object container'
         );
         assertErrorContent(
-            out[5], 'schema', 'layout', null,
+            out[5],
+            'schema',
+            'layout',
+            null,
             ['xaxis2', 'rangeselector', 'buttons', 0, 'title'],
             'xaxis2.rangeselector.buttons[0].title',
             'In layout, key xaxis2.rangeselector.buttons[0].title is not part of the schema'
         );
         assertErrorContent(
-            out[6], 'array', 'layout', null,
+            out[6],
+            'array',
+            'layout',
+            null,
             ['xaxis3', 'rangeselector', 'buttons'],
             'xaxis3.rangeselector.buttons',
             'In layout, key xaxis3.rangeselector.buttons must be linked to an array container'
         );
         assertErrorContent(
-            out[7], 'value', 'layout', null,
-            ['shapes', 0, 'opacity'], 'shapes[0].opacity',
+            out[7],
+            'value',
+            'layout',
+            null,
+            ['shapes', 0, 'opacity'],
+            'shapes[0].opacity',
             'In layout, key shapes[0].opacity is set to an invalid value (none)'
         );
         assertErrorContent(
-            out[8], 'invisible', 'layout', null,
-            ['updatemenus', 2, 'buttons', 0], 'updatemenus[2].buttons[0]',
+            out[8],
+            'invisible',
+            'layout',
+            null,
+            ['updatemenus', 2, 'buttons', 0],
+            'updatemenus[2].buttons[0]',
             'In layout, item updatemenus[2].buttons[0] got defaulted to be not visible'
         );
         assertErrorContent(
-            out[9], 'schema', 'layout', null,
-            ['updatemenus', 2, 'buttons', 1, 'title'], 'updatemenus[2].buttons[1].title',
+            out[9],
+            'schema',
+            'layout',
+            null,
+            ['updatemenus', 2, 'buttons', 1, 'title'],
+            'updatemenus[2].buttons[1].title',
             'In layout, key updatemenus[2].buttons[1].title is not part of the schema'
         );
         assertErrorContent(
-            out[10], 'object', 'layout', null,
-            ['updatemenus', 2, 'buttons', 2], 'updatemenus[2].buttons[2]',
+            out[10],
+            'object',
+            'layout',
+            null,
+            ['updatemenus', 2, 'buttons', 2],
+            'updatemenus[2].buttons[2]',
             'In layout, key updatemenus[2].buttons[2] must be linked to an object container'
         );
         assertErrorContent(
-            out[11], 'object', 'layout', null,
-            ['updatemenus', 1], 'updatemenus[1]',
+            out[11],
+            'object',
+            'layout',
+            null,
+            ['updatemenus', 1],
+            'updatemenus[1]',
             'In layout, key updatemenus[1] must be linked to an object container'
         );
     });
 
-    it('should work with isSubplotObj attributes', function() {
+    it('should work with isSubplotObj attributes', function () {
         var out = Plotly.validate([], {
             xaxis2: {
                 range: 30
@@ -318,32 +467,45 @@ describe('Plotly.validate', function() {
 
         expect(out.length).toEqual(4);
         assertErrorContent(
-            out[0], 'value', 'layout', null,
-            ['xaxis2', 'range'], 'xaxis2.range',
+            out[0],
+            'value',
+            'layout',
+            null,
+            ['xaxis2', 'range'],
+            'xaxis2.range',
             'In layout, key xaxis2.range is set to an invalid value (30)'
         );
         assertErrorContent(
-            out[1], 'unused', 'layout', null,
-            ['scene10'], 'scene10',
+            out[1],
+            'unused',
+            'layout',
+            null,
+            ['scene10'],
+            'scene10',
             'In layout, container scene10 did not get coerced'
         );
         assertErrorContent(
-            out[2], 'schema', 'layout', null,
-            ['geo0'], 'geo0',
+            out[2],
+            'schema',
+            'layout',
+            null,
+            ['geo0'],
+            'geo0',
             'In layout, key geo0 is not part of the schema'
         );
         assertErrorContent(
-            out[3], 'object', 'layout', null,
-            ['yaxis5'], 'yaxis5',
+            out[3],
+            'object',
+            'layout',
+            null,
+            ['yaxis5'],
+            'yaxis5',
             'In layout, key yaxis5 must be linked to an object container'
         );
     });
 
-    it('should catch input errors for attribute with dynamic defaults', function() {
-        var out = Plotly.validate([
-            {y: [1, 2]},
-            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
-        ], {
+    it('should catch input errors for attribute with dynamic defaults', function () {
+        var out = Plotly.validate([{ y: [1, 2] }, { y: [1, 2], xaxis: 'x2', yaxis: 'y2' }], {
             xaxis: {
                 constrain: 'domain',
                 constraintoward: 'bottom'
@@ -362,98 +524,144 @@ describe('Plotly.validate', function() {
 
         expect(out.length).toBe(4);
         assertErrorContent(
-            out[0], 'dynamic', 'layout', null,
-            ['xaxis', 'constraintoward'], 'xaxis.constraintoward',
-            'In layout, key xaxis.constraintoward (set to \'bottom\') got reset to \'center\' during defaults.'
+            out[0],
+            'dynamic',
+            'layout',
+            null,
+            ['xaxis', 'constraintoward'],
+            'xaxis.constraintoward',
+            "In layout, key xaxis.constraintoward (set to 'bottom') got reset to 'center' during defaults."
         );
         assertErrorContent(
-            out[1], 'dynamic', 'layout', null,
-            ['yaxis', 'constraintoward'], 'yaxis.constraintoward',
-            'In layout, key yaxis.constraintoward (set to \'left\') got reset to \'middle\' during defaults.'
+            out[1],
+            'dynamic',
+            'layout',
+            null,
+            ['yaxis', 'constraintoward'],
+            'yaxis.constraintoward',
+            "In layout, key yaxis.constraintoward (set to 'left') got reset to 'middle' during defaults."
         );
         assertErrorContent(
-            out[2], 'dynamic', 'layout', null,
-            ['xaxis2', 'anchor'], 'xaxis2.anchor',
-            'In layout, key xaxis2.anchor (set to \'x3\') got reset to \'y\' during defaults.'
+            out[2],
+            'dynamic',
+            'layout',
+            null,
+            ['xaxis2', 'anchor'],
+            'xaxis2.anchor',
+            "In layout, key xaxis2.anchor (set to 'x3') got reset to 'y' during defaults."
         );
         assertErrorContent(
-            out[3], 'dynamic', 'layout', null,
-            ['yaxis2', 'overlaying'], 'yaxis2.overlaying',
-            'In layout, key yaxis2.overlaying (set to \'x\') got reset to \'false\' during defaults.'
+            out[3],
+            'dynamic',
+            'layout',
+            null,
+            ['yaxis2', 'overlaying'],
+            'yaxis2.overlaying',
+            "In layout, key yaxis2.overlaying (set to 'x') got reset to 'false' during defaults."
         );
     });
 
-    it('catches bad axes in grid definitions', function() {
-        var out = Plotly.validate([
-            {y: [1, 2]},
-            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
-        ], {
-            grid: {xaxes: ['x3', '', 'x2', 4], yaxes: ['y', 3, '', 'y4']},
+    it('catches bad axes in grid definitions', function () {
+        var out = Plotly.validate([{ y: [1, 2] }, { y: [1, 2], xaxis: 'x2', yaxis: 'y2' }], {
+            grid: { xaxes: ['x3', '', 'x2', 4], yaxes: ['y', 3, '', 'y4'] },
             // while we're at it check on another info_array
-            xaxis: {range: [5, 'lots']}
+            xaxis: { range: [5, 'lots'] }
         });
 
         expect(out.length).toBe(5);
         assertErrorContent(
-            out[0], 'dynamic', 'layout', null,
-            ['grid', 'xaxes', 0], 'grid.xaxes[0]',
-            'In layout, key grid.xaxes[0] (set to \'x3\') got reset to \'\' during defaults.'
+            out[0],
+            'dynamic',
+            'layout',
+            null,
+            ['grid', 'xaxes', 0],
+            'grid.xaxes[0]',
+            "In layout, key grid.xaxes[0] (set to 'x3') got reset to '' during defaults."
         );
         assertErrorContent(
-            out[1], 'value', 'layout', null,
-            ['grid', 'xaxes', 3], 'grid.xaxes[3]',
+            out[1],
+            'value',
+            'layout',
+            null,
+            ['grid', 'xaxes', 3],
+            'grid.xaxes[3]',
             'In layout, key grid.xaxes[3] is set to an invalid value (4)'
         );
         assertErrorContent(
-            out[2], 'value', 'layout', null,
-            ['grid', 'yaxes', 1], 'grid.yaxes[1]',
+            out[2],
+            'value',
+            'layout',
+            null,
+            ['grid', 'yaxes', 1],
+            'grid.yaxes[1]',
             'In layout, key grid.yaxes[1] is set to an invalid value (3)'
         );
         assertErrorContent(
-            out[3], 'dynamic', 'layout', null,
-            ['grid', 'yaxes', 3], 'grid.yaxes[3]',
-            'In layout, key grid.yaxes[3] (set to \'y4\') got reset to \'\' during defaults.'
+            out[3],
+            'dynamic',
+            'layout',
+            null,
+            ['grid', 'yaxes', 3],
+            'grid.yaxes[3]',
+            "In layout, key grid.yaxes[3] (set to 'y4') got reset to '' during defaults."
         );
         assertErrorContent(
-            out[4], 'dynamic', 'layout', null,
-            ['xaxis', 'range', 1], 'xaxis.range[1]',
-            'In layout, key xaxis.range[1] (set to \'lots\') got reset to \'50\' during defaults.'
+            out[4],
+            'dynamic',
+            'layout',
+            null,
+            ['xaxis', 'range', 1],
+            'xaxis.range[1]',
+            "In layout, key xaxis.range[1] (set to 'lots') got reset to '50' during defaults."
         );
     });
 
-    it('catches bad subplots in grid definitions', function() {
-        var out = Plotly.validate([
-            {y: [1, 2]},
-            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'},
-            {y: [1, 2], xaxis: 'x2'}
-        ], {
-            grid: {subplots: [['xy', 'x2y3'], ['x2y', 'x2y2'], [5, '']]},
-        });
+    it('catches bad subplots in grid definitions', function () {
+        var out = Plotly.validate(
+            [{ y: [1, 2] }, { y: [1, 2], xaxis: 'x2', yaxis: 'y2' }, { y: [1, 2], xaxis: 'x2' }],
+            {
+                grid: {
+                    subplots: [
+                        ['xy', 'x2y3'],
+                        ['x2y', 'x2y2'],
+                        [5, '']
+                    ]
+                }
+            }
+        );
 
         expect(out.length).toBe(3);
         assertErrorContent(
-            out[0], 'dynamic', 'layout', null,
-            ['grid', 'subplots', 0, 1], 'grid.subplots[0][1]',
-            'In layout, key grid.subplots[0][1] (set to \'x2y3\') got reset to \'\' during defaults.'
+            out[0],
+            'dynamic',
+            'layout',
+            null,
+            ['grid', 'subplots', 0, 1],
+            'grid.subplots[0][1]',
+            "In layout, key grid.subplots[0][1] (set to 'x2y3') got reset to '' during defaults."
         );
         assertErrorContent(
-            out[1], 'dynamic', 'layout', null,
-            ['grid', 'subplots', 1, 0], 'grid.subplots[1][0]',
-            'In layout, key grid.subplots[1][0] (set to \'x2y\') got reset to \'\' during defaults.'
+            out[1],
+            'dynamic',
+            'layout',
+            null,
+            ['grid', 'subplots', 1, 0],
+            'grid.subplots[1][0]',
+            "In layout, key grid.subplots[1][0] (set to 'x2y') got reset to '' during defaults."
         );
         assertErrorContent(
-            out[2], 'value', 'layout', null,
-            ['grid', 'subplots', 2, 0], 'grid.subplots[2][0]',
+            out[2],
+            'value',
+            'layout',
+            null,
+            ['grid', 'subplots', 2, 0],
+            'grid.subplots[2][0]',
             'In layout, key grid.subplots[2][0] is set to an invalid value (5)'
         );
     });
 
-    it('should detect opposite axis range slider attributes', function() {
-        var out = Plotly.validate([
-            {y: [1, 2]},
-            {y: [1, 2], yaxis: 'y2'},
-            {y: [1, 2], yaxis: 'y3'}
-        ], {
+    it('should detect opposite axis range slider attributes', function () {
+        var out = Plotly.validate([{ y: [1, 2] }, { y: [1, 2], yaxis: 'y2' }, { y: [1, 2], yaxis: 'y3' }], {
             xaxis: {
                 rangeslider: {
                     yaxis: { rangemode: 'auto' },
@@ -469,7 +677,7 @@ describe('Plotly.validate', function() {
         expect(out).toBeUndefined();
     });
 
-    it('should accept attributes that really end in a number', function() {
+    it('should accept attributes that really end in a number', function () {
         // and not try to strip that number off!
         // eg x0, x1 in shapes
         var shapeMock = require('../../image/mocks/shapes.json');
@@ -477,101 +685,139 @@ describe('Plotly.validate', function() {
         expect(out).toBeUndefined();
     });
 
-    it('should work with *trace* layout attributes', function() {
-        var out = Plotly.validate([{
-            type: 'bar',
-            y: [1, 2, 1]
-        }, {
-            type: 'barpolar',
-            r: [1, 2, 3]
-        }, {
-            type: 'scatterpolar',
-            theta: [0, 90, 200],
-            subplot: 'polar2'
-        }], {
-            bargap: 0.3,
-            polar: {bargap: 0.2},
-            polar2: {bargap: 0.05},
-            polar3: {bargap: 0.4}
-        });
+    it('should work with *trace* layout attributes', function () {
+        var out = Plotly.validate(
+            [
+                {
+                    type: 'bar',
+                    y: [1, 2, 1]
+                },
+                {
+                    type: 'barpolar',
+                    r: [1, 2, 3]
+                },
+                {
+                    type: 'scatterpolar',
+                    theta: [0, 90, 200],
+                    subplot: 'polar2'
+                }
+            ],
+            {
+                bargap: 0.3,
+                polar: { bargap: 0.2 },
+                polar2: { bargap: 0.05 },
+                polar3: { bargap: 0.4 }
+            }
+        );
 
         expect(out.length).toBe(2);
         assertErrorContent(
-            out[0], 'unused', 'layout', null, ['polar2', 'bargap'], 'polar2.bargap',
+            out[0],
+            'unused',
+            'layout',
+            null,
+            ['polar2', 'bargap'],
+            'polar2.bargap',
             'In layout, key polar2.bargap did not get coerced'
         );
         assertErrorContent(
-            out[1], 'unused', 'layout', null, ['polar3'], 'polar3',
+            out[1],
+            'unused',
+            'layout',
+            null,
+            ['polar3'],
+            'polar3',
             'In layout, container polar3 did not get coerced'
         );
     });
 
-    it('understands histogram bin and autobin attributes', function() {
-        var out = Plotly.validate([{
-            type: 'histogram',
-            x: [1, 2, 3],
-            // allowed by Plotly.validate, even though we get rid of it
-            // in a real plot call
-            autobinx: true,
-            // valid attribute, but not coerced
-            autobiny: false
-        }]);
+    it('understands histogram bin and autobin attributes', function () {
+        var out = Plotly.validate([
+            {
+                type: 'histogram',
+                x: [1, 2, 3],
+                // allowed by Plotly.validate, even though we get rid of it
+                // in a real plot call
+                autobinx: true,
+                // valid attribute, but not coerced
+                autobiny: false
+            }
+        ]);
         expect(out.length).toBe(1);
         assertErrorContent(
-            out[0], 'unused', 'data', 0, ['autobiny'], 'autobiny',
+            out[0],
+            'unused',
+            'data',
+            0,
+            ['autobiny'],
+            'autobiny',
             'In data trace 0, key autobiny did not get coerced'
         );
 
-        out = Plotly.validate([{
-            type: 'histogram',
-            x: [1, 2, 3],
-            xbins: {start: 1, end: 4, size: 0.5}
-        }]);
+        out = Plotly.validate([
+            {
+                type: 'histogram',
+                x: [1, 2, 3],
+                xbins: { start: 1, end: 4, size: 0.5 }
+            }
+        ]);
         expect(out).toBeUndefined();
 
-        out = Plotly.validate([{
-            type: 'histogram',
-            x: [1, 2, 3],
-            xbins: {start: 0.8, end: 4, size: 0.5}
-        }, {
-            type: 'histogram',
-            x: [1, 2, 3],
-            // start and end still get coerced, even though start will get modified
-            // during calc. size will not be coerced because trace 0 already has it.
-            xbins: {start: 2, end: 3, size: 1}
-        }]);
+        out = Plotly.validate([
+            {
+                type: 'histogram',
+                x: [1, 2, 3],
+                xbins: { start: 0.8, end: 4, size: 0.5 }
+            },
+            {
+                type: 'histogram',
+                x: [1, 2, 3],
+                // start and end still get coerced, even though start will get modified
+                // during calc. size will not be coerced because trace 0 already has it.
+                xbins: { start: 2, end: 3, size: 1 }
+            }
+        ]);
 
         expect(out.length).toBe(1);
         assertErrorContent(
-            out[0], 'unused', 'data', 1, ['xbins', 'size'], 'xbins.size',
+            out[0],
+            'unused',
+            'data',
+            1,
+            ['xbins', 'size'],
+            'xbins.size',
             'In data trace 1, key xbins.size did not get coerced'
         );
     });
 
-    it('understands histogram2d(contour) bin and autobin attributes', function() {
-        var out = Plotly.validate([{
-            type: 'histogram2d',
-            x: [1, 2, 3],
-            y: [1, 2, 3],
-            autobinx: true,
-            autobiny: false,
-            xbins: {start: 5, end: 10},
-            ybins: {size: 2}
-        }, {
-            type: 'histogram2d',
-            x: [1, 2, 3],
-            y: [1, 2, 3],
-            xbins: {start: 0, end: 7, size: 1},
-            ybins: {size: 3}
-        }, {
-            type: 'histogram2dcontour',
-            x: [1, 2, 3],
-            y: [1, 2, 3],
-            autobinx: false,
-            autobiny: false,
-            xbins: {start: 1, end: 5, size: 2},
-            ybins: {size: 4}
-        }]);
+    it('understands histogram2d(contour) bin and autobin attributes', function () {
+        var out = Plotly.validate([
+            {
+                type: 'histogram2d',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                autobinx: true,
+                autobiny: false,
+                xbins: { start: 5, end: 10 },
+                ybins: { size: 2 }
+            },
+            {
+                type: 'histogram2d',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                xbins: { start: 0, end: 7, size: 1 },
+                ybins: { size: 3 }
+            },
+            {
+                type: 'histogram2dcontour',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                autobinx: false,
+                autobiny: false,
+                xbins: { start: 1, end: 5, size: 2 },
+                ybins: { size: 4 }
+            }
+        ]);
         expect(out).toBeUndefined();
     });
 });

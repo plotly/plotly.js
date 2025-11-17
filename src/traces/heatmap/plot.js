@@ -202,7 +202,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
 
         function setColor(v, pixsize) {
             if (v === undefined || pixsize === undefined) return [0, 0, 0, 0];
-            
+
             var c = sclFunc(v);
             c[0] = Math.round(c[0]);
             c[1] = Math.round(c[1]);
@@ -349,7 +349,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
             bcount = Math.round(bcount / pixcount);
 
             const cstr = `rgb(${rcount}, ${gcount}, ${bcount})`;
-            
+
             gd._hmpixcount = (gd._hmpixcount || 0) + pixcount;
             gd._hmlumcount = (gd._hmlumcount || 0) + pixcount * Color.color(cstr).luminosity();
         }
@@ -542,7 +542,11 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
 
                     var fontColor = font.color;
                     if (!fontColor || fontColor === 'auto') {
-                        fontColor = Color.contrast(d.z === undefined ? gd._fullLayout.plot_bgcolor : `rgba(${sclFunc(d.z).map(Math.round).join()})`);
+                        fontColor = Color.contrast(
+                            d.z === undefined
+                                ? gd._fullLayout.plot_bgcolor
+                                : `rgba(${sclFunc(d.z).map(Math.round).join()})`
+                        );
                     }
 
                     thisLabel
