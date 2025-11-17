@@ -1,0 +1,29 @@
+---
+name: "locationmode: 'ISO-3'"
+language: plotly_js
+suite: outline-map-locations
+order: 1
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Set `locationmode: 'ISO-3'` to use three-letter ISO country codes in `locations`.
+---
+
+var data = [{
+  type: 'choropleth',
+  locations: ['USA', 'CAN', 'MEX', 'BRA', 'RUS'],
+  locationmode: 'ISO-3',
+  z: [100, 85, 72, 95, 68],
+  colorscale: 'Viridis'
+}];
+
+var layout = {
+  title: 'Choropleth with ISO-3 Country Codes',
+  geo: {
+    projection: {
+      type: 'natural earth'
+    }
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);

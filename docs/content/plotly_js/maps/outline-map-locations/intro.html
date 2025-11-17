@@ -1,0 +1,20 @@
+---
+name: Locations for Outline-based Maps
+language: plotly_js
+suite: outline-map-locations
+order: 0
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  With outline-based maps, you can visualize data for specific regions using the `locations` and `locationmode` parameters.
+
+  The following map types in Plotly.js support these parameters:
+  - `choropleth` - color regions based on data values
+  - `scattergeo` - show markers at geographic locations
+
+  The `locations` parameter accepts region identifiers and the `locationmode` parameter controls interpretation:
+  
+  - `'ISO-3'` - three-letter ISO country codes (e.g., `'USA'`, `'CAN'`, `'GBR'`)
+  - `'USA-states'` - two-letter US state abbreviations (e.g., `'CA'`, `'TX'`, `'NY'`)
+  - `'country names'` - full country names (e.g., `'United States'`)
+---
