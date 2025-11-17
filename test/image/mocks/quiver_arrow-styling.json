@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "small arrows",
+      "x": [0, 1, 2],
+      "y": [0, 0, 0],
+      "u": [1, 1, 1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "arrowsize": 0.5,
+      "anchor": "tail",
+      "line": {
+        "color": "red",
+        "width": 1
+      },
+      "showscale": false
+    },
+    {
+      "type": "quiver",
+      "name": "medium arrows",
+      "x": [0, 1, 2],
+      "y": [1, 1, 1],
+      "u": [1, 1, 1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "arrowsize": 1.0,
+      "anchor": "tail",
+      "line": {
+        "color": "blue",
+        "width": 2
+      },
+      "showscale": false
+    },
+    {
+      "type": "quiver",
+      "name": "large arrows",
+      "x": [0, 1, 2],
+      "y": [2, 2, 2],
+      "u": [1, 1, 1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "arrowsize": 2.0,
+      "anchor": "tail",
+      "line": {
+        "color": "green",
+        "width": 3
+      },
+      "showscale": false
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 600,
+    "showlegend": true,
+    "xaxis": {
+      "range": [-0.5, 2.5]
+    },
+    "yaxis": {
+      "range": [-0.5, 2.5]
+    }
+  }
+}

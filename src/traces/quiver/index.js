@@ -15,6 +15,7 @@ module.exports = {
     style: require('./style'),
     styleOnSelect: require('../scatter/style').styleOnSelect,
     hoverPoints: require('./hover'),
+    formatLabels: require('./format_labels'),
     eventData: require('./event_data'),
     selectPoints: require('./select_points'),
     animatable: true,
