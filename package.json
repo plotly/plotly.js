@@ -179,6 +179,9 @@
     "virtual-webgl": "^1.0.6"
   },
   "overrides": {
+    "color": {
+      "color-string": "^2.1.4"
+    },
     "falafel": {
       "acorn": "^8.1.1"
     }
