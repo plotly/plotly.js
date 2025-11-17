@@ -1,7 +1,6 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var m4FromQuat = require('gl-mat4/fromQuat');
 
 var Registry = require('../registry');
 var Lib = require('../lib');
@@ -13,9 +12,11 @@ var cleanId = AxisIds.cleanId;
 var getFromTrace = AxisIds.getFromTrace;
 var traceIs = Registry.traceIs;
 
+const AX_LETTERS = ['x', 'y', 'z'];
+
 // clear the promise queue if one of them got rejected
-exports.clearPromiseQueue = function(gd) {
-    if(Array.isArray(gd._promises) && gd._promises.length > 0) {
+exports.clearPromiseQueue = function (gd) {
+    if (Array.isArray(gd._promises) && gd._promises.length > 0) {
         Lib.log('Clearing previous rejected promises from queue.');
     }
 
@@ -25,22 +26,22 @@ exports.clearPromiseQueue = function(gd) {
 // make a few changes to the layout right away
 // before it gets used for anything
 // backward compatibility and cleanup of nonstandard options
-exports.cleanLayout = function(layout) {
+exports.cleanLayout = function (layout) {
     var i, j;
 
-    if(!layout) layout = {};
+    if (!layout) layout = {};
 
     // cannot have (x|y)axis1, numbering goes axis, axis2, axis3...
-    if(layout.xaxis1) {
-        if(!layout.xaxis) layout.xaxis = layout.xaxis1;
+    if (layout.xaxis1) {
+        if (!layout.xaxis) layout.xaxis = layout.xaxis1;
         delete layout.xaxis1;
     }
-    if(layout.yaxis1) {
-        if(!layout.yaxis) layout.yaxis = layout.yaxis1;
+    if (layout.yaxis1) {
+        if (!layout.yaxis) layout.yaxis = layout.yaxis1;
         delete layout.yaxis1;
     }
-    if(layout.scene1) {
-        if(!layout.scene) layout.scene = layout.scene1;
+    if (layout.scene1) {
+        if (!layout.scene) layout.scene = layout.scene1;
         delete layout.scene1;
     }
 
@@ -50,85 +51,85 @@ exports.cleanLayout = function(layout) {
     var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
     var keys = Object.keys(layout);
-    for(i = 0; i < keys.length; i++) {
+    for (i = 0; i < keys.length; i++) {
         var key = keys[i];
 
-        if(axisAttrRegex && axisAttrRegex.test(key)) {
+        if (axisAttrRegex && axisAttrRegex.test(key)) {
             // modifications to cartesian axes
 
             var ax = layout[key];
-            if(ax.anchor && ax.anchor !== 'free') {
+            if (ax.anchor && ax.anchor !== 'free') {
                 ax.anchor = cleanId(ax.anchor);
             }
-            if(ax.overlaying) ax.overlaying = cleanId(ax.overlaying);
+            if (ax.overlaying) ax.overlaying = cleanId(ax.overlaying);
 
             // old method of axis type - isdate and islog (before category existed)
-            if(!ax.type) {
-                if(ax.isdate) ax.type = 'date';
-                else if(ax.islog) ax.type = 'log';
-                else if(ax.isdate === false && ax.islog === false) ax.type = 'linear';
+            if (!ax.type) {
+                if (ax.isdate) ax.type = 'date';
+                else if (ax.islog) ax.type = 'log';
+                else if (ax.isdate === false && ax.islog === false) ax.type = 'linear';
             }
-            if(ax.autorange === 'withzero' || ax.autorange === 'tozero') {
+            if (ax.autorange === 'withzero' || ax.autorange === 'tozero') {
                 ax.autorange = true;
                 ax.rangemode = 'tozero';
             }
 
-            if(ax.insiderange) delete ax.range;
+            if (ax.insiderange) delete ax.range;
 
             delete ax.islog;
             delete ax.isdate;
             delete ax.categories; // replaced by _categories
 
             // prune empty domain arrays made before the new nestedProperty
-            if(emptyContainer(ax, 'domain')) delete ax.domain;
+            if (emptyContainer(ax, 'domain')) delete ax.domain;
         }
     }
 
     var annotationsLen = Array.isArray(layout.annotations) ? layout.annotations.length : 0;
-    for(i = 0; i < annotationsLen; i++) {
+    for (i = 0; i < annotationsLen; i++) {
         var ann = layout.annotations[i];
 
-        if(!Lib.isPlainObject(ann)) continue;
+        if (!Lib.isPlainObject(ann)) continue;
 
         cleanAxRef(ann, 'xref');
         cleanAxRef(ann, 'yref');
     }
 
     var shapesLen = Array.isArray(layout.shapes) ? layout.shapes.length : 0;
-    for(i = 0; i < shapesLen; i++) {
+    for (i = 0; i < shapesLen; i++) {
         var shape = layout.shapes[i];
 
-        if(!Lib.isPlainObject(shape)) continue;
+        if (!Lib.isPlainObject(shape)) continue;
 
         cleanAxRef(shape, 'xref');
         cleanAxRef(shape, 'yref');
     }
 
     var imagesLen = Array.isArray(layout.images) ? layout.images.length : 0;
-    for(i = 0; i < imagesLen; i++) {
+    for (i = 0; i < imagesLen; i++) {
         var image = layout.images[i];
 
-        if(!Lib.isPlainObject(image)) continue;
+        if (!Lib.isPlainObject(image)) continue;
 
         cleanAxRef(image, 'xref');
         cleanAxRef(image, 'yref');
     }
 
     var legend = layout.legend;
-    if(legend) {
+    if (legend) {
         // check for old-style legend positioning (x or y is +/- 100)
-        if(legend.x > 3) {
+        if (legend.x > 3) {
             legend.x = 1.02;
             legend.xanchor = 'left';
-        } else if(legend.x < -2) {
+        } else if (legend.x < -2) {
             legend.x = -0.02;
             legend.xanchor = 'right';
         }
 
-        if(legend.y > 3) {
+        if (legend.y > 3) {
             legend.y = 1.02;
             legend.yanchor = 'bottom';
-        } else if(legend.y < -2) {
+        } else if (legend.y < -2) {
             legend.y = -0.02;
             legend.yanchor = 'top';
         }
@@ -137,13 +138,13 @@ exports.cleanLayout = function(layout) {
     /*
      * Moved from rotate -> orbit for dragmode
      */
-    if(layout.dragmode === 'rotate') layout.dragmode = 'orbit';
+    if (layout.dragmode === 'rotate') layout.dragmode = 'orbit';
 
     // sanitize rgb(fractions) and rgba(fractions) because they're not valid css
     Color.clean(layout);
 
     // clean the layout container in layout.template
-    if(layout.template && layout.template.layout) {
+    if (layout.template && layout.template.layout) {
         exports.cleanLayout(layout.template.layout);
     }
 
@@ -153,7 +154,7 @@ exports.cleanLayout = function(layout) {
 function cleanAxRef(container, attr) {
     var valIn = container[attr];
     var axLetter = attr.charAt(0);
-    if(valIn && valIn !== 'paper') {
+    if (valIn && valIn !== 'paper') {
         container[attr] = cleanId(valIn, axLetter, true);
     }
 }
@@ -165,79 +166,79 @@ function cleanAxRef(container, attr) {
  * Important: if you're going to add something here that modifies a data array,
  * update it in place so the new array === the old one.
  */
-exports.cleanData = function(data) {
-    for(var tracei = 0; tracei < data.length; tracei++) {
+exports.cleanData = function (data) {
+    for (var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
         var i;
 
         // use xbins to bin data in x, and ybins to bin data in y
-        if(trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
+        if (trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
             trace.ybins = trace.xbins;
             delete trace.xbins;
         }
 
         // now we have only one 1D histogram type, and whether
         // it uses x or y data depends on trace.orientation
-        if(trace.type === 'histogramy') exports.swapXYData(trace);
-        if(trace.type === 'histogramx' || trace.type === 'histogramy') {
+        if (trace.type === 'histogramy') exports.swapXYData(trace);
+        if (trace.type === 'histogramx' || trace.type === 'histogramy') {
             trace.type = 'histogram';
         }
 
         // scl->scale, reversescl->reversescale
-        if('scl' in trace && !('colorscale' in trace)) {
+        if ('scl' in trace && !('colorscale' in trace)) {
             trace.colorscale = trace.scl;
             delete trace.scl;
         }
-        if('reversescl' in trace && !('reversescale' in trace)) {
+        if ('reversescl' in trace && !('reversescale' in trace)) {
             trace.reversescale = trace.reversescl;
             delete trace.reversescl;
         }
 
         // axis ids x1 -> x, y1-> y
-        if(trace.xaxis) trace.xaxis = cleanId(trace.xaxis, 'x');
-        if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
+        if (trace.xaxis) trace.xaxis = cleanId(trace.xaxis, 'x');
+        if (trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(traceIs(trace, 'gl3d') && trace.scene) {
+        if (traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!traceIs(trace, 'pie-like') && !traceIs(trace, 'bar-like')) {
-            if(Array.isArray(trace.textposition)) {
-                for(i = 0; i < trace.textposition.length; i++) {
+        if (!traceIs(trace, 'pie-like') && !traceIs(trace, 'bar-like')) {
+            if (Array.isArray(trace.textposition)) {
+                for (i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
                 }
-            } else if(trace.textposition) {
+            } else if (trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
         }
 
         // fix typo in colorscale definition
         var _module = Registry.getModule(trace);
-        if(_module && _module.colorbar) {
+        if (_module && _module.colorbar) {
             var containerName = _module.colorbar.container;
             var container = containerName ? trace[containerName] : trace;
-            if(container && container.colorscale) {
-                if(container.colorscale === 'YIGnBu') container.colorscale = 'YlGnBu';
-                if(container.colorscale === 'YIOrRd') container.colorscale = 'YlOrRd';
+            if (container && container.colorscale) {
+                if (container.colorscale === 'YIGnBu') container.colorscale = 'YlGnBu';
+                if (container.colorscale === 'YIOrRd') container.colorscale = 'YlOrRd';
             }
         }
 
         // fix typo in surface 'highlight*' definitions
-        if(trace.type === 'surface' && Lib.isPlainObject(trace.contours)) {
+        if (trace.type === 'surface' && Lib.isPlainObject(trace.contours)) {
             var dims = ['x', 'y', 'z'];
 
-            for(i = 0; i < dims.length; i++) {
+            for (i = 0; i < dims.length; i++) {
                 var opts = trace.contours[dims[i]];
 
-                if(!Lib.isPlainObject(opts)) continue;
+                if (!Lib.isPlainObject(opts)) continue;
 
-                if(opts.highlightColor) {
+                if (opts.highlightColor) {
                     opts.highlightcolor = opts.highlightColor;
                     delete opts.highlightColor;
                 }
 
-                if(opts.highlightWidth) {
+                if (opts.highlightWidth) {
                     opts.highlightwidth = opts.highlightWidth;
                     delete opts.highlightWidth;
                 }
@@ -245,7 +246,7 @@ exports.cleanData = function(data) {
         }
 
         // fixes from converting finance from transforms to real trace types
-        if(trace.type === 'candlestick' || trace.type === 'ohlc') {
+        if (trace.type === 'candlestick' || trace.type === 'ohlc') {
             var increasingShowlegend = (trace.increasing || {}).showlegend !== false;
             var decreasingShowlegend = (trace.decreasing || {}).showlegend !== false;
             var increasingName = cleanFinanceDir(trace.increasing);
@@ -253,27 +254,24 @@ exports.cleanData = function(data) {
 
             // now figure out something smart to do with the separate direction
             // names we removed
-            if((increasingName !== false) && (decreasingName !== false)) {
+            if (increasingName !== false && decreasingName !== false) {
                 // both sub-names existed: base name previously had no effect
                 // so ignore it and try to find a shared part of the sub-names
 
-                var newName = commonPrefix(
-                    increasingName, decreasingName,
-                    increasingShowlegend, decreasingShowlegend
-                );
+                var newName = commonPrefix(increasingName, decreasingName, increasingShowlegend, decreasingShowlegend);
                 // if no common part, leave whatever name was (or wasn't) there
-                if(newName) trace.name = newName;
-            } else if((increasingName || decreasingName) && !trace.name) {
+                if (newName) trace.name = newName;
+            } else if ((increasingName || decreasingName) && !trace.name) {
                 // one sub-name existed but not the base name - just use the sub-name
                 trace.name = increasingName || decreasingName;
             }
         }
 
         // prune empty containers made before the new nestedProperty
-        if(emptyContainer(trace, 'line')) delete trace.line;
-        if('marker' in trace) {
-            if(emptyContainer(trace.marker, 'line')) delete trace.marker.line;
-            if(emptyContainer(trace, 'marker')) delete trace.marker;
+        if (emptyContainer(trace, 'line')) delete trace.line;
+        if ('marker' in trace) {
+            if (emptyContainer(trace.marker, 'line')) delete trace.marker.line;
+            if (emptyContainer(trace, 'marker')) delete trace.marker;
         }
 
         // sanitize rgb(fractions) and rgba(fractions) because they're not valid css
@@ -283,11 +281,11 @@ exports.cleanData = function(data) {
         // if false, this needs to happen in Histogram.calc because it
         // can be a one-time autobin so we need to know the results before
         // we can push them back into the trace.
-        if(trace.autobinx) {
+        if (trace.autobinx) {
             delete trace.autobinx;
             delete trace.xbins;
         }
-        if(trace.autobiny) {
+        if (trace.autobiny) {
             delete trace.autobiny;
             delete trace.ybins;
         }
@@ -295,7 +293,7 @@ exports.cleanData = function(data) {
 };
 
 function cleanFinanceDir(dirContainer) {
-    if(!Lib.isPlainObject(dirContainer)) return false;
+    if (!Lib.isPlainObject(dirContainer)) return false;
 
     var dirName = dirContainer.name;
 
@@ -307,19 +305,19 @@ function cleanFinanceDir(dirContainer) {
 
 function commonPrefix(name1, name2, show1, show2) {
     // if only one is shown in the legend, use that
-    if(show1 && !show2) return name1;
-    if(show2 && !show1) return name2;
+    if (show1 && !show2) return name1;
+    if (show2 && !show1) return name2;
 
     // if both or neither are in the legend, check if one is blank (or whitespace)
     // and use the other one
     // note that hover labels can still use the name even if the legend doesn't
-    if(!name1.trim()) return name2;
-    if(!name2.trim()) return name1;
+    if (!name1.trim()) return name2;
+    if (!name2.trim()) return name1;
 
     var minLen = Math.min(name1.length, name2.length);
     var i;
-    for(i = 0; i < minLen; i++) {
-        if(name1.charAt(i) !== name2.charAt(i)) break;
+    for (i = 0; i < minLen; i++) {
+        if (name1.charAt(i) !== name2.charAt(i)) break;
     }
 
     var out = name1.substr(0, i);
@@ -332,62 +330,60 @@ function cleanTextPosition(textposition) {
     var posY = 'middle';
     var posX = 'center';
 
-    if(typeof textposition === 'string') {
-        if(textposition.indexOf('top') !== -1) posY = 'top';
-        else if(textposition.indexOf('bottom') !== -1) posY = 'bottom';
+    if (typeof textposition === 'string') {
+        if (textposition.indexOf('top') !== -1) posY = 'top';
+        else if (textposition.indexOf('bottom') !== -1) posY = 'bottom';
 
-        if(textposition.indexOf('left') !== -1) posX = 'left';
-        else if(textposition.indexOf('right') !== -1) posX = 'right';
+        if (textposition.indexOf('left') !== -1) posX = 'left';
+        else if (textposition.indexOf('right') !== -1) posX = 'right';
     }
 
     return posY + ' ' + posX;
 }
 
 function emptyContainer(outer, innerStr) {
-    return (innerStr in outer) &&
-        (typeof outer[innerStr] === 'object') &&
-        (Object.keys(outer[innerStr]).length === 0);
+    return innerStr in outer && typeof outer[innerStr] === 'object' && Object.keys(outer[innerStr]).length === 0;
 }
 
-
 // swap all the data and data attributes associated with x and y
-exports.swapXYData = function(trace) {
+exports.swapXYData = function (trace) {
     var i;
     Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
-    if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
-        if(trace.transpose) delete trace.transpose;
+    if (Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
+        if (trace.transpose) delete trace.transpose;
         else trace.transpose = true;
     }
-    if(trace.error_x && trace.error_y) {
+    if (trace.error_x && trace.error_y) {
         var errorY = trace.error_y;
-        var copyYstyle = ('copy_ystyle' in errorY) ?
-            errorY.copy_ystyle :
-            !(errorY.color || errorY.thickness || errorY.width);
+        var copyYstyle =
+            'copy_ystyle' in errorY ? errorY.copy_ystyle : !(errorY.color || errorY.thickness || errorY.width);
         Lib.swapAttrs(trace, ['error_?.copy_ystyle']);
-        if(copyYstyle) {
+        if (copyYstyle) {
             Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
         }
     }
-    if(typeof trace.hoverinfo === 'string') {
+    if (typeof trace.hoverinfo === 'string') {
         var hoverInfoParts = trace.hoverinfo.split('+');
-        for(i = 0; i < hoverInfoParts.length; i++) {
-            if(hoverInfoParts[i] === 'x') hoverInfoParts[i] = 'y';
-            else if(hoverInfoParts[i] === 'y') hoverInfoParts[i] = 'x';
+        for (i = 0; i < hoverInfoParts.length; i++) {
+            if (hoverInfoParts[i] === 'x') hoverInfoParts[i] = 'y';
+            else if (hoverInfoParts[i] === 'y') hoverInfoParts[i] = 'x';
         }
         trace.hoverinfo = hoverInfoParts.join('+');
     }
 };
 
 // coerce traceIndices input to array of trace indices
-exports.coerceTraceIndices = function(gd, traceIndices) {
-    if(isNumeric(traceIndices)) {
+exports.coerceTraceIndices = function (gd, traceIndices) {
+    if (isNumeric(traceIndices)) {
         return [traceIndices];
-    } else if(!Array.isArray(traceIndices) || !traceIndices.length) {
-        return gd.data.map(function(_, i) { return i; });
-    } else if(Array.isArray(traceIndices)) {
+    } else if (!Array.isArray(traceIndices) || !traceIndices.length) {
+        return gd.data.map(function (_, i) {
+            return i;
+        });
+    } else if (Array.isArray(traceIndices)) {
         var traceIndicesOut = [];
-        for(var i = 0; i < traceIndices.length; i++) {
-            if(Lib.isIndex(traceIndices[i], gd.data.length)) {
+        for (var i = 0; i < traceIndices.length; i++) {
+            if (Lib.isIndex(traceIndices[i], gd.data.length)) {
                 traceIndicesOut.push(traceIndices[i]);
             } else {
                 Lib.warn('trace index (', traceIndices[i], ') is not a number or is out of bounds');
@@ -411,7 +407,7 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
  *  undo hash (N.B. undoit may be mutated here).
  *
  */
-exports.manageArrayContainers = function(np, newVal, undoit) {
+exports.manageArrayContainers = function (np, newVal, undoit) {
     var obj = np.obj;
     var parts = np.parts;
     var pLength = parts.length;
@@ -419,7 +415,7 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
     var pLastIsNumber = isNumeric(pLast);
 
-    if(pLastIsNumber && newVal === null) {
+    if (pLastIsNumber && newVal === null) {
         // delete item
 
         // Clear item in array container when new value is null
@@ -429,11 +425,11 @@ exports.manageArrayContainers = function(np, newVal, undoit) {
 
         // Note that nested property clears null / undefined at end of
         // array container, but not within them.
-    } else if(pLastIsNumber && np.get() === undefined) {
+    } else if (pLastIsNumber && np.get() === undefined) {
         // create item
 
         // When adding a new item, make sure undo command will remove it
-        if(np.get() === undefined) undoit[np.astr] = null;
+        if (np.get() === undefined) undoit[np.astr] = null;
 
         np.set(newVal);
     } else {
@@ -455,10 +451,10 @@ var ATTR_TAIL_RE = /(\.[^\[\]\.]+|\[[^\[\]\.]+\])$/;
 
 function getParent(attr) {
     var tail = attr.search(ATTR_TAIL_RE);
-    if(tail > 0) return attr.substr(0, tail);
+    if (tail > 0) return attr.substr(0, tail);
 }
 
-/*
+/**
  * hasParent: does an attribute object contain a parent of the given attribute?
  * for example, given 'images[2].x' do we also have 'images' or 'images[2]'?
  *
@@ -469,10 +465,10 @@ function getParent(attr) {
  * @returns {Boolean}
  *  is a parent of attr present in aobj?
  */
-exports.hasParent = function(aobj, attr) {
+exports.hasParent = function (aobj, attr) {
     var attrParent = getParent(attr);
-    while(attrParent) {
-        if(attrParent in aobj) return true;
+    while (attrParent) {
+        if (attrParent in aobj) return true;
         attrParent = getParent(attrParent);
     }
     return false;
@@ -486,27 +482,67 @@ exports.hasParent = function(aobj, attr) {
  * @param {object} layoutUpdate: any update being done concurrently to the layout,
  *   which may supercede clearing the axis types
  */
-var axLetters = ['x', 'y', 'z'];
-exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
-    for(var i = 0; i < traces.length; i++) {
+exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
+    for (var i = 0; i < traces.length; i++) {
         var trace = gd._fullData[i];
-        for(var j = 0; j < 3; j++) {
-            var ax = getFromTrace(gd, trace, axLetters[j]);
+        for (var j = 0; j < 3; j++) {
+            var ax = getFromTrace(gd, trace, AX_LETTERS[j]);
 
             // do not clear log type - that's never an auto result so must have been intentional
-            if(ax && ax.type !== 'log') {
+            if (ax && ax.type !== 'log') {
                 var axAttr = ax._name;
                 var sceneName = ax._id.substr(1);
-                if(sceneName.substr(0, 5) === 'scene') {
-                    if(layoutUpdate[sceneName] !== undefined) continue;
+                if (sceneName.substr(0, 5) === 'scene') {
+                    if (layoutUpdate[sceneName] !== undefined) continue;
                     axAttr = sceneName + '.' + axAttr;
                 }
                 var typeAttr = axAttr + '.type';
 
-                if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
+                if (layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
                     Lib.nestedProperty(gd.layout, typeAttr).set(null);
                 }
             }
         }
     }
 };
+
+/**
+ * Check if two collections (object or array) are equal
+ *
+ * @param {Object|Array} collection1: First collection to compare
+ * @param {Object|Array} collection2: Second collection to compare
+ */
+const collectionsAreEqual = (collection1, collection2) => {
+    const isArrayOrObject = (...vals) => vals.every((v) => Lib.isPlainObject(v)) || vals.every((v) => Array.isArray(v));
+    if ([collection1, collection2].every((a) => Array.isArray(a))) {
+        if (collection1.length !== collection2.length) return false;
+
+        for (let i = 0; i < collection1.length; i++) {
+            const oldVal = collection1[i];
+            const newVal = collection2[i];
+            if (oldVal !== newVal) {
+                const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+                if (!equal) return false;
+            }
+        }
+
+        return true;
+    } else if ([collection1, collection2].every((a) => Lib.isPlainObject(a))) {
+        if (Object.keys(collection1).length !== Object.keys(collection2).length) return false;
+
+        for (const k in collection1) {
+            if (k.startsWith('_')) continue;
+            const oldVal = collection1[k];
+            const newVal = collection2[k];
+            if (oldVal !== newVal) {
+                const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+                if (!equal) return false;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+};
+exports.collectionsAreEqual = collectionsAreEqual;

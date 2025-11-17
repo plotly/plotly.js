@@ -23,7 +23,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var isBubble = subTypes.isBubble(traceIn);
 
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -37,25 +37,27 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('mode', defaultMode);
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noAngleRef: true, noStandOff: true});
+    if (subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noAngleRef: true, noStandOff: true });
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
     }
 
-    if(subTypes.hasLines(traceOut)) {
+    if (subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('line.shape');
     }
 
-    if(subTypes.hasText(traceOut)) {
+    if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
+        coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce, {
             noFontShadow: true,
             noFontLineposition: true,
-            noFontTextcase: true,
+            noFontTextcase: true
         });
     }
 
@@ -63,13 +65,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var markerColor = (traceOut.marker || {}).color;
 
     coerce('fill');
-    if(traceOut.fill !== 'none') {
+    if (traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, { axis: 'y' });
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, { axis: 'x', inherit: 'y' });
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

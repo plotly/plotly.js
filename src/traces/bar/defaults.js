@@ -20,7 +20,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -31,7 +31,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     coerce('zorder');
 
-    coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+    coerce('orientation', traceOut.x && !traceOut.y ? 'h' : 'v');
     coerce('base');
     coerce('offset');
     coerce('width');
@@ -39,6 +39,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -55,8 +56,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     // override defaultColor for error bars with defaultLine
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, { axis: 'y' });
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, { axis: 'x', inherit: 'y' });
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
@@ -68,15 +69,15 @@ function crossTraceDefaults(fullData, fullLayout) {
         return Lib.coerce(traceOut._input, traceOut, attributes, attr, dflt);
     }
 
-    for(var i = 0; i < fullData.length; i++) {
+    for (var i = 0; i < fullData.length; i++) {
         traceOut = fullData[i];
 
-        if(traceOut.type === 'bar') {
+        if (traceOut.type === 'bar') {
             traceIn = traceOut._input;
             // `marker.cornerradius` needs to be coerced here rather than in handleStyleDefaults()
             // because it needs to happen after `layout.barcornerradius` has been coerced
             var r = coerce('marker.cornerradius', fullLayout.barcornerradius);
-            if(traceOut.marker) {
+            if (traceOut.marker) {
                 traceOut.marker.cornerradius = validateCornerradius(r);
             }
 
@@ -93,14 +94,14 @@ function crossTraceDefaults(fullData, fullLayout) {
 // If the given cornerradius value is a numeric string, it will be converted
 // to a number.
 function validateCornerradius(r) {
-    if(isNumeric(r)) {
+    if (isNumeric(r)) {
         r = +r;
-        if(r >= 0) return r;
-    } else if(typeof r === 'string') {
+        if (r >= 0) return r;
+    } else if (typeof r === 'string') {
         r = r.trim();
-        if(r.slice(-1) === '%' && isNumeric(r.slice(0, -1))) {
+        if (r.slice(-1) === '%' && isNumeric(r.slice(0, -1))) {
             r = +r.slice(0, -1);
-            if(r >= 0) return r + '%';
+            if (r >= 0) return r + '%';
         }
     }
     return undefined;
@@ -120,7 +121,7 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
     var hasInside = hasBoth || textposition === 'inside';
     var hasOutside = hasBoth || textposition === 'outside';
 
-    if(hasInside || hasOutside) {
+    if (hasInside || hasOutside) {
         var dfltFont = coerceFont(coerce, 'textfont', layout.font);
 
         // Note that coercing `insidetextfont` is always needed –
@@ -130,32 +131,33 @@ function handleText(traceIn, traceOut, layout, coerce, textposition, opts) {
         var insideTextFontDefault = Lib.extendFlat({}, dfltFont);
         var isTraceTextfontColorSet = traceIn.textfont && traceIn.textfont.color;
         var isColorInheritedFromLayoutFont = !isTraceTextfontColorSet;
-        if(isColorInheritedFromLayoutFont) {
+        if (isColorInheritedFromLayoutFont) {
             delete insideTextFontDefault.color;
         }
         coerceFont(coerce, 'insidetextfont', insideTextFontDefault);
 
-        if(hasPathbar) {
+        if (hasPathbar) {
             var pathbarTextFontDefault = Lib.extendFlat({}, dfltFont);
-            if(isColorInheritedFromLayoutFont) {
+            if (isColorInheritedFromLayoutFont) {
                 delete pathbarTextFontDefault.color;
             }
             coerceFont(coerce, 'pathbar.textfont', pathbarTextFontDefault);
         }
 
-        if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
+        if (hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
 
-        if(moduleHasSelected) coerce('selected.textfont.color');
-        if(moduleHasUnselected) coerce('unselected.textfont.color');
-        if(moduleHasConstrain) coerce('constraintext');
-        if(moduleHasCliponaxis) coerce('cliponaxis');
-        if(moduleHasTextangle) coerce('textangle');
+        if (moduleHasSelected) coerce('selected.textfont.color');
+        if (moduleHasUnselected) coerce('unselected.textfont.color');
+        if (moduleHasConstrain) coerce('constraintext');
+        if (moduleHasCliponaxis) coerce('cliponaxis');
+        if (moduleHasTextangle) coerce('textangle');
 
         coerce('texttemplate');
+        coerce('texttemplatefallback');
     }
 
-    if(hasInside) {
-        if(moduleHasInsideanchor) coerce('insidetextanchor');
+    if (hasInside) {
+        if (moduleHasInsideanchor) coerce('insidetextanchor');
     }
 }
 
@@ -163,5 +165,5 @@ module.exports = {
     supplyDefaults: supplyDefaults,
     crossTraceDefaults: crossTraceDefaults,
     handleText: handleText,
-    validateCornerradius: validateCornerradius,
+    validateCornerradius: validateCornerradius
 };

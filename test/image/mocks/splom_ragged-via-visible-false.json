@@ -1,40 +1,40 @@
 {
- "data": [
-  {
-   "type": "splom",
-   "dimensions": [
+  "data": [
     {
-     "values": [1, 2, 3],
-     "label": "A"
+      "type": "splom",
+      "dimensions": [
+        {
+          "values": [1, 2, 3],
+          "label": "A"
+        },
+        {
+          "values": [4, 5, 6],
+          "label": "B"
+        }
+      ]
     },
     {
-     "values": [4, 5, 6],
-     "label": "B"
+      "type": "splom",
+      "dimensions": [
+        {
+          "visible": false
+        },
+        {
+          "visible": false
+        },
+        {
+          "values": [1, 2, 3],
+          "label": "C"
+        },
+        {
+          "values": [4, 5, 6],
+          "label": "D"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "type": "splom",
-   "dimensions": [
-    {
-     "visible": false
-    },
-    {
-     "visible": false
-    },
-    {
-     "values": [1, 2, 3],
-     "label": "C"
-    },
-    {
-     "values": [4, 5, 6],
-     "label": "D"
-    }
-   ]
+  ],
+  "layout": {
+    "showlegend": false,
+    "title": { "text": "ragged sploms using visible false dimensions" }
   }
- ],
- "layout": {
-  "showlegend": false,
-  "title": { "text": "ragged sploms using visible false dimensions" }
- }
 }

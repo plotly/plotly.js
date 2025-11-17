@@ -1070,6 +1070,84 @@ describe('hover info', function() {
             })
             .then(done, done.fail);
         });
+        it('should display correct label when customdata is typed array - x/y/z heatmap|contour', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                x: [1, 1, 2, 2],
+                y: [1, 2, 1, 2],
+                z: [1, 2, 3, 4],
+                customdata: new Float64Array([100, 200, 300, 400]),
+                hovertemplate: '%{customdata}<extra>%{data.type}: %{pointNumber}</extra>'
+            }], {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: '200',
+                    name: 'heatmap: 1'
+                });
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '300',
+                    name: 'heatmap: 2'
+                });
+            })
+            .then(function() { return Plotly.restyle(gd, 'type', 'contour'); })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: '200',
+                    name: 'contour: 1'
+                });
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '300',
+                    name: 'contour: 2'
+                });
+            })
+            .then(done, done.fail);
+        });
+        it('should display correct label when customdata contains typed arrays - z heatmap|contour', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[1, 3],[2, 4]],
+                customdata:[new Float64Array([100, 300]), new Float64Array([200, 400])],
+                hovertemplate: '%{customdata}<extra>%{data.type}: %{pointNumber}</extra>'
+            }], {
+                width: 400,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: '200',
+                    name: 'heatmap: 1,0'
+                });
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '300',
+                    name: 'heatmap: 0,1'
+                });
+            })
+            .then(function() { return Plotly.restyle(gd, 'type', 'contour'); })
+            .then(function() {
+                _hover(gd, 50, 50);
+                assertHoverLabelContent({
+                    nums: '200',
+                    name: 'contour: 1,0'
+                });
+                _hover(gd, 250, 300);
+                assertHoverLabelContent({
+                    nums: '300',
+                    name: 'contour: 0,1'
+                });
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('hover info for negative data on a log axis', function() {

@@ -325,7 +325,7 @@ function drawColorBar(g, opts, gd) {
     function drawTitle(titleClass, titleOpts) {
         var dfltTitleOpts = {
             propContainer: ax,
-            propName: opts._propPrefix + 'title',
+            propName: opts._propPrefix + 'title.text',
             traceIndex: opts._traceIndex,
             _meta: opts._meta,
             placeholder: fullLayout._dfltTitle.colorbar,
@@ -400,7 +400,7 @@ function drawColorBar(g, opts, gd) {
                             ax.tickfont.size :
                             0
                     ) + (
-                        ax.ticks !== 'intside' ?
+                        ax.ticks !== 'inside' ?
                             opts.ticklen || 0 :
                             0
                     );

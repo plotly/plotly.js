@@ -9,7 +9,58 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
-## [3.1.0]
+## [3.3.0] -- 2025-11-14
+
+### Added
+- Add `hovertemplate` for `candlestick` and `ohlc` traces [[#7619](https://github.com/plotly/plotly.js/pull/7619)]
+- Generate list of ISO codes for provided topojson maps, update info for some disputed territories [[#7622](https://github.com/plotly/plotly.js/pull/7622)]
+
+### Changed
+- Turn off borders for plot container in CSS reset [[#7617](https://github.com/plotly/plotly.js/pull/7617)]
+
+### Fixed
+- Fix KDE sampling precision in violin trace to eliminate floating-point drift and prevent density underrun/overrun [[#7581](https://github.com/plotly/plotly.js/pull/7581)], with thanks to @Koookadooo for the contribution!
+
+
+## [3.2.0] -- 2025-10-30
+
+### Added
+- Add `hovertemplatefallback` and `texttemplatefallback` attributes [[#7577](https://github.com/plotly/plotly.js/pull/7577)]
+
+### Fixed
+- Fix wrong scrolling behavior for legend [[#7067](https://github.com/plotly/plotly.js/pull/7067)], with thanks to @Lexachoc for the contribution!
+- Fix bug affecting use of `customdata` with typed arrays [[#7608](https://github.com/plotly/plotly.js/pull/7608)]
+
+
+## [3.1.2] -- 2025-10-16
+
+### Added
+- Add "SI extended" formatting rule for tick exponents on axis labels, allowing values to be displayed with extended SI prefixes (e.g., femto, pico, atto) [[#7249](https://github.com/plotly/plotly.js/pull/7249)], with thanks to @dberardi99 for the contribution!
+
+### Fixed
+- Fix editable `title.text` for `ternary`, `polar`, `colorbar`, and `rangeslider` (regression introduced in 3.0.0) [[#7513](https://github.com/plotly/plotly.js/pull/7513)], with thanks to @Lexachoc for the contribution!
+- Fix `layout.title.subtitle` does not properly clear/remove from the chart when `subtitle` object is not in place, or `subtitle.text` set to `null`, empty string, or whitespace-only values [[#7571](https://github.com/plotly/plotly.js/pull/7571)], with thanks to @cminn10 for the contribution!
+- Fix issue where `visible` property of one legend was affecting another. [[#7574](https://github.com/plotly/plotly.js/pull/7574)]
+- Resolve incorrect shape clipping for domain-referenced shapes on n*10th subplot. [[#7576](https://github.com/plotly/plotly.js/pull/7576)]
+- Update config diff check method to handle nested arrays [[#7579](https://github.com/plotly/plotly.js/pull/7579)]
+
+
+## [3.1.1] -- 2025-09-29
+
+### Fixed
+- Update plot with all config changes during call to `Plotly.react` [[#7475](https://github.com/plotly/plotly.js/pull/7475)]
+- Fix wheel event handler `Violation` in Chromium by setting `passive: true` [[#7517](https://github.com/plotly/plotly.js/pull/7517)]
+- Fix `locationmode` warning to be less aggressive: show warning only when `locationmode` is `'country names'` [[#7520](https://github.com/plotly/plotly.js/pull/7520)]
+- Refactor `drawMainTitle` to use context-specific selections for title and subtitle, avoiding conflicts when multiple plots are present on the same page [[#7522](https://github.com/plotly/plotly.js/pull/7522)], with thanks to @davibarbosa2 for the contribution!
+- Fix broken styling of map attributions [[#7526](https://github.com/plotly/plotly.js/pull/7526)]
+- Calculate colorscale properly for histogram when marker `cmin`/`cmax`/`cmid` values are undefined [[#7534](https://github.com/plotly/plotly.js/pull/7534)]
+- Tidy up some stray characters in attribute descriptions [[#7539](https://github.com/plotly/plotly.js/pull/7539)], [[#7540](https://github.com/plotly/plotly.js/pull/7540)]
+- Fix some typos (and a conditional check) [[#7542](https://github.com/plotly/plotly.js/pull/7542)], with thanks to @musvaage for the contribution!
+- Fix cropping of subunits in USA topojson, clean up land and coastlines layers for all topojson [[#7555](https://github.com/plotly/plotly.js/pull/7555)]
+- Fix issue causing empty ScatterGL plots when using text elements [#7563](https://github.com/plotly/plotly.js/pull/7563)
+
+
+## [3.1.0]  -- 2025-08-08
 
 ### Added
 - Add property `zerolinelayer` to cartesian axes to allow drawing zeroline above traces [[#7269](https://github.com/plotly/plotly.js/pull/7269)]

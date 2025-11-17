@@ -1027,6 +1027,98 @@ describe('Title automargining', function() {
     });
 });
 
+describe("Subtitle clearing via relayout", function () {
+  "use strict";
+
+  var data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
+  var gd;
+
+  beforeEach(function () {
+    gd = createGraphDiv();
+  });
+
+  afterEach(destroyGraphDiv);
+
+  it("should properly clear subtitle when set to null", function (done) {
+    Plotly.newPlot(gd, data, {
+      title: {
+        text: "Main Title",
+        subtitle: { text: "Subtitle Text" },
+      },
+    })
+      .then(function () {
+        var subtitleSel = d3Select(".gtitle-subtitle");
+        expect(subtitleSel.empty()).toBe(
+          false,
+          "Subtitle should exist initially"
+        );
+        expect(subtitleSel.text()).toBe("Subtitle Text");
+
+        return Plotly.relayout(gd, { "title.subtitle.text": null });
+      })
+      .then(function () {
+        var subtitleSel = d3Select(".gtitle-subtitle");
+        expect(subtitleSel.empty()).toBe(
+          true,
+          "Subtitle should be removed when set to null"
+        );
+      })
+      .then(done, done.fail);
+  });
+
+  it("should properly clear subtitle when set to empty string", function (done) {
+    Plotly.newPlot(gd, data, {
+      title: {
+        text: "Main Title",
+        subtitle: { text: "Subtitle Text" },
+      },
+    })
+      .then(function () {
+        var subtitleSel = d3Select(".gtitle-subtitle");
+        expect(subtitleSel.empty()).toBe(
+          false,
+          "Subtitle should exist initially"
+        );
+
+        return Plotly.relayout(gd, { "title.subtitle.text": "" });
+      })
+      .then(function () {
+        var subtitleSel = d3Select(".gtitle-subtitle");
+        expect(subtitleSel.empty()).toBe(
+          true,
+          "Subtitle should be removed when set to empty string"
+        );
+      })
+      .then(done, done.fail);
+  });
+
+  it("should properly clear subtitle when set to whitespace", function (done) {
+    Plotly.newPlot(gd, data, {
+      title: {
+        text: "Main Title",
+        subtitle: { text: "Subtitle Text" },
+      },
+    })
+      .then(function () {
+        var subtitleSel = d3Select(".gtitle-subtitle");
+        expect(subtitleSel.empty()).toBe(
+          false,
+          "Subtitle should exist initially"
+        );
+
+        return Plotly.relayout(gd, { "title.subtitle.text": "   " });
+      })
+      .then(function () {
+        var subtitleSel = d3Select(".gtitle-subtitle");
+        expect(subtitleSel.empty()).toBe(
+          true,
+          "Subtitle should be removed when set to whitespace"
+        );
+      })
+      .then(done, done.fail);
+  });
+});
+
 function expectTitle(expTitle) {
     expectTitleFn(expTitle)();
 }

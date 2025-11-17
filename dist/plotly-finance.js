@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v3.1.0
+* plotly.js (finance) v3.3.0
 * Copyright 2012-2025, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -15,9 +15,26 @@
 "use strict";
 var Plotly = (() => {
   var __defProp = Object.defineProperty;
+  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {}))
+      if (__hasOwnProp.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    if (__getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(b)) {
+        if (__propIsEnum.call(b, prop))
+          __defNormalProp(a, prop, b[prop]);
+      }
+    return a;
+  };
+  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
@@ -42,7 +59,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.1.0";
+      exports.version = "3.3.0";
     }
   });
 
@@ -13157,80 +13174,47 @@ var Plotly = (() => {
   var require_template_attributes = __commonJS({
     "src/plots/template_attributes.js"(exports) {
       "use strict";
-      var docs = require_docs();
-      var FORMAT_LINK = docs.FORMAT_LINK;
-      var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
-      function templateFormatStringDescription(opts) {
-        var supportOther = opts && opts.supportOther;
+      var { DATE_FORMAT_LINK, FORMAT_LINK } = require_docs();
+      var MISSING_UNDEFINED_DESCRIPTION = [
+        "Variables that can't be found will be replaced with the specifier.",
+        'For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing.',
+        "Variables with an undefined value will be replaced with the fallback value."
+      ].join(" ");
+      function templateFormatStringDescription({ supportOther } = {}) {
+        const supportOtherText = " as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.";
         return [
           "Variables are inserted using %{variable},",
-          'for example "y: %{y}"' + (supportOther ? " as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown." : "."),
+          'for example "y: %{y}"' + (supportOther ? supportOtherText : "."),
           `Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".`,
           FORMAT_LINK,
           "for details on the formatting syntax.",
           `Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".`,
           DATE_FORMAT_LINK,
-          "for details on the date formatting syntax."
+          "for details on the date formatting syntax.",
+          MISSING_UNDEFINED_DESCRIPTION
         ].join(" ");
       }
       exports.templateFormatStringDescription = templateFormatStringDescription;
-      function describeVariables(extra) {
-        var descPart = extra.description ? " " + extra.description : "";
-        var keys = extra.keys || [];
-        if (keys.length > 0) {
-          var quotedKeys = [];
-          for (var i = 0; i < keys.length; i++) {
-            quotedKeys[i] = "`" + keys[i] + "`";
-          }
-          descPart = descPart + "Finally, the template string has access to ";
-          if (keys.length === 1) {
-            descPart = descPart + "variable " + quotedKeys[0];
-          } else {
-            descPart = descPart + "variables " + quotedKeys.slice(0, -1).join(", ") + " and " + quotedKeys.slice(-1) + ".";
-          }
-        }
-        return descPart;
-      }
-      exports.hovertemplateAttrs = function(opts, extra) {
-        opts = opts || {};
-        extra = extra || {};
-        var descPart = describeVariables(extra);
-        var hovertemplate = {
-          valType: "string",
-          dflt: "",
-          editType: opts.editType || "none"
-        };
-        if (opts.arrayOk !== false) {
-          hovertemplate.arrayOk = true;
-        }
-        return hovertemplate;
-      };
-      exports.texttemplateAttrs = function(opts, extra) {
-        opts = opts || {};
-        extra = extra || {};
-        var descPart = describeVariables(extra);
-        var texttemplate = {
-          valType: "string",
-          dflt: "",
-          editType: opts.editType || "calc"
-        };
-        if (opts.arrayOk !== false) {
-          texttemplate.arrayOk = true;
-        }
-        return texttemplate;
-      };
-      exports.shapeTexttemplateAttrs = function(opts, extra) {
-        opts = opts || {};
-        extra = extra || {};
-        var newStr = opts.newshape ? "new " : "";
-        var descPart = describeVariables(extra);
-        var texttemplate = {
-          valType: "string",
-          dflt: "",
-          editType: opts.editType || "arraydraw"
-        };
-        return texttemplate;
-      };
+      exports.hovertemplateAttrs = ({ editType = "none", arrayOk } = {}, extra = {}) => __spreadValues({
+        valType: "string",
+        dflt: "",
+        editType
+      }, arrayOk !== false ? { arrayOk: true } : {});
+      exports.texttemplateAttrs = ({ editType = "calc", arrayOk } = {}, extra = {}) => __spreadValues({
+        valType: "string",
+        dflt: "",
+        editType
+      }, arrayOk !== false ? { arrayOk: true } : {});
+      exports.shapeTexttemplateAttrs = ({ editType = "arraydraw", newshape } = {}, extra = {}) => ({
+        valType: "string",
+        dflt: "",
+        editType
+      });
+      exports.templatefallbackAttrs = ({ editType = "none" } = {}) => ({
+        valType: "any",
+        dflt: "-",
+        editType
+      });
     }
   });
 
@@ -13320,119 +13304,128 @@ var Plotly = (() => {
       var fontAttrs = require_font_attributes();
       var dash = require_attributes4().dash;
       var extendFlat = require_extend().extendFlat;
-      var shapeTexttemplateAttrs = require_template_attributes().shapeTexttemplateAttrs;
+      var { shapeTexttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var shapeLabelTexttemplateVars = require_label_texttemplate();
-      module.exports = overrideAll({
-        newshape: {
-          visible: extendFlat({}, basePlotAttributes.visible, {}),
-          showlegend: {
-            valType: "boolean",
-            dflt: false
-          },
-          legend: extendFlat({}, basePlotAttributes.legend, {}),
-          legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {}),
-          legendgrouptitle: {
-            text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {}),
-            font: fontAttrs({})
-          },
-          legendrank: extendFlat({}, basePlotAttributes.legendrank, {}),
-          legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {}),
-          line: {
-            color: {
-              valType: "color"
+      module.exports = overrideAll(
+        {
+          newshape: {
+            visible: extendFlat({}, basePlotAttributes.visible, {}),
+            showlegend: {
+              valType: "boolean",
+              dflt: false
             },
-            width: {
+            legend: extendFlat({}, basePlotAttributes.legend, {}),
+            legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {}),
+            legendgrouptitle: {
+              text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {}),
+              font: fontAttrs({})
+            },
+            legendrank: extendFlat({}, basePlotAttributes.legendrank, {}),
+            legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {}),
+            line: {
+              color: {
+                valType: "color"
+              },
+              width: {
+                valType: "number",
+                min: 0,
+                dflt: 4
+              },
+              dash: extendFlat({}, dash, {
+                dflt: "solid"
+              })
+            },
+            fillcolor: {
+              valType: "color",
+              dflt: "rgba(0,0,0,0)"
+            },
+            fillrule: {
+              valType: "enumerated",
+              values: ["evenodd", "nonzero"],
+              dflt: "evenodd"
+            },
+            opacity: {
               valType: "number",
               min: 0,
-              dflt: 4
+              max: 1,
+              dflt: 1
             },
-            dash: extendFlat({}, dash, {
-              dflt: "solid"
-            })
-          },
-          fillcolor: {
-            valType: "color",
-            dflt: "rgba(0,0,0,0)"
-          },
-          fillrule: {
-            valType: "enumerated",
-            values: ["evenodd", "nonzero"],
-            dflt: "evenodd"
-          },
-          opacity: {
-            valType: "number",
-            min: 0,
-            max: 1,
-            dflt: 1
-          },
-          layer: {
-            valType: "enumerated",
-            values: ["below", "above", "between"],
-            dflt: "above"
-          },
-          drawdirection: {
-            valType: "enumerated",
-            values: ["ortho", "horizontal", "vertical", "diagonal"],
-            dflt: "diagonal"
-          },
-          name: extendFlat({}, basePlotAttributes.name, {}),
-          label: {
-            text: {
-              valType: "string",
-              dflt: ""
-            },
-            texttemplate: shapeTexttemplateAttrs({ newshape: true }, { keys: Object.keys(shapeLabelTexttemplateVars) }),
-            font: fontAttrs({}),
-            textposition: {
+            layer: {
               valType: "enumerated",
-              values: [
-                "top left",
-                "top center",
-                "top right",
-                "middle left",
-                "middle center",
-                "middle right",
-                "bottom left",
-                "bottom center",
-                "bottom right",
-                "start",
-                "middle",
-                "end"
-              ]
+              values: ["below", "above", "between"],
+              dflt: "above"
             },
-            textangle: {
-              valType: "angle",
-              dflt: "auto"
-            },
-            xanchor: {
+            drawdirection: {
               valType: "enumerated",
-              values: ["auto", "left", "center", "right"],
-              dflt: "auto"
+              values: ["ortho", "horizontal", "vertical", "diagonal"],
+              dflt: "diagonal"
             },
-            yanchor: {
-              valType: "enumerated",
-              values: ["top", "middle", "bottom"]
+            name: extendFlat({}, basePlotAttributes.name, {}),
+            label: {
+              text: {
+                valType: "string",
+                dflt: ""
+              },
+              texttemplate: shapeTexttemplateAttrs(
+                { newshape: true },
+                { keys: Object.keys(shapeLabelTexttemplateVars) }
+              ),
+              texttemplatefallback: templatefallbackAttrs({ editType: "arraydraw" }),
+              font: fontAttrs({}),
+              textposition: {
+                valType: "enumerated",
+                values: [
+                  "top left",
+                  "top center",
+                  "top right",
+                  "middle left",
+                  "middle center",
+                  "middle right",
+                  "bottom left",
+                  "bottom center",
+                  "bottom right",
+                  "start",
+                  "middle",
+                  "end"
+                ]
+              },
+              textangle: {
+                valType: "angle",
+                dflt: "auto"
+              },
+              xanchor: {
+                valType: "enumerated",
+                values: ["auto", "left", "center", "right"],
+                dflt: "auto"
+              },
+              yanchor: {
+                valType: "enumerated",
+                values: ["top", "middle", "bottom"]
+              },
+              padding: {
+                valType: "number",
+                dflt: 3,
+                min: 0
+              }
+            }
+          },
+          activeshape: {
+            fillcolor: {
+              valType: "color",
+              dflt: "rgb(255,0,255)",
+              description: "Sets the color filling the active shape' interior."
             },
-            padding: {
+            opacity: {
               valType: "number",
-              dflt: 3,
-              min: 0
+              min: 0,
+              max: 1,
+              dflt: 0.5
             }
           }
         },
-        activeshape: {
-          fillcolor: {
-            valType: "color",
-            dflt: "rgb(255,0,255)"
-          },
-          opacity: {
-            valType: "number",
-            min: 0,
-            max: 1,
-            dflt: 0.5
-          }
-        }
-      }, "none", "from-root");
+        "none",
+        "from-root"
+      );
     }
   });
 
@@ -13767,17 +13760,17 @@ var Plotly = (() => {
     }
   });
 
-  // temp_stylePlugin:node_modules/maplibre-gl/dist/maplibre-gl.css
-  var init_maplibre_gl = __esm({
-    "temp_stylePlugin:node_modules/maplibre-gl/dist/maplibre-gl.css"() {
-    }
-  });
-
-  // stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css
-  var maplibre_gl_exports = {};
-  var init_maplibre_gl2 = __esm({
-    "stylePlugin:/home/cam/Development/plotly/plotly.js/node_modules/maplibre-gl/dist/maplibre-gl.css"() {
-      init_maplibre_gl();
+  // node_modules/maplibre-gl/dist/maplibre-gl.css
+  var require_maplibre_gl = __commonJS({
+    "node_modules/maplibre-gl/dist/maplibre-gl.css"() {
+      (function() {
+        if (!document.getElementById("ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe")) {
+          var e = document.createElement("style");
+          e.id = "ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe";
+          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-map:fullscreen{height:100%;width:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl-group{background:#fff;border-radius:4px}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{background-color:transparent;border:0;box-sizing:border-box;cursor:pointer;display:block;height:29px;outline:none;padding:0;width:29px}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{background-position:50%;background-repeat:no-repeat;display:block;height:100%;width:100%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}.maplibregl-ctrl button:not(:disabled):hover{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;cursor:pointer;display:block;height:23px;margin:0 0 -4px -4px;overflow:hidden;width:88px}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{background-color:#fff;border-radius:12px;box-sizing:content-box;color:#000;margin:10px;min-height:20px;padding:2px 24px 2px 0;position:relative}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{border-radius:12px;padding:2px 8px 2px 28px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{background-color:hsla(0,0%,100%,.5);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");border:0;border-radius:12px;box-sizing:border-box;cursor:pointer;display:none;height:24px;outline:none;position:absolute;right:0;top:0;width:24px}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{right:0;top:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{left:0;top:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);border:2px solid #333;border-top:#333;box-sizing:border-box;color:#333;font-size:10px;padding:0 5px}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:#fff;border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:#fff;border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:#fff;border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:#fff;border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgb(0 0 0/5%)}.maplibregl-popup-content{background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}@keyframes maplibregl-user-location-dot-pulse{0%{opacity:1;transform:scale(1)}70%{opacity:0;transform:scale(3)}to{opacity:0;transform:scale(1)}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{background:#fff;border:2px dotted #202020;height:0;left:0;opacity:.5;position:absolute;top:0;width:0}.maplibregl-cooperative-gesture-screen{align-items:center;background:rgba(0,0,0,.4);color:#fff;display:flex;font-size:1.4em;inset:0;justify-content:center;line-height:1.2;opacity:0;padding:1rem;pointer-events:none;position:absolute;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(width <= 480px){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{height:100%!important;left:0!important;position:fixed!important;top:0!important;width:100%!important;z-index:99999}`;
+          document.head.appendChild(e);
+        }
+      })();
     }
   });
 
@@ -13906,7 +13899,7 @@ var Plotly = (() => {
           }
         }
         if (bpmName === "map") {
-          init_maplibre_gl2();
+          require_maplibre_gl();
         }
         if ((bpmName === "geo" || bpmName === "mapbox" || bpmName === "map") && window.PlotlyGeoAssets === void 0) {
           window.PlotlyGeoAssets = { topojson: {} };
@@ -15692,7 +15685,10 @@ var Plotly = (() => {
                 prop = match[1];
                 if (notValid(prop)) continue;
                 delete data[key];
-                data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
+                data[prop] = lib.extendDeepNoArrays(
+                  data[prop] || {},
+                  lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]
+                );
               } else if (match = key.match(indexedPropertyRegex)) {
                 datum = data[key];
                 prop = match[1];
@@ -15758,17 +15754,13 @@ var Plotly = (() => {
         count: 0,
         name: "hovertemplate"
       };
-      lib.hovertemplateString = function() {
-        return templateFormatString.apply(hovertemplateWarnings, arguments);
-      };
+      lib.hovertemplateString = (params) => templateFormatString(__spreadProps(__spreadValues({}, params), { opts: hovertemplateWarnings }));
       var texttemplateWarnings = {
         max: 10,
         count: 0,
         name: "texttemplate"
       };
-      lib.texttemplateString = function() {
-        return templateFormatString.apply(texttemplateWarnings, arguments);
-      };
+      lib.texttemplateString = (params) => templateFormatString(__spreadProps(__spreadValues({}, params), { opts: texttemplateWarnings }));
       var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
       function multDivParser(inputStr) {
         var match = inputStr.match(MULT_DIV_REGEX);
@@ -15781,39 +15773,31 @@ var Plotly = (() => {
         name: "texttemplate",
         parseMultDiv: true
       };
-      lib.texttemplateStringForShapes = function() {
-        return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
-      };
+      lib.texttemplateStringForShapes = (params) => templateFormatString(__spreadProps(__spreadValues({}, params), { opts: texttemplateWarningsForShapes }));
       var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
-      function templateFormatString(string, labels, d3locale) {
-        var opts = this;
-        var args = arguments;
-        if (!labels) labels = {};
-        return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
-          var isOther = rawKey === "xother" || rawKey === "yother";
-          var isSpaceOther = rawKey === "_xother" || rawKey === "_yother";
-          var isSpaceOtherSpace = rawKey === "_xother_" || rawKey === "_yother_";
-          var isOtherSpace = rawKey === "xother_" || rawKey === "yother_";
-          var hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
-          var key = rawKey;
+      function templateFormatString({ data = [], locale, fallback, labels = {}, opts, template }) {
+        return template.replace(lib.TEMPLATE_STRING_REGEX, (match, key, format) => {
+          const isOther = ["xother", "yother"].includes(key);
+          const isSpaceOther = ["_xother", "_yother"].includes(key);
+          const isSpaceOtherSpace = ["_xother_", "_yother_"].includes(key);
+          const isOtherSpace = ["xother_", "yother_"].includes(key);
+          const hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
           if (isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
           if (isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
-          var parsedOp = null;
-          var parsedNumber = null;
+          let parsedOp = null;
+          let parsedNumber = null;
           if (opts.parseMultDiv) {
             var _match = multDivParser(key);
             key = _match.key;
             parsedOp = _match.op;
             parsedNumber = _match.number;
           }
-          var value;
+          let value = void 0;
           if (hasOther) {
+            if (labels[key] === void 0) return "";
             value = labels[key];
-            if (value === void 0) return "";
           } else {
-            var obj, i;
-            for (i = 3; i < args.length; i++) {
-              obj = args[i];
+            for (const obj of data) {
               if (!obj) continue;
               if (obj.hasOwnProperty(key)) {
                 value = obj[key];
@@ -15825,31 +15809,34 @@ var Plotly = (() => {
               if (value !== void 0) break;
             }
           }
-          if (value !== void 0) {
-            if (parsedOp === "*") value *= parsedNumber;
-            if (parsedOp === "/") value /= parsedNumber;
-          }
-          if (value === void 0 && opts) {
-            if (opts.count < opts.max) {
-              lib.warn("Variable '" + key + "' in " + opts.name + " could not be found!");
-              value = match;
+          if (value === void 0) {
+            const { count, max, name } = opts;
+            const fallbackValue = fallback === false ? match : fallback;
+            if (count < max) {
+              lib.warn(
+                [
+                  `Variable '${key}' in ${name} could not be found!`,
+                  "Please verify that the template is correct.",
+                  `Using value: '${fallbackValue}'.`
+                ].join(" ")
+              );
             }
-            if (opts.count === opts.max) {
-              lib.warn("Too many " + opts.name + " warnings - additional warnings will be suppressed");
-            }
+            if (count === max) lib.warn(`Too many '${name}' warnings - additional warnings will be suppressed.`);
             opts.count++;
-            return match;
+            return fallbackValue;
           }
+          if (parsedOp === "*") value *= parsedNumber;
+          if (parsedOp === "/") value /= parsedNumber;
           if (format) {
             var fmt;
             if (format[0] === ":") {
-              fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
+              fmt = locale ? locale.numberFormat : lib.numberFormat;
               if (value !== "") {
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ""))(value);
               }
             }
             if (format[0] === "|") {
-              fmt = d3locale ? d3locale.timeFormat : utcFormat;
+              fmt = locale ? locale.timeFormat : utcFormat;
               var ms = lib.dateTime2ms(value);
               value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ""), false, fmt);
             }
@@ -15945,10 +15932,7 @@ var Plotly = (() => {
         var scale = transform.scale;
         if (!scale) scale = 0;
         else if (scale > 1) scale = 1;
-        return lib.strTranslate(
-          targetX - scale * (textX + anchorX),
-          targetY - scale * (textY + anchorY)
-        ) + lib.strScale(scale) + (rotate ? "rotate(" + rotate + (noCenter ? "" : " " + textX + " " + textY) + ")" : "");
+        return lib.strTranslate(targetX - scale * (textX + anchorX), targetY - scale * (textY + anchorY)) + lib.strScale(scale) + (rotate ? "rotate(" + rotate + (noCenter ? "" : " " + textX + " " + textY) + ")" : "");
       };
       lib.setTransormAndDisplay = function(s, transform) {
         s.attr("transform", lib.getTextTransform(transform));
@@ -15956,10 +15940,7 @@ var Plotly = (() => {
       };
       lib.ensureUniformFontSize = function(gd, baseFont) {
         var out = lib.extendFlat({}, baseFont);
-        out.size = Math.max(
-          baseFont.size,
-          gd._fullLayout.uniformtext.minsize || 0
-        );
+        out.size = Math.max(baseFont.size, gd._fullLayout.uniformtext.minsize || 0);
         return out;
       };
       lib.join2 = function(arr, mainSeparator, lastSeparator) {
@@ -15976,15 +15957,9 @@ var Plotly = (() => {
       var isProblematicFirefox = firefoxVersion !== null && firefoxVersion < 86;
       lib.getPositionFromD3Event = function() {
         if (isProblematicFirefox) {
-          return [
-            d3.event.layerX,
-            d3.event.layerY
-          ];
+          return [d3.event.layerX, d3.event.layerY];
         } else {
-          return [
-            d3.event.offsetX,
-            d3.event.offsetY
-          ];
+          return [d3.event.offsetX, d3.event.offsetY];
         }
       };
     }
@@ -15996,7 +15971,7 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var rules = {
-        "X,X div": 'direction:ltr;font-family:"Open Sans",verdana,arial,sans-serif;margin:0;padding:0;',
+        "X,X div": 'direction:ltr;font-family:"Open Sans",verdana,arial,sans-serif;margin:0;padding:0;border:0;',
         "X input,X button": 'font-family:"Open Sans",verdana,arial,sans-serif;',
         "X input:focus,X button:focus": "outline:none;",
         "X a": "text-decoration:none;",
@@ -16476,7 +16451,7 @@ var Plotly = (() => {
           };
           if (typeof plotObj.addEventListener === "function") {
             plotObj.addEventListener("wheel", () => {
-            });
+            }, { passive: true });
           }
           return plotObj;
         },
@@ -21446,7 +21421,7 @@ var Plotly = (() => {
         },
         exponentformat: {
           valType: "enumerated",
-          values: ["none", "e", "E", "power", "SI", "B"],
+          values: ["none", "e", "E", "power", "SI", "B", "SI extended"],
           dflt: "B",
           editType: "ticks"
         },
@@ -22876,7 +22851,7 @@ var Plotly = (() => {
       }
       function getPointData(val, pointNumber) {
         if (Array.isArray(pointNumber)) {
-          if (Array.isArray(val) && Array.isArray(val[pointNumber[0]])) {
+          if (Lib.isArrayOrTypedArray(val) && Lib.isArrayOrTypedArray(val[pointNumber[0]])) {
             return val[pointNumber[0]][pointNumber[1]];
           }
         } else {
@@ -23662,7 +23637,11 @@ var Plotly = (() => {
         if (style) s.style("font-style", style);
         if (variant) s.style("font-variant", variant);
         if (textcase) s.style("text-transform", dropNone(textcase2transform(textcase)));
-        if (shadow) s.style("text-shadow", shadow === "auto" ? svgTextUtils.makeTextShadow(Color2.contrast(color2)) : dropNone(shadow));
+        if (shadow)
+          s.style(
+            "text-shadow",
+            shadow === "auto" ? svgTextUtils.makeTextShadow(Color2.contrast(color2)) : dropNone(shadow)
+          );
         if (lineposition) s.style("text-decoration-line", dropNone(lineposition2decorationLine(lineposition)));
       };
       function dropNone(a) {
@@ -23710,10 +23689,7 @@ var Plotly = (() => {
         });
       };
       drawing.hideOutsideRangePoint = function(d, sel, xa, ya, xcalendar, ycalendar) {
-        sel.attr(
-          "display",
-          xa.isPtWithinRange(d, xcalendar) && ya.isPtWithinRange(d, ycalendar) ? null : "none"
-        );
+        sel.attr("display", xa.isPtWithinRange(d, xcalendar) && ya.isPtWithinRange(d, ycalendar) ? null : "none");
       };
       drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         if (!subplot._hasClipOnAxisFalse) return;
@@ -23826,23 +23802,22 @@ var Plotly = (() => {
                 y: fillgradient.stop
               };
             }
-            start.x = trace._xA.c2p(
-              start.x === void 0 ? trace._extremes.x.min[0].val : start.x,
-              true
+            start.x = trace._xA.c2p(start.x === void 0 ? trace._extremes.x.min[0].val : start.x, true);
+            start.y = trace._yA.c2p(start.y === void 0 ? trace._extremes.y.min[0].val : start.y, true);
+            stop.x = trace._xA.c2p(stop.x === void 0 ? trace._extremes.x.max[0].val : stop.x, true);
+            stop.y = trace._yA.c2p(stop.y === void 0 ? trace._extremes.y.max[0].val : stop.y, true);
+            sel.call(
+              gradientWithBounds,
+              gd,
+              gradientID,
+              "linear",
+              fillgradient.colorscale,
+              "fill",
+              start,
+              stop,
+              true,
+              false
             );
-            start.y = trace._yA.c2p(
-              start.y === void 0 ? trace._extremes.y.min[0].val : start.y,
-              true
-            );
-            stop.x = trace._xA.c2p(
-              stop.x === void 0 ? trace._extremes.x.max[0].val : stop.x,
-              true
-            );
-            stop.y = trace._yA.c2p(
-              stop.y === void 0 ? trace._extremes.y.max[0].val : stop.y,
-              true
-            );
-            sel.call(gradientWithBounds, gd, gradientID, "linear", fillgradient.colorscale, "fill", start, stop, true, false);
           } else {
             if (direction === "horizontal") {
               direction = direction + "reversed";
@@ -24144,13 +24119,7 @@ var Plotly = (() => {
             };
             break;
         }
-        var str = [
-          shape || "noSh",
-          bgcolor || "noBg",
-          fgcolor || "noFg",
-          size,
-          solidity
-        ].join(";");
+        var str = [shape || "noSh", bgcolor || "noBg", fgcolor || "noFg", size, solidity].join(";");
         var pattern = fullLayout._defs.select(".patterns").selectAll("#" + fullID).data([str], Lib.identity);
         pattern.exit().remove();
         pattern.enter().append("pattern").each(function() {
@@ -24212,10 +24181,7 @@ var Plotly = (() => {
         var marker = trace.marker;
         var markerLine = marker.line;
         if (pt && pt.i >= 0 && d.i === void 0) d.i = pt.i;
-        sel.style(
-          "opacity",
-          fns.selectedOpacityFn ? fns.selectedOpacityFn(d) : d.mo === void 0 ? marker.opacity : d.mo
-        );
+        sel.style("opacity", fns.selectedOpacityFn ? fns.selectedOpacityFn(d) : d.mo === void 0 ? marker.opacity : d.mo);
         if (fns.ms2mrc) {
           var r;
           if (d.ms === "various" || marker.size === "various") {
@@ -24288,7 +24254,10 @@ var Plotly = (() => {
               gd,
               gradientID,
               gradientType,
-              [[0, gradientColor], [1, fillColor]],
+              [
+                [0, gradientColor],
+                [1, fillColor]
+              ],
               "fill"
             );
           } else if (patternShape) {
@@ -24435,7 +24404,10 @@ var Plotly = (() => {
           seq.push(function(pt, d) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
-            pt.attr("d", makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace)));
+            pt.attr(
+              "d",
+              makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace))
+            );
             d.mrc2 = mrc2;
           });
         }
@@ -24503,8 +24475,13 @@ var Plotly = (() => {
             var labels = fn ? fn(d, trace, fullLayout) : {};
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, d.i);
-            var meta = trace._meta || {};
-            text = Lib.texttemplateString(text, labels, fullLayout._d3locale, pointValues, d, meta);
+            text = Lib.texttemplateString({
+              data: [pointValues, d, trace._meta],
+              fallback: trace.texttemplatefallback,
+              labels,
+              locale: fullLayout._d3locale,
+              template: text
+            });
           }
           var pos = d.tp || trace.textposition;
           var fontSize = extracTextFontSize(d, trace);
@@ -24564,9 +24541,7 @@ var Plotly = (() => {
         for (i = 1; i < pLast; i++) {
           tangents.push(makeTangent(pts[i - 1], pts[i], pts[i + 1], smoothness));
         }
-        tangents.push(
-          makeTangent(pts[pLast - 1], pts[pLast], pts[0], smoothness)
-        );
+        tangents.push(makeTangent(pts[pLast - 1], pts[pLast], pts[0], smoothness));
         for (i = 1; i <= pLast; i++) {
           path += "C" + tangents[i - 1][1] + " " + tangents[i][0] + " " + pts[i];
         }
@@ -24601,14 +24576,8 @@ var Plotly = (() => {
         var denom1 = 3 * d2a * (d1a + d2a);
         var denom2 = 3 * d1a * (d1a + d2a);
         return [
-          [
-            roundX(thispt[0] + (denom1 && numx / denom1)),
-            roundY(thispt[1] + (denom1 && numy / denom1))
-          ],
-          [
-            roundX(thispt[0] - (denom2 && numx / denom2)),
-            roundY(thispt[1] - (denom2 && numy / denom2))
-          ]
+          [roundX(thispt[0] + (denom1 && numx / denom1)), roundY(thispt[1] + (denom1 && numy / denom1))],
+          [roundX(thispt[0] - (denom2 && numx / denom2)), roundY(thispt[1] - (denom2 && numy / denom2))]
         ];
       }
       var STEPPATH = {
@@ -24847,11 +24816,7 @@ var Plotly = (() => {
           if (xScale === 1 && yScale === 1) {
             transforms = [];
           } else {
-            transforms = [
-              strTranslate(x, y),
-              "scale(" + xScale + "," + yScale + ")",
-              strTranslate(-x, -y)
-            ];
+            transforms = [strTranslate(x, y), "scale(" + xScale + "," + yScale + ")", strTranslate(-x, -y)];
           }
           if (existingTransform) {
             transforms.push(existingTransform);
@@ -24877,10 +24842,7 @@ var Plotly = (() => {
       function rotate(t, xy) {
         var x = xy[0];
         var y = xy[1];
-        return [
-          x * cos(t) - y * sin(t),
-          x * sin(t) + y * cos(t)
-        ];
+        return [x * cos(t) - y * sin(t), x * sin(t) + y * cos(t)];
       }
       var previousLon;
       var previousLat;
@@ -24926,14 +24888,8 @@ var Plotly = (() => {
               // epsilon
               lat
             ]);
-            var u = atan2(
-              east[1] - y,
-              east[0] - x
-            );
-            var v = atan2(
-              north[1] - y,
-              north[0] - x
-            );
+            var u = atan2(east[1] - y, east[0] - x);
+            var v = atan2(north[1] - y, north[0] - x);
             var t;
             if (ref === "north") {
               t = angle / 180 * Math.PI;
@@ -24945,19 +24901,13 @@ var Plotly = (() => {
               var dLon = lon2 - lon1;
               var deltaY = cos(lat2) * sin(dLon);
               var deltaX = sin(lat2) * cos(lat1) - cos(lat2) * sin(lat1) * cos(dLon);
-              t = -atan2(
-                deltaY,
-                deltaX
-              ) - Math.PI;
+              t = -atan2(deltaY, deltaX) - Math.PI;
               previousLon = lon;
               previousLat = lat;
             }
             var A2 = rotate(u, [cos(t), 0]);
             var B2 = rotate(v, [sin(t), 0]);
-            angle = atan2(
-              A2[1] + B2[1],
-              A2[0] + B2[0]
-            ) / Math.PI * 180;
+            angle = atan2(A2[1] + B2[1], A2[0] + B2[0]) / Math.PI * 180;
             if (ref === "previous" && !(previousTraceUid === trace.uid && d.i === previousI + 1)) {
               angle = null;
             }
@@ -25032,7 +24982,7 @@ var Plotly = (() => {
         var subtitleEnabled = !!subtitleProp;
         var subtitlePlaceholder = options.subtitlePlaceholder;
         var subtitle = (cont.title || {}).subtitle || { text: "", font: {} };
-        var subtitleTxt = subtitle.text.trim();
+        var subtitleTxt = (subtitle.text || "").trim();
         var subtitleIsPlaceholder = false;
         var subtitleOpacity = 1;
         var subtitleFont = subtitle.font;
@@ -25086,7 +25036,7 @@ var Plotly = (() => {
         var subtitleEl = null;
         var subtitleClass = titleClass + "-subtitle";
         var subtitleElShouldExist = subtitleTxt || editable;
-        if (subtitleEnabled && subtitleElShouldExist) {
+        if (subtitleEnabled) {
           subtitleEl = group.selectAll("text." + subtitleClass).data(subtitleElShouldExist ? [0] : []);
           subtitleEl.enter().append("text");
           subtitleEl.text(subtitleTxt).attr("class", subtitleClass);
@@ -25137,7 +25087,7 @@ var Plotly = (() => {
             shadow: fontShadow,
             lineposition: fontLineposition
           }).attr(attributes).call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
-          if (subtitleEl2) {
+          if (subtitleEl2 && !subtitleEl2.empty()) {
             var titleElMathGroup = group.select("." + titleClass + "-math-group");
             var titleElBbox2 = titleEl.node().getBBox();
             var titleElMathBbox = titleElMathGroup.node() ? titleElMathGroup.node().getBBox() : void 0;
@@ -25258,7 +25208,7 @@ var Plotly = (() => {
           }
         }
         el.classed("js-placeholder", titleIsPlaceholder);
-        if (subtitleEl) subtitleEl.classed("js-placeholder", subtitleIsPlaceholder);
+        if (subtitleEl && !subtitleEl.empty()) subtitleEl.classed("js-placeholder", subtitleIsPlaceholder);
         return group;
       }
       module.exports = {
@@ -27577,7 +27527,7 @@ var Plotly = (() => {
           var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
           var minexponent = ax.minexponent === void 0 ? 3 : ax.minexponent;
           if (Math.abs(rangeexp) > minexponent) {
-            if (isSIFormat(ax.exponentformat) && !beyondSI(rangeexp)) {
+            if (isSIFormat(ax.exponentformat) && ax.exponentformat !== "SI extended" && !beyondSI(rangeexp) || isSIFormat(ax.exponentformat) && ax.exponentformat === "SI extended" && !beyondSIExtended(rangeexp)) {
               ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
             } else ax._tickexponent = rangeexp;
           }
@@ -27801,7 +27751,7 @@ var Plotly = (() => {
           var p = +parts[1];
           var absP = Math.abs(p);
           var exponentFormat = ax.exponentformat;
-          if (exponentFormat === "power" || isSIFormat(exponentFormat) && beyondSI(p)) {
+          if (exponentFormat === "power" || isSIFormat(exponentFormat) && exponentFormat !== "SI extended" && beyondSI(p) || isSIFormat(exponentFormat) && exponentFormat === "SI extended" && beyondSIExtended(p)) {
             out.text = parts[0];
             if (absP > 0) out.text += "x10";
             if (out.text === "1x10") out.text = "10";
@@ -27917,11 +27867,19 @@ var Plotly = (() => {
         ];
       }
       var SIPREFIXES = ["f", "p", "n", "\u03BC", "m", "", "k", "M", "G", "T"];
-      function isSIFormat(exponentFormat) {
-        return exponentFormat === "SI" || exponentFormat === "B";
-      }
+      var SIPREFIXES_EXTENDED = ["q", "r", "y", "z", "a", ...SIPREFIXES, "P", "E", "Z", "Y", "R", "Q"];
+      var isSIFormat = (exponentFormat) => ["SI", "SI extended", "B"].includes(exponentFormat);
       function beyondSI(exponent) {
         return exponent > 14 || exponent < -15;
+      }
+      function beyondSIExtended(exponent) {
+        return exponent > 32 || exponent < -30;
+      }
+      function shouldSwitchSIToPowerFormat(exponent, exponentFormat) {
+        if (!isSIFormat(exponentFormat)) return false;
+        if (exponentFormat === "SI extended" && beyondSIExtended(exponent)) return true;
+        if (exponentFormat !== "SI extended" && beyondSI(exponent)) return true;
+        return false;
       }
       function numFormat(v, ax, fmtoverride, hover) {
         var isNeg = v < 0;
@@ -27970,7 +27928,7 @@ var Plotly = (() => {
           v = Lib.numSeparate(v, ax._separators, separatethousands);
         }
         if (exponent && exponentFormat !== "hide") {
-          if (isSIFormat(exponentFormat) && beyondSI(exponent)) exponentFormat = "power";
+          if (shouldSwitchSIToPowerFormat(exponent, exponentFormat)) exponentFormat = "power";
           var signedExponent;
           if (exponent < 0) signedExponent = MINUS_SIGN + -exponent;
           else if (exponentFormat !== "power") signedExponent = "+" + exponent;
@@ -27982,7 +27940,7 @@ var Plotly = (() => {
           } else if (exponentFormat === "B" && exponent === 9) {
             v += "B";
           } else if (isSIFormat(exponentFormat)) {
-            v += SIPREFIXES[exponent / 3 + 5];
+            v += exponentFormat === "SI extended" ? SIPREFIXES_EXTENDED[exponent / 3 + 10] : SIPREFIXES[exponent / 3 + 5];
           }
         }
         if (isNeg) return MINUS_SIGN + v;
@@ -30267,9 +30225,11 @@ var Plotly = (() => {
           return Lib.coerce(traceIn, traceOut, plotsAttrs, attr, dflt);
         };
         var globalFont = layoutOut.font || {};
-        var grouptitlefont = Lib.coerceFont(coerce, "grouptitlefont", globalFont, { overrideDflt: {
-          size: Math.round(globalFont.size * 1.1)
-        } });
+        var grouptitlefont = Lib.coerceFont(coerce, "grouptitlefont", globalFont, {
+          overrideDflt: {
+            size: Math.round(globalFont.size * 1.1)
+          }
+        });
         var legendTraceCount = 0;
         var legendReallyHasATrace = false;
         var defaultOrder = "normal";
@@ -30416,7 +30376,7 @@ var Plotly = (() => {
         for (i = 0; i < legends.length; i++) {
           var legendId = legends[i];
           groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
-          if (layoutOut[legendId] && layoutOut[legendId].visible) {
+          if (layoutOut[legendId]) {
             layoutOut[legendId]._id = legendId;
           }
           layoutOut._legends.push(legendId);
@@ -31659,7 +31619,7 @@ var Plotly = (() => {
               scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
               legend.on("wheel", function() {
                 scrollBoxY = Lib.constrain(
-                  legendObj._scrollY + d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
+                  legendObj._scrollY + d3.event.deltaY / scrollBoxYMax * scrollBarYMax,
                   0,
                   scrollBoxYMax
                 );
@@ -32252,13 +32212,9 @@ var Plotly = (() => {
       exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
         gd = Lib.getGraphDiv(gd);
         var eventTarget = evt.target;
-        Lib.throttle(
-          gd._fullLayout._uid + constants.HOVERID,
-          constants.HOVERMINTIME,
-          function() {
-            _hover(gd, evt, subplot, noHoverEvent, eventTarget);
-          }
-        );
+        Lib.throttle(gd._fullLayout._uid + constants.HOVERID, constants.HOVERMINTIME, function() {
+          _hover(gd, evt, subplot, noHoverEvent, eventTarget);
+        });
       };
       exports.loneHover = function loneHover(hoverItems, opts) {
         var multiHover = true;
@@ -32708,10 +32664,10 @@ var Plotly = (() => {
         gd._spikepoints = newspikepoints;
         var sortHoverData = function() {
           var hoverDataInSubplot = hoverData.filter(function(a) {
-            return firstXaxis && firstXaxis._id === a.xa._id && (firstYaxis && firstYaxis._id === a.ya._id);
+            return firstXaxis && firstXaxis._id === a.xa._id && firstYaxis && firstYaxis._id === a.ya._id;
           });
           var hoverDataOutSubplot = hoverData.filter(function(a) {
-            return !(firstXaxis && firstXaxis._id === a.xa._id && (firstYaxis && firstYaxis._id === a.ya._id));
+            return !(firstXaxis && firstXaxis._id === a.xa._id && firstYaxis && firstYaxis._id === a.ya._id);
           });
           hoverDataInSubplot.sort(distanceSort);
           hoverDataOutSubplot.sort(distanceSort);
@@ -32752,9 +32708,7 @@ var Plotly = (() => {
         if (helpers.isXYhover(_mode) && hoverData[0].length !== 0 && hoverData[0].trace.type !== "splom") {
           var winningPoint = hoverData[0];
           if (multipleHoverPoints[winningPoint.trace.type]) {
-            hoverData = hoverData.filter(function(d) {
-              return d.trace.index === winningPoint.trace.index;
-            });
+            hoverData = hoverData.filter((d) => d.trace.index === winningPoint.trace.index);
           } else {
             hoverData = [winningPoint];
           }
@@ -32793,8 +32747,7 @@ var Plotly = (() => {
         var newhoverdata = [];
         var gTop = getTopOffset(gd);
         var gLeft = getLeftOffset(gd);
-        for (itemnum = 0; itemnum < hoverData.length; itemnum++) {
-          var pt = hoverData[itemnum];
+        for (const pt of hoverData) {
           var eventData = helpers.makeEventData(pt, pt.trace, pt.cd);
           if (pt.hovertemplate !== false) {
             var ht = false;
@@ -32824,10 +32777,7 @@ var Plotly = (() => {
         }
         gd._hoverdata = newhoverdata;
         var rotateLabels = hovermode === "y" && (searchData.length > 1 || hoverData.length > 1) || hovermode === "closest" && hasOneHorizontalTrace && hoverData.length > 1;
-        var bgColor = Color2.combine(
-          fullLayout.plot_bgcolor || Color2.background,
-          fullLayout.paper_bgcolor
-        );
+        var bgColor = Color2.combine(fullLayout.plot_bgcolor || Color2.background, fullLayout.paper_bgcolor);
         var hoverText = createHoverText(hoverData, {
           gd,
           hovermode,
@@ -32960,7 +32910,11 @@ var Plotly = (() => {
           var lx2, ly2;
           if (hovermode === "x") {
             var topsign = xa.side === "top" ? "-" : "";
-            ltext.attr("text-anchor", "middle").call(svgTextUtils.positionText, 0, xa.side === "top" ? outerTop - tbb2.bottom - HOVERARROWSIZE - HOVERTEXTPAD : outerTop - tbb2.top + HOVERARROWSIZE + HOVERTEXTPAD);
+            ltext.attr("text-anchor", "middle").call(
+              svgTextUtils.positionText,
+              0,
+              xa.side === "top" ? outerTop - tbb2.bottom - HOVERARROWSIZE - HOVERTEXTPAD : outerTop - tbb2.top + HOVERARROWSIZE + HOVERTEXTPAD
+            );
             lx2 = xa._offset + (c0.x0 + c0.x1) / 2;
             ly2 = ya._offset + (xa.side === "top" ? 0 : ya._length);
             var halfWidth = tbb2.width / 2 + HOVERTEXTPAD;
@@ -32970,7 +32924,10 @@ var Plotly = (() => {
             } else if (lx2 > fullLayout.width - halfWidth) {
               tooltipMidX = fullLayout.width - halfWidth;
             }
-            lpath.attr("d", "M" + (lx2 - tooltipMidX) + ",0L" + (lx2 - tooltipMidX + HOVERARROWSIZE) + "," + topsign + HOVERARROWSIZE + "H" + halfWidth + "v" + topsign + (HOVERTEXTPAD * 2 + tbb2.height) + "H" + -halfWidth + "V" + topsign + HOVERARROWSIZE + "H" + (lx2 - tooltipMidX - HOVERARROWSIZE) + "Z");
+            lpath.attr(
+              "d",
+              "M" + (lx2 - tooltipMidX) + ",0L" + (lx2 - tooltipMidX + HOVERARROWSIZE) + "," + topsign + HOVERARROWSIZE + "H" + halfWidth + "v" + topsign + (HOVERTEXTPAD * 2 + tbb2.height) + "H" + -halfWidth + "V" + topsign + HOVERARROWSIZE + "H" + (lx2 - tooltipMidX - HOVERARROWSIZE) + "Z"
+            );
             lx2 = tooltipMidX;
             commonLabelRect.minX = lx2 - halfWidth;
             commonLabelRect.maxX = lx2 + halfWidth;
@@ -32998,7 +32955,10 @@ var Plotly = (() => {
             }
             ly2 = ya._offset + (c0.y0 + c0.y1) / 2;
             ltext.attr("text-anchor", anchor);
-            lpath.attr("d", "M0,0L" + leftsign + HOVERARROWSIZE + "," + HOVERARROWSIZE + "V" + (HOVERTEXTPAD + tbb2.height / 2) + "h" + leftsign + (HOVERTEXTPAD * 2 + tbb2.width) + "V-" + (HOVERTEXTPAD + tbb2.height / 2) + "H" + leftsign + HOVERARROWSIZE + "V-" + HOVERARROWSIZE + "Z");
+            lpath.attr(
+              "d",
+              "M0,0L" + leftsign + HOVERARROWSIZE + "," + HOVERARROWSIZE + "V" + (HOVERTEXTPAD + tbb2.height / 2) + "h" + leftsign + (HOVERTEXTPAD * 2 + tbb2.width) + "V-" + (HOVERTEXTPAD + tbb2.height / 2) + "H" + leftsign + HOVERARROWSIZE + "V-" + HOVERARROWSIZE + "Z"
+            );
             commonLabelRect.minY = ly2 - (HOVERTEXTPAD + tbb2.height / 2);
             commonLabelRect.maxY = ly2 + (HOVERTEXTPAD + tbb2.height / 2);
             if (ya.side === "right") {
@@ -33041,20 +33001,18 @@ var Plotly = (() => {
         });
         if (helpers.isUnifiedHover(hovermode)) {
           container.selectAll("g.hovertext").remove();
-          var groupedHoverData = hoverData.filter(function(data) {
-            return data.hoverinfo !== "none";
-          });
+          const groupedHoverData = hoverData.filter((data) => data.hoverinfo !== "none");
           if (groupedHoverData.length === 0) return [];
           var hoverlabel = fullLayout.hoverlabel;
           var font = hoverlabel.font;
           var item0 = groupedHoverData[0];
           var unifiedhovertitleText = ((hovermode === "x unified" ? item0.xa : item0.ya).unifiedhovertitle || {}).text;
-          var mainText = !unifiedhovertitleText ? t02 : Lib.hovertemplateString(
-            unifiedhovertitleText,
-            {},
-            fullLayout._d3locale,
-            hovermode === "x unified" ? { xa: item0.xa, x: item0.xVal } : { ya: item0.ya, y: item0.yVal }
-          );
+          var mainText = !unifiedhovertitleText ? t02 : Lib.hovertemplateString({
+            data: hovermode === "x unified" ? [{ xa: item0.xa, x: item0.xVal }] : [{ ya: item0.ya, y: item0.yVal }],
+            fallback: item0.trace.hovertemplatefallback,
+            locale: fullLayout._d3locale,
+            template: unifiedhovertitleText
+          });
           var mockLayoutIn = {
             showlegend: true,
             legend: {
@@ -33120,17 +33078,25 @@ var Plotly = (() => {
               lyTop = avgY - HOVERTEXTPAD;
               lyBottom = avgY + HOVERTEXTPAD;
             } else {
-              lyTop = Math.min.apply(null, groupedHoverData.map(function(c) {
-                return Math.min(c.y0, c.y1);
-              }));
-              lyBottom = Math.max.apply(null, groupedHoverData.map(function(c) {
-                return Math.max(c.y0, c.y1);
-              }));
+              lyTop = Math.min.apply(
+                null,
+                groupedHoverData.map(function(c) {
+                  return Math.min(c.y0, c.y1);
+                })
+              );
+              lyBottom = Math.max.apply(
+                null,
+                groupedHoverData.map(function(c) {
+                  return Math.max(c.y0, c.y1);
+                })
+              );
             }
           } else {
-            lyTop = lyBottom = Lib.mean(groupedHoverData.map(function(c) {
-              return (c.y0 + c.y1) / 2;
-            })) - tHeight / 2;
+            lyTop = lyBottom = Lib.mean(
+              groupedHoverData.map(function(c) {
+                return (c.y0 + c.y1) / 2;
+              })
+            ) - tHeight / 2;
           }
           var lxRight, lxLeft;
           if (axLetter === "x") {
@@ -33138,17 +33104,25 @@ var Plotly = (() => {
               lxRight = avgX + HOVERTEXTPAD;
               lxLeft = avgX - HOVERTEXTPAD;
             } else {
-              lxRight = Math.max.apply(null, groupedHoverData.map(function(c) {
-                return Math.max(c.x0, c.x1);
-              }));
-              lxLeft = Math.min.apply(null, groupedHoverData.map(function(c) {
-                return Math.min(c.x0, c.x1);
-              }));
+              lxRight = Math.max.apply(
+                null,
+                groupedHoverData.map(function(c) {
+                  return Math.max(c.x0, c.x1);
+                })
+              );
+              lxLeft = Math.min.apply(
+                null,
+                groupedHoverData.map(function(c) {
+                  return Math.min(c.x0, c.x1);
+                })
+              );
             }
           } else {
-            lxRight = lxLeft = Lib.mean(groupedHoverData.map(function(c) {
-              return (c.x0 + c.x1) / 2;
-            })) - tWidth / 2;
+            lxRight = lxLeft = Lib.mean(
+              groupedHoverData.map(function(c) {
+                return (c.x0 + c.x1) / 2;
+              })
+            ) - tWidth / 2;
           }
           var xOffset = xa._offset;
           var yOffset = ya._offset;
@@ -33215,14 +33189,8 @@ var Plotly = (() => {
             dColor = dColor[d.eventData[0].pointNumber];
           }
           var color0 = d.bgcolor || dColor;
-          var numsColor = Color2.combine(
-            Color2.opacity(color0) ? color0 : Color2.defaultLine,
-            bgColor
-          );
-          var nameColor = Color2.combine(
-            Color2.opacity(dColor) ? dColor : Color2.defaultLine,
-            bgColor
-          );
+          var numsColor = Color2.combine(Color2.opacity(color0) ? color0 : Color2.defaultLine, bgColor);
+          var nameColor = Color2.combine(Color2.opacity(dColor) ? dColor : Color2.defaultLine, bgColor);
           var contrastColor = d.borderColor || Color2.contrast(numsColor);
           var texts2 = getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t02, g);
           var text2 = texts2[0];
@@ -33324,13 +33292,12 @@ var Plotly = (() => {
         };
       }
       function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t02, g) {
+        var _a, _b;
         var name = "";
         var text = "";
         if (d.nameOverride !== void 0) d.name = d.nameOverride;
         if (d.name) {
-          if (d.trace._meta) {
-            d.name = Lib.templateString(d.name, d.trace._meta);
-          }
+          if (d.trace._meta) d.name = Lib.templateString(d.name, d.trace._meta);
           name = plainText(d.name, d.nameLength);
         }
         var h0 = hovermode.charAt(0);
@@ -33357,21 +33324,22 @@ var Plotly = (() => {
           if (name === "") g.remove();
           text = name;
         }
-        var hovertemplate = d.hovertemplate || false;
+        if ((_b = (_a = d.trace) == null ? void 0 : _a.hoverlabel) == null ? void 0 : _b.split) d.hovertemplate = "";
+        const { hovertemplate = false } = d;
         if (hovertemplate) {
-          var labels = d.hovertemplateLabels || d;
+          const labels = d.hovertemplateLabels || d;
           if (d[h0 + "Label"] !== t02) {
             labels[h0 + "other"] = labels[h0 + "Val"];
             labels[h0 + "otherLabel"] = labels[h0 + "Label"];
           }
-          text = Lib.hovertemplateString(
-            hovertemplate,
+          text = Lib.hovertemplateString({
+            data: [d.eventData[0] || {}, d.trace._meta],
+            fallback: d.trace.hovertemplatefallback,
             labels,
-            fullLayout._d3locale,
-            d.eventData[0] || {},
-            d.trace._meta
-          );
-          text = text.replace(EXTRA_STRING_REGEX, function(match, extra) {
+            locale: fullLayout._d3locale,
+            template: hovertemplate
+          });
+          text = text.replace(EXTRA_STRING_REGEX, (_, extra) => {
             name = plainText(extra, d.nameLength);
             return "";
           });
@@ -33446,16 +33414,18 @@ var Plotly = (() => {
               }
             }
           }
-          pointgroups[k++] = [{
-            datum: d,
-            traceIndex: d.trace.index,
-            dp: 0,
-            pos: d.pos,
-            posref: d.posref,
-            size: d.by * (axIsX ? YFACTOR : 1) / 2,
-            pmin,
-            pmax
-          }];
+          pointgroups[k++] = [
+            {
+              datum: d,
+              traceIndex: d.trace.index,
+              dp: 0,
+              pos: d.pos,
+              posref: d.posref,
+              size: d.by * (axIsX ? YFACTOR : 1) / 2,
+              pmin,
+              pmax
+            }
+          ];
         });
         pointgroups.sort(function(a, b) {
           return a[0].posref - b[0].posref || // for equal positions, sort trace indices increasing or decreasing
@@ -33846,7 +33816,8 @@ var Plotly = (() => {
       }
       function spikesChanged(gd, oldspikepoints) {
         if (!oldspikepoints) return true;
-        if (oldspikepoints.vLinePoint !== gd._spikepoints.vLinePoint || oldspikepoints.hLinePoint !== gd._spikepoints.hLinePoint) return true;
+        if (oldspikepoints.vLinePoint !== gd._spikepoints.vLinePoint || oldspikepoints.hLinePoint !== gd._spikepoints.hLinePoint)
+          return true;
         return false;
       }
       function plainText(s, len) {
@@ -33901,12 +33872,8 @@ var Plotly = (() => {
         }
         return val;
       }
-      function getTopOffset(gd) {
-        return gd.offsetTop + gd.clientTop;
-      }
-      function getLeftOffset(gd) {
-        return gd.offsetLeft + gd.clientLeft;
-      }
+      var getTopOffset = (gd) => gd.offsetTop + gd.clientTop;
+      var getLeftOffset = (gd) => gd.offsetLeft + gd.clientLeft;
       function getBoundingClientRect(gd, node) {
         var fullLayout = gd._fullLayout;
         var rect = node.getBoundingClientRect();
@@ -35409,12 +35376,12 @@ var Plotly = (() => {
               if (val !== void 0) templateValues[key] = val;
             }
           }
-          text = Lib.texttemplateStringForShapes(
-            options.label.texttemplate,
-            {},
-            gd._fullLayout._d3locale,
-            templateValues
-          );
+          text = Lib.texttemplateStringForShapes({
+            data: [templateValues],
+            fallback: options.label.texttemplatefallback,
+            locale: gd._fullLayout._d3locale,
+            template: options.label.texttemplate
+          });
         } else {
           text = options.label.text;
         }
@@ -36034,7 +36001,7 @@ var Plotly = (() => {
         }
       }
       function setClipPath(shapePath, gd, shapeOptions) {
-        var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, "").replace(/[xyz][1-9]* *domain/g, "");
+        var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, "").replace(/[xyz][0-9]* *domain/g, "");
         Drawing.setClipUrl(
           shapePath,
           clipAxes ? "clip" + gd._fullLayout._uid + clipAxes : null,
@@ -38531,8 +38498,8 @@ var Plotly = (() => {
           }
         });
         if (title.text && title.automargin) {
-          var titleObj = d3.selectAll(".gtitle");
-          var titleHeight = Drawing.bBox(d3.selectAll(".g-gtitle").node()).height;
+          var titleObj = d3.select(gd).selectAll(".gtitle");
+          var titleHeight = Drawing.bBox(d3.select(gd).selectAll(".g-gtitle").node()).height;
           var pushMargin = needsMarginPush(gd, title, titleHeight);
           if (pushMargin > 0) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
@@ -38553,7 +38520,7 @@ var Plotly = (() => {
                 this.setAttribute("dy", newDy);
               });
             }
-            var subtitleObj = d3.selectAll(".gtitle-subtitle");
+            var subtitleObj = d3.select(gd).selectAll(".gtitle-subtitle");
             if (subtitleObj.node()) {
               var titleBB = titleObj.node().getBBox();
               var titleBottom = titleBB.y + titleBB.height;
@@ -41930,8 +41897,7 @@ var Plotly = (() => {
     "src/traces/scatter/attributes.js"(exports, module) {
       "use strict";
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var colorScaleAttrs = require_attributes8();
       var fontAttrs = require_font_attributes();
       var dash = require_attributes4().dash;
@@ -41956,11 +41922,7 @@ var Plotly = (() => {
       function axisPeriodAlignment(axis) {
         return {
           valType: "enumerated",
-          values: [
-            "start",
-            "middle",
-            "end"
-          ],
+          values: ["start", "middle", "end"],
           dflt: "middle",
           editType: "calc"
         };
@@ -42046,7 +42008,8 @@ var Plotly = (() => {
           arrayOk: true,
           editType: "calc"
         },
-        texttemplate: texttemplateAttrs({}, {}),
+        texttemplate: texttemplateAttrs(),
+        texttemplatefallback: templatefallbackAttrs({ editType: "calc" }),
         hovertext: {
           valType: "string",
           dflt: "",
@@ -42064,9 +42027,8 @@ var Plotly = (() => {
           flags: ["points", "fills"],
           editType: "style"
         },
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: constants.eventDataKeys
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+        hovertemplatefallback: templatefallbackAttrs(),
         line: {
           color: {
             valType: "color",
@@ -43879,7 +43841,6 @@ var Plotly = (() => {
     "src/plot_api/helpers.js"(exports) {
       "use strict";
       var isNumeric = require_fast_isnumeric();
-      var m4FromQuat = require_fromQuat();
       var Registry = require_registry();
       var Lib = require_lib();
       var Plots = require_plots();
@@ -43888,6 +43849,7 @@ var Plotly = (() => {
       var cleanId = AxisIds.cleanId;
       var getFromTrace = AxisIds.getFromTrace;
       var traceIs = Registry.traceIs;
+      var AX_LETTERS = ["x", "y", "z"];
       exports.clearPromiseQueue = function(gd) {
         if (Array.isArray(gd._promises) && gd._promises.length > 0) {
           Lib.log("Clearing previous rejected promises from queue.");
@@ -44054,12 +44016,7 @@ var Plotly = (() => {
             var increasingName = cleanFinanceDir(trace.increasing);
             var decreasingName = cleanFinanceDir(trace.decreasing);
             if (increasingName !== false && decreasingName !== false) {
-              var newName = commonPrefix(
-                increasingName,
-                decreasingName,
-                increasingShowlegend,
-                decreasingShowlegend
-              );
+              var newName = commonPrefix(increasingName, decreasingName, increasingShowlegend, decreasingShowlegend);
               if (newName) trace.name = newName;
             } else if ((increasingName || decreasingName) && !trace.name) {
               trace.name = increasingName || decreasingName;
@@ -44189,12 +44146,11 @@ var Plotly = (() => {
         }
         return false;
       };
-      var axLetters = ["x", "y", "z"];
       exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
         for (var i = 0; i < traces.length; i++) {
           var trace = gd._fullData[i];
           for (var j = 0; j < 3; j++) {
-            var ax = getFromTrace(gd, trace, axLetters[j]);
+            var ax = getFromTrace(gd, trace, AX_LETTERS[j]);
             if (ax && ax.type !== "log") {
               var axAttr = ax._name;
               var sceneName = ax._id.substr(1);
@@ -44210,6 +44166,35 @@ var Plotly = (() => {
           }
         }
       };
+      var collectionsAreEqual = (collection1, collection2) => {
+        const isArrayOrObject = (...vals) => vals.every((v) => Lib.isPlainObject(v)) || vals.every((v) => Array.isArray(v));
+        if ([collection1, collection2].every((a) => Array.isArray(a))) {
+          if (collection1.length !== collection2.length) return false;
+          for (let i = 0; i < collection1.length; i++) {
+            const oldVal = collection1[i];
+            const newVal = collection2[i];
+            if (oldVal !== newVal) {
+              const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+              if (!equal) return false;
+            }
+          }
+          return true;
+        } else if ([collection1, collection2].every((a) => Lib.isPlainObject(a))) {
+          if (Object.keys(collection1).length !== Object.keys(collection2).length) return false;
+          for (const k in collection1) {
+            if (k.startsWith("_")) continue;
+            const oldVal = collection1[k];
+            const newVal = collection2[k];
+            if (oldVal !== newVal) {
+              const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+              if (!equal) return false;
+            }
+          }
+          return true;
+        }
+        return false;
+      };
+      exports.collectionsAreEqual = collectionsAreEqual;
     }
   });
 
@@ -44317,21 +44302,28 @@ var Plotly = (() => {
             }
           }
           if (!fullLayout._glcanvas && fullLayout._has("gl")) {
-            fullLayout._glcanvas = fullLayout._glcontainer.selectAll(".gl-canvas").data([{
-              key: "contextLayer",
-              context: true,
-              pick: false
-            }, {
-              key: "focusLayer",
-              context: false,
-              pick: false
-            }, {
-              key: "pickLayer",
-              context: false,
-              pick: true
-            }], function(d) {
-              return d.key;
-            });
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll(".gl-canvas").data(
+              [
+                {
+                  key: "contextLayer",
+                  context: true,
+                  pick: false
+                },
+                {
+                  key: "focusLayer",
+                  context: false,
+                  pick: false
+                },
+                {
+                  key: "pickLayer",
+                  context: false,
+                  pick: true
+                }
+              ],
+              function(d) {
+                return d.key;
+              }
+            );
             fullLayout._glcanvas.enter().append("canvas").attr("class", function(d) {
               return "gl-canvas gl-canvas-" + d.key.replace("Layer", "");
             }).style({
@@ -44389,21 +44381,21 @@ var Plotly = (() => {
         }
         function marginPushersAgain() {
           if (!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
-          return Lib.syncOrAsync([
-            marginPushers,
-            subroutines.layoutStyles
-          ], gd);
+          return Lib.syncOrAsync([marginPushers, subroutines.layoutStyles], gd);
         }
         function positionAndAutorange() {
           if (!recalc) {
             doAutoRangeAndConstraints();
             return;
           }
-          return Lib.syncOrAsync([
-            Registry.getComponentMethod("shapes", "calcAutorange"),
-            Registry.getComponentMethod("annotations", "calcAutorange"),
-            doAutoRangeAndConstraints
-          ], gd);
+          return Lib.syncOrAsync(
+            [
+              Registry.getComponentMethod("shapes", "calcAutorange"),
+              Registry.getComponentMethod("annotations", "calcAutorange"),
+              doAutoRangeAndConstraints
+            ],
+            gd
+          );
         }
         function doAutoRangeAndConstraints() {
           if (gd._transitioning) return;
@@ -44414,28 +44406,19 @@ var Plotly = (() => {
         function drawAxes() {
           return Axes.draw(gd, graphWasEmpty ? "" : "redraw");
         }
-        var seq = [
-          Plots.previousPromises,
-          addFrames2,
-          drawFramework,
-          marginPushers,
-          marginPushersAgain
-        ];
+        var seq = [Plots.previousPromises, addFrames2, drawFramework, marginPushers, marginPushersAgain];
         if (hasCartesian) seq.push(positionAndAutorange);
         seq.push(subroutines.layoutStyles);
         if (hasCartesian) {
-          seq.push(
-            drawAxes,
-            function insideTickLabelsAutorange(gd2) {
-              var insideTickLabelsUpdaterange = gd2._fullLayout._insideTickLabelsUpdaterange;
-              if (insideTickLabelsUpdaterange) {
-                gd2._fullLayout._insideTickLabelsUpdaterange = void 0;
-                return relayout(gd2, insideTickLabelsUpdaterange).then(function() {
-                  Axes.saveRangeInitial(gd2, true);
-                });
-              }
+          seq.push(drawAxes, function insideTickLabelsAutorange(gd2) {
+            var insideTickLabelsUpdaterange = gd2._fullLayout._insideTickLabelsUpdaterange;
+            if (insideTickLabelsUpdaterange) {
+              gd2._fullLayout._insideTickLabelsUpdaterange = void 0;
+              return relayout(gd2, insideTickLabelsUpdaterange).then(function() {
+                Axes.saveRangeInitial(gd2, true);
+              });
             }
-          );
+          });
         }
         seq.push(
           subroutines.drawData,
@@ -44641,7 +44624,7 @@ var Plotly = (() => {
         }
         for (i = 0; i < traces.length; i++) {
           value = traces[i];
-          if (typeof value !== "object" || (Array.isArray(value) || value === null)) {
+          if (typeof value !== "object" || Array.isArray(value) || value === null) {
             throw new Error("all values in traces array must be non-array objects");
           }
         }
@@ -44649,9 +44632,7 @@ var Plotly = (() => {
           newIndices = [newIndices];
         }
         if (typeof newIndices !== "undefined" && newIndices.length !== traces.length) {
-          throw new Error(
-            "if indices is specified, traces.length must equal indices.length"
-          );
+          throw new Error("if indices is specified, traces.length must equal indices.length");
         }
       }
       function assertExtendTracesArgs(gd, update2, indices, maxPoints) {
@@ -44671,7 +44652,9 @@ var Plotly = (() => {
             throw new Error("attribute " + key + " must be an array of length equal to indices array length");
           }
           if (maxPointsIsObject && (!(key in maxPoints) || !Array.isArray(maxPoints[key]) || maxPoints[key].length !== update2[key].length)) {
-            throw new Error("when maxPoints is set as a key:value object it must contain a 1:1 corrispondence with the keys and number of traces in the update object");
+            throw new Error(
+              "when maxPoints is set as a key:value object it must contain a 1:1 correspondence with the keys and number of traces in the update object"
+            );
           }
         }
       }
@@ -44961,18 +44944,8 @@ var Plotly = (() => {
           if (flags.colorbars) seq.push(subroutines.doColorBars);
           seq.push(emitAfterPlot);
         }
-        seq.push(
-          Plots.rehover,
-          Plots.redrag,
-          Plots.reselect
-        );
-        Queue.add(
-          gd,
-          restyle,
-          [gd, specs.undoit, specs.traces],
-          restyle,
-          [gd, specs.redoit, specs.traces]
-        );
+        seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
+        Queue.add(gd, restyle, [gd, specs.undoit, specs.traces], restyle, [gd, specs.redoit, specs.traces]);
         var plotDone = Lib.syncOrAsync(seq, gd);
         if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function() {
@@ -45139,7 +45112,11 @@ var Plotly = (() => {
               var topOrBottom = orient === "top" || orient === "bottom";
               if (finalPart === "thicknessmode") {
                 var thicknorm = topOrBottom ? gs.h : gs.w;
-                doextra(prefixDot + "thickness", innerContFull.thickness * (newVal === "fraction" ? 1 / thicknorm : thicknorm), i);
+                doextra(
+                  prefixDot + "thickness",
+                  innerContFull.thickness * (newVal === "fraction" ? 1 / thicknorm : thicknorm),
+                  i
+                );
               } else {
                 var lennorm = topOrBottom ? gs.w : gs.h;
                 doextra(prefixDot + "len", innerContFull.len * (newVal === "fraction" ? 1 / lennorm : lennorm), i);
@@ -45162,12 +45139,7 @@ var Plotly = (() => {
               }
             }
             undoit[ai][i] = undefinedToNull(oldVal);
-            var swapAttrs = [
-              "swapxy",
-              "swapxyaxes",
-              "orientation",
-              "orientationaxes"
-            ];
+            var swapAttrs = ["swapxy", "swapxyaxes", "orientation", "orientationaxes"];
             if (swapAttrs.indexOf(ai) !== -1) {
               if (ai === "orientation") {
                 param.set(newVal);
@@ -45264,18 +45236,8 @@ var Plotly = (() => {
           if (flags.colorbars) seq.push(subroutines.doColorBars);
           seq.push(emitAfterPlot);
         }
-        seq.push(
-          Plots.rehover,
-          Plots.redrag,
-          Plots.reselect
-        );
-        Queue.add(
-          gd,
-          relayout,
-          [gd, specs.undoit],
-          relayout,
-          [gd, specs.redoit]
-        );
+        seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
+        Queue.add(gd, relayout, [gd, specs.undoit], relayout, [gd, specs.redoit]);
         var plotDone = Lib.syncOrAsync(seq, gd);
         if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
         return plotDone.then(function() {
@@ -45515,7 +45477,7 @@ var Plotly = (() => {
           } else {
             if (ai === "dragmode" && (vi === false && vOld !== false || vi !== false && vOld === false)) {
               flags.plot = true;
-            } else if (fullLayout._has("scatter-like") && fullLayout._has("regl") && (ai === "dragmode" && (vi === "lasso" || vi === "select") && !(vOld === "lasso" || vOld === "select"))) {
+            } else if (fullLayout._has("scatter-like") && fullLayout._has("regl") && ai === "dragmode" && (vi === "lasso" || vi === "select") && !(vOld === "lasso" || vOld === "select")) {
               flags.plot = true;
             } else if (valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
@@ -45602,18 +45564,13 @@ var Plotly = (() => {
           if (relayoutFlags.camera) seq.push(subroutines.doCamera);
           seq.push(emitAfterPlot);
         }
-        seq.push(
-          Plots.rehover,
-          Plots.redrag,
-          Plots.reselect
-        );
-        Queue.add(
+        seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
+        Queue.add(gd, update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces], update, [
           gd,
-          update,
-          [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
-          update,
-          [gd, restyleSpecs.redoit, relayoutSpecs.redoit, restyleSpecs.traces]
-        );
+          restyleSpecs.redoit,
+          relayoutSpecs.redoit,
+          restyleSpecs.traces
+        ]);
         var plotDone = Lib.syncOrAsync(seq, gd);
         if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
         return plotDone.then(function() {
@@ -45835,97 +45792,100 @@ var Plotly = (() => {
           }
           var configChanged = false;
           if (config) {
-            var oldConfig = Lib.extendDeep({}, gd._context);
+            const oldConfig = Lib.extendDeepAll({}, gd._context);
             gd._context = void 0;
             setPlotContext(gd, config);
-            configChanged = diffConfig(oldConfig, gd._context);
+            configChanged = !helpers.collectionsAreEqual(oldConfig, gd._context);
           }
-          gd.data = data || [];
-          helpers.cleanData(gd.data);
-          gd.layout = layout || {};
-          helpers.cleanLayout(gd.layout);
-          applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
-          Plots.supplyDefaults(gd, { skipUpdateCalc: true });
-          var newFullData = gd._fullData;
-          var newFullLayout = gd._fullLayout;
-          var immutable = newFullLayout.datarevision === void 0;
-          var transition = newFullLayout.transition;
-          var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition);
-          var newDataRevision = relayoutFlags.newDataRevision;
-          var restyleFlags = diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision);
-          if (updateAutosize(gd)) relayoutFlags.layoutReplot = true;
-          if (restyleFlags.calc || relayoutFlags.calc) {
-            gd.calcdata = void 0;
-            var allNames = Object.getOwnPropertyNames(newFullLayout);
-            for (var q = 0; q < allNames.length; q++) {
-              var name = allNames[q];
-              var start = name.substring(0, 5);
-              if (start === "xaxis" || start === "yaxis") {
-                var emptyCategories = newFullLayout[name]._emptyCategories;
-                if (emptyCategories) emptyCategories();
+          if (configChanged) {
+            const eventListeners = gd._ev.eventNames().map((name2) => [name2, gd._ev.listeners(name2)]);
+            plotDone = exports.newPlot(gd, data, layout, config).then(() => {
+              for (const [name2, callbacks] of eventListeners) {
+                callbacks.forEach((cb) => gd.on(name2, cb));
               }
-            }
-          } else {
-            Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
-          }
-          var seq = [];
-          if (frames) {
-            gd._transitionData = {};
-            Plots.createTransitionData(gd);
-            seq.push(addFrames2);
-          }
-          if (newFullLayout.transition && !configChanged && (restyleFlags.anim || relayoutFlags.anim)) {
-            if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
-            Plots.doCalcdata(gd);
-            subroutines.doAutoRangeAndConstraints(gd);
-            seq.push(function() {
-              return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
+              return exports.react(gd, data, layout, config);
             });
-          } else if (restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
-            gd._fullLayout._skipDefaults = true;
-            seq.push(exports._doPlot);
           } else {
-            for (var componentType in relayoutFlags.arrays) {
-              var indices = relayoutFlags.arrays[componentType];
-              if (indices.length) {
-                var drawOne = Registry.getComponentMethod(componentType, "drawOne");
-                if (drawOne !== Lib.noop) {
-                  for (var i = 0; i < indices.length; i++) {
-                    drawOne(gd, indices[i]);
-                  }
-                } else {
-                  var draw = Registry.getComponentMethod(componentType, "draw");
-                  if (draw === Lib.noop) {
-                    throw new Error("cannot draw components: " + componentType);
-                  }
-                  draw(gd);
+            gd.data = data || [];
+            helpers.cleanData(gd.data);
+            gd.layout = layout || {};
+            helpers.cleanLayout(gd.layout);
+            applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
+            Plots.supplyDefaults(gd, { skipUpdateCalc: true });
+            var newFullData = gd._fullData;
+            var newFullLayout = gd._fullLayout;
+            var immutable = newFullLayout.datarevision === void 0;
+            var transition = newFullLayout.transition;
+            var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition);
+            var newDataRevision = relayoutFlags.newDataRevision;
+            var restyleFlags = diffData(gd, oldFullData, newFullData, immutable, transition, newDataRevision);
+            if (updateAutosize(gd)) relayoutFlags.layoutReplot = true;
+            if (restyleFlags.calc || relayoutFlags.calc) {
+              gd.calcdata = void 0;
+              var allNames = Object.getOwnPropertyNames(newFullLayout);
+              for (var q = 0; q < allNames.length; q++) {
+                var name = allNames[q];
+                var start = name.substring(0, 5);
+                if (start === "xaxis" || start === "yaxis") {
+                  var emptyCategories = newFullLayout[name]._emptyCategories;
+                  if (emptyCategories) emptyCategories();
                 }
               }
+            } else {
+              Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
             }
-            seq.push(Plots.previousPromises);
-            if (restyleFlags.style) seq.push(subroutines.doTraceStyle);
-            if (restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
-            if (relayoutFlags.legend) seq.push(subroutines.doLegend);
-            if (relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
-            if (relayoutFlags.axrange) addAxRangeSequence(seq);
-            if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
-            if (relayoutFlags.modebar) seq.push(subroutines.doModeBar);
-            if (relayoutFlags.camera) seq.push(subroutines.doCamera);
-            seq.push(emitAfterPlot);
+            var seq = [];
+            if (frames) {
+              gd._transitionData = {};
+              Plots.createTransitionData(gd);
+              seq.push(addFrames2);
+            }
+            if (newFullLayout.transition && (restyleFlags.anim || relayoutFlags.anim)) {
+              if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+              Plots.doCalcdata(gd);
+              subroutines.doAutoRangeAndConstraints(gd);
+              seq.push(function() {
+                return Plots.transitionFromReact(gd, restyleFlags, relayoutFlags, oldFullLayout);
+              });
+            } else if (restyleFlags.fullReplot || relayoutFlags.layoutReplot) {
+              gd._fullLayout._skipDefaults = true;
+              seq.push(exports._doPlot);
+            } else {
+              for (var componentType in relayoutFlags.arrays) {
+                var indices = relayoutFlags.arrays[componentType];
+                if (indices.length) {
+                  var drawOne = Registry.getComponentMethod(componentType, "drawOne");
+                  if (drawOne !== Lib.noop) {
+                    for (var i = 0; i < indices.length; i++) {
+                      drawOne(gd, indices[i]);
+                    }
+                  } else {
+                    var draw = Registry.getComponentMethod(componentType, "draw");
+                    if (draw === Lib.noop) {
+                      throw new Error("cannot draw components: " + componentType);
+                    }
+                    draw(gd);
+                  }
+                }
+              }
+              seq.push(Plots.previousPromises);
+              if (restyleFlags.style) seq.push(subroutines.doTraceStyle);
+              if (restyleFlags.colorbars || relayoutFlags.colorbars) seq.push(subroutines.doColorBars);
+              if (relayoutFlags.legend) seq.push(subroutines.doLegend);
+              if (relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+              if (relayoutFlags.axrange) addAxRangeSequence(seq);
+              if (relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+              if (relayoutFlags.modebar) seq.push(subroutines.doModeBar);
+              if (relayoutFlags.camera) seq.push(subroutines.doCamera);
+              seq.push(emitAfterPlot);
+            }
+            seq.push(Plots.rehover, Plots.redrag, Plots.reselect);
+            plotDone = Lib.syncOrAsync(seq, gd);
+            if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
           }
-          seq.push(
-            Plots.rehover,
-            Plots.redrag,
-            Plots.reselect
-          );
-          plotDone = Lib.syncOrAsync(seq, gd);
-          if (!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
         }
-        return plotDone.then(function() {
-          gd.emit("plotly_react", {
-            data,
-            layout
-          });
+        return plotDone.then(() => {
+          if (!configChanged) gd.emit("plotly_react", { config, data, layout });
           return gd;
         });
       }
@@ -46133,38 +46093,6 @@ var Plotly = (() => {
               flags.calc = true;
               return;
             } else changed();
-          }
-        }
-      }
-      function diffConfig(oldConfig, newConfig) {
-        var key;
-        for (key in oldConfig) {
-          if (key.charAt(0) === "_") continue;
-          var oldVal = oldConfig[key];
-          var newVal = newConfig[key];
-          if (oldVal !== newVal) {
-            if (Lib.isPlainObject(oldVal) && Lib.isPlainObject(newVal)) {
-              if (diffConfig(oldVal, newVal)) {
-                return true;
-              }
-            } else if (Array.isArray(oldVal) && Array.isArray(newVal)) {
-              if (oldVal.length !== newVal.length) {
-                return true;
-              }
-              for (var i = 0; i < oldVal.length; i++) {
-                if (oldVal[i] !== newVal[i]) {
-                  if (Lib.isPlainObject(oldVal[i]) && Lib.isPlainObject(newVal[i])) {
-                    if (diffConfig(oldVal[i], newVal[i])) {
-                      return true;
-                    }
-                  } else {
-                    return true;
-                  }
-                }
-              }
-            } else {
-              return true;
-            }
           }
         }
       }
@@ -46436,9 +46364,13 @@ var Plotly = (() => {
           var collisionPresent = _frameHash[name] || _frameHashLocal[name];
           if (name && newName && typeof newName === "number" && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
             numericNameWarningCount++;
-            Lib.warn('addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name + '" with a frame whose name of type "number" also equates to "' + name + '". This is valid but may potentially lead to unexpected behavior since all plotly.js frame names are stored internally as strings.');
+            Lib.warn(
+              'addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name + '" with a frame whose name of type "number" also equates to "' + name + '". This is valid but may potentially lead to unexpected behavior since all plotly.js frame names are stored internally as strings.'
+            );
             if (numericNameWarningCount === numericNameWarningCountLimit) {
-              Lib.warn("addFrames: This API call has yielded too many of these warnings. For the rest of this call, further warnings about numeric frame names will be suppressed.");
+              Lib.warn(
+                "addFrames: This API call has yielded too many of these warnings. For the rest of this call, further warnings about numeric frame names will be suppressed."
+              );
             }
           }
           _frameHashLocal[lookupName] = { name: lookupName };
@@ -46458,7 +46390,9 @@ var Plotly = (() => {
         for (i = insertions.length - 1; i >= 0; i--) {
           frame = insertions[i].frame;
           if (typeof frame.name === "number") {
-            Lib.warn("Warning: addFrames accepts frames with numeric names, but the numbers areimplicitly cast to strings");
+            Lib.warn(
+              "Warning: addFrames accepts frames with numeric names, but the numbers areimplicitly cast to strings"
+            );
           }
           if (!frame.name) {
             while (_frameHash[frame.name = "frame " + gd._transitionData._counter++]) ;
@@ -48117,6 +48051,7 @@ var Plotly = (() => {
         }
         if (subTypes.hasText(traceOut)) {
           coerce("texttemplate");
+          coerce("texttemplatefallback");
           handleTextDefaults(traceIn, traceOut, layout, coerce);
         }
         var dfltHoverOn = [];
@@ -48139,7 +48074,10 @@ var Plotly = (() => {
           dfltHoverOn.push("fills");
         }
         coerce("hoveron", dfltHoverOn.join("+") || "points");
-        if (traceOut.hoveron !== "fills") coerce("hovertemplate");
+        if (traceOut.hoveron !== "fills") {
+          coerce("hovertemplate");
+          coerce("hovertemplatefallback");
+        }
         var errorBarsSupplyDefaults = Registry.getComponentMethod("errorbars", "supplyDefaults");
         errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, { axis: "y" });
         errorBarsSupplyDefaults(traceIn, traceOut, lineColor || markerColor || defaultColor, { axis: "x", inherit: "y" });
@@ -53497,7 +53435,7 @@ var Plotly = (() => {
       var templatedArray = require_plot_template().templatedArray;
       var axisPlaceableObjs = require_axis_placeable_objects();
       var basePlotAttributes = require_attributes2();
-      var shapeTexttemplateAttrs = require_template_attributes().shapeTexttemplateAttrs;
+      var { shapeTexttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var shapeLabelTexttemplateVars = require_label_texttemplate();
       module.exports = templatedArray("shape", {
         visible: extendFlat({}, basePlotAttributes.visible, {
@@ -53646,6 +53584,7 @@ var Plotly = (() => {
             editType: "arraydraw"
           },
           texttemplate: shapeTexttemplateAttrs({}, { keys: Object.keys(shapeLabelTexttemplateVars) }),
+          texttemplatefallback: templatefallbackAttrs({ editType: "arraydraw" }),
           font: fontAttrs({
             editType: "calc+arraydraw",
             colorEditType: "arraydraw"
@@ -53757,14 +53696,7 @@ var Plotly = (() => {
           var ax;
           var pos2r;
           var r2pos;
-          var axRef = Axes.coerceRef(
-            shapeIn,
-            shapeOut,
-            gdMock,
-            axLetter,
-            void 0,
-            "paper"
-          );
+          var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, void 0, "paper");
           var axRefType = Axes.getRefType(axRef);
           if (axRefType === "range") {
             ax = Axes.getFromId(gdMock, axRef);
@@ -53814,6 +53746,7 @@ var Plotly = (() => {
         var labelTextTemplate, labelText;
         if (noPath) {
           labelTextTemplate = coerce("label.texttemplate");
+          coerce("label.texttemplatefallback");
         }
         if (!labelTextTemplate) {
           labelText = coerce("label.text");
@@ -53863,6 +53796,7 @@ var Plotly = (() => {
         var isLine = layoutIn.dragmode === "drawline";
         var labelText = coerce("newshape.label.text");
         var labelTextTemplate = coerce("newshape.label.texttemplate");
+        coerce("newshape.label.texttemplatefallback");
         if (labelText || labelTextTemplate) {
           coerce("newshape.label.textangle");
           var labelTextPosition = coerce("newshape.label.textposition", isLine ? "middle" : "middle center");
@@ -56497,7 +56431,7 @@ var Plotly = (() => {
           if (axisOpts.side === "bottom") {
             Titles.draw(gd, axisOpts._id + "title", {
               propContainer: axisOpts,
-              propName: axisOpts._name + ".title",
+              propName: axisOpts._name + ".title.text",
               placeholder: fullLayout._dfltTitle.x,
               attributes: {
                 x: axisOpts._offset + axisOpts._length / 2,
@@ -58320,7 +58254,7 @@ var Plotly = (() => {
         function drawTitle(titleClass, titleOpts) {
           var dfltTitleOpts = {
             propContainer: ax,
-            propName: opts._propPrefix + "title",
+            propName: opts._propPrefix + "title.text",
             traceIndex: opts._traceIndex,
             _meta: opts._meta,
             placeholder: fullLayout._dfltTitle.colorbar,
@@ -58361,7 +58295,7 @@ var Plotly = (() => {
             } else {
               x = mid;
               if (titleSide === "bottom") {
-                y = gs.t + posH * pos + 10 + (ticklabelposition.indexOf("inside") === -1 ? ax.tickfont.size : 0) + (ax.ticks !== "intside" ? opts.ticklen || 0 : 0);
+                y = gs.t + posH * pos + 10 + (ticklabelposition.indexOf("inside") === -1 ? ax.tickfont.size : 0) + (ax.ticks !== "inside" ? opts.ticklen || 0 : 0);
               }
               if (titleSide === "top") {
                 var nlines = title.text.split("<br>").length;
@@ -59223,8 +59157,7 @@ var Plotly = (() => {
       "use strict";
       var scatterAttrs = require_attributes12();
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var colorScaleAttrs = require_attributes8();
       var fontAttrs = require_font_attributes();
       var constants = require_constants14();
@@ -59237,33 +59170,36 @@ var Plotly = (() => {
       });
       var scatterMarkerAttrs = scatterAttrs.marker;
       var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-      var markerLineWidth = extendFlat(
-        {},
-        scatterMarkerLineAttrs.width,
-        { dflt: 0 }
-      );
-      var markerLine = extendFlat({
-        width: markerLineWidth,
-        editType: "calc"
-      }, colorScaleAttrs("marker.line"));
-      var marker = extendFlat({
-        line: markerLine,
-        editType: "calc"
-      }, colorScaleAttrs("marker"), {
-        opacity: {
-          valType: "number",
-          arrayOk: true,
-          dflt: 1,
-          min: 0,
-          max: 1,
-          editType: "style"
-        },
-        pattern,
-        cornerradius: {
-          valType: "any",
+      var markerLineWidth = extendFlat({}, scatterMarkerLineAttrs.width, { dflt: 0 });
+      var markerLine = extendFlat(
+        {
+          width: markerLineWidth,
           editType: "calc"
+        },
+        colorScaleAttrs("marker.line")
+      );
+      var marker = extendFlat(
+        {
+          line: markerLine,
+          editType: "calc"
+        },
+        colorScaleAttrs("marker"),
+        {
+          opacity: {
+            valType: "number",
+            arrayOk: true,
+            dflt: 1,
+            min: 0,
+            max: 1,
+            editType: "style"
+          },
+          pattern,
+          cornerradius: {
+            valType: "any",
+            editType: "calc"
+          }
         }
-      });
+      );
       module.exports = {
         x: scatterAttrs.x,
         x0: scatterAttrs.x0,
@@ -59280,13 +59216,11 @@ var Plotly = (() => {
         xhoverformat: axisHoverFormat("x"),
         yhoverformat: axisHoverFormat("y"),
         text: scatterAttrs.text,
-        texttemplate: texttemplateAttrs({ editType: "plot" }, {
-          keys: constants.eventDataKeys
-        }),
+        texttemplate: texttemplateAttrs({ editType: "plot" }, { keys: constants.eventDataKeys }),
+        texttemplatefallback: templatefallbackAttrs({ editType: "plot" }),
         hovertext: scatterAttrs.hovertext,
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: constants.eventDataKeys
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+        hovertemplatefallback: templatefallbackAttrs(),
         textposition: {
           valType: "enumerated",
           values: ["inside", "outside", "auto", "none"],
@@ -59476,6 +59410,7 @@ var Plotly = (() => {
         coerce("text");
         coerce("hovertext");
         coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         var textposition = coerce("textposition");
         handleText(traceIn, traceOut, layout, coerce, textposition, {
           moduleHasSelected: true,
@@ -59557,6 +59492,7 @@ var Plotly = (() => {
           if (moduleHasCliponaxis) coerce("cliponaxis");
           if (moduleHasTextangle) coerce("textangle");
           coerce("texttemplate");
+          coerce("texttemplatefallback");
         }
         if (hasInside) {
           if (moduleHasInsideanchor) coerce("insidetextanchor");
@@ -60347,9 +60283,21 @@ var Plotly = (() => {
               if (hasB) {
                 fitsInside = textfitsInsideBar(barWidth - 2 * r, barHeight, textWidth, textHeight, isHorizontal) || textfitsInsideBar(barWidth, barHeight - 2 * r, textWidth, textHeight, isHorizontal);
               } else if (isHorizontal) {
-                fitsInside = textfitsInsideBar(barWidth - (r - overhead), barHeight, textWidth, textHeight, isHorizontal) || textfitsInsideBar(barWidth, barHeight - 2 * (r - overhead), textWidth, textHeight, isHorizontal);
+                fitsInside = textfitsInsideBar(barWidth - (r - overhead), barHeight, textWidth, textHeight, isHorizontal) || textfitsInsideBar(
+                  barWidth,
+                  barHeight - 2 * (r - overhead),
+                  textWidth,
+                  textHeight,
+                  isHorizontal
+                );
               } else {
-                fitsInside = textfitsInsideBar(barWidth, barHeight - (r - overhead), textWidth, textHeight, isHorizontal) || textfitsInsideBar(barWidth - 2 * (r - overhead), barHeight, textWidth, textHeight, isHorizontal);
+                fitsInside = textfitsInsideBar(barWidth, barHeight - (r - overhead), textWidth, textHeight, isHorizontal) || textfitsInsideBar(
+                  barWidth - 2 * (r - overhead),
+                  barHeight,
+                  textWidth,
+                  textHeight,
+                  isHorizontal
+                );
               }
             } else {
               fitsInside = textfitsInsideBar(barWidth, barHeight, textWidth, textHeight, isHorizontal);
@@ -60456,11 +60404,7 @@ var Plotly = (() => {
         } else {
           scale = 1;
           if (constrained) {
-            scale = Math.min(
-              1,
-              lx / t.x,
-              ly / t.y
-            );
+            scale = Math.min(1, lx / t.x, ly / t.y);
           }
           padForRounding = 0;
         }
@@ -60536,9 +60480,19 @@ var Plotly = (() => {
         }
         scale = Math.min(1, scale);
         if (isHorizontal) {
-          pad = Math.max(0, R - Math.sqrt(Math.max(0, R * R - (R - (barHeight - t.y * scale) / 2) * (R - (barHeight - t.y * scale) / 2))) - overhead);
+          pad = Math.max(
+            0,
+            R - Math.sqrt(
+              Math.max(0, R * R - (R - (barHeight - t.y * scale) / 2) * (R - (barHeight - t.y * scale) / 2))
+            ) - overhead
+          );
         } else {
-          pad = Math.max(0, R - Math.sqrt(Math.max(0, R * R - (R - (barWidth - t.x * scale) / 2) * (R - (barWidth - t.x * scale) / 2))) - overhead);
+          pad = Math.max(
+            0,
+            R - Math.sqrt(
+              Math.max(0, R * R - (R - (barWidth - t.x * scale) / 2) * (R - (barWidth - t.x * scale) / 2))
+            ) - overhead
+          );
         }
         return { scale, pad };
       }
@@ -60666,7 +60620,13 @@ var Plotly = (() => {
         }
         var customdata = Lib.castOption(trace, cdi.i, "customdata");
         if (customdata) obj.customdata = customdata;
-        return Lib.texttemplateString(texttemplate, obj, fullLayout._d3locale, pt, obj, trace._meta || {});
+        return Lib.texttemplateString({
+          data: [pt, obj, trace._meta],
+          fallback: trace.texttemplatefallback,
+          labels: obj,
+          locale: fullLayout._d3locale,
+          template: texttemplate
+        });
       }
       function calcTextinfo(cd, index, xa, ya) {
         var trace = cd[0].trace;
@@ -61052,8 +61012,7 @@ var Plotly = (() => {
       "use strict";
       var barAttrs = require_attributes23();
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var fontAttrs = require_font_attributes();
       var makeBinAttrs = require_bin_attributes();
       var constants = require_constants15();
@@ -61133,15 +61092,10 @@ var Plotly = (() => {
           dflt: "",
           editType: "calc"
         },
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: constants.eventDataKeys
-        }),
-        texttemplate: texttemplateAttrs({
-          arrayOk: false,
-          editType: "plot"
-        }, {
-          keys: ["label", "value"]
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+        hovertemplatefallback: templatefallbackAttrs(),
+        texttemplate: texttemplateAttrs({ arrayOk: false, editType: "plot" }, { keys: ["label", "value"] }),
+        texttemplatefallback: templatefallbackAttrs({ editType: "plot" }),
         textposition: extendFlat({}, barAttrs.textposition, {
           arrayOk: false
         }),
@@ -61207,6 +61161,7 @@ var Plotly = (() => {
         });
         coerce("hovertext");
         coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         coerce("xhoverformat");
         coerce("yhoverformat");
         var orientation = coerce("orientation", y && !x ? "h" : "v");
@@ -61676,6 +61631,8 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Registry = require_registry();
       var Axes = require_axes();
+      var { hasColorscale } = require_helpers();
+      var colorscaleCalc = require_calc();
       var arraysToCalcdata = require_arrays_to_calcdata2();
       var binFunctions = require_bin_functions();
       var normFunctions = require_norm_functions();
@@ -61828,6 +61785,20 @@ var Plotly = (() => {
         }
         if (cd.length === 1) {
           cd[0].width1 = Axes.tickIncrement(cd[0].p, binSpec.size, false, calendar) - cd[0].p;
+        }
+        if (hasColorscale(trace, "marker")) {
+          colorscaleCalc(gd, trace, {
+            vals: trace.marker.color,
+            containerStr: "marker",
+            cLetter: "c"
+          });
+        }
+        if (hasColorscale(trace, "marker.line")) {
+          colorscaleCalc(gd, trace, {
+            vals: trace.marker.line.color,
+            containerStr: "marker.line",
+            cLetter: "c"
+          });
         }
         arraysToCalcdata(cd, trace);
         if (Lib.isArrayOrTypedArray(trace.selectedpoints)) {
@@ -62213,8 +62184,7 @@ var Plotly = (() => {
       var lineAttrs = require_attributes12().line;
       var baseAttrs = require_attributes2();
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var constants = require_constants16();
       var extendFlat = require_extend().extendFlat;
       var Color2 = require_color();
@@ -62234,9 +62204,8 @@ var Plotly = (() => {
         xhoverformat: axisHoverFormat("x"),
         yhoverformat: axisHoverFormat("y"),
         hovertext: barAttrs.hovertext,
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: constants.eventDataKeys
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+        hovertemplatefallback: templatefallbackAttrs(),
         hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
           flags: ["name", "x", "y", "text", "percent initial", "percent previous", "percent total"]
         }),
@@ -62248,9 +62217,8 @@ var Plotly = (() => {
           arrayOk: false
         },
         // TODO: incorporate `label` and `value` in the eventData
-        texttemplate: texttemplateAttrs({ editType: "plot" }, {
-          keys: constants.eventDataKeys.concat(["label", "value"])
-        }),
+        texttemplate: texttemplateAttrs({ editType: "plot" }, { keys: constants.eventDataKeys.concat(["label", "value"]) }),
+        texttemplatefallback: templatefallbackAttrs({ editType: "plot" }),
         text: barAttrs.text,
         textposition: barAttrs.textposition,
         insidetextanchor: extendFlat({}, barAttrs.insidetextanchor, { dflt: "middle" }),
@@ -62355,6 +62323,7 @@ var Plotly = (() => {
         var text = coerce("text");
         coerce("hovertext");
         coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         var textposition = coerce("textposition");
         handleText(traceIn, traceOut, layout, coerce, textposition, {
           moduleHasSelected: false,
@@ -62866,8 +62835,7 @@ var Plotly = (() => {
       var lineAttrs = require_attributes12().line;
       var baseAttrs = require_attributes2();
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var constants = require_constants17();
       var extendFlat = require_extend().extendFlat;
       var Color2 = require_color();
@@ -62921,9 +62889,8 @@ var Plotly = (() => {
         xhoverformat: axisHoverFormat("x"),
         yhoverformat: axisHoverFormat("y"),
         hovertext: barAttrs.hovertext,
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: constants.eventDataKeys
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+        hovertemplatefallback: templatefallbackAttrs(),
         hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
           flags: ["name", "x", "y", "text", "initial", "delta", "final"]
         }),
@@ -62935,9 +62902,8 @@ var Plotly = (() => {
           arrayOk: false
         },
         // TODO: incorporate `label` and `value` in the eventData
-        texttemplate: texttemplateAttrs({ editType: "plot" }, {
-          keys: constants.eventDataKeys.concat(["label"])
-        }),
+        texttemplate: texttemplateAttrs({ editType: "plot" }, { keys: constants.eventDataKeys.concat(["label"]) }),
+        texttemplatefallback: templatefallbackAttrs({ editType: "plot" }),
         text: barAttrs.text,
         textposition: barAttrs.textposition,
         insidetextanchor: barAttrs.insidetextanchor,
@@ -63068,6 +63034,7 @@ var Plotly = (() => {
         coerce("text");
         coerce("hovertext");
         coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         var textposition = coerce("textposition");
         handleText(traceIn, traceOut, layout, coerce, textposition, {
           moduleHasSelected: false,
@@ -63079,6 +63046,7 @@ var Plotly = (() => {
         });
         if (traceOut.textposition !== "none") {
           coerce("texttemplate");
+          coerce("texttemplatefallback");
           if (!traceOut.texttemplate) coerce("textinfo");
         }
         handleDirection(coerce, "increasing", INCREASING_COLOR);
@@ -63552,8 +63520,7 @@ var Plotly = (() => {
       var domainAttrs = require_domain().attributes;
       var fontAttrs = require_font_attributes();
       var colorAttrs = require_attributes3();
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var extendFlat = require_extend().extendFlat;
       var pattern = require_attributes4().pattern;
       var textFontAttrs = fontAttrs({
@@ -63635,12 +63602,10 @@ var Plotly = (() => {
         hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
           flags: ["label", "text", "value", "percent", "name"]
         }),
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: ["label", "color", "value", "percent", "text"]
-        }),
-        texttemplate: texttemplateAttrs({ editType: "plot" }, {
-          keys: ["label", "color", "value", "percent", "text"]
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: ["label", "color", "value", "percent", "text"] }),
+        hovertemplatefallback: templatefallbackAttrs(),
+        texttemplate: texttemplateAttrs({ editType: "plot" }, { keys: ["label", "color", "value", "percent", "text"] }),
+        texttemplatefallback: templatefallbackAttrs({ editType: "plot" }),
         textposition: {
           valType: "enumerated",
           values: ["inside", "outside", "auto", "none"],
@@ -63742,10 +63707,7 @@ var Plotly = (() => {
       function handleLabelsAndValues(labels, values) {
         var hasLabels = Lib.isArrayOrTypedArray(labels);
         var hasValues = Lib.isArrayOrTypedArray(values);
-        var len = Math.min(
-          hasLabels ? labels.length : Infinity,
-          hasValues ? values.length : Infinity
-        );
+        var len = Math.min(hasLabels ? labels.length : Infinity, hasValues ? values.length : Infinity);
         if (!isFinite(len)) len = 0;
         if (len && hasValues) {
           var hasPositive;
@@ -63801,10 +63763,12 @@ var Plotly = (() => {
         coerce("scalegroup");
         var textData = coerce("text");
         var textTemplate = coerce("texttemplate");
+        coerce("texttemplatefallback");
         var textInfo;
         if (!textTemplate) textInfo = coerce("textinfo", Lib.isArrayOrTypedArray(textData) ? "text+percent" : "percent");
         coerce("hovertext");
         coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         if (textTemplate || textInfo && textInfo !== "none") {
           var textposition = coerce("textposition");
           handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -64142,10 +64106,7 @@ var Plotly = (() => {
                     "M" + (cx + hole * pt.px1[0]) + "," + (cy + hole * pt.px1[1]) + arc(pt.px1, pt.px0, false, hole) + "l" + rim * pt.px0[0] + "," + rim * pt.px0[1] + outerArc + "Z"
                   );
                 } else {
-                  slicePath.attr(
-                    "d",
-                    "M" + cx + "," + cy + "l" + pt.px0[0] + "," + pt.px0[1] + outerArc + "Z"
-                  );
+                  slicePath.attr("d", "M" + cx + "," + cy + "l" + pt.px0[0] + "," + pt.px0[1] + outerArc + "Z");
                 }
               }
               formatSliceLabel(gd, pt, cd0);
@@ -64303,10 +64264,14 @@ var Plotly = (() => {
           if (gd._dragging || fullLayout2.hovermode === false) return;
           var hoverinfo = trace2.hoverinfo;
           if (Array.isArray(hoverinfo)) {
-            hoverinfo = Fx.castHoverinfo({
-              hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
-              _module: trace._module
-            }, fullLayout2, 0);
+            hoverinfo = Fx.castHoverinfo(
+              {
+                hoverinfo: [helpers.castOption(hoverinfo, pt.pts)],
+                _module: trace._module
+              },
+              fullLayout2,
+              0
+            );
           }
           if (hoverinfo === "all") hoverinfo = "label+text+value+percent+name";
           if (trace2.hovertemplate || hoverinfo !== "none" && hoverinfo !== "skip" && hoverinfo) {
@@ -64330,34 +64295,37 @@ var Plotly = (() => {
             var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
             var bbox = [];
-            Fx.loneHover({
-              trace,
-              x0: hoverCenterX - rInscribed * cd0.r,
-              x1: hoverCenterX + rInscribed * cd0.r,
-              y: hoverCenterY,
-              _x0: isFunnelArea ? cx + pt.TL[0] : hoverCenterX - rInscribed * cd0.r,
-              _x1: isFunnelArea ? cx + pt.TR[0] : hoverCenterX + rInscribed * cd0.r,
-              _y0: isFunnelArea ? cy + pt.TL[1] : hoverCenterY - rInscribed * cd0.r,
-              _y1: isFunnelArea ? cy + pt.BL[1] : hoverCenterY + rInscribed * cd0.r,
-              text: text.join("<br>"),
-              name: trace2.hovertemplate || hoverinfo.indexOf("name") !== -1 ? trace2.name : void 0,
-              idealAlign: pt.pxmid[0] < 0 ? "left" : "right",
-              color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
-              borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
-              fontFamily: helpers.castOption(hoverFont.family, pt.pts),
-              fontSize: helpers.castOption(hoverFont.size, pt.pts),
-              fontColor: helpers.castOption(hoverFont.color, pt.pts),
-              nameLength: helpers.castOption(hoverLabel.namelength, pt.pts),
-              textAlign: helpers.castOption(hoverLabel.align, pt.pts),
-              hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
-              hovertemplateLabels: pt,
-              eventData: [eventData(pt, trace2)]
-            }, {
-              container: fullLayout2._hoverlayer.node(),
-              outerContainer: fullLayout2._paper.node(),
-              gd,
-              inOut_bbox: bbox
-            });
+            Fx.loneHover(
+              {
+                trace,
+                x0: hoverCenterX - rInscribed * cd0.r,
+                x1: hoverCenterX + rInscribed * cd0.r,
+                y: hoverCenterY,
+                _x0: isFunnelArea ? cx + pt.TL[0] : hoverCenterX - rInscribed * cd0.r,
+                _x1: isFunnelArea ? cx + pt.TR[0] : hoverCenterX + rInscribed * cd0.r,
+                _y0: isFunnelArea ? cy + pt.TL[1] : hoverCenterY - rInscribed * cd0.r,
+                _y1: isFunnelArea ? cy + pt.BL[1] : hoverCenterY + rInscribed * cd0.r,
+                text: text.join("<br>"),
+                name: trace2.hovertemplate || hoverinfo.indexOf("name") !== -1 ? trace2.name : void 0,
+                idealAlign: pt.pxmid[0] < 0 ? "left" : "right",
+                color: helpers.castOption(hoverLabel.bgcolor, pt.pts) || pt.color,
+                borderColor: helpers.castOption(hoverLabel.bordercolor, pt.pts),
+                fontFamily: helpers.castOption(hoverFont.family, pt.pts),
+                fontSize: helpers.castOption(hoverFont.size, pt.pts),
+                fontColor: helpers.castOption(hoverFont.color, pt.pts),
+                nameLength: helpers.castOption(hoverLabel.namelength, pt.pts),
+                textAlign: helpers.castOption(hoverLabel.align, pt.pts),
+                hovertemplate: helpers.castOption(trace2.hovertemplate, pt.pts),
+                hovertemplateLabels: pt,
+                eventData: [eventData(pt, trace2)]
+              },
+              {
+                container: fullLayout2._hoverlayer.node(),
+                outerContainer: fullLayout2._paper.node(),
+                gd,
+                inOut_bbox: bbox
+              }
+            );
             pt.bbox = bbox[0];
             trace._hasHoverLabel = true;
           }
@@ -64576,10 +64544,7 @@ var Plotly = (() => {
       }
       function calcMaxHalfSize(a, halfAngle, r, ring) {
         var q = a + 1 / (2 * Math.tan(halfAngle));
-        return r * Math.min(
-          1 / (Math.sqrt(q * q + 0.5) + q),
-          ring / (Math.sqrt(a * a + ring / 2) + a)
-        );
+        return r * Math.min(1 / (Math.sqrt(q * q + 0.5) + q), ring / (Math.sqrt(a * a + ring / 2) + a));
       }
       function getInscribedRadiusFraction(pt, cd0) {
         if (pt.v === cd0.vTotal && !cd0.trace.hole) return 1;
@@ -64895,7 +64860,13 @@ var Plotly = (() => {
             var obj = makeTemplateVariables(pt);
             var ptTx = helpers.getFirstFilled(trace.text, pt.pts);
             if (isValidTextValue(ptTx) || ptTx === "") obj.text = ptTx;
-            pt.text = Lib.texttemplateString(txt, obj, gd._fullLayout._d3locale, obj, trace._meta || {});
+            pt.text = Lib.texttemplateString({
+              data: [obj, trace._meta],
+              fallback: trace.texttemplatefallback,
+              labels: obj,
+              locale: gd._fullLayout._d3locale,
+              template: txt
+            });
           }
         }
       }
@@ -65014,8 +64985,7 @@ var Plotly = (() => {
       var pieAttrs = require_attributes27();
       var baseAttrs = require_attributes2();
       var domainAttrs = require_domain().attributes;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
-      var texttemplateAttrs = require_template_attributes().texttemplateAttrs;
+      var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var extendFlat = require_extend().extendFlat;
       module.exports = {
         labels: pieAttrs.labels,
@@ -65041,15 +65011,13 @@ var Plotly = (() => {
         textinfo: extendFlat({}, pieAttrs.textinfo, {
           flags: ["label", "text", "value", "percent"]
         }),
-        texttemplate: texttemplateAttrs({ editType: "plot" }, {
-          keys: ["label", "color", "value", "text", "percent"]
-        }),
+        texttemplate: texttemplateAttrs({ editType: "plot" }, { keys: ["label", "color", "value", "text", "percent"] }),
+        texttemplatefallback: templatefallbackAttrs({ editType: "plot" }),
         hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
           flags: ["label", "text", "value", "percent", "name"]
         }),
-        hovertemplate: hovertemplateAttrs({}, {
-          keys: ["label", "color", "value", "text", "percent"]
-        }),
+        hovertemplate: hovertemplateAttrs({}, { keys: ["label", "color", "value", "text", "percent"] }),
+        hovertemplatefallback: templatefallbackAttrs(),
         textposition: extendFlat({}, pieAttrs.textposition, {
           values: ["inside", "none"],
           dflt: "inside"
@@ -65136,10 +65104,12 @@ var Plotly = (() => {
         coerce("scalegroup");
         var textData = coerce("text");
         var textTemplate = coerce("texttemplate");
+        coerce("texttemplatefallback");
         var textInfo;
         if (!textTemplate) textInfo = coerce("textinfo", Array.isArray(textData) ? "text+percent" : "percent");
         coerce("hovertext");
         coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         if (textTemplate || textInfo && textInfo !== "none") {
           var textposition = coerce("textposition");
           handleText(traceIn, traceOut, layout, coerce, textposition, {
@@ -67813,6 +67783,7 @@ var Plotly = (() => {
       var extendFlat = require_lib().extendFlat;
       var scatterAttrs = require_attributes12();
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
+      var { hovertemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var dash = require_attributes4().dash;
       var fxAttrs = require_attributes();
       var delta = require_delta();
@@ -67875,6 +67846,13 @@ var Plotly = (() => {
           arrayOk: true,
           editType: "calc"
         },
+        hovertemplate: hovertemplateAttrs(
+          {},
+          {
+            keys: ["open", "high", "low", "close"]
+          }
+        ),
+        hovertemplatefallback: templatefallbackAttrs(),
         tickwidth: {
           valType: "number",
           min: 0,
@@ -67944,6 +67922,8 @@ var Plotly = (() => {
         handleDirection(traceIn, traceOut, coerce, "decreasing");
         coerce("text");
         coerce("hovertext");
+        coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         coerce("tickwidth");
         layout._requestRangeslider[traceOut.xaxis] = true;
         coerce("zorder");
@@ -68220,13 +68200,9 @@ var Plotly = (() => {
         var closeBoxData = [];
         var closestPoint = _getClosestPoint(pointData, xval, yval, hovermode);
         if (!closestPoint) return [];
-        var cdIndex = closestPoint.index;
-        var di = cd[cdIndex];
-        var hoverinfo = di.hi || trace.hoverinfo;
-        var hoverParts = hoverinfo.split("+");
-        var isAll = hoverinfo === "all";
-        var hasY = isAll || hoverParts.indexOf("y") !== -1;
-        if (!hasY) return [];
+        var di = cd[closestPoint.index];
+        var hoverinfo = di.hi || trace.hoverinfo || "";
+        if (hoverinfo === "none" || hoverinfo === "skip") return [];
         var attrs = ["high", "open", "close", "low"];
         var usedVals = {};
         for (var i = 0; i < attrs.length; i++) {
@@ -68263,7 +68239,7 @@ var Plotly = (() => {
         function getLabelLine(attr) {
           return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i], trace.yhoverformat);
         }
-        var hoverinfo = di.hi || trace.hoverinfo;
+        var hoverinfo = di.hi || trace.hoverinfo || "";
         var hoverParts = hoverinfo.split("+");
         var isAll = hoverinfo === "all";
         var hasY = isAll || hoverParts.indexOf("y") !== -1;
@@ -68360,7 +68336,7 @@ var Plotly = (() => {
       var barAttrs = require_attributes23();
       var colorAttrs = require_attributes3();
       var axisHoverFormat = require_axis_format_attributes().axisHoverFormat;
-      var hovertemplateAttrs = require_template_attributes().hovertemplateAttrs;
+      var { hovertemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var extendFlat = require_extend().extendFlat;
       var scatterMarkerAttrs = scatterAttrs.marker;
       var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
@@ -68505,42 +68481,18 @@ var Plotly = (() => {
             dflt: "rgba(0, 0, 0, 0)",
             editType: "style"
           },
-          symbol: extendFlat(
-            {},
-            scatterMarkerAttrs.symbol,
-            { arrayOk: false, editType: "plot" }
-          ),
-          opacity: extendFlat(
-            {},
-            scatterMarkerAttrs.opacity,
-            { arrayOk: false, dflt: 1, editType: "style" }
-          ),
-          angle: extendFlat(
-            {},
-            scatterMarkerAttrs.angle,
-            { arrayOk: false, editType: "calc" }
-          ),
-          size: extendFlat(
-            {},
-            scatterMarkerAttrs.size,
-            { arrayOk: false, editType: "calc" }
-          ),
-          color: extendFlat(
-            {},
-            scatterMarkerAttrs.color,
-            { arrayOk: false, editType: "style" }
-          ),
+          symbol: extendFlat({}, scatterMarkerAttrs.symbol, { arrayOk: false, editType: "plot" }),
+          opacity: extendFlat({}, scatterMarkerAttrs.opacity, { arrayOk: false, dflt: 1, editType: "style" }),
+          angle: extendFlat({}, scatterMarkerAttrs.angle, { arrayOk: false, editType: "calc" }),
+          size: extendFlat({}, scatterMarkerAttrs.size, { arrayOk: false, editType: "calc" }),
+          color: extendFlat({}, scatterMarkerAttrs.color, { arrayOk: false, editType: "style" }),
           line: {
-            color: extendFlat(
-              {},
-              scatterMarkerLineAttrs.color,
-              { arrayOk: false, dflt: colorAttrs.defaultLine, editType: "style" }
-            ),
-            width: extendFlat(
-              {},
-              scatterMarkerLineAttrs.width,
-              { arrayOk: false, dflt: 0, editType: "style" }
-            ),
+            color: extendFlat({}, scatterMarkerLineAttrs.color, {
+              arrayOk: false,
+              dflt: colorAttrs.defaultLine,
+              editType: "style"
+            }),
+            width: extendFlat({}, scatterMarkerLineAttrs.width, { arrayOk: false, dflt: 0, editType: "style" }),
             outliercolor: {
               valType: "color",
               editType: "style"
@@ -68593,6 +68545,7 @@ var Plotly = (() => {
         text: extendFlat({}, scatterAttrs.text, {}),
         hovertext: extendFlat({}, scatterAttrs.hovertext, {}),
         hovertemplate: hovertemplateAttrs({}),
+        hovertemplatefallback: templatefallbackAttrs(),
         hoveron: {
           valType: "flaglist",
           flags: ["boxes", "points"],
@@ -68642,6 +68595,8 @@ var Plotly = (() => {
         decreasing: directionAttrs(OHLCattrs.decreasing.line.color.dflt),
         text: OHLCattrs.text,
         hovertext: OHLCattrs.hovertext,
+        hovertemplate: OHLCattrs.hovertemplate,
+        hovertemplatefallback: OHLCattrs.hovertemplatefallback,
         whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
         hoverlabel: OHLCattrs.hoverlabel,
         zorder: boxAttrs.zorder
@@ -68911,6 +68866,8 @@ var Plotly = (() => {
         handleDirection(traceIn, traceOut, coerce, "decreasing");
         coerce("text");
         coerce("hovertext");
+        coerce("hovertemplate");
+        coerce("hovertemplatefallback");
         coerce("whiskerwidth");
         layout._requestRangeslider[traceOut.xaxis] = true;
         coerce("zorder");

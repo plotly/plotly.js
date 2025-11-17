@@ -374,7 +374,7 @@ proto.drawAxes = function(doTitles) {
 
         layers['a-title'] = Titles.draw(gd, 'a' + titlesuffix, {
             propContainer: aaxis,
-            propName: _this.id + '.aaxis.title',
+            propName: _this.id + '.aaxis.title.text',
             placeholder: _(gd, 'Click to enter Component A title'),
             attributes: {
                 x: _this.x0 + _this.w / 2,
@@ -384,7 +384,7 @@ proto.drawAxes = function(doTitles) {
         });
         layers['b-title'] = Titles.draw(gd, 'b' + titlesuffix, {
             propContainer: baxis,
-            propName: _this.id + '.baxis.title',
+            propName: _this.id + '.baxis.title.text',
             placeholder: _(gd, 'Click to enter Component B title'),
             attributes: {
                 x: _this.x0 - bpad,
@@ -394,7 +394,7 @@ proto.drawAxes = function(doTitles) {
         });
         layers['c-title'] = Titles.draw(gd, 'c' + titlesuffix, {
             propContainer: caxis,
-            propName: _this.id + '.caxis.title',
+            propName: _this.id + '.caxis.title.text',
             placeholder: _(gd, 'Click to enter Component C title'),
             attributes: {
                 x: _this.x0 + _this.w + bpad,
