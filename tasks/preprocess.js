@@ -16,32 +16,25 @@ updateVersion(constants.pathToPlotlyVersion);
 
 // convert scss to css to js and static css file
 function makeBuildCSS() {
-    sass.render(
-        {
-            file: constants.pathToSCSS,
-            outputStyle: 'compressed'
-        },
-        function (err, result) {
-            if (err) throw err;
+    sass.render({
+        file: constants.pathToSCSS,
+        outputStyle: 'compressed'
+    }, function(err, result) {
+        if(err) throw err;
 
-            // To support application with strict CSP where styles cannot be inlined,
-            // build a static CSS file that can be included into such applications.
-            var staticCSS = String(result.css);
-            for (var k in mapBoxGLStyleRules) {
-                staticCSS = addAdditionalCSSRules(
-                    staticCSS,
-                    '.js-plotly-plot .plotly .mapboxgl-' + k,
-                    mapBoxGLStyleRules[k]
-                );
-            }
-            fs.writeFile(constants.pathToCSSDist, staticCSS, function (err) {
-                if (err) throw err;
-            });
-
-            // css to js to be inlined
-            pullCSS(String(result.css), constants.pathToCSSBuild);
+        // To support application with strict CSP where styles cannot be inlined,
+        // build a static CSS file that can be included into such applications.
+        var staticCSS = String(result.css);
+        for(var k in mapBoxGLStyleRules) {
+            staticCSS = addAdditionalCSSRules(staticCSS, '.js-plotly-plot .plotly .mapboxgl-' + k, mapBoxGLStyleRules[k]);
         }
-    );
+        fs.writeFile(constants.pathToCSSDist, staticCSS, function(err) {
+            if(err) throw err;
+        });
+
+        // css to js to be inlined
+        pullCSS(String(result.css), constants.pathToCSSBuild);
+    });
 }
 
 function addAdditionalCSSRules(staticStyleString, selector, style) {
@@ -51,7 +44,7 @@ function addAdditionalCSSRules(staticStyleString, selector, style) {
 function exposePartsInLib() {
     var obj = {};
 
-    var insert = function (name, folder) {
+    var insert = function(name, folder) {
         obj[name] = folder + '/' + name;
     };
 
@@ -59,7 +52,7 @@ function exposePartsInLib() {
 
     insert('calendars', 'src/components');
 
-    constants.allTraces.forEach(function (k) {
+    constants.allTraces.forEach(function(k) {
         insert(k, 'src/traces');
     });
 
@@ -67,14 +60,24 @@ function exposePartsInLib() {
 }
 
 function writeLibFiles(obj) {
-    for (var name in obj) {
+    for(var name in obj) {
         common.writeFile(
             path.join(constants.pathToLib, name + '.js'),
-            ["'use strict';", '', "module.exports = require('../" + obj[name] + "');", ''].join('\n')
+            [
+                '\'use strict\';',
+                '',
+                'module.exports = require(\'../' + obj[name] + '\');',
+                ''
+            ].join('\n')
         );
     }
 }
 
 function copyTopojsonFiles() {
-    fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist, { clobber: true }, common.throwOnError);
+    fs.copy(
+        constants.pathToTopojsonSrc,
+        constants.pathToTopojsonDist,
+        { clobber: true },
+        common.throwOnError
+    );
 }
