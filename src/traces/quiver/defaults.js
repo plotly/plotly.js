@@ -17,6 +17,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var y = coerce('y');
     var u = coerce('u');
     var v = coerce('v');
+    
+    // Optional scalar field for colorscale
+    coerce('c');
 
     // Simple validation - check if we have the required arrays
     // Use Lib.isArrayOrTypedArray to support both regular arrays and typed arrays
