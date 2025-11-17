@@ -76,5 +76,14 @@ function writeLibFiles(obj) {
 }
 
 function copyTopojsonFiles() {
-    fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist, { clobber: true }, common.throwOnError);
+    const FILES_TO_EXCLUDE = ['country_names_iso_codes.json'];
+    fs.copy(
+        constants.pathToTopojsonSrc,
+        constants.pathToTopojsonDist,
+        {
+            clobber: true,
+            filter: (filePath) => !FILES_TO_EXCLUDE.includes(path.basename(filePath))
+        },
+        common.throwOnError
+    );
 }
