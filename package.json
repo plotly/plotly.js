@@ -140,7 +140,7 @@
     "falafel": "^2.2.5",
     "fs-extra": "^10.1.0",
     "fuse.js": "^6.6.2",
-    "glob": "^10.4.5",
+    "glob": "^11.1.0",
     "gzip-size": "^6.0.0",
     "ify-loader": "^1.1.0",
     "into-stream": "^6.0.0",
