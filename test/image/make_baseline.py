@@ -110,6 +110,7 @@ for name in allNames :
                 if 'b64-json' in sys.argv and attempt == 0 : print(json.dumps(fig, indent = 2))
 
             try :
+                print(f"plotly.js version: {pio.kaleido.scope.plotlyjs}")
                 pio.write_image(
                     fig=fig,
                     file=os.path.join(dirOut, outName + '.png'),
