@@ -19,19 +19,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var v = coerce('v');
 
     // Simple validation - check if we have the required arrays
-    if(!x || !Array.isArray(x) || x.length === 0 ||
-       !y || !Array.isArray(y) || y.length === 0) {
+    // Use Lib.isArrayOrTypedArray to support both regular arrays and typed arrays
+    if(!x || !Lib.isArrayOrTypedArray(x) || x.length === 0 ||
+       !y || !Lib.isArrayOrTypedArray(y) || y.length === 0) {
         traceOut.visible = false;
         return;
     }
 
     // If u/v are missing, default to zeros so the trace participates in calc/category logic
     var len = Math.min(x.length, y.length);
-    if(!Array.isArray(u) || u.length === 0) {
+    if(!Lib.isArrayOrTypedArray(u) || u.length === 0) {
         traceOut.u = new Array(len);
         for(var i = 0; i < len; i++) traceOut.u[i] = 0;
     }
-    if(!Array.isArray(v) || v.length === 0) {
+    if(!Lib.isArrayOrTypedArray(v) || v.length === 0) {
         traceOut.v = new Array(len);
         for(var j = 0; j < len; j++) traceOut.v[j] = 0;
     }
@@ -86,5 +87,3 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Set the data length
     traceOut._length = len;
 };
-
-
