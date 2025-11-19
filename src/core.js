@@ -81,3 +81,9 @@ exports.Fx = {
 };
 exports.Snapshot = require('./snapshot');
 exports.PlotSchema = require('./plot_api/plot_schema');
+
+// expose Drawing methods for custom marker registration
+var Drawing = require('./components/drawing');
+exports.Drawing = {
+    addCustomMarker: Drawing.addCustomMarker
+};

@@ -366,9 +366,71 @@ Object.keys(SYMBOLDEFS).forEach(function (k) {
     }
 });
 
-var MAXSYMBOL = drawing.symbolNames.length;
 // add a dot in the middle of the symbol
 var DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
+
+/**
+ * Add a custom marker symbol
+ *
+ * @param {string} name: the name of the new marker symbol
+ * @param {function} drawFunc: a function(r, angle, standoff) that returns an SVG path string
+ * @param {object} opts: optional configuration object
+ *   - backoff {number}: backoff distance for this symbol (default: 0)
+ *   - needLine {boolean}: whether this symbol needs a line (default: false)
+ *   - noDot {boolean}: whether to skip creating -dot variants (default: false)
+ *   - noFill {boolean}: whether this symbol should not be filled (default: false)
+ *
+ * @return {number}: the symbol number assigned to the new marker, or existing number if already registered
+ */
+drawing.addCustomMarker = function(name, drawFunc, opts) {
+    opts = opts || {};
+    
+    // Check if marker already exists
+    var existingIndex = drawing.symbolNames.indexOf(name);
+    if(existingIndex >= 0) {
+        return existingIndex;
+    }
+    
+    // Get the next available symbol number
+    var n = drawing.symbolNames.length;
+    
+    // Add to symbolList (base and -open variants)
+    drawing.symbolList.push(
+        n,
+        String(n),
+        name,
+        n + 100,
+        String(n + 100),
+        name + '-open'
+    );
+    
+    // Register the symbol
+    drawing.symbolNames[n] = name;
+    drawing.symbolFuncs[n] = drawFunc;
+    drawing.symbolBackOffs[n] = opts.backoff || 0;
+    
+    if(opts.needLine) {
+        drawing.symbolNeedLines[n] = true;
+    }
+    if(opts.noDot) {
+        drawing.symbolNoDot[n] = true;
+    } else {
+        // Add -dot and -open-dot variants
+        drawing.symbolList.push(
+            n + 200,
+            String(n + 200),
+            name + '-dot',
+            n + 300,
+            String(n + 300),
+            name + '-open-dot'
+        );
+    }
+    if(opts.noFill) {
+        drawing.symbolNoFill[n] = true;
+    }
+    
+    return n;
+};
 
 drawing.symbolNumber = function (v) {
     if (isNumeric(v)) {
@@ -389,7 +451,9 @@ drawing.symbolNumber = function (v) {
         }
     }
 
-    return v % 100 >= MAXSYMBOL || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
+    // Use dynamic length instead of MAXSYMBOL constant
+    var maxSymbol = drawing.symbolNames.length;
+    return v % 100 >= maxSymbol || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
 };
 
 function makePointPath(symbolNumber, r, t, s) {

@@ -31,6 +31,13 @@ describe('Test plot api', function () {
         });
     });
 
+    describe('Plotly.Drawing', function () {
+        it('should expose addCustomMarker method', function () {
+            expect(typeof Plotly.Drawing).toBe('object');
+            expect(typeof Plotly.Drawing.addCustomMarker).toBe('function');
+        });
+    });
+
     describe('Plotly.newPlot', function () {
         var gd;
 
