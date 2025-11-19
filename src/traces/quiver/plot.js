@@ -191,7 +191,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         lineSegments.style('stroke', function(cdi) {
             var cArr = trace.c;
             var value;
-            if (Array.isArray(cArr) && cArr.length > cdi.i && isFinite(cArr[cdi.i])) {
+            if (Lib.isArrayOrTypedArray(cArr) && cArr.length > cdi.i && isFinite(cArr[cdi.i])) {
                 value = cArr[cdi.i];
             } else {
                 var uVal = (trace.u && trace.u[cdi.i]) || 0;
@@ -212,5 +212,3 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             .style('opacity', 1);
     }
 }
-
-

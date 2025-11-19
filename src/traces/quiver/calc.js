@@ -29,7 +29,7 @@ module.exports = function calc(gd, trace) {
     var normMax = -Infinity;
     var cMin = Infinity;
     var cMax = -Infinity;
-    var hasC = Array.isArray(trace.c);
+    var hasC = Lib.isArrayOrTypedArray(trace.c);
 
     for(var i = 0; i < len; i++) {
         var cdi = cd[i] = { i: i };
@@ -75,5 +75,3 @@ module.exports = function calc(gd, trace) {
 
     return cd;
 };
-
-
