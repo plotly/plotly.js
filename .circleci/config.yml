@@ -401,7 +401,7 @@ jobs:
             sudo apt-get install poppler-utils
       - run:
           name: Create svg, jpg, jpeg, webp, pdf and eps files
-          command: sudo python3 test/image/make_exports.py
+          command: uv run test/image/make_exports.py
       - persist_to_workspace:
           root: ~/
           paths:
