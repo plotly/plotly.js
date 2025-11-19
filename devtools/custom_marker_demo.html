@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Custom Marker Demo - Plotly.js</title>
+    <!-- After building, use the local build instead of CDN -->
+    <script src="dist/plotly.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 10px;
+        }
+        .plot {
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .info {
+            background-color: #e7f3ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Custom SVG Markers in Plotly.js</h1>
+        
+        <div class="info">
+            <strong>New Feature:</strong> You can now add custom SVG marker symbols to scatter plots using 
+            <code>Plotly.Drawing.addCustomMarker(name, drawFunc, opts)</code>
+        </div>
+
+        <h2>Example: Custom Markers</h2>
+        <div id="plot1" class="plot"></div>
+
+        <h3>Code:</h3>
+        <div class="code-block">
+            <pre>// Define a custom heart-shaped marker
+function heartMarker(r, angle, standoff) {
+    var x = r * 0.6;
+    var y = r * 0.8;
+    return 'M0,' + (-y/2) + 
+           'C' + (-x) + ',' + (-y) + ' ' + (-x*2) + ',' + (-y/3) + ' ' + (-x*2) + ',0' +
+           'C' + (-x*2) + ',' + (y/2) + ' 0,' + (y) + ' 0,' + (y*1.5) +
+           'C0,' + (y) + ' ' + (x*2) + ',' + (y/2) + ' ' + (x*2) + ',0' +
+           'C' + (x*2) + ',' + (-y/3) + ' ' + (x) + ',' + (-y) + ' 0,' + (-y/2) + 'Z';
+}
+
+// Define a custom star marker
+function star5Marker(r, angle, standoff) {
+    var points = 5;
+    var outerRadius = r;
+    var innerRadius = r * 0.4;
+    var path = 'M';
+    
+    for (var i = 0; i < points * 2; i++) {
+        var radius = i % 2 === 0 ? outerRadius : innerRadius;
+        var ang = (i * Math.PI) / points - Math.PI / 2;
+        var x = radius * Math.cos(ang);
+        var y = radius * Math.sin(ang);
+        path += (i === 0 ? '' : 'L') + x.toFixed(2) + ',' + y.toFixed(2);
+    }
+    path += 'Z';
+    return path;
+}
+
+// Register the custom markers
+Plotly.Drawing.addCustomMarker('heart', heartMarker);
+Plotly.Drawing.addCustomMarker('star5', star5Marker);
+
+// Use them in a plot
+Plotly.newPlot('plot1', [{
+    x: [1, 2, 3, 4, 5],
+    y: [2, 3, 4, 3, 2],
+    mode: 'markers',
+    marker: {
+        symbol: ['heart', 'star5', 'heart-open', 'star5-open', 'heart-dot'],
+        size: 20,
+        color: ['red', 'gold', 'pink', 'orange', 'crimson']
+    }
+}]);</pre>
+        </div>
+
+        <h2>API Reference</h2>
+        <div class="code-block">
+            <pre><strong>Plotly.Drawing.addCustomMarker(name, drawFunc, opts)</strong>
+
+<strong>Parameters:</strong>
+  - name (string): The name of the new marker symbol
+  - drawFunc (function): A function(r, angle, standoff) that returns an SVG path string
+  - opts (object, optional): Configuration options
+    - backoff (number): Backoff distance for this symbol (default: 0)
+    - needLine (boolean): Whether this symbol needs a line (default: false)
+    - noDot (boolean): Whether to skip creating -dot variants (default: false)
+    - noFill (boolean): Whether this symbol should not be filled (default: false)
+
+<strong>Returns:</strong>
+  - (number): The symbol number assigned to the new marker
+
+<strong>Marker Variants:</strong>
+  Automatically creates these variants (unless noDot is true):
+  - 'name'           : Base marker (filled)
+  - 'name-open'      : Open marker (outline only)
+  - 'name-dot'       : Marker with dot in center
+  - 'name-open-dot'  : Open marker with dot in center</pre>
+        </div>
+    </div>
+
+    <script>
+        // Check if the API is available
+        if (typeof Plotly.Drawing === 'undefined' || typeof Plotly.Drawing.addCustomMarker !== 'function') {
+            document.getElementById('plot1').innerHTML = 
+                '<div style="padding: 20px; text-align: center; color: #d32f2f;">' +
+                '<h3>⚠️ Custom Marker API Not Available</h3>' +
+                '<p>This page requires a build of plotly.js with the custom marker feature.</p>' +
+                '<p>Run <code>npm run bundle</code> to build the library with this feature.</p>' +
+                '</div>';
+        } else {
+            // Define a custom heart-shaped marker
+            function heartMarker(r, angle, standoff) {
+                var x = r * 0.6;
+                var y = r * 0.8;
+                return 'M0,' + (-y/2) + 
+                       'C' + (-x) + ',' + (-y) + ' ' + (-x*2) + ',' + (-y/3) + ' ' + (-x*2) + ',0' +
+                       'C' + (-x*2) + ',' + (y/2) + ' 0,' + (y) + ' 0,' + (y*1.5) +
+                       'C0,' + (y) + ' ' + (x*2) + ',' + (y/2) + ' ' + (x*2) + ',0' +
+                       'C' + (x*2) + ',' + (-y/3) + ' ' + (x) + ',' + (-y) + ' 0,' + (-y/2) + 'Z';
+            }
+
+            // Define a custom 5-point star marker
+            function star5Marker(r, angle, standoff) {
+                var points = 5;
+                var outerRadius = r;
+                var innerRadius = r * 0.4;
+                var path = 'M';
+                
+                for (var i = 0; i < points * 2; i++) {
+                    var radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    var ang = (i * Math.PI) / points - Math.PI / 2;
+                    var x = radius * Math.cos(ang);
+                    var y = radius * Math.sin(ang);
+                    path += (i === 0 ? '' : 'L') + x.toFixed(2) + ',' + y.toFixed(2);
+                }
+                path += 'Z';
+                return path;
+            }
+
+            // Register the custom markers
+            console.log('Registering custom markers...');
+            var heartNum = Plotly.Drawing.addCustomMarker('heart', heartMarker);
+            var star5Num = Plotly.Drawing.addCustomMarker('star5', star5Marker);
+            console.log('Heart marker number:', heartNum);
+            console.log('Star5 marker number:', star5Num);
+
+            // Create the plot
+            var trace = {
+                x: [1, 2, 3, 4, 5],
+                y: [2, 3, 4, 3, 2],
+                mode: 'markers+lines',
+                name: 'Custom Markers',
+                marker: {
+                    symbol: ['heart', 'star5', 'heart-open', 'star5-open', 'heart-dot'],
+                    size: 20,
+                    color: ['#e74c3c', '#f39c12', '#e91e63', '#ff9800', '#c0392b'],
+                    line: {
+                        color: '#34495e',
+                        width: 2
+                    }
+                },
+                line: {
+                    color: '#95a5a6',
+                    width: 2,
+                    dash: 'dot'
+                }
+            };
+
+            var layout = {
+                title: 'Custom SVG Markers Demo',
+                xaxis: {
+                    title: 'X Axis',
+                    gridcolor: '#ecf0f1'
+                },
+                yaxis: {
+                    title: 'Y Axis',
+                    gridcolor: '#ecf0f1'
+                },
+                plot_bgcolor: '#fafafa',
+                showlegend: true
+            };
+
+            Plotly.newPlot('plot1', [trace], layout);
+            console.log('Plot created successfully!');
+        }
+    </script>
+</body>
+</html>
