@@ -8,5 +8,3 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     out.pointNumber = pointNumber;
     out.trace = trace;
 };
-
-

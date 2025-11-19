@@ -254,5 +254,3 @@ attrs.hovertemplate = extendFlat({}, hovertemplateAttrs({}, {
 }));
 
 module.exports = attrs;
-
-

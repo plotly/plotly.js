@@ -14,5 +14,3 @@ module.exports = function style(gd, calcTrace) {
     s.selectAll('path.js-line')
         .call(Drawing.lineGroupStyle, trace.line || {});
 };
-
-

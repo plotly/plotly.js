@@ -37,5 +37,3 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
 
     return selection;
 };
-
-

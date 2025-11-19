@@ -73,5 +73,3 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     return [hoverPoint];
 };
-
-
