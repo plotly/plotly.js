@@ -2730,6 +2730,83 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         })
         .then(done, done.fail);
     });
+
+    describe('minscale and maxscale', () => {
+        const defaultConfig = {
+            layout: {
+                dragmode: 'pan',
+                geo: { projection: {} },
+                height: 500,
+                width: 700
+            }
+        }
+        let gd;
+
+        beforeEach(() => { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        const allTests = [
+            {
+                name: 'non-clipped',
+                mock: require('../../image/mocks/geo_winkel-tripel')
+            },
+            {
+                name: 'clipped',
+                mock: require('../../image/mocks/geo_orthographic')
+            },
+            {
+                name: 'scoped',
+                mock: require('../../image/mocks/geo_europe-bubbles')
+            }
+        ];
+
+        allTests.forEach(({ mock, name }) => {
+            it(`${name} maxscale`, done => {
+                const fig = Lib.extendDeep({}, mock, defaultConfig);
+                fig.layout.geo.projection.maxscale = 1.2;
+
+                Plotly
+                    .newPlot(gd, fig)
+                    // Zoom in far enough to hit limit
+                    .then(() => scroll([200, 250], [-200, -200]))
+                    .then(() => {
+                        const maxScale = gd._fullLayout.geo._subplot.projection.scaleExtent()[1];
+                        expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(maxScale);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it(`${name} minscale`, done => {
+                const fig = Lib.extendDeep({}, mock, defaultConfig);
+                fig.layout.geo.projection.minscale = 0.8;
+
+                Plotly
+                    .newPlot(gd, fig)
+                    // Zoom out far enough to hit limit
+                    .then(() => scroll([200, 250], [1000, 1000]))
+                    .then(() => {
+                        const minScale = gd._fullLayout.geo._subplot.projection.scaleExtent()[0];
+                        expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(minScale);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it(`${name} minscale greater than 1`, done => {
+                const fig = Lib.extendDeep({}, mock, defaultConfig);
+                fig.layout.geo.projection.minscale = 3;
+
+                Plotly
+                    .newPlot(gd, fig)
+                    // The limit should already be hit during plot creation
+                    .then(() => {
+                        const minScale = gd._fullLayout.geo._subplot.projection.scaleExtent()[0];
+                        expect(gd._fullLayout.geo._subplot.projection.scale()).toEqual(minScale);
+                    })
+                    .then(done, done.fail);
+            });
+        });
+    });
 });
 
 describe('Test geo interactions update marker angles:', function() {
