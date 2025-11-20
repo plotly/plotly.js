@@ -74,6 +74,7 @@ var partialBundleTraces = {
         'splom'
     ],
     gl3d: [
+        'bar3d',
         'cone',
         'isosurface',
         'mesh3d',
@@ -91,6 +92,7 @@ var partialBundleTraces = {
     ],
     strict: [
         'bar',
+        'bar3d',
         'barpolar',
         'box',
         'candlestick',

@@ -1,0 +1,73 @@
+{
+    "data": [{
+        "type": "bar3d",
+        "colorscale": "Blackbody",
+        "reversescale": true,
+        "contour": {
+            "show": true,
+            "color": "black"
+        },
+        "marker": {
+            "coloring": "heatmap"
+        },
+        "xgap": 0.2,
+        "ygap": 0.2,
+        "x": [
+            1, 2, 3, 4, 5, 6,
+            1, 2, 3, 4, 5, 6,
+            1, 2, 3, 4, 5, 6,
+            1, 2, 3, 4, 5, 6
+        ],
+        "y": [
+            1, 1, 1, 1, 1, 1,
+            2, 2, 2, 2, 2, 2,
+            3, 3, 3, 3, 3, 3,
+            4, 4, 4, 4, 4, 4
+        ],
+        "value": [
+            0, -1, -2, -3, -4, -5,
+            1, 2, 3, 4, 5, 6,
+            12, 11, 10, 9, 8, 7,
+            13, 14, 15, 16, 17, 18
+        ],
+        "base": [
+            0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0
+        ],
+        "showbase": true
+    }],
+    "layout": {
+        "title": {
+            "text": "bar3d | showbase: true"
+        },
+        "width": 700,
+        "height": 700,
+        "scene": {
+            "xaxis": { "dtick": 1 },
+            "yaxis": { "dtick": 1 },
+            "zaxis": { "dtick": 5 },
+            "aspectratio": {
+                "x": 1.2,
+                "y": 1.2,
+                "z": 1.2
+            },
+            "camera": {
+                "projection": {
+                    "type": "orthographic"
+                },
+                "eye": {
+                    "x": -0.125,
+                    "y": -1,
+                    "z": 0.75
+                },
+                "center": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                }
+            }
+        }
+    }
+}
