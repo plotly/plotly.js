@@ -150,6 +150,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | Active, Maintainer |
 |**Emily Kellison-Linn** | [@emilykl](https://github.com/emilykl) | Active, Maintainer |
 |**Cameron DeCoster** | [@camdecoster](https://github.com/camdecoster) | Active, Maintainer |
+|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | Active, Community Contributor |
 |**My-Tien Nguyen**| [@my-tien](https://github.com/my-tien) | Active, Community Contributor |
 |**Birk Skyum**| [@birkskyum](https://github.com/birkskyum) | Active, Community Contributor |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | Hall of Fame |
@@ -169,7 +170,6 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 |**Hannah Ker** | [@hannahker](https://github.com/hannahker) | Hall of Fame |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | Hall of Fame |
 |**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | Hall of Fame |
-|**Mojtaba Samimi** | [@archmoj](https://github.com/archmoj) | Hall of Fame |
 
 ---
 ## Copyright and license
