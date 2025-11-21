@@ -574,69 +574,11 @@ describe('gradients', function() {
         }, done.fail);
     });
 
-    describe('addCustomMarker', function() {
-        it('should register a new custom marker symbol', function() {
-            var initialLength = Drawing.symbolNames.length;
-            
+    describe('custom marker functions', function() {
+        it('should accept a function as marker.symbol', function(done) {
             var customFunc = function(r) {
                 return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
             };
-            
-            var symbolNumber = Drawing.addCustomMarker('my-custom-marker', customFunc);
-            
-            expect(symbolNumber).toBe(initialLength);
-            expect(Drawing.symbolNames[symbolNumber]).toBe('my-custom-marker');
-            expect(Drawing.symbolFuncs[symbolNumber]).toBe(customFunc);
-            expect(Drawing.symbolNames.length).toBe(initialLength + 1);
-        });
-
-        it('should return existing symbol number if marker already registered', function() {
-            var customFunc = function(r) {
-                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
-            };
-            
-            var firstAdd = Drawing.addCustomMarker('my-marker-2', customFunc);
-            var secondAdd = Drawing.addCustomMarker('my-marker-2', customFunc);
-            
-            expect(firstAdd).toBe(secondAdd);
-        });
-
-        it('should add marker to symbolList with variants', function() {
-            var initialListLength = Drawing.symbolList.length;
-            var customFunc = function(r) {
-                return 'M0,0L' + r + ',0';
-            };
-            
-            var symbolNumber = Drawing.addCustomMarker('my-marker-3', customFunc);
-            
-            // Should add 6 entries: n, String(n), name, n+100, String(n+100), name-open
-            // Plus 6 more for dot variants if noDot is not set
-            expect(Drawing.symbolList.length).toBeGreaterThan(initialListLength);
-            expect(Drawing.symbolList).toContain('my-marker-3');
-            expect(Drawing.symbolList).toContain('my-marker-3-open');
-            expect(Drawing.symbolList).toContain('my-marker-3-dot');
-            expect(Drawing.symbolList).toContain('my-marker-3-open-dot');
-        });
-
-        it('should respect noDot option', function() {
-            var customFunc = function(r) {
-                return 'M0,0L' + r + ',0';
-            };
-            
-            Drawing.addCustomMarker('my-marker-4', customFunc, {noDot: true});
-            
-            expect(Drawing.symbolList).toContain('my-marker-4');
-            expect(Drawing.symbolList).toContain('my-marker-4-open');
-            expect(Drawing.symbolList).not.toContain('my-marker-4-dot');
-            expect(Drawing.symbolList).not.toContain('my-marker-4-open-dot');
-        });
-
-        it('should allow using custom marker in scatter plot', function(done) {
-            var customFunc = function(r) {
-                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
-            };
-            
-            Drawing.addCustomMarker('my-scatter-marker', customFunc);
             
             Plotly.newPlot(gd, [{
                 type: 'scatter',
@@ -644,7 +586,7 @@ describe('gradients', function() {
                 y: [2, 3, 4],
                 mode: 'markers',
                 marker: {
-                    symbol: 'my-scatter-marker',
+                    symbol: customFunc,
                     size: 12
                 }
             }])
@@ -660,12 +602,13 @@ describe('gradients', function() {
             .then(done, done.fail);
         });
 
-        it('should work with marker symbol variants', function(done) {
-            var customFunc = function(r) {
+        it('should work with array of functions', function(done) {
+            var customFunc1 = function(r) {
                 return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
             };
-            
-            Drawing.addCustomMarker('my-variant-marker', customFunc);
+            var customFunc2 = function(r) {
+                return 'M' + r + ',' + r + 'H-' + r + 'V-' + r + 'H' + r + 'Z';
+            };
             
             Plotly.newPlot(gd, [{
                 type: 'scatter',
@@ -673,13 +616,35 @@ describe('gradients', function() {
                 y: [2, 3, 4],
                 mode: 'markers',
                 marker: {
-                    symbol: ['my-variant-marker', 'my-variant-marker-open', 'my-variant-marker-dot'],
+                    symbol: [customFunc1, customFunc2, customFunc1],
                     size: 12
                 }
             }])
             .then(function() {
                 var points = d3Select(gd).selectAll('.point');
                 expect(points.size()).toBe(3);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work mixed with built-in symbols', function(done) {
+            var customFunc = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3, 4],
+                y: [2, 3, 4, 3],
+                mode: 'markers',
+                marker: {
+                    symbol: ['circle', customFunc, 'square', customFunc],
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(4);
             })
             .then(done, done.fail);
         });

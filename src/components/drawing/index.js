@@ -366,71 +366,9 @@ Object.keys(SYMBOLDEFS).forEach(function (k) {
     }
 });
 
+var MAXSYMBOL = drawing.symbolNames.length;
 // add a dot in the middle of the symbol
 var DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
-
-/**
- * Add a custom marker symbol
- *
- * @param {string} name: the name of the new marker symbol
- * @param {function} drawFunc: a function(r, angle, standoff) that returns an SVG path string
- * @param {object} opts: optional configuration object
- *   - backoff {number}: backoff distance for this symbol (default: 0)
- *   - needLine {boolean}: whether this symbol needs a line (default: false)
- *   - noDot {boolean}: whether to skip creating -dot variants (default: false)
- *   - noFill {boolean}: whether this symbol should not be filled (default: false)
- *
- * @return {number}: the symbol number assigned to the new marker, or existing number if already registered
- */
-drawing.addCustomMarker = function(name, drawFunc, opts) {
-    opts = opts || {};
-    
-    // Check if marker already exists
-    var existingIndex = drawing.symbolNames.indexOf(name);
-    if(existingIndex >= 0) {
-        return existingIndex;
-    }
-    
-    // Get the next available symbol number
-    var n = drawing.symbolNames.length;
-    
-    // Add to symbolList (base and -open variants)
-    drawing.symbolList.push(
-        n,
-        String(n),
-        name,
-        n + 100,
-        String(n + 100),
-        name + '-open'
-    );
-    
-    // Register the symbol
-    drawing.symbolNames[n] = name;
-    drawing.symbolFuncs[n] = drawFunc;
-    drawing.symbolBackOffs[n] = opts.backoff || 0;
-    
-    if(opts.needLine) {
-        drawing.symbolNeedLines[n] = true;
-    }
-    if(opts.noDot) {
-        drawing.symbolNoDot[n] = true;
-    } else {
-        // Add -dot and -open-dot variants
-        drawing.symbolList.push(
-            n + 200,
-            String(n + 200),
-            name + '-dot',
-            n + 300,
-            String(n + 300),
-            name + '-open-dot'
-        );
-    }
-    if(opts.noFill) {
-        drawing.symbolNoFill[n] = true;
-    }
-    
-    return n;
-};
 
 drawing.symbolNumber = function (v) {
     if (isNumeric(v)) {
@@ -451,12 +389,16 @@ drawing.symbolNumber = function (v) {
         }
     }
 
-    // Use dynamic length instead of MAXSYMBOL constant
-    var maxSymbol = drawing.symbolNames.length;
-    return v % 100 >= maxSymbol || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
+    return v % 100 >= MAXSYMBOL || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r, t, s) {
+function makePointPath(symbolNumberOrFunc, r, t, s) {
+    // Check if a custom function was passed directly
+    if (typeof symbolNumberOrFunc === 'function') {
+        return symbolNumberOrFunc(r, t, s);
+    }
+    
+    var symbolNumber = symbolNumberOrFunc;
     var base = symbolNumber % 100;
     return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
@@ -978,12 +920,13 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
             r = d.mrc = fns.selectedSizeFn(d);
         }
 
-        // turn the symbol into a sanitized number
-        var x = drawing.symbolNumber(d.mx || marker.symbol) || 0;
+        // turn the symbol into a sanitized number (or keep function if it's a custom function)
+        var symbolValue = d.mx || marker.symbol;
+        var x = typeof symbolValue === 'function' ? symbolValue : (drawing.symbolNumber(symbolValue) || 0);
 
         // save if this marker is open
         // because that impacts how to handle colors
-        d.om = x % 200 >= 100;
+        d.om = typeof x === 'number' && x % 200 >= 100;
 
         var angle = getMarkerAngle(d, trace);
         var standoff = getMarkerStandoff(d, trace);
@@ -1266,9 +1209,12 @@ drawing.selectedPointStyle = function (s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
+            // Handle both function and string/number symbols
+            var symbolForPath = typeof mx === 'function' ? mx : drawing.symbolNumber(mx);
+            
             pt.attr(
                 'd',
-                makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace))
+                makePointPath(symbolForPath, mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace))
             );
 
             // save for Drawing.selectedTextStyle
@@ -1560,7 +1506,7 @@ function applyBackoff(pt, start) {
             var endMarkerSize = endMarker.size;
             if (Lib.isArrayOrTypedArray(endMarkerSize)) endMarkerSize = endMarkerSize[endI];
 
-            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] * endMarkerSize : 0;
+            b = endMarker ? (drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] || 0) * endMarkerSize : 0;
             b += drawing.getMarkerStandoff(d[endI], trace) || 0;
         }
 
