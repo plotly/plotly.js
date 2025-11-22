@@ -1506,12 +1506,7 @@ function applyBackoff(pt, start) {
             var endMarkerSize = endMarker.size;
             if (Lib.isArrayOrTypedArray(endMarkerSize)) endMarkerSize = endMarkerSize[endI];
 
-            // Custom functions don't have backoff values, only built-in symbols do
-            var backoffValue = 0;
-            if (endMarker && typeof endMarkerSymbol !== 'function') {
-                backoffValue = drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] || 0;
-            }
-            b = backoffValue * endMarkerSize;
+            b = endMarker && typeof endMarkerSymbol !== 'function' ? (drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] || 0) * endMarkerSize : 0;
             b += drawing.getMarkerStandoff(d[endI], trace) || 0;
         }
 
