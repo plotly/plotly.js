@@ -1,1 +1,0 @@
-- Update script to generate schema JSON with 2 space indentation [[#7626](https://github.com/plotly/plotly.js/pull/7626)]
