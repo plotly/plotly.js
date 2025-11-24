@@ -45,6 +45,11 @@
     **Choropleth Maps**
 
 
+-   [![](https://images.plot.ly/plotly-documentation/thumbnail/scatter-plot-on-maps.jpg)](outline-map-locations.md)
+
+    **Locations for Outline-based Maps**
+
+
 
 -   [![](https://images.plot.ly/plotly-documentation/thumbnail/area.jpg)](filled-area-on-map.md)
 

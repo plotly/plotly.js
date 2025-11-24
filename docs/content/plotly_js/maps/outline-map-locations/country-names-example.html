@@ -1,0 +1,24 @@
+---
+name: "locationmode: 'country names'"
+language: plotly_js
+suite: outline-map-locations
+order: 3
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Set `locationmode: 'country names'` to use full country names in `locations`.
+---
+var data = [{
+    type: 'choropleth',
+    locations: ['United States', 'Canada', 'United Kingdom'],
+    locationmode: 'country names',
+    z: [1, 1, 1],
+    colorscale: [[0, '#636efa'], [1, '#636efa']],
+    showscale: false
+}];
+
+var layout = {
+    title: 'Choropleth with Country Names'
+};
+
+Plotly.newPlot('myDiv', data, layout);

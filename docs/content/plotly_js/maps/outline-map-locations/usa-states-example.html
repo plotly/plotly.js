@@ -1,0 +1,26 @@
+---
+name: "locationmode: 'USA-states'"
+language: plotly_js
+suite: outline-map-locations
+order: 2
+sitemap: false
+arrangement: horizontal
+markdown_content: |
+  Set `locationmode: 'USA-states'` to use two-letter US state abbreviations in `locations`.
+---
+var data = [{
+    type: 'choropleth',
+    locations: ['CA', 'TX', 'NY', 'FL', 'IL'],
+    locationmode: 'USA-states',
+    z: [95, 88, 92, 85, 78],
+    colorscale: 'Reds'
+}];
+
+var layout = {
+    title: 'USA States Choropleth',
+    geo: {
+        scope: 'usa'
+    }
+};
+
+Plotly.newPlot('myDiv', data, layout);
