@@ -170,6 +170,7 @@ nav:
     - Scatter Plots on Maps: scatter-plots-on-maps.md
     - Scatter Plots on Tile Maps: scatter-tile-maps.md
     - Choropleth Maps: choropleth-maps.md
+    - Locations for Outline-based Maps: outline-map-locations.md
     - Filled Area on Tile Maps: filled-area-on-map.md
   - 3D Charts:
     - Overview: 3d-charts.md
