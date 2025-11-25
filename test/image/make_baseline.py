@@ -13,7 +13,7 @@ elif len(sys.argv) > 1 :
 root = os.getcwd()
 
 virtual_webgl = os.path.join(root, 'node_modules', 'virtual-webgl', 'src', 'virtual-webgl.js')
-plotlyjs = os.path.join(root, 'build', 'plotly.js')
+plotlyjs = os.path.join(root, 'build', 'plotly.min.js')
 plotlyjs_with_virtual_webgl = os.path.join(root, 'build', 'plotly_with_virtual-webgl.js')
 
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
@@ -110,6 +110,7 @@ for name in allNames :
                 if 'b64-json' in sys.argv and attempt == 0 : print(json.dumps(fig, indent = 2))
 
             try :
+                print(f"plotly.js version: {pio.kaleido.scope.plotlyjs}")
                 pio.write_image(
                     fig=fig,
                     file=os.path.join(dirOut, outName + '.png'),

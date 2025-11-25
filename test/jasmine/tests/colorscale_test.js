@@ -1045,8 +1045,8 @@ describe('Test colorscale restyle calls:', function() {
                 .then(function() { _assert(msg + ' back to original marker.symbol', exp); });
         }
 
-        var rdbu = ['rgb(5, 10, 172)', 'rgb(53, 70, 208)', 'rgb(227, 153, 104)',
-            'rgb(53, 70, 208)', 'rgb(53, 70, 208)', 'rgb(178, 10, 28)'];
+        var rdbu = ['rgb(5, 10, 172)', 'rgb(53, 71, 208)', 'rgb(227, 153, 104)',
+            'rgb(53, 71, 208)', 'rgb(53, 71, 208)', 'rgb(178, 10, 28)'];
         var grns = ['rgb(0, 68, 27)', 'rgb(12, 119, 52)', 'rgb(174, 222, 167)',
             'rgb(12, 119, 52)', 'rgb(12, 119, 52)', 'rgb(247, 252, 245)'];
 

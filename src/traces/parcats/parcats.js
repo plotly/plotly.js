@@ -3,11 +3,11 @@
 var d3 = require('@plotly/d3');
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var Plotly = require('../../plot_api/plot_api');
+const Color = require('../../components/color');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var Drawing = require('../../components/drawing');
-var tinycolor = require('tinycolor2');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 function performPlot(parcatsModels, graphDiv, layout, svg) {
@@ -426,7 +426,7 @@ function mouseoverPath(d) {
                 var hoverCenterX = d.parcatsViewModel.x + pathCenterX;
                 var hoverCenterY = d.parcatsViewModel.y + pathCenterY;
 
-                var textColor = tinycolor.mostReadable(d.model.color, ['black', 'white']);
+                var textColor = Color.mostReadable(d.model.color);
 
                 var count = d.model.count;
                 var prob = count / d.parcatsViewModel.model.count;
@@ -575,9 +575,7 @@ function stylePathsNoHover(pathSelection) {
 function stylePathsHover(pathSelection) {
     pathSelection
         .attr('fill-opacity', 0.8)
-        .attr('stroke', function(d) {
-            return tinycolor.mostReadable(d.model.color, ['black', 'white']);
-        })
+        .attr('stroke', d => Color.mostReadable(d.model.color))
         .attr('stroke-width', 0.3);
 }
 
@@ -936,7 +934,7 @@ function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
     var hovertext = hoverinfoParts.join('<br>');
 
     // Compute text color
-    var textColor = tinycolor.mostReadable(bandViewModel.color, ['black', 'white']);
+    var textColor = Color.mostReadable(bandViewModel.color);
 
     return {
         trace: trace,

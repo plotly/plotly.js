@@ -11,8 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('../../../src/components/color');
-var rgb = color.rgb;
+var Color = require('../../../src/components/color');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -259,7 +258,7 @@ describe('Waterfall.supplyDefaults', function() {
             y: [1, 2, 3],
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
-        expect(traceOut.connector.line.color).toBe(color.defaultLine);
+        expect(traceOut.connector.line.color).toBe(Color.defaultLine);
     });
 });
 
@@ -668,7 +667,7 @@ describe('A waterfall plot', function() {
         expect(textNode.style.fontSize).toBe(expectedFontProps.size[index] + 'px');
 
         var actualColorRGB = textNode.style.fill;
-        var expectedColorRGB = rgb(expectedFontProps.color[index]);
+        var expectedColorRGB = Color.rgb(expectedFontProps.color[index]);
         expect(actualColorRGB).toBe(expectedColorRGB);
     }
 
@@ -688,7 +687,7 @@ describe('A waterfall plot', function() {
                 var expFontColor = expFontColors[i];
                 var isArray = Array.isArray(expFontColor);
 
-                expect(this.style.fill).toBe(isArray ? rgb(expFontColor[0]) : rgb(expFontColor),
+                expect(this.style.fill).toBe(Color.rgb(isArray ? expFontColor[0] : expFontColor),
                   (label || '') + ', fill for element ' + i);
                 expect(this.style.fillOpacity).toBe(isArray ? expFontColor[1] : '1',
                   (label || '') + ', fillOpacity for element ' + i);
@@ -1067,9 +1066,6 @@ describe('A waterfall plot', function() {
             font: {family: 'arial', color: 'blue', size: 13}
         };
 
-        // Note: insidetextfont.color does NOT inherit from textfont.color
-        // since insidetextfont.color should be contrasting to bar's fill by default.
-        var contrastingLightColorVal = color.contrast('black');
         var expected = {
             y: [10, 20, 30, 40],
             type: 'waterfall',
@@ -1082,7 +1078,8 @@ describe('A waterfall plot', function() {
             },
             insidetextfont: {
                 family: ['"comic sans"', 'arial', 'arial'],
-                color: ['black', 'green', contrastingLightColorVal],
+                // NOTE: 'color' does NOT inherit from 'textfont.color' since 'color' should be contrasting to bar's fill by default.
+                color: ['black', 'green', Color.contrast('white')],
                 size: [8, 12, 16]
             },
             outsidetextfont: {
@@ -1187,7 +1184,7 @@ describe('A waterfall plot', function() {
             text: ['A', 'B', 'C'],
             textposition: 'inside'
         }])
-        .then(assertTextFontColors(['rgb(255, 255, 255)', 'rgb(255, 255, 255)', 'rgb(255, 255, 255)']))
+        .then(assertTextFontColors(['rgb(68, 68, 68)', 'rgb(68, 68, 68)', 'rgb(68, 68, 68)']))
         .then(function() {
             gd.data[0].insidetextfont = {color: 'red'};
             return Plotly.react(gd, gd.data);

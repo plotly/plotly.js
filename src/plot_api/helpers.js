@@ -140,8 +140,7 @@ exports.cleanLayout = function (layout) {
      */
     if (layout.dragmode === 'rotate') layout.dragmode = 'orbit';
 
-    // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
-    // supported, but new tinycolor does not because they're not valid css
+    // sanitize rgb(fractions) and rgba(fractions) because they're not valid css
     Color.clean(layout);
 
     // clean the layout container in layout.template
@@ -275,8 +274,7 @@ exports.cleanData = function (data) {
             if (emptyContainer(trace, 'marker')) delete trace.marker;
         }
 
-        // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
-        // supported, but new tinycolor does not because they're not valid css
+        // sanitize rgb(fractions) and rgba(fractions) because they're not valid css
         Color.clean(trace);
 
         // remove obsolete autobin(x|y) attributes, but only if true

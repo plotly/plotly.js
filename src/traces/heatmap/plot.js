@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Drawing = require('../../components/drawing');
@@ -202,19 +201,19 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
         var xb, xi, v, row, c;
 
         function setColor(v, pixsize) {
-            if (v !== undefined) {
-                var c = sclFunc(v);
-                c[0] = Math.round(c[0]);
-                c[1] = Math.round(c[1]);
-                c[2] = Math.round(c[2]);
+            if (v === undefined || pixsize === undefined) return [0, 0, 0, 0];
 
-                pixcount += pixsize;
-                rcount += c[0] * pixsize;
-                gcount += c[1] * pixsize;
-                bcount += c[2] * pixsize;
-                return c;
-            }
-            return [0, 0, 0, 0];
+            var c = sclFunc(v);
+            c[0] = Math.round(c[0]);
+            c[1] = Math.round(c[1]);
+            c[2] = Math.round(c[2]);
+
+            pixcount += pixsize;
+            rcount += c[0] * pixsize;
+            gcount += c[1] * pixsize;
+            bcount += c[2] * pixsize;
+
+            return c;
         }
 
         function interpColor(r0, r1, xinterp, yinterp) {
@@ -343,13 +342,17 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
             }
         }
 
-        rcount = Math.round(rcount / pixcount);
-        gcount = Math.round(gcount / pixcount);
-        bcount = Math.round(bcount / pixcount);
-        var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
+        // Guard against dividing by zero and the resulting bad color string
+        if (pixcount) {
+            rcount = Math.round(rcount / pixcount);
+            gcount = Math.round(gcount / pixcount);
+            bcount = Math.round(bcount / pixcount);
 
-        gd._hmpixcount = (gd._hmpixcount || 0) + pixcount;
-        gd._hmlumcount = (gd._hmlumcount || 0) + pixcount * avgColor.getLuminance();
+            const cstr = `rgb(${rcount}, ${gcount}, ${bcount})`;
+
+            gd._hmpixcount = (gd._hmpixcount || 0) + pixcount;
+            gd._hmlumcount = (gd._hmlumcount || 0) + pixcount * Color.color(cstr).luminosity();
+        }
 
         var image3 = plotGroup.selectAll('image').data(cd);
 
@@ -540,7 +543,9 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
                     var fontColor = font.color;
                     if (!fontColor || fontColor === 'auto') {
                         fontColor = Color.contrast(
-                            d.z === undefined ? gd._fullLayout.plot_bgcolor : 'rgba(' + sclFunc(d.z).join() + ')'
+                            d.z === undefined
+                                ? gd._fullLayout.plot_bgcolor
+                                : `rgba(${sclFunc(d.z).map(Math.round).join()})`
                         );
                     }
 

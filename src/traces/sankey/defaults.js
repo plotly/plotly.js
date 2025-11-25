@@ -3,7 +3,6 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var Color = require('../../components/color');
-var tinycolor = require('tinycolor2');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults');
 var Template = require('../../plot_api/plot_template');
@@ -63,23 +62,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
     coerceLink('hovertemplate');
 
-    var darkBG = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333;
+    var darkBG = Color.color(layout.paper_bgcolor).luminosity() < 0.333;
     var defaultLinkColor = darkBG ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
     var linkColor = coerceLink('color', defaultLinkColor);
 
     function makeDefaultHoverColor(_linkColor) {
-        var tc = tinycolor(_linkColor);
-        if(!tc.isValid()) {
-            // hopefully the user-specified color is valid, but if not that can be caught elsewhere
-            return _linkColor;
-        }
-        var alpha = tc.getAlpha();
-        if(alpha <= 0.8) {
-            tc.setAlpha(alpha + 0.2);
-        } else {
-            tc = darkBG ? tc.brighten() : tc.darken();
-        }
-        return tc.toRgbString();
+        // hopefully the user-specified color is valid, but if not that can be caught elsewhere
+        if(!Color.isValid(_linkColor)) return _linkColor;
+
+        const c = Color.color(_linkColor);
+        const alpha = c.alpha();
+
+        return alpha <= 0.8
+            ? c.alpha(alpha + 0.2).rgb().string()
+            : (darkBG ? c.lighten(0.1) : c.darken(0.1)).rgb().string()
     }
 
     coerceLink('hovercolor', Array.isArray(linkColor) ?
