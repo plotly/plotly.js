@@ -1,7 +1,6 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var makeFillcolorAttr = require('../scatter/fillcolor_attribute');
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -61,7 +60,7 @@ module.exports = {
             '0 (or missing) means to use ternary<i>.sum'
         ].join(' ')
     },
-    mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
+    mode: extendFlat({}, scatterAttrs.mode, { dflt: 'markers' }),
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (a,b,c) point.',
@@ -73,9 +72,8 @@ module.exports = {
             'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['a', 'b', 'c', 'text']
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: ['a', 'b', 'c', 'text'] }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     hovertext: extendFlat({}, scatterAttrs.hovertext, {
         description: [
             'Sets hover text elements associated with each (a,b,c) point.',
@@ -91,8 +89,7 @@ module.exports = {
         width: scatterLineAttrs.width,
         dash: dash,
         backoff: scatterLineAttrs.backoff,
-        shape: extendFlat({}, scatterLineAttrs.shape,
-            {values: ['linear', 'spline']}),
+        shape: extendFlat({}, scatterLineAttrs.shape, { values: ['linear', 'spline'] }),
         smoothing: scatterLineAttrs.smoothing,
         editType: 'calc'
     },
@@ -114,26 +111,28 @@ module.exports = {
         ].join(' ')
     }),
     fillcolor: makeFillcolorAttr(),
-    marker: extendFlat({
-        symbol: scatterMarkerAttrs.symbol,
-        opacity: scatterMarkerAttrs.opacity,
-        angle: scatterMarkerAttrs.angle,
-        angleref: scatterMarkerAttrs.angleref,
-        standoff: scatterMarkerAttrs.standoff,
-        maxdisplayed: scatterMarkerAttrs.maxdisplayed,
-        size: scatterMarkerAttrs.size,
-        sizeref: scatterMarkerAttrs.sizeref,
-        sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
-        line: extendFlat({
-            width: scatterMarkerLineAttrs.width,
+    marker: extendFlat(
+        {
+            symbol: scatterMarkerAttrs.symbol,
+            opacity: scatterMarkerAttrs.opacity,
+            angle: scatterMarkerAttrs.angle,
+            angleref: scatterMarkerAttrs.angleref,
+            standoff: scatterMarkerAttrs.standoff,
+            maxdisplayed: scatterMarkerAttrs.maxdisplayed,
+            size: scatterMarkerAttrs.size,
+            sizeref: scatterMarkerAttrs.sizeref,
+            sizemin: scatterMarkerAttrs.sizemin,
+            sizemode: scatterMarkerAttrs.sizemode,
+            line: extendFlat(
+                {
+                    width: scatterMarkerLineAttrs.width,
+                    editType: 'calc'
+                },
+                colorScaleAttrs('marker.line')
+            ),
+            gradient: scatterMarkerAttrs.gradient,
             editType: 'calc'
         },
-            colorScaleAttrs('marker.line')
-        ),
-        gradient: scatterMarkerAttrs.gradient,
-        editType: 'calc'
-    },
         colorScaleAttrs('marker')
     ),
 
@@ -148,4 +147,5 @@ module.exports = {
     }),
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs()
 };

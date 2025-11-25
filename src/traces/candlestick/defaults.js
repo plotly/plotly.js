@@ -12,12 +12,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var len = handleOHLC(traceIn, traceOut, coerce, layout);
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
 
-    handlePeriodDefaults(traceIn, traceOut, layout, coerce, {x: true});
+    handlePeriodDefaults(traceIn, traceOut, layout, coerce, { x: true });
     coerce('xhoverformat');
     coerce('yhoverformat');
 
@@ -28,6 +28,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('hovertext');
+    coerce('hovertemplate');
+    coerce('hovertemplatefallback');
+
     coerce('whiskerwidth');
 
     layout._requestRangeslider[traceOut.xaxis] = true;

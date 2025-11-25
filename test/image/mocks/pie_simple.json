@@ -1,12 +1,12 @@
 {
- "data": [
-  {
-   "values": [1, 2, 3, 4, 5],
-   "type": "pie"
+  "data": [
+    {
+      "values": [1, 2, 3, 4, 5],
+      "type": "pie"
+    }
+  ],
+  "layout": {
+    "height": 300,
+    "width": 400
   }
- ],
- "layout": {
-  "height": 300,
-  "width": 400
- }
 }

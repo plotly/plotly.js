@@ -1,17 +1,17 @@
 {
   "data": [
-    {"x": [1, 2, 3, 4], "y": [1, 2, 3, 2], "xaxis": "x", "yaxis": "y"},
-    {"x": [1, 2, 3, 4], "y": [2, 3, 2, 1], "xaxis": "x2", "yaxis": "y2"},
-    {"x": [1, 2, 3, 4], "y": [3, 1, 2, 3], "xaxis": "x3", "yaxis": "y3"},
-    {"x": [1, 2, 3, 4], "y": [1, 3, 2, 2], "xaxis": "x4", "yaxis": "y4"},
-    {"x": [1, 2, 3, 4], "y": [2, 1, 3, 1], "xaxis": "x5", "yaxis": "y5"},
-    {"x": [1, 2, 3, 4], "y": [3, 2, 1, 3], "xaxis": "x6", "yaxis": "y6"},
-    {"x": [1, 2, 3, 4], "y": [1, 2, 2, 3], "xaxis": "x7", "yaxis": "y7"},
-    {"x": [1, 2, 3, 4], "y": [2, 3, 1, 2], "xaxis": "x8", "yaxis": "y8"},
-    {"x": [1, 2, 3, 4], "y": [3, 1, 3, 1], "xaxis": "x9", "yaxis": "y9"},
-    {"x": [1, 2, 3, 4], "y": [1, 2, 3, 2], "xaxis": "x10", "yaxis": "y10"},
-    {"x": [1, 2, 3, 4], "y": [2, 3, 2, 1], "xaxis": "x11", "yaxis": "y11"},
-    {"x": [1, 2, 3, 4], "y": [3, 1, 2, 3], "xaxis": "x12", "yaxis": "y12"}
+    { "x": [1, 2, 3, 4], "y": [1, 2, 3, 2], "xaxis": "x", "yaxis": "y" },
+    { "x": [1, 2, 3, 4], "y": [2, 3, 2, 1], "xaxis": "x2", "yaxis": "y2" },
+    { "x": [1, 2, 3, 4], "y": [3, 1, 2, 3], "xaxis": "x3", "yaxis": "y3" },
+    { "x": [1, 2, 3, 4], "y": [1, 3, 2, 2], "xaxis": "x4", "yaxis": "y4" },
+    { "x": [1, 2, 3, 4], "y": [2, 1, 3, 1], "xaxis": "x5", "yaxis": "y5" },
+    { "x": [1, 2, 3, 4], "y": [3, 2, 1, 3], "xaxis": "x6", "yaxis": "y6" },
+    { "x": [1, 2, 3, 4], "y": [1, 2, 2, 3], "xaxis": "x7", "yaxis": "y7" },
+    { "x": [1, 2, 3, 4], "y": [2, 3, 1, 2], "xaxis": "x8", "yaxis": "y8" },
+    { "x": [1, 2, 3, 4], "y": [3, 1, 3, 1], "xaxis": "x9", "yaxis": "y9" },
+    { "x": [1, 2, 3, 4], "y": [1, 2, 3, 2], "xaxis": "x10", "yaxis": "y10" },
+    { "x": [1, 2, 3, 4], "y": [2, 3, 2, 1], "xaxis": "x11", "yaxis": "y11" },
+    { "x": [1, 2, 3, 4], "y": [3, 1, 2, 3], "xaxis": "x12", "yaxis": "y12" }
   ],
   "layout": {
     "title": {
@@ -23,31 +23,31 @@
     "showlegend": false,
     "width": 800,
     "height": 900,
-    "grid": {"rows": 4, "columns": 3, "pattern": "independent"},
-    "xaxis": {"domain": [0.05, 0.28], "range": [1, 4]},
-    "yaxis": {"domain": [0.80, 0.95], "range": [1, 3]},
-    "xaxis2": {"domain": [0.38, 0.61], "range": [1, 4]},
-    "yaxis2": {"domain": [0.80, 0.95], "range": [1, 3]},
-    "xaxis3": {"domain": [0.71, 0.95], "range": [1, 4]},
-    "yaxis3": {"domain": [0.80, 0.95], "range": [1, 3]},
-    "xaxis4": {"domain": [0.05, 0.28], "range": [1, 4]},
-    "yaxis4": {"domain": [0.55, 0.70], "range": [1, 3]},
-    "xaxis5": {"domain": [0.38, 0.61], "range": [1, 4]},
-    "yaxis5": {"domain": [0.55, 0.70], "range": [1, 3]},
-    "xaxis6": {"domain": [0.71, 0.95], "range": [1, 4]},
-    "yaxis6": {"domain": [0.55, 0.70], "range": [1, 3]},
-    "xaxis7": {"domain": [0.05, 0.28], "range": [1, 4]},
-    "yaxis7": {"domain": [0.30, 0.45], "range": [1, 3]},
-    "xaxis8": {"domain": [0.38, 0.61], "range": [1, 4]},
-    "yaxis8": {"domain": [0.30, 0.45], "range": [1, 3]},
-    "xaxis9": {"domain": [0.71, 0.95], "range": [1, 4]},
-    "yaxis9": {"domain": [0.30, 0.45], "range": [1, 3]},
-    "xaxis10": {"domain": [0.05, 0.28], "range": [1, 4]},
-    "yaxis10": {"domain": [0.05, 0.20], "range": [1, 3]},
-    "xaxis11": {"domain": [0.38, 0.61], "range": [1, 4]},
-    "yaxis11": {"domain": [0.05, 0.20], "range": [1, 3]},
-    "xaxis12": {"domain": [0.71, 0.95], "range": [1, 4]},
-    "yaxis12": {"domain": [0.05, 0.20], "range": [1, 3]},
+    "grid": { "rows": 4, "columns": 3, "pattern": "independent" },
+    "xaxis": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis": { "domain": [0.8, 0.95], "range": [1, 3] },
+    "xaxis2": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis2": { "domain": [0.8, 0.95], "range": [1, 3] },
+    "xaxis3": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis3": { "domain": [0.8, 0.95], "range": [1, 3] },
+    "xaxis4": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis4": { "domain": [0.55, 0.7], "range": [1, 3] },
+    "xaxis5": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis5": { "domain": [0.55, 0.7], "range": [1, 3] },
+    "xaxis6": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis6": { "domain": [0.55, 0.7], "range": [1, 3] },
+    "xaxis7": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis7": { "domain": [0.3, 0.45], "range": [1, 3] },
+    "xaxis8": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis8": { "domain": [0.3, 0.45], "range": [1, 3] },
+    "xaxis9": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis9": { "domain": [0.3, 0.45], "range": [1, 3] },
+    "xaxis10": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis10": { "domain": [0.05, 0.2], "range": [1, 3] },
+    "xaxis11": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis11": { "domain": [0.05, 0.2], "range": [1, 3] },
+    "xaxis12": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis12": { "domain": [0.05, 0.2], "range": [1, 3] },
     "shapes": [
       {
         "type": "rect",
@@ -58,7 +58,7 @@
         "y0": 0,
         "y1": 1,
         "fillcolor": "rgba(255, 0, 0, 0.3)",
-        "line": {"color": "red", "width": 1}
+        "line": { "color": "red", "width": 1 }
       },
       {
         "type": "rect",
@@ -69,7 +69,7 @@
         "y0": 0,
         "y1": 1,
         "fillcolor": "rgba(0, 255, 0, 0.3)",
-        "line": {"color": "green", "width": 1}
+        "line": { "color": "green", "width": 1 }
       },
       {
         "type": "rect",
@@ -80,7 +80,7 @@
         "y0": 0,
         "y1": 1,
         "fillcolor": "rgba(0, 0, 255, 0.3)",
-        "line": {"color": "blue", "width": 2}
+        "line": { "color": "blue", "width": 2 }
       },
       {
         "type": "rect",
@@ -91,7 +91,7 @@
         "y0": 0,
         "y1": 1,
         "fillcolor": "rgba(255, 165, 0, 0.3)",
-        "line": {"color": "orange", "width": 1}
+        "line": { "color": "orange", "width": 1 }
       },
       {
         "type": "rect",
@@ -102,8 +102,9 @@
         "y0": 0,
         "y1": 1.5,
         "fillcolor": "rgba(215, 192, 203, 0.3)",
-        "line": {"color": "brown", "width": 2}
-      },      {
+        "line": { "color": "brown", "width": 2 }
+      },
+      {
         "type": "rect",
         "xref": "x5 domain",
         "yref": "y5",
@@ -112,7 +113,7 @@
         "y0": 2.5,
         "y1": 5,
         "fillcolor": "rgba(250, 220, 120, 0.3)",
-        "line": {"color": "yellow", "width": 2}
+        "line": { "color": "yellow", "width": 2 }
       },
       {
         "type": "rect",
@@ -123,7 +124,7 @@
         "y0": 2.5,
         "y1": 5,
         "fillcolor": "rgba(128, 0, 128, 0.3)",
-        "line": {"color": "purple", "width": 2}
+        "line": { "color": "purple", "width": 2 }
       },
       {
         "type": "rect",
@@ -134,7 +135,7 @@
         "y0": 0,
         "y1": 1.5,
         "fillcolor": "rgba(0, 128, 0, 0.3)",
-        "line": {"color": "darkgreen", "width": 2}
+        "line": { "color": "darkgreen", "width": 2 }
       },
       {
         "type": "rect",
@@ -145,7 +146,7 @@
         "y0": 0,
         "y1": 1.5,
         "fillcolor": "rgba(0, 255, 255, 0.3)",
-        "line": {"color": "cyan", "width": 2}
+        "line": { "color": "cyan", "width": 2 }
       }
     ]
   }

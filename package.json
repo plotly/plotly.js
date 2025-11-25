@@ -1,13 +1,13 @@
 {
   "name": "plotly.js",
-  "version": "3.1.1",
+  "version": "3.3.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
   "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/plotly/plotly.js.git"
+    "url": "git+https://github.com/plotly/plotly.js.git"
   },
   "bugs": {
     "url": "https://github.com/plotly/plotly.js/issues"
@@ -140,7 +140,7 @@
     "falafel": "^2.2.5",
     "fs-extra": "^10.1.0",
     "fuse.js": "^6.6.2",
-    "glob": "^10.4.5",
+    "glob": "^10.5.0",
     "gzip-size": "^6.0.0",
     "ify-loader": "^1.1.0",
     "into-stream": "^6.0.0",

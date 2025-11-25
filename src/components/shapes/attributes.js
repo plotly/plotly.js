@@ -8,7 +8,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 var basePlotAttributes = require('../../plots/attributes');
-var shapeTexttemplateAttrs = require('../../plots/template_attributes').shapeTexttemplateAttrs;
+const { shapeTexttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
@@ -26,10 +26,7 @@ module.exports = templatedArray('shape', {
         valType: 'boolean',
         dflt: false,
         editType: 'calc+arraydraw',
-        description: [
-            'Determines whether or not this',
-            'shape is shown in the legend.'
-        ].join(' ')
+        description: ['Determines whether or not this', 'shape is shown in the legend.'].join(' ')
     },
 
     legend: extendFlat({}, basePlotAttributes.legend, {
@@ -57,11 +54,9 @@ module.exports = templatedArray('shape', {
         }),
         font: fontAttrs({
             editType: 'calc+arraydraw',
-            description: [
-                'Sets this legend group\'s title font.'
-            ].join(' '),
+            description: ["Sets this legend group's title font."].join(' ')
         }),
-        editType: 'calc+arraydraw',
+        editType: 'calc+arraydraw'
     },
 
     legendrank: extendFlat({}, basePlotAttributes.legendrank, {
@@ -80,7 +75,7 @@ module.exports = templatedArray('shape', {
 
     legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
         editType: 'calc+arraydraw',
-        description: 'Sets the width (in px or fraction) of the legend for this shape.',
+        description: 'Sets the width (in px or fraction) of the legend for this shape.'
     }),
 
     type: {
@@ -91,20 +86,20 @@ module.exports = templatedArray('shape', {
             'Specifies the shape type to be drawn.',
 
             'If *line*, a line is drawn from (`x0`,`y0`) to (`x1`,`y1`)',
-            'with respect to the axes\' sizing mode.',
+            "with respect to the axes' sizing mode.",
 
             'If *circle*, a circle is drawn from',
             '((`x0`+`x1`)/2, (`y0`+`y1`)/2))',
             'with radius',
             '(|(`x0`+`x1`)/2 - `x0`|, |(`y0`+`y1`)/2 -`y0`)|)',
-            'with respect to the axes\' sizing mode.',
+            "with respect to the axes' sizing mode.",
 
             'If *rect*, a rectangle is drawn linking',
             '(`x0`,`y0`), (`x1`,`y0`), (`x1`,`y1`), (`x0`,`y1`), (`x0`,`y0`)',
-            'with respect to the axes\' sizing mode.',
+            "with respect to the axes' sizing mode.",
 
             'If *path*, draw a custom SVG path using `path`.',
-            'with respect to the axes\' sizing mode.'
+            "with respect to the axes' sizing mode."
         ].join(' ')
     },
 
@@ -121,7 +116,7 @@ module.exports = templatedArray('shape', {
 
     xref: extendFlat({}, annAttrs.xref, {
         description: [
-            'Sets the shape\'s x coordinate axis.',
+            "Sets the shape's x coordinate axis.",
             axisPlaceableObjs.axisRefDescription('x', 'left', 'right')
         ].join(' ')
     }),
@@ -131,9 +126,9 @@ module.exports = templatedArray('shape', {
         dflt: 'scaled',
         editType: 'calc+arraydraw',
         description: [
-            'Sets the shapes\'s sizing mode along the x axis.',
+            "Sets the shapes's sizing mode along the x axis.",
             'If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to',
-            'data values on the x axis or a fraction of the plot area\'s width',
+            "data values on the x axis or a fraction of the plot area's width",
             '(`xref` set to *paper*).',
             'If set to *pixel*, `xanchor` specifies the x position in terms',
             'of data or plot fraction but `x0`, `x1` and x coordinates within `path`',
@@ -156,18 +151,12 @@ module.exports = templatedArray('shape', {
     x0: {
         valType: 'any',
         editType: 'calc+arraydraw',
-        description: [
-            'Sets the shape\'s starting x position.',
-            'See `type` and `xsizemode` for more info.'
-        ].join(' ')
+        description: ["Sets the shape's starting x position.", 'See `type` and `xsizemode` for more info.'].join(' ')
     },
     x1: {
         valType: 'any',
         editType: 'calc+arraydraw',
-        description: [
-            'Sets the shape\'s end x position.',
-            'See `type` and `xsizemode` for more info.'
-        ].join(' ')
+        description: ["Sets the shape's end x position.", 'See `type` and `xsizemode` for more info.'].join(' ')
     },
     x0shift: {
         valType: 'number',
@@ -195,7 +184,7 @@ module.exports = templatedArray('shape', {
     },
     yref: extendFlat({}, annAttrs.yref, {
         description: [
-            'Sets the shape\'s y coordinate axis.',
+            "Sets the shape's y coordinate axis.",
             axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top')
         ].join(' ')
     }),
@@ -205,9 +194,9 @@ module.exports = templatedArray('shape', {
         dflt: 'scaled',
         editType: 'calc+arraydraw',
         description: [
-            'Sets the shapes\'s sizing mode along the y axis.',
+            "Sets the shapes's sizing mode along the y axis.",
             'If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to',
-            'data values on the y axis or a fraction of the plot area\'s height',
+            "data values on the y axis or a fraction of the plot area's height",
             '(`yref` set to *paper*).',
             'If set to *pixel*, `yanchor` specifies the y position in terms',
             'of data or plot fraction but `y0`, `y1` and y coordinates within `path`',
@@ -230,18 +219,12 @@ module.exports = templatedArray('shape', {
     y0: {
         valType: 'any',
         editType: 'calc+arraydraw',
-        description: [
-            'Sets the shape\'s starting y position.',
-            'See `type` and `ysizemode` for more info.'
-        ].join(' ')
+        description: ["Sets the shape's starting y position.", 'See `type` and `ysizemode` for more info.'].join(' ')
     },
     y1: {
         valType: 'any',
         editType: 'calc+arraydraw',
-        description: [
-            'Sets the shape\'s end y position.',
-            'See `type` and `ysizemode` for more info.'
-        ].join(' ')
+        description: ["Sets the shape's end y position.", 'See `type` and `ysizemode` for more info.'].join(' ')
     },
     y0shift: {
         valType: 'number',
@@ -291,8 +274,8 @@ module.exports = templatedArray('shape', {
             'of categories because using the categories themselves there would',
             'be no way to describe fractional positions',
             'On data axes: because space and T are both normal components of path',
-            'strings, we can\'t use either to separate date from time parts.',
-            'Therefore we\'ll use underscore for this purpose:',
+            "strings, we can't use either to separate date from time parts.",
+            "Therefore we'll use underscore for this purpose:",
             '2015-02-21_13:45:56.789'
         ].join(' ')
     },
@@ -306,18 +289,16 @@ module.exports = templatedArray('shape', {
         description: 'Sets the opacity of the shape.'
     },
     line: {
-        color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
-        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calc+arraydraw'}),
-        dash: extendFlat({}, dash, {editType: 'arraydraw'}),
+        color: extendFlat({}, scatterLineAttrs.color, { editType: 'arraydraw' }),
+        width: extendFlat({}, scatterLineAttrs.width, { editType: 'calc+arraydraw' }),
+        dash: extendFlat({}, dash, { editType: 'arraydraw' }),
         editType: 'calc+arraydraw'
     },
     fillcolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         editType: 'arraydraw',
-        description: [
-            'Sets the color filling the shape\'s interior. Only applies to closed shapes.'
-        ].join(' ')
+        description: ["Sets the color filling the shape's interior. Only applies to closed shapes."].join(' ')
     },
     fillrule: {
         valType: 'enumerated',
@@ -349,7 +330,8 @@ module.exports = templatedArray('shape', {
                 'It is also used for legend item if `name` is not provided.'
             ].join(' ')
         },
-        texttemplate: shapeTexttemplateAttrs({}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
+        texttemplate: shapeTexttemplateAttrs({}, { keys: Object.keys(shapeLabelTexttemplateVars) }),
+        texttemplatefallback: templatefallbackAttrs({ editType: 'arraydraw' }),
         font: fontAttrs({
             editType: 'calc+arraydraw',
             colorEditType: 'arraydraw',
@@ -358,10 +340,18 @@ module.exports = templatedArray('shape', {
         textposition: {
             valType: 'enumerated',
             values: [
-                'top left', 'top center', 'top right',
-                'middle left', 'middle center', 'middle right',
-                'bottom left', 'bottom center', 'bottom right',
-                'start', 'middle', 'end',
+                'top left',
+                'top center',
+                'top right',
+                'middle left',
+                'middle center',
+                'middle right',
+                'bottom left',
+                'bottom center',
+                'bottom right',
+                'start',
+                'middle',
+                'end'
             ],
             editType: 'arraydraw',
             description: [
@@ -371,7 +361,7 @@ module.exports = templatedArray('shape', {
                 '*middle center*, *middle right*, *bottom left*, *bottom center*,',
                 'and *bottom right*.',
                 'Supported values for lines are *start*, *middle*, and *end*.',
-                'Default: *middle center* for rectangles, circles, and paths; *middle* for lines.',
+                'Default: *middle center* for rectangles, circles, and paths; *middle* for lines.'
             ].join(' ')
         },
         textangle: {
@@ -391,27 +381,27 @@ module.exports = templatedArray('shape', {
             dflt: 'auto',
             editType: 'calc+arraydraw',
             description: [
-                'Sets the label\'s horizontal position anchor',
+                "Sets the label's horizontal position anchor",
                 'This anchor binds the specified `textposition` to the *left*, *center*',
                 'or *right* of the label text.',
                 'For example, if `textposition` is set to *top right* and',
                 '`xanchor` to *right* then the right-most portion of the',
                 'label text lines up with the right-most edge of the',
-                'shape.',
-            ].join(' '),
+                'shape.'
+            ].join(' ')
         },
         yanchor: {
             valType: 'enumerated',
             values: ['top', 'middle', 'bottom'],
             editType: 'calc+arraydraw',
             description: [
-                'Sets the label\'s vertical position anchor',
+                "Sets the label's vertical position anchor",
                 'This anchor binds the specified `textposition` to the *top*, *middle*',
                 'or *bottom* of the label text.',
                 'For example, if `textposition` is set to *top right* and',
                 '`yanchor` to *top* then the top-most portion of the',
                 'label text lines up with the top-most edge of the',
-                'shape.',
+                'shape.'
             ].join(' ')
         },
         padding: {

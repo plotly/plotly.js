@@ -9,6 +9,42 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.3.0] -- 2025-11-14
+
+### Added
+- Add `hovertemplate` for `candlestick` and `ohlc` traces [[#7619](https://github.com/plotly/plotly.js/pull/7619)]
+- Generate list of ISO codes for provided topojson maps, update info for some disputed territories [[#7622](https://github.com/plotly/plotly.js/pull/7622)]
+
+### Changed
+- Turn off borders for plot container in CSS reset [[#7617](https://github.com/plotly/plotly.js/pull/7617)]
+
+### Fixed
+- Fix KDE sampling precision in violin trace to eliminate floating-point drift and prevent density underrun/overrun [[#7581](https://github.com/plotly/plotly.js/pull/7581)], with thanks to @Koookadooo for the contribution!
+
+
+## [3.2.0] -- 2025-10-30
+
+### Added
+- Add `hovertemplatefallback` and `texttemplatefallback` attributes [[#7577](https://github.com/plotly/plotly.js/pull/7577)]
+
+### Fixed
+- Fix wrong scrolling behavior for legend [[#7067](https://github.com/plotly/plotly.js/pull/7067)], with thanks to @Lexachoc for the contribution!
+- Fix bug affecting use of `customdata` with typed arrays [[#7608](https://github.com/plotly/plotly.js/pull/7608)]
+
+
+## [3.1.2] -- 2025-10-16
+
+### Added
+- Add "SI extended" formatting rule for tick exponents on axis labels, allowing values to be displayed with extended SI prefixes (e.g., femto, pico, atto) [[#7249](https://github.com/plotly/plotly.js/pull/7249)], with thanks to @dberardi99 for the contribution!
+
+### Fixed
+- Fix editable `title.text` for `ternary`, `polar`, `colorbar`, and `rangeslider` (regression introduced in 3.0.0) [[#7513](https://github.com/plotly/plotly.js/pull/7513)], with thanks to @Lexachoc for the contribution!
+- Fix `layout.title.subtitle` does not properly clear/remove from the chart when `subtitle` object is not in place, or `subtitle.text` set to `null`, empty string, or whitespace-only values [[#7571](https://github.com/plotly/plotly.js/pull/7571)], with thanks to @cminn10 for the contribution!
+- Fix issue where `visible` property of one legend was affecting another. [[#7574](https://github.com/plotly/plotly.js/pull/7574)]
+- Resolve incorrect shape clipping for domain-referenced shapes on n*10th subplot. [[#7576](https://github.com/plotly/plotly.js/pull/7576)]
+- Update config diff check method to handle nested arrays [[#7579](https://github.com/plotly/plotly.js/pull/7579)]
+
+
 ## [3.1.1] -- 2025-09-29
 
 ### Fixed

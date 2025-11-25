@@ -101,14 +101,15 @@ describe('The legend', function() {
             var initialDataScroll = getScroll(gd);
             var wheelDeltaY = 100;
             var finalDataScroll = Lib.constrain(initialDataScroll +
-                wheelDeltaY / scrollBarYMax * scrollBoxYMax,
+                ((wheelDeltaY / scrollBoxYMax) * scrollBarYMax),
                 0, scrollBoxYMax);
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
-
-            expect(getScroll(gd)).toBe(finalDataScroll);
+                
+            var dataScroll = getScroll(gd);
+            expect(dataScroll).toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0,' + -finalDataScroll + ')');
+                'translate(0,' + -dataScroll + ')');
         });
 
         function dragScroll(element, rightClick, mainClick) {

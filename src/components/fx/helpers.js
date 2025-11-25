@@ -4,19 +4,19 @@ var Lib = require('../../lib');
 
 // look for either subplot or xaxis and yaxis attributes
 // does not handle splom case
-exports.getSubplot = function(trace) {
-    return trace.subplot || (trace.xaxis + trace.yaxis) || trace.geo;
+exports.getSubplot = function (trace) {
+    return trace.subplot || trace.xaxis + trace.yaxis || trace.geo;
 };
 
 // is trace in given list of subplots?
 // does handle splom case
-exports.isTraceInSubplots = function(trace, subplots) {
-    if(trace.type === 'splom') {
+exports.isTraceInSubplots = function (trace, subplots) {
+    if (trace.type === 'splom') {
         var xaxes = trace.xaxes || [];
         var yaxes = trace.yaxes || [];
-        for(var i = 0; i < xaxes.length; i++) {
-            for(var j = 0; j < yaxes.length; j++) {
-                if(subplots.indexOf(xaxes[i] + yaxes[j]) !== -1) {
+        for (var i = 0; i < xaxes.length; i++) {
+            for (var j = 0; j < yaxes.length; j++) {
+                if (subplots.indexOf(xaxes[i] + yaxes[j]) !== -1) {
                     return true;
                 }
             }
@@ -28,31 +28,31 @@ exports.isTraceInSubplots = function(trace, subplots) {
 };
 
 // convenience functions for mapping all relevant axes
-exports.flat = function(subplots, v) {
+exports.flat = function (subplots, v) {
     var out = new Array(subplots.length);
-    for(var i = 0; i < subplots.length; i++) {
+    for (var i = 0; i < subplots.length; i++) {
         out[i] = v;
     }
     return out;
 };
 
-exports.p2c = function(axArray, v) {
+exports.p2c = function (axArray, v) {
     var out = new Array(axArray.length);
-    for(var i = 0; i < axArray.length; i++) {
+    for (var i = 0; i < axArray.length; i++) {
         out[i] = axArray[i].p2c(v);
     }
     return out;
 };
 
-exports.getDistanceFunction = function(mode, dx, dy, dxy) {
-    if(mode === 'closest') return dxy || exports.quadrature(dx, dy);
+exports.getDistanceFunction = function (mode, dx, dy, dxy) {
+    if (mode === 'closest') return dxy || exports.quadrature(dx, dy);
     return mode.charAt(0) === 'x' ? dx : dy;
 };
 
-exports.getClosest = function(cd, distfn, pointData) {
+exports.getClosest = function (cd, distfn, pointData) {
     // do we already have a point number? (array mode only)
-    if(pointData.index !== false) {
-        if(pointData.index >= 0 && pointData.index < cd.length) {
+    if (pointData.index !== false) {
+        if (pointData.index >= 0 && pointData.index < cd.length) {
             pointData.distance = 0;
         } else pointData.index = false;
     } else {
@@ -64,10 +64,10 @@ exports.getClosest = function(cd, distfn, pointData) {
         // defined outside the for to improve the garbage collector performance
         var newDistance = Infinity;
         // the browser engine typically optimizes the length, but it is outside the cycle if it does not
-        var len = cd.length
-        for(var i = 0; i < len; i++) {
+        var len = cd.length;
+        for (var i = 0; i < len; i++) {
             newDistance = distfn(cd[i]);
-            if(newDistance <= pointData.distance) {
+            if (newDistance <= pointData.distance) {
                 pointData.index = i;
                 pointData.distance = newDistance;
             }
@@ -84,12 +84,12 @@ exports.getClosest = function(cd, distfn, pointData) {
  * @param {number} v1: signed difference between the current position and the right edge
  * @param {number} passVal: the value to return on success
  */
-exports.inbox = function(v0, v1, passVal) {
-    return (v0 * v1 < 0 || v0 === 0) ? passVal : Infinity;
+exports.inbox = function (v0, v1, passVal) {
+    return v0 * v1 < 0 || v0 === 0 ? passVal : Infinity;
 };
 
-exports.quadrature = function(dx, dy) {
-    return function(di) {
+exports.quadrature = function (dx, dy) {
+    return function (di) {
         var x = dx(di);
         var y = dy(di);
         return Math.sqrt(x * x + y * y);
@@ -111,7 +111,7 @@ exports.quadrature = function(dx, dy) {
  * @param {object} cd
  * @return {object}
  */
-exports.makeEventData = function(pt, trace, cd) {
+exports.makeEventData = function (pt, trace, cd) {
     // hover uses 'index', select uses 'pointNumber'
     var pointNumber = 'index' in pt ? pt.index : pt.pointNumber;
 
@@ -122,10 +122,10 @@ exports.makeEventData = function(pt, trace, cd) {
         pointNumber: pointNumber
     };
 
-    if(trace._indexToPoints) {
+    if (trace._indexToPoints) {
         var pointIndices = trace._indexToPoints[pointNumber];
 
-        if(pointIndices.length === 1) {
+        if (pointIndices.length === 1) {
             out.pointIndex = pointIndices[0];
         } else {
             out.pointIndices = pointIndices;
@@ -134,18 +134,18 @@ exports.makeEventData = function(pt, trace, cd) {
         out.pointIndex = pointNumber;
     }
 
-    if(trace._module.eventData) {
+    if (trace._module.eventData) {
         out = trace._module.eventData(out, pt, trace, cd, pointNumber);
     } else {
-        if('xVal' in pt) out.x = pt.xVal;
-        else if('x' in pt) out.x = pt.x;
+        if ('xVal' in pt) out.x = pt.xVal;
+        else if ('x' in pt) out.x = pt.x;
 
-        if('yVal' in pt) out.y = pt.yVal;
-        else if('y' in pt) out.y = pt.y;
+        if ('yVal' in pt) out.y = pt.yVal;
+        else if ('y' in pt) out.y = pt.y;
 
-        if(pt.xa) out.xaxis = pt.xa;
-        if(pt.ya) out.yaxis = pt.ya;
-        if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
+        if (pt.xa) out.xaxis = pt.xa;
+        if (pt.ya) out.yaxis = pt.ya;
+        if (pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
     }
 
     exports.appendArrayPointValue(out, trace, pointNumber);
@@ -160,22 +160,22 @@ exports.makeEventData = function(pt, trace, cd) {
  * @param {number|Array(number)} pointNumber : point number. May be a length-2 array
  *     [row, col] to dig into 2D arrays
  */
-exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
+exports.appendArrayPointValue = function (pointData, trace, pointNumber) {
     var arrayAttrs = trace._arrayAttrs;
 
-    if(!arrayAttrs) {
+    if (!arrayAttrs) {
         return;
     }
 
-    for(var i = 0; i < arrayAttrs.length; i++) {
+    for (var i = 0; i < arrayAttrs.length; i++) {
         var astr = arrayAttrs[i];
         var key = getPointKey(astr);
 
-        if(pointData[key] === undefined) {
+        if (pointData[key] === undefined) {
             var val = Lib.nestedProperty(trace, astr).get();
             var pointVal = getPointData(val, pointNumber);
 
-            if(pointVal !== undefined) pointData[key] = pointVal;
+            if (pointVal !== undefined) pointData[key] = pointVal;
         }
     }
 };
@@ -190,22 +190,22 @@ exports.appendArrayPointValue = function(pointData, trace, pointNumber) {
  * @param {Array(number)|Array(Array(number))} pointNumbers : Array of point numbers.
  *     Each entry in the array may itself be a length-2 array [row, col] to dig into 2D arrays
  */
-exports.appendArrayMultiPointValues = function(pointData, trace, pointNumbers) {
+exports.appendArrayMultiPointValues = function (pointData, trace, pointNumbers) {
     var arrayAttrs = trace._arrayAttrs;
 
-    if(!arrayAttrs) {
+    if (!arrayAttrs) {
         return;
     }
 
-    for(var i = 0; i < arrayAttrs.length; i++) {
+    for (var i = 0; i < arrayAttrs.length; i++) {
         var astr = arrayAttrs[i];
         var key = getPointKey(astr);
 
-        if(pointData[key] === undefined) {
+        if (pointData[key] === undefined) {
             var val = Lib.nestedProperty(trace, astr).get();
             var keyVal = new Array(pointNumbers.length);
 
-            for(var j = 0; j < pointNumbers.length; j++) {
+            for (var j = 0; j < pointNumbers.length; j++) {
                 keyVal[j] = getPointData(val, pointNumbers[j]);
             }
             pointData[key] = keyVal;
@@ -227,8 +227,8 @@ function getPointKey(astr) {
 }
 
 function getPointData(val, pointNumber) {
-    if(Array.isArray(pointNumber)) {
-        if(Array.isArray(val) && Array.isArray(val[pointNumber[0]])) {
+    if (Array.isArray(pointNumber)) {
+        if (Lib.isArrayOrTypedArray(val) && Lib.isArrayOrTypedArray(val[pointNumber[0]])) {
             return val[pointNumber[0]][pointNumber[1]];
         }
     } else {
@@ -246,12 +246,12 @@ var unifiedHoverMode = {
     'y unified': true
 };
 
-exports.isUnifiedHover = function(hovermode) {
-    if(typeof hovermode !== 'string') return false;
+exports.isUnifiedHover = function (hovermode) {
+    if (typeof hovermode !== 'string') return false;
     return !!unifiedHoverMode[hovermode];
 };
 
-exports.isXYhover = function(hovermode) {
-    if(typeof hovermode !== 'string') return false;
+exports.isXYhover = function (hovermode) {
+    if (typeof hovermode !== 'string') return false;
     return !!xyHoverMode[hovermode];
 };
