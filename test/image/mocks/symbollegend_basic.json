@@ -1,0 +1,29 @@
+{
+    "data": [{
+        "type": "scatter",
+        "mode": "markers",
+        "x": [1, 2, 3, 4, 5, 6, 7, 8],
+        "y": [2, 4, 3, 5, 4, 6, 5, 7],
+        "marker": {
+            "symbol": ["circle", "square", "diamond", "circle", "square", "diamond", "circle", "square"],
+            "symbollegend": "symbollegend",
+            "size": 12,
+            "color": "#1f77b4"
+        },
+        "name": "Sample Data"
+    }],
+    "layout": {
+        "title": {
+            "text": "Symbol Legend Example"
+        },
+        "symbollegend": {
+            "title": { "text": "Region" },
+            "x": 1.02,
+            "y": 0,
+            "visible": true
+        },
+        "width": 600,
+        "height": 400,
+        "showlegend": false
+    }
+}
