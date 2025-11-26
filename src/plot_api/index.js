@@ -37,3 +37,5 @@ exports.downloadImage = require('../snapshot/download');
 var templateApi = require('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
+
+exports.profile = require('./profile');
