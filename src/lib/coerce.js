@@ -88,8 +88,17 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v === true || v === false) propOut.set(v);
-            else propOut.set(dflt);
+            function isBoolean(value) {
+                return value === true || value === false;
+            }
+
+            if (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isBoolean)) {
+                propOut.set(v);
+            } else if(isBoolean(v)) {
+                propOut.set(v);
+            } else {
+                propOut.set(dflt);
+            }
         }
     },
     number: {
@@ -227,16 +236,17 @@ exports.valObjectMeta = {
         requiredOpts: ['dflt'],
         otherOpts: ['regex', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.arrayOk && isArrayOrTypedArray(v)) {
-                propOut.set(v);
-                return;
-            }
             var regex = opts.regex || counterRegex(dflt);
-            if(typeof v === 'string' && regex.test(v)) {
-                propOut.set(v);
-                return;
+            function isSubplotId(value) {
+                return typeof value === 'string' && regex.test(value);
             }
-            propOut.set(dflt);
+            if (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isSubplotId)) {
+                propOut.set(v);
+            } else if(isSubplotId(v)) {
+                propOut.set(v);
+            } else {
+                propOut.set(dflt);
+            }
         },
         validateFunction: function(v, opts) {
             var dflt = opts.dflt;
