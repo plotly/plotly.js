@@ -52,7 +52,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     };
     fullData
         .filter(isPieWithLegendArray)
-        .map(function (trace, idx) {
+        .forEach(function (trace) {
             if (trace.visible) {
                 legendTraceCount++;
             }
@@ -61,13 +61,11 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
                 if(legend === legendId) {
                     // showlegend can be undefined, boolean or a boolean array.
                     // will fall back to default if undefined or if array index is out-of-range
-                    if(
-                        !Array.isArray(trace.showlegend)
-                        ? trace.showlegend || trace._dfltShowLegend
-                        : trace.showlegend[index] == null
-                        ? trace._dfltShowLegend
-                        : trace.showlegend[index]
-                    ) {
+                    var showInLegend = trace.showlegend || trace._dfltShowLegend;
+                    if (Array.isArray(trace.showlegend)) {
+                        showInLegend = trace.showlegend[index] ?? trace._dfltShowLegend;
+                    }
+                    if(showInLegend) {
                         legendReallyHasATrace = true;
                         legendTraceCount++;
                     }
