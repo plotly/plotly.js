@@ -270,7 +270,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var legends = ['legend'];
     for(i = 0; i < allLegendsData.length; i++) {
         if (Array.isArray(allLegendsData[i].legend)) {
-            Lib.extendFlat(legends, allLegendsData[i].legend);
+            legends = legends.concat(allLegendsData[i].legend);
         } else {
             Lib.pushUnique(legends, allLegendsData[i].legend);
         }
