@@ -5,7 +5,7 @@
       "type": "pie",
       "values": [1, 2, 3, 4],
       "showlegend": [true, false, true],
-      "legend": ["legend3", "legend2", "legend3"]
+      "legend": ["legend", "legend2", "legend3"]
     }
   ],
   "layout": {
