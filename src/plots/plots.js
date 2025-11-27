@@ -14,6 +14,7 @@ var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('./cartesian/axis_ids');
+var cartesianConstants = require('./cartesian/constants');
 var clearOutline = require('../components/shapes/handle_outline').clearOutline;
 var scatterAttrs = require('../traces/scatter/layout_attributes');
 
@@ -892,6 +893,19 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
                 plotinfo._hasClipOnAxisFalse = true;
                 break;
             }
+        }
+    }
+
+    // Preserve z-indexed subplots (e.g. 'xyz2', 'xyz3') from oldSubplots to _plots only.
+    // These are created by drawFramework when traces have different zorder values.
+    // We preserve them to _plots (not _subplots.cartesian) so that drag/pan operations
+    // in dragbox.js can still transform them during relayout operations that don't
+    // trigger a full redraw (e.g., resize). If drawFramework runs later, it will
+    // properly update/remove these subplots as needed.
+    var zindexSeparator = cartesianConstants.zindexSeparator;
+    for(var oldId in oldSubplots) {
+        if(oldId.indexOf(zindexSeparator) !== -1 && !newSubplots[oldId]) {
+            newSubplots[oldId] = oldSubplots[oldId];
         }
     }
 
