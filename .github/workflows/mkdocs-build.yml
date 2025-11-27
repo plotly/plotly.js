@@ -1,0 +1,91 @@
+name: MkDocs Documentation Build
+
+# Trigger on pushes and pull requests to the live-docs branch
+# This is where the mkdocs documentation is being developed
+on:
+  push:
+    branches:
+      - live-docs
+  pull_request:
+    branches:
+      - live-docs
+  # Allow manual workflow dispatch for testing
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    name: Build MkDocs Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install uv (Python package manager)
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      
+      - name: Display uv version
+        run: uv --version
+      
+      - name: Install Python dependencies
+        working-directory: docs
+        run: |
+          uv pip install --system -r requirements.txt
+      
+      - name: Display installed packages
+        run: uv pip list --system
+      
+      - name: Build documentation examples
+        working-directory: docs
+        run: |
+          make examples
+      
+      - name: Build documentation reference
+        working-directory: docs
+        run: |
+          make reference
+      
+      - name: Build MkDocs site
+        working-directory: docs
+        run: |
+          uv run mkdocs build --strict
+      
+      - name: Check build output
+        working-directory: docs
+        run: |
+          if [ -d "build" ]; then
+            echo "✅ Documentation built successfully!"
+            echo "📊 Build statistics:"
+            du -sh build
+            find build -type f | wc -l | xargs echo "Total files:"
+          else
+            echo "❌ Documentation build failed - output directory not found"
+            exit 1
+          fi
+      
+      - name: Upload documentation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mkdocs-build-output
+          path: docs/build/
+          retention-days: 7
+          if-no-files-found: warn
+      
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            docs/tmp/
+          retention-days: 7
+          if-no-files-found: ignore
