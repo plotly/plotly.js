@@ -10,14 +10,14 @@ var constants = require('./constants');
 // completely in favor of just 'x' if it weren't ingrained in the API etc.
 exports.id2name = function id2name(id) {
     if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
-    var axNum = id.split(' ')[0].substr(1);
+    var axNum = id.split(' ')[0].slice(1);
     if(axNum === '1') axNum = '';
     return id.charAt(0) + 'axis' + axNum;
 };
 
 exports.name2id = function name2id(name) {
     if(!name.match(constants.AX_NAME_PATTERN)) return;
-    var axNum = name.substr(5);
+    var axNum = name.slice(5);
     if(axNum === '1') axNum = '';
     return name.charAt(0) + axNum;
 };
@@ -33,7 +33,7 @@ exports.cleanId = function cleanId(id, axLetter, domainId) {
     if(typeof id !== 'string' || !id.match(constants.AX_ID_PATTERN)) return;
     if(axLetter && id.charAt(0) !== axLetter) return;
     if(domainTest && (!domainId)) return;
-    var axNum = id.split(' ')[0].substr(1).replace(/^0+/, '');
+    var axNum = id.split(' ')[0].slice(1).replace(/^0+/, '');
     if(axNum === '1') axNum = '';
     return id.charAt(0) + axNum + (domainTest && domainId ? ' domain' : '');
 };
@@ -49,7 +49,7 @@ exports.list = function(gd, axLetter, only2d) {
 
     for(i = 0; i < idList.length; i++) {
         var idi = idList[i];
-        out[i] = fullLayout[idi.charAt(0) + 'axis' + idi.substr(1)];
+        out[i] = fullLayout[idi.charAt(0) + 'axis' + idi.slice(1)];
     }
 
     if(!only2d) {
@@ -97,7 +97,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
 
     if(Registry.traceIs(fullTrace, 'gl3d')) {
         var scene = fullTrace.scene;
-        if(scene.substr(0, 5) === 'scene') {
+        if(scene.slice(0, 5) === 'scene') {
             ax = fullLayout[scene][type + 'axis'];
         }
     } else {
@@ -112,7 +112,7 @@ exports.idSort = function(id1, id2) {
     var letter1 = id1.charAt(0);
     var letter2 = id2.charAt(0);
     if(letter1 !== letter2) return letter1 > letter2 ? 1 : -1;
-    return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
+    return +(id1.slice(1) || 1) - +(id2.slice(1) || 1);
 };
 
 /*

@@ -272,7 +272,7 @@ function makeVecAttr(vecIndex, sampleCount, points) {
 
 function pad2(num) {
     var s = '0' + num;
-    return s.substr(s.length - 2);
+    return s.slice(-2);
 }
 
 function getAttrName(i) {

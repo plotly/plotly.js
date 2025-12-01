@@ -76,7 +76,7 @@ exports.valObjectMeta = {
                 var k = String(values[i]);
 
                 if((k.charAt(0) === '/' && k.charAt(k.length - 1) === '/')) {
-                    var regex = new RegExp(k.substr(1, k.length - 2));
+                    var regex = new RegExp(k.slice(1, -1));
                     if(regex.test(v)) return true;
                 } else if(v === values[i]) return true;
             }

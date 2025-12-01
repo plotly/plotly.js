@@ -65,9 +65,9 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
             }
 
             trace._ownfill = (trace.fill && (
-                trace.fill.substr(0, 6) === 'tozero' ||
+                trace.fill.slice(0, 6) === 'tozero' ||
                 trace.fill === 'toself' ||
-                (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace)
+                (trace.fill.slice(0, 2) === 'to' && !trace._prevtrace)
             ));
 
             prevtraces[group] = trace;

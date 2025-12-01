@@ -37,7 +37,7 @@ module.exports = function containerArrayMatch(astr) {
 
     if(!arrayStr) return false;
 
-    var tail = astr.substr(arrayStr.length);
+    var tail = astr.slice(arrayStr.length);
     if(!tail) return {array: arrayStr, index: '', property: ''};
 
     match = tail.match(/^\[(0|[1-9][0-9]*)\](\.(.+))?$/);

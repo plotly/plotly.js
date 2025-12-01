@@ -115,7 +115,7 @@ function shapeBounds(ax, shape, paramsToUse) {
         drawnParam = paramsToUse[segment.charAt(0)].drawn;
         if(drawnParam === undefined) continue;
 
-        params = segments[i].substr(1).match(constants.paramRE);
+        params = segments[i].slice(1).match(constants.paramRE);
         if(!params || params.length < drawnParam) continue;
 
         val = convertVal(params[drawnParam]);

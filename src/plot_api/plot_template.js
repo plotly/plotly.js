@@ -232,7 +232,7 @@ function arrayDefaultKey(name) {
     if(name.charAt(lastChar) !== 's') {
         Lib.warn('bad argument to arrayDefaultKey: ' + name);
     }
-    return name.substr(0, name.length - 1) + 'defaults';
+    return name.slice(0, -1) + 'defaults';
 }
 exports.arrayDefaultKey = arrayDefaultKey;
 

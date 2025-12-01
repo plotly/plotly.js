@@ -20,7 +20,7 @@ var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 module.exports = function nestedProperty(container, propStr) {
     if(isNumeric(propStr)) propStr = String(propStr);
     else if(typeof propStr !== 'string' ||
-            propStr.substr(propStr.length - 4) === '[-1]') {
+            propStr.slice(-4) === '[-1]') {
         throw 'bad property string';
     }
 
@@ -48,7 +48,7 @@ module.exports = function nestedProperty(container, propStr) {
             else throw 'bad property string';
 
             indices = indexed[2]
-                .substr(1, indexed[2].length - 2)
+                .slice(1, -1)
                 .split('][');
 
             for(i = 0; i < indices.length; i++) {

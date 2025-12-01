@@ -620,7 +620,7 @@ function movePath(pathIn, moveX, moveY) {
         var yParams = constants.paramIsY[segmentType];
         var nParams = constants.numParams[segmentType];
 
-        var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
+        var paramString = segment.slice(1).replace(constants.paramRE, function(param) {
             if(paramNumber >= nParams) return param;
 
             if(xParams[paramNumber]) param = moveX(param);
