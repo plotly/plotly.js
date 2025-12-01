@@ -458,7 +458,7 @@ exports.plainText = function(_str, opts) {
                 }
 
                 if(len > eLen) {
-                    newParts.push(p.slice(0, pLen2 - eLen) + ellipsis);
+                    newParts.push(p.slice(0, Math.max(0, pLen2 - eLen)) + ellipsis);
                 } else {
                     newParts.push(p.slice(0, pLen2));
                 }

@@ -45,7 +45,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     if(subplots) {
         var yIds = subplots.cartesian
             .filter(function(subplotId) {
-                return subplotId.slice(0, subplotId.indexOf('y')) === axisIds.name2id(axName);
+                return subplotId.slice(0, Math.max(0, subplotId.indexOf('y'))) === axisIds.name2id(axName);
             })
             .map(function(subplotId) {
                 return subplotId.slice(subplotId.indexOf('y'), subplotId.length);

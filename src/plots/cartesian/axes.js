@@ -2163,7 +2163,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(tickRound === 0) v = String(Math.floor(v));
         else if(tickRound < 0) {
             v = String(Math.round(v));
-            v = v.slice(0, v.length + tickRound);
+            v = v.slice(0, Math.max(0, v.length + tickRound));
             for(var i = tickRound; i < 0; i++) v += '0';
         } else {
             v = String(v);
