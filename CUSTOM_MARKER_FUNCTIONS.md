@@ -256,6 +256,80 @@ function indexBasedStar(r, angle, standoff, d, trace) {
 }
 ```
 
+### Weather Map Example (Sun, Clouds, Wind with Speed Bars)
+
+A practical example showing different weather symbols based on customdata:
+
+```javascript
+// Weather marker: sun, clouds, or directional wind with speed bars
+function weatherMarker(r, angle, standoff, d, trace) {
+    var weather = d.data;  // customdata contains {type, direction, speed}
+    
+    if (weather.type === 'sunny') {
+        // Sun: circle with 8 rays
+        var cr = r * 0.5;
+        var path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 0,-' + cr + 
+                   'A' + cr + ',' + cr + ' 0 0,1 ' + cr + ',0Z';
+        for (var i = 0; i < 8; i++) {
+            var ang = i * Math.PI / 4;
+            var x1 = (cr + 2) * Math.cos(ang), y1 = (cr + 2) * Math.sin(ang);
+            var x2 = (cr + r*0.4) * Math.cos(ang), y2 = (cr + r*0.4) * Math.sin(ang);
+            path += 'M' + x1.toFixed(2) + ',' + y1.toFixed(2) + 
+                    'L' + x2.toFixed(2) + ',' + y2.toFixed(2);
+        }
+        return path;
+    }
+    
+    if (weather.type === 'cloudy') {
+        // Cloud: curved shape
+        var cy = r * 0.2;
+        return 'M' + (-r*0.6) + ',' + cy + 
+               'A' + (r*0.35) + ',' + (r*0.35) + ' 0 1,1 ' + (-r*0.1) + ',' + (-cy) +
+               'A' + (r*0.4) + ',' + (r*0.4) + ' 0 1,1 ' + (r*0.5) + ',' + (-cy*0.5) +
+               'A' + (r*0.3) + ',' + (r*0.3) + ' 0 1,1 ' + (r*0.7) + ',' + cy +
+               'L' + (-r*0.6) + ',' + cy + 'Z';
+    }
+    
+    if (weather.type === 'wind') {
+        // Wind arrow with speed bars (1-3 bars based on speed)
+        var speed = weather.speed || 1;
+        var shaftLen = r * 1.2, headLen = r * 0.4, headWidth = r * 0.3;
+        var path = 'M0,' + shaftLen + 'L0,' + (-shaftLen + headLen) +  // shaft
+                   'M0,' + (-shaftLen) + 'L' + (-headWidth) + ',' + (-shaftLen + headLen) +  // head
+                   'M0,' + (-shaftLen) + 'L' + headWidth + ',' + (-shaftLen + headLen);
+        // Speed bars
+        for (var b = 0; b < speed; b++) {
+            var barY = (-shaftLen + headLen + r*0.2) + b * r * 0.3;
+            path += 'M' + (-r*0.5) + ',' + barY + 'L' + (r*0.5) + ',' + barY;
+        }
+        return path;
+    }
+    return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r + 'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
+}
+
+// Weather data with customdata for each location
+Plotly.newPlot('myDiv', [{
+    type: 'scatter',
+    x: [-122.4, -118.2, -73.9, -87.6, -95.4],
+    y: [37.8, 34.1, 40.7, 41.9, 29.8],
+    customdata: [
+        { type: 'sunny' },
+        { type: 'cloudy' },
+        { type: 'wind', direction: 45, speed: 3 },
+        { type: 'wind', direction: 180, speed: 1 },
+        { type: 'sunny' }
+    ],
+    mode: 'markers',
+    marker: {
+        symbol: weatherMarker,
+        size: 30,
+        color: ['#FFD700', '#708090', '#4169E1', '#4169E1', '#FFD700'],
+        line: { width: 2, color: '#333' },
+        angle: [0, 0, 45, 180, 0]  // Wind direction for rotation
+    }
+}]);
+```
+
 ## Notes
 
 - Custom marker functions work with all marker styling options (color, size, line, etc.)

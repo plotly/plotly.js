@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Weather Map Demo - Custom Marker Functions</title>
+    <script src="../../dist/plotly.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        #weatherMap { width: 100%; height: 600px; }
+        .legend { margin-top: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>🌤️ Weather Map Demo</h1>
+    <p>Custom marker functions with data-driven symbols showing clouds, sun, and directional wind markers with speed bars.</p>
+    <div id="weatherMap"></div>
+    <div class="legend">
+        <strong>Legend:</strong> ☀️ Sunny | ☁️ Cloudy | 🌬️ Wind (direction + speed bars: 1=low, 2=medium, 3=high)
+    </div>
+
+    <script>
+    // Weather marker function that draws different symbols based on customdata
+    function weatherMarker(r, angle, standoff, d, trace) {
+        var weather = d.data;  // customdata contains weather info
+        
+        if (weather.type === 'sunny') {
+            // Sun symbol: circle with rays
+            var cr = r * 0.5;
+            var rayLen = r * 0.4;
+            var path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 0,-' + cr + 
+                       'A' + cr + ',' + cr + ' 0 0,1 ' + cr + ',0Z';
+            // Add 8 rays
+            for (var i = 0; i < 8; i++) {
+                var ang = i * Math.PI / 4;
+                var x1 = (cr + 2) * Math.cos(ang);
+                var y1 = (cr + 2) * Math.sin(ang);
+                var x2 = (cr + rayLen) * Math.cos(ang);
+                var y2 = (cr + rayLen) * Math.sin(ang);
+                path += 'M' + x1.toFixed(2) + ',' + y1.toFixed(2) + 
+                        'L' + x2.toFixed(2) + ',' + y2.toFixed(2);
+            }
+            return path;
+        }
+        
+        if (weather.type === 'cloudy') {
+            // Cloud symbol: overlapping circles
+            var cx = r * 0.3;
+            var cy = r * 0.2;
+            return 'M' + (-r*0.6) + ',' + cy + 
+                   'A' + (r*0.35) + ',' + (r*0.35) + ' 0 1,1 ' + (-r*0.1) + ',' + (-cy) +
+                   'A' + (r*0.4) + ',' + (r*0.4) + ' 0 1,1 ' + (r*0.5) + ',' + (-cy*0.5) +
+                   'A' + (r*0.3) + ',' + (r*0.3) + ' 0 1,1 ' + (r*0.7) + ',' + (cy) +
+                   'L' + (-r*0.6) + ',' + cy + 'Z';
+        }
+        
+        if (weather.type === 'wind') {
+            // Wind arrow with speed bars
+            var direction = weather.direction || 0;  // degrees
+            var speed = weather.speed || 1;  // 1-3 bars
+            var rad = direction * Math.PI / 180;
+            
+            // Arrow shaft
+            var shaftLen = r * 1.2;
+            var headLen = r * 0.4;
+            var headWidth = r * 0.3;
+            
+            // Build arrow pointing up, then we rely on marker.angle to rotate
+            var path = 'M0,' + shaftLen +  // bottom of shaft
+                       'L0,' + (-shaftLen + headLen) +  // top of shaft before head
+                       'M0,' + (-shaftLen) +  // arrow tip
+                       'L' + (-headWidth) + ',' + (-shaftLen + headLen) +
+                       'M0,' + (-shaftLen) +
+                       'L' + headWidth + ',' + (-shaftLen + headLen);
+            
+            // Add speed bars (perpendicular to shaft)
+            var barWidth = r * 0.5;
+            var barSpacing = r * 0.3;
+            for (var b = 0; b < speed; b++) {
+                var barY = (-shaftLen + headLen + r*0.2) + b * barSpacing;
+                path += 'M' + (-barWidth) + ',' + barY + 'L' + barWidth + ',' + barY;
+            }
+            
+            return path;
+        }
+        
+        // Default: small dot
+        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r + 
+               'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
+    }
+
+    // Weather data for the map
+    var locations = [
+        { name: 'City A', lon: -122.4, lat: 37.8, weather: { type: 'sunny' } },
+        { name: 'City B', lon: -118.2, lat: 34.1, weather: { type: 'cloudy' } },
+        { name: 'City C', lon: -73.9, lat: 40.7, weather: { type: 'wind', direction: 45, speed: 3 } },
+        { name: 'City D', lon: -87.6, lat: 41.9, weather: { type: 'wind', direction: 180, speed: 1 } },
+        { name: 'City E', lon: -95.4, lat: 29.8, weather: { type: 'sunny' } },
+        { name: 'City F', lon: -104.9, lat: 39.7, weather: { type: 'wind', direction: 270, speed: 2 } },
+        { name: 'City G', lon: -122.3, lat: 47.6, weather: { type: 'cloudy' } },
+        { name: 'City H', lon: -80.2, lat: 25.8, weather: { type: 'sunny' } },
+        { name: 'City I', lon: -71.1, lat: 42.4, weather: { type: 'wind', direction: 135, speed: 2 } },
+        { name: 'City J', lon: -112.1, lat: 33.4, weather: { type: 'sunny' } }
+    ];
+
+    // Prepare trace data
+    var x = locations.map(function(l) { return l.lon; });
+    var y = locations.map(function(l) { return l.lat; });
+    var customdata = locations.map(function(l) { return l.weather; });
+    var text = locations.map(function(l) { 
+        var w = l.weather;
+        if (w.type === 'wind') {
+            return l.name + '<br>Wind: ' + w.direction + '° Speed: ' + w.speed;
+        }
+        return l.name + '<br>' + w.type.charAt(0).toUpperCase() + w.type.slice(1);
+    });
+    
+    // Color based on weather type
+    var colors = locations.map(function(l) {
+        if (l.weather.type === 'sunny') return '#FFD700';
+        if (l.weather.type === 'cloudy') return '#708090';
+        if (l.weather.type === 'wind') return '#4169E1';
+        return '#333';
+    });
+    
+    // Angle for wind markers (rotate to show direction)
+    var angles = locations.map(function(l) {
+        if (l.weather.type === 'wind') return l.weather.direction;
+        return 0;
+    });
+
+    Plotly.newPlot('weatherMap', [{
+        type: 'scatter',
+        mode: 'markers+text',
+        x: x,
+        y: y,
+        customdata: customdata,
+        text: text,
+        textposition: 'bottom center',
+        hoverinfo: 'text',
+        marker: {
+            symbol: weatherMarker,
+            size: 30,
+            color: colors,
+            line: { width: 2, color: '#333' },
+            angle: angles
+        }
+    }], {
+        title: 'US Weather Map with Custom Markers',
+        xaxis: { 
+            title: 'Longitude', 
+            range: [-130, -65],
+            gridcolor: '#eee'
+        },
+        yaxis: { 
+            title: 'Latitude', 
+            range: [20, 55],
+            scaleanchor: 'x',
+            gridcolor: '#eee'
+        },
+        showlegend: false,
+        paper_bgcolor: '#f5f5f5',
+        plot_bgcolor: '#e8f4f8'
+    });
+    </script>
+</body>
+</html>
