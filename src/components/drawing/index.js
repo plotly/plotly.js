@@ -396,8 +396,11 @@ function makePointPath(symbolNumberOrFunc, r, t, s, d, trace) {
     // Check if a custom function was passed directly
     if (typeof symbolNumberOrFunc === 'function') {
         // Pass additional context for custom functions:
-        // r: radius/size, t: angle, s: standoff, d: data point object, trace: trace object
-        // d contains: i (index), data (customdata), x, y, and other per-point info
+        // r: radius/size of the marker
+        // t: rotation angle in degrees
+        // s: standoff distance from the point
+        // d: data point object containing i (index), data (customdata), x, y, etc.
+        // trace: the full trace object
         return symbolNumberOrFunc(r, t, s, d, trace);
     }
     
