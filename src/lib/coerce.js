@@ -88,13 +88,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            function isBoolean(value) {
-                return value === true || value === false;
-            }
-
-            if (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isBoolean)) {
-                propOut.set(v);
-            } else if(isBoolean(v)) {
+            const isBoolean = value => value === true || value === false;
+            if (isBoolean(v) || (opts.arrayOk && Array.isArray(v) && v.length > 0 && v.every(isBoolean))) {
                 propOut.set(v);
             } else {
                 propOut.set(dflt);
@@ -238,9 +233,7 @@ exports.valObjectMeta = {
         coerceFunction: function(v, propOut, dflt, opts) {
             var regex = opts.regex || counterRegex(dflt);
             const isSubplotId = value => typeof value === 'string' && regex.test(value);
-            if (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isSubplotId)) {
-                propOut.set(v);
-            } else if(isSubplotId(v)) {
+            if (isSubplotId(v) || (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isSubplotId))) {
                 propOut.set(v);
             } else {
                 propOut.set(dflt);
