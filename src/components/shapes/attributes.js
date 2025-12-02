@@ -119,12 +119,16 @@ module.exports = templatedArray('shape', {
         ].join(' ')
     },
 
-    xref: extendFlat({}, annAttrs.xref, {
+    xref: {
+        valType: 'any',
+        editType: 'calc',
         description: [
             'Sets the shape\'s x coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('x', 'left', 'right')
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
+            'If an array of axis IDs is provided, each `x` value will refer to the corresponding axis',
+            '(e.g., [\'x\', \'x2\'] for a rectangle means `x0` uses the `x` axis and `x1` uses the `x2` axis).',
         ].join(' ')
-    }),
+    },
     xsizemode: {
         valType: 'enumerated',
         values: ['scaled', 'pixel'],
@@ -193,12 +197,16 @@ module.exports = templatedArray('shape', {
             'corresponds to the end of the category.'
         ].join(' ')
     },
-    yref: extendFlat({}, annAttrs.yref, {
+    yref: {
+        valType: 'any',
+        editType: 'calc',
         description: [
             'Sets the shape\'s y coordinate axis.',
-            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top')
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
+            'If an array of axis IDs is provided, each `y` value will refer to the corresponding axis',
+            '(e.g., [\'y\', \'y2\'] for a rectangle means `y0` uses the `y` axis and `y1` uses the `y2` axis).',
         ].join(' ')
-    }),
+    },
     ysizemode: {
         valType: 'enumerated',
         values: ['scaled', 'pixel'],
