@@ -237,9 +237,7 @@ exports.valObjectMeta = {
         otherOpts: ['regex', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             var regex = opts.regex || counterRegex(dflt);
-            function isSubplotId(value) {
-                return typeof value === 'string' && regex.test(value);
-            }
+            const isSubplotId = value => typeof value === 'string' && regex.test(value);
             if (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isSubplotId)) {
                 propOut.set(v);
             } else if(isSubplotId(v)) {
