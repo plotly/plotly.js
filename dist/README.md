@@ -91,7 +91,7 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.6 MB | 1.1 MB | 361.3 kB |
+| 2.6 MB | 1.1 MB | 361.4 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-basic-3.3.0.js
@@ -114,7 +114,7 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.3 MB | 459.4 kB |
+| 3.3 MB | 1.3 MB | 459.5 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-cartesian-3.3.0.js
@@ -160,7 +160,7 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.2 MB | 1.6 MB | 529.8 kB |
+| 4.2 MB | 1.6 MB | 529.9 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-gl3d-3.3.0.js
@@ -183,7 +183,7 @@ The `gl2d` partial bundle contains trace modules `parcoords`, `scatter`, `scatte
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.8 MB | 1.5 MB | 518 kB |
+| 3.8 MB | 1.5 MB | 518.1 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-gl2d-3.3.0.js

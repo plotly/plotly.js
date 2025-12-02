@@ -103,10 +103,12 @@ Plotly.newPlot('myDiv', [{
 Your custom marker function should have the following signature:
 
 ```javascript
-function customMarker(r, angle, standoff) {
+function customMarker(r, angle, standoff, d, trace) {
     // r: radius/size of the marker
     // angle: rotation angle in degrees (for directional markers)
     // standoff: standoff distance from the point (for advanced use)
+    // d: data point object containing per-point information
+    // trace: the full trace object
     
     // Return an SVG path string
     return 'M...Z';
@@ -118,6 +120,18 @@ function customMarker(r, angle, standoff) {
 - **r** (number): The radius/size of the marker. Your path should scale proportionally with this value.
 - **angle** (number, optional): The rotation angle in degrees. Most simple markers can ignore this.
 - **standoff** (number, optional): The standoff distance. Most markers can ignore this.
+- **d** (object, optional): The data point object containing per-point information:
+  - `d.i`: The index of the data point in the trace
+  - `d.x`: The x value of the data point
+  - `d.y`: The y value of the data point
+  - `d.data`: The customdata value for this point (if customdata array was provided)
+  - Other per-point properties may be available depending on the trace type
+- **trace** (object, optional): The full trace object, providing access to all trace properties including:
+  - `trace.x`: The array of all x values
+  - `trace.y`: The array of all y values  
+  - `trace.customdata`: The customdata array
+  - `trace.marker`: The marker configuration object
+  - All other trace properties
 
 ### Return Value
 
@@ -182,6 +196,66 @@ function arrowMarker(r) {
 }
 ```
 
+### Data-Driven Marker (Using customdata)
+
+You can create markers that vary based on the data point's values or customdata:
+
+```javascript
+// Marker that changes shape based on customdata category
+function categoryMarker(r, angle, standoff, d, trace) {
+    var category = d.data; // access customdata for this point
+    
+    if (category === 'high') {
+        // Triangle pointing up for 'high' category
+        return 'M0,-' + r + 'L' + r + ',' + r + 'L-' + r + ',' + r + 'Z';
+    } else if (category === 'low') {
+        // Triangle pointing down for 'low' category
+        return 'M0,' + r + 'L' + r + ',-' + r + 'L-' + r + ',-' + r + 'Z';
+    } else {
+        // Default circle-like shape
+        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r + 
+               'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
+    }
+}
+
+// Use with customdata
+Plotly.newPlot('myDiv', [{
+    type: 'scatter',
+    x: [1, 2, 3, 4, 5],
+    y: [2, 5, 1, 4, 3],
+    customdata: ['high', 'high', 'low', 'medium', 'low'],
+    mode: 'markers',
+    marker: {
+        symbol: categoryMarker,
+        size: 20,
+        color: 'steelblue'
+    }
+}]);
+```
+
+### Index-Based Marker
+
+Create markers that vary by their position in the data:
+
+```javascript
+// Star with number of points based on index
+function indexBasedStar(r, angle, standoff, d, trace) {
+    var points = 3 + d.i; // 3 points for first, 4 for second, etc.
+    var outerRadius = r;
+    var innerRadius = r * 0.4;
+    var path = 'M';
+    
+    for (var i = 0; i < points * 2; i++) {
+        var radius = i % 2 === 0 ? outerRadius : innerRadius;
+        var ang = (i * Math.PI) / points - Math.PI / 2;
+        var x = radius * Math.cos(ang);
+        var y = radius * Math.sin(ang);
+        path += (i === 0 ? '' : 'L') + x.toFixed(2) + ',' + y.toFixed(2);
+    }
+    return path + 'Z';
+}
+```
+
 ## Notes
 
 - Custom marker functions work with all marker styling options (color, size, line, etc.)
@@ -189,6 +263,7 @@ function arrowMarker(r) {
 - Functions are passed through as-is and not stored in any registry
 - This approach is simpler than the registration-based API
 - For best performance, define your functions once outside the plot call
+- The `d` and `trace` parameters provide access to data for data-driven markers
 
 ## Browser Compatibility
 
