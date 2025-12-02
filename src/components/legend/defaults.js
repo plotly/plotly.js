@@ -59,13 +59,10 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
             for(var index = 0; index < trace._length; index++) {
                 var legend = (Array.isArray(trace.legend) ? trace.legend[index] : trace.legend) || 'legend';
                 if(legend === legendId) {
-                    // showlegend can be undefined, boolean or a boolean array.
-                    // will fall back to default if undefined or if array index is out-of-range
-                    var showInLegend = trace.showlegend || trace._dfltShowLegend;
-                    if (Array.isArray(trace.showlegend)) {
-                        showInLegend = trace.showlegend[index] ?? trace._dfltShowLegend;
-                    }
-                    if(showInLegend) {
+                    // showlegend can be boolean or a boolean array.
+                    // will fall back to default if array index is out-of-range
+                    const showInLegend = Array.isArray(trace.showlegend) ? trace.showlegend[index] : trace.showlegend;
+                    if (showInLegend || trace._dfltShowLegend) {
                         legendReallyHasATrace = true;
                         legendTraceCount++;
                     }
