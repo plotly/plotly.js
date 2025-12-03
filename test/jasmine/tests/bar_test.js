@@ -2170,7 +2170,7 @@ describe('A bar plot', function() {
 
     function getArea(path) {
         var pos = path
-            .substr(1, path.length - 2)
+            .substring(1, path.length - 1)
             .replace('V', ',')
             .replace('H', ',')
             .replace('V', ',')
