@@ -71,7 +71,7 @@ function checkStyleVal(sel, key, val) {
         // test each part separately
         val.split(/[, ]/g).forEach(function(valPart) {
             var pxSplit = valPart.length - 2;
-            if(valPart.substr(pxSplit) === 'px' && !isNumeric(valPart.substr(0, pxSplit))) {
+            if(valPart.slice(pxSplit) === 'px' && !isNumeric(valPart.slice(0, pxSplit))) {
                 throw new Error('d3 selection.style called with value: ' + val);
             }
         });
