@@ -53,6 +53,25 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     return extractedCoordinates;
 };
 
+exports.countDefiningCoords = function(path, isNotPath) {
+    // non-path shapes always have 2 defining coordinates
+    if(isNotPath) return 2;
+    if(!path) return 0;
+
+    var segments = path.match(constants.segmentRE);
+    if(!segments) return 0;
+
+    var coordCount = 0;
+    segments.forEach(function(segment) {
+        // for each path command, check if there is a drawn coordinate
+        var segmentType = segment.charAt(0);
+        var hasDrawnX = constants.paramIsX[segmentType].drawn !== undefined;
+        var hasDrawnY = constants.paramIsY[segmentType].drawn !== undefined;
+        if(hasDrawnX || hasDrawnY) coordCount++;
+    });
+    return coordCount;
+};
+
 exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
