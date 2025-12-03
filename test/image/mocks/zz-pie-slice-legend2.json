@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "labels": [
+        "with",
+        "multiple",
+        "hidden",
+        "legends",
+        "A",
+        "hidden too",
+        "pie"
+      ],
+      "values": [3, 2, 7, 1, 5, 8, 4],
+      "type": "pie",
+      "showlegend": [true, true, false, true, true, false],
+      "legend": [
+        "legend2",
+        "legend2",
+        "legend4",
+        "legend3",
+        "legend",
+        "legend4"
+      ]
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Test short array version of 'showlegend' and 'legend'"
+    },
+    "width": 500,
+    "height": 400,
+    "legend": {
+      "title": {
+        "text": "L1"
+      },
+      "y": 1
+    },
+    "legend2": {
+      "title": {
+        "text": "L2"
+      },
+      "y": 0.7
+    },
+    "legend3": {
+      "title": {
+        "text": "L3"
+      },
+      "y": 0.2
+    },
+    "legend4": {
+      "title": {
+        "text": "L4"
+      },
+      "y": 0
+    }
+  }
+}

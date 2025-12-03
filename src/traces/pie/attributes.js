@@ -180,7 +180,24 @@ module.exports = {
         editType: 'plot',
         description: ['Determines whether outside text labels can push the margins.'].join(' ')
     },
-
+    showlegend: extendFlat({}, baseAttrs.showlegend, {
+        arrayOk: true,
+        description: [
+            'Determines whether or not items corresponding to the pie slices are shown in the',
+            'legend. Can be an array if `values` is set. In that case, each entry specifies',
+            'appearance in the legend for one slice.'
+        ].join(' ')
+    }),
+    legend: extendFlat({}, baseAttrs.legend, {
+        arrayOk: true,
+        description: [
+            'Sets the reference to a legend to show the pie slices in. Can be an array if `values`',
+            'is set. In that case, each entry specifies the legend reference for one slice.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
+        ].join(' ')
+    }),
     title: {
         text: {
             valType: 'string',
