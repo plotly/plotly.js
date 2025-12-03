@@ -1040,7 +1040,7 @@ describe('ModeBar', function() {
             var actual = ax.range;
 
             if(ax.type === 'date') {
-                var truncate = function(v) { return v.substring(0, 10); };
+                var truncate = function(v) { return v.slice(0, 10); };
                 expect(actual.map(truncate)).toEqual(expected.map(truncate), axName);
             } else {
                 expect(actual).toBeCloseToArray(expected, PRECISION, axName);

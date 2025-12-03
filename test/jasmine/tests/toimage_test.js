@@ -247,12 +247,12 @@ describe('Plotly.toImage', function() {
             var clipPath = gSubplot.getAttribute('clip-path');
             var len = clipPath.length;
 
-            var head = clipPath.substring(0, 4);
-            var tail = clipPath.substring(len - 7, len);
+            var head = clipPath.slice(0, 4);
+            var tail = clipPath.slice(len - 7, len);
             expect(head).toBe('url(', 'subplot clipPath head');
             expect(tail).toBe('xyplot)', 'subplot clipPath tail');
 
-            var middle = clipPath.substring(4, 14);
+            var middle = clipPath.slice(4, 14);
             expect(middle.length).toBe(10, 'subplot clipPath uid length');
             expect(middle.indexOf('http://')).toBe(-1, 'no <base> URL in subplot clipPath!');
             expect(middle.indexOf('https://')).toBe(-1, 'no <base> URL in subplot clipPath!');
