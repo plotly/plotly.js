@@ -79,7 +79,7 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    mathjax-firefox)
+    mathjax-firefox-legacy)
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --nowatch || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
