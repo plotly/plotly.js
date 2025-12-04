@@ -66,8 +66,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     // positioning
     var axLetters = ['x', 'y'];
-    for(var i = 0; i < 2; i++) {
-        var axLetter = axLetters[i];
+    axLetters.forEach(function(axLetter) {
         var attrAnchor = axLetter + 'anchor';
         var sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode;
         var gdMock = {_fullLayout: fullLayout};
@@ -75,9 +74,31 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         var pos2r;
         var r2pos;
 
-        // xref, yref
-        var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined,
-            'paper');
+        // xref, yref - handle both string and array values
+        var axRef;
+        var refAttr = axLetter + 'ref';
+        var inputRef = shapeIn[refAttr];
+
+        if(Array.isArray(inputRef) && inputRef.length > 0) {
+            // Array case: use coerceRefArray for validation
+            var expectedLen = helpers.countDefiningCoords(path, noPath);
+            axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, expectedLen);
+            shapeOut['_' + axLetter + 'refArray'] = true;
+
+            // Need to register the shape with all referenced axes for redrawing purposes
+            axRef.forEach(function(ref) {
+                if(Axes.getRefType(ref) === 'range') {
+                    ax = Axes.getFromId(gdMock, ref);
+                    if(ax && ax._shapeIndices.indexOf(shapeOut._index) === -1) {
+                        ax._shapeIndices.push(shapeOut._index);
+                    }
+                }
+            });
+        } else {
+            // String/undefined case: use coerceRef
+            axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper');
+        }
+
         var axRefType = Axes.getRefType(axRef);
 
         if(axRefType === 'range') {
@@ -136,7 +157,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
             shapeIn[attrAnchor] = inAnchor;
         }
-    }
+    });
 
     if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
