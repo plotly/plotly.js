@@ -872,8 +872,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function updateSubplots(viewBox) {
         var fullLayout = gd._fullLayout;
         var plotinfos = fullLayout._plots;
-        var subplots = fullLayout._subplots.cartesian;
+        var subplots = fullLayout._subplots.cartesian.slice();
         var i, sp, xa, ya;
+
+        // Include z-indexed subplots from _plots that may not be in _subplots.cartesian
+        // (e.g., after a relayout that resets _subplots.cartesian but preserves _plots)
+        var zindexSeparator = constants.zindexSeparator;
+        for(var plotId in plotinfos) {
+            if(plotId.indexOf(zindexSeparator) !== -1 && subplots.indexOf(plotId) === -1) {
+                subplots.push(plotId);
+            }
+        }
 
         if(hasSplom) {
             Registry.subplotsRegistry.splom.drag(gd);
