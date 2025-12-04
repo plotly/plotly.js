@@ -573,4 +573,80 @@ describe('gradients', function() {
             done();
         }, done.fail);
     });
+
+    describe('custom marker functions', function() {
+        it('should accept a function as marker.symbol', function(done) {
+            var customFunc = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                mode: 'markers',
+                marker: {
+                    symbol: customFunc,
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(3);
+                
+                var firstPoint = points.node();
+                var path = firstPoint.getAttribute('d');
+                expect(path).toContain('M');
+                expect(path).toContain('L');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work with array of functions', function(done) {
+            var customFunc1 = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            var customFunc2 = function(r) {
+                return 'M' + r + ',' + r + 'H-' + r + 'V-' + r + 'H' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                mode: 'markers',
+                marker: {
+                    symbol: [customFunc1, customFunc2, customFunc1],
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(3);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work mixed with built-in symbols', function(done) {
+            var customFunc = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3, 4],
+                y: [2, 3, 4, 3],
+                mode: 'markers',
+                marker: {
+                    symbol: ['circle', customFunc, 'square', customFunc],
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(4);
+            })
+            .then(done, done.fail);
+        });
+    });
 });
