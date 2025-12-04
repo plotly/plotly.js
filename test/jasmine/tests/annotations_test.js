@@ -1289,7 +1289,7 @@ describe('annotation effects', function() {
             // AJ loosened this test - expected '2017-02-02 06:36:46.8112'
             // but when I run it I get '2017-02-02 06:28:39.9586'.
             // must be different fonts altering autoranging
-            expect(gd._fullLayout.annotations[0].y.substr(0, 10)).toBe('2017-02-02');
+            expect(gd._fullLayout.annotations[0].y.slice(0, 10)).toBe('2017-02-02');
         })
         .then(done, done.fail);
     });

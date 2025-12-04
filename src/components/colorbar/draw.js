@@ -338,7 +338,7 @@ function drawColorBar(g, opts, gd) {
         // wrong class (in case earlier the colorbar was drawn on
         // a different side, I think?)
         var otherClass = titleClass.charAt(0) === 'h' ?
-            titleClass.substr(1) :
+            titleClass.slice(1) :
             'h' + titleClass;
         g.selectAll('.' + otherClass + ',.' + otherClass + '-math-group').remove();
 

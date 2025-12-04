@@ -1,0 +1,1 @@
+ - Replace deprecated `String.substr()` with `String.slice()` [[#7662](https://github.com/plotly/plotly.js/pull/7662)], with thanks to @JBR-0100 for the contribution!

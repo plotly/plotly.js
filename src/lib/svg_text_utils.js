@@ -458,9 +458,9 @@ exports.plainText = function(_str, opts) {
                 }
 
                 if(len > eLen) {
-                    newParts.push(p.substr(0, pLen2 - eLen) + ellipsis);
+                    newParts.push(p.slice(0, Math.max(0, pLen2 - eLen)) + ellipsis);
                 } else {
-                    newParts.push(p.substr(0, pLen2));
+                    newParts.push(p.slice(0, pLen2));
                 }
                 break;
             }
@@ -508,8 +508,8 @@ function convertEntities(_str) {
             // cannot use String.fromCodePoint in IE
             outChar = fromCodePoint(
                 innerMatch.charAt(1) === 'x' ?
-                    parseInt(innerMatch.substr(2), 16) :
-                    parseInt(innerMatch.substr(1), 10)
+                    parseInt(innerMatch.slice(2), 16) :
+                    parseInt(innerMatch.slice(1), 10)
             );
         } else outChar = entityToUnicode[innerMatch];
 

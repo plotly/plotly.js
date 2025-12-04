@@ -115,7 +115,7 @@ describe('number format', function() {
 
             if(format.indexOf('(') === 0) {
                 posExp = exp.replace('+', ' ');
-                negExp = exp.replace('+', '(').substring(1) + ')';
+                negExp = exp.replace('+', '(').slice(1) + ')';
             } else if(format.indexOf('+') === 0) {
                 negExp = exp.replace('+', '-');
             } else if(format.indexOf('-') === 0) {

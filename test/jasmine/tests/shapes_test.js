@@ -1642,7 +1642,7 @@ describe('Test shapes', function() {
             var xParams = constants.paramIsX[segmentType];
             var yParams = constants.paramIsY[segmentType];
             var nParams = constants.numParams[segmentType];
-            var params = segment.substr(1).match(constants.paramRE);
+            var params = segment.slice(1).match(constants.paramRE);
 
             if(params) {
                 params.forEach(function(param) {

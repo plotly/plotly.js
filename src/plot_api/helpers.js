@@ -322,7 +322,7 @@ function commonPrefix(name1, name2, show1, show2) {
         if (name1.charAt(i) !== name2.charAt(i)) break;
     }
 
-    var out = name1.substr(0, i);
+    var out = name1.slice(0, i);
     return out.trim();
 }
 
@@ -453,7 +453,7 @@ var ATTR_TAIL_RE = /(\.[^\[\]\.]+|\[[^\[\]\.]+\])$/;
 
 function getParent(attr) {
     var tail = attr.search(ATTR_TAIL_RE);
-    if (tail > 0) return attr.substr(0, tail);
+    if (tail > 0) return attr.slice(0, tail);
 }
 
 /**
@@ -493,8 +493,8 @@ exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
             // do not clear log type - that's never an auto result so must have been intentional
             if (ax && ax.type !== 'log') {
                 var axAttr = ax._name;
-                var sceneName = ax._id.substr(1);
-                if (sceneName.substr(0, 5) === 'scene') {
+                var sceneName = ax._id.slice(1);
+                if (sceneName.slice(0, 5) === 'scene') {
                     if (layoutUpdate[sceneName] !== undefined) continue;
                     axAttr = sceneName + '.' + axAttr;
                 }
