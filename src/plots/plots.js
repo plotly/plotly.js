@@ -53,6 +53,9 @@ plots.redrawText = function(gd) {
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
             Registry.getComponentMethod('colorbar', 'draw')(gd);
+            Registry.getComponentMethod('colorlegend', 'draw')(gd);
+            Registry.getComponentMethod('sizelegend', 'draw')(gd);
+            Registry.getComponentMethod('symbollegend', 'draw')(gd);
             resolve(plots.previousPromises(gd));
         }, 300);
     });

@@ -11,6 +11,7 @@ var Drawing = require('../../components/drawing');
 var constants = require('./constants');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var counterRegex = require('../../lib/regex').counter;
 
 var makeFillcolorAttr = require('./fillcolor_attribute');
 
@@ -579,6 +580,45 @@ module.exports = {
                     ].join(' ')
                 },
                 editType: 'calc'
+            },
+            colorlegend: {
+                valType: 'subplotid',
+                regex: counterRegex('colorlegend'),
+                dflt: null,
+                editType: 'calc',
+                description: [
+                    'Sets a reference to a shared color legend.',
+                    'Traces referencing the same color legend will contribute',
+                    'their unique color values to that legend.',
+                    'Set to *colorlegend* to use `layout.colorlegend`,',
+                    'or *colorlegend2*, *colorlegend3*, etc. for additional legends.'
+                ].join(' ')
+            },
+            sizelegend: {
+                valType: 'subplotid',
+                regex: counterRegex('sizelegend'),
+                dflt: null,
+                editType: 'calc',
+                description: [
+                    'Sets a reference to a shared size legend.',
+                    'Traces referencing the same size legend will contribute',
+                    'their size values to that legend.',
+                    'Set to *sizelegend* to use `layout.sizelegend`,',
+                    'or *sizelegend2*, *sizelegend3*, etc. for additional legends.'
+                ].join(' ')
+            },
+            symbollegend: {
+                valType: 'subplotid',
+                regex: counterRegex('symbollegend'),
+                dflt: null,
+                editType: 'calc',
+                description: [
+                    'Sets a reference to a shared symbol legend.',
+                    'Traces referencing the same symbol legend will contribute',
+                    'their unique symbol values to that legend.',
+                    'Set to *symbollegend* to use `layout.symbollegend`,',
+                    'or *symbollegend2*, *symbollegend3*, etc. for additional legends.'
+                ].join(' ')
             },
             editType: 'calc'
         },

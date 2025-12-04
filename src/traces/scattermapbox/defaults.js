@@ -35,7 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('below');
 
     if (subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noLine: true, noAngle: true });
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noLine: true, noAngle: true, noAttrLegends: true });
 
         coerce('marker.allowoverlap');
         coerce('marker.angle');

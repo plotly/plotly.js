@@ -241,10 +241,20 @@ exports.valObjectMeta = {
         },
         validateFunction: function(v, opts) {
             var dflt = opts.dflt;
+            var regex = opts.regex;
+
+            // Handle regex being a string (from schema JSON) vs RegExp object
+            if(typeof regex === 'string') {
+                // Extract pattern from string like "/^colorlegend([2-9]|...)$/"
+                var match = regex.match(/^\/(.*)\/$/);
+                regex = match ? new RegExp(match[1]) : counterRegex(dflt);
+            } else if(!regex) {
+                regex = counterRegex(dflt);
+            }
 
             if(v === dflt) return true;
             if(typeof v !== 'string') return false;
-            if(counterRegex(dflt).test(v)) return true;
+            if(regex.test(v)) return true;
 
             return false;
         }

@@ -41,6 +41,13 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
+    // Attribute legend support (only for trace types with these attributes defined)
+    if(!opts.noAttrLegends) {
+        coerce('marker.colorlegend');
+        coerce('marker.sizelegend');
+        coerce('marker.symbollegend');
+    }
+
     if(!opts.noSelect) {
         coerce('selected.marker.color');
         coerce('unselected.marker.color');
