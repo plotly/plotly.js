@@ -81,8 +81,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         if(Array.isArray(inputRef) && inputRef.length > 0) {
             // Array case: use coerceRefArray for validation
-            var expectedLen = helpers.countDefiningCoords(path, noPath);
-            axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, expectedLen);
+            var expectedLen = helpers.countDefiningCoords(shapeType, path);
+            axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper', expectedLen);
             shapeOut['_' + axLetter + 'refArray'] = true;
 
             // Need to register the shape with all referenced axes for redrawing purposes

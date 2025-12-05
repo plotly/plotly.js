@@ -53,9 +53,9 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     return extractedCoordinates;
 };
 
-exports.countDefiningCoords = function(path, isNotPath) {
+exports.countDefiningCoords = function(shapeType, path) {
     // non-path shapes always have 2 defining coordinates
-    if(isNotPath) return 2;
+    if(shapeType !== 'path') return 2;
     if(!path) return 0;
 
     var segments = path.match(constants.segmentRE);
