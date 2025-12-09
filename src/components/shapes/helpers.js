@@ -61,15 +61,13 @@ exports.countDefiningCoords = function(shapeType, path) {
     var segments = path.match(constants.segmentRE);
     if(!segments) return 0;
 
-    var coordCount = 0;
-    segments.forEach(function(segment) {
+    return segments.reduce((coordCount, segment) => {
         // for each path command, check if there is a drawn coordinate
         var segmentType = segment.charAt(0);
         var hasDrawnX = constants.paramIsX[segmentType].drawn !== undefined;
         var hasDrawnY = constants.paramIsY[segmentType].drawn !== undefined;
-        if(hasDrawnX || hasDrawnY) coordCount++;
-    });
-    return coordCount;
+        return coordCount + (hasDrawnX || hasDrawnY ? 1 : 0);
+    }, 0);
 };
 
 exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {

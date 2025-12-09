@@ -65,8 +65,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var ySizeMode = coerce('ysizemode');
 
     // positioning
-    var axLetters = ['x', 'y'];
-    axLetters.forEach(function(axLetter) {
+    ['x', 'y'].forEach(axLetter => {
         var attrAnchor = axLetter + 'anchor';
         var sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode;
         var gdMock = {_fullLayout: fullLayout};

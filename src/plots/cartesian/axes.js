@@ -98,8 +98,7 @@ function expandRange(range) {
  *     but can be prefixed, like 'ax' for annotation's arrow x
  * dflt: the default to coerce to, or blank to use the first axis (falling back on
  *     extraOption if there is no axis)
- * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
- *     Only required if it's different from `dflt`
+ * extraOption: fallback value, only required if it's different from `dflt`
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
     var axLetter = attr.charAt(attr.length - 1);
@@ -143,7 +142,7 @@ axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraO
 
     // Build the axis list, which we use to validate the axis references
     if(!dflt) dflt = axlist[0] || (typeof extraOption === 'string' ? extraOption : extraOption[0]);
-    axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
+    axlist = axlist.concat(axlist.map(x => x + ' domain'));
     axlist = axlist.concat(extraOption ? extraOption : []);
 
     // Handle array length mismatch
@@ -178,6 +177,7 @@ axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraO
  */
 axes.getRefType = function(ar) {
     if(ar === undefined) { return ar; }
+    if(Array.isArray(ar)) { return 'array'; }
     if(ar === 'paper') { return 'paper'; }
     if(ar === 'pixel') { return 'pixel'; }
     if(/( domain)$/.test(ar)) { return 'domain'; } else { return 'range'; }
