@@ -150,7 +150,8 @@ var attrs = (module.exports = overrideAll(
 
                 line: extendFlat(
                     {
-                        width: extendFlat({}, scatterMarkerLineAttrs.width, { arrayOk: false })
+                        width: extendFlat({}, scatterMarkerLineAttrs.width, { arrayOk: false }),
+                        dash: extendFlat({}, scatterMarkerLineAttrs.dash, { arrayOk: false })
                     },
                     colorAttributes('marker.line')
                 )

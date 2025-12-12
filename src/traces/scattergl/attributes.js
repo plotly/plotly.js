@@ -83,7 +83,8 @@ var attrs = (module.exports = overrideAll(
             opacity: scatterMarkerAttrs.opacity,
             colorbar: scatterMarkerAttrs.colorbar,
             line: extendFlat({}, colorScaleAttrs('marker.line'), {
-                width: scatterMarkerLineAttrs.width
+                width: scatterMarkerLineAttrs.width,
+                dash: scatterMarkerLineAttrs.dash
             })
         }),
         connectgaps: scatterAttrs.connectgaps,

@@ -14,6 +14,7 @@ var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 var markerLineAttrs = extendFlat(colorScaleAttrs('marker.line', { editTypeOverride: 'calc' }), {
     width: extendFlat({}, scatterMarkerLineAttrs.width, { editType: 'calc' }),
+    dash: extendFlat({}, scatterMarkerLineAttrs.dash, { editType: 'calc' }),
     editType: 'calc'
 });
 
