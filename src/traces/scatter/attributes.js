@@ -555,6 +555,10 @@ module.exports = {
                         anim: true,
                         description: 'Sets the width (in px) of the lines bounding the marker points.'
                     },
+                    dash: extendFlat({}, dash, {
+                        arrayOk: true,
+                        editType: 'style'
+                    }),
                     editType: 'calc'
                 },
                 colorScaleAttrs('marker.line', { anim: true })

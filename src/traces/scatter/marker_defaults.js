@@ -64,6 +64,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         coerce('marker.line.width', isBubble ? 1 : 0);
+        coerce('marker.line.dash');
     }
 
     if(isBubble) {

@@ -965,6 +965,8 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
         }
     }
 
+    var lineDash = d.mld || (markerLine || {}).dash;
+
     if (d.om) {
         // open markers can't have zero linewidth, default to 1px,
         // and use fill color as stroke color
@@ -972,6 +974,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
             'stroke-width': (lineWidth || 1) + 'px',
             fill: 'none'
         });
+        drawing.dashLine(sel, lineDash, lineWidth || 1);
     } else {
         sel.style('stroke-width', (d.isBlank ? 0 : lineWidth) + 'px');
 
@@ -1057,6 +1060,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
 
         if (lineWidth) {
             Color.stroke(sel, lineColor);
+            drawing.dashLine(sel, lineDash, lineWidth);
         }
     }
 };
