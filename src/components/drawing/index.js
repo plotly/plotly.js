@@ -1060,7 +1060,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
 
         if (lineWidth) {
             Color.stroke(sel, lineColor);
-            drawing.dashLine(sel, lineDash, lineWidth);
+            drawing.dashLine(sel, lineDash, d.isBlank ? 0 : lineWidth);
         }
     }
 };
