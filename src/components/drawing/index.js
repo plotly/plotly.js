@@ -193,10 +193,8 @@ drawing.dashLine = function (s, dash, lineWidth) {
 
     dash = drawing.dashStyle(dash, lineWidth);
 
-    s.style({
-        'stroke-dasharray': dash,
-        'stroke-width': lineWidth + 'px'
-    });
+    s.style('stroke-width', lineWidth + 'px')
+        .style('stroke-dasharray', dash || null);
 };
 
 drawing.dashStyle = function (dash, lineWidth) {
