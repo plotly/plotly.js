@@ -9,6 +9,8 @@ var Axes = require('../../plots/cartesian/axes');
 var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 var Sieve = require('./sieve.js');
 
+var TEXTPAD = require('./constants').TEXTPAD;
+
 /*
  * Bar chart stacking/grouping positioning and autoscaling calculations
  * for each direction separately calculate the ranges and positions
@@ -565,9 +567,11 @@ function setBaseAndTop(sa, sieve) {
             }
         }
 
+        const textPadding = estimateExtraPaddingForText(fullTrace);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero: tozero,
-            padded: true
+            padded: true,
+            ppad: textPadding
         });
     }
 }
@@ -637,13 +641,16 @@ function stackBars(sa, sieve, opts) {
             }
         }
 
+        const textPadding = estimateExtraPaddingForText(fullTrace);
+
         // if barnorm is set, let normalizeBars update the axis range
         if (!opts.norm) {
             fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
                 // N.B. we don't stack base with 'base',
                 // so set tozero:true always!
                 tozero: true,
-                padded: true
+                padded: true,
+                ppad: textPadding
             });
         }
     }
@@ -752,6 +759,32 @@ function normalizeBars(sa, sieve, opts) {
             padded: padded
         });
     }
+}
+
+// Returns a very lightweight estimate of extra padding (in pixels)
+// needed to accommodate outside text labels on bars. Only adds padding
+// vertical bars with textposition 'outside' and cliponaxis 'true'
+// for now.
+//
+// This mitigates the most common scenario where a simple vertical
+// bar chart with textposition set to 'outside' experiences text
+// labels being cut off at the edge of the plot area.
+//
+// More complex scenarios (horizontal bars, multi-line text labels)
+// are not (yet) handled here, but could be in the future.
+function estimateExtraPaddingForText(trace) {
+    if (
+        trace.orientation === 'v' &&
+        (trace.text || trace.texttemplate) &&
+        trace.textposition == 'outside' &&
+        trace.cliponaxis
+    ) {
+        // could count <br> elements here
+        // but before that, need to make sure we are only
+        // adding padding on the side(s) where it is needed
+        return trace.outsidetextfont.size + TEXTPAD;
+    }
+    return 0;
 }
 
 // Add an `_sMin` and `_sMax` value for each bar representing the min and max size value
