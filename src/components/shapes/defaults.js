@@ -98,63 +98,107 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper');
         }
 
-        var axRefType = Axes.getRefType(axRef);
+        if(Array.isArray(axRef)) {
+            var dflts = [0.25, 0.75];
+            var pixelDflts = [0, 10];
 
-        if(axRefType === 'range') {
-            ax = Axes.getFromId(gdMock, axRef);
-            ax._shapeIndices.push(shapeOut._index);
-            r2pos = helpers.rangeToShapePosition(ax);
-            pos2r = helpers.shapePositionToRange(ax);
-            if(ax.type === 'category' || ax.type === 'multicategory') {
-                coerce(axLetter + '0shift');
-                coerce(axLetter + '1shift');
-            }
+            // For each coordinate, coerce the position with their respective axis ref
+            [0, 1].forEach(function(i) {
+                var ref = axRef[i];
+                var refType = Axes.getRefType(ref);
+                if(refType === 'range') {
+                    ax = Axes.getFromId(gdMock, ref);
+                    pos2r = helpers.shapePositionToRange(ax);
+                    r2pos = helpers.rangeToShapePosition(ax);
+                    if(ax.type === 'category' || ax.type === 'multicategory') {
+                        coerce(axLetter + i + 'shift');
+                    }
+                } else {
+                    pos2r = r2pos = Lib.identity;
+                }
+
+                if(noPath) {
+                    var attr = axLetter + i;
+                    var inValue = shapeIn[attr];
+                    shapeIn[attr] = pos2r(shapeIn[attr], true);
+
+                    if(sizeMode === 'pixel') {
+                        coerce(attr, pixelDflts[i]);
+                    } else {
+                        Axes.coercePosition(shapeOut, gdMock, coerce, ref, attr, dflts[i]);
+                    }
+
+                    shapeOut[attr] = r2pos(shapeOut[attr]);
+                    shapeIn[attr] = inValue;
+                }
+
+                if(i === 0 && sizeMode === 'pixel') {
+                    var inAnchor = shapeIn[attrAnchor];
+                    shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+                    Axes.coercePosition(shapeOut, gdMock, coerce, ref, attrAnchor, 0.25);
+                    shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+                    shapeIn[attrAnchor] = inAnchor;
+                }
+            });
         } else {
-            pos2r = r2pos = Lib.identity;
-        }
+            var axRefType = Axes.getRefType(axRef);
 
-        // Coerce x0, x1, y0, y1
-        if(noPath) {
-            var dflt0 = 0.25;
-            var dflt1 = 0.75;
-
-            // hack until V3.0 when log has regular range behavior - make it look like other
-            // ranges to send to coerce, then put it back after
-            // this is all to give reasonable default position behavior on log axes, which is
-            // a pretty unimportant edge case so we could just ignore this.
-            var attr0 = axLetter + '0';
-            var attr1 = axLetter + '1';
-            var in0 = shapeIn[attr0];
-            var in1 = shapeIn[attr1];
-            shapeIn[attr0] = pos2r(shapeIn[attr0], true);
-            shapeIn[attr1] = pos2r(shapeIn[attr1], true);
-
-            if(sizeMode === 'pixel') {
-                coerce(attr0, 0);
-                coerce(attr1, 10);
+            if(axRefType === 'range') {
+                ax = Axes.getFromId(gdMock, axRef);
+                ax._shapeIndices.push(shapeOut._index);
+                r2pos = helpers.rangeToShapePosition(ax);
+                pos2r = helpers.shapePositionToRange(ax);
+                if(ax.type === 'category' || ax.type === 'multicategory') {
+                    coerce(axLetter + '0shift');
+                    coerce(axLetter + '1shift');
+                }
             } else {
-                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
-                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+                pos2r = r2pos = Lib.identity;
             }
 
-            // hack part 2
-            shapeOut[attr0] = r2pos(shapeOut[attr0]);
-            shapeOut[attr1] = r2pos(shapeOut[attr1]);
-            shapeIn[attr0] = in0;
-            shapeIn[attr1] = in1;
-        }
+            // Coerce x0, x1, y0, y1
+            if(noPath) {
+                var dflt0 = 0.25;
+                var dflt1 = 0.75;
 
-        // Coerce xanchor and yanchor
-        if(sizeMode === 'pixel') {
-            // Hack for log axis described above
-            var inAnchor = shapeIn[attrAnchor];
-            shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+                // hack until V3.0 when log has regular range behavior - make it look like other
+                // ranges to send to coerce, then put it back after
+                // this is all to give reasonable default position behavior on log axes, which is
+                // a pretty unimportant edge case so we could just ignore this.
+                var attr0 = axLetter + '0';
+                var attr1 = axLetter + '1';
+                var in0 = shapeIn[attr0];
+                var in1 = shapeIn[attr1];
+                shapeIn[attr0] = pos2r(shapeIn[attr0], true);
+                shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 
-            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
+                if(sizeMode === 'pixel') {
+                    coerce(attr0, 0);
+                    coerce(attr1, 10);
+                } else {
+                    Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
+                    Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+                }
 
-            // Hack part 2
-            shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
-            shapeIn[attrAnchor] = inAnchor;
+                // hack part 2
+                shapeOut[attr0] = r2pos(shapeOut[attr0]);
+                shapeOut[attr1] = r2pos(shapeOut[attr1]);
+                shapeIn[attr0] = in0;
+                shapeIn[attr1] = in1;
+            }
+
+            // Coerce xanchor and yanchor
+            if(sizeMode === 'pixel') {
+                // Hack for log axis described above
+                var inAnchor = shapeIn[attrAnchor];
+                shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
+
+                // Hack part 2
+                shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+                shapeIn[attrAnchor] = inAnchor;
+            }
         }
     });
 

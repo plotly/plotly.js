@@ -22,7 +22,8 @@ module.exports = function calcAutorange(gd) {
         var yRefType = Axes.getRefType(shape.yref);
 
         // paper and axis domain referenced shapes don't affect autorange
-        if(shape.xref !== 'paper' && xRefType !== 'domain') {
+        // TODO: implement autorange calculation for array ref shapes
+        if(xRefType !== 'array' && shape.xref !== 'paper' && xRefType !== 'domain') {
             ax = Axes.getFromId(gd, shape.xref);
 
             bounds = shapeBounds(ax, shape, constants.paramIsX);
@@ -31,7 +32,8 @@ module.exports = function calcAutorange(gd) {
             }
         }
 
-        if(shape.yref !== 'paper' && yRefType !== 'domain') {
+        // TODO: implement autorange calculation for array ref shapes
+        if(yRefType !== 'array' && shape.yref !== 'paper' && yRefType !== 'domain') {
             ax = Axes.getFromId(gd, shape.yref);
 
             bounds = shapeBounds(ax, shape, constants.paramIsY);
