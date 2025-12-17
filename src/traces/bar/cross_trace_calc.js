@@ -568,12 +568,12 @@ function setBaseAndTop(sa, sieve) {
             }
         }
 
-        const textPadding = estimateExtraPaddingForText(fullTrace, calcTrace);
+        const extraPad = estimateAxisPaddingForText(fullTrace, calcTrace);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero: tozero,
             padded: true,
-            ppadplus: textPadding.ppadplus,
-            ppadminus: textPadding.ppadminus
+            ppadplus: extraPad.ppadplus,
+            ppadminus: extraPad.ppadminus
         });
     }
 }
@@ -643,17 +643,16 @@ function stackBars(sa, sieve, opts) {
             }
         }
 
-        const textPadding = estimateExtraPaddingForText(fullTrace, calcTrace);
-
         // if barnorm is set, let normalizeBars update the axis range
         if (!opts.norm) {
+            const extraPad = estimateAxisPaddingForText(fullTrace, calcTrace);
             fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
                 // N.B. we don't stack base with 'base',
                 // so set tozero:true always!
                 tozero: true,
                 padded: true,
-                ppadplus: textPadding.ppadplus,
-                ppadminus: textPadding.ppadminus
+                ppadplus: extraPad.ppadplus,
+                ppadminus: extraPad.ppadminus
             });
         }
     }
@@ -757,13 +756,12 @@ function normalizeBars(sa, sieve, opts) {
             }
         }
 
-        const textPadding = estimateExtraPaddingForText(fullTrace, calcTrace);
-
+        const extraPad = estimateAxisPaddingForText(fullTrace, calcTrace);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero: tozero,
             padded: padded,
-            ppadplus: textPadding.ppadplus,
-            ppadminus: textPadding.ppadminus
+            ppadplus: extraPad.ppadplus,
+            ppadminus: extraPad.ppadminus
         });
     }
 }
@@ -777,11 +775,11 @@ function normalizeBars(sa, sieve, opts) {
 // bar chart with textposition set to 'outside' experiences text
 // labels being cut off at the edge of the plot area.
 //
-// More complex scenarios (horizontal bars, multi-line text labels)
+// More complex scenarios (horizontal bars, various text angles)
 // are not (yet) handled here, but could be in the future.
 // Returns an object with ppadplus and ppadminus values,
 // to be passed into Axes.findExtremes.
-function estimateExtraPaddingForText(trace, calcTrace) {
+function estimateAxisPaddingForText(trace, calcTrace) {
     if (
         trace.orientation === 'v' &&
         (trace.text || trace.texttemplate) &&
@@ -805,7 +803,7 @@ function estimateExtraPaddingForText(trace, calcTrace) {
             ppadminus: calcTrace.some((bar) => bar.s >= 0) ? padAmount : 0
         };
     }
-    return 0;
+    return { ppadplus: undefined, ppadminus: undefined };
 }
 
 // Add an `_sMin` and `_sMax` value for each bar representing the min and max size value
