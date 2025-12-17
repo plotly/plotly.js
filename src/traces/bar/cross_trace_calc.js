@@ -10,6 +10,7 @@ var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 var Sieve = require('./sieve.js');
 
 var TEXTPAD = require('./constants').TEXTPAD;
+var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
 
 /*
  * Bar chart stacking/grouping positioning and autoscaling calculations
@@ -567,11 +568,12 @@ function setBaseAndTop(sa, sieve) {
             }
         }
 
-        const textPadding = estimateExtraPaddingForText(fullTrace);
+        const textPadding = estimateExtraPaddingForText(fullTrace, calcTrace);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero: tozero,
             padded: true,
-            ppad: textPadding
+            ppadplus: textPadding.ppadplus,
+            ppadminus: textPadding.ppadminus
         });
     }
 }
@@ -641,7 +643,7 @@ function stackBars(sa, sieve, opts) {
             }
         }
 
-        const textPadding = estimateExtraPaddingForText(fullTrace);
+        const textPadding = estimateExtraPaddingForText(fullTrace, calcTrace);
 
         // if barnorm is set, let normalizeBars update the axis range
         if (!opts.norm) {
@@ -650,7 +652,8 @@ function stackBars(sa, sieve, opts) {
                 // so set tozero:true always!
                 tozero: true,
                 padded: true,
-                ppad: textPadding
+                ppadplus: textPadding.ppadplus,
+                ppadminus: textPadding.ppadminus
             });
         }
     }
@@ -754,16 +757,20 @@ function normalizeBars(sa, sieve, opts) {
             }
         }
 
+        const textPadding = estimateExtraPaddingForText(fullTrace, calcTrace);
+
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero: tozero,
-            padded: padded
+            padded: padded,
+            ppadplus: textPadding.ppadplus,
+            ppadminus: textPadding.ppadminus
         });
     }
 }
 
 // Returns a very lightweight estimate of extra padding (in pixels)
 // needed to accommodate outside text labels on bars. Only adds padding
-// vertical bars with textposition 'outside' and cliponaxis 'true'
+// vertical bars with textposition 'outside' and textangle 0 or 'auto'
 // for now.
 //
 // This mitigates the most common scenario where a simple vertical
@@ -772,17 +779,31 @@ function normalizeBars(sa, sieve, opts) {
 //
 // More complex scenarios (horizontal bars, multi-line text labels)
 // are not (yet) handled here, but could be in the future.
-function estimateExtraPaddingForText(trace) {
+// Returns an object with ppadplus and ppadminus values,
+// to be passed into Axes.findExtremes.
+function estimateExtraPaddingForText(trace, calcTrace) {
     if (
         trace.orientation === 'v' &&
         (trace.text || trace.texttemplate) &&
         trace.textposition == 'outside' &&
-        trace.cliponaxis
+        (trace.textangle == 'auto' || trace.textangle == 0)
     ) {
-        // could count <br> elements here
-        // but before that, need to make sure we are only
-        // adding padding on the side(s) where it is needed
-        return trace.outsidetextfont.size + TEXTPAD;
+        // count number of lines by counting <br> elements
+        function countLines(text) {
+            const BR_TAG_ALL = /<br\s*\/?>/gi;
+            return (text.match(BR_TAG_ALL) || []).length + 1;
+        }
+        var nLines = trace.texttemplate
+            ? countLines(trace.texttemplate)
+            : Math.max(...trace.text.map((t) => countLines(t)));
+
+        const padAmount = trace.outsidetextfont.size * nLines + TEXTPAD;
+        return {
+            // Yes, I know this looks backwards from what it should be,
+            // but it works like this
+            ppadplus: calcTrace.some((bar) => bar.s < 0) ? padAmount : 0,
+            ppadminus: calcTrace.some((bar) => bar.s >= 0) ? padAmount : 0
+        };
     }
     return 0;
 }
