@@ -788,7 +788,7 @@ function estimateAxisPaddingForText(trace, calcTrace) {
     ) {
         // count number of lines by counting <br> elements
         function countLines(text) {
-            const BR_TAG_ALL = /<br\s*\/?>/gi;
+            if (!text || typeof text !== 'string') return 0;
             return (text.match(BR_TAG_ALL) || []).length + 1;
         }
         var nLines = trace.texttemplate
