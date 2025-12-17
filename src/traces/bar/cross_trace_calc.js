@@ -793,7 +793,9 @@ function estimateAxisPaddingForText(trace, calcTrace) {
         }
         var nLines = trace.texttemplate
             ? countLines(trace.texttemplate)
-            : Math.max(...trace.text.map((t) => countLines(t)));
+            : isArrayOrTypedArray(trace.text)
+              ? Math.max(...trace.text.map((t) => countLines(t)))
+              : countLines(trace.text);
 
         const padAmount = trace.outsidetextfont.size * nLines + TEXTPAD;
         return {
