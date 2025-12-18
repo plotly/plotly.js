@@ -5,9 +5,8 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var selection = [];
-    var trace = cd[0].trace;
     var i;
-    var segment;
+    var di;
     var x;
     var y;
 
@@ -17,20 +16,19 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
         }
     } else {
         for(i = 0; i < cd.length; i++) {
-            segment = cd[i];
-            // Use the start point of the arrow for selection testing
-            x = xa.c2p(segment[0].x);
-            y = ya.c2p(segment[0].y);
+            di = cd[i];
+            x = xa.c2p(di.x);
+            y = ya.c2p(di.y);
 
-            if((segment[0].i !== null) && selectionTester.contains([x, y], false, i, searchInfo)) {
+            if((di.i !== null) && selectionTester.contains([x, y], false, i, searchInfo)) {
                 selection.push({
-                    pointNumber: segment[0].i,
-                    x: xa.c2d(segment[0].x),
-                    y: ya.c2d(segment[0].y)
+                    pointNumber: di.i,
+                    x: xa.c2d(di.x),
+                    y: ya.c2d(di.y)
                 });
-                segment.selected = 1;
+                di.selected = 1;
             } else {
-                segment.selected = 0;
+                di.selected = 0;
             }
         }
     }

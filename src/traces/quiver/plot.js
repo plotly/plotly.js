@@ -2,7 +2,6 @@
 
 var d3 = require('@plotly/d3');
 
-var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
@@ -61,7 +60,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var trace = cdscatter[0].trace;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var fullLayout = gd._fullLayout;
 
     // Create line group for arrows
     var lines = d3.select(element).selectAll('g.lines')
@@ -86,11 +84,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var uArr = trace.u || [];
     var vArr = trace.v || [];
     var maxNorm = 0;
-    for (var ni = 0; ni < trace._length; ni++) {
+    for(var ni = 0; ni < trace._length; ni++) {
         var uu = uArr[ni] || 0;
         var vv = vArr[ni] || 0;
         var nrm = Math.sqrt(uu * uu + vv * vv);
-        if (nrm > maxNorm) maxNorm = nrm;
+        if(nrm > maxNorm) maxNorm = nrm;
     }
     var sizemode = trace.sizemode || 'scaled';
     var sizeref = (trace.sizeref !== undefined) ? trace.sizeref : (sizemode === 'raw' ? 1 : 0.5);
@@ -127,7 +125,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var unitx = norm ? (u / norm) : 0;
         var unity = norm ? (v / norm) : 0;
         var baseLen;
-        if (sizemode === 'scaled') {
+        if(sizemode === 'scaled') {
             var n = maxNorm ? (norm / maxNorm) : 0;
             baseLen = n * sizeref;
         } else {
@@ -146,12 +144,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var ang2 = barbAng - headAngle;
 
         var x0, y0, x1, y1;
-        if (anchor === 'tip') {
+        if(anchor === 'tip') {
             x1 = cdi.x;
             y1 = cdi.y;
             x0 = x1 - dx;
             y0 = y1 - dy;
-        } else if (anchor === 'cm' || anchor === 'center' || anchor === 'middle') {
+        } else if(anchor === 'cm' || anchor === 'center' || anchor === 'middle') {
             x0 = cdi.x - dx / 2;
             y0 = cdi.y - dy / 2;
             x1 = cdi.x + dx / 2;
@@ -186,12 +184,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     Drawing.lineGroupStyle(lineSegments, trace.line && trace.line.width, trace.line && trace.line.color, trace.line && trace.line.dash);
 
     // If colorscale present, color arrows by magnitude |(u,v)|
-    if (trace._hasColorscale) {
+    if(trace._hasColorscale) {
         var colorFunc = Colorscale.makeColorScaleFuncFromTrace(trace);
         lineSegments.style('stroke', function(cdi) {
             var cArr = trace.c;
             var value;
-            if (Lib.isArrayOrTypedArray(cArr) && cArr.length > cdi.i && isFinite(cArr[cdi.i])) {
+            if(Lib.isArrayOrTypedArray(cArr) && cArr.length > cdi.i && isFinite(cArr[cdi.i])) {
                 value = cArr[cdi.i];
             } else {
                 var uVal = (trace.u && trace.u[cdi.i]) || 0;

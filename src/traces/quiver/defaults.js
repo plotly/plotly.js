@@ -2,12 +2,9 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
-var Colorscale = require('../../components/colorscale');
-var colorscaleDefaults = Colorscale.handleDefaults;
-var hasColorscale = Colorscale.hasColorscale;
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    // Selection styling - use coerce to set proper defaults
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -17,7 +14,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var y = coerce('y');
     var u = coerce('u');
     var v = coerce('v');
-    
+
     // Optional scalar field for colorscale
     coerce('c');
 
@@ -40,46 +37,48 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         for(var j = 0; j < len; j++) traceOut.v[j] = 0;
     }
 
-    // Set basic properties
-    traceOut.type = 'quiver';
-
     // Sizing API similar to cone
     var sizemode = coerce('sizemode');
     coerce('sizeref', sizemode === 'raw' ? 1 : 0.5);
     coerce('anchor');
 
-    // Set default values using coerce
-    coerce('arrowsize', 1);
-    // back-compat
-    coerce('arrow_scale');
-    coerce('hoverdistance', 20);
+    // Arrow styling
+    coerce('arrowsize');
+    coerce('arrow_scale'); // back-compat alias
+    coerce('arrowwidth');
+    coerce('hoverdistance');
 
-    // Line styling
-    traceOut.line = {
-        color: traceIn.line && traceIn.line.color ? traceIn.line.color : defaultColor,
-        width: (traceIn.arrowwidth !== undefined) ? traceIn.arrowwidth : (traceIn.line && traceIn.line.width ? traceIn.line.width : 1),
-        dash: traceIn.line && traceIn.line.dash ? traceIn.line.dash : 'solid',
-        shape: traceIn.line && traceIn.line.shape ? traceIn.line.shape : 'linear',
-        smoothing: traceIn.line && traceIn.line.smoothing ? traceIn.line.smoothing : 1,
-        simplify: traceIn.line && traceIn.line.simplify !== undefined ? traceIn.line.simplify : true
-    };
-
-    // Hover and interaction - let the plots module handle hoverinfo defaults
-    // traceOut.hoverinfo will be set by Lib.coerceHoverinfo in plots.js
-    traceOut.hovertemplate = traceIn.hovertemplate;
-
-    // Colorscale defaults (adds colorscale, showscale, colorbar, etc.)
-    // Keep colorscale enabled by default for quiver
-    traceOut._hasColorscale = hasColorscale(traceIn) || true;
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
+    // Line styling - use coerce for proper validation
+    coerce('line.color', defaultColor);
+    // If arrowwidth is set, use it as line.width default
+    var arrowwidth = traceOut.arrowwidth;
+    if(arrowwidth !== undefined) {
+        coerce('line.width', arrowwidth);
+    } else {
+        coerce('line.width');
+    }
+    coerce('line.dash');
+    coerce('line.shape');
+    coerce('line.smoothing');
+    coerce('line.simplify');
 
     // Text
-    traceOut.text = traceIn.text;
-    traceOut.textposition = traceIn.textposition || 'middle center';
-    
-    // Use Lib.coerceFont to set textfont properly
+    coerce('text');
+    coerce('textposition');
     Lib.coerceFont(coerce, 'textfont', layout.font);
-    
+
+    // Hover
+    coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('uhoverformat');
+    coerce('vhoverformat');
+
+    // Colorscale defaults (adds colorscale, showscale, colorbar, etc.)
+    traceOut._hasColorscale = true;
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
+
+    // Selection styling
     coerce('selected.line.color');
     coerce('selected.line.width');
     coerce('selected.textfont.color');

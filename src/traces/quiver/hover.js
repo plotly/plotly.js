@@ -15,7 +15,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var distfn = function(di) {
         var x = xa.c2p(di.x) - xpx;
         var y = ya.c2p(di.y) - ypx;
-        return Math.max(Math.sqrt(x * x + y * y), 1 - 3 / Math.max(3, di.mrc || 0));
+        return Math.sqrt(x * x + y * y);
     };
 
     Fx.getClosest(cd, distfn, pointData);
