@@ -3,6 +3,7 @@
 var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var fontAttrs = require('../../plots/font_attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var dash = require('../../components/drawing/attributes').dash;
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -80,6 +81,11 @@ var attrs = {
         editType: 'calc',
         description: 'Maximum distance (in pixels) to look for nearby arrows on hover.'
     },
+
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    uhoverformat: axisHoverFormat('u', 'noDate'),
+    vhoverformat: axisHoverFormat('v', 'noDate'),
 
     // Arrowhead sizing, consistent with annotations API naming
     arrowsize: {
