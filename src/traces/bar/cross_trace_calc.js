@@ -10,6 +10,7 @@ var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 var Sieve = require('./sieve.js');
 
 var TEXTPAD = require('./constants').TEXTPAD;
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
 
 /*
@@ -797,7 +798,7 @@ function estimateAxisPaddingForText(trace, calcTrace) {
               ? Math.max(...trace.text.map((t) => countLines(t)))
               : countLines(trace.text);
 
-        const padAmount = trace.outsidetextfont.size * nLines + TEXTPAD;
+        const padAmount = trace.outsidetextfont.size * LINE_SPACING * nLines + TEXTPAD;
         return {
             // Yes, I know this looks backwards from what it should be,
             // but it works like this
