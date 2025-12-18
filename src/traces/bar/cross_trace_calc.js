@@ -1,17 +1,17 @@
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
-var BADNUM = require('../../constants/numerical').BADNUM;
+const isNumeric = require('fast-isnumeric');
+const { isArrayOrTypedArray } = require('../../lib');
+const { BADNUM } = require('../../constants/numerical');
 
-var Registry = require('../../registry');
-var Axes = require('../../plots/cartesian/axes');
-var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
-var Sieve = require('./sieve.js');
+const Registry = require('../../registry');
+const Axes = require('../../plots/cartesian/axes');
+const { getAxisGroup } = require('../../plots/cartesian/constraints');
+const Sieve = require('./sieve.js');
 
-var TEXTPAD = require('./constants').TEXTPAD;
-var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
-var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
+const { TEXTPAD } = require('./constants');
+const { LINE_SPACING } = require('../../constants/alignment');
+const { BR_TAG_ALL } = require('../../lib/svg_text_utils');
 
 /*
  * Bar chart stacking/grouping positioning and autoscaling calculations
@@ -569,12 +569,12 @@ function setBaseAndTop(sa, sieve) {
             }
         }
 
-        const extraPad = estimateAxisPaddingForText(fullTrace, calcTrace);
+        const { ppadminus, ppadplus } = estimateAxisPaddingForText(fullTrace, calcTrace);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: tozero,
+            tozero,
             padded: true,
-            ppadplus: extraPad.ppadplus,
-            ppadminus: extraPad.ppadminus
+            ppadplus,
+            ppadminus
         });
     }
 }
@@ -646,14 +646,14 @@ function stackBars(sa, sieve, opts) {
 
         // if barnorm is set, let normalizeBars update the axis range
         if (!opts.norm) {
-            const extraPad = estimateAxisPaddingForText(fullTrace, calcTrace);
+            const { ppadminus, ppadplus } = estimateAxisPaddingForText(fullTrace, calcTrace);
             fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
                 // N.B. we don't stack base with 'base',
                 // so set tozero:true always!
                 tozero: true,
                 padded: true,
-                ppadplus: extraPad.ppadplus,
-                ppadminus: extraPad.ppadminus
+                ppadplus,
+                ppadminus
             });
         }
     }
@@ -757,51 +757,56 @@ function normalizeBars(sa, sieve, opts) {
             }
         }
 
-        const extraPad = estimateAxisPaddingForText(fullTrace, calcTrace);
+        const { ppadminus, ppadplus } = estimateAxisPaddingForText(fullTrace, calcTrace);
         fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
-            tozero: tozero,
-            padded: padded,
-            ppadplus: extraPad.ppadplus,
-            ppadminus: extraPad.ppadminus
+            tozero,
+            padded,
+            ppadplus,
+            ppadminus
         });
     }
 }
 
-// Returns a very lightweight estimate of extra padding (in pixels)
-// needed to accommodate outside text labels on bars. Only adds padding
-// vertical bars with textposition 'outside' and textangle 0 or 'auto'
-// for now.
-//
-// This mitigates the most common scenario where a simple vertical
-// bar chart with textposition set to 'outside' experiences text
-// labels being cut off at the edge of the plot area.
-//
-// More complex scenarios (horizontal bars, various text angles)
-// are not (yet) handled here, but could be in the future.
-// Returns an object with ppadplus and ppadminus values,
-// to be passed into Axes.findExtremes.
+/*
+ * Returns a very lightweight estimate of extra padding (in pixels)
+ * needed to accommodate outside text labels on bars. Only adds padding
+ * for vertical bars with textposition 'outside' and textangle 0 or 'auto'
+ * for now.
+ *
+ * This mitigates the most common scenario where a simple vertical
+ * bar chart with textposition set to 'outside' experiences text
+ * labels being cut off at the edge of the plot area.
+ *
+ * More complex scenarios (horizontal bars, various text angles)
+ * are not (yet) handled here, but could be in the future.
+ * Returns an object with ppadplus and ppadminus values,
+ * to be passed into Axes.findExtremes.
+ */
 function estimateAxisPaddingForText(trace, calcTrace) {
     if (
         trace.orientation === 'v' &&
         (trace.text || trace.texttemplate) &&
-        trace.textposition == 'outside' &&
-        (trace.textangle == 'auto' || trace.textangle == 0)
+        trace.textposition === 'outside' &&
+        (trace.textangle === 'auto' || trace.textangle === 0)
     ) {
         // count number of lines by counting <br> elements
         function countLines(text) {
             if (!text || typeof text !== 'string') return 0;
             return (text.match(BR_TAG_ALL) || []).length + 1;
         }
-        var nLines = trace.texttemplate
-            ? countLines(trace.texttemplate)
-            : isArrayOrTypedArray(trace.text)
-              ? Math.max(...trace.text.map((t) => countLines(t)))
-              : countLines(trace.text);
+        var nLines;
+        if (trace.texttemplate) {
+            nLines = countLines(trace.texttemplate);
+        } else {
+            nLines = isArrayOrTypedArray(trace.text)
+                ? Math.max(...trace.text.map((t) => countLines(t)))
+                : countLines(trace.text);
+        }
 
         const padAmount = trace.outsidetextfont.size * LINE_SPACING * nLines + TEXTPAD;
         return {
-            // Yes, I know this looks backwards from what it should be,
-            // but it works like this
+            // ppadplus corresponds to the negative-direction bars and
+            // ppadminus corresponds to the positive-direction bars (for some reason)
             ppadplus: calcTrace.some((bar) => bar.s < 0) ? padAmount : 0,
             ppadminus: calcTrace.some((bar) => bar.s >= 0) ? padAmount : 0
         };
