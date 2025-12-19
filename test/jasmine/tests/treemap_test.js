@@ -13,7 +13,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
 
-
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -23,15 +22,15 @@ var SLICES_SELECTOR = '.treemaplayer path.surface';
 var SLICES_TEXT_SELECTOR = '.treemaplayer text.slicetext';
 
 function _mouseEvent(type, gd, v) {
-    return function() {
-        if(Array.isArray(v)) {
+    return function () {
+        if (Array.isArray(v)) {
             // px-based position
             mouseEvent(type, v[0], v[1]);
         } else {
             // position from slice number
             var gd3 = d3Select(gd);
             var el = gd3.select('.slice:nth-child(' + v + ')').node();
-            mouseEvent(type, 0, 0, {element: el});
+            mouseEvent(type, 0, 0, { element: el });
         }
     };
 }
@@ -48,7 +47,7 @@ function click(gd, v) {
     return _mouseEvent('click', gd, v);
 }
 
-describe('Test treemap defaults:', function() {
+describe('Test treemap defaults:', function () {
     var gd;
     var fullData;
 
@@ -56,8 +55,8 @@ describe('Test treemap defaults:', function() {
         gd = {};
         opts = Array.isArray(opts) ? opts : [opts];
 
-        gd.data = opts.map(function(o) {
-            return Lib.extendFlat({type: 'treemap'}, o || {});
+        gd.data = opts.map(function (o) {
+            return Lib.extendFlat({ type: 'treemap' }, o || {});
         });
         gd.layout = layout || {};
 
@@ -65,23 +64,19 @@ describe('Test treemap defaults:', function() {
         fullData = gd._fullData;
     }
 
-    it('should set *visible:false* when *labels* or *parents* is missing', function() {
-        _supply([
-            {labels: [1], parents: ['']},
-            {labels: [1]},
-            {parents: ['']}
-        ]);
+    it('should set *visible:false* when *labels* or *parents* is missing', function () {
+        _supply([{ labels: [1], parents: [''] }, { labels: [1] }, { parents: [''] }]);
 
         expect(fullData[0].visible).toBe(true, 'base');
         expect(fullData[1].visible).toBe(false, 'no parents');
         expect(fullData[2].visible).toBe(false, 'no labels');
     });
 
-    it('should only coerce *count* when the *values* array is not present', function() {
+    it('should only coerce *count* when the *values* array is not present', function () {
         _supply([
-            {labels: [1], parents: ['']},
-            {labels: [1], parents: [''], values: []},
-            {labels: [1], parents: [''], values: [1]}
+            { labels: [1], parents: [''] },
+            { labels: [1], parents: [''], values: [] },
+            { labels: [1], parents: [''], values: [1] }
         ]);
 
         expect(fullData[0].count).toBe('leaves');
@@ -89,69 +84,70 @@ describe('Test treemap defaults:', function() {
         expect(fullData[2].count).toBe(undefined, 'has values');
     });
 
-    it('should not coerce *branchvalues* when *values* is not set', function() {
+    it('should not coerce *branchvalues* when *values* is not set', function () {
         _supply([
-            {labels: [1], parents: [''], values: [1]},
-            {labels: [1], parents: ['']},
+            { labels: [1], parents: [''], values: [1] },
+            { labels: [1], parents: [''] }
         ]);
 
         expect(fullData[0].branchvalues).toBe('remainder', 'base');
         expect(fullData[1].branchvalues).toBe(undefined, 'no values');
     });
 
-    it('should use *paper_bgcolor* as *marker.line.color* default', function() {
-        _supply([
-            {labels: [1], parents: [''], marker: {line: {color: 'red'}}},
-            {labels: [1], parents: ['']}
-        ], {
-            paper_bgcolor: 'orange'
-        });
+    it('should use *paper_bgcolor* as *marker.line.color* default', function () {
+        _supply(
+            [
+                { labels: [1], parents: [''], marker: { line: { color: 'red' } } },
+                { labels: [1], parents: [''] }
+            ],
+            {
+                paper_bgcolor: 'orange'
+            }
+        );
 
         expect(fullData[0].marker.line.color).toBe('red', 'set color');
         expect(fullData[1].marker.line.color).toBe('orange', 'using dflt');
     });
 
-    it('should not coerce *marker.line.color* when *marker.line.width* is 0', function() {
+    it('should not coerce *marker.line.color* when *marker.line.width* is 0', function () {
         _supply([
-            {labels: [1], parents: [''], marker: {line: {width: 0}}},
-            {labels: [1], parents: ['']}
+            { labels: [1], parents: [''], marker: { line: { width: 0 } } },
+            { labels: [1], parents: [''] }
         ]);
 
         expect(fullData[0].marker.line.color).toBe(undefined, 'not coerced');
         expect(fullData[1].marker.line.color).toBe('#fff', 'dflt');
     });
 
-    it('should default *marker.depthfade* depending on *marker.colors* is present or not', function() {
+    it('should default *marker.depthfade* depending on *marker.colors* is present or not', function () {
         _supply([
-            {labels: ['A', 'B', 'a'], parents: ['', '', 'A']},
-            {labels: ['A', 'B', 'a'], parents: ['', '', 'A'], marker: {colors: ['red', 'green', 'blue']}}
+            { labels: ['A', 'B', 'a'], parents: ['', '', 'A'] },
+            { labels: ['A', 'B', 'a'], parents: ['', '', 'A'], marker: { colors: ['red', 'green', 'blue'] } }
         ]);
 
         expect(fullData[0].marker.depthfade).toBe(true);
         expect(fullData[1].marker.depthfade).toBe(false);
     });
 
-    it('should not coerce *marker.depthfade* when a *colorscale* is present', function() {
-        _supply([
-            {labels: [1], parents: [''], marker: {colorscale: 'Blues'}}
-        ]);
+    it('should not coerce *marker.depthfade* when a *colorscale* is present', function () {
+        _supply([{ labels: [1], parents: [''], marker: { colorscale: 'Blues' } }]);
 
         expect(fullData[0].marker.depthfade).toBe(undefined);
     });
 
-    it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function() {
+    it('should use *textfont.size* to adjust top, bottom , left and right *marker.pad* defaults', function () {
         _supply([
-            {labels: [1], parents: ['']},
-            {labels: [1], parents: [''], textfont: {size: 24}},
-            {labels: [1], parents: [''], textposition: 'bottom left'},
-            {labels: [1], parents: [''], textposition: 'bottom center'},
-            {labels: [1], parents: [''], textposition: 'bottom right'},
-            {labels: [1], parents: [''], textposition: 'middle left'},
-            {labels: [1], parents: [''], textposition: 'middle center'},
-            {labels: [1], parents: [''], textposition: 'middle right'},
-            {labels: [1], parents: [''], textposition: 'top left'},
-            {labels: [1], parents: [''], textposition: 'tpo center'},
-            {labels: [1], parents: [''], textposition: 'top right'}
+            { labels: [1], parents: [''] },
+            { labels: [1], parents: [''], textfont: { size: 24 } },
+            { labels: [1], parents: [''], textposition: 'bottom left' },
+            { labels: [1], parents: [''], textposition: 'bottom center' },
+            { labels: [1], parents: [''], textposition: 'bottom right' },
+            { labels: [1], parents: [''], textposition: 'middle left' },
+            { labels: [1], parents: [''], textposition: 'middle center' },
+            { labels: [1], parents: [''], textposition: 'middle right' },
+            { labels: [1], parents: [''], textposition: 'top left' },
+            { labels: [1], parents: [''], textposition: 'tpo center' },
+            { labels: [1], parents: [''], textposition: 'top right' }
         ]);
 
         expect(fullData[0].textfont.size).toBe(12);
@@ -167,57 +163,83 @@ describe('Test treemap defaults:', function() {
         expect(fullData[1].marker.pad.b).toBe(12, 'half of increased textfont.size');
 
         var i;
-        for(i = 0 + 2; i < 3 + 2; i++) {
-            expect(fullData[i].marker.pad.t).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
-            expect(fullData[i].marker.pad.l).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
-            expect(fullData[i].marker.pad.r).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
-            expect(fullData[i].marker.pad.b).toBe(24, 'twice of default textfont.size', 'with textposition:' + fullData[i].textposition);
+        for (i = 0 + 2; i < 3 + 2; i++) {
+            expect(fullData[i].marker.pad.t).toBe(
+                6,
+                'half of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
+            expect(fullData[i].marker.pad.l).toBe(
+                6,
+                'half of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
+            expect(fullData[i].marker.pad.r).toBe(
+                6,
+                'half of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
+            expect(fullData[i].marker.pad.b).toBe(
+                24,
+                'twice of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
         }
-        for(i = 0 + 5; i < 6 + 5; i++) {
-            expect(fullData[i].marker.pad.t).toBe(24, 'twice of default textfont.size', 'with textposition:' + fullData[i].textposition);
-            expect(fullData[i].marker.pad.l).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
-            expect(fullData[i].marker.pad.r).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
-            expect(fullData[i].marker.pad.b).toBe(6, 'half of default textfont.size', 'with textposition:' + fullData[i].textposition);
+        for (i = 0 + 5; i < 6 + 5; i++) {
+            expect(fullData[i].marker.pad.t).toBe(
+                24,
+                'twice of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
+            expect(fullData[i].marker.pad.l).toBe(
+                6,
+                'half of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
+            expect(fullData[i].marker.pad.r).toBe(
+                6,
+                'half of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
+            expect(fullData[i].marker.pad.b).toBe(
+                6,
+                'half of default textfont.size',
+                'with textposition:' + fullData[i].textposition
+            );
         }
     });
 
-    it('should not include "text" flag in *textinfo* when *text* is set', function() {
+    it('should not include "text" flag in *textinfo* when *text* is set', function () {
         _supply([
-            {labels: [1], parents: [''], text: ['A']},
-            {labels: [1], parents: ['']}
+            { labels: [1], parents: [''], text: ['A'] },
+            { labels: [1], parents: [''] }
         ]);
 
         expect(fullData[0].textinfo).toBe('text+label', 'with text');
         expect(fullData[1].textinfo).toBe('label', 'no text');
     });
 
-    it('should use *layout.colorway* as dflt for *treemapcolorway*', function() {
-        _supply([
-            {labels: [1], parents: ['']}
-        ], {
+    it('should use *layout.colorway* as dflt for *treemapcolorway*', function () {
+        _supply([{ labels: [1], parents: [''] }], {
             colorway: ['red', 'blue', 'green']
         });
-        expect(gd._fullLayout.treemapcolorway)
-            .toEqual(['red', 'blue', 'green'], 'dflt to layout colorway');
+        expect(gd._fullLayout.treemapcolorway).toEqual(['red', 'blue', 'green'], 'dflt to layout colorway');
 
-        _supply([
-            {labels: [1], parents: ['']}
-        ], {
+        _supply([{ labels: [1], parents: [''] }], {
             colorway: ['red', 'blue', 'green'],
             treemapcolorway: ['cyan', 'yellow', 'black']
         });
-        expect(gd._fullLayout.treemapcolorway)
-            .toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
+        expect(gd._fullLayout.treemapcolorway).toEqual(['cyan', 'yellow', 'black'], 'user-defined value');
     });
 
-    it('should only coerce *squarifyratio* when *tiling.packing* is *squarify*', function() {
+    it('should only coerce *squarifyratio* when *tiling.packing* is *squarify*', function () {
         _supply([
-            {labels: [1], parents: ['']},
-            {labels: [1], parents: [''], tiling: {packing: 'binary'}},
-            {labels: [1], parents: [''], tiling: {packing: 'slice'}},
-            {labels: [1], parents: [''], tiling: {packing: 'dice'}},
-            {labels: [1], parents: [''], tiling: {packing: 'slice-dice'}},
-            {labels: [1], parents: [''], tiling: {packing: 'dice-slice'}}
+            { labels: [1], parents: [''] },
+            { labels: [1], parents: [''], tiling: { packing: 'binary' } },
+            { labels: [1], parents: [''], tiling: { packing: 'slice' } },
+            { labels: [1], parents: [''], tiling: { packing: 'dice' } },
+            { labels: [1], parents: [''], tiling: { packing: 'slice-dice' } },
+            { labels: [1], parents: [''], tiling: { packing: 'dice-slice' } }
         ]);
 
         expect(fullData[0].tiling.squarifyratio).toBe(1);
@@ -228,10 +250,8 @@ describe('Test treemap defaults:', function() {
         expect(fullData[5].tiling.squarifyratio).toBe(undefined, 'no squarify');
     });
 
-    it('should not coerce *pathbar* attributes when *pathbar.visible* is false', function() {
-        _supply([
-            {labels: [1], parents: [''], pathbar: {visible: false}}
-        ]);
+    it('should not coerce *pathbar* attributes when *pathbar.visible* is false', function () {
+        _supply([{ labels: [1], parents: [''], pathbar: { visible: false } }]);
 
         expect(fullData[0].pathbar.visible).toBe(false);
         expect(fullData[0].pathbar.textfont).toBe(undefined);
@@ -240,18 +260,14 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.edgeshape).toBe(undefined);
     });
 
-    it('should set *pathbar.visible* to true by default', function() {
-        _supply([
-            {labels: [1], parents: ['']}
-        ]);
+    it('should set *pathbar.visible* to true by default', function () {
+        _supply([{ labels: [1], parents: [''] }]);
 
         expect(fullData[0].pathbar.visible).toBe(true);
     });
 
-    it('should set *pathbar.visible* to true by default', function() {
-        _supply([
-            {labels: [1], parents: ['']}
-        ]);
+    it('should set *pathbar.visible* to true by default', function () {
+        _supply([{ labels: [1], parents: [''] }]);
 
         expect(fullData[0].pathbar.textfont.family).toBe('"Open Sans", verdana, arial, sans-serif');
         expect(fullData[0].pathbar.textfont.color).toBe(undefined);
@@ -261,11 +277,9 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.edgeshape).toBe('>');
     });
 
-    it('should default *pathbar* sizes and styles to layout', function() {
-        _supply([
-            {labels: [1], parents: ['']}
-        ], {
-            font: {family: 'Times New Romans', color: '#ABC', size: 24}
+    it('should default *pathbar* sizes and styles to layout', function () {
+        _supply([{ labels: [1], parents: [''] }], {
+            font: { family: 'Times New Romans', color: '#ABC', size: 24 }
         });
 
         expect(fullData[0].pathbar.textfont.family).toBe('Times New Romans');
@@ -274,36 +288,38 @@ describe('Test treemap defaults:', function() {
         expect(fullData[0].pathbar.thickness).toBe(30);
     });
 
-    it('should not default *marker.colorscale* when *marker.colors* is not present', function() {
-        _supply([
-            {labels: [1], parents: ['']}
-        ]);
+    it('should not default *marker.colorscale* when *marker.colors* is not present', function () {
+        _supply([{ labels: [1], parents: [''] }]);
 
         expect(fullData[0].marker.colorscale).toBe(undefined);
     });
 
-    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function() {
+    it('should default *marker.colorscale* to *Reds* when *marker.colors* is present', function () {
         _supply([
-            {labels: [1], parents: [''], marker: {
-                colors: [0]
-            }}
+            {
+                labels: [1],
+                parents: [''],
+                marker: {
+                    colors: [0]
+                }
+            }
         ]);
 
         expect(fullData[0].marker.colorscale).toBeCloseToArray([
-            [ 0, 'rgb(5,10,172)' ],
-            [ 0.35, 'rgb(106,137,247)' ],
-            [ 0.5, 'rgb(190,190,190)' ],
-            [ 0.6, 'rgb(220,170,132)' ],
-            [ 0.7, 'rgb(230,145,90)' ],
-            [ 1, 'rgb(178,10,28)' ]
+            [0, 'rgb(5,10,172)'],
+            [0.35, 'rgb(106,137,247)'],
+            [0.5, 'rgb(190,190,190)'],
+            [0.6, 'rgb(220,170,132)'],
+            [0.7, 'rgb(230,145,90)'],
+            [1, 'rgb(178,10,28)']
         ]);
     });
 });
 
-describe('Test treemap calc:', function() {
+describe('Test treemap calc:', function () {
     var gd;
 
-    beforeEach(function() {
+    beforeEach(function () {
         spyOn(Lib, 'warn');
     });
 
@@ -311,8 +327,8 @@ describe('Test treemap calc:', function() {
         gd = {};
         opts = Array.isArray(opts) ? opts : [opts];
 
-        gd.data = opts.map(function(o) {
-            return Lib.extendFlat({type: 'treemap'}, o || {});
+        gd.data = opts.map(function (o) {
+            return Lib.extendFlat({ type: 'treemap' }, o || {});
         });
         gd.layout = layout || {};
 
@@ -321,22 +337,24 @@ describe('Test treemap calc:', function() {
     }
 
     function extract(k) {
-        var out = gd.calcdata.map(function(cd) {
-            return cd.map(function(pt) { return pt[k]; });
-        });
-        return out.length > 1 ? out : out[0];
-    }
-
-    function extractPt(k) {
-        var out = gd.calcdata.map(function(cd) {
-            return cd[0].hierarchy.descendants().map(function(pt) {
+        var out = gd.calcdata.map(function (cd) {
+            return cd.map(function (pt) {
                 return pt[k];
             });
         });
         return out.length > 1 ? out : out[0];
     }
 
-    it('should generate *id* when it can', function() {
+    function extractPt(k) {
+        var out = gd.calcdata.map(function (cd) {
+            return cd[0].hierarchy.descendants().map(function (pt) {
+                return pt[k];
+            });
+        });
+        return out.length > 1 ? out : out[0];
+    }
+
+    it('should generate *id* when it can', function () {
         _calc({
             labels: ['Root', 'A', 'B', 'b'],
             parents: ['', 'Root', 'Root', 'B']
@@ -346,9 +364,9 @@ describe('Test treemap calc:', function() {
         expect(Lib.warn).toHaveBeenCalledTimes(0);
     });
 
-    it('should generate "implied root" when it can', function() {
+    it('should generate "implied root" when it can', function () {
         _calc({
-            labels: [ 'A', 'B', 'b'],
+            labels: ['A', 'B', 'b'],
             parents: ['Root', 'Root', 'B']
         });
 
@@ -358,23 +376,25 @@ describe('Test treemap calc:', function() {
         expect(Lib.warn).toHaveBeenCalledTimes(0);
     });
 
-    it('should warn when there are multiple implied roots', function() {
+    it('should warn when there are multiple implied roots', function () {
         _calc({
-            labels: [ 'A', 'B', 'b'],
+            labels: ['A', 'B', 'b'],
             parents: ['Root1', 'Root22', 'B']
         });
 
         expect(Lib.warn).toHaveBeenCalledTimes(1);
-        expect(Lib.warn).toHaveBeenCalledWith('Multiple implied roots, cannot build treemap hierarchy of trace 0. These roots include: Root1, Root22');
+        expect(Lib.warn).toHaveBeenCalledWith(
+            'Multiple implied roots, cannot build treemap hierarchy of trace 0. These roots include: Root1, Root22'
+        );
     });
 
-    it('should generate "root of roots" when it can', function() {
-        spyOn(Lib, 'randstr').and.callFake(function() {
+    it('should generate "root of roots" when it can', function () {
+        spyOn(Lib, 'randstr').and.callFake(function () {
             return 'dummy';
         });
 
         _calc({
-            labels: [ 'A', 'B', 'b'],
+            labels: ['A', 'B', 'b'],
             parents: ['', '', 'B']
         });
 
@@ -383,16 +403,16 @@ describe('Test treemap calc:', function() {
         expect(extract('label')).toEqual(['', 'A', 'B', 'b']);
     });
 
-    it('should compute hierarchy values', function() {
+    it('should compute hierarchy values', function () {
         var labels = ['Root', 'A', 'B', 'b'];
         var parents = ['', 'Root', 'Root', 'B'];
 
         _calc([
-            {labels: labels, parents: parents, count: 'leaves+branches'},
-            {labels: labels, parents: parents, count: 'branches'},
-            {labels: labels, parents: parents}, // N.B. counts 'leaves' in this case
-            {labels: labels, parents: parents, values: [0, 1, 2, 3]},
-            {labels: labels, parents: parents, values: [30, 20, 10, 5], branchvalues: 'total'}
+            { labels: labels, parents: parents, count: 'leaves+branches' },
+            { labels: labels, parents: parents, count: 'branches' },
+            { labels: labels, parents: parents }, // N.B. counts 'leaves' in this case
+            { labels: labels, parents: parents, values: [0, 1, 2, 3] },
+            { labels: labels, parents: parents, values: [30, 20, 10, 5], branchvalues: 'total' }
         ]);
 
         expect(extractPt('value')).toEqual([
@@ -405,7 +425,7 @@ describe('Test treemap calc:', function() {
         expect(Lib.warn).toHaveBeenCalledTimes(0);
     });
 
-    it('should warn when values under *branchvalues:total* do not add up and not show trace', function() {
+    it('should warn when values under *branchvalues:total* do not add up and not show trace', function () {
         _calc({
             labels: ['Root', 'A', 'B', 'b'],
             parents: ['', 'Root', 'Root', 'B'],
@@ -416,11 +436,15 @@ describe('Test treemap calc:', function() {
         expect(gd.calcdata[0][0].hierarchy).toBe(undefined, 'no computed hierarchy');
 
         expect(Lib.warn).toHaveBeenCalledTimes(2);
-        expect(Lib.warn.calls.allArgs()[0][0]).toBe('Total value for node Root of trace 0 is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3');
-        expect(Lib.warn.calls.allArgs()[1][0]).toBe('Total value for node B of trace 0 is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3');
+        expect(Lib.warn.calls.allArgs()[0][0]).toBe(
+            'Total value for node Root of trace 0 is smaller than the sum of its children. \nparent value = 0 \nchildren sum = 3'
+        );
+        expect(Lib.warn.calls.allArgs()[1][0]).toBe(
+            'Total value for node B of trace 0 is smaller than the sum of its children. \nparent value = 2 \nchildren sum = 3'
+        );
     });
 
-    it('should warn labels/parents lead to ambiguous hierarchy', function() {
+    it('should warn labels/parents lead to ambiguous hierarchy', function () {
         _calc({
             labels: ['Root', 'A', 'A', 'B'],
             parents: ['', 'Root', 'Root', 'A']
@@ -430,7 +454,7 @@ describe('Test treemap calc:', function() {
         expect(Lib.warn).toHaveBeenCalledWith('Failed to build treemap hierarchy of trace 0. Error: ambiguous: A');
     });
 
-    it('should warn ids/parents lead to ambiguous hierarchy', function() {
+    it('should warn ids/parents lead to ambiguous hierarchy', function () {
         _calc({
             labels: ['label 1', 'label 2', 'label 3', 'label 4'],
             ids: ['a', 'b', 'b', 'c'],
@@ -441,7 +465,7 @@ describe('Test treemap calc:', function() {
         expect(Lib.warn).toHaveBeenCalledWith('Failed to build treemap hierarchy of trace 0. Error: ambiguous: b');
     });
 
-    it('should accept numbers (even `0`) are ids/parents items', function() {
+    it('should accept numbers (even `0`) are ids/parents items', function () {
         _calc({
             labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
             ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -452,7 +476,7 @@ describe('Test treemap calc:', function() {
         expect(extract('pid')).toEqual(['', '0', '0', '2', '2', '0', '0', '6', '0']);
     });
 
-    it('should accept mix typed are ids/parents items', function() {
+    it('should accept mix typed are ids/parents items', function () {
         _calc({
             labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
             ids: [true, 1, '2', 3, 4, 5, 6, 7, 8],
@@ -463,7 +487,7 @@ describe('Test treemap calc:', function() {
         expect(extract('pid')).toEqual(['', 'true', 'true', '2', '2', 'true', 'true', '6', 'true']);
     });
 
-    it('should use *marker.colors*', function() {
+    it('should use *marker.colors*', function () {
         _calc({
             marker: { colors: ['pink', '#777', '#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#fff'] },
             labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
@@ -483,7 +507,7 @@ describe('Test treemap calc:', function() {
         expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
     });
 
-    it('should use *marker.colors* numbers with default colorscale', function() {
+    it('should use *marker.colors* numbers with default colorscale', function () {
         _calc({
             marker: { colors: [-4, -3, -2, -1, 0, 1, 2, 3, 4] },
             labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
@@ -503,7 +527,7 @@ describe('Test treemap calc:', function() {
         expect(cd[8].color).toEqual('rgb(178, 10, 28)');
     });
 
-    it('should use *marker.colors* numbers with desired colorscale', function() {
+    it('should use *marker.colors* numbers with desired colorscale', function () {
         _calc({
             marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
             labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
@@ -523,7 +547,7 @@ describe('Test treemap calc:', function() {
         expect(cd[8].color).toEqual('rgb(217, 30, 30)');
     });
 
-    it('should use *marker.colors* numbers not values with colorscale', function() {
+    it('should use *marker.colors* numbers not values with colorscale', function () {
         _calc({
             values: [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000],
             marker: { colors: [1, 2, 3, 4, 5, 6, 7, 8, 9], colorscale: 'Portland' },
@@ -544,7 +568,7 @@ describe('Test treemap calc:', function() {
         expect(cd[8].color).toEqual('rgb(217, 30, 30)');
     });
 
-    it('should use values with colorscale when *marker.colors* in empty', function() {
+    it('should use values with colorscale when *marker.colors* in empty', function () {
         _calc({
             values: [1, 2, 3, 4, 5, 6, 7, 8, 9],
             marker: { colors: [], colorscale: 'Portland' },
@@ -566,29 +590,33 @@ describe('Test treemap calc:', function() {
     });
 });
 
-describe('Test treemap plot:', function() {
+describe('Test treemap plot:', function () {
     var gd;
 
-    beforeEach(function() { gd = createGraphDiv(); });
+    beforeEach(function () {
+        gd = createGraphDiv();
+    });
 
     afterEach(destroyGraphDiv);
 
-    it('should return early from the plot when there is no entry', function(done) {
-        Plotly.newPlot(gd, [{
-            labels: ['a', 'b'],
-            parents: ['A', 'B'],
-            type: 'treemap'
-        }])
-        .then(function() {
-            var gd3 = d3Select(gd);
-            var element = gd3.select('.treemap trace').node();
-            expect(element).toBe(null);
-        })
-        .then(done, done.fail);
+    it('should return early from the plot when there is no entry', function (done) {
+        Plotly.newPlot(gd, [
+            {
+                labels: ['a', 'b'],
+                parents: ['A', 'B'],
+                type: 'treemap'
+            }
+        ])
+            .then(function () {
+                var gd3 = d3Select(gd);
+                var element = gd3.select('.treemap trace').node();
+                expect(element).toBe(null);
+            })
+            .then(done, done.fail);
     });
 });
 
-describe('Test treemap hover:', function() {
+describe('Test treemap hover:', function () {
     var gd;
 
     var labels0 = ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'];
@@ -600,31 +628,36 @@ describe('Test treemap hover:', function() {
     function run(spec) {
         gd = createGraphDiv();
 
-        var data = (spec.traces || [{}]).map(function(t) {
+        var data = (spec.traces || [{}]).map(function (t) {
             t.type = 'treemap';
-            if(!t.labels) t.labels = labels0.slice();
-            if(!t.parents) t.parents = parents0.slice();
+            if (!t.labels) t.labels = labels0.slice();
+            if (!t.parents) t.parents = parents0.slice();
             return t;
         });
 
-        var layout = Lib.extendFlat({
-            width: 500,
-            height: 500,
-            margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
-        }, spec.layout || {});
+        var layout = Lib.extendFlat(
+            {
+                width: 500,
+                height: 500,
+                margin: { t: 0, b: 0, l: 0, r: 0, pad: 0 }
+            },
+            spec.layout || {}
+        );
 
         var exp = spec.exp || {};
         var ptData = null;
 
         return Plotly.newPlot(gd, data, layout)
-            .then(function() {
-                gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
+            .then(function () {
+                gd.once('plotly_hover', function (d) {
+                    ptData = d.points[0];
+                });
             })
             .then(hover(gd, spec.pos))
-            .then(function() {
+            .then(function () {
                 assertHoverLabelContent(exp.label);
 
-                for(var k in exp.ptData) {
+                for (var k in exp.ptData) {
                     expect(ptData[k]).toBe(exp.ptData[k], 'pt event data key ' + k);
                 }
 
@@ -634,315 +667,430 @@ describe('Test treemap hover:', function() {
                 expect(typeof ptData.bbox.y0).toEqual('number');
                 expect(typeof ptData.bbox.y1).toEqual('number');
 
-                if(exp.style) {
+                if (exp.style) {
                     var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
                 }
             });
     }
 
-    [{
-        desc: 'base',
-        pos: 2,
-        exp: {
-            label: {
-                nums: 'Seth',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 2,
-                label: 'Seth',
-                parent: 'Eve'
-            }
-        }
-    }, {
-        desc: 'with scalar hovertext',
-        traces: [{ hovertext: 'A' }],
-        pos: 3,
-        exp: {
-            label: {
-                nums: 'Cain\nA',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 1,
-                label: 'Cain',
-                parent: 'Eve'
-            }
-        }
-    }, {
-        desc: 'with array hovertext',
-        traces: [{
-            hovertext: values0,
-            hoverinfo: 'all'
-        }],
-        pos: 4,
-        exp: {
-            label: {
-                nums: 'Abel\nEve/\n17% of Eve\n6',
-                name: 'trace 0'
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 5,
-                label: 'Abel',
-                parent: 'Eve'
-            }
-        }
-    }, {
-        desc: 'with hoverlabel.namelength set ',
-        traces: [{
-            hoverlabel: {namelength: 4},
-            hoverinfo: 'all'
-        }],
-        pos: 4,
-        exp: {
-            label: {
-                nums: 'Abel\nEve/\n17% of Eve',
-                name: 't...'
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 5,
-                label: 'Abel',
-                parent: 'Eve'
-            }
-        }
-    }, {
-        desc: 'with values',
-        traces: [{
-            values: values0,
-            hoverinfo: 'value'
-        }],
-        pos: 5,
-        exp: {
-            label: {
-                nums: '6'
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 5,
-                label: 'Abel',
-                parent: 'Eve',
-                value: 6
-            }
-        }
-    }, {
-        desc: 'with values and hovertemplate',
-        traces: [{
-            values: values0,
-            hovertemplate: '%{label} :: %{value:.2f}<extra><b>N.B.</b></extra>'
-        }],
-        pos: 5,
-        exp: {
-            label: {
-                nums: 'Abel :: 6.00',
-                name: '<tspan style="font-weight:bold">N.B.</tspan>'
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 5,
-                label: 'Abel',
-                parent: 'Eve',
-                value: 6
-            }
-        }
-    }, {
-        desc: 'with array hovertemplate and label styling',
-        traces: [{
-            hovertemplate: parents0.map(function(p) {
-                return p ?
-                    '%{label} -| %{parent}<extra></extra>' :
-                    '%{label}<extra>THE ROOT</extra>';
-            }),
-            hoverlabel: {
-                bgcolor: 'red',
-                bordercolor: 'blue',
-                font: {
-                    size: 20,
-                    family: 'Roboto',
-                    color: 'orange'
+    [
+        {
+            desc: 'base',
+            pos: 2,
+            exp: {
+                label: {
+                    nums: 'Seth'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 2,
+                    label: 'Seth',
+                    parent: 'Eve'
                 }
             }
-        }],
-        pos: 1,
-        exp: {
-            label: {
-                nums: 'Eve',
-                name: 'THE ROOT'
-            },
-            style: {
-                bgcolor: 'rgb(255, 0, 0)',
-                bordercolor: 'rgb(0, 0, 255)',
-                fontSize: 20,
-                fontFamily: 'Roboto',
-                fontColor: 'rgb(255, 165, 0)'
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 0,
-                label: 'Eve',
-                parent: ''
+        },
+        {
+            desc: 'with scalar hovertext',
+            traces: [{ hovertext: 'A' }],
+            pos: 3,
+            exp: {
+                label: {
+                    nums: 'Cain\nA'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 1,
+                    label: 'Cain',
+                    parent: 'Eve'
+                }
+            }
+        },
+        {
+            desc: 'with array hovertext',
+            traces: [
+                {
+                    hovertext: values0,
+                    hoverinfo: 'all'
+                }
+            ],
+            pos: 4,
+            exp: {
+                label: {
+                    nums: 'Abel\nEve/\n17% of Eve\n6',
+                    name: 'trace 0'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 5,
+                    label: 'Abel',
+                    parent: 'Eve'
+                }
+            }
+        },
+        {
+            desc: 'with hoverlabel.namelength set ',
+            traces: [
+                {
+                    hoverlabel: { namelength: 4 },
+                    hoverinfo: 'all'
+                }
+            ],
+            pos: 4,
+            exp: {
+                label: {
+                    nums: 'Abel\nEve/\n17% of Eve',
+                    name: 't...'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 5,
+                    label: 'Abel',
+                    parent: 'Eve'
+                }
+            }
+        },
+        {
+            desc: 'with values',
+            traces: [
+                {
+                    values: values0,
+                    hoverinfo: 'value'
+                }
+            ],
+            pos: 5,
+            exp: {
+                label: {
+                    nums: '6'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 5,
+                    label: 'Abel',
+                    parent: 'Eve',
+                    value: 6
+                }
+            }
+        },
+        {
+            desc: 'with values and hovertemplate',
+            traces: [
+                {
+                    values: values0,
+                    hovertemplate: '%{label} :: %{value:.2f}<extra><b>N.B.</b></extra>'
+                }
+            ],
+            pos: 5,
+            exp: {
+                label: {
+                    nums: 'Abel :: 6.00',
+                    name: '<tspan style="font-weight:bold">N.B.</tspan>'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 5,
+                    label: 'Abel',
+                    parent: 'Eve',
+                    value: 6
+                }
+            }
+        },
+        {
+            desc: 'with array hovertemplate and label styling',
+            traces: [
+                {
+                    hovertemplate: parents0.map(function (p) {
+                        return p ? '%{label} -| %{parent}<extra></extra>' : '%{label}<extra>THE ROOT</extra>';
+                    }),
+                    hoverlabel: {
+                        bgcolor: 'red',
+                        bordercolor: 'blue',
+                        font: {
+                            size: 20,
+                            family: 'Roboto',
+                            color: 'orange'
+                        }
+                    }
+                }
+            ],
+            pos: 1,
+            exp: {
+                label: {
+                    nums: 'Eve',
+                    name: 'THE ROOT'
+                },
+                style: {
+                    bgcolor: 'rgb(255, 0, 0)',
+                    bordercolor: 'rgb(0, 0, 255)',
+                    fontSize: 20,
+                    fontFamily: 'Roboto',
+                    fontColor: 'rgb(255, 165, 0)'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    label: 'Eve',
+                    parent: ''
+                }
             }
         }
-    }]
-    .forEach(function(spec) {
-        it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
+    ].forEach(function (spec) {
+        it('should generate correct hover labels and event data - ' + spec.desc, function (done) {
             run(spec).then(done, done.fail);
         });
     });
 });
 
-describe('Test treemap hover with and without levels', function() {
+describe('Test treemap hover with and without levels', function () {
     var gd;
 
-    var labels0 = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet', 'Kilo', 'Lima', 'Mike', 'November', 'Oscar', 'Papa', 'Quebec', 'Romeo', 'Sierra', 'Tango', 'Uniform', 'Victor', 'Whiskey', 'X ray', 'Yankee', 'Zulu'];
-    var parents0 = ['', 'Alpha', 'Alpha', 'Charlie', 'Charlie', 'Charlie', 'Foxtrot', 'Foxtrot', 'Foxtrot', 'Foxtrot', 'Juliet', 'Juliet', 'Juliet', 'Juliet', 'Juliet', 'Oscar', 'Oscar', 'Oscar', 'Oscar', 'Oscar', 'Oscar', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform'];
-    var values0 = [40, 2, 38, 1.5, 2.5, 34, 1, 2, 3, 28, 1.25, 1.75, 2.25, 2.75, 20, 1, 1.5, 2, 2.5, 3, 10, 1, 1.5, 2, 2.5, 3];
-    var text0 = ['forty', 'two', 'thirty-eight', 'one and a half', 'two and a half', 'thirty-four', 'one', 'two', 'three', 'twenty-eight', 'one and twenty-five hundredths', 'one and seventy-five hundredths', 'two and twenty-five hundredths', 'two and seventy-five hundredths', 'twenty', 'one', 'one and a half', 'two', 'two and a half', 'three', 'ten', 'one', 'one and a half', 'two', 'two and a half', 'three'];
+    var labels0 = [
+        'Alpha',
+        'Bravo',
+        'Charlie',
+        'Delta',
+        'Echo',
+        'Foxtrot',
+        'Golf',
+        'Hotel',
+        'India',
+        'Juliet',
+        'Kilo',
+        'Lima',
+        'Mike',
+        'November',
+        'Oscar',
+        'Papa',
+        'Quebec',
+        'Romeo',
+        'Sierra',
+        'Tango',
+        'Uniform',
+        'Victor',
+        'Whiskey',
+        'X ray',
+        'Yankee',
+        'Zulu'
+    ];
+    var parents0 = [
+        '',
+        'Alpha',
+        'Alpha',
+        'Charlie',
+        'Charlie',
+        'Charlie',
+        'Foxtrot',
+        'Foxtrot',
+        'Foxtrot',
+        'Foxtrot',
+        'Juliet',
+        'Juliet',
+        'Juliet',
+        'Juliet',
+        'Juliet',
+        'Oscar',
+        'Oscar',
+        'Oscar',
+        'Oscar',
+        'Oscar',
+        'Oscar',
+        'Uniform',
+        'Uniform',
+        'Uniform',
+        'Uniform',
+        'Uniform',
+        'Uniform'
+    ];
+    var values0 = [
+        40, 2, 38, 1.5, 2.5, 34, 1, 2, 3, 28, 1.25, 1.75, 2.25, 2.75, 20, 1, 1.5, 2, 2.5, 3, 10, 1, 1.5, 2, 2.5, 3
+    ];
+    var text0 = [
+        'forty',
+        'two',
+        'thirty-eight',
+        'one and a half',
+        'two and a half',
+        'thirty-four',
+        'one',
+        'two',
+        'three',
+        'twenty-eight',
+        'one and twenty-five hundredths',
+        'one and seventy-five hundredths',
+        'two and twenty-five hundredths',
+        'two and seventy-five hundredths',
+        'twenty',
+        'one',
+        'one and a half',
+        'two',
+        'two and a half',
+        'three',
+        'ten',
+        'one',
+        'one and a half',
+        'two',
+        'two and a half',
+        'three'
+    ];
 
     afterEach(destroyGraphDiv);
 
     function run(spec) {
         gd = createGraphDiv();
 
-        var data = (spec.traces || [{}]).map(function(t) {
+        var data = (spec.traces || [{}]).map(function (t) {
             t.type = 'treemap';
             t.text = text0;
             t.values = values0;
             t.level = spec.level;
             t.branchvalues = 'total';
-            t.hovertemplate = 'path = %{currentPath}<br>label = %{label}<br>text = %{text}<br>value = %{value}<br>ratio to %{parent} = %{percentParent}<br>ratio to %{entry} = %{percentEntry}<br>ratio to %{root} = %{percentRoot}';
+            t.hovertemplate =
+                'path = %{currentPath}<br>label = %{label}<br>text = %{text}<br>value = %{value}<br>ratio to %{parent} = %{percentParent}<br>ratio to %{entry} = %{percentEntry}<br>ratio to %{root} = %{percentRoot}';
 
-            if(!t.labels) t.labels = labels0.slice();
-            if(!t.parents) t.parents = parents0.slice();
+            if (!t.labels) t.labels = labels0.slice();
+            if (!t.parents) t.parents = parents0.slice();
             return t;
         });
 
-        var layout = Lib.extendFlat({
-            width: 500,
-            height: 500,
-            margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
-        }, spec.layout || {});
+        var layout = Lib.extendFlat(
+            {
+                width: 500,
+                height: 500,
+                margin: { t: 0, b: 0, l: 0, r: 0, pad: 0 }
+            },
+            spec.layout || {}
+        );
 
         var exp = spec.exp || {};
         var ptData = null;
 
         return Plotly.newPlot(gd, data, layout)
-            .then(function() {
-                gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
+            .then(function () {
+                gd.once('plotly_hover', function (d) {
+                    ptData = d.points[0];
+                });
             })
             .then(hover(gd, spec.pos))
-            .then(function() {
+            .then(function () {
                 assertHoverLabelContent(exp.label);
 
-                for(var k in exp.ptData) {
+                for (var k in exp.ptData) {
                     expect(ptData[k]).toBe(exp.ptData[k], 'pt event data key ' + k);
                 }
 
-                if(exp.style) {
+                if (exp.style) {
                     var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
                 }
             });
     }
 
-    [{
-        desc: 'entry',
-        level: 'X ray',
-        pos: 0,
-        exp: {
-            label: {
-                name: 'trace 0',
-                nums: 'path = Alpha/Charlie/Foxtrot/Juliet/Oscar/Uniform/\nlabel = X ray\ntext = two\nvalue = 2\nratio to Uniform = 0.2\nratio to X ray = 1\nratio to Alpha = 0.05',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 23,
-                label: 'X ray',
-                parent: 'Uniform'
+    [
+        {
+            desc: 'entry',
+            level: 'X ray',
+            pos: 0,
+            exp: {
+                label: {
+                    name: 'trace 0',
+                    nums: 'path = Alpha/Charlie/Foxtrot/Juliet/Oscar/Uniform/\nlabel = X ray\ntext = two\nvalue = 2\nratio to Uniform = 0.2\nratio to X ray = 1\nratio to Alpha = 0.05'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 23,
+                    label: 'X ray',
+                    parent: 'Uniform'
+                }
+            }
+        },
+        {
+            desc: 'entry',
+            level: 'Oscar',
+            pos: 0,
+            exp: {
+                label: {
+                    name: 'trace 0',
+                    nums: 'path = Alpha/Charlie/Foxtrot/Juliet/\nlabel = Oscar\ntext = twenty\nvalue = 20\nratio to Juliet = 0.7142857142857143\nratio to Oscar = 1\nratio to Alpha = 0.5'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 14,
+                    label: 'Oscar',
+                    parent: 'Juliet'
+                }
+            }
+        },
+        {
+            desc: 'leaf',
+            level: 'Oscar',
+            pos: 10,
+            exp: {
+                label: {
+                    name: 'trace 0',
+                    nums: 'path = Alpha/Charlie/Foxtrot/Juliet/Oscar/Uniform/\nlabel = X ray\ntext = two\nvalue = 2\nratio to Uniform = 0.2\nratio to Oscar = 0.1\nratio to Alpha = 0.05'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 23,
+                    label: 'X ray',
+                    parent: 'Uniform'
+                }
+            }
+        },
+        {
+            desc: 'entry',
+            level: undefined, // root
+            pos: 0,
+            exp: {
+                label: {
+                    name: 'trace 0',
+                    nums: 'path = /\nlabel = Alpha\ntext = forty\nvalue = 40\nratio to  = 1\nratio to Alpha = 1\nratio to Alpha = 1'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    label: 'Alpha',
+                    parent: ''
+                }
+            }
+        },
+        {
+            desc: 'leaf',
+            level: undefined, // root
+            pos: 10,
+            exp: {
+                label: {
+                    name: 'trace 0',
+                    nums: 'path = Alpha/Charlie/Foxtrot/\nlabel = Golf\ntext = one\nvalue = 1\nratio to Foxtrot = 0.029411764705882353\nratio to Alpha = 0.025\nratio to Alpha = 0.025'
+                },
+                ptData: {
+                    curveNumber: 0,
+                    pointNumber: 6,
+                    label: 'Golf',
+                    parent: 'Foxtrot'
+                }
             }
         }
-    }, {
-        desc: 'entry',
-        level: 'Oscar',
-        pos: 0,
-        exp: {
-            label: {
-                name: 'trace 0',
-                nums: 'path = Alpha/Charlie/Foxtrot/Juliet/\nlabel = Oscar\ntext = twenty\nvalue = 20\nratio to Juliet = 0.7142857142857143\nratio to Oscar = 1\nratio to Alpha = 0.5',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 14,
-                label: 'Oscar',
-                parent: 'Juliet'
+    ].forEach(function (spec) {
+        it(
+            'should generate correct hover labels and event data - ' + spec.desc + ' with level:' + spec.level,
+            function (done) {
+                run(spec).then(done, done.fail);
             }
-        }
-    }, {
-        desc: 'leaf',
-        level: 'Oscar',
-        pos: 10,
-        exp: {
-            label: {
-                name: 'trace 0',
-                nums: 'path = Alpha/Charlie/Foxtrot/Juliet/Oscar/Uniform/\nlabel = X ray\ntext = two\nvalue = 2\nratio to Uniform = 0.2\nratio to Oscar = 0.1\nratio to Alpha = 0.05',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 23,
-                label: 'X ray',
-                parent: 'Uniform'
-            }
-        }
-    }, {
-        desc: 'entry',
-        level: undefined, // root
-        pos: 0,
-        exp: {
-            label: {
-                name: 'trace 0',
-                nums: 'path = /\nlabel = Alpha\ntext = forty\nvalue = 40\nratio to  = 1\nratio to Alpha = 1\nratio to Alpha = 1',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 0,
-                label: 'Alpha',
-                parent: ''
-            }
-        }
-    }, {
-        desc: 'leaf',
-        level: undefined, // root
-        pos: 10,
-        exp: {
-            label: {
-                name: 'trace 0',
-                nums: 'path = Alpha/Charlie/Foxtrot/\nlabel = Golf\ntext = one\nvalue = 1\nratio to Foxtrot = 0.029411764705882353\nratio to Alpha = 0.025\nratio to Alpha = 0.025',
-            },
-            ptData: {
-                curveNumber: 0,
-                pointNumber: 6,
-                label: 'Golf',
-                parent: 'Foxtrot'
-            }
-        }
-    }]
-    .forEach(function(spec) {
-        it('should generate correct hover labels and event data - ' + spec.desc + ' with level:' + spec.level, function(done) {
-            run(spec).then(done, done.fail);
-        });
+        );
     });
 });
 
-describe('Test treemap hover lifecycle:', function() {
+describe('Test treemap hover lifecycle:', function () {
     var gd;
     var hoverData;
     var unhoverData;
     var hoverCnt;
     var unhoverCnt;
 
-    beforeEach(function() { gd = createGraphDiv(); });
+    beforeEach(function () {
+        gd = createGraphDiv();
+    });
 
     afterEach(destroyGraphDiv);
 
@@ -952,62 +1100,62 @@ describe('Test treemap hover lifecycle:', function() {
         hoverCnt = 0;
         unhoverCnt = 0;
 
-        return function() {
-            gd.on('plotly_hover', function(d) {
+        return function () {
+            gd.on('plotly_hover', function (d) {
                 hoverData = d;
                 hoverCnt++;
             });
-            gd.on('plotly_unhover', function(d) {
+            gd.on('plotly_unhover', function (d) {
                 unhoverData = d;
                 unhoverCnt++;
             });
         };
     }
 
-    it('should fire the correct events', function(done) {
+    it('should fire the correct events', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
-        .then(setupListeners())
-        .then(hover(gd, 1))
-        .then(function() {
-            if(hoverCnt === 1) {
-                expect(hoverData.event).toBeDefined();
-                expect(hoverData.points[0].label).toBe('Eve');
-            } else {
-                fail('did not trigger correct # of plotly_hover events');
-            }
+            .then(setupListeners())
+            .then(hover(gd, 1))
+            .then(function () {
+                if (hoverCnt === 1) {
+                    expect(hoverData.event).toBeDefined();
+                    expect(hoverData.points[0].label).toBe('Eve');
+                } else {
+                    fail('did not trigger correct # of plotly_hover events');
+                }
 
-            if(unhoverCnt) {
-                fail('should not have triggered plotly_unhover');
-            }
-        })
-        .then(unhover(gd, 1))
-        .then(hover(gd, 2))
-        .then(function() {
-            if(hoverCnt === 2) {
-                expect(hoverData.event).toBeDefined();
-                expect(hoverData.points[0].label).toBe('Seth');
-            } else {
-                fail('did not trigger correct # of plotly_hover events');
-            }
+                if (unhoverCnt) {
+                    fail('should not have triggered plotly_unhover');
+                }
+            })
+            .then(unhover(gd, 1))
+            .then(hover(gd, 2))
+            .then(function () {
+                if (hoverCnt === 2) {
+                    expect(hoverData.event).toBeDefined();
+                    expect(hoverData.points[0].label).toBe('Seth');
+                } else {
+                    fail('did not trigger correct # of plotly_hover events');
+                }
 
-            if(unhoverCnt === 1) {
-                expect(unhoverData.event).toBeDefined();
-                expect(unhoverData.points[0].label).toBe('Eve');
-            } else {
-                fail('did not trigger correct # of plotly_unhover events');
-            }
-        })
-        .then(done, done.fail);
+                if (unhoverCnt === 1) {
+                    expect(unhoverData.event).toBeDefined();
+                    expect(unhoverData.points[0].label).toBe('Eve');
+                } else {
+                    fail('did not trigger correct # of plotly_unhover events');
+                }
+            })
+            .then(done, done.fail);
     });
 });
 
-describe('Test treemap clicks:', function() {
+describe('Test treemap clicks:', function () {
     var gd;
     var trackers;
 
-    beforeEach(function() {
+    beforeEach(function () {
         gd = createGraphDiv();
         trackers = {};
     });
@@ -1024,242 +1172,247 @@ describe('Test treemap clicks:', function() {
         // use `.unshift` that way to latest event data object
         // will be in entry [0], which is easier to pick out
 
-        return function() {
-            gd.on('plotly_treemapclick', function(d) {
+        return function () {
+            gd.on('plotly_treemapclick', function (d) {
                 trackers.treemapclick.unshift(d);
-                if(opts.turnOffAnimation) return false;
+                if (opts.turnOffAnimation) return false;
             });
-            gd.on('plotly_click', function(d) {
+            gd.on('plotly_click', function (d) {
                 trackers.click.unshift(d);
             });
-            gd.on('plotly_animating', function() {
+            gd.on('plotly_animating', function () {
                 // N.B. does not emit event data
                 trackers.animating.unshift(true);
             });
         };
     }
 
-    it('should trigger animation when clicking on branches', function(done) {
+    it('should trigger animation when clicking on branches', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
-        .then(setupListeners())
-        .then(click(gd, 2))
-        .then(function() {
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined();
-                expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
-                expect(trackers.treemapclick[0].nextLevel).toBe('Seth');
-            } else {
-                fail('incorrect plotly_treemapclick triggering');
-            }
+            .then(setupListeners())
+            .then(click(gd, 2))
+            .then(function () {
+                if (trackers.treemapclick.length === 1) {
+                    expect(trackers.treemapclick[0].event).toBeDefined();
+                    expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
+                    expect(trackers.treemapclick[0].nextLevel).toBe('Seth');
+                } else {
+                    fail('incorrect plotly_treemapclick triggering');
+                }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Seth');
-                expect(trackers.click[0].nextLevel).not.toBeDefined();
-            } else {
-                fail('incorrect plotly_click triggering');
-            }
+                if (trackers.click.length === 1) {
+                    expect(trackers.click[0].event).toBeDefined();
+                    expect(trackers.click[0].points[0].label).toBe('Seth');
+                    expect(trackers.click[0].nextLevel).not.toBeDefined();
+                } else {
+                    fail('incorrect plotly_click triggering');
+                }
 
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering');
-            }
-        })
-        .then(done, done.fail);
+                if (trackers.animating.length !== 1) {
+                    fail('incorrect plotly_animating triggering');
+                }
+            })
+            .then(done, done.fail);
     });
 
-    it('should trigger plotly_click event when clicking on leaf node', function(done) {
+    it('should trigger plotly_click event when clicking on leaf node', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
-        .then(setupListeners())
-        .then(click(gd, 8))
-        .then(function() {
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined();
-                expect(trackers.treemapclick[0].points[0].label).toBe('Noam');
-            } else {
-                fail('incorrect plotly_treemapclick triggering');
-            }
+            .then(setupListeners())
+            .then(click(gd, 8))
+            .then(function () {
+                if (trackers.treemapclick.length === 1) {
+                    expect(trackers.treemapclick[0].event).toBeDefined();
+                    expect(trackers.treemapclick[0].points[0].label).toBe('Noam');
+                } else {
+                    fail('incorrect plotly_treemapclick triggering');
+                }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined();
-                expect(trackers.click[0].points[0].label).toBe('Noam');
-            }
-        })
-        .then(done, done.fail);
+                if (trackers.click.length === 1) {
+                    expect(trackers.click[0].event).toBeDefined();
+                    expect(trackers.click[0].points[0].label).toBe('Noam');
+                }
+            })
+            .then(done, done.fail);
     });
 
-    it('should not trigger animation when graph is transitioning', function(done) {
+    it('should not trigger animation when graph is transitioning', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
-        .then(setupListeners())
-        .then(click(gd, 2))
-        .then(function() {
-            var msg = 'after 1st click';
+            .then(setupListeners())
+            .then(click(gd, 2))
+            .then(function () {
+                var msg = 'after 1st click';
 
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined(msg);
-                expect(trackers.treemapclick[0].points[0].label).toBe('Seth', msg);
-                expect(trackers.treemapclick[0].nextLevel).toBe('Seth', msg);
-            } else {
-                fail('incorrect plotly_treemapclick triggering - ' + msg);
-            }
+                if (trackers.treemapclick.length === 1) {
+                    expect(trackers.treemapclick[0].event).toBeDefined(msg);
+                    expect(trackers.treemapclick[0].points[0].label).toBe('Seth', msg);
+                    expect(trackers.treemapclick[0].nextLevel).toBe('Seth', msg);
+                } else {
+                    fail('incorrect plotly_treemapclick triggering - ' + msg);
+                }
 
-            if(trackers.click.length === 1) {
-                expect(trackers.click[0].event).toBeDefined(msg);
-                expect(trackers.click[0].points[0].label).toBe('Seth', msg);
-                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
-            } else {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
+                if (trackers.click.length === 1) {
+                    expect(trackers.click[0].event).toBeDefined(msg);
+                    expect(trackers.click[0].points[0].label).toBe('Seth', msg);
+                    expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+                } else {
+                    fail('incorrect plotly_click triggering - ' + msg);
+                }
 
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        })
-        .then(click(gd, 4))
-        .then(function() {
-            var msg = 'after 2nd click';
+                if (trackers.animating.length !== 1) {
+                    fail('incorrect plotly_animating triggering - ' + msg);
+                }
+            })
+            .then(click(gd, 4))
+            .then(function () {
+                var msg = 'after 2nd click';
 
-            // should trigger plotly_treemapclick and plotly_click twice,
-            // but not plotly_animating
+                // should trigger plotly_treemapclick and plotly_click twice,
+                // but not plotly_animating
 
-            if(trackers.treemapclick.length === 2) {
-                expect(trackers.treemapclick[0].event).toBeDefined(msg);
-                expect(trackers.treemapclick[0].points[0].label).toBe('Awan', msg);
-                expect(trackers.treemapclick[0].nextLevel).toBe('Awan', msg);
-            } else {
-                fail('incorrect plotly_treemapclick triggering - ' + msg);
-            }
+                if (trackers.treemapclick.length === 2) {
+                    expect(trackers.treemapclick[0].event).toBeDefined(msg);
+                    expect(trackers.treemapclick[0].points[0].label).toBe('Awan', msg);
+                    expect(trackers.treemapclick[0].nextLevel).toBe('Awan', msg);
+                } else {
+                    fail('incorrect plotly_treemapclick triggering - ' + msg);
+                }
 
-            if(trackers.click.length === 2) {
-                expect(trackers.click[0].event).toBeDefined(msg);
-                expect(trackers.click[0].points[0].label).toBe('Awan', msg);
-                expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
-            } else {
-                fail('incorrect plotly_click triggering - ' + msg);
-            }
+                if (trackers.click.length === 2) {
+                    expect(trackers.click[0].event).toBeDefined(msg);
+                    expect(trackers.click[0].points[0].label).toBe('Awan', msg);
+                    expect(trackers.click[0].nextLevel).not.toBeDefined(msg);
+                } else {
+                    fail('incorrect plotly_click triggering - ' + msg);
+                }
 
-
-            if(trackers.animating.length !== 1) {
-                fail('incorrect plotly_animating triggering - ' + msg);
-            }
-        })
-        .then(done, done.fail);
+                if (trackers.animating.length !== 1) {
+                    fail('incorrect plotly_animating triggering - ' + msg);
+                }
+            })
+            .then(done, done.fail);
     });
 
-    it('should be able to override default click behavior using plotly_treemapclick handler ()', function(done) {
+    it('should be able to override default click behavior using plotly_treemapclick handler ()', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
-        .then(setupListeners({turnOffAnimation: true}))
-        .then(click(gd, 2))
-        .then(function() {
-            if(trackers.treemapclick.length === 1) {
-                expect(trackers.treemapclick[0].event).toBeDefined();
-                expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
-            } else {
-                fail('incorrect plotly_treemapclick triggering');
-            }
+            .then(setupListeners({ turnOffAnimation: true }))
+            .then(click(gd, 2))
+            .then(function () {
+                if (trackers.treemapclick.length === 1) {
+                    expect(trackers.treemapclick[0].event).toBeDefined();
+                    expect(trackers.treemapclick[0].points[0].label).toBe('Seth');
+                } else {
+                    fail('incorrect plotly_treemapclick triggering');
+                }
 
-            if(trackers.click.length !== 0) {
-                fail('incorrect plotly_click triggering');
-            }
+                if (trackers.click.length !== 0) {
+                    fail('incorrect plotly_click triggering');
+                }
 
-            if(trackers.animating.length !== 0) {
-                fail('incorrect plotly_animating triggering');
-            }
-        })
-        .then(done, done.fail);
+                if (trackers.animating.length !== 0) {
+                    fail('incorrect plotly_animating triggering');
+                }
+            })
+            .then(done, done.fail);
     });
 });
 
-describe('Test treemap restyle:', function() {
+describe('Test treemap restyle:', function () {
     var gd;
 
-    beforeEach(function() { gd = createGraphDiv(); });
+    beforeEach(function () {
+        gd = createGraphDiv();
+    });
 
     afterEach(destroyGraphDiv);
 
     function _restyle(updateObj) {
-        return function() { return Plotly.restyle(gd, updateObj); };
+        return function () {
+            return Plotly.restyle(gd, updateObj);
+        };
     }
 
-    it('should be able to toggle visibility', function(done) {
+    it('should be able to toggle visibility', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         function _assert(msg, exp) {
-            return function() {
+            return function () {
                 var layer = d3Select(gd).select('.treemaplayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
 
         Plotly.newPlot(gd, mock)
-        .then(_assert('base', 2))
-        .then(_restyle({visible: false}))
-        .then(_assert('both visible:false', 0))
-        .then(_restyle({visible: true}))
-        .then(_assert('back to visible:true', 2))
-        .then(done, done.fail);
+            .then(_assert('base', 2))
+            .then(_restyle({ visible: false }))
+            .then(_assert('both visible:false', 0))
+            .then(_restyle({ visible: true }))
+            .then(_assert('back to visible:true', 2))
+            .then(done, done.fail);
     });
 
-    it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
+    it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_coffee.json'));
 
         function _assert(msg, exp) {
-            return function() {
+            return function () {
                 var layer = d3Select(gd).select('.treemaplayer');
 
                 expect(layer.selectAll('.slice').size()).toBe(exp, msg);
 
                 // editType:plot
-                if(msg !== 'base') {
+                if (msg !== 'base') {
                     expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
                 }
             };
         }
 
         Plotly.newPlot(gd, mock)
-        .then(_assert('base', 97))
-        .then(function() {
-            spyOn(Plots, 'doCalcdata').and.callThrough();
-        })
-        .then(_restyle({maxdepth: 3}))
-        .then(_assert('with maxdepth:3', 97))
-        .then(_restyle({level: 'Aromas'}))
-        .then(_assert('with non-root level', 67))
-        .then(_restyle({maxdepth: null, level: null}))
-        .then(_assert('back to first view', 97))
-        .then(done, done.fail);
+            .then(_assert('base', 97))
+            .then(function () {
+                spyOn(Plots, 'doCalcdata').and.callThrough();
+            })
+            .then(_restyle({ maxdepth: 3 }))
+            .then(_assert('with maxdepth:3', 97))
+            .then(_restyle({ level: 'Aromas' }))
+            .then(_assert('with non-root level', 67))
+            .then(_restyle({ maxdepth: null, level: null }))
+            .then(_assert('back to first view', 97))
+            .then(done, done.fail);
     });
 
-    it('should be able to restyle *textinfo*', function(done) {
+    it('should be able to restyle *textinfo*', function (done) {
         var mock = {
-            data: [{
-                type: 'treemap',
-                labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B'],
-                text: ['node0', 'node1', 'node2', 'node3'],
-                values: [0, 1, 2, 3],
-                pathbar: { visible: false }
-            }]
+            data: [
+                {
+                    type: 'treemap',
+                    labels: ['Root', 'A', 'B', 'b'],
+                    parents: ['', 'Root', 'Root', 'B'],
+                    text: ['node0', 'node1', 'node2', 'node3'],
+                    values: [0, 1, 2, 3],
+                    pathbar: { visible: false }
+                }
+            ]
         };
 
         function _assert(msg, exp) {
-            return function() {
+            return function () {
                 var layer = d3Select(gd).select('.treemaplayer');
                 var tx = [];
 
-                layer.selectAll('text.slicetext').each(function() {
+                layer.selectAll('text.slicetext').each(function () {
                     var lines = d3Select(this).selectAll('tspan');
 
-                    if(lines.size()) {
+                    if (lines.size()) {
                         var t = [];
-                        lines.each(function() {
+                        lines.each(function () {
                             t.push(this.innerHTML);
                         });
                         tx.push(t.join('\n'));
@@ -1271,46 +1424,48 @@ describe('Test treemap restyle:', function() {
                 expect(tx).toEqual(exp, msg);
 
                 // editType:plot
-                if(msg !== 'base') {
+                if (msg !== 'base') {
                     expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
                 }
             };
         }
 
         Plotly.newPlot(gd, mock)
-        .then(_assert('base', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
-        .then(function() {
-            spyOn(Plots, 'doCalcdata').and.callThrough();
-        })
-        .then(_restyle({textinfo: 'label'}))
-        .then(_assert('just label', ['Root', 'B', 'A', 'b']))
-        .then(_restyle({textinfo: 'value'}))
-        .then(_assert('show input values', ['Root', 'B', '1', '3']))
-        .then(_restyle({textinfo: 'none'}))
-        .then(_assert('no textinfo', ['Root', 'B', ' ', ' '])) // use one space character instead of a blank string to avoid jumps during transition
-        .then(_restyle({textinfo: 'label+text+value'}))
-        .then(_assert('show everything', ['Root', 'B', 'A\n1\nnode1', 'b\n3\nnode3']))
-        .then(_restyle({textinfo: null}))
-        .then(_assert('back to dflt', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
-        .then(done, done.fail);
+            .then(_assert('base', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
+            .then(function () {
+                spyOn(Plots, 'doCalcdata').and.callThrough();
+            })
+            .then(_restyle({ textinfo: 'label' }))
+            .then(_assert('just label', ['Root', 'B', 'A', 'b']))
+            .then(_restyle({ textinfo: 'value' }))
+            .then(_assert('show input values', ['Root', 'B', '1', '3']))
+            .then(_restyle({ textinfo: 'none' }))
+            .then(_assert('no textinfo', ['Root', 'B', ' ', ' '])) // use one space character instead of a blank string to avoid jumps during transition
+            .then(_restyle({ textinfo: 'label+text+value' }))
+            .then(_assert('show everything', ['Root', 'B', 'A\n1\nnode1', 'b\n3\nnode3']))
+            .then(_restyle({ textinfo: null }))
+            .then(_assert('back to dflt', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
+            .then(done, done.fail);
     });
 
-    it('should be able to restyle *marker.cornerradius*', function(done) {
+    it('should be able to restyle *marker.cornerradius*', function (done) {
         var mock = {
-            data: [{
-                type: 'treemap',
-                labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B'],
-                text: ['node0', 'node1', 'node2', 'node3'],
-                values: [0, 1, 2, 3],
-                pathbar: { visible: false }
-            }]
+            data: [
+                {
+                    type: 'treemap',
+                    labels: ['Root', 'A', 'B', 'b'],
+                    parents: ['', 'Root', 'Root', 'B'],
+                    text: ['node0', 'node1', 'node2', 'node3'],
+                    values: [0, 1, 2, 3],
+                    pathbar: { visible: false }
+                }
+            ]
         };
 
         function _assert(msg, exp) {
-            return function() {
+            return function () {
                 var layer = d3Select(gd).select('.treemaplayer');
-                layer.selectAll('.surface').each(function() {
+                layer.selectAll('.surface').each(function () {
                     var surfaces = d3Select(this);
                     var path = surfaces[0][0].getAttribute('d');
                     expect(path.indexOf('a') !== -1).toEqual(exp);
@@ -1319,30 +1474,30 @@ describe('Test treemap restyle:', function() {
         }
 
         Plotly.newPlot(gd, mock)
-        .then(_assert('no arcs', false))
-        .then(function() {
-            return Plotly.restyle(gd, 'marker.cornerradius', 10);
-        })
-        .then(_assert('has arcs', true))
-        .then(function() {
-            return Plotly.restyle(gd, 'marker.cornerradius', 0);
-        })
-        .then(_assert('no arcs', false))
-        .then(done, done.fail);
+            .then(_assert('no arcs', false))
+            .then(function () {
+                return Plotly.restyle(gd, 'marker.cornerradius', 10);
+            })
+            .then(_assert('has arcs', true))
+            .then(function () {
+                return Plotly.restyle(gd, 'marker.cornerradius', 0);
+            })
+            .then(_assert('no arcs', false))
+            .then(done, done.fail);
     });
 });
 
-describe('Test treemap tweening:', function() {
+describe('Test treemap tweening:', function () {
     var gd;
     var pathTweenFnLookup;
     var textTweenFnLookup;
 
-    beforeEach(function() {
+    beforeEach(function () {
         gd = createGraphDiv();
 
         // hacky way to track tween functions
-        spyOn(d3Transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
-            var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
+        spyOn(d3Transition.prototype, 'attrTween').and.callFake(function (attrName, fn) {
+            var lookup = { d: pathTweenFnLookup, transform: textTweenFnLookup }[attrName];
             var pt = this[0][0].__data__;
             var id = pt.data.data.id;
 
@@ -1370,9 +1525,8 @@ describe('Test treemap tweening:', function() {
         return s.replace(/\s/g, '');
     }
 
-
     function _assert(msg, attrName, id, exp, tolerance) {
-        var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
+        var lookup = { d: pathTweenFnLookup, transform: textTweenFnLookup }[attrName];
         var fn = lookup[id];
         // normalize time in [0, 1] where we'll assert the tweening fn output,
         // asserting at the mid point *should be* representative enough
@@ -1380,8 +1534,12 @@ describe('Test treemap tweening:', function() {
         var actual = trim(fn(t));
         var msg2 = msg + ' | node ' + id + ' @t=' + t;
 
-        if(attrName === 'transform') {
-            var fake = {attr: function() { return actual; }};
+        if (attrName === 'transform') {
+            var fake = {
+                attr: function () {
+                    return actual;
+                }
+            };
             var xy = Drawing.getTranslate(fake);
             expect([xy.x, xy.y]).toBeWithinArray(exp, tolerance || 2, msg2);
         } else {
@@ -1392,137 +1550,124 @@ describe('Test treemap tweening:', function() {
         }
     }
 
-    it('should tween sector exit/update (case: click on branch, no maxdepth)', function(done) {
+    it('should tween sector exit/update (case: click on branch, no maxdepth)', function (done) {
         var mock = {
-            data: [{
-                type: 'treemap', pathbar: { visible: false },
-                labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B']
-            }]
+            data: [
+                {
+                    type: 'treemap',
+                    pathbar: { visible: false },
+                    labels: ['Root', 'A', 'B', 'b'],
+                    parents: ['', 'Root', 'Root', 'B']
+                }
+            ]
         };
 
         Plotly.newPlot(gd, mock)
-        .then(_run(gd, 3))
-        .then(function() {
-            _assert('exit entry', 'd', 'Root',
-                'M80,100L620,100L620,370L80,370Z'
-            );
-            _assert('update A to new position', 'd', 'A',
-                'M83,112L214.25,112L214.25,367L83,367Z'
-            );
-            _assert('update B to new position', 'd', 'B',
-                'M215.75,112L617,112L617,367L215.75,367Z'
-            );
-            _assert('update b to new position', 'd', 'b',
-                'M221.75,136L611,136L611,361L221.75,361Z'
-            );
-            _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
-            _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
-        })
-        .then(done, done.fail);
+            .then(_run(gd, 3))
+            .then(function () {
+                _assert('exit entry', 'd', 'Root', 'M80,100L620,100L620,370L80,370Z');
+                _assert('update A to new position', 'd', 'A', 'M83,112L214.25,112L214.25,367L83,367Z');
+                _assert('update B to new position', 'd', 'B', 'M215.75,112L617,112L617,367L215.75,367Z');
+                _assert('update b to new position', 'd', 'b', 'M221.75,136L611,136L611,361L221.75,361Z');
+                _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
+                _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
+            })
+            .then(done, done.fail);
     });
 
-    it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
+    it('should tween sector enter/update (case: click on entry, no maxdepth)', function (done) {
         var mock = {
-            data: [{
-                type: 'treemap', pathbar: { visible: false },
-                labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B'],
-                level: 'B'
-            }]
+            data: [
+                {
+                    type: 'treemap',
+                    pathbar: { visible: false },
+                    labels: ['Root', 'A', 'B', 'b'],
+                    parents: ['', 'Root', 'Root', 'B'],
+                    level: 'B'
+                }
+            ]
         };
 
         Plotly.newPlot(gd, mock)
-        .then(_run(gd, 1))
-        .then(function() {
-            _assert('enter new entry', 'd', 'Root',
-                'M80,100L620,100L620,370L80,370Z'
-            );
-            _assert('update A to new position', 'd', 'A',
-                'M83,112L214.25,112L214.25,367L83,367Z'
-            );
-            _assert('update B to new position', 'd', 'B',
-                'M215.75,112L617,112L617,367L215.75,367Z'
-            );
-            _assert('update b to new position', 'd', 'b',
-                'M221.75,136L611,136L611,361L221.75,361Z'
-            );
-            _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
-            _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
-        })
-        .then(done, done.fail);
+            .then(_run(gd, 1))
+            .then(function () {
+                _assert('enter new entry', 'd', 'Root', 'M80,100L620,100L620,370L80,370Z');
+                _assert('update A to new position', 'd', 'A', 'M83,112L214.25,112L214.25,367L83,367Z');
+                _assert('update B to new position', 'd', 'B', 'M215.75,112L617,112L617,367L215.75,367Z');
+                _assert('update b to new position', 'd', 'b', 'M221.75,136L611,136L611,361L221.75,361Z');
+                _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
+                _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
+            })
+            .then(done, done.fail);
     });
 
-    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function (done) {
         var mock = {
-            data: [{
-                type: 'treemap', pathbar: { visible: false },
-                labels: ['Root', 'A', 'B', 'b'],
-                parents: ['', 'Root', 'Root', 'B'],
-                maxdepth: 2
-            }]
+            data: [
+                {
+                    type: 'treemap',
+                    pathbar: { visible: false },
+                    labels: ['Root', 'A', 'B', 'b'],
+                    parents: ['', 'Root', 'Root', 'B'],
+                    maxdepth: 2
+                }
+            ]
         };
 
         Plotly.newPlot(gd, mock)
-        .then(_run(gd, 3))
-        .then(function() {
-            _assert('exit entry', 'd', 'Root',
-                'M80,100L620,100L620,370L80,370Z'
-            );
-            _assert('update A to new position', 'd', 'A',
-                'M83,112L214.25,112L214.25,367L83,367Z'
-            );
-            _assert('update B to new position', 'd', 'B',
-                'M215.75,112L617,112L617,367L215.75,367Z'
-            );
-            _assert('enter b for parent position', 'd', 'b',
-                'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
-            );
-            _assert('move B text to new position', 'transform', 'B', [221.25, 126], 3);
-            _assert('enter b text to new position', 'transform', 'b', [287.625, 192]);
-        })
-        .then(done, done.fail);
+            .then(_run(gd, 3))
+            .then(function () {
+                _assert('exit entry', 'd', 'Root', 'M80,100L620,100L620,370L80,370Z');
+                _assert('update A to new position', 'd', 'A', 'M83,112L214.25,112L214.25,367L83,367Z');
+                _assert('update B to new position', 'd', 'B', 'M215.75,112L617,112L617,367L215.75,367Z');
+                _assert(
+                    'enter b for parent position',
+                    'd',
+                    'b',
+                    'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
+                );
+                _assert('move B text to new position', 'transform', 'B', [221.25, 126], 3);
+                _assert('enter b text to new position', 'transform', 'b', [287.625, 192]);
+            })
+            .then(done, done.fail);
     });
 
-    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
+    it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function (done) {
         var mock = {
-            data: [{
-                type: 'treemap', pathbar: { visible: false },
-                labels: ['Root', 'A', 'B', 'b', 'bb'],
-                parents: ['', 'Root', 'Root', 'B', 'b'],
-                maxdepth: 2,
-                level: 'B'
-            }]
+            data: [
+                {
+                    type: 'treemap',
+                    pathbar: { visible: false },
+                    labels: ['Root', 'A', 'B', 'b', 'bb'],
+                    parents: ['', 'Root', 'Root', 'B', 'b'],
+                    maxdepth: 2,
+                    level: 'B'
+                }
+            ]
         };
 
         Plotly.newPlot(gd, mock)
-        .then(_run(gd, 1))
-        .then(function() {
-            _assert('exit b', 'd', 'b',
-                'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z'
-            );
-            _assert('enter new entry', 'd', 'Root',
-                'M80,100L620,100L620,370L80,370Z'
-            );
-            _assert('enter A counterclockwise', 'd', 'A',
-                'M83,112L214.25,112L214.25,367L83,367Z'
-            );
-            _assert('update B to new position', 'd', 'B',
-                'M215.75,112L617,112L617,367L215.75,367Z'
-            );
-        })
-        .then(done, done.fail);
+            .then(_run(gd, 1))
+            .then(function () {
+                _assert('exit b', 'd', 'b', 'M284.375,188.5L548.375,188.5L548.375,308.5L284.375,308.5Z');
+                _assert('enter new entry', 'd', 'Root', 'M80,100L620,100L620,370L80,370Z');
+                _assert('enter A counterclockwise', 'd', 'A', 'M83,112L214.25,112L214.25,367L83,367Z');
+                _assert('update B to new position', 'd', 'B', 'M215.75,112L617,112L617,367L215.75,367Z');
+            })
+            .then(done, done.fail);
     });
 });
 
-describe('Test treemap interactions edge cases', function() {
+describe('Test treemap interactions edge cases', function () {
     var gd;
 
-    beforeEach(function() { gd = createGraphDiv(); });
+    beforeEach(function () {
+        gd = createGraphDiv();
+    });
 
     afterEach(destroyGraphDiv);
 
-    it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
+    it('should keep tracking hover labels and hover events after *calc* edits', function (done) {
         var mock = Lib.extendFlat({}, require('../../image/mocks/treemap_first.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
@@ -1541,68 +1686,70 @@ describe('Test treemap interactions edge cases', function() {
         }
 
         Plotly.newPlot(gd, mock)
-        .then(function() {
-            gd.on('plotly_hover', function() {
-                hoverCnt++;
-                // N.B. trigger a 'plot' edit
-                Plotly.restyle(gd, 'textinfo', 'none');
-            });
-            gd.on('plotly_unhover', function() {
-                unhoverCnt++;
-                // N.B. trigger a 'plot' edit
-                Plotly.restyle(gd, 'textinfo', null);
-            });
-        })
-        .then(hover(gd, 1))
-        .then(function() {
-            _assert('after hovering on first sector', {
-                hoverCnt: 1,
-                unhoverCnt: 0,
-                hoverLabel: 1
-            });
-        })
-        .then(unhover(gd, 1))
-        .then(function() {
-            _assert('after un-hovering from first sector', {
-                hoverCnt: 0,
-                unhoverCnt: 1,
-                hoverLabel: 0
-            });
-        })
-        .then(hover(gd, 2))
-        .then(function() {
-            _assert('after hovering onto second sector', {
-                hoverCnt: 1,
-                unhoverCnt: 0,
-                hoverLabel: 1
-            });
-        })
-        .then(done, done.fail);
+            .then(function () {
+                gd.on('plotly_hover', function () {
+                    hoverCnt++;
+                    // N.B. trigger a 'plot' edit
+                    Plotly.restyle(gd, 'textinfo', 'none');
+                });
+                gd.on('plotly_unhover', function () {
+                    unhoverCnt++;
+                    // N.B. trigger a 'plot' edit
+                    Plotly.restyle(gd, 'textinfo', null);
+                });
+            })
+            .then(hover(gd, 1))
+            .then(function () {
+                _assert('after hovering on first sector', {
+                    hoverCnt: 1,
+                    unhoverCnt: 0,
+                    hoverLabel: 1
+                });
+            })
+            .then(unhover(gd, 1))
+            .then(function () {
+                _assert('after un-hovering from first sector', {
+                    hoverCnt: 0,
+                    unhoverCnt: 1,
+                    hoverLabel: 0
+                });
+            })
+            .then(hover(gd, 2))
+            .then(function () {
+                _assert('after hovering onto second sector', {
+                    hoverCnt: 1,
+                    unhoverCnt: 0,
+                    hoverLabel: 1
+                });
+            })
+            .then(done, done.fail);
     });
 
-    it('should show falsy zero text', function(done) {
+    it('should show falsy zero text', function (done) {
         Plotly.newPlot(gd, {
-            data: [{
-                type: 'treemap',
-                parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
-                labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
-                values: [7, 6, 5, 4, 3, 2, 1],
-                text: [null, '', '0', 0, 1, true, false],
-                textinfo: 'label+text+value'
-            }],
+            data: [
+                {
+                    type: 'treemap',
+                    parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
+                    labels: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                    values: [7, 6, 5, 4, 3, 2, 1],
+                    text: [null, '', '0', 0, 1, true, false],
+                    textinfo: 'label+text+value'
+                }
+            ],
             layout: {
                 width: 400,
                 height: 400
             }
         })
-        .then(hover(gd, 4))
-        .then(function() {
-            assertHoverLabelContent({ nums: 'D\n4\n0' });
-        })
-        .then(done, done.fail);
+            .then(hover(gd, 4))
+            .then(function () {
+                assertHoverLabelContent({ nums: 'D\n4\n0' });
+            })
+            .then(done, done.fail);
     });
 
-    it('should transition treemap traces only', function(done) {
+    it('should transition treemap traces only', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.data[0].visible = false;
         mock.data[1].type = 'treemap';
@@ -1610,163 +1757,391 @@ describe('Test treemap interactions edge cases', function() {
 
         function _assert(msg, exp) {
             var gd3 = d3Select(gd);
-            expect(gd3.select('.cartesianlayer').selectAll('.trace').size())
-                .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
-            expect(gd3.select('.pielayer').selectAll('.trace').size())
-                .toBe(exp.pieTraceCnt, '# of pie traces');
-            expect(gd3.select('.treemaplayer').selectAll('.trace').size())
-                .toBe(exp.treemapTraceCnt, '# of treemap traces');
+            expect(gd3.select('.cartesianlayer').selectAll('.trace').size()).toBe(
+                exp.cartesianTraceCnt,
+                '# of cartesian traces'
+            );
+            expect(gd3.select('.pielayer').selectAll('.trace').size()).toBe(exp.pieTraceCnt, '# of pie traces');
+            expect(gd3.select('.treemaplayer').selectAll('.trace').size()).toBe(
+                exp.treemapTraceCnt,
+                '# of treemap traces'
+            );
         }
 
         Plotly.newPlot(gd, mock)
-        .then(function() {
-            _assert('base', {
-                cartesianTraceCnt: 2,
-                pieTraceCnt: 0,
-                treemapTraceCnt: 1
-            });
-        })
-        .then(click(gd, 2))
-        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
-        .then(function() {
-            _assert('after treemap click', {
-                cartesianTraceCnt: 2,
-                pieTraceCnt: 0,
-                treemapTraceCnt: 1
-            });
-        })
-        .then(done, done.fail);
+            .then(function () {
+                _assert('base', {
+                    cartesianTraceCnt: 2,
+                    pieTraceCnt: 0,
+                    treemapTraceCnt: 1
+                });
+            })
+            .then(click(gd, 2))
+            .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+            .then(function () {
+                _assert('after treemap click', {
+                    cartesianTraceCnt: 2,
+                    pieTraceCnt: 0,
+                    treemapTraceCnt: 1
+                });
+            })
+            .then(done, done.fail);
     });
 
-    it('should be able to transition treemap traces via `Plotly.react`', function(done) {
+    it('should be able to transition treemap traces via `Plotly.react`', function (done) {
         var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.data[1].type = 'treemap';
         mock.data[1].name = 'treemap';
 
-        mock.layout.transition = {duration: 200};
+        mock.layout.transition = { duration: 200 };
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
 
         Plotly.newPlot(gd, mock)
-        .then(function() {
-            gd.data[1].level = 'B';
-            return Plotly.react(gd, gd.data, gd.layout);
-        })
-        .then(delay(202))
-        .then(function() {
-            expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
-        })
-        .then(done, done.fail);
+            .then(function () {
+                gd.data[1].level = 'B';
+                return Plotly.react(gd, gd.data, gd.layout);
+            })
+            .then(delay(202))
+            .then(function () {
+                expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
+            })
+            .then(done, done.fail);
     });
 });
 
-describe('Test treemap texttemplate without `values` should work:', function() {
-    checkTextTemplate([{
-        type: 'treemap', pathbar: { visible: false },
-        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
-        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
-        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
-    }], 'g.slicetext', [
-        ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
-        ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
-        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
-        ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']],
-        ['%{percentRoot} of %{root}', ['Eve', '33% of Eve', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '17% of Eve', '17% of Eve']],
-        ['%{percentEntry} of %{entry}', ['Eve', '33% of Eve', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '17% of Eve', '17% of Eve']],
-        ['%{percentParent} of %{parent}', ['Eve', '100% of Seth', 'Seth', '17% of Eve', '17% of Eve', '17% of Eve', 'Awan', '50% of Seth', '100% of Awan']],
+describe('Test treemap texttemplate without `values` should work:', function () {
+    checkTextTemplate(
+        [
+            {
+                type: 'treemap',
+                pathbar: { visible: false },
+                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
+                text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+            }
+        ],
+        'g.slicetext',
         [
             [
                 'color: %{color}',
-                'label: %{label}, text: %{text}',
-                'text: %{text}',
-                'value: %{value}',
-                '%{percentRoot} of %{root}',
-                '%{percentEntry} of %{entry}',
-                '%{percentParent} of %{parent}',
-                '%{percentParent} of %{parent}',
-                '%{percentParent} of %{parent}'
+                [
+                    'Eve',
+                    'color: #1f77b4',
+                    'Seth',
+                    'color: #2ca02c',
+                    'color: #d62728',
+                    'color: #9467bd',
+                    'Awan',
+                    'color: #ff7f0e',
+                    'color: #d62728'
+                ]
             ],
             [
-                'Eve',
-                'label: Cain, text: fourteen',
-                'Seth',
-                'value: %{value}', // N.B. there is no `values` array
-                '17% of Eve',
-                '17% of Eve',
-                'Awan',
-                '17% of Eve',
-                '100% of Awan'
+                'label: %{label}',
+                [
+                    'Eve',
+                    'label: Cain',
+                    'Seth',
+                    'label: Enos',
+                    'label: Noam',
+                    'label: Abel',
+                    'Awan',
+                    'label: Enoch',
+                    'label: Azura'
+                ]
+            ],
+            [
+                'text: %{text}',
+                [
+                    'Eve',
+                    'text: fourteen',
+                    'Seth',
+                    'text: ten',
+                    'text: two',
+                    'text: six',
+                    'Awan',
+                    'text: one',
+                    'text: four'
+                ]
+            ],
+            [
+                'path: %{currentPath}',
+                [
+                    'Eve',
+                    'path: Eve/',
+                    'Seth',
+                    'path: Eve/',
+                    'path: Eve/',
+                    'path: Eve/Seth/',
+                    'Awan',
+                    'path: Eve/Seth/',
+                    'path: Eve/Awan/'
+                ]
+            ],
+            [
+                '%{percentRoot} of %{root}',
+                [
+                    'Eve',
+                    '33% of Eve',
+                    'Seth',
+                    '17% of Eve',
+                    '17% of Eve',
+                    '17% of Eve',
+                    'Awan',
+                    '17% of Eve',
+                    '17% of Eve'
+                ]
+            ],
+            [
+                '%{percentEntry} of %{entry}',
+                [
+                    'Eve',
+                    '33% of Eve',
+                    'Seth',
+                    '17% of Eve',
+                    '17% of Eve',
+                    '17% of Eve',
+                    'Awan',
+                    '17% of Eve',
+                    '17% of Eve'
+                ]
+            ],
+            [
+                '%{percentParent} of %{parent}',
+                [
+                    'Eve',
+                    '100% of Seth',
+                    'Seth',
+                    '17% of Eve',
+                    '17% of Eve',
+                    '17% of Eve',
+                    'Awan',
+                    '50% of Seth',
+                    '100% of Awan'
+                ]
+            ],
+            [
+                [
+                    'color: %{color}',
+                    'label: %{label}, text: %{text}',
+                    'text: %{text}',
+                    'value: %{value}',
+                    '%{percentRoot} of %{root}',
+                    '%{percentEntry} of %{entry}',
+                    '%{percentParent} of %{parent}',
+                    '%{percentParent} of %{parent}',
+                    '%{percentParent} of %{parent}'
+                ],
+                [
+                    'Eve',
+                    'label: Cain, text: fourteen',
+                    'Seth',
+                    'value: -', // N.B. there is no `values` array
+                    '17% of Eve',
+                    '17% of Eve',
+                    'Awan',
+                    '17% of Eve',
+                    '100% of Awan'
+                ]
             ]
-        ]
-    ], /* skipEtra */ true);
+        ],
+        /* skipEtra */ true
+    );
 });
 
-describe('Test treemap texttemplate with *total* `values` should work:', function() {
-    checkTextTemplate([{
-        type: 'treemap', pathbar: { visible: false },
-        branchvalues: 'total',
-        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
-        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
-        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
-        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
-    }], 'g.slicetext', [
-        ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
-        ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
-        ['value: %{value}', ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']],
-        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
-        ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']]
-    ], /* skipEtra */ true);
+describe('Test treemap texttemplate with *total* `values` should work:', function () {
+    checkTextTemplate(
+        [
+            {
+                type: 'treemap',
+                pathbar: { visible: false },
+                branchvalues: 'total',
+                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
+                values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+                text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+            }
+        ],
+        'g.slicetext',
+        [
+            [
+                'color: %{color}',
+                [
+                    'Eve',
+                    'color: #1f77b4',
+                    'Seth',
+                    'color: #2ca02c',
+                    'color: #d62728',
+                    'color: #9467bd',
+                    'Awan',
+                    'color: #ff7f0e',
+                    'color: #d62728'
+                ]
+            ],
+            [
+                'label: %{label}',
+                [
+                    'Eve',
+                    'label: Cain',
+                    'Seth',
+                    'label: Enos',
+                    'label: Noam',
+                    'label: Abel',
+                    'Awan',
+                    'label: Enoch',
+                    'label: Azura'
+                ]
+            ],
+            [
+                'value: %{value}',
+                ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']
+            ],
+            [
+                'text: %{text}',
+                [
+                    'Eve',
+                    'text: fourteen',
+                    'Seth',
+                    'text: ten',
+                    'text: two',
+                    'text: six',
+                    'Awan',
+                    'text: one',
+                    'text: four'
+                ]
+            ],
+            [
+                'path: %{currentPath}',
+                [
+                    'Eve',
+                    'path: Eve/',
+                    'Seth',
+                    'path: Eve/',
+                    'path: Eve/',
+                    'path: Eve/Seth/',
+                    'Awan',
+                    'path: Eve/Seth/',
+                    'path: Eve/Awan/'
+                ]
+            ]
+        ],
+        /* skipEtra */ true
+    );
 });
 
-describe('Test treemap texttemplate with *remainder* `values` should work:', function() {
-    checkTextTemplate([{
-        type: 'treemap', pathbar: { visible: false },
-        branchvalues: 'remainder',
-        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
-        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
-        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
-        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
-    }], 'g.slicetext', [
-        ['color: %{color}', ['Eve', 'color: #1f77b4', 'Seth', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'Awan', 'color: #ff7f0e', 'color: #d62728']],
-        ['label: %{label}', ['Eve', 'label: Cain', 'Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'Awan', 'label: Enoch', 'label: Azura']],
-        ['value: %{value}', ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']],
-        ['text: %{text}', ['Eve', 'text: fourteen', 'Seth', 'text: ten', 'text: two', 'text: six', 'Awan', 'text: one', 'text: four']],
-        ['path: %{currentPath}', ['Eve', 'path: Eve/', 'Seth', 'path: Eve/', 'path: Eve/', 'path: Eve/Seth/', 'Awan', 'path: Eve/Seth/', 'path: Eve/Awan/']]
-    ], /* skipEtra */ true);
+describe('Test treemap texttemplate with *remainder* `values` should work:', function () {
+    checkTextTemplate(
+        [
+            {
+                type: 'treemap',
+                pathbar: { visible: false },
+                branchvalues: 'remainder',
+                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
+                values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+                text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+            }
+        ],
+        'g.slicetext',
+        [
+            [
+                'color: %{color}',
+                [
+                    'Eve',
+                    'color: #1f77b4',
+                    'Seth',
+                    'color: #2ca02c',
+                    'color: #d62728',
+                    'color: #9467bd',
+                    'Awan',
+                    'color: #ff7f0e',
+                    'color: #d62728'
+                ]
+            ],
+            [
+                'label: %{label}',
+                [
+                    'Eve',
+                    'label: Cain',
+                    'Seth',
+                    'label: Enos',
+                    'label: Noam',
+                    'label: Abel',
+                    'Awan',
+                    'label: Enoch',
+                    'label: Azura'
+                ]
+            ],
+            [
+                'value: %{value}',
+                ['Eve', 'value: 14', 'Seth', 'value: 10', 'value: 2', 'value: 6', 'Awan', 'value: 1', 'value: 4']
+            ],
+            [
+                'text: %{text}',
+                [
+                    'Eve',
+                    'text: fourteen',
+                    'Seth',
+                    'text: ten',
+                    'text: two',
+                    'text: six',
+                    'Awan',
+                    'text: one',
+                    'text: four'
+                ]
+            ],
+            [
+                'path: %{currentPath}',
+                [
+                    'Eve',
+                    'path: Eve/',
+                    'Seth',
+                    'path: Eve/',
+                    'path: Eve/',
+                    'path: Eve/Seth/',
+                    'Awan',
+                    'path: Eve/Seth/',
+                    'path: Eve/Awan/'
+                ]
+            ]
+        ],
+        /* skipEtra */ true
+    );
 });
 
-describe('treemap uniformtext', function() {
+describe('treemap uniformtext', function () {
     'use strict';
 
     var gd;
 
-    beforeEach(function() {
+    beforeEach(function () {
         gd = createGraphDiv();
     });
 
     afterEach(destroyGraphDiv);
 
     function assertTextSizes(msg, opts) {
-        return function() {
+        return function () {
             var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
-            ['fontsizes', 'scales'].forEach(function(e) {
+            ['fontsizes', 'scales'].forEach(function (e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
             });
 
-            selection.each(function(d, i) {
+            selection.each(function (d, i) {
                 var fontSize = this.style.fontSize;
                 expect(fontSize).toBe(opts.fontsizes[i] + 'px', 'fontSize for element ' + i, msg);
             });
 
-            for(var i = 0; i < selection[0].length; i++) {
+            for (var i = 0; i < selection[0].length; i++) {
                 var transform = selection[0][i].getAttribute('transform');
                 var pos0 = transform.indexOf('scale(');
                 var scale = 1;
-                if(pos0 !== -1) {
+                if (pos0 !== -1) {
                     pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0, pos1));
+                    scale = +transform.slice(pos0, pos1);
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);
@@ -1774,29 +2149,32 @@ describe('treemap uniformtext', function() {
         };
     }
 
-    it('should be able to react with new uniform text options', function(done) {
+    it('should be able to react with new uniform text options', function (done) {
         var fig = {
-            data: [{
-                type: 'treemap', tiling: { packing: 'slice' },
-                parents: ['', '', '', '', '', '', '', '', '', ''],
-                labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            data: [
+                {
+                    type: 'treemap',
+                    tiling: { packing: 'slice' },
+                    parents: ['', '', '', '', '', '', '', '', '', ''],
+                    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    values: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
-                text: [
-                    0,
-                    '<br>',
-                    null,
-                    '',
-                    ' ',
-                    '.',
-                    '|',
-                    '=',
-                    'longest word in German',
-                    'Rindfleischetikettierungsueberwachungsaufgabenuebertragungsgesetz'
-                ],
+                    text: [
+                        0,
+                        '<br>',
+                        null,
+                        '',
+                        ' ',
+                        '.',
+                        '|',
+                        '=',
+                        'longest word in German',
+                        'Rindfleischetikettierungsueberwachungsaufgabenuebertragungsgesetz'
+                    ],
 
-                textinfo: 'text'
-            }],
+                    textinfo: 'text'
+                }
+            ],
             layout: {
                 width: 500,
                 height: 500
@@ -1804,90 +2182,104 @@ describe('treemap uniformtext', function() {
         };
 
         Plotly.newPlot(gd, fig)
-        .then(assertTextSizes('without uniformtext', {
-            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
-        }))
-        .then(function() {
-            fig.layout.uniformtext = {mode: 'hide'}; // default with minsize=0
-            return Plotly.react(gd, fig);
-        })
-        .then(assertTextSizes('using mode: "hide"', {
-            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84],
-        }))
-        .then(function() {
-            fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
-            return Plotly.react(gd, fig);
-        })
-        .then(assertTextSizes('using minsize: 9', {
-            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84],
-        }))
-        .then(function() {
-            fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
-            return Plotly.react(gd, fig);
-        })
-        .then(assertTextSizes('using minsize: 13', {
-            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-        }))
-        .then(function() {
-            fig.layout.uniformtext.mode = 'show';
-            return Plotly.react(gd, fig);
-        })
-        .then(assertTextSizes('using mode: "show"', {
-            fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        }))
-        .then(function() {
-            fig.layout.uniformtext = undefined; // back to default
-            return Plotly.react(gd, fig);
-        })
-        .then(assertTextSizes('clear uniformtext', {
-            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
-        }))
-        .then(done, done.fail);
+            .then(
+                assertTextSizes('without uniformtext', {
+                    fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+                    scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84]
+                })
+            )
+            .then(function () {
+                fig.layout.uniformtext = { mode: 'hide' }; // default with minsize=0
+                return Plotly.react(gd, fig);
+            })
+            .then(
+                assertTextSizes('using mode: "hide"', {
+                    fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+                    scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84]
+                })
+            )
+            .then(function () {
+                fig.layout.uniformtext.minsize = 9; // set a minsize less than trace font size
+                return Plotly.react(gd, fig);
+            })
+            .then(
+                assertTextSizes('using minsize: 9', {
+                    fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+                    scales: [0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84]
+                })
+            )
+            .then(function () {
+                fig.layout.uniformtext.minsize = 13; // set a minsize greater than trace font size
+                return Plotly.react(gd, fig);
+            })
+            .then(
+                assertTextSizes('using minsize: 13', {
+                    fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+                    scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+                })
+            )
+            .then(function () {
+                fig.layout.uniformtext.mode = 'show';
+                return Plotly.react(gd, fig);
+            })
+            .then(
+                assertTextSizes('using mode: "show"', {
+                    fontsizes: [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+                    scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                })
+            )
+            .then(function () {
+                fig.layout.uniformtext = undefined; // back to default
+                return Plotly.react(gd, fig);
+            })
+            .then(
+                assertTextSizes('clear uniformtext', {
+                    fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+                    scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84]
+                })
+            )
+            .then(done, done.fail);
     });
 
-    it('should uniform text scales after transition', function(done) {
+    it('should uniform text scales after transition', function (done) {
         Plotly.newPlot(gd, {
-            data: [{
-                type: 'treemap',
-                tiling: { packing: 'dice'},
-                pathbar: { visible: false },
-                parents: [
-                    '',
-                    'Oscar',
-                    'Oscar',
-                    'Oscar',
-                    'Oscar',
-                    'Oscar',
-                    'Oscar',
-                    'Uniform',
-                    'Uniform',
-                    'Uniform',
-                    'Uniform',
-                    'Uniform',
-                    'Uniform'
-                ],
-                labels: [
-                    'Oscar',
-                    'Papa',
-                    'Quebec',
-                    'Romeo and Juliet',
-                    'Sierra',
-                    'Tango',
-                    'Uniform',
-                    'ViKtor Korchnoi - Anatoly Karpov',
-                    'Whiskey',
-                    'X ray',
-                    'Yankee',
-                    'Zulu'
-                ],
-                textinfo: 'label'
-            }],
+            data: [
+                {
+                    type: 'treemap',
+                    tiling: { packing: 'dice' },
+                    pathbar: { visible: false },
+                    parents: [
+                        '',
+                        'Oscar',
+                        'Oscar',
+                        'Oscar',
+                        'Oscar',
+                        'Oscar',
+                        'Oscar',
+                        'Uniform',
+                        'Uniform',
+                        'Uniform',
+                        'Uniform',
+                        'Uniform',
+                        'Uniform'
+                    ],
+                    labels: [
+                        'Oscar',
+                        'Papa',
+                        'Quebec',
+                        'Romeo and Juliet',
+                        'Sierra',
+                        'Tango',
+                        'Uniform',
+                        'ViKtor Korchnoi - Anatoly Karpov',
+                        'Whiskey',
+                        'X ray',
+                        'Yankee',
+                        'Zulu'
+                    ],
+                    textinfo: 'label'
+                }
+            ],
             layout: {
                 width: 850,
                 height: 350,
@@ -1897,50 +2289,58 @@ describe('treemap uniformtext', function() {
                 }
             }
         })
-        .then(assertTextSizes('before click', {
-            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
-        }))
-        .then(click(gd, 2)) // click on Uniform
-        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
-        .then(assertTextSizes('after click child', {
-            fontsizes: [12, 12, 12, 12, 12, 12],
-            scales: [1, 0, 1, 1, 1, 1],
-        }))
-        .then(click(gd, 1)) // click on Oscar
-        .then(delay(constants.CLICK_TRANSITION_TIME + 1))
-        .then(assertTextSizes('after click parent', {
-            fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
-            scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
-        }))
-        .then(done, done.fail);
+            .then(
+                assertTextSizes('before click', {
+                    fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+                    scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1]
+                })
+            )
+            .then(click(gd, 2)) // click on Uniform
+            .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+            .then(
+                assertTextSizes('after click child', {
+                    fontsizes: [12, 12, 12, 12, 12, 12],
+                    scales: [1, 0, 1, 1, 1, 1]
+                })
+            )
+            .then(click(gd, 1)) // click on Oscar
+            .then(delay(constants.CLICK_TRANSITION_TIME + 1))
+            .then(
+                assertTextSizes('after click parent', {
+                    fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
+                    scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1]
+                })
+            )
+            .then(done, done.fail);
     });
 });
 
-describe('treemap pathbar react', function() {
+describe('treemap pathbar react', function () {
     'use strict';
 
     var gd;
 
-    beforeEach(function() {
+    beforeEach(function () {
         gd = createGraphDiv();
     });
 
     afterEach(destroyGraphDiv);
 
-    it('should show and hide pathbar', function(done) {
+    it('should show and hide pathbar', function (done) {
         var fig = {
-            data: [{
-                type: 'treemap',
-                parents: ['', 'A', 'B', 'C'],
-                labels: ['A', 'B', 'C', 'D'],
-                level: 'C'
-            }],
+            data: [
+                {
+                    type: 'treemap',
+                    parents: ['', 'A', 'B', 'C'],
+                    labels: ['A', 'B', 'C', 'D'],
+                    level: 'C'
+                }
+            ],
             layout: {}
         };
 
         function _assert(msg, exp) {
-            return function() {
+            return function () {
                 var selection = d3SelectAll(SLICES_SELECTOR);
                 var size = selection.size();
 
@@ -1949,17 +2349,17 @@ describe('treemap pathbar react', function() {
         }
 
         Plotly.newPlot(gd, fig)
-        .then(_assert('default pathbar.visible: true', 4))
-        .then(function() {
-            fig.data[0].pathbar = {visible: false};
-            return Plotly.react(gd, fig);
-        })
-        .then(_assert('disable pathbar', 2))
-        .then(function() {
-            fig.data[0].pathbar = {visible: true};
-            return Plotly.react(gd, fig);
-        })
-        .then(_assert('enable pathbar', 4))
-        .then(done, done.fail);
+            .then(_assert('default pathbar.visible: true', 4))
+            .then(function () {
+                fig.data[0].pathbar = { visible: false };
+                return Plotly.react(gd, fig);
+            })
+            .then(_assert('disable pathbar', 2))
+            .then(function () {
+                fig.data[0].pathbar = { visible: true };
+                return Plotly.react(gd, fig);
+            })
+            .then(_assert('enable pathbar', 4))
+            .then(done, done.fail);
     });
 });

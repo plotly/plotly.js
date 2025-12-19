@@ -41,7 +41,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
         var relevantParamIdx = paramsToUse[segment.charAt(0)].drawn;
         if(relevantParamIdx === undefined) return;
 
-        var params = segment.substr(1).match(constants.paramRE);
+        var params = segment.slice(1).match(constants.paramRE);
         if(!params || params.length < relevantParamIdx) return;
 
         var str = params[relevantParamIdx];
@@ -325,7 +325,7 @@ function convertPath(options, x2p, y2p) {
         var segmentX2p = (isArrayXref && xSizemode !== 'pixel') ? x2p[xVertexIndex] : x2p;
         var segmentY2p = (isArrayYref && ySizemode !== 'pixel') ? y2p[yVertexIndex] : y2p;
 
-        var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
+        var paramString = segment.slice(1).replace(constants.paramRE, function(param) {
             if(xParams[paramNumber]) {
                 if(xSizemode === 'pixel') param = segmentX2p(xAnchor) + Number(param);
                 else param = segmentX2p(param);

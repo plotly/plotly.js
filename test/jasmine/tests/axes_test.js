@@ -833,7 +833,7 @@ describe('Test axes', function() {
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
+                warnings.push(msg.slice(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -868,7 +868,7 @@ describe('Test axes', function() {
         it('silently drops invalid scaleanchor values', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
+                warnings.push(msg.slice(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {

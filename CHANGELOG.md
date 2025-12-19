@@ -9,6 +9,38 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.3.1] -- 2025-12-12
+
+### Added
+- Add support for arrays for the pie properties `showlegend` and `legend`, so that these can be configured per slice. [[#7580](https://github.com/plotly/plotly.js/pull/7580)], with thanks to @my-tien for the contribution!
+
+### Changed
+ - Replace deprecated `String.substr()` with `String.slice()` [[#7662](https://github.com/plotly/plotly.js/pull/7662)], with thanks to @JBR-0100 for the contribution!
+
+
+## [3.3.0] -- 2025-11-14
+
+### Added
+- Add `hovertemplate` for `candlestick` and `ohlc` traces [[#7619](https://github.com/plotly/plotly.js/pull/7619)]
+- Generate list of ISO codes for provided topojson maps, update info for some disputed territories [[#7622](https://github.com/plotly/plotly.js/pull/7622)]
+
+### Changed
+- Turn off borders for plot container in CSS reset [[#7617](https://github.com/plotly/plotly.js/pull/7617)]
+
+### Fixed
+- Fix KDE sampling precision in violin trace to eliminate floating-point drift and prevent density underrun/overrun [[#7581](https://github.com/plotly/plotly.js/pull/7581)], with thanks to @Koookadooo for the contribution!
+
+
+## [3.2.0] -- 2025-10-30
+
+### Added
+- Add `hovertemplatefallback` and `texttemplatefallback` attributes [[#7577](https://github.com/plotly/plotly.js/pull/7577)]
+
+### Fixed
+- Fix wrong scrolling behavior for legend [[#7067](https://github.com/plotly/plotly.js/pull/7067)], with thanks to @Lexachoc for the contribution!
+- Fix bug affecting use of `customdata` with typed arrays [[#7608](https://github.com/plotly/plotly.js/pull/7608)]
+
+
 ## [3.1.2] -- 2025-10-16
 
 ### Added

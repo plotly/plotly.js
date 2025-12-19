@@ -76,7 +76,7 @@ exports.valObjectMeta = {
                 var k = String(values[i]);
 
                 if((k.charAt(0) === '/' && k.charAt(k.length - 1) === '/')) {
-                    var regex = new RegExp(k.substr(1, k.length - 2));
+                    var regex = new RegExp(k.slice(1, -1));
                     if(regex.test(v)) return true;
                 } else if(v === values[i]) return true;
             }
@@ -86,10 +86,14 @@ exports.valObjectMeta = {
     boolean: {
         description: 'A boolean (true/false) value.',
         requiredOpts: [],
-        otherOpts: ['dflt'],
-        coerceFunction: function(v, propOut, dflt) {
-            if(v === true || v === false) propOut.set(v);
-            else propOut.set(dflt);
+        otherOpts: ['dflt', 'arrayOk'],
+        coerceFunction: function(v, propOut, dflt, opts) {
+            const isBoolean = value => value === true || value === false;
+            if (isBoolean(v) || (opts.arrayOk && Array.isArray(v) && v.length > 0 && v.every(isBoolean))) {
+                propOut.set(v);
+            } else {
+                propOut.set(dflt);
+            }
         }
     },
     number: {
@@ -225,14 +229,15 @@ exports.valObjectMeta = {
             '\'geo\', \'geo2\', \'geo3\', ...'
         ].join(' '),
         requiredOpts: ['dflt'],
-        otherOpts: ['regex'],
+        otherOpts: ['regex', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             var regex = opts.regex || counterRegex(dflt);
-            if(typeof v === 'string' && regex.test(v)) {
+            const isSubplotId = value => typeof value === 'string' && regex.test(value);
+            if (isSubplotId(v) || (opts.arrayOk && isArrayOrTypedArray(v) && v.length > 0 && v.every(isSubplotId))) {
                 propOut.set(v);
-                return;
+            } else {
+                propOut.set(dflt);
             }
-            propOut.set(dflt);
         },
         validateFunction: function(v, opts) {
             var dflt = opts.dflt;

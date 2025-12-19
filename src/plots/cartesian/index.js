@@ -98,10 +98,10 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
             if(constants.attrRegex.test(ki)) {
                 var axLetter = ki.charAt(0);
                 if(axLetter === 'x') {
-                    if(!xi || (+ki.substr(5) < +xi.substr(5))) {
+                    if(!xi || (+ki.slice(5) < +xi.slice(5))) {
                         xi = ki;
                     }
-                } else if(!yi || (+ki.substr(5) < +yi.substr(5))) {
+                } else if(!yi || (+ki.slice(5) < +yi.slice(5))) {
                     yi = ki;
                 }
             }

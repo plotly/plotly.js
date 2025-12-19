@@ -7,7 +7,6 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 var attributes = require('./attributes');
 var helpers = require('./helpers');
 
-
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, {
         name: 'shapes',
@@ -19,9 +18,13 @@ function dfltLabelYanchor(isLine, labelTextPosition) {
     // If shape is a line, default y-anchor is 'bottom' (so that text is above line by default)
     // Otherwise, default y-anchor is equal to y-component of `textposition`
     // (so that text is positioned inside shape bounding box by default)
-    return isLine ? 'bottom' :
-        labelTextPosition.indexOf('top') !== -1 ? 'top' :
-        labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+    return isLine
+        ? 'bottom'
+        : labelTextPosition.indexOf('top') !== -1
+          ? 'top'
+          : labelTextPosition.indexOf('bottom') !== -1
+            ? 'bottom'
+            : 'middle';
 }
 
 function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
@@ -32,10 +35,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     shapeOut._isShape = true;
 
     var visible = coerce('visible');
-    if(!visible) return;
+    if (!visible) return;
 
     var showlegend = coerce('showlegend');
-    if(showlegend) {
+    if (showlegend) {
         coerce('legend');
         coerce('legendwidth');
         coerce('legendgroup');
@@ -48,7 +51,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var dfltType = path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
     var noPath = shapeType !== 'path';
-    if(noPath) delete shapeOut.path;
+    if (noPath) delete shapeOut.path;
 
     coerce('editable');
     coerce('layer');
@@ -56,7 +59,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('fillcolor');
     coerce('fillrule');
     var lineWidth = coerce('line.width');
-    if(lineWidth) {
+    if (lineWidth) {
         coerce('line.color');
         coerce('line.dash');
     }
@@ -68,7 +71,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     ['x', 'y'].forEach(axLetter => {
         var attrAnchor = axLetter + 'anchor';
         var sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode;
-        var gdMock = {_fullLayout: fullLayout};
+        var gdMock = { _fullLayout: fullLayout };
         var ax;
         var pos2r;
         var r2pos;
@@ -202,16 +205,21 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
     });
 
-    if(noPath) {
+    if (noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 
     // Label options
     var isLine = shapeType === 'line';
     var labelTextTemplate, labelText;
-    if(noPath) { labelTextTemplate = coerce('label.texttemplate'); }
-    if(!labelTextTemplate) { labelText = coerce('label.text'); }
-    if(labelText || labelTextTemplate) {
+    if (noPath) {
+        labelTextTemplate = coerce('label.texttemplate');
+        coerce('label.texttemplatefallback');
+    }
+    if (!labelTextTemplate) {
+        labelText = coerce('label.text');
+    }
+    if (labelText || labelTextTemplate) {
         coerce('label.textangle');
         var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
         coerce('label.xanchor');

@@ -1,10 +1,9 @@
 'use strict';
 
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var barAttrs = require('../bar/attributes');
-
 
 module.exports = {
     r: scatterPolarAttrs.r,
@@ -31,15 +30,10 @@ module.exports = {
         ].join(' ')
     }),
     offset: extendFlat({}, barAttrs.offset, {
-        description: [
-            'Shifts the angular position where the bar is drawn',
-            '(in *thetatunit* units).'
-        ].join(' ')
+        description: ['Shifts the angular position where the bar is drawn', '(in *thetatunit* units).'].join(' ')
     }),
     width: extendFlat({}, barAttrs.width, {
-        description: [
-            'Sets the bar angular width (in *thetaunit* units).'
-        ].join(' ')
+        description: ['Sets the bar angular width (in *thetaunit* units).'].join(' ')
     }),
 
     text: extendFlat({}, barAttrs.text, {
@@ -47,7 +41,7 @@ module.exports = {
             'Sets hover text elements associated with each bar.',
             'If a single string, the same string appears over all bars.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s coordinates.'
+            "this trace's coordinates."
         ].join(' ')
     }),
     hovertext: extendFlat({}, barAttrs.hovertext, {
@@ -65,6 +59,7 @@ module.exports = {
 
     hoverinfo: scatterPolarAttrs.hoverinfo,
     hovertemplate: hovertemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected

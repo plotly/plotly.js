@@ -31,6 +31,20 @@ function getJsonFile(filename) {
     }
 }
 
+function createCountriesList(geojsonPath, outputPath) {
+    const geojson = getJsonFile(geojsonPath);
+    if (!geojson.features) return;
+
+    const countryData = geojson.features
+        .map((feature) => {
+            const { iso3cd, nam_en } = feature.properties;
+            return { iso3cd, name: nam_en };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    fs.writeFileSync(outputPath, JSON.stringify(countryData));
+}
+
 function addCentroidsToGeojson(geojsonPath) {
     const geojson = getJsonFile(geojsonPath);
     if (!geojson.features) return;
@@ -363,9 +377,15 @@ const commandsCountries50m = [
     // Subtract Caspian Sea from country polygons
     `-filter 'globalid === "{BBBEF27F-A6F4-4FBC-9729-77B3A8739409}"' target=all_features + name=caspian_sea`,
     '-erase source=caspian_sea target=all_features',
-    // Update country codes for disputed territories at Egypt/Sudan border: https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
-    `-each 'if (globalid === "{CA12D116-7A19-41D1-9622-17C12CCC720D}") iso3cd = "XHT"'`, // Halaib Triangle
-    `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") iso3cd = "XBT"'`, // Bir Tawil
+    // Update country codes, names for disputed territories
+    // https://en.wikipedia.org/wiki/Ilemi_Triangle
+    `-each 'if (globalid === "{CAB4B11D-5D1D-495E-AC9C-8A18A5A4370B}") { iso3cd = "XIT"; nam_en = "Ilemi Triangle"; }'`,
+    // https://en.wikipedia.org/wiki/Egypt%E2%80%93Sudan_border
+    `-each 'if (globalid === "{CA12D116-7A19-41D1-9622-17C12CCC720D}") { iso3cd = "XHT"; nam_en = "Halaib Triangle"; }'`,
+    `-each 'if (globalid === "{9FD54A50-0BFB-4385-B342-1C3BDEE5ED9B}") { iso3cd = "XBT"; nam_en = "Bir Tawil"; }'`,
+    // https://en.wikipedia.org/wiki/Sino-Indian_border_dispute
+    `-each 'if (globalid === "{9AB8E07B-A251-47AB-9B0C-F969DBE07558}") nam_en = "Aksai Chin"'`,
+    `-each 'if (globalid === "{F180660F-073C-402E-AF75-1E448B4C30F1}") nam_en = "Arunachal Pradesh"'`,
     `-each 'if (iso3cd) iso3cd = iso3cd.toUpperCase()'`,
     `-filter '${filters.countries}'`,
     // Snap polygons to clean up land, coastlines layers
@@ -374,6 +394,9 @@ const commandsCountries50m = [
 ].join(' ');
 await mapshaper.runCommands(commandsCountries50m);
 clampToAntimeridian(outputFilePathCountries50m);
+
+// Build list of countries, ISO codes for documentation
+createCountriesList(outputFilePathCountries50m, `${outputDirTopojson}/country_names_iso_codes.json`);
 
 // Get land from all polygon features
 const inputFilePathLand50m = outputFilePathCountries50m;
