@@ -545,6 +545,41 @@ describe('end-to-end scattergl tests', function() {
             expect(getSnap()).toEqual(TOO_MANY_POINTS + 1);
         }).then(done, done.fail);
     });
+
+    it('@gl should not throw when plot is called with a subset of scattergl calcdata', function (done) {
+        var layout = {
+            width: 300,
+            height: 300,
+            margin: { l: 0, r: 0, t: 0, b: 0 }
+        };
+        var config = { plotGlPixelRatio: 1 };
+
+        Plotly.newPlot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            x: [0, 1],
+            y: [0, 1],
+            line: { width: 10 }
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [0, 1],
+            y: [1, 0],
+            line: { width: 10 }
+        }], layout, config)
+            .then(function () {
+                var subplot = gd._fullLayout._plots.xy;
+                expect(subplot._scene.count).toBeGreaterThan(1);
+
+                expect(function () {
+                    ScatterGl.plot(gd, subplot, [gd.calcdata[1]]);
+                }).not.toThrow();
+            })
+            .then(done, done.fail);
+    });
+
+
+
 });
 
 describe('Test scattergl autorange:', function() {
