@@ -975,6 +975,9 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
     } else {
         sel.style('stroke-width', (d.isBlank ? 0 : lineWidth) + 'px');
 
+        const lineDash = d.mld || (markerLine || {}).dash;
+        if(lineDash) drawing.dashLine(sel, lineDash, lineWidth);
+
         var markerGradient = marker.gradient;
 
         var gradientType = d.mgt;
