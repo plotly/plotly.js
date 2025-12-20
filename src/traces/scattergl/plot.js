@@ -263,8 +263,10 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < count; i++) {
-        var cd0 = cdata[i][0];
+    for(i = 0; i < cdata.length; i++) {
+        var cdscatter = cdata[i];
+        if(!cdscatter || !cdscatter[0]) continue;
+        var cd0 = cdscatter[0];
         var trace = cd0.trace;
         var stash = cd0.t;
         var index = stash.index;
