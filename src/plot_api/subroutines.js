@@ -668,6 +668,9 @@ exports.doTraceStyle = function(gd) {
 
 exports.doColorBars = function(gd) {
     Registry.getComponentMethod('colorbar', 'draw')(gd);
+    Registry.getComponentMethod('colorlegend', 'draw')(gd);
+    Registry.getComponentMethod('sizelegend', 'draw')(gd);
+    Registry.getComponentMethod('symbollegend', 'draw')(gd);
     return Plots.previousPromises(gd);
 };
 
@@ -859,4 +862,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('sliders', 'draw')(gd);
     Registry.getComponentMethod('updatemenus', 'draw')(gd);
     Registry.getComponentMethod('colorbar', 'draw')(gd);
+    Registry.getComponentMethod('colorlegend', 'draw')(gd);
+    Registry.getComponentMethod('sizelegend', 'draw')(gd);
+    Registry.getComponentMethod('symbollegend', 'draw')(gd);
 };

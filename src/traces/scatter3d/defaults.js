@@ -32,7 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode');
 
     if (subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noSelect: true, noAngle: true });
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noSelect: true, noAngle: true, noAttrLegends: true });
     }
 
     if (subTypes.hasLines(traceOut)) {
