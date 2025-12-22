@@ -91,11 +91,13 @@ function drawOne(gd, index) {
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!options._input || options.visible !== true) return;
 
+    var isMultiAxisShape = Array.isArray(options.xref) || Array.isArray(options.yref);
+
     if(options.layer === 'above') {
         drawShape(gd._fullLayout._shapeUpperLayer);
-    } else if(options.xref === 'paper' || options.yref === 'paper') {
+    } else if(options.xref.includes('paper') || options.yref.includes('paper')) {
         drawShape(gd._fullLayout._shapeLowerLayer);
-    } else if(options.layer === 'between') {
+    } else if(options.layer === 'between' && !isMultiAxisShape) {
         drawShape(plotinfo.shapelayerBetween);
     } else {
         if(plotinfo._hadPlotinfo) {

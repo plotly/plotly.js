@@ -21,21 +21,21 @@ module.exports = function calcAutorange(gd) {
         var xRefType = Axes.getRefType(shape.xref);
         var yRefType = Axes.getRefType(shape.yref);
 
-        // paper and axis domain referenced shapes don't affect autorange
-        // TODO: implement autorange calculation for array ref shapes
-        if(xRefType !== 'array' && shape.xref !== 'paper' && xRefType !== 'domain') {
+        if(xRefType === 'array') {
+            calcArrayRefAutorange(gd, shape, 'x');
+        } else if(shape.xref !== 'paper' && xRefType !== 'domain') {
+            // paper and axis domain referenced shapes don't affect autorange
             ax = Axes.getFromId(gd, shape.xref);
-
             bounds = shapeBounds(ax, shape, constants.paramIsX);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
             }
         }
 
-        // TODO: implement autorange calculation for array ref shapes
-        if(yRefType !== 'array' && shape.yref !== 'paper' && yRefType !== 'domain') {
+        if(yRefType === 'array') {
+            calcArrayRefAutorange(gd, shape, 'y');
+        } else if(shape.yref !== 'paper' && yRefType !== 'domain') {
             ax = Axes.getFromId(gd, shape.yref);
-
             bounds = shapeBounds(ax, shape, constants.paramIsY);
             if(bounds) {
                 shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
@@ -43,6 +43,50 @@ module.exports = function calcAutorange(gd) {
         }
     }
 };
+
+function calcArrayRefAutorange(gd, shape, dim) {
+    var refs = shape[dim + 'ref'];
+    var paramsToUse = dim === 'x' ? constants.paramIsX : constants.paramIsY;
+    var paddingOpts = dim === 'x' ? calcXPaddingOptions(shape) : calcYPaddingOptions(shape);
+
+    function addToAxisGroup(ref, val) {
+        if(ref === 'paper' || Axes.getRefType(ref) === 'domain') return;
+        if(!axisGroups[ref]) axisGroups[ref] = [];
+        axisGroups[ref].push(val);
+    }
+
+    // group coordinates by axis reference so we can calculate the extremes for each axis
+    var axisGroups = {};
+    if(shape.type === 'path' && shape.path) {
+        var segments = shape.path.match(constants.segmentRE) || [];
+        var refIndex = 0;
+        for(var i = 0; i < segments.length; i++) {
+            var segment = segments[i];
+            var command = segment.charAt(0);
+            var drawnIndex = paramsToUse[command].drawn;
+
+            if(drawnIndex === undefined) continue;
+
+            var params = segment.slice(1).match(constants.paramRE);
+            if(params && params.length > drawnIndex) {
+                addToAxisGroup(refs[refIndex], params[drawnIndex]);
+                refIndex++;
+            }
+        }
+    } else {
+        addToAxisGroup(refs[0], shape[dim + '0']);
+        addToAxisGroup(refs[1], shape[dim + '1']);
+    }
+
+    // For each axis, convert coordinates to data values then calculate extremes
+    for(var axId in axisGroups) {
+        var ax = Axes.getFromId(gd, axId);
+        if(!ax) continue;
+        var convertVal = (ax.type === 'category' || ax.type === 'multicategory') ? ax.r2c : ax.d2c;
+        if(ax.type === 'date') convertVal = helpers.decodeDate(convertVal);
+        shape._extremes[ax._id] = Axes.findExtremes(ax, axisGroups[axId].map(convertVal), paddingOpts);
+    }
+}
 
 function calcXPaddingOptions(shape) {
     return calcPaddingOptions(shape.line.width, shape.xsizemode, shape.x0, shape.x1, shape.path, false);
