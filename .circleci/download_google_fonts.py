@@ -1,11 +1,13 @@
 import os
+import time
 
 import requests
 
 dir_out = ".circleci/fonts/truetype/googleFonts/"
 
 
-def download(repo, family, types, overwrite=True):
+def download(repo, family, types, overwrite=True, retries=4, timeout=20):
+    session = requests.Session()
     for t in types:
         name = family + t + ".ttf"
         url = repo + name + "?raw=true"
@@ -14,18 +16,49 @@ def download(repo, family, types, overwrite=True):
         if os.path.exists(out_file) and not overwrite:
             print("    => Already exists: ", out_file)
             continue
-        req = requests.get(url, allow_redirects=False)
-        if req.status_code != 200:
-            # If we get a redirect, print an error so that we know to update the URL
-            if req.status_code == 302 or req.status_code == 301:
-                new_url = req.headers.get("Location")
-                print(f"    => Redirected -- please update URL to: {new_url}")
-            raise RuntimeError(f"""
-Download failed.
-Status code: {req.status_code}
-Message: {req.reason}
-""")
-        open(out_file, "wb").write(req.content)
+
+        attempt = 0
+        backoff = 2
+        last_err = None
+        # follow up to 2 redirects manually to keep logs readable
+        max_redirects = 2
+        while attempt <= retries:
+            try:
+                cur_url = url
+                redirects = 0
+                while True:
+                    req = session.get(cur_url, allow_redirects=False, timeout=timeout)
+                    if req.status_code in (301, 302) and redirects < max_redirects:
+                        new_url = req.headers.get("Location")
+                        print(f"    => Redirected to: {new_url}")
+                        cur_url = new_url
+                        redirects += 1
+                        continue
+                    break
+
+                if req.status_code == 200:
+                    os.makedirs(os.path.dirname(out_file), exist_ok=True)
+                    with open(out_file, "wb") as f:
+                        f.write(req.content)
+                    print("    => Saved:", out_file)
+                    last_err = None
+                    break
+                else:
+                    print(f"    => HTTP {req.status_code}: {req.reason}")
+                    last_err = RuntimeError(f"HTTP {req.status_code}: {req.reason}")
+            except requests.exceptions.RequestException as e:
+                last_err = e
+                print(f"    => Network error: {e}")
+
+            attempt += 1
+            if attempt <= retries:
+                print(f"    => Retrying in {backoff}s (attempt {attempt}/{retries})...")
+                time.sleep(backoff)
+                backoff *= 2
+
+        if last_err is not None:
+            # Don't hard-fail the entire job; log and move on.
+            print(f"    => Giving up on {name}: {last_err}")
 
 
 download(
