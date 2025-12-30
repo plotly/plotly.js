@@ -40,6 +40,8 @@
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.mjs",
     "lint": "npx @biomejs/biome lint",
     "lint-fix": "npx @biomejs/biome format ./test/image/mocks --write; npx @biomejs/biome lint --write || true",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "test-mock": "node tasks/test_mock.mjs",
@@ -122,6 +124,8 @@
     "@biomejs/biome": "2.2.0",
     "@plotly/mathjax-v2": "npm:mathjax@2.7.5",
     "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
+    "@types/d3": "3.5.34",
+    "@types/node": "^24.10.0",
     "amdefine": "^1.0.1",
     "assert": "^2.1.0",
     "browserify-transform-tools": "^1.7.0",
@@ -174,6 +178,7 @@
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
+    "typescript": "^5.9.3",
     "virtual-webgl": "^1.0.6"
   },
   "overrides": {
