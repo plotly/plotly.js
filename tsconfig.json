@@ -1,0 +1,69 @@
+{
+  "compilerOptions": {
+    // Target and module - optimized for CommonJS codebase
+    "target": "ES2016",
+    "module": "CommonJS",
+    "lib": ["ES2016", "DOM"],
+
+    // Module resolution
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // Paths
+    "baseUrl": ".",
+    "paths": {
+      "stream": ["node_modules/stream-browserify"],
+      "@types": ["src/types"],
+      "@types/*": ["src/types/*"]
+    },
+
+    // Emit
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "noEmit": true,
+
+    // Type checking - start loose, tighten gradually
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
+
+    // Linting
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": true,
+
+    // Advanced options
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "checkJs": false,
+    "maxNodeModuleJsDepth": 1,
+    "isolatedModules": true
+  },
+  "include": [
+    "src/**/*",
+    "lib/**/*",
+    "tasks/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "test",
+    "stackgl_modules",
+    "topojson",
+    "devtools",
+    "**/*.spec.js",
+    "**/*.test.js"
+  ]
+}
