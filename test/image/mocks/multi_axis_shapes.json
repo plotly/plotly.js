@@ -1,0 +1,60 @@
+{
+  "data": [
+    { "x": [1, 2, 3], "y": [1, 2, 1], "xaxis": "x", "yaxis": "y", "mode": "markers" },
+    { "x": [1, 2, 3], "y": [2, 1, 2], "xaxis": "x2", "yaxis": "y2", "mode": "markers" },
+    { "x": [1, 2, 3], "y": [1, 3, 2], "xaxis": "x3", "yaxis": "y3", "mode": "markers" },
+    { "x": [1, 2, 3], "y": [3, 2, 1], "xaxis": "x4", "yaxis": "y4", "mode": "markers" }
+  ],
+  "layout": {
+    "title": { "text": "Multi-Axis Shapes (with clipping & autorange)" },
+    "width": 600,
+    "height": 600,
+    "showlegend": false,
+    "grid": { "rows": 2, "columns": 2, "pattern": "independent" },
+    "xaxis": { "range": [0, 4] },
+    "yaxis": { "range": [0, 4] },
+    "yaxis2": { "range": [0, 4] },
+    "shapes": [
+      {
+        "type": "rect",
+        "xref": ["x", "x2"],
+        "yref": ["y", "y2"],
+        "x0": 3,
+        "x1": 1,
+        "y0": 5,
+        "y1": 2,
+        "fillcolor": "rgba(255, 0, 0, 0.3)",
+        "line": { "color": "red", "width": 2 }
+      },
+      {
+        "type": "circle",
+        "xref": ["x3", "x4"],
+        "yref": ["y3", "y4"],
+        "x0": 0,
+        "x1": 5,
+        "y0": 0,
+        "y1": 5,
+        "fillcolor": "rgba(0, 0, 255, 0.3)",
+        "line": { "color": "blue", "width": 2 }
+      },
+      {
+        "type": "line",
+        "xref": ["x", "x3"],
+        "yref": ["y", "y3"],
+        "x0": 0.5,
+        "x1": 4,
+        "y0": 0.5,
+        "y1": 4,
+        "line": { "color": "green", "width": 3 }
+      },
+      {
+        "type": "path",
+        "xref": ["x2", "x2", "x4", "x4"],
+        "yref": ["y2", "y2", "y4", "y4"],
+        "path": "M0.5,0.5 L5,0.5 L4,4 L0.5,4 Z",
+        "fillcolor": "rgba(255, 165, 0, 0.3)",
+        "line": { "color": "orange", "width": 2 }
+      }
+    ]
+  }
+}
