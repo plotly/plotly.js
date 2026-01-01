@@ -1662,3 +1662,275 @@ describe('Test shapes', function() {
         return coordinates;
     }
 });
+
+describe('Test multi-axis shapes', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+
+    function getShape(index) {
+        var s = d3SelectAll('.shapelayer path[data-index="' + index + '"]');
+        expect(s.size()).toBe(1);
+        return s;
+    }
+
+    function getBoundingBox(index) {
+        var node = getShape(index).node();
+        return node ? node.getBoundingClientRect() : null;
+    }
+
+    it('renders all shape types with array xref and yref values', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1, 2], y: [1, 2]},
+            {x: [1, 2], y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            xaxis: {domain: [0, 0.45]},
+            yaxis: {domain: [0, 0.45]},
+            xaxis2: {domain: [0.55, 1], anchor: 'y2'},
+            yaxis2: {domain: [0.55, 1], anchor: 'x2'},
+            shapes: [
+                {type: 'line', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'rect', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1.5, x1: 1.5, y0: 1.5, y1: 1.5},
+                {type: 'circle', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'path', xref: ['x', 'x2'], yref: ['y', 'y2'], path: 'M1,1L2,2'}
+            ]
+        }).then(function() {
+            expect(getShape(0)).not.toBe(null);
+            expect(getShape(1)).not.toBe(null);
+            expect(getShape(2)).not.toBe(null);
+            expect(getShape(3)).not.toBe(null);
+        })
+        .then(done, done.fail);
+    });
+
+    it('positions shapes correctly with side-by-side subplots', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1, 2], y: [1, 2]},
+            {x: [1, 2], y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            width: 800, height: 400,
+            xaxis: {domain: [0, 0.45]},
+            yaxis: {domain: [0, 0.45]},
+            xaxis2: {domain: [0.55, 1], anchor: 'y2'},
+            yaxis2: {domain: [0.55, 1], anchor: 'x2'},
+            shapes: [
+                {type: 'line', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'rect', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1.5, x1: 1.5, y0: 1.5, y1: 1.5},
+                {type: 'circle', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'path', xref: ['x', 'x2'], yref: ['y', 'y2'], path: 'M1,1L2,2'}
+            ]
+        }).then(function() {
+            var xa = gd._fullLayout.xaxis;
+            var xa2 = gd._fullLayout.xaxis2;
+            
+            var lineExpectedLeft = xa.l2p(1) + xa._offset;
+            var lineExpectedRight = xa2.l2p(2) + xa2._offset;
+            var lineBBox = getBoundingBox(0);
+
+            expect(lineBBox.left).toBeCloseTo(lineExpectedLeft);
+            expect(lineBBox.right).toBeCloseTo(lineExpectedRight);
+
+            var rectExpectedLeft = xa.l2p(1.5) + xa._offset;
+            var rectExpectedRight = xa2.l2p(1.5) + xa2._offset;
+            var rectBBox = getBoundingBox(1);
+
+            expect(rectBBox.left).toBeCloseTo(rectExpectedLeft);
+            expect(rectBBox.right).toBeCloseTo(rectExpectedRight);
+            
+            var circleExpectedLeft = xa.l2p(1) + xa._offset;
+            var circleExpectedRight = xa2.l2p(2) + xa2._offset;
+            var circleBBox = getBoundingBox(2);
+
+            expect(circleBBox.left).toBeCloseTo(circleExpectedLeft);
+            expect(circleBBox.right).toBeCloseTo(circleExpectedRight);
+            
+            var pathExpectedLeft = xa.l2p(1) + xa._offset;
+            var pathExpectedRight = xa2.l2p(2) + xa2._offset;
+            var pathBBox = getBoundingBox(3);
+
+            expect(pathBBox.left).toBeCloseTo(pathExpectedLeft);
+            expect(pathBBox.right).toBeCloseTo(pathExpectedRight);
+        })
+        .then(done, done.fail);
+    });
+
+    it('positions shapes correctly with overlaid axes', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1, 2], y: [1, 2]},
+            {x: [1, 2], y: [50, 100], yaxis: 'y2'}
+        ], {
+            width: 600, height: 400,
+            yaxis: {range: [0, 10]},
+            yaxis2: {overlaying: 'y', side: 'right', range: [0, 100]},
+            shapes: [
+                {type: 'line', xref: 'x', yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 20},
+                {type: 'rect', xref: 'x', yref: ['y', 'y2'], x0: 1.5, x1: 1.5, y0: 1.5, y1: 50},
+                {type: 'circle', xref: 'x', yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 65},
+                {type: 'path', xref: 'x', yref: ['y', 'y2'], path: 'M1,1L2,90'}]
+        }).then(function() {
+            var ya = gd._fullLayout.yaxis;
+            var ya2 = gd._fullLayout.yaxis2;
+
+            var lineExpectedBottom = ya.l2p(1) + ya._offset;
+            var lineExpectedTop = ya2.l2p(20) + ya2._offset;
+            var lineBBox = getBoundingBox(0);
+
+            expect(lineBBox.bottom).toBeCloseTo(lineExpectedBottom);
+            expect(lineBBox.top).toBeCloseTo(lineExpectedTop);
+
+            var rectExpectedBottom = ya.l2p(1.5) + ya._offset;
+            var rectExpectedTop = ya2.l2p(50) + ya2._offset;
+            var rectBBox = getBoundingBox(1);
+
+            expect(rectBBox.bottom).toBeCloseTo(rectExpectedBottom);
+            expect(rectBBox.top).toBeCloseTo(rectExpectedTop);
+            
+            var circleExpectedBottom = ya.l2p(1) + ya._offset;
+            var circleExpectedTop = ya2.l2p(65) + ya2._offset;
+            var circleBBox = getBoundingBox(2);
+
+            expect(circleBBox.bottom).toBeCloseTo(circleExpectedBottom);
+            expect(circleBBox.top).toBeCloseTo(circleExpectedTop);
+            
+            var pathExpectedBottom = ya.l2p(1) + ya._offset;
+            var pathExpectedTop = ya2.l2p(90) + ya2._offset;
+            var pathBBox = getBoundingBox(3);
+
+            expect(pathBBox.bottom).toBeCloseTo(pathExpectedBottom);
+            expect(pathBBox.top).toBeCloseTo(pathExpectedTop);
+        })
+        .then(done, done.fail);
+    });
+
+    it('adjusts shape position when one referenced axis is zoomed', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [0, 4], y: [0, 4]},
+            {x: [0, 4], y: [0, 4], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            width: 800, height: 400,
+            xaxis: {domain: [0, 0.45], range: [0, 4]},
+            yaxis: {range: [0, 4]},
+            xaxis2: {domain: [0.55, 1], anchor: 'y2', range: [0, 4]},
+            yaxis2: {anchor: 'x2', range: [0, 4]},
+            shapes: [
+                {type: 'line', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'rect', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1.5, x1: 1.5, y0: 1.5, y1: 1.5},
+                {type: 'circle', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'path', xref: ['x', 'x2'], yref: ['y', 'y2'], path: 'M1,1L2,2'}
+            ]
+        }).then(function() {
+            return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
+        }).then(function() {
+            var xa = gd._fullLayout.xaxis;
+            var xa2 = gd._fullLayout.xaxis2;
+
+            var lineExpectedLeft = xa.l2p(1) + xa._offset;
+            var lineExpectedRight = xa2.l2p(2) + xa2._offset;
+            var lineBBox = getBoundingBox(0);
+
+            expect(lineBBox.left).toBeCloseTo(lineExpectedLeft);
+            expect(lineBBox.right).toBeCloseTo(lineExpectedRight);
+
+            var rectExpectedLeft = xa.l2p(1.5) + xa._offset;
+            var rectExpectedRight = xa2.l2p(1.5) + xa2._offset;
+            var rectBBox = getBoundingBox(1);
+
+            expect(rectBBox.left).toBeCloseTo(rectExpectedLeft);
+            expect(rectBBox.right).toBeCloseTo(rectExpectedRight);
+
+            var circleExpectedLeft = xa.l2p(1) + xa._offset;
+            var circleExpectedRight = xa2.l2p(2) + xa2._offset;
+            var circleBBox = getBoundingBox(2);
+
+            expect(circleBBox.left).toBeCloseTo(circleExpectedLeft);
+            expect(circleBBox.right).toBeCloseTo(circleExpectedRight);
+
+            var pathExpectedLeft = xa.l2p(1) + xa._offset;
+            var pathExpectedRight = xa2.l2p(2) + xa2._offset;
+            var pathBBox = getBoundingBox(3);
+
+            expect(pathBBox.left).toBeCloseTo(pathExpectedLeft);
+            expect(pathBBox.right).toBeCloseTo(pathExpectedRight);
+        })
+        .then(done, done.fail);
+    });
+
+    it('updates shape when panning a referenced axis', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [0, 4], y: [0, 4]},
+            {x: [0, 4], y: [0, 4], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            width: 800, height: 400,
+            xaxis: {domain: [0, 0.45], range: [0, 4]},
+            yaxis: {range: [0, 4]},
+            xaxis2: {domain: [0.55, 1], anchor: 'y2', range: [0, 4]},
+            yaxis2: {anchor: 'x2', range: [0, 4]},
+            shapes: [
+                {type: 'line', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'rect', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1.5, x1: 1.5, y0: 1.5, y1: 1.5},
+                {type: 'circle', xref: ['x', 'x2'], yref: ['y', 'y2'], x0: 1, x1: 2, y0: 1, y1: 2},
+                {type: 'path', xref: ['x', 'x2'], yref: ['y', 'y2'], path: 'M1,1L2,2'}
+            ]
+        }).then(function() {
+            return Plotly.relayout(gd, 'yaxis.range', [1, 5]);
+        }).then(function() {
+            var ya = gd._fullLayout.yaxis;
+            var ya2 = gd._fullLayout.yaxis2;
+
+            var lineExpectedBottom = ya.l2p(1) + ya._offset;
+            var lineExpectedTop = ya2.l2p(2) + ya2._offset;
+            var lineBBox = getBoundingBox(0);
+
+            expect(lineBBox.bottom).toBeCloseTo(lineExpectedBottom);
+            expect(lineBBox.top).toBeCloseTo(lineExpectedTop);
+
+            var rectExpectedBottom = ya.l2p(1.5) + ya._offset;
+            var rectExpectedTop = ya2.l2p(1.5) + ya2._offset;
+            var rectBBox = getBoundingBox(1);
+
+            expect(rectBBox.bottom).toBeCloseTo(rectExpectedBottom);
+            expect(rectBBox.top).toBeCloseTo(rectExpectedTop);
+
+            var circleExpectedBottom = ya.l2p(1) + ya._offset;
+            var circleExpectedTop = ya2.l2p(2) + ya2._offset;
+            var circleBBox = getBoundingBox(2);
+
+            expect(circleBBox.bottom).toBeCloseTo(circleExpectedBottom);
+            expect(circleBBox.top).toBeCloseTo(circleExpectedTop);
+
+            var pathExpectedBottom = ya.l2p(1) + ya._offset;
+            var pathExpectedTop = ya2.l2p(2) + ya2._offset;
+            var pathBBox = getBoundingBox(3);
+
+            expect(pathBBox.bottom).toBeCloseTo(pathExpectedBottom);
+            expect(pathBBox.top).toBeCloseTo(pathExpectedTop);
+        })
+        .then(done, done.fail);
+    });
+
+    it('handles autorange', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1, 2], y: [1, 2]},
+            {x: [1, 2], y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            xaxis: {domain: [0, 0.45]},
+            yaxis: {domain: [0, 0.45]},
+            xaxis2: {domain: [0.55, 1], anchor: 'y2'},
+            yaxis2: {domain: [0.55, 1], anchor: 'x2'},
+            shapes: [{
+                type: 'rect',
+                xref: ['x', 'x2'], yref: ['y', 'y2'],
+                x0: 0, x1: 5, y0: 0, y1: 5
+            }]
+        }).then(function() {
+            expect(gd._fullLayout.xaxis.range[0]).toBeLessThan(1);
+            expect(gd._fullLayout.yaxis.range[0]).toBeLessThan(1);
+            expect(gd._fullLayout.xaxis2.range[1]).toBeGreaterThan(4);
+            expect(gd._fullLayout.yaxis2.range[1]).toBeGreaterThan(4);
+        })
+        .then(done, done.fail);
+    });
+});
