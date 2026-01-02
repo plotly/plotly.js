@@ -1,6 +1,6 @@
 'use strict';
 
-var sortObjectKeys = require('../../lib/sort_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys').default;
 var arcgisSatHybrid = require('./styles/arcgis-sat-hybrid'); // https://raw.githubusercontent.com/go2garret/maps/v1.0.0/LICENSE
 var arcgisSat = require('./styles/arcgis-sat');
 

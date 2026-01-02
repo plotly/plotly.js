@@ -5,7 +5,7 @@ var domainAttrs = require('../domain').attributes;
 var dash = require('../../components/drawing/attributes').dash;
 var constants = require('./constants');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var sortObjectKeys = require('../../lib/sort_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys').default;
 
 var geoAxesAttrs = {
     range: {
