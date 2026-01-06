@@ -115,7 +115,8 @@ module.exports = templatedArray('shape', {
     },
 
     xref: {
-        valType: 'any',
+        arrayOk: true,
+        valType: 'enumerated',
         editType: 'calc',
         description: [
             "Sets the shape's x coordinate axis.",
@@ -187,7 +188,8 @@ module.exports = templatedArray('shape', {
         ].join(' ')
     },
     yref: {
-        valType: 'any',
+        arrayOk: true,
+        valType: 'enumerated',
         editType: 'calc',
         description: [
             "Sets the shape's y coordinate axis.",
