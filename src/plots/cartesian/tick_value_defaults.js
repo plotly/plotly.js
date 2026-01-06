@@ -22,8 +22,18 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     var _tick0 = readInput('tick0');
     var _dtick = readInput('dtick');
     var _tickvals = readInput('tickvals');
+    var _overlaying = readInput('overlaying');
 
-    var tickmodeDefault = isArrayOrTypedArray(_tickvals) ? 'array' : _dtick ? 'linear' : 'auto';
+    var tickmodeDefault;
+    if (isArrayOrTypedArray(_tickvals)) {
+        tickmodeDefault = 'array';
+    } else if (_dtick) {
+        tickmodeDefault = 'linear';
+    } else if (_overlaying) {
+        tickmodeDefault = 'sync';
+    } else {
+        tickmodeDefault = 'auto';
+    }
     var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
 
     if (tickmode === 'auto' || tickmode === 'sync') {
