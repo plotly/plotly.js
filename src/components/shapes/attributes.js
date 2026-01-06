@@ -1,6 +1,6 @@
 'use strict';
 
-var annAttrs = require('../annotations/attributes');
+var cartesianConstants = require('../../plots/cartesian/constants');
 var fontAttrs = require('../../plots/font_attributes');
 var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
@@ -117,6 +117,10 @@ module.exports = templatedArray('shape', {
     xref: {
         arrayOk: true,
         valType: 'enumerated',
+        values: [
+            'paper',
+            cartesianConstants.idRegex.x.toString()
+        ],
         editType: 'calc',
         description: [
             "Sets the shape's x coordinate axis.",
@@ -190,6 +194,10 @@ module.exports = templatedArray('shape', {
     yref: {
         arrayOk: true,
         valType: 'enumerated',
+        values: [
+            'paper',
+            cartesianConstants.idRegex.y.toString()
+        ],
         editType: 'calc',
         description: [
             "Sets the shape's y coordinate axis.",
