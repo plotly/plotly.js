@@ -528,6 +528,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         // viewbox redraw at first
+        gd._fullLayout._replotting = true;
         updateSubplots(scrollViewBox);
         ticksAndAnnotations();
 
