@@ -83,7 +83,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         if(Array.isArray(inputRef) && inputRef.length > 0) {
             // Array case: use coerceRefArray for validation
-            var expectedLen = helpers.countDefiningCoords(shapeType, path);
+            var expectedLen = helpers.countDefiningCoords(shapeType, path, axLetter);
             axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper', expectedLen);
             shapeOut['_' + axLetter + 'refArray'] = true;
 
@@ -102,25 +102,24 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
 
         if(Array.isArray(axRef)) {
-            var dflts = [0.25, 0.75];
-            var pixelDflts = [0, 10];
+            if(noPath) {
+                var dflts = [0.25, 0.75];
+                var pixelDflts = [0, 10];
 
-            // For each coordinate, coerce the position with their respective axis ref
-            [0, 1].forEach(function(i) {
-                var ref = axRef[i];
-                var refType = Axes.getRefType(ref);
-                if(refType === 'range') {
-                    ax = Axes.getFromId(gdMock, ref);
-                    pos2r = helpers.shapePositionToRange(ax);
-                    r2pos = helpers.rangeToShapePosition(ax);
-                    if(ax.type === 'category' || ax.type === 'multicategory') {
-                        coerce(axLetter + i + 'shift');
+                [0, 1].forEach(function(i) {
+                    var ref = axRef[i];
+                    var refType = Axes.getRefType(ref);
+                    if(refType === 'range') {
+                        ax = Axes.getFromId(gdMock, ref);
+                        pos2r = helpers.shapePositionToRange(ax);
+                        r2pos = helpers.rangeToShapePosition(ax);
+                        if(ax.type === 'category' || ax.type === 'multicategory') {
+                            coerce(axLetter + i + 'shift');
+                        }
+                    } else {
+                        pos2r = r2pos = Lib.identity;
                     }
-                } else {
-                    pos2r = r2pos = Lib.identity;
-                }
 
-                if(noPath) {
                     var attr = axLetter + i;
                     var inValue = shapeIn[attr];
                     shapeIn[attr] = pos2r(shapeIn[attr], true);
@@ -133,16 +132,16 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
                     shapeOut[attr] = r2pos(shapeOut[attr]);
                     shapeIn[attr] = inValue;
-                }
 
-                if(i === 0 && sizeMode === 'pixel') {
-                    var inAnchor = shapeIn[attrAnchor];
-                    shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
-                    Axes.coercePosition(shapeOut, gdMock, coerce, ref, attrAnchor, 0.25);
-                    shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
-                    shapeIn[attrAnchor] = inAnchor;
-                }
-            });
+                    if(i === 0 && sizeMode === 'pixel') {
+                        var inAnchor = shapeIn[attrAnchor];
+                        shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+                        Axes.coercePosition(shapeOut, gdMock, coerce, ref, attrAnchor, 0.25);
+                        shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+                        shapeIn[attrAnchor] = inAnchor;
+                    }
+                });
+            }
         } else {
             var axRefType = Axes.getRefType(axRef);
 
@@ -151,7 +150,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                 ax._shapeIndices.push(shapeOut._index);
                 r2pos = helpers.rangeToShapePosition(ax);
                 pos2r = helpers.shapePositionToRange(ax);
-                if(ax.type === 'category' || ax.type === 'multicategory') {
+                if(noPath && (ax.type === 'category' || ax.type === 'multicategory')) {
                     coerce(axLetter + '0shift');
                     coerce(axLetter + '1shift');
                 }

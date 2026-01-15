@@ -53,7 +53,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     return extractedCoordinates;
 };
 
-exports.countDefiningCoords = function(shapeType, path) {
+exports.countDefiningCoords = function(shapeType, path, axLetter) {
     // non-path shapes always have 2 defining coordinates
     if(shapeType !== 'path') return 2;
     if(!path) return 0;
@@ -61,12 +61,13 @@ exports.countDefiningCoords = function(shapeType, path) {
     var segments = path.match(constants.segmentRE);
     if(!segments) return 0;
 
+    var paramIsAxis = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
+
     return segments.reduce((coordCount, segment) => {
-        // for each path command, check if there is a drawn coordinate
+        // for each path command, check if there is a drawn coordinate for this axis
         var segmentType = segment.charAt(0);
-        var hasDrawnX = constants.paramIsX[segmentType].drawn !== undefined;
-        var hasDrawnY = constants.paramIsY[segmentType].drawn !== undefined;
-        return coordCount + (hasDrawnX || hasDrawnY ? 1 : 0);
+        var hasDrawn = paramIsAxis[segmentType].drawn !== undefined;
+        return coordCount + (hasDrawn ? 1 : 0);
     }, 0);
 };
 
