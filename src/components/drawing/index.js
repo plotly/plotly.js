@@ -395,15 +395,13 @@ drawing.symbolNumber = function (v) {
 function makePointPath(symbolNumberOrFunc, r, t, s, d, trace) {
     // Check if a custom function was passed directly
     if (typeof symbolNumberOrFunc === 'function') {
-        // Pass additional context for custom functions:
-        // r: radius/size of the marker
-        // t: rotation angle in degrees
-        // s: standoff distance from the point
-        // d: data point object containing i (index), data (customdata), x, y, etc.
-        // trace: the full trace object
-        return symbolNumberOrFunc(r, t, s, d, trace);
+        // Custom functions receive (r, d, trace) and return an unrotated path.
+        // Rotation (t) and standoff (s) are applied automatically via align(),
+        // just like built-in symbols.
+        var path = symbolNumberOrFunc(r, d, trace);
+        return SYMBOLDEFS.align(t, s, path);
     }
-    
+
     var symbolNumber = symbolNumberOrFunc;
     var base = symbolNumber % 100;
     return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');

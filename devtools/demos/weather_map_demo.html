@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         h1 { color: #333; }
-        #weatherMap { width: 100%; height: 600px; }
+        #weatherMap { width: 100%; max-width: 800px; height: 400px; }
         .legend { margin-top: 10px; font-size: 14px; }
     </style>
 </head>
@@ -21,99 +21,78 @@
 
     <script>
     // Weather marker function that draws different symbols based on customdata
-    function weatherMarker(r, angle, standoff, d, trace) {
+    // Signature: (r, d, trace) - rotation is handled automatically by plotly
+    function weatherMarker(r, d, trace) {
         var weather = d.data;  // customdata contains weather info
-        
+
         if (weather.type === 'sunny') {
             // Sun symbol: circle with rays
             var cr = r * 0.5;
             var rayLen = r * 0.4;
-            var path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 0,-' + cr + 
+            var path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 0,-' + cr +
                        'A' + cr + ',' + cr + ' 0 0,1 ' + cr + ',0Z';
-            // Add 8 rays
             for (var i = 0; i < 8; i++) {
                 var ang = i * Math.PI / 4;
                 var x1 = (cr + 2) * Math.cos(ang);
                 var y1 = (cr + 2) * Math.sin(ang);
                 var x2 = (cr + rayLen) * Math.cos(ang);
                 var y2 = (cr + rayLen) * Math.sin(ang);
-                path += 'M' + x1.toFixed(2) + ',' + y1.toFixed(2) + 
+                path += 'M' + x1.toFixed(2) + ',' + y1.toFixed(2) +
                         'L' + x2.toFixed(2) + ',' + y2.toFixed(2);
             }
             return path;
         }
-        
+
         if (weather.type === 'cloudy') {
-            // Cloud symbol: overlapping circles
-            var cx = r * 0.3;
+            // Cloud symbol
             var cy = r * 0.2;
-            return 'M' + (-r*0.6) + ',' + cy + 
+            return 'M' + (-r*0.6) + ',' + cy +
                    'A' + (r*0.35) + ',' + (r*0.35) + ' 0 1,1 ' + (-r*0.1) + ',' + (-cy) +
                    'A' + (r*0.4) + ',' + (r*0.4) + ' 0 1,1 ' + (r*0.5) + ',' + (-cy*0.5) +
-                   'A' + (r*0.3) + ',' + (r*0.3) + ' 0 1,1 ' + (r*0.7) + ',' + (cy) +
+                   'A' + (r*0.3) + ',' + (r*0.3) + ' 0 1,1 ' + (r*0.7) + ',' + cy +
                    'L' + (-r*0.6) + ',' + cy + 'Z';
         }
-        
+
         if (weather.type === 'wind') {
-            // Meteorological wind barb
-            // Speed in knots: short barb = 5kt, long barb = 10kt, pennant = 50kt
-            var speed = weather.speed || 5;  // knots
-            var rad = (angle - 90) * Math.PI / 180;  // convert to radians, -90 to point up at 0°
-            var cos = Math.cos(rad);
-            var sin = Math.sin(rad);
-
-            // Rotate point (x, y) around origin
-            function rot(x, y) {
-                return [(x * cos - y * sin).toFixed(2), (x * sin + y * cos).toFixed(2)];
-            }
-
+            // Meteorological wind barb (pointing up, rotation handled by marker.angle)
+            var speed = weather.speed || 5;
             var staffLen = r * 1.4;
             var barbLen = r * 0.7;
             var halfBarbLen = r * 0.4;
             var barbSpacing = r * 0.25;
             var pennantWidth = r * 0.25;
 
-            // Staff
-            var p1 = rot(0, staffLen);
-            var p2 = rot(0, -staffLen);
-            var path = 'M' + p1[0] + ',' + p1[1] + 'L' + p2[0] + ',' + p2[1];
-
+            // Staff pointing up
+            var path = 'M0,' + staffLen + 'L0,-' + staffLen;
             var remaining = speed;
             var y = -staffLen;
 
             // Pennants (50 knots each)
             while (remaining >= 50) {
-                var pa = rot(0, y);
-                var pb = rot(barbLen, y + pennantWidth);
-                var pc = rot(0, y + pennantWidth * 2);
-                path += 'M' + pa[0] + ',' + pa[1] +
-                        'L' + pb[0] + ',' + pb[1] +
-                        'L' + pc[0] + ',' + pc[1] + 'Z';
+                path += 'M0,' + y +
+                        'L' + barbLen + ',' + (y + pennantWidth) +
+                        'L0,' + (y + pennantWidth * 2) + 'Z';
                 y += pennantWidth * 2 + barbSpacing * 0.5;
                 remaining -= 50;
             }
 
             // Long barbs (10 knots each)
             while (remaining >= 10) {
-                var la = rot(0, y);
-                var lb = rot(barbLen, y + barbSpacing);
-                path += 'M' + la[0] + ',' + la[1] + 'L' + lb[0] + ',' + lb[1];
+                path += 'M0,' + y + 'L' + barbLen + ',' + (y + barbSpacing);
                 y += barbSpacing;
                 remaining -= 10;
             }
 
             // Short barb (5 knots)
             if (remaining >= 5) {
-                var sa = rot(0, y);
-                var sb = rot(halfBarbLen, y + barbSpacing * 0.5);
-                path += 'M' + sa[0] + ',' + sa[1] + 'L' + sb[0] + ',' + sb[1];
+                path += 'M0,' + y + 'L' + halfBarbLen + ',' + (y + barbSpacing * 0.5);
             }
 
             return path;
         }
-        
-        // Default: small dot
-        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r + 
+
+        // Default: circle
+        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r +
                'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
     }
 
@@ -174,20 +153,21 @@
             angle: angles
         }
     }], {
-        title: 'US Weather Map with Custom Markers',
-        xaxis: { 
-            title: 'Longitude', 
+        title: 'Weather Map Demo',
+        xaxis: {
+            title: 'Longitude',
             range: [-130, -65],
-            gridcolor: '#eee'
+            gridcolor: '#ddd'
         },
-        yaxis: { 
-            title: 'Latitude', 
-            range: [20, 55],
+        yaxis: {
+            title: 'Latitude',
+            range: [22, 52],
             scaleanchor: 'x',
-            gridcolor: '#eee'
+            gridcolor: '#ddd'
         },
         showlegend: false,
-        paper_bgcolor: '#f5f5f5',
+        margin: { l: 50, r: 20, t: 40, b: 40 },
+        paper_bgcolor: '#f8f8f8',
         plot_bgcolor: '#e8f4f8'
     });
     </script>
