@@ -16,7 +16,7 @@
     <p>Custom marker functions with data-driven symbols showing clouds, sun, and directional wind markers with speed bars.</p>
     <div id="weatherMap"></div>
     <div class="legend">
-        <strong>Legend:</strong> ☀️ Sunny | ☁️ Cloudy | 🌬️ Wind (direction + speed bars: 1=low, 2=medium, 3=high)
+        <strong>Legend:</strong> ☀️ Sunny | ☁️ Cloudy | 🌬️ Wind barbs (short=5kt, long=10kt, pennant=50kt)
     </div>
 
     <script>
@@ -55,32 +55,60 @@
         }
         
         if (weather.type === 'wind') {
-            // Wind arrow with speed bars
-            var direction = weather.direction || 0;  // degrees
-            var speed = weather.speed || 1;  // 1-3 bars
-            var rad = direction * Math.PI / 180;
-            
-            // Arrow shaft
-            var shaftLen = r * 1.2;
-            var headLen = r * 0.4;
-            var headWidth = r * 0.3;
-            
-            // Build arrow pointing up, then we rely on marker.angle to rotate
-            var path = 'M0,' + shaftLen +  // bottom of shaft
-                       'L0,' + (-shaftLen + headLen) +  // top of shaft before head
-                       'M0,' + (-shaftLen) +  // arrow tip
-                       'L' + (-headWidth) + ',' + (-shaftLen + headLen) +
-                       'M0,' + (-shaftLen) +
-                       'L' + headWidth + ',' + (-shaftLen + headLen);
-            
-            // Add speed bars (perpendicular to shaft)
-            var barWidth = r * 0.5;
-            var barSpacing = r * 0.3;
-            for (var b = 0; b < speed; b++) {
-                var barY = (-shaftLen + headLen + r*0.2) + b * barSpacing;
-                path += 'M' + (-barWidth) + ',' + barY + 'L' + barWidth + ',' + barY;
+            // Meteorological wind barb
+            // Speed in knots: short barb = 5kt, long barb = 10kt, pennant = 50kt
+            var speed = weather.speed || 5;  // knots
+            var rad = (angle - 90) * Math.PI / 180;  // convert to radians, -90 to point up at 0°
+            var cos = Math.cos(rad);
+            var sin = Math.sin(rad);
+
+            // Rotate point (x, y) around origin
+            function rot(x, y) {
+                return [(x * cos - y * sin).toFixed(2), (x * sin + y * cos).toFixed(2)];
             }
-            
+
+            var staffLen = r * 1.4;
+            var barbLen = r * 0.7;
+            var halfBarbLen = r * 0.4;
+            var barbSpacing = r * 0.25;
+            var pennantWidth = r * 0.25;
+
+            // Staff
+            var p1 = rot(0, staffLen);
+            var p2 = rot(0, -staffLen);
+            var path = 'M' + p1[0] + ',' + p1[1] + 'L' + p2[0] + ',' + p2[1];
+
+            var remaining = speed;
+            var y = -staffLen;
+
+            // Pennants (50 knots each)
+            while (remaining >= 50) {
+                var pa = rot(0, y);
+                var pb = rot(barbLen, y + pennantWidth);
+                var pc = rot(0, y + pennantWidth * 2);
+                path += 'M' + pa[0] + ',' + pa[1] +
+                        'L' + pb[0] + ',' + pb[1] +
+                        'L' + pc[0] + ',' + pc[1] + 'Z';
+                y += pennantWidth * 2 + barbSpacing * 0.5;
+                remaining -= 50;
+            }
+
+            // Long barbs (10 knots each)
+            while (remaining >= 10) {
+                var la = rot(0, y);
+                var lb = rot(barbLen, y + barbSpacing);
+                path += 'M' + la[0] + ',' + la[1] + 'L' + lb[0] + ',' + lb[1];
+                y += barbSpacing;
+                remaining -= 10;
+            }
+
+            // Short barb (5 knots)
+            if (remaining >= 5) {
+                var sa = rot(0, y);
+                var sb = rot(halfBarbLen, y + barbSpacing * 0.5);
+                path += 'M' + sa[0] + ',' + sa[1] + 'L' + sb[0] + ',' + sb[1];
+            }
+
             return path;
         }
         
@@ -93,13 +121,13 @@
     var locations = [
         { name: 'City A', lon: -122.4, lat: 37.8, weather: { type: 'sunny' } },
         { name: 'City B', lon: -118.2, lat: 34.1, weather: { type: 'cloudy' } },
-        { name: 'City C', lon: -73.9, lat: 40.7, weather: { type: 'wind', direction: 45, speed: 3 } },
-        { name: 'City D', lon: -87.6, lat: 41.9, weather: { type: 'wind', direction: 180, speed: 1 } },
+        { name: 'City C', lon: -73.9, lat: 40.7, weather: { type: 'wind', direction: 45, speed: 25 } },
+        { name: 'City D', lon: -87.6, lat: 41.9, weather: { type: 'wind', direction: 180, speed: 15 } },
         { name: 'City E', lon: -95.4, lat: 29.8, weather: { type: 'sunny' } },
-        { name: 'City F', lon: -104.9, lat: 39.7, weather: { type: 'wind', direction: 270, speed: 2 } },
+        { name: 'City F', lon: -104.9, lat: 39.7, weather: { type: 'wind', direction: 270, speed: 65 } },
         { name: 'City G', lon: -122.3, lat: 47.6, weather: { type: 'cloudy' } },
         { name: 'City H', lon: -80.2, lat: 25.8, weather: { type: 'sunny' } },
-        { name: 'City I', lon: -71.1, lat: 42.4, weather: { type: 'wind', direction: 135, speed: 2 } },
+        { name: 'City I', lon: -71.1, lat: 42.4, weather: { type: 'wind', direction: 135, speed: 35 } },
         { name: 'City J', lon: -112.1, lat: 33.4, weather: { type: 'sunny' } }
     ];
 
@@ -107,10 +135,10 @@
     var x = locations.map(function(l) { return l.lon; });
     var y = locations.map(function(l) { return l.lat; });
     var customdata = locations.map(function(l) { return l.weather; });
-    var text = locations.map(function(l) { 
+    var text = locations.map(function(l) {
         var w = l.weather;
         if (w.type === 'wind') {
-            return l.name + '<br>Wind: ' + w.direction + '° Speed: ' + w.speed;
+            return l.name + '<br>Wind: ' + w.direction + '° ' + w.speed + ' kt';
         }
         return l.name + '<br>' + w.type.charAt(0).toUpperCase() + w.type.slice(1);
     });
