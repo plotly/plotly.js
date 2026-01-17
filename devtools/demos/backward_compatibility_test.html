@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Backward Compatibility Test</title>
+    <script src="../../dist/plotly.js"></script>
+</head>
+<body>
+    <h2>Backward Compatibility Test</h2>
+    <p>Old functions (3 params) and new functions (5 params) both work:</p>
+    <div id="test1" style="width: 600px; height: 400px;"></div>
+    
+    <script>
+    // OLD STYLE: 3 parameters (still works!)
+    function oldStyleMarker(r, angle, standoff) {
+        return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+    }
+    
+    // NEW STYLE: 5 parameters (uses data)
+    function newStyleMarker(r, angle, standoff, d, trace) {
+        var category = d.data;
+        if (category === 'large') {
+            var r2 = r * 1.5;
+            return 'M' + r2 + ',0L0,' + r2 + 'L-' + r2 + ',0L0,-' + r2 + 'Z';
+        }
+        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r + 'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
+    }
+    
+    Plotly.newPlot('test1', [{
+        name: 'Old Style (3 params)',
+        type: 'scatter',
+        x: [1, 2, 3],
+        y: [1, 1, 1],
+        mode: 'markers',
+        marker: {
+            symbol: oldStyleMarker,
+            size: 20,
+            color: 'blue'
+        }
+    }, {
+        name: 'New Style (5 params)',
+        type: 'scatter',
+        x: [1, 2, 3],
+        y: [2, 2, 2],
+        customdata: ['small', 'large', 'small'],
+        mode: 'markers',
+        marker: {
+            symbol: newStyleMarker,
+            size: 20,
+            color: 'red'
+        }
+    }], {
+        title: 'Both old and new marker functions work together',
+        showlegend: true
+    });
+    </script>
+</body>
+</html>
