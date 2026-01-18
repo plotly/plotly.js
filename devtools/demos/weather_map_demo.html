@@ -12,21 +12,20 @@
     </style>
 </head>
 <body>
-    <h1>🌤️ Weather Map Demo</h1>
-    <p>Custom marker functions with data-driven symbols showing clouds, sun, and directional wind markers with speed bars.</p>
+    <h1>Weather Map Demo</h1>
+    <p>Custom marker functions with data-driven symbols: sun, cloud, and wind arrows.</p>
     <div id="weatherMap"></div>
     <div class="legend">
-        <strong>Legend:</strong> ☀️ Sunny | ☁️ Cloudy | 🌬️ Wind barbs (short=5kt, long=10kt, pennant=50kt)
+        <strong>Legend:</strong> Sun = sunny | Cloud = cloudy | Arrows = wind direction &amp; speed (more barbs = stronger)
     </div>
 
     <script>
-    // Weather marker function that draws different symbols based on customdata
-    // Signature: (r, d, trace) - rotation is handled automatically by plotly
-    function weatherMarker(r, d, trace) {
-        var weather = d.data;  // customdata contains weather info
+    // Weather marker function: (r, customdata)
+    function weatherMarker(r, customdata) {
+        var weather = customdata;
 
         if (weather.type === 'sunny') {
-            // Sun symbol: circle with rays
+            // Sun: circle with rays
             var cr = r * 0.5;
             var rayLen = r * 0.4;
             var path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 0,-' + cr +
@@ -44,7 +43,7 @@
         }
 
         if (weather.type === 'cloudy') {
-            // Cloud symbol
+            // Cloud shape
             var cy = r * 0.2;
             return 'M' + (-r*0.6) + ',' + cy +
                    'A' + (r*0.35) + ',' + (r*0.35) + ' 0 1,1 ' + (-r*0.1) + ',' + (-cy) +
@@ -54,38 +53,21 @@
         }
 
         if (weather.type === 'wind') {
-            // Meteorological wind barb (pointing up, rotation handled by marker.angle)
-            var speed = weather.speed || 5;
-            var staffLen = r * 1.4;
-            var barbLen = r * 0.7;
-            var halfBarbLen = r * 0.4;
-            var barbSpacing = r * 0.25;
-            var pennantWidth = r * 0.25;
+            // Simple wind barb: staff with 1-3 barbs based on speed
+            var speed = weather.speed || 1;
+            var barbs = Math.min(speed, 3);  // max 3 barbs
+            var staffLen = r * 1.2;
+            var barbLen = r * 0.6;
+            var barbSpacing = r * 0.3;
 
-            // Staff pointing up
+            // Staff pointing up (rotation handled by marker.angle)
             var path = 'M0,' + staffLen + 'L0,-' + staffLen;
-            var remaining = speed;
             var y = -staffLen;
 
-            // Pennants (50 knots each)
-            while (remaining >= 50) {
-                path += 'M0,' + y +
-                        'L' + barbLen + ',' + (y + pennantWidth) +
-                        'L0,' + (y + pennantWidth * 2) + 'Z';
-                y += pennantWidth * 2 + barbSpacing * 0.5;
-                remaining -= 50;
-            }
-
-            // Long barbs (10 knots each)
-            while (remaining >= 10) {
+            // Add barbs
+            for (var i = 0; i < barbs; i++) {
                 path += 'M0,' + y + 'L' + barbLen + ',' + (y + barbSpacing);
                 y += barbSpacing;
-                remaining -= 10;
-            }
-
-            // Short barb (5 knots)
-            if (remaining >= 5) {
-                path += 'M0,' + y + 'L' + halfBarbLen + ',' + (y + barbSpacing * 0.5);
             }
 
             return path;
@@ -96,44 +78,30 @@
                'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
     }
 
-    // Weather data for the map
+    // 6 locations: 3 cities (NW, S, NE) + 3 winds (SW, N, SE)
     var locations = [
-        { name: 'City A', lon: -122.4, lat: 37.8, weather: { type: 'sunny' } },
-        { name: 'City B', lon: -118.2, lat: 34.1, weather: { type: 'cloudy' } },
-        { name: 'City C', lon: -73.9, lat: 40.7, weather: { type: 'wind', direction: 45, speed: 25 } },
-        { name: 'City D', lon: -87.6, lat: 41.9, weather: { type: 'wind', direction: 180, speed: 15 } },
-        { name: 'City E', lon: -95.4, lat: 29.8, weather: { type: 'sunny' } },
-        { name: 'City F', lon: -104.9, lat: 39.7, weather: { type: 'wind', direction: 270, speed: 65 } },
-        { name: 'City G', lon: -122.3, lat: 47.6, weather: { type: 'cloudy' } },
-        { name: 'City H', lon: -80.2, lat: 25.8, weather: { type: 'sunny' } },
-        { name: 'City I', lon: -71.1, lat: 42.4, weather: { type: 'wind', direction: 135, speed: 35 } },
-        { name: 'City J', lon: -112.1, lat: 33.4, weather: { type: 'sunny' } }
+        { name: 'Seattle', lon: -122, lat: 47, weather: { type: 'cloudy' } },      // NW
+        { name: 'Houston', lon: -95, lat: 30, weather: { type: 'sunny' } },        // S
+        { name: 'Boston', lon: -71, lat: 42, weather: { type: 'cloudy' } },        // NE
+        { name: 'NE 1', lon: -115, lat: 35, weather: { type: 'wind', direction: 45, speed: 1 } },   // SW
+        { name: 'S 2', lon: -95, lat: 45, weather: { type: 'wind', direction: 180, speed: 2 } },   // N
+        { name: 'NW 3', lon: -80, lat: 33, weather: { type: 'wind', direction: 315, speed: 3 } }   // SE
     ];
 
-    // Prepare trace data
     var x = locations.map(function(l) { return l.lon; });
     var y = locations.map(function(l) { return l.lat; });
     var customdata = locations.map(function(l) { return l.weather; });
-    var text = locations.map(function(l) {
-        var w = l.weather;
-        if (w.type === 'wind') {
-            return l.name + '<br>Wind: ' + w.direction + '° ' + w.speed + ' kt';
-        }
-        return l.name + '<br>' + w.type.charAt(0).toUpperCase() + w.type.slice(1);
-    });
-    
-    // Color based on weather type
+    var text = locations.map(function(l) { return l.name; });
+
     var colors = locations.map(function(l) {
         if (l.weather.type === 'sunny') return '#FFD700';
         if (l.weather.type === 'cloudy') return '#708090';
         if (l.weather.type === 'wind') return '#4169E1';
         return '#333';
     });
-    
-    // Angle for wind markers (rotate to show direction)
+
     var angles = locations.map(function(l) {
-        if (l.weather.type === 'wind') return l.weather.direction;
-        return 0;
+        return l.weather.type === 'wind' ? l.weather.direction : 0;
     });
 
     Plotly.newPlot('weatherMap', [{
@@ -154,17 +122,8 @@
         }
     }], {
         title: 'Weather Map Demo',
-        xaxis: {
-            title: 'Longitude',
-            range: [-130, -65],
-            gridcolor: '#ddd'
-        },
-        yaxis: {
-            title: 'Latitude',
-            range: [22, 52],
-            scaleanchor: 'x',
-            gridcolor: '#ddd'
-        },
+        xaxis: { title: 'Longitude', range: [-130, -70], gridcolor: '#ddd' },
+        yaxis: { title: 'Latitude', range: [20, 52], scaleanchor: 'x', gridcolor: '#ddd' },
         showlegend: false,
         margin: { l: 50, r: 20, t: 40, b: 40 },
         paper_bgcolor: '#f8f8f8',
