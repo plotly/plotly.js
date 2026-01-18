@@ -78,14 +78,23 @@
                'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
     }
 
-    // 6 locations: 3 cities (NW, S, NE) + 3 winds (SW, N, SE)
+    // Cities with weather + wind arrows forming a jet stream pattern (W to E, curving south)
     var locations = [
-        { name: 'Seattle', lon: -122, lat: 47, weather: { type: 'cloudy' } },      // NW
-        { name: 'Houston', lon: -95, lat: 30, weather: { type: 'sunny' } },        // S
-        { name: 'Boston', lon: -71, lat: 42, weather: { type: 'cloudy' } },        // NE
-        { name: 'NE 1', lon: -115, lat: 35, weather: { type: 'wind', direction: 45, speed: 1 } },   // SW
-        { name: 'S 2', lon: -95, lat: 45, weather: { type: 'wind', direction: 180, speed: 2 } },   // N
-        { name: 'NW 3', lon: -80, lat: 33, weather: { type: 'wind', direction: 315, speed: 3 } }   // SE
+        // Cities
+        { name: 'Seattle', lon: -122, lat: 47, weather: { type: 'cloudy' } },
+        { name: 'San Francisco', lon: -122, lat: 38, weather: { type: 'sunny' } },
+        { name: 'Denver', lon: -105, lat: 40, weather: { type: 'sunny' } },
+        { name: 'Chicago', lon: -88, lat: 42, weather: { type: 'cloudy' } },
+        { name: 'New York', lon: -74, lat: 41, weather: { type: 'cloudy' } },
+        { name: 'Miami', lon: -80, lat: 26, weather: { type: 'sunny' } },
+        { name: 'Dallas', lon: -97, lat: 33, weather: { type: 'sunny' } },
+        // Wind arrows - jet stream curving from NW to SE
+        { name: 'E 3', lon: -115, lat: 46, weather: { type: 'wind', direction: 100, speed: 3 } },
+        { name: 'ESE 3', lon: -108, lat: 44, weather: { type: 'wind', direction: 110, speed: 3 } },
+        { name: 'SE 2', lon: -100, lat: 42, weather: { type: 'wind', direction: 120, speed: 2 } },
+        { name: 'SE 2', lon: -93, lat: 39, weather: { type: 'wind', direction: 130, speed: 2 } },
+        { name: 'SSE 1', lon: -85, lat: 36, weather: { type: 'wind', direction: 150, speed: 1 } },
+        { name: 'S 1', lon: -78, lat: 33, weather: { type: 'wind', direction: 170, speed: 1 } }
     ];
 
     var x = locations.map(function(l) { return l.lon; });
