@@ -648,5 +648,68 @@ describe('gradients', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should pass customdata to custom marker function', function(done) {
+            var receivedArgs = [];
+            var customFunc = function(r, customdata) {
+                receivedArgs.push({ r: r, customdata: customdata });
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                mode: 'markers',
+                customdata: ['first', 'second', 'third'],
+                marker: {
+                    symbol: customFunc,
+                    size: 12
+                }
+            }])
+            .then(function() {
+                expect(receivedArgs.length).toBe(3);
+
+                // Verify r is passed
+                expect(typeof receivedArgs[0].r).toBe('number');
+                expect(receivedArgs[0].r).toBe(6); // size/2
+
+                // Verify customdata values
+                expect(receivedArgs[0].customdata).toBe('first');
+                expect(receivedArgs[1].customdata).toBe('second');
+                expect(receivedArgs[2].customdata).toBe('third');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work with object customdata', function(done) {
+            var receivedData = [];
+            var customFunc = function(r, customdata) {
+                receivedData.push(customdata);
+                if(customdata && customdata.type === 'big') {
+                    return 'M' + (r*1.5) + ',0L0,' + (r*1.5) + 'L-' + (r*1.5) + ',0L0,-' + (r*1.5) + 'Z';
+                }
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                mode: 'markers',
+                customdata: [{ type: 'small' }, { type: 'big' }, { type: 'small' }],
+                marker: {
+                    symbol: customFunc,
+                    size: 12
+                }
+            }])
+            .then(function() {
+                expect(receivedData.length).toBe(3);
+                expect(receivedData[0].type).toBe('small');
+                expect(receivedData[1].type).toBe('big');
+                expect(receivedData[2].type).toBe('small');
+            })
+            .then(done, done.fail);
+        });
     });
 });

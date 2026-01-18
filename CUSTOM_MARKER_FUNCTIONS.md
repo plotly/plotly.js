@@ -6,30 +6,60 @@ This document describes how to use custom SVG marker functions in plotly.js scat
 
 You can now pass a custom function directly as the `marker.symbol` value to create custom marker shapes. This provides a simple, flexible way to extend the built-in marker symbols without any registration required.
 
-## Usage
+## Function Signature
+
+Custom marker functions receive:
+
+```javascript
+function customMarker(r, customdata) {
+    // r: radius/size of the marker (half of marker.size)
+    // customdata: the value from trace.customdata[i] for this point (optional)
+
+    // Return an SVG path string centered at (0,0)
+    return 'M...Z';
+}
+```
+
+**Simple markers** can use just `(r)`:
+```javascript
+function diamond(r) {
+    return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+}
+```
+
+**Data-aware markers** use `(r, customdata)`:
+```javascript
+function categoryMarker(r, customdata) {
+    if (customdata === 'high') {
+        return 'M0,-' + r + 'L' + r + ',' + r + 'L-' + r + ',' + r + 'Z';  // up triangle
+    }
+    return 'M0,' + r + 'L' + r + ',-' + r + 'L-' + r + ',-' + r + 'Z';  // down triangle
+}
+```
+
+Note: Rotation is handled automatically via `marker.angle` - your function just returns an unrotated path.
+
+## Usage Examples
 
 ### Basic Example
 
 ```javascript
-// Define a custom marker function
-function heartMarker(r, angle, standoff) {
-    var x = r * 0.6;
-    var y = r * 0.8;
-    return 'M0,' + (-y/2) + 
+function heartMarker(r) {
+    var x = r * 0.6, y = r * 0.8;
+    return 'M0,' + (-y/2) +
            'C' + (-x) + ',' + (-y) + ' ' + (-x*2) + ',' + (-y/3) + ' ' + (-x*2) + ',0' +
            'C' + (-x*2) + ',' + (y/2) + ' 0,' + (y) + ' 0,' + (y*1.5) +
            'C0,' + (y) + ' ' + (x*2) + ',' + (y/2) + ' ' + (x*2) + ',0' +
            'C' + (x*2) + ',' + (-y/3) + ' ' + (x) + ',' + (-y) + ' 0,' + (-y/2) + 'Z';
 }
 
-// Use it directly in a plot
 Plotly.newPlot('myDiv', [{
     type: 'scatter',
     x: [1, 2, 3, 4, 5],
     y: [2, 3, 4, 3, 2],
     mode: 'markers',
     marker: {
-        symbol: heartMarker,  // Pass the function directly!
+        symbol: heartMarker,
         size: 15,
         color: 'red'
     }
@@ -38,158 +68,96 @@ Plotly.newPlot('myDiv', [{
 
 ### Multiple Custom Markers
 
-You can use different custom markers for different points by passing an array:
-
 ```javascript
-function heartMarker(r) {
-    var x = r * 0.6, y = r * 0.8;
-    return 'M0,' + (-y/2) + 'C...Z';
-}
-
-function starMarker(r) {
-    var points = 5;
-    var outerRadius = r;
-    var innerRadius = r * 0.4;
+function star(r) {
     var path = 'M';
-    
-    for (var i = 0; i < points * 2; i++) {
-        var radius = i % 2 === 0 ? outerRadius : innerRadius;
-        var ang = (i * Math.PI) / points - Math.PI / 2;
-        var x = radius * Math.cos(ang);
-        var y = radius * Math.sin(ang);
-        path += (i === 0 ? '' : 'L') + x.toFixed(2) + ',' + y.toFixed(2);
+    for (var i = 0; i < 10; i++) {
+        var radius = i % 2 === 0 ? r : r * 0.4;
+        var ang = (i * Math.PI) / 5 - Math.PI / 2;
+        path += (i === 0 ? '' : 'L') + (radius * Math.cos(ang)).toFixed(2) + ',' + (radius * Math.sin(ang)).toFixed(2);
     }
-    path += 'Z';
-    return path;
+    return path + 'Z';
 }
 
 Plotly.newPlot('myDiv', [{
-    type: 'scatter',
     x: [1, 2, 3, 4, 5],
     y: [2, 3, 4, 3, 2],
     mode: 'markers',
     marker: {
-        symbol: [heartMarker, starMarker, heartMarker, starMarker, heartMarker],
+        symbol: [heartMarker, star, 'circle', star, heartMarker],
         size: 18,
-        color: ['red', 'gold', 'pink', 'orange', 'crimson']
+        color: ['red', 'gold', 'blue', 'orange', 'crimson']
     }
 }]);
 ```
 
-### Mixing with Built-in Symbols
-
-Custom functions work seamlessly with built-in symbol names:
+### Data-Driven Markers with customdata
 
 ```javascript
-function customDiamond(r) {
-    var rd = r * 1.5;
-    return 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z';
+function weatherMarker(r, customdata) {
+    var weather = customdata;
+
+    if (weather.type === 'sunny') {
+        // Sun: circle with rays
+        var cr = r * 0.5;
+        var path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 0,-' + cr +
+                   'A' + cr + ',' + cr + ' 0 0,1 ' + cr + ',0Z';
+        for (var i = 0; i < 8; i++) {
+            var ang = i * Math.PI / 4;
+            var x1 = (cr + 2) * Math.cos(ang), y1 = (cr + 2) * Math.sin(ang);
+            var x2 = (cr + r*0.4) * Math.cos(ang), y2 = (cr + r*0.4) * Math.sin(ang);
+            path += 'M' + x1.toFixed(2) + ',' + y1.toFixed(2) + 'L' + x2.toFixed(2) + ',' + y2.toFixed(2);
+        }
+        return path;
+    }
+
+    if (weather.type === 'cloudy') {
+        var cy = r * 0.2;
+        return 'M' + (-r*0.6) + ',' + cy +
+               'A' + (r*0.35) + ',' + (r*0.35) + ' 0 1,1 ' + (-r*0.1) + ',' + (-cy) +
+               'A' + (r*0.4) + ',' + (r*0.4) + ' 0 1,1 ' + (r*0.5) + ',' + (-cy*0.5) +
+               'A' + (r*0.3) + ',' + (r*0.3) + ' 0 1,1 ' + (r*0.7) + ',' + cy +
+               'L' + (-r*0.6) + ',' + cy + 'Z';
+    }
+
+    // Default: circle
+    return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r + 'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
 }
 
 Plotly.newPlot('myDiv', [{
     type: 'scatter',
-    x: [1, 2, 3, 4],
-    y: [1, 2, 3, 4],
+    x: [-122.4, -118.2, -87.6],
+    y: [37.8, 34.1, 41.9],
+    customdata: [
+        { type: 'sunny' },
+        { type: 'cloudy' },
+        { type: 'sunny' }
+    ],
     mode: 'markers',
     marker: {
-        symbol: ['circle', customDiamond, 'square', customDiamond],
-        size: 15
+        symbol: weatherMarker,
+        size: 30,
+        color: ['#FFD700', '#708090', '#FFD700']
     }
 }]);
 ```
 
-## Function Signature
-
-Your custom marker function should have the following signature:
-
-```javascript
-function customMarker(r, angle, standoff) {
-    // r: radius/size of the marker
-    // angle: rotation angle in degrees (for directional markers)
-    // standoff: standoff distance from the point (for advanced use)
-    
-    // Return an SVG path string
-    return 'M...Z';
-}
-```
-
-### Parameters
-
-- **r** (number): The radius/size of the marker. Your path should scale proportionally with this value.
-- **angle** (number, optional): The rotation angle in degrees. Most simple markers can ignore this.
-- **standoff** (number, optional): The standoff distance. Most markers can ignore this.
-
-### Return Value
-
-The function must return a valid SVG path string. The path should:
-- Be centered at (0, 0)
-- Scale proportionally with the radius `r`
-- Use standard SVG path commands (M, L, C, Q, A, Z, etc.)
-
 ## SVG Path Commands
 
-Here are the common SVG path commands you can use:
+Common SVG path commands:
 
-- `M x,y`: Move to absolute position (x, y)
-- `m dx,dy`: Move to relative position (dx, dy)
-- `L x,y`: Line to absolute position
-- `l dx,dy`: Line to relative position
+- `M x,y`: Move to (x, y)
+- `L x,y`: Line to (x, y)
 - `H x`: Horizontal line to x
-- `h dx`: Horizontal line by dx
 - `V y`: Vertical line to y
-- `v dy`: Vertical line by dy
 - `C x1,y1 x2,y2 x,y`: Cubic Bézier curve
 - `Q x1,y1 x,y`: Quadratic Bézier curve
 - `A rx,ry rotation large-arc sweep x,y`: Elliptical arc
 - `Z`: Close path
 
-## Examples
-
-### Simple Triangle
-
-```javascript
-function triangleMarker(r) {
-    var h = r * 1.5;
-    return 'M0,-' + h + 'L' + r + ',' + (h/2) + 'L-' + r + ',' + (h/2) + 'Z';
-}
-```
-
-### Pentagon
-
-```javascript
-function pentagonMarker(r) {
-    var points = 5;
-    var path = 'M';
-    for (var i = 0; i < points; i++) {
-        var angle = (i * 2 * Math.PI / points) - Math.PI / 2;
-        var x = r * Math.cos(angle);
-        var y = r * Math.sin(angle);
-        path += (i === 0 ? '' : 'L') + x.toFixed(2) + ',' + y.toFixed(2);
-    }
-    return path + 'Z';
-}
-```
-
-### Arrow
-
-```javascript
-function arrowMarker(r) {
-    var headWidth = r;
-    var headLength = r * 1.5;
-    return 'M0,-' + headLength + 
-           'L-' + headWidth + ',0' +
-           'L' + headWidth + ',0Z';
-}
-```
-
 ## Notes
 
 - Custom marker functions work with all marker styling options (color, size, line, etc.)
 - The function is called for each point that uses it
-- Functions are passed through as-is and not stored in any registry
-- This approach is simpler than the registration-based API
-- For best performance, define your functions once outside the plot call
-
-## Browser Compatibility
-
-Custom marker functions work in all browsers that support plotly.js and SVG path rendering.
+- Rotation is handled via `marker.angle` - your function returns an unrotated path
+- For best performance, define functions once outside the plot call
