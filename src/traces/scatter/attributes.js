@@ -556,7 +556,7 @@ module.exports = {
                         description: 'Sets the width (in px) of the lines bounding the marker points.'
                     },
                     dash: extendFlat({}, dash, {
-                        editType: 'style'
+                        arrayOk: true
                     }),
                     editType: 'calc'
                 },
