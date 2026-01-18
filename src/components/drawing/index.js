@@ -392,12 +392,12 @@ drawing.symbolNumber = function (v) {
     return v % 100 >= MAXSYMBOL || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumberOrFunc, r, t, s, pt, trace) {
+function makePointPath(symbolNumberOrFunc, r, t, s, d, trace) {
     // Check if a custom function was passed directly
     if (typeof symbolNumberOrFunc === 'function') {
         // Custom functions receive (r, customdata) and return an unrotated path.
         // Rotation and standoff are applied automatically via align().
-        var path = symbolNumberOrFunc(r, pt.data);
+        var path = symbolNumberOrFunc(r, d.data);
         return SYMBOLDEFS.align(t, s, path);
     }
 
