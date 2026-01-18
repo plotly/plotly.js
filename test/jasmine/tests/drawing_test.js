@@ -649,19 +649,13 @@ describe('gradients', function() {
             .then(done, done.fail);
         });
 
-        it('should pass data point and trace to custom marker function', function(done) {
+        it('should pass customdata to custom marker function', function(done) {
             var receivedArgs = [];
-            var customFunc = function(r, angle, standoff, d, trace) {
-                receivedArgs.push({
-                    r: r,
-                    angle: angle,
-                    standoff: standoff,
-                    d: d,
-                    trace: trace
-                });
+            var customFunc = function(r, customdata) {
+                receivedArgs.push({ r: r, customdata: customdata });
                 return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
             };
-            
+
             Plotly.newPlot(gd, [{
                 type: 'scatter',
                 x: [1, 2, 3],
@@ -674,50 +668,36 @@ describe('gradients', function() {
                 }
             }])
             .then(function() {
-                // Verify all three points were rendered
                 expect(receivedArgs.length).toBe(3);
-                
-                // Verify each call received the data point object
-                for(var i = 0; i < receivedArgs.length; i++) {
-                    var args = receivedArgs[i];
-                    expect(args.r).toBeDefined();
-                    expect(typeof args.r).toBe('number');
-                    
-                    // d should have the data point info
-                    expect(args.d).toBeDefined();
-                    expect(typeof args.d.i).toBe('number');
-                    
-                    // trace should be the trace object
-                    expect(args.trace).toBeDefined();
-                    expect(args.trace.type).toBe('scatter');
-                }
-                
-                // Verify customdata is accessible via d.data
-                expect(receivedArgs[0].d.data).toBe('first');
-                expect(receivedArgs[1].d.data).toBe('second');
-                expect(receivedArgs[2].d.data).toBe('third');
+
+                // Verify r is passed
+                expect(typeof receivedArgs[0].r).toBe('number');
+                expect(receivedArgs[0].r).toBe(6); // size/2
+
+                // Verify customdata values
+                expect(receivedArgs[0].customdata).toBe('first');
+                expect(receivedArgs[1].customdata).toBe('second');
+                expect(receivedArgs[2].customdata).toBe('third');
             })
             .then(done, done.fail);
         });
 
-        it('should provide access to x and y values in data point', function(done) {
+        it('should work with object customdata', function(done) {
             var receivedData = [];
-            var customFunc = function(r, angle, standoff, d, trace) {
-                receivedData.push({
-                    x: d.x,
-                    y: d.y,
-                    i: d.i,
-                    traceX: trace.x,
-                    traceY: trace.y
-                });
+            var customFunc = function(r, customdata) {
+                receivedData.push(customdata);
+                if(customdata && customdata.type === 'big') {
+                    return 'M' + (r*1.5) + ',0L0,' + (r*1.5) + 'L-' + (r*1.5) + ',0L0,-' + (r*1.5) + 'Z';
+                }
                 return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
             };
-            
+
             Plotly.newPlot(gd, [{
                 type: 'scatter',
-                x: [10, 20, 30],
-                y: [100, 200, 300],
+                x: [1, 2, 3],
+                y: [1, 2, 3],
                 mode: 'markers',
+                customdata: [{ type: 'small' }, { type: 'big' }, { type: 'small' }],
                 marker: {
                     symbol: customFunc,
                     size: 12
@@ -725,23 +705,9 @@ describe('gradients', function() {
             }])
             .then(function() {
                 expect(receivedData.length).toBe(3);
-                
-                // Verify x and y values are accessible
-                expect(receivedData[0].x).toBe(10);
-                expect(receivedData[0].y).toBe(100);
-                expect(receivedData[1].x).toBe(20);
-                expect(receivedData[1].y).toBe(200);
-                expect(receivedData[2].x).toBe(30);
-                expect(receivedData[2].y).toBe(300);
-                
-                // Verify indices
-                expect(receivedData[0].i).toBe(0);
-                expect(receivedData[1].i).toBe(1);
-                expect(receivedData[2].i).toBe(2);
-                
-                // Verify trace x and y arrays are accessible
-                expect(receivedData[0].traceX).toEqual([10, 20, 30]);
-                expect(receivedData[0].traceY).toEqual([100, 200, 300]);
+                expect(receivedData[0].type).toBe('small');
+                expect(receivedData[1].type).toBe('big');
+                expect(receivedData[2].type).toBe('small');
             })
             .then(done, done.fail);
         });
