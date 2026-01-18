@@ -392,7 +392,7 @@ drawing.symbolNumber = function (v) {
     return v % 100 >= MAXSYMBOL || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumberOrFunc, r, t, s, d, trace) {
+function makePointPath(symbolNumberOrFunc, r, t, s, d) {
     // Check if a custom function was passed directly
     if (typeof symbolNumberOrFunc === 'function') {
         // Custom functions receive (r, customdata) and return an unrotated path.
@@ -934,7 +934,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
         var angle = getMarkerAngle(d, trace);
         var standoff = getMarkerStandoff(d, trace);
 
-        sel.attr('d', makePointPath(x, r, angle, standoff, d, trace));
+        sel.attr('d', makePointPath(x, r, angle, standoff, d));
     }
 
     var perPointGradient = false;
@@ -1217,7 +1217,7 @@ drawing.selectedPointStyle = function (s, trace) {
             
             pt.attr(
                 'd',
-                makePointPath(symbolForPath, mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace), d, trace)
+                makePointPath(symbolForPath, mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace), d)
             );
 
             // save for Drawing.selectedTextStyle
