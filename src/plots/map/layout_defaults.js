@@ -47,6 +47,51 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     containerOut._input = containerIn;
 }
 
+function getMinBoundLon(lon) {
+    if (!lon.length) return { minLon: 0, maxLon: 0 };
+
+    // normalize to [0, 360)
+    const norm = lon.map(to360).sort((a, b) => a - b);
+
+    let maxGap = -1;
+    let gapIndex = 0;
+
+    // find largest gap
+    for (let i = 0; i < norm.length; i++) {
+        const curr = norm[i];
+        const next = norm[(i + 1) % norm.length];
+        const gap = (next - curr + 360) % 360;
+
+        if (gap > maxGap) {
+            maxGap = gap;
+            gapIndex = i;
+        }
+    }
+
+    // take complement of largest gap
+    let minLon = norm[(gapIndex + 1) % norm.length];
+    let maxLon = norm[gapIndex];
+    minLon = to180(minLon)
+    maxLon = to180(maxLon)
+
+    return { minLon, maxLon };
+
+    // https://gis.stackexchange.com/questions/201789/verifying-formula-that-will-convert-longitude-0-360-to-180-to-180
+    function to180(deg) {
+        return ((deg + 180) % 360) - 180
+    }
+    function to360(deg) {
+        return ((deg % 360) + 360) % 360;
+    }
+}
+
+function getMinBoundLat(lat) {
+    return {
+        minLat: Math.min(...lat),
+        maxLat: Math.max(...lat)
+    };
+}
+
 function handleLayerDefaults(layerIn, layerOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt);
