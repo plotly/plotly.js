@@ -23,13 +23,14 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     var _dtick = readInput('dtick');
     var _tickvals = readInput('tickvals');
     var _overlaying = readInput('overlaying');
+    var _categorical = axType === 'category' || axType === 'multicategory';
 
     var tickmodeDefault;
     if (isArrayOrTypedArray(_tickvals)) {
         tickmodeDefault = 'array';
     } else if (_dtick) {
         tickmodeDefault = 'linear';
-    } else if (_overlaying) {
+    } else if (_overlaying && !_categorical) {
         tickmodeDefault = 'sync';
     } else {
         tickmodeDefault = 'auto';
