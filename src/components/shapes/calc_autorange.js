@@ -22,7 +22,11 @@ module.exports = function calcAutorange(gd) {
         var yRefType = Axes.getRefType(shape.yref);
 
         if(xRefType === 'array') {
-            calcArrayRefAutorange(gd, shape, 'x');
+            const extremesForRefArray = calcArrayRefAutorange(gd, shape, 'x');
+            Object.entries(extremesForRefArray).forEach(([axID, axExtremes]) => {
+                ax = Axes.getFromId(gd, axID);
+                shape._extremes[ax._id] = Axes.findExtremes(ax, axExtremes, calcXPaddingOptions(shape));
+            });
         } else if(shape.xref !== 'paper' && xRefType !== 'domain') {
             // paper and axis domain referenced shapes don't affect autorange
             ax = Axes.getFromId(gd, shape.xref);
@@ -33,7 +37,11 @@ module.exports = function calcAutorange(gd) {
         }
 
         if(yRefType === 'array') {
-            calcArrayRefAutorange(gd, shape, 'y');
+            const extremesForRefArray = calcArrayRefAutorange(gd, shape, 'y');
+            Object.entries(extremesForRefArray).forEach(([axID, axExtremes]) => {
+                ax = Axes.getFromId(gd, axID);
+                shape._extremes[ax._id] = Axes.findExtremes(ax, axExtremes, calcYPaddingOptions(shape));
+            });
         } else if(shape.yref !== 'paper' && yRefType !== 'domain') {
             ax = Axes.getFromId(gd, shape.yref);
             bounds = shapeBounds(ax, shape, constants.paramIsY);
@@ -44,10 +52,9 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-function calcArrayRefAutorange(gd, shape, dim) {
-    var refs = shape[dim + 'ref'];
-    var paramsToUse = dim === 'x' ? constants.paramIsX : constants.paramIsY;
-    var paddingOpts = dim === 'x' ? calcXPaddingOptions(shape) : calcYPaddingOptions(shape);
+function calcArrayRefAutorange(gd, shape, axLetter) {
+    var refs = shape[axLetter + 'ref'];
+    var paramsToUse = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
 
     function addToAxisGroup(ref, val) {
         if(ref === 'paper' || Axes.getRefType(ref) === 'domain') return;
@@ -74,18 +81,21 @@ function calcArrayRefAutorange(gd, shape, dim) {
             }
         }
     } else {
-        addToAxisGroup(refs[0], shape[dim + '0']);
-        addToAxisGroup(refs[1], shape[dim + '1']);
+        addToAxisGroup(refs[0], shape[axLetter + '0']);
+        addToAxisGroup(refs[1], shape[axLetter + '1']);
     }
 
-    // For each axis, convert coordinates to data values then calculate extremes
+    // Convert coordinates to data values
+    var convertedGroups = {};
     for(var axId in axisGroups) {
         var ax = Axes.getFromId(gd, axId);
         if(!ax) continue;
         var convertVal = (ax.type === 'category' || ax.type === 'multicategory') ? ax.r2c : ax.d2c;
         if(ax.type === 'date') convertVal = helpers.decodeDate(convertVal);
-        shape._extremes[ax._id] = Axes.findExtremes(ax, axisGroups[axId].map(convertVal), paddingOpts);
+        convertedGroups[ax._id] = axisGroups[axId].map(convertVal);
     }
+
+    return convertedGroups;
 }
 
 function calcXPaddingOptions(shape) {
