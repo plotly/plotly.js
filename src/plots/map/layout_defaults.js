@@ -12,11 +12,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'map',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
-        partition: 'y'
+        partition: 'y',
+        fullData
     });
 };
 
-function handleDefaults(containerIn, containerOut, coerce) {
+function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');
