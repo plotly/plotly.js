@@ -25,6 +25,22 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('bearing');
     coerce('pitch');
 
+    // dynamically set center/zoom if neither param provided
+    if (!containerIn?.center && !containerIn?.zoom) {
+        var [{ lon, lat }] = opts.fullData;
+        var { minLon, maxLon } = getMinBoundLon(lon);
+        var { minLat, maxLat } = getMinBoundLat(lat);
+        // this param is called bounds in mapLibre ctor
+        // not to be confused with maxBounds aliased below
+        containerOut.fitBounds = {
+            west:  minLon,
+            east:  maxLon,
+            south: minLat,
+            north: maxLat,
+        };
+    }
+
+    // bounds is really for setting maxBounds in mapLibre ctor
     var west = coerce('bounds.west');
     var east = coerce('bounds.east');
     var south = coerce('bounds.south');
