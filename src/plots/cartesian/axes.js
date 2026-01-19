@@ -156,11 +156,10 @@ axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraO
         axRef = axRef.concat(Array(expectedLen - axRef.length).fill(dflt));
     }
 
-    // Check all references, replace with default if invalid
+    // Clean all axis references, replace with default if invalid
     for(var i = 0; i < axRef.length; i++) {
-        if(!axlist.includes(axRef[i])) {
-            axRef[i] = dflt;
-        }
+        axRef[i] = axisIds.cleanId(axRef[i], axLetter, true) || axRef[i];
+        if(!axlist.includes(axRef[i])) axRef[i] = dflt;
     }
 
     containerOut[refAttr] = axRef;
