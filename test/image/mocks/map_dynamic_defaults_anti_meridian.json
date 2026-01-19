@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "hovertext": ["P1", "P2", "P3", "P4"],
+      "lat": [43.9360958, 30.06263, 41.01384, 63.43049],
+      "legendgroup": "",
+      "lon": [170, 180, -180, -170],
+      "marker": {
+        "color": "#636efa"
+      },
+      "mode": "markers",
+      "type": "scattermap"
+    }
+  ]
+}
