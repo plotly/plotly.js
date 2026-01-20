@@ -44,7 +44,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "142.0.7444.134"
+          chrome-version: "137.0.7151.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -83,7 +83,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "142.0.7444.134"
+          chrome-version: "137.0.7151.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -105,7 +105,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "142.0.7444.134"
+          chrome-version: "137.0.7151.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -127,7 +127,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "142.0.7444.134"
+          chrome-version: "137.0.7151.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -169,7 +169,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "142.0.7444.134"
+          chrome-version: "137.0.7151.119"
       - attach_workspace:
           at: ~/
       - run:
@@ -190,7 +190,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "142.0.7444.134"
+          chrome-version: "137.0.7151.119"
       - attach_workspace:
           at: ~/
       - run:
