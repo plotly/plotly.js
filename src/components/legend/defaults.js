@@ -238,6 +238,9 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         });
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
+
+        coerce('titleclick');
+        coerce('titledoubleclick');
     }
 }
 
