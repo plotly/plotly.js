@@ -668,9 +668,10 @@ describe('gradients', function() {
                 }
             }])
             .then(function() {
-                // Function is called multiple times per point (plot + style phases)
-                // so check that we got at least one call per point
-                expect(receivedArgs.length).toBeGreaterThanOrEqual(3);
+                // Marker functions are called once per point (3 points = 3 calls).
+                // With selected.marker.size, selectedPointStyle triggers a second pass (6 calls).
+                expect(receivedArgs.length === 3 || receivedArgs.length === 6).toBe(true,
+                    'Expected 3 or 6 calls, got ' + receivedArgs.length);
 
                 // Verify r is passed correctly
                 expect(typeof receivedArgs[0].r).toBe('number');
@@ -707,8 +708,10 @@ describe('gradients', function() {
                 }
             }])
             .then(function() {
-                // Function is called multiple times per point (plot + style phases)
-                expect(receivedData.length).toBeGreaterThanOrEqual(3);
+                // Marker functions are called once per point (3 points = 3 calls).
+                // With selected.marker.size, selectedPointStyle triggers a second pass (6 calls).
+                expect(receivedData.length === 3 || receivedData.length === 6).toBe(true,
+                    'Expected 3 or 6 calls, got ' + receivedData.length);
 
                 // Verify all expected customdata types were received
                 var receivedTypes = receivedData.map(function(d) { return d ? d.type : null; });
