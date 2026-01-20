@@ -11,9 +11,16 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     if(gd._dragged || gd._editing) return;
 
-    var itemClick = fullLayout.legend.itemclick;
-    var itemDoubleClick = fullLayout.legend.itemdoubleclick;
-    var groupClick = fullLayout.legend.groupclick;
+
+    var legendItem = g.data()[0][0];
+    if(legendItem.groupTitle && legendItem.noClick) return;
+
+    var legendId = legendItem.trace.legend || 'legend';
+    var legendObj = fullLayout[legendId];
+
+    var itemClick = legendObj.itemclick;
+    var itemDoubleClick = legendObj.itemdoubleclick;
+    var groupClick = legendObj.groupclick;
 
     if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
@@ -34,9 +41,6 @@ module.exports = function handleClick(g, gd, numClicks) {
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
         [];
-
-    var legendItem = g.data()[0][0];
-    if(legendItem.groupTitle && legendItem.noClick) return;
 
     var fullData = gd._fullData;
     var shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
