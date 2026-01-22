@@ -105,7 +105,7 @@ lib.roundUp = searchModule.roundUp;
 lib.sort = searchModule.sort;
 lib.findIndexOfMin = searchModule.findIndexOfMin;
 
-lib.sortObjectKeys = require('./sort_object_keys');
+lib.sortObjectKeys = require('./sort_object_keys').default;
 
 var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;
@@ -206,7 +206,7 @@ lib.pushUnique = require('./push_unique');
 
 lib.increment = require('./increment');
 
-lib.cleanNumber = require('./clean_number');
+lib.cleanNumber = require('./clean_number').default;
 
 lib.ensureNumber = function ensureNumber(v) {
     if (!isNumeric(v)) return BADNUM;
