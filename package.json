@@ -68,8 +68,6 @@
   },
   "dependencies": {
     "@plotly/d3": "3.8.2",
-    "@plotly/d3-sankey": "0.7.2",
-    "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/mapbox-gl": "1.13.4",
     "@plotly/regl": "^2.1.2",
     "@turf/area": "^7.1.0",
@@ -88,6 +86,8 @@
     "d3-geo-projection": "^2.9.0",
     "d3-hierarchy": "^1.1.9",
     "d3-interpolate": "^3.0.1",
+    "d3-sankey": "0.12.3",
+    "d3-sankey-circular": "0.34.0",
     "d3-time": "^1.1.0",
     "d3-time-format": "^2.2.3",
     "fast-isnumeric": "^1.1.4",

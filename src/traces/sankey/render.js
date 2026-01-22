@@ -3,8 +3,8 @@
 var d3Force = require('d3-force');
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var d3 = require('@plotly/d3');
-var d3Sankey = require('@plotly/d3-sankey');
-var d3SankeyCircular = require('@plotly/d3-sankey-circular');
+var d3Sankey = require('d3-sankey');
+var d3SankeyCircular = require('d3-sankey-circular');
 
 var c = require('./constants');
 var tinycolor = require('tinycolor2');
