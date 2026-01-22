@@ -1,0 +1,92 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "scaled",
+      "x": [0, 1, 2],
+      "y": [0, 0, 0],
+      "u": [1, 2, 3],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.3,
+      "anchor": "tail",
+      "line": {
+        "color": "red",
+        "width": 2
+      },
+      "showscale": false,
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "quiver",
+      "name": "absolute",
+      "x": [0, 1, 2],
+      "y": [1, 1, 1],
+      "u": [1, 2, 3],
+      "v": [1, 1, 1],
+      "sizemode": "absolute",
+      "sizeref": 0.3,
+      "anchor": "tail",
+      "line": {
+        "color": "blue",
+        "width": 2
+      },
+      "showscale": false,
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "quiver",
+      "name": "raw",
+      "x": [0, 1, 2],
+      "y": [2, 2, 2],
+      "u": [0.3, 0.6, 0.9],
+      "v": [0.3, 0.3, 0.3],
+      "sizemode": "raw",
+      "sizeref": 1,
+      "anchor": "tail",
+      "line": {
+        "color": "green",
+        "width": 2
+      },
+      "showscale": false,
+      "xaxis": "x3",
+      "yaxis": "y3"
+    }
+  ],
+  "layout": {
+    "width": 800,
+    "height": 400,
+    "showlegend": true,
+    "xaxis": {
+      "domain": [0, 0.3],
+      "range": [-0.5, 2.5],
+      "title": {"text": "scaled"}
+    },
+    "yaxis": {
+      "domain": [0, 1],
+      "range": [-0.5, 0.5]
+    },
+    "xaxis2": {
+      "domain": [0.35, 0.65],
+      "range": [-0.5, 2.5],
+      "title": {"text": "absolute"}
+    },
+    "yaxis2": {
+      "domain": [0, 1],
+      "anchor": "x2",
+      "range": [0.5, 1.5]
+    },
+    "xaxis3": {
+      "domain": [0.7, 1],
+      "range": [-0.5, 2.5],
+      "title": {"text": "raw"}
+    },
+    "yaxis3": {
+      "domain": [0, 1],
+      "anchor": "x3",
+      "range": [1.5, 2.5]
+    }
+  }
+}
