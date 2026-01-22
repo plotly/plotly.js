@@ -44,7 +44,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "132.0.6834.110"
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run:
@@ -83,7 +83,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "132.0.6834.110"
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run:
@@ -105,7 +105,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "132.0.6834.110"
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run:
@@ -127,7 +127,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "132.0.6834.110"
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run:
@@ -169,7 +169,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "132.0.6834.110"
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run:
@@ -190,7 +190,7 @@ jobs:
           install-firefox: false
           install-geckodriver: false
           install-chrome: true
-          chrome-version: "132.0.6834.110"
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run:
@@ -218,9 +218,15 @@ jobs:
   make-baselines-virtual-webgl:
     parallelism: 8
     docker:
-      - image: cimg/python:3.12.11
+      - image: cimg/python:3.12.11-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run: sudo apt-get update
@@ -237,9 +243,15 @@ jobs:
 
   make-baselines-mathjax3:
     docker:
-      - image: cimg/python:3.12.11
+      - image: cimg/python:3.12.11-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run: sudo apt-get update
@@ -257,9 +269,15 @@ jobs:
   make-baselines:
     parallelism: 12
     docker:
-      - image: cimg/python:3.12.11
+      - image: cimg/python:3.12.11-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run: sudo apt-get update
@@ -277,9 +295,15 @@ jobs:
   make-baselines-b64:
     parallelism: 12
     docker:
-      - image: cimg/python:3.12.11
+      - image: cimg/python:3.12.11-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run: sudo apt-get update
@@ -356,9 +380,15 @@ jobs:
 
   make-exports:
     docker:
-      - image: cimg/python:3.12.11
+      - image: cimg/python:3.12.11-browsers
     working_directory: ~/plotly.js
     steps:
+      - run: sudo apt-get update
+      - browser-tools/install-browser-tools:
+          install-firefox: false
+          install-geckodriver: false
+          install-chrome: true
+          chrome-version: "142.0.7444.175"
       - attach_workspace:
           at: ~/
       - run: sudo apt-get update
@@ -372,7 +402,7 @@ jobs:
             sudo apt-get install poppler-utils
       - run:
           name: Create svg, jpg, jpeg, webp, pdf and eps files
-          command: sudo python3 test/image/make_exports.py
+          command: uv run test/image/make_exports.py
       - persist_to_workspace:
           root: ~/
           paths:
