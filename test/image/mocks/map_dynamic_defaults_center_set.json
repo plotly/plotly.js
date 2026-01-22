@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "hovertext": ["San Marino", "Cairo", "Istanbul", "Trondheim"],
+      "lat": [43.9360958, 30.06263, 41.01384, 63.43049],
+      "legendgroup": "",
+      "lon": [12.4417702, 31.24967, 28.94966, 10.39506],
+      "marker": {
+        "color": "#636efa"
+      },
+      "mode": "markers",
+      "type": "scattermap"
+    }
+  ],
+  "layout": {
+    "map": {
+      "center": {
+        "lat": 90,
+        "lon": 90
+      }
+    }
+  }
+}
