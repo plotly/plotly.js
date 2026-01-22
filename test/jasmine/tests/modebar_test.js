@@ -11,6 +11,16 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
 var failTest = require('../assets/fail_test');
 
+// Ensure default environment doesn't expose clipboard API so button counts remain stable
+// Individual clipboard tests will explicitly mock/enable it as needed.
+var __origClipboard__ = (typeof navigator !== 'undefined') ? navigator.clipboard : undefined;
+beforeAll(function() {
+    if(typeof navigator !== 'undefined') navigator.clipboard = undefined;
+});
+afterAll(function() {
+    if(typeof navigator !== 'undefined') navigator.clipboard = __origClipboard__;
+});
+
 describe('ModeBar', function() {
     'use strict';
 
@@ -1942,6 +1952,101 @@ describe('ModeBar', function() {
                     .then(done)
                     .catch(failTest);
                 });
+            });
+        });
+    });
+
+    describe('copyToClipboard button', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should be present when clipboard API is supported', function(done) {
+            // Mock clipboard API support
+            var originalClipboard = navigator.clipboard;
+            navigator.clipboard = { write: function() { return Promise.resolve(); } };
+
+            Plotly.newPlot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            }])
+            .then(function() {
+                var modeBar = gd._fullLayout._modeBar;
+                var copyButton = selectButton(modeBar, 'copyToClipboard');
+                expect(copyButton.node).toBeDefined();
+                expect(copyButton.node.getAttribute('data-title')).toBe('Copy plot to clipboard');
+
+                // Restore original clipboard
+                navigator.clipboard = originalClipboard;
+            })
+            .then(done)
+            .catch(failTest);
+        });
+
+        it('should not be present when clipboard API is not supported', function(done) {
+            // Mock no clipboard API support
+            var originalClipboard = navigator.clipboard;
+            navigator.clipboard = undefined;
+
+            Plotly.newPlot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            }])
+            .then(function() {
+                var modeBar = gd._fullLayout._modeBar;
+                var copyButton = selectButton(modeBar, 'copyToClipboard');
+                expect(copyButton.node).toBeNull();
+
+                // Restore original clipboard
+                navigator.clipboard = originalClipboard;
+            })
+            .then(done)
+            .catch(failTest);
+        });
+
+        it('should call clipboard API when clicked', function(done) {
+            var clipboardWriteCalled = false;
+            var originalClipboard = navigator.clipboard;
+            var originalClipboardItem = window.ClipboardItem;
+            
+            // Mock successful clipboard API
+            window.ClipboardItem = window.ClipboardItem || function ClipboardItem(data) { this.data = data; };
+            navigator.clipboard = {
+                write: function(items) {
+                    clipboardWriteCalled = true;
+                    expect(items.length).toBe(1);
+                    expect(items[0] instanceof ClipboardItem).toBeTrue();
+                    return Promise.resolve();
+                }
+            };
+
+            Plotly.newPlot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 3]
+            }])
+            .then(function() {
+                var copyButton = selectButton(gd._fullLayout._modeBar, 'copyToClipboard');
+                copyButton.click();
+
+                // Wait a bit for async operations
+                setTimeout(function() {
+                    expect(clipboardWriteCalled).toBe(true);
+                    
+                    // Restore original clipboard
+                    navigator.clipboard = originalClipboard;
+                    window.ClipboardItem = originalClipboardItem;
+                    done();
+                }, 100);
+            })
+            .catch(function(err) {
+                // Restore original clipboard
+                navigator.clipboard = originalClipboard;
+                window.ClipboardItem = originalClipboardItem;
+                failTest(err);
             });
         });
     });
