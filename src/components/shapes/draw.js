@@ -212,11 +212,10 @@ function setClipPath(shapePath, gd, shapeOptions) {
         }).select('rect').attr(rect);
 
         Drawing.setClipUrl(shapePath, clipId, gd);
-        return;
+    } else {
+        var clipAxes = (xref + yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
+        Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
     }
-
-    var clipAxes = (xref + yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
-    Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
 }
 
 function getMultiAxisClipRect(gd, xref, yref) {

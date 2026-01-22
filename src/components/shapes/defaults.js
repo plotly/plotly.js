@@ -68,6 +68,9 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var ySizeMode = coerce('ysizemode');
 
     // positioning
+    var dflts = [0.25, 0.75];
+    var pixelDflts = [0, 10];
+
     ['x', 'y'].forEach(axLetter => {
         var attrAnchor = axLetter + 'anchor';
         var sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode;
@@ -86,8 +89,13 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             var expectedLen = helpers.countDefiningCoords(shapeType, path, axLetter);
             axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper', expectedLen);
             shapeOut['_' + axLetter + 'refArray'] = true;
+        } else {
+            // String/undefined case: use coerceRef
+            axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper');
+        }
 
-            // Need to register the shape with all referenced axes for redrawing purposes
+        if(Array.isArray(axRef)) {
+            // Register the shape with all referenced axes for redrawing purposes
             axRef.forEach(function(ref) {
                 if(Axes.getRefType(ref) === 'range') {
                     ax = Axes.getFromId(gdMock, ref);
@@ -96,16 +104,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                     }
                 }
             });
-        } else {
-            // String/undefined case: use coerceRef
-            axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper');
-        }
 
-        if(Array.isArray(axRef)) {
             if(noPath) {
-                var dflts = [0.25, 0.75];
-                var pixelDflts = [0, 10];
-
                 [0, 1].forEach(function(i) {
                     var ref = axRef[i];
                     var refType = Axes.getRefType(ref);
@@ -160,9 +160,6 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
             // Coerce x0, x1, y0, y1
             if(noPath) {
-                var dflt0 = 0.25;
-                var dflt1 = 0.75;
-
                 // hack until V3.0 when log has regular range behavior - make it look like other
                 // ranges to send to coerce, then put it back after
                 // this is all to give reasonable default position behavior on log axes, which is
@@ -175,11 +172,11 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                 shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 
                 if(sizeMode === 'pixel') {
-                    coerce(attr0, 0);
-                    coerce(attr1, 10);
+                    coerce(attr0, pixelDflts[0]);
+                    coerce(attr1, pixelDflts[1]);
                 } else {
-                    Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
-                    Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+                    Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflts[0]);
+                    Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflts[1]);
                 }
 
                 // hack part 2

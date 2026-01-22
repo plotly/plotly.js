@@ -52,6 +52,14 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
+/**
+ * Calculate autorange extremes for shapes that reference multiple axes (array refs).
+ *
+ * @param {object} gd - main graph div object
+ * @param {object} shape - shape object
+ * @param {string} axLetter - 'x' or 'y' indicating which axis dimension to process
+ * @returns {object} - mapping of axis IDs to arrays of converted coordinate values
+ */
 function calcArrayRefAutorange(gd, shape, axLetter) {
     var refs = shape[axLetter + 'ref'];
     var paramsToUse = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
