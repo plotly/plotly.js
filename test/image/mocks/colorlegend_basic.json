@@ -1,0 +1,28 @@
+{
+    "data": [{
+        "type": "scatter",
+        "mode": "markers",
+        "x": [1, 2, 3, 4, 5, 6, 7, 8],
+        "y": [2, 4, 3, 5, 4, 6, 5, 7],
+        "marker": {
+            "color": ["red", "blue", "red", "green", "blue", "red", "green", "blue"],
+            "colorlegend": "colorlegend",
+            "size": 15
+        },
+        "name": "Sample Data"
+    }],
+    "layout": {
+        "title": {
+            "text": "Color Legend Example"
+        },
+        "colorlegend": {
+            "title": { "text": "Category" },
+            "x": 1.02,
+            "y": 1,
+            "visible": true
+        },
+        "width": 600,
+        "height": 400,
+        "showlegend": false
+    }
+}

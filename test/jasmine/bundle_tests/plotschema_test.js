@@ -130,7 +130,10 @@ describe('plot schema', function() {
             // ... counters, so list it here
             'xaxis.rangeslider.yaxis',
             'legend',
-            'coloraxis'
+            'coloraxis',
+            'colorlegend',
+            'sizelegend',
+            'symbollegend'
         ];
 
         // check if the subplot objects have '_isSubplotObj'

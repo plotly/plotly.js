@@ -44,6 +44,9 @@ register([
     require('./components/errorbars'),
     require('./components/colorscale'),
     require('./components/colorbar'),
+    require('./components/colorlegend'),
+    require('./components/sizelegend'),
+    require('./components/symbollegend'),
     require('./components/legend'), // legend needs to come after shape | legend defaults depends on shapes
     require('./components/fx'), // fx needs to come after legend | unified hover defaults depends on legends
     require('./components/modebar')
