@@ -331,6 +331,8 @@ drawing.symbolList = [];
 
 Object.keys(SYMBOLDEFS).forEach(function (k) {
     var symDef = SYMBOLDEFS[k];
+    // Skip non-symbol exports (like 'align' function)
+    if (typeof symDef !== 'object' || symDef.n === undefined) return;
     var n = symDef.n;
     drawing.symbolList.push(
         n,
