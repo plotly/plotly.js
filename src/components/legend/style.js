@@ -221,6 +221,7 @@ module.exports = function style(s, gd, legend) {
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5], CST_MARKER_LINE_WIDTH);
+                dEdit.mld = boundVal('marker.line.dash', pickFirst);
                 tEdit.marker = {
                     sizeref: 1,
                     sizemin: 1,
