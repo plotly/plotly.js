@@ -733,7 +733,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 var axListI = axList[i];
                 var axListIType = axListI[axisType];
                 var axId = axListIType._id;
-                if(!axListI.fixedrange && axListIType.tickmode === 'sync' && activeAxIds.indexOf(axId) === -1) {
+                if(!axListI.fixedrange && axListIType.tickmode === 'sync' && !activeAxIds.includes(axId)) {
                     activeAxIds.push(axId);
                 }
             }

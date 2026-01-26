@@ -36,7 +36,7 @@ var tickmode = extendFlat({}, minorTickmode, {
         minorTickmode.description,
         'If *sync*, the number of ticks will sync with the overlayed axis',
         'set by `overlaying` property. When no other tick info is provided,',
-        'overlyaing (non-categorical) axes default to *sync*, while other axes default to *auto*.',
+        'overlaying (non-categorical) axes default to *sync*, while other axes default to *auto*.',
     ].join(' ')
 });
 

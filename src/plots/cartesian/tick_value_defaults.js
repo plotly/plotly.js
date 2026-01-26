@@ -5,8 +5,7 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 var decodeTypedArraySpec = require('../../lib/array').decodeTypedArraySpec;
 
-module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType, opts) {
-    if (!opts) opts = {};
+module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType, opts = {}) {
     var isMinor = opts.isMinor;
     var cIn = isMinor ? containerIn.minor || {} : containerIn;
     var cOut = isMinor ? containerOut.minor : containerOut;
