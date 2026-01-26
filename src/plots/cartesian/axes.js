@@ -98,7 +98,8 @@ function expandRange(range) {
  *     but can be prefixed, like 'ax' for annotation's arrow x
  * dflt: the default to coerce to, or blank to use the first axis (falling back on
  *     extraOption if there is no axis)
- * extraOption: fallback value, only required if it's different from `dflt`
+ * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
+ *     Only required if it's different from `dflt`
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
     var axLetter = attr.charAt(attr.length - 1);

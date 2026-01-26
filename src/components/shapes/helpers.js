@@ -323,8 +323,8 @@ function convertPath(options, x2p, y2p) {
         var hasDrawnY = yParams.drawn !== undefined;
 
         // Use vertex indices for array refs (same converter for all params in segment)
-        var segmentX2p = (isArrayXref && xSizemode !== 'pixel') ? x2p[xVertexIndex] : x2p;
-        var segmentY2p = (isArrayYref && ySizemode !== 'pixel') ? y2p[yVertexIndex] : y2p;
+        var segmentX2p = isArrayXref ? x2p[xVertexIndex] : x2p;
+        var segmentY2p = isArrayYref ? y2p[yVertexIndex] : y2p;
 
         var paramString = segment.slice(1).replace(constants.paramRE, function(param) {
             if(xParams[paramNumber]) {

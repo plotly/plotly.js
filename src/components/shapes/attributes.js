@@ -140,7 +140,7 @@ module.exports = templatedArray('shape', {
             'are pixels relative to `xanchor`. This way, the shape can have',
             'a fixed width while maintaining a position relative to data or',
             'plot fraction.',
-            'Note: *pixel* mode is not supported when `xref` is an array.'
+            'Note: `xsizemode` *pixel* is not supported when `xref` is an array.'
         ].join(' ')
     },
     xanchor: {
@@ -213,7 +213,7 @@ module.exports = templatedArray('shape', {
             'are pixels relative to `yanchor`. This way, the shape can have',
             'a fixed height while maintaining a position relative to data or',
             'plot fraction.',
-            'Note: *pixel* mode is not supported when `yref` is an array.'
+            'Note: `ysizemode` *pixel* is not supported when `yref` is an array.'
         ].join(' ')
     },
     yanchor: {
