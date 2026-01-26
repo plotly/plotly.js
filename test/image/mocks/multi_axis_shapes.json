@@ -24,7 +24,8 @@
         "y0": 5,
         "y1": 2,
         "fillcolor": "rgba(255, 0, 0, 0.3)",
-        "line": { "color": "red", "width": 2 }
+        "line": { "color": "red", "width": 2 },
+        "label": { "text": "rect" }
       },
       {
         "type": "circle",
@@ -35,7 +36,8 @@
         "y0": 0,
         "y1": 5,
         "fillcolor": "rgba(0, 0, 255, 0.3)",
-        "line": { "color": "blue", "width": 2 }
+        "line": { "color": "blue", "width": 2 },
+        "label": { "text": "circle" }
       },
       {
         "type": "line",
@@ -45,7 +47,8 @@
         "x1": 4,
         "y0": 0.5,
         "y1": 4,
-        "line": { "color": "green", "width": 3 }
+        "line": { "color": "green", "width": 3 },
+        "label": { "text": "line" }
       },
       {
         "type": "path",
@@ -53,7 +56,8 @@
         "yref": ["y2", "y2", "y4", "y4"],
         "path": "M0.5,0.5 L5,0.5 L4,4 L0.5,4 Z",
         "fillcolor": "rgba(255, 165, 0, 0.3)",
-        "line": { "color": "orange", "width": 2 }
+        "line": { "color": "orange", "width": 2 },
+        "label": { "text": "path" }
       }
     ]
   }

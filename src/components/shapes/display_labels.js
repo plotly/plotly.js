@@ -82,27 +82,27 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
     } else {
         // Otherwise, we use the x and y bounds defined in the shape options
         // and convert them to pixel coordinates
-        // Setup conversion functions
-        var xa = Axes.getFromId(gd, options.xref);
-        var xShiftStart = options.x0shift;
-        var xShiftEnd = options.x1shift;
-        var xRefType = Axes.getRefType(options.xref);
-        var ya = Axes.getFromId(gd, options.yref);
-        var yShiftStart = options.y0shift;
-        var yShiftEnd = options.y1shift;
-        var yRefType = Axes.getRefType(options.yref);
-        var x2p = function (v, shift) {
-            var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
-            return dataToPixel(v);
+        // Setup conversion functions, handling array refs for multi-axis shapes
+        var isArrayXref = Array.isArray(options.xref);
+        var isArrayYref = Array.isArray(options.yref);
+        var xa0 = Axes.getFromId(gd, isArrayXref ? options.xref[0] : options.xref);
+        var xa1 = Axes.getFromId(gd, isArrayXref ? options.xref[1] : options.xref);
+        var ya0 = Axes.getFromId(gd, isArrayYref ? options.yref[0] : options.yref);
+        var ya1 = Axes.getFromId(gd, isArrayYref ? options.yref[1] : options.yref);
+        var xRefType0 = Axes.getRefType(isArrayXref ? options.xref[0] : options.xref);
+        var xRefType1 = Axes.getRefType(isArrayXref ? options.xref[1] : options.xref);
+        var yRefType0 = Axes.getRefType(isArrayYref ? options.yref[0] : options.yref);
+        var yRefType1 = Axes.getRefType(isArrayYref ? options.yref[1] : options.yref);
+        var x2p = function(v, shift, xa, xRefType) {
+            return helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
         };
-        var y2p = function (v, shift) {
-            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
-            return dataToPixel(v);
+        var y2p = function(v, shift, ya, yRefType) {
+            return helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
         };
-        shapex0 = x2p(options.x0, xShiftStart);
-        shapex1 = x2p(options.x1, xShiftEnd);
-        shapey0 = y2p(options.y0, yShiftStart);
-        shapey1 = y2p(options.y1, yShiftEnd);
+        shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);
+        shapex1 = x2p(options.x1, options.x1shift, xa1, xRefType1);
+        shapey0 = y2p(options.y0, options.y0shift, ya0, yRefType0);
+        shapey1 = y2p(options.y1, options.y1shift, ya1, yRefType1);
     }
 
     // Handle `auto` angle
