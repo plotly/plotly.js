@@ -16,6 +16,7 @@ jobs:
 
     steps:
     - uses: browser-actions/setup-chrome@v2
+      id: setup-chrome
       with:
         chrome-version: 146.0.7649.0
         install-chromedriver: true
@@ -25,7 +26,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: chrome --version
+    - name: Set Chrome binary path
+      run: echo "CHROME_BIN=${{ steps.setup-chrome.outputs.chrome-path }}" >> $GITHUB_ENV
+    - name: Verify Chrome version
+      run: |
+        echo "Chrome path: $CHROME_BIN"
+        $CHROME_BIN --version
     - run: ls
     - run: npm run pretest
     - run: npm ci
