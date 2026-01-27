@@ -15,7 +15,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: browser-actions/setup-chrome@v1
+    - uses: browser-actions/setup-chrome@v2
       with:
         chrome-version: 146.0.7649.0
     - uses: actions/checkout@v4
