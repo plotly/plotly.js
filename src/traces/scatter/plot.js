@@ -83,6 +83,11 @@ function createFills(gd, traceJoin, plotinfo) {
 
         var trace = d[0].trace;
 
+        // trace._ownFill and trace._nextFill may have leftover values
+        // from a previous call to createFills. They should always start as null.
+        // We clear both values in order to start with a clean slate.
+        // Note that these are DIFFERENT VARIABLES than
+        // trace._ownfill and trace._nexttrace referenced a few lines down.
         trace._ownFill = null;
         trace._nextFill = null;
 
