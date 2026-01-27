@@ -27,7 +27,18 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         if (options.type !== 'path') {
             var _xa = Axes.getFromId(gd, options.xref);
             var _ya = Axes.getFromId(gd, options.yref);
+            var isMultiAxisX = Array.isArray(options.xref);
+            var isMultiAxisY = Array.isArray(options.yref);
+
+            // For multi-axis shapes, derived variables are meaningless
+            // Skip them and let texttemplatefallback handle those cases.
+            var derivedX = ['dx', 'width', 'xcenter', 'slope', 'length'];
+            var derivedY = ['dy', 'height', 'ycenter', 'slope', 'length'];
+
             for (var key in shapeLabelTexttemplateVars) {
+                if (isMultiAxisX && derivedX.includes(key)) continue;
+                if (isMultiAxisY && derivedY.includes(key)) continue;
+
                 var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
                 if (val !== undefined) templateValues[key] = val;
             }

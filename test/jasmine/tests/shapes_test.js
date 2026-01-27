@@ -1671,12 +1671,12 @@ describe('Test multi-axis shapes', function() {
     beforeEach(function() { gd = createGraphDiv(); });
     afterEach(destroyGraphDiv);
 
-    function getShape(index) {
+    function getShapesWithIndex(index) {
         return d3SelectAll('.shapelayer path[data-index="' + index + '"]');
     }
 
     function getBoundingBox(index) {
-        var node = getShape(index).node();
+        var node = getShapesWithIndex(index).node();
         return node ? node.getBoundingClientRect() : null;
     }
 
@@ -1696,10 +1696,10 @@ describe('Test multi-axis shapes', function() {
                 {type: 'path', xref: ['x', 'x2'], yref: ['y', 'y2'], path: 'M1,1L2,2'}
             ]
         }).then(function() {
-            expect(getShape(0).size()).toBe(1);
-            expect(getShape(1).size()).toBe(1);
-            expect(getShape(2).size()).toBe(1);
-            expect(getShape(3).size()).toBe(1);
+            expect(getShapesWithIndex(0).size()).toBe(1);
+            expect(getShapesWithIndex(1).size()).toBe(1);
+            expect(getShapesWithIndex(2).size()).toBe(1);
+            expect(getShapesWithIndex(3).size()).toBe(1);
         })
         .then(done, done.fail);
     });
