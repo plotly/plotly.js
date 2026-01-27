@@ -83,6 +83,14 @@ function createFills(gd, traceJoin, plotinfo) {
 
         var trace = d[0].trace;
 
+        // trace._ownFill and trace._nextFill may have leftover values
+        // from a previous call to createFills. They should always start as null.
+        // We clear both values in order to start with a clean slate.
+        // Note that these are DIFFERENT VARIABLES than
+        // trace._ownfill and trace._nexttrace referenced a few lines down.
+        trace._ownFill = null;
+        trace._nextFill = null;
+
         var fillData = [];
         if(trace._ownfill) fillData.push('_ownFill');
         if(trace._nexttrace) fillData.push('_nextFill');
@@ -91,9 +99,7 @@ function createFills(gd, traceJoin, plotinfo) {
 
         fillJoin.enter().append('g');
 
-        fillJoin.exit()
-            .each(function(d) { trace[d] = null; })
-            .remove();
+        fillJoin.exit().remove();
 
         fillJoin.order().each(function(d) {
             // make a path element inside the fill group, just so
