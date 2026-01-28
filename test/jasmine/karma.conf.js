@@ -253,14 +253,15 @@ func.defaultConfig = {
     //
     // window-size values came from observing default size
     //
-    // '--ignore-gpu-blacklist' allow to test WebGL on CI (!!!)
+    // '--ignore-gpu-blocklist' allow to test WebGL on CI (!!!)
     customLaunchers: {
         _Chrome: {
             base: 'Chrome',
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--ignore-gpu-blacklist' : '',
+                isCI ? '--ignore-gpu-blocklist' : '',
+                isCI ? '--use-gl=desktop' : '',
                 isCI ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
