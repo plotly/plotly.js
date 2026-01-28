@@ -1,0 +1,210 @@
+{
+  "config": {
+    "editable": false
+  },
+  "data": [
+    {
+      "name": "Series A1",
+      "y": [1, 2, 3],
+      "xaxis": "x",
+      "yaxis": "y",
+      "legendgroup": "Group A",
+      "legendgrouptitle": { "text": "Group A" }
+    },
+    {
+      "name": "Series A2",
+      "y": [2, 3, 4],
+      "xaxis": "x",
+      "yaxis": "y",
+      "legendgroup": "Group A"
+    },
+    {
+      "name": "Series B1",
+      "y": [3, 4, 5],
+      "xaxis": "x",
+      "yaxis": "y",
+      "legendgroup": "Group B",
+      "legendgrouptitle": { "text": "Group B" }
+    },
+    {
+      "name": "Series C1",
+      "y": [5, 6, 7],
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "legend": "legend2",
+      "legendgroup": "Group C",
+      "legendgrouptitle": { "text": "Group C" }
+    },
+    {
+      "name": "Series C2",
+      "y": [6, 7, 8],
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "legend": "legend2",
+      "legendgroup": "Group C"
+    },
+    {
+      "name": "Series D1",
+      "y": [7, 8, 9],
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "legend": "legend3"
+    },
+    {
+      "name": "Series D2",
+      "y": [8, 9, 10],
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "legend": "legend3"
+    },
+    {
+      "name": "Series E1",
+      "y": [9, 10, 11],
+      "xaxis": "x4",
+      "yaxis": "y4",
+      "legend": "legend4"
+    },
+    {
+      "name": "Series E2",
+      "y": [10, 11, 12],
+      "xaxis": "x4",
+      "yaxis": "y4",
+      "legend": "legend4"
+    },
+    {
+      "name": "Series F1",
+      "y": [2, 4, 3],
+      "xaxis": "x",
+      "yaxis": "y",
+      "legend": "legend5"
+    },
+    {
+      "name": "Series F2",
+      "y": [3, 5, 4],
+      "xaxis": "x",
+      "yaxis": "y",
+      "legend": "legend5"
+    }
+  ],
+  "layout": {
+    "title": { "text": "Legend Title Click Behaviors" },
+    "width": 900,
+    "height": 700,
+    "grid": { "rows": 2, "columns": 2, "pattern": "independent" },
+    "xaxis": { "domain": [0, 0.35] },
+    "yaxis": { "domain": [0.55, 1] },
+    "xaxis2": { "domain": [0, 0.35] },
+    "yaxis2": { "domain": [0, 0.45] },
+    "xaxis3": { "domain": [0.45, 0.8] },
+    "yaxis3": { "domain": [0.55, 1] },
+    "xaxis4": { "domain": [0.45, 0.8] },
+    "yaxis4": { "domain": [0, 0.45] },
+    "legend": {
+      "bgcolor": "rgba(200, 230, 255, 0.8)",
+      "title": { "text": "Default" },
+      "x": 1.02,
+      "y": 1,
+      "xanchor": "left",
+      "titleclick": "toggle",
+      "titledoubleclick": "toggleothers",
+      "groupclick": "toggleitem"
+    },
+    "legend2": {
+      "bgcolor": "rgba(255, 230, 200, 0.8)",
+      "title": { "text": "Swapped" },
+      "x": 1.02,
+      "y": 0.7,
+      "xanchor": "left",
+      "titleclick": "toggleothers",
+      "titledoubleclick": "toggle"
+    },
+    "legend3": {
+      "bgcolor": "rgba(230, 255, 200, 0.8)",
+      "title": { "text": "Single click disabled" },
+      "x": 1.02,
+      "y": 0.4,
+      "xanchor": "left",
+      "titleclick": false,
+      "titledoubleclick": "toggleothers"
+    },
+    "legend4": {
+      "bgcolor": "rgba(255, 200, 230, 0.8)",
+      "title": { "text": "Double click disabled" },
+      "x": 1.02,
+      "y": 0.15,
+      "xanchor": "left",
+      "titleclick": "toggle",
+      "titledoubleclick": false
+    },
+    "legend5": {
+      "bgcolor": "rgba(200, 200, 200, 0.8)",
+      "title": { "text": "Both disabled" },
+      "x": 1.02,
+      "y": 0,
+      "xanchor": "left",
+      "yanchor": "bottom",
+      "titleclick": false,
+      "titledoubleclick": false
+    },
+    "shapes": [
+      {
+        "type": "rect",
+        "xref": "x",
+        "yref": "y",
+        "x0": 0.5,
+        "y0": 1.5,
+        "x1": 1.5,
+        "y1": 2.5,
+        "fillcolor": "rgba(100, 150, 255, 0.4)",
+        "line": { "color": "blue" },
+        "name": "Shape A",
+        "showlegend": true,
+        "legend": "legend",
+        "legendgroup": "Group A"
+      },
+      {
+        "type": "rect",
+        "xref": "x2",
+        "yref": "y2",
+        "x0": 0.5,
+        "y0": 5.5,
+        "x1": 1.5,
+        "y1": 6.5,
+        "fillcolor": "rgba(255, 180, 100, 0.4)",
+        "line": { "color": "orange" },
+        "name": "Shape C",
+        "showlegend": true,
+        "legend": "legend2",
+        "legendgroup": "Group C"
+      },
+      {
+        "type": "rect",
+        "xref": "x3",
+        "yref": "y3",
+        "x0": 0.5,
+        "y0": 7.5,
+        "x1": 1.5,
+        "y1": 8.5,
+        "fillcolor": "rgba(150, 255, 100, 0.4)",
+        "line": { "color": "green" },
+        "name": "Shape D",
+        "showlegend": true,
+        "legend": "legend3"
+      },
+      {
+        "type": "rect",
+        "xref": "x4",
+        "yref": "y4",
+        "x0": 0.5,
+        "y0": 9.5,
+        "x1": 1.5,
+        "y1": 10.5,
+        "fillcolor": "rgba(255, 100, 180, 0.4)",
+        "line": { "color": "magenta" },
+        "name": "Shape E",
+        "showlegend": true,
+        "legend": "legend4"
+      }
+    ]
+  }
+}
