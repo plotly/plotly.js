@@ -261,8 +261,10 @@ func.defaultConfig = {
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blocklist' : '',
-                isCI ? '--use-gl=angle' : '',
-                isCI ? '--use-angle=swiftshader' : '',
+                // The following two flags are needed only for the "NoCI" tests which run in GitHub Actions,
+                // since the GPU is not available to those runners and therefore we need to use SwiftShader instead.
+                isCI && process.env.GITHUB_ACTIONS ? '--use-gl=angle' : '',
+                isCI && process.env.GITHUB_ACTIONS ? '--use-angle=swiftshader' : '',
                 isCI ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
