@@ -261,7 +261,8 @@ func.defaultConfig = {
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blocklist' : '',
-                isCI ? '--use-gl=desktop' : '',
+                isCI ? '--use-gl=angle' : '',
+                isCI ? '--use-angle=swiftshader' : '',
                 isCI ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
