@@ -261,6 +261,7 @@ func.defaultConfig = {
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blacklist' : '',
+                isCI ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
         },
