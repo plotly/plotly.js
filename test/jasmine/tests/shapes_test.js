@@ -1919,14 +1919,14 @@ describe('Test multi-axis shapes', function() {
                 x0: 0, x1: 5, y0: 0, y1: 5
             }]
         }).then(function() {
-            expect(gd._fullLayout.xaxis.range[0]).toBeLessThan(0);
-            expect(gd._fullLayout.xaxis.range[1]).toBeGreaterThan(2);
-            expect(gd._fullLayout.yaxis.range[0]).toBeLessThan(0);
-            expect(gd._fullLayout.yaxis.range[1]).toBeGreaterThan(2);
-            expect(gd._fullLayout.xaxis2.range[0]).toBeLessThan(1);
-            expect(gd._fullLayout.xaxis2.range[1]).toBeGreaterThan(5);
-            expect(gd._fullLayout.yaxis2.range[0]).toBeLessThan(1);
-            expect(gd._fullLayout.yaxis2.range[1]).toBeGreaterThan(5);
+            expect(gd._fullLayout.xaxis.range[0]).toBeCloseTo(-0.01);
+            expect(gd._fullLayout.xaxis.range[1]).toBeCloseTo(2.14);
+            expect(gd._fullLayout.yaxis.range[0]).toBeCloseTo(-0.02);
+            expect(gd._fullLayout.yaxis.range[1]).toBeCloseTo(2.18);
+            expect(gd._fullLayout.xaxis2.range[0]).toBeCloseTo(0.72);
+            expect(gd._fullLayout.xaxis2.range[1]).toBeCloseTo(5.02);
+            expect(gd._fullLayout.yaxis2.range[0]).toBeCloseTo(0.64);
+            expect(gd._fullLayout.yaxis2.range[1]).toBeCloseTo(5.04);
         })
         .then(done, done.fail);
     });
