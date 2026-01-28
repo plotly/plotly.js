@@ -101,8 +101,8 @@ exports.cleanLayout = function (layout) {
 
         if (!Lib.isPlainObject(shape)) continue;
 
-        cleanAxRef(shape, 'xref');
-        cleanAxRef(shape, 'yref');
+        cleanAxRef(shape, 'xref', true);
+        cleanAxRef(shape, 'yref', true);
     }
 
     var imagesLen = Array.isArray(layout.images) ? layout.images.length : 0;
@@ -152,9 +152,13 @@ exports.cleanLayout = function (layout) {
     return layout;
 };
 
-function cleanAxRef(container, attr) {
+function cleanAxRef(container, attr, isShape = false) {
     var valIn = container[attr];
     var axLetter = attr.charAt(0);
+
+    // Skip for shapes with array references
+    if (isShape && Array.isArray(valIn)) return;
+
     if (valIn && valIn !== 'paper') {
         container[attr] = cleanId(valIn, axLetter, true);
     }
