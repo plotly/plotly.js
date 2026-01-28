@@ -17,9 +17,6 @@ jobs:
     steps:
     - uses: browser-actions/setup-chrome@v2
       id: setup-chrome
-      with:
-        chrome-version: 146.0.7649.0
-        install-chromedriver: true
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
