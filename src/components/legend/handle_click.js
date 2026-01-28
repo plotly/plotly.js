@@ -6,7 +6,7 @@ var pushUnique = Lib.pushUnique;
 
 var SHOWISOLATETIP = true;
 
-module.exports = function handleClick(g, gd, numClicks) {
+exports.handleClick = function handleClick(g, gd, numClicks) {
     var fullLayout = gd._fullLayout;
 
     if(gd._dragged || gd._editing) return;
@@ -271,5 +271,66 @@ module.exports = function handleClick(g, gd, numClicks) {
         } else {
             Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
         }
+    }
+};
+
+exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
+    var legendId = legendObj._id || 'legend';
+    var shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
+    var allLegendItems = fullData.concat(shapesWithLegend);
+
+    function isInLegend(item) {
+        return (item.legend || 'legend') === legendId;
+    }
+
+    var toggleThisLegend;
+    var toggleOtherLegends;
+
+    if(mode === 'toggle') {
+        // If any item is visible in this legend, hide all. If all are hidden, show all
+        var anyVisibleHere = allLegendItems.some(function(item) {
+            return isInLegend(item) && item.visible === true;
+        });
+
+        toggleThisLegend = !anyVisibleHere;
+        toggleOtherLegends = null;
+    } else {
+        // isolate this legend or set all legends to visible
+        var anyVisibleElsewhere = allLegendItems.some(function(item) {
+            return !isInLegend(item) && item.visible === true && item.showlegend !== false;
+        });
+
+        toggleThisLegend = true;
+        toggleOtherLegends = !anyVisibleElsewhere;
+    }
+
+    var dataUpdate = { visible: [] };
+    var dataIndices = [];
+    var updatedShapes = (fullLayout.shapes || []).map(function(d) { return d._input; });
+    var shapesUpdated = false;
+
+    for(var i = 0; i < allLegendItems.length; i++) {
+        var item = allLegendItems[i];
+        var shouldShow = isInLegend(item) ? toggleThisLegend : toggleOtherLegends;
+        var newVis = shouldShow ? true : 'legendonly';
+
+        // Only update if the item is visible and the visibility is different from the new visibility
+        if ((item.visible !== false) && (shouldShow !== null) && (item.visible !== newVis)) {
+            if(item._isShape) {
+                updatedShapes[item._index].visible = newVis;
+                shapesUpdated = true;
+            } else {
+                dataIndices.push(item.index);
+                dataUpdate.visible.push(newVis);
+            }
+        }
+    }
+
+    if(shapesUpdated) {
+        Registry.call('_guiUpdate', gd, dataUpdate, {shapes: updatedShapes}, dataIndices);
+    } else if(dataIndices.length) {
+        Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
     }
 };
