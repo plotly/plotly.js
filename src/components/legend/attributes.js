@@ -179,25 +179,25 @@ module.exports = {
     titleclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
-        dflt: 'toggle',
         editType: 'legend',
         description: [
             'Determines the behavior on legend title click.',
             '*toggle* toggles the visibility of all items in the legend.',
             '*toggleothers* toggles the visibility of all other legends.',
-            '*false* disables legend title click interactions.'
+            '*false* disables legend title click interactions.',
+            'Defaults to *toggle* when there are multiple legends, *false* otherwise.'
         ].join(' ')
     },
     titledoubleclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
-        dflt: 'toggleothers',
         editType: 'legend',
         description: [
             'Determines the behavior on legend title double-click.',
             '*toggle* toggles the visibility of all items in the legend.',
             '*toggleothers* toggles the visibility of all other legends.',
-            '*false* disables legend title double-click interactions.'
+            '*false* disables legend title double-click interactions.',
+            'Defaults to *toggleothers* when there are multiple legends, *false* otherwise.'
         ].join(' ')
     },
     x: {
