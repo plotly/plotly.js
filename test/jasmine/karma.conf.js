@@ -266,8 +266,7 @@ func.defaultConfig = {
                 // and therefore we need to use SwiftShader instead.
                 // The third flag is needed because the Chrome browser installed by the CI job runner
                 // fails without it.
-                isCI && process.env.GITHUB_ACTIONS ? '--use-gl=angle' : '',
-                isCI && process.env.GITHUB_ACTIONS ? '--use-angle=swiftshader' : '',
+                isCI && process.env.GITHUB_ACTIONS ? '--enable-unsafe-swiftshader' : '',
                 isCI && process.env.GITHUB_ACTIONS ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
