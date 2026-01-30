@@ -14,6 +14,7 @@ var Drawing = require('../../components/drawing');
 
 var axAttrs = require('./layout_attributes');
 var cleanTicks = require('./clean_ticks');
+var cartesianConstants = require('./constants');
 
 var constants = require('../../constants/numerical');
 var ONEMAXYEAR = constants.ONEMAXYEAR;
@@ -125,6 +126,48 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 };
 
 /*
+ * Coerce an array of axis references. Used by shapes for per-coordinate axis references.
+ *
+ * attr: the attribute we're generating a reference for. Should end in 'x' or 'y'
+ *     but can be prefixed, like 'ax' for annotation's arrow x
+ * dflt: the default to coerce to, or blank to use the first axis (falling back on
+ *     extraOption if there is no axis)
+ * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
+ *     Only required if it's different from `dflt`
+ */
+axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraOption, expectedLen) {
+    const axLetter = attr.charAt(attr.length - 1);
+    var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
+    const refAttr = attr + 'ref';
+    var axRef = containerIn[refAttr];
+
+    // Build the axis list, which we use to validate the axis references
+    if(!dflt) dflt = axlist[0] || (typeof extraOption === 'string' ? extraOption : extraOption[0]);
+    axlist = axlist.concat(axlist.map(x => x + ' domain'));
+    axlist = axlist.concat(extraOption ? extraOption : []);
+
+    // Handle array length mismatch
+    if(axRef.length > expectedLen) {
+        // if the array is longer than the expected length, truncate it
+        Lib.warn('Array attribute ' + refAttr + ' has more entries than expected, truncating to ' + expectedLen);
+        axRef = axRef.slice(0, expectedLen);
+    } else if(axRef.length < expectedLen) {
+        // if the array is shorter than the expected length, extend using the default value
+        Lib.warn('Array attribute ' + refAttr + ' has fewer entries than expected, extending with default value');
+        axRef = axRef.concat(Array(expectedLen - axRef.length).fill(dflt));
+    }
+
+    // Clean all axis references, replace with default if invalid
+    for(var i = 0; i < axRef.length; i++) {
+        axRef[i] = axisIds.cleanId(axRef[i], axLetter, true) || axRef[i];
+        if(!axlist.includes(axRef[i])) axRef[i] = dflt;
+    }
+
+    containerOut[refAttr] = axRef;
+    return axRef;
+};
+
+/*
  * Get the type of an axis reference. This can be 'range', 'domain', or 'paper'.
  * This assumes ar is a valid axis reference and returns 'range' if it doesn't
  * match the patterns for 'paper' or 'domain'.
@@ -134,6 +177,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  */
 axes.getRefType = function(ar) {
     if(ar === undefined) { return ar; }
+    if(Array.isArray(ar)) { return 'array'; }
     if(ar === 'paper') { return 'paper'; }
     if(ar === 'pixel') { return 'pixel'; }
     if(/( domain)$/.test(ar)) { return 'domain'; } else { return 'range'; }
