@@ -64,6 +64,11 @@ exports.valObjectMeta = {
         requiredOpts: ['values'],
         otherOpts: ['dflt', 'coerceNumber', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
+            // Allow functions to pass through (for custom marker symbols, etc.)
+            if(typeof v === 'function') {
+                propOut.set(v);
+                return;
+            }
             if(opts.coerceNumber) v = +v;
             if(opts.values.indexOf(v) === -1) propOut.set(dflt);
             else propOut.set(v);

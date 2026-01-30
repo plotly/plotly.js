@@ -811,3 +811,6 @@ function align(angle, standoff, path) {
 
     return str;
 }
+
+// Export align for use with custom marker functions
+module.exports.align = align;

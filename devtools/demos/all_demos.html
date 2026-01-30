@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Custom Marker Functions - All Demos</title>
+    <script src="../../dist/plotly.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; max-width: 900px; margin: 0 auto; padding: 20px; }
+        h1 { border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+        h2 { color: #333; margin-top: 40px; }
+        .plot { width: 100%; height: 400px; margin: 20px 0; }
+        .info { background: #e7f3ff; padding: 10px; border-left: 4px solid #3b82f6; margin: 10px 0; }
+        pre { background: #f5f5f5; padding: 15px; overflow-x: auto; font-size: 13px; }
+        code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Custom Marker Functions</h1>
+    <div class="info">
+        Pass functions as <code>marker.symbol</code> to create custom shapes.<br>
+        <strong>Simple:</strong> <code>function(r)</code> — r is marker radius<br>
+        <strong>Data-aware:</strong> <code>function(r, customdata)</code> — access per-point data
+    </div>
+
+    <!-- Demo 1: Basic custom markers -->
+    <h2>1. Basic Custom Markers</h2>
+    <p>Define functions returning SVG path strings. Mix with built-in symbols.</p>
+    <div id="plot1" class="plot"></div>
+    <pre>
+// Heart shape
+function heart(r) {
+    var x = r * 0.6, y = r * 0.8;
+    return 'M0,' + (-y/2) +
+           'C' + (-x) + ',' + (-y) + ' ' + (-x*2) + ',' + (-y/3) + ' ' + (-x*2) + ',0' +
+           'C' + (-x*2) + ',' + (y/2) + ' 0,' + y + ' 0,' + (y*1.5) +
+           'C0,' + y + ' ' + (x*2) + ',' + (y/2) + ' ' + (x*2) + ',0' +
+           'C' + (x*2) + ',' + (-y/3) + ' ' + x + ',' + (-y) + ' 0,' + (-y/2) + 'Z';
+}
+
+// 5-point star
+function star(r) {
+    var path = 'M';
+    for (var i = 0; i < 10; i++) {
+        var rad = i % 2 === 0 ? r : r * 0.4;
+        var ang = i * Math.PI / 5 - Math.PI / 2;
+        path += (i ? 'L' : '') + (rad * Math.cos(ang)).toFixed(2) + ',' + (rad * Math.sin(ang)).toFixed(2);
+    }
+    return path + 'Z';
+}
+
+Plotly.newPlot('plot1', [{
+    x: [1, 2, 3, 4, 5],
+    y: [2, 3, 4, 3, 2],
+    mode: 'markers+lines',
+    marker: {
+        symbol: [heart, star, 'circle', star, heart],  // mix functions and strings
+        size: 25,
+        color: ['red', 'gold', 'blue', 'gold', 'red']
+    }
+}]);</pre>
+
+    <!-- Demo 2: Data-aware markers -->
+    <h2>2. Data-Aware Markers</h2>
+    <p>Access <code>customdata[i]</code> to vary shape per point.</p>
+    <div id="plot2" class="plot"></div>
+    <pre>
+function shapeByData(r, customdata) {
+    if (customdata === 'star') {
+        // Star shape
+        var path = 'M';
+        for (var i = 0; i < 10; i++) {
+            var rad = i % 2 === 0 ? r : r * 0.4;
+            var ang = i * Math.PI / 5 - Math.PI / 2;
+            path += (i ? 'L' : '') + (rad * Math.cos(ang)).toFixed(2) + ',' + (rad * Math.sin(ang)).toFixed(2);
+        }
+        return path + 'Z';
+    }
+    if (customdata === 'big') {
+        r *= 1.4;  // Larger diamond
+    }
+    // Default: diamond
+    return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+}
+
+Plotly.newPlot('plot2', [{
+    x: [1, 2, 3, 4],
+    y: [1, 1, 1, 1],
+    customdata: ['normal', 'big', 'star', 'normal'],
+    mode: 'markers',
+    marker: { symbol: shapeByData, size: 25, color: '#10b981' }
+}]);</pre>
+
+    <!-- Demo 3: Weather map -->
+    <h2>3. Weather Map</h2>
+    <p>Complex example: sun, cloud, and wind barbs based on weather data.</p>
+    <div id="plot3" class="plot"></div>
+    <pre>
+function weatherMarker(r, data) {
+    if (data.type === 'sunny') {
+        // Sun: circle with rays
+        var cr = r * 0.5, path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 -' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 ' + cr + ',0';
+        for (var i = 0; i < 8; i++) {
+            var ang = i * Math.PI / 4;
+            path += 'M' + ((cr+2) * Math.cos(ang)).toFixed(1) + ',' + ((cr+2) * Math.sin(ang)).toFixed(1) +
+                    'L' + ((cr+r*0.4) * Math.cos(ang)).toFixed(1) + ',' + ((cr+r*0.4) * Math.sin(ang)).toFixed(1);
+        }
+        return path;
+    }
+    if (data.type === 'cloudy') {
+        return 'M-8,3 A6,6 0 1,1 -2,-4 A7,7 0 1,1 8,-2 A5,5 0 1,1 10,3 Z';
+    }
+    if (data.type === 'wind') {
+        // Wind barb: staff + barbs based on speed
+        var path = 'M0,' + r + 'L0,-' + r, y = -r;
+        for (var i = 0; i < Math.min(data.speed, 3); i++) {
+            path += 'M0,' + y + 'L' + (r*0.6) + ',' + (y + r*0.3);
+            y += r * 0.3;
+        }
+        return path;
+    }
+    return 'M' + r + ',0A' + r + ',' + r + ' 0 1,0 -' + r + ',0A' + r + ',' + r + ' 0 1,0 ' + r + ',0';
+}
+
+var locations = [
+    { name: 'Seattle', lon: -122, lat: 47, weather: { type: 'cloudy' } },
+    { name: 'SF', lon: -122, lat: 38, weather: { type: 'sunny' } },
+    { name: 'Denver', lon: -105, lat: 40, weather: { type: 'sunny' } },
+    { name: 'Chicago', lon: -88, lat: 42, weather: { type: 'cloudy' } },
+    { name: 'NYC', lon: -74, lat: 41, weather: { type: 'cloudy' } },
+    { name: 'Miami', lon: -80, lat: 26, weather: { type: 'sunny' } },
+    // Wind arrows (jet stream)
+    { lon: -115, lat: 46, weather: { type: 'wind', direction: 100, speed: 3 } },
+    { lon: -100, lat: 42, weather: { type: 'wind', direction: 120, speed: 2 } },
+    { lon: -85, lat: 36, weather: { type: 'wind', direction: 150, speed: 1 } }
+];
+
+Plotly.newPlot('plot3', [{
+    x: locations.map(l => l.lon),
+    y: locations.map(l => l.lat),
+    customdata: locations.map(l => l.weather),
+    text: locations.map(l => l.name || ''),
+    mode: 'markers+text',
+    textposition: 'bottom center',
+    marker: {
+        symbol: weatherMarker,
+        size: 30,
+        color: locations.map(l => ({ sunny: '#FFD700', cloudy: '#708090', wind: '#4169E1' }[l.weather.type])),
+        angle: locations.map(l => l.weather.direction || 0)
+    }
+}], { xaxis: { range: [-130, -70] }, yaxis: { range: [20, 52], scaleanchor: 'x' } });</pre>
+
+    <script>
+    // === Demo 1: Basic markers ===
+    function heart(r) {
+        var x = r * 0.6, y = r * 0.8;
+        return 'M0,' + (-y/2) + 'C' + (-x) + ',' + (-y) + ' ' + (-x*2) + ',' + (-y/3) + ' ' + (-x*2) + ',0C' + (-x*2) + ',' + (y/2) + ' 0,' + y + ' 0,' + (y*1.5) + 'C0,' + y + ' ' + (x*2) + ',' + (y/2) + ' ' + (x*2) + ',0C' + (x*2) + ',' + (-y/3) + ' ' + x + ',' + (-y) + ' 0,' + (-y/2) + 'Z';
+    }
+    function star(r) {
+        var path = 'M';
+        for (var i = 0; i < 10; i++) {
+            var rad = i % 2 === 0 ? r : r * 0.4, ang = i * Math.PI / 5 - Math.PI / 2;
+            path += (i ? 'L' : '') + (rad * Math.cos(ang)).toFixed(2) + ',' + (rad * Math.sin(ang)).toFixed(2);
+        }
+        return path + 'Z';
+    }
+    Plotly.newPlot('plot1', [{
+        x: [1, 2, 3, 4, 5], y: [2, 3, 4, 3, 2], mode: 'markers+lines',
+        marker: { symbol: [heart, star, 'circle', star, heart], size: 25, color: ['red', 'gold', 'blue', 'gold', 'red'] }
+    }], { title: 'Mix custom functions with built-in symbols' });
+
+    // === Demo 2: Data-aware ===
+    function shapeByData(r, customdata) {
+        if (customdata === 'star') {
+            var path = 'M';
+            for (var i = 0; i < 10; i++) {
+                var rad = i % 2 === 0 ? r : r * 0.4, ang = i * Math.PI / 5 - Math.PI / 2;
+                path += (i ? 'L' : '') + (rad * Math.cos(ang)).toFixed(2) + ',' + (rad * Math.sin(ang)).toFixed(2);
+            }
+            return path + 'Z';
+        }
+        if (customdata === 'big') r *= 1.4;
+        return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+    }
+    Plotly.newPlot('plot2', [{
+        x: [1, 2, 3, 4], y: [1, 1, 1, 1], customdata: ['normal', 'big', 'star', 'normal'],
+        mode: 'markers', marker: { symbol: shapeByData, size: 25, color: '#10b981' }
+    }], { title: 'Shape varies by customdata value', xaxis: { range: [0, 5] } });
+
+    // === Demo 3: Weather map ===
+    function weatherMarker(r, data) {
+        if (data.type === 'sunny') {
+            var cr = r * 0.5, path = 'M' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 -' + cr + ',0A' + cr + ',' + cr + ' 0 1,1 ' + cr + ',0';
+            for (var i = 0; i < 8; i++) {
+                var ang = i * Math.PI / 4;
+                path += 'M' + ((cr+2) * Math.cos(ang)).toFixed(1) + ',' + ((cr+2) * Math.sin(ang)).toFixed(1) + 'L' + ((cr+r*0.4) * Math.cos(ang)).toFixed(1) + ',' + ((cr+r*0.4) * Math.sin(ang)).toFixed(1);
+            }
+            return path;
+        }
+        if (data.type === 'cloudy') return 'M-8,3 A6,6 0 1,1 -2,-4 A7,7 0 1,1 8,-2 A5,5 0 1,1 10,3 Z';
+        if (data.type === 'wind') {
+            var path = 'M0,' + r + 'L0,-' + r, y = -r;
+            for (var i = 0; i < Math.min(data.speed, 3); i++) { path += 'M0,' + y + 'L' + (r*0.6) + ',' + (y + r*0.3); y += r * 0.3; }
+            return path;
+        }
+        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,0 -' + r + ',0A' + r + ',' + r + ' 0 1,0 ' + r + ',0';
+    }
+    var locations = [
+        { name: 'Seattle', lon: -122, lat: 47, weather: { type: 'cloudy' } },
+        { name: 'SF', lon: -122, lat: 38, weather: { type: 'sunny' } },
+        { name: 'Denver', lon: -105, lat: 40, weather: { type: 'sunny' } },
+        { name: 'Chicago', lon: -88, lat: 42, weather: { type: 'cloudy' } },
+        { name: 'NYC', lon: -74, lat: 41, weather: { type: 'cloudy' } },
+        { name: 'Miami', lon: -80, lat: 26, weather: { type: 'sunny' } },
+        { lon: -115, lat: 46, weather: { type: 'wind', direction: 100, speed: 3 } },
+        { lon: -100, lat: 42, weather: { type: 'wind', direction: 120, speed: 2 } },
+        { lon: -85, lat: 36, weather: { type: 'wind', direction: 150, speed: 1 } }
+    ];
+    Plotly.newPlot('plot3', [{
+        x: locations.map(l => l.lon), y: locations.map(l => l.lat),
+        customdata: locations.map(l => l.weather), text: locations.map(l => l.name || ''),
+        mode: 'markers+text', textposition: 'bottom center',
+        marker: { symbol: weatherMarker, size: 30, color: locations.map(l => ({ sunny: '#FFD700', cloudy: '#708090', wind: '#4169E1' }[l.weather.type])), angle: locations.map(l => l.weather.direction || 0) }
+    }], { title: 'Weather icons with wind direction via marker.angle', xaxis: { range: [-130, -70] }, yaxis: { range: [20, 52], scaleanchor: 'x' } });
+    </script>
+</body>
+</html>
