@@ -41,7 +41,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode', defaultMode);
 
     if (subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noAngleRef: true, noStandOff: true });
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {
+            noAngleRef: true,
+            noLineDash: true,
+            noStandOff: true
+        });
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
     }
 
