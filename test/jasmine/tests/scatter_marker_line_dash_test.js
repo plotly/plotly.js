@@ -63,23 +63,28 @@ describe('Test scatter marker line dash:', function() {
     });
 
     it('should show marker line dash in the legend', function(done) {
-        Plotly.newPlot(gd, [{
-            mode: 'markers',
-            x: [1, 2, 3],
-            y: [1, 2, 3],
-            marker: {
-                line: {
-                    color: 'red',
-                    width: 2,
-                    dash: 'dash'
+        Plotly.newPlot(
+            gd,
+            [{
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    line: {
+                        color: 'red',
+                        width: 2,
+                        dash: 'dash'
+                    }
                 }
-            }
-        }]).then(function() {
-            var legendPoints = gd.querySelectorAll('.legendpoints path.point');
-            expect(legendPoints.length).toBe(1);
-            expect(legendPoints[0].style.strokeDasharray).not.toBe('');
-        })
-        .then(done, done.fail);
+            }],
+            { showlegend: true }
+        )
+            .then(function () {
+                var legendPoints = gd.querySelectorAll('.legendpoints path.scatterpts');
+                expect(legendPoints.length).toBe(1);
+                expect(legendPoints[0].style.strokeDasharray).not.toBe('');
+            })
+            .then(done, done.fail);
     });
 
     it('should update marker line dash via restyle', function(done) {
