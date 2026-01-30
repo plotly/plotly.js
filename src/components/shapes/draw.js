@@ -91,7 +91,7 @@ function drawOne(gd, index) {
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!options._input || options.visible !== true) return;
 
-    var isMultiAxisShape = Array.isArray(options.xref) || Array.isArray(options.yref);
+    const isMultiAxisShape = Array.isArray(options.xref) || Array.isArray(options.yref);
 
     if(options.layer === 'above') {
         drawShape(gd._fullLayout._shapeUpperLayer);
@@ -199,13 +199,13 @@ function setClipPath(shapePath, gd, shapeOptions) {
     // if axis is 'paper' or an axis with " domain" appended, then there is no
     // clip axis
 
-    var xref = shapeOptions.xref;
-    var yref = shapeOptions.yref;
+    const xref = shapeOptions.xref;
+    const yref = shapeOptions.yref;
 
     // For multi-axis shapes, create a custom clip path from axis bounds
     if(Array.isArray(xref) || Array.isArray(yref)) {
-        var clipId = 'clip' + gd._fullLayout._uid + 'shape' + shapeOptions._index;
-        var rect = getMultiAxisClipRect(gd, xref, yref);
+        const clipId = 'clip' + gd._fullLayout._uid + 'shape' + shapeOptions._index;
+        const rect = getMultiAxisClipRect(gd, xref, yref);
 
         Lib.ensureSingleById(gd._fullLayout._clips, 'clipPath', clipId, function(s) {
             s.append('rect');
@@ -213,17 +213,17 @@ function setClipPath(shapePath, gd, shapeOptions) {
 
         Drawing.setClipUrl(shapePath, clipId, gd);
     } else {
-        var clipAxes = (xref + yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
+        const clipAxes = (xref + yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
         Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
     }
 }
 
 function getMultiAxisClipRect(gd, xref, yref) {
-    var gs = gd._fullLayout._size;
+    const gs = gd._fullLayout._size;
 
     function getBounds(refs, isVertical) {
         // Retrieve all existing axes from the references
-        var axes = (Array.isArray(refs) ? refs : [refs])
+        const axes = (Array.isArray(refs) ? refs : [refs])
             .map(r => Axes.getFromId(gd, r))
             .filter(Boolean);
 
@@ -234,13 +234,13 @@ function getMultiAxisClipRect(gd, xref, yref) {
 
         // Otherwise, we find all find and return the smallest start point
         // and largest end point to be used as the clip bounds
-        var startBounds = axes.map(function(ax) { return ax._offset; });
-        var endBounds = axes.map(function(ax) { return ax._offset + ax._length; });
+        const startBounds = axes.map(function(ax) { return ax._offset; });
+        const endBounds = axes.map(function(ax) { return ax._offset + ax._length; });
         return [Math.min(...startBounds), Math.max(...endBounds)];
     }
 
-    var xb = getBounds(xref, false);
-    var yb = getBounds(yref, true);
+    const xb = getBounds(xref, false);
+    const yb = getBounds(yref, true);
     return {x: xb[0], y: yb[0], width: xb[1] - xb[0], height: yb[1] - yb[0]};
 }
 

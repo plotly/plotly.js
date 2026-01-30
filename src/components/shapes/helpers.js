@@ -58,15 +58,15 @@ exports.countDefiningCoords = function(shapeType, path, axLetter) {
     if(shapeType !== 'path') return 2;
     if(!path) return 0;
 
-    var segments = path.match(constants.segmentRE);
+    const segments = path.match(constants.segmentRE);
     if(!segments) return 0;
 
-    var paramIsAxis = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
+    const paramIsAxis = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
 
     return segments.reduce((coordCount, segment) => {
         // for each path command, check if there is a drawn coordinate for this axis
-        var segmentType = segment.charAt(0);
-        var hasDrawn = paramIsAxis[segmentType].drawn !== undefined;
+        const segmentType = segment.charAt(0);
+        const hasDrawn = paramIsAxis[segmentType].drawn !== undefined;
         return coordCount + (hasDrawn ? 1 : 0);
     }, 0);
 };
@@ -191,10 +191,10 @@ exports.makeSelectionsOptionsAndPlotinfo = function(gd, index) {
 
 
 exports.getPathString = function(gd, options) {
-    var shapeType = options.type;
-    var xRefType = Axes.getRefType(options.xref);
-    var yRefType = Axes.getRefType(options.yref);
-    var gs = gd._fullLayout._size;
+    const shapeType = options.type;
+    const xRefType = Axes.getRefType(options.xref);
+    const yRefType = Axes.getRefType(options.yref);
+    const gs = gd._fullLayout._size;
     var xa, ya;
     var xShiftStart, xShiftEnd, yShiftStart, yShiftEnd;
     var x2p, y2p;
@@ -210,7 +210,7 @@ exports.getPathString = function(gd, options) {
                     converter = function(v) { return axis._offset + axis._length * v; };
                 }
             } else {
-                var d2r = exports.shapePositionToRange(axis);
+                const d2r = exports.shapePositionToRange(axis);
                 converter = function(v) { return axis._offset + axis.r2p(d2r(v, true)); };
 
                 if(shapeType === 'path' && axis.type === 'date') converter = exports.decodeDate(converter);
@@ -261,7 +261,7 @@ exports.getPathString = function(gd, options) {
         xShiftStart = getPixelShift(xa, options.x0shift);
         xShiftEnd = getPixelShift(xa, options.x1shift);
         if(options.xsizemode === 'pixel') {
-            var xAnchorPos = x2p(options.xanchor);
+            const xAnchorPos = x2p(options.xanchor);
             x0 = xAnchorPos + options.x0 + xShiftStart;
             x1 = xAnchorPos + options.x1 + xShiftEnd;
         } else {
@@ -278,7 +278,7 @@ exports.getPathString = function(gd, options) {
         yShiftStart = getPixelShift(ya, options.y0shift);
         yShiftEnd = getPixelShift(ya, options.y1shift);
         if(options.ysizemode === 'pixel') {
-            var yAnchorPos = y2p(options.yanchor);
+            const yAnchorPos = y2p(options.yanchor);
             y0 = yAnchorPos - options.y0 + yShiftStart;
             y1 = yAnchorPos - options.y1 + yShiftEnd;
         } else {
@@ -303,13 +303,13 @@ exports.getPathString = function(gd, options) {
 };
 
 function convertPath(options, x2p, y2p) {
-    var pathIn = options.path;
-    var xSizemode = options.xsizemode;
-    var ySizemode = options.ysizemode;
-    var xAnchor = options.xanchor;
-    var yAnchor = options.yanchor;
-    var isArrayXref = Array.isArray(options.xref);
-    var isArrayYref = Array.isArray(options.yref);
+    const pathIn = options.path;
+    const xSizemode = options.xsizemode;
+    const ySizemode = options.ysizemode;
+    const xAnchor = options.xanchor;
+    const yAnchor = options.yanchor;
+    const isArrayXref = Array.isArray(options.xref);
+    const isArrayYref = Array.isArray(options.yref);
     var xVertexIndex = 0;
     var yVertexIndex = 0;
 
@@ -319,12 +319,12 @@ function convertPath(options, x2p, y2p) {
         var xParams = constants.paramIsX[segmentType];
         var yParams = constants.paramIsY[segmentType];
         var nParams = constants.numParams[segmentType];
-        var hasDrawnX = xParams.drawn !== undefined;
-        var hasDrawnY = yParams.drawn !== undefined;
+        const hasDrawnX = xParams.drawn !== undefined;
+        const hasDrawnY = yParams.drawn !== undefined;
 
         // Use vertex indices for array refs (same converter for all params in segment)
-        var segmentX2p = isArrayXref ? x2p[xVertexIndex] : x2p;
-        var segmentY2p = isArrayYref ? y2p[yVertexIndex] : y2p;
+        const segmentX2p = isArrayXref ? x2p[xVertexIndex] : x2p;
+        const segmentY2p = isArrayYref ? y2p[yVertexIndex] : y2p;
 
         var paramString = segment.slice(1).replace(constants.paramRE, function(param) {
             if(xParams[paramNumber]) {

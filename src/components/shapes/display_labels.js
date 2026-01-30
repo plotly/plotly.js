@@ -27,13 +27,13 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         if (options.type !== 'path') {
             var _xa = Axes.getFromId(gd, options.xref);
             var _ya = Axes.getFromId(gd, options.yref);
-            var isMultiAxisX = Array.isArray(options.xref);
-            var isMultiAxisY = Array.isArray(options.yref);
+            const isMultiAxisX = Array.isArray(options.xref);
+            const isMultiAxisY = Array.isArray(options.yref);
 
             // For multi-axis shapes, derived variables are meaningless
             // Skip them and let texttemplatefallback handle those cases.
-            var derivedX = ['dx', 'width', 'xcenter', 'slope', 'length'];
-            var derivedY = ['dy', 'height', 'ycenter', 'slope', 'length'];
+            const derivedX = ['dx', 'width', 'xcenter', 'slope', 'length'];
+            const derivedY = ['dy', 'height', 'ycenter', 'slope', 'length'];
 
             for (var key in shapeLabelTexttemplateVars) {
                 if (isMultiAxisX && derivedX.includes(key)) continue;
@@ -94,20 +94,20 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         // Otherwise, we use the x and y bounds defined in the shape options
         // and convert them to pixel coordinates
         // Setup conversion functions, handling array refs for multi-axis shapes
-        var isArrayXref = Array.isArray(options.xref);
-        var isArrayYref = Array.isArray(options.yref);
-        var xa0 = Axes.getFromId(gd, isArrayXref ? options.xref[0] : options.xref);
-        var xa1 = Axes.getFromId(gd, isArrayXref ? options.xref[1] : options.xref);
-        var ya0 = Axes.getFromId(gd, isArrayYref ? options.yref[0] : options.yref);
-        var ya1 = Axes.getFromId(gd, isArrayYref ? options.yref[1] : options.yref);
-        var xRefType0 = Axes.getRefType(isArrayXref ? options.xref[0] : options.xref);
-        var xRefType1 = Axes.getRefType(isArrayXref ? options.xref[1] : options.xref);
-        var yRefType0 = Axes.getRefType(isArrayYref ? options.yref[0] : options.yref);
-        var yRefType1 = Axes.getRefType(isArrayYref ? options.yref[1] : options.yref);
-        var x2p = function(v, shift, xa, xRefType) {
+        const isArrayXref = Array.isArray(options.xref);
+        const isArrayYref = Array.isArray(options.yref);
+        const xa0 = Axes.getFromId(gd, isArrayXref ? options.xref[0] : options.xref);
+        const xa1 = Axes.getFromId(gd, isArrayXref ? options.xref[1] : options.xref);
+        const ya0 = Axes.getFromId(gd, isArrayYref ? options.yref[0] : options.yref);
+        const ya1 = Axes.getFromId(gd, isArrayYref ? options.yref[1] : options.yref);
+        const xRefType0 = Axes.getRefType(isArrayXref ? options.xref[0] : options.xref);
+        const xRefType1 = Axes.getRefType(isArrayXref ? options.xref[1] : options.xref);
+        const yRefType0 = Axes.getRefType(isArrayYref ? options.yref[0] : options.yref);
+        const yRefType1 = Axes.getRefType(isArrayYref ? options.yref[1] : options.yref);
+        const x2p = function(v, shift, xa, xRefType) {
             return helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
         };
-        var y2p = function(v, shift, ya, yRefType) {
+        const y2p = function(v, shift, ya, yRefType) {
             return helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
         };
         shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);

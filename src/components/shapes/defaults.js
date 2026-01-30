@@ -68,8 +68,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var ySizeMode = coerce('ysizemode');
 
     // positioning
-    var dflts = [0.25, 0.75];
-    var pixelDflts = [0, 10];
+    const dflts = [0.25, 0.75];
+    const pixelDflts = [0, 10];
 
     ['x', 'y'].forEach(axLetter => {
         var attrAnchor = axLetter + 'anchor';
@@ -81,12 +81,12 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         // xref, yref - handle both string and array values
         var axRef;
-        var refAttr = axLetter + 'ref';
-        var inputRef = shapeIn[refAttr];
+        const refAttr = axLetter + 'ref';
+        const inputRef = shapeIn[refAttr];
 
         if(Array.isArray(inputRef) && inputRef.length > 0) {
             // Array case: use coerceRefArray for validation
-            var expectedLen = helpers.countDefiningCoords(shapeType, path, axLetter);
+            const expectedLen = helpers.countDefiningCoords(shapeType, path, axLetter);
             axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, undefined, 'paper', expectedLen);
             shapeOut['_' + axLetter + 'refArray'] = true;
         } else {
@@ -107,8 +107,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
             if(noPath) {
                 [0, 1].forEach(function(i) {
-                    var ref = axRef[i];
-                    var refType = Axes.getRefType(ref);
+                    const ref = axRef[i];
+                    const refType = Axes.getRefType(ref);
                     if(refType === 'range') {
                         ax = Axes.getFromId(gdMock, ref);
                         pos2r = helpers.shapePositionToRange(ax);
@@ -120,8 +120,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                         pos2r = r2pos = Lib.identity;
                     }
 
-                    var attr = axLetter + i;
-                    var inValue = shapeIn[attr];
+                    const attr = axLetter + i;
+                    const inValue = shapeIn[attr];
                     shapeIn[attr] = pos2r(shapeIn[attr], true);
 
                     if(sizeMode === 'pixel') {
@@ -134,7 +134,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                     shapeIn[attr] = inValue;
 
                     if(i === 0 && sizeMode === 'pixel') {
-                        var inAnchor = shapeIn[attrAnchor];
+                        const inAnchor = shapeIn[attrAnchor];
                         shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
                         Axes.coercePosition(shapeOut, gdMock, coerce, ref, attrAnchor, 0.25);
                         shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
@@ -143,7 +143,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                 });
             }
         } else {
-            var axRefType = Axes.getRefType(axRef);
+            const axRefType = Axes.getRefType(axRef);
 
             if(axRefType === 'range') {
                 ax = Axes.getFromId(gdMock, axRef);
@@ -164,10 +164,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
                 // ranges to send to coerce, then put it back after
                 // this is all to give reasonable default position behavior on log axes, which is
                 // a pretty unimportant edge case so we could just ignore this.
-                var attr0 = axLetter + '0';
-                var attr1 = axLetter + '1';
-                var in0 = shapeIn[attr0];
-                var in1 = shapeIn[attr1];
+                const attr0 = axLetter + '0';
+                const attr1 = axLetter + '1';
+                const in0 = shapeIn[attr0];
+                const in1 = shapeIn[attr1];
                 shapeIn[attr0] = pos2r(shapeIn[attr0], true);
                 shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 
@@ -189,7 +189,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
             // Coerce xanchor and yanchor
             if(sizeMode === 'pixel') {
                 // Hack for log axis described above
-                var inAnchor = shapeIn[attrAnchor];
+                const inAnchor = shapeIn[attrAnchor];
                 shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
 
                 Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);

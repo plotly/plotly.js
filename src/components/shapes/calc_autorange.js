@@ -61,8 +61,8 @@ module.exports = function calcAutorange(gd) {
  * @returns {object} - mapping of axis IDs to arrays of converted coordinate values
  */
 function calcArrayRefAutorange(gd, shape, axLetter) {
-    var refs = shape[axLetter + 'ref'];
-    var paramsToUse = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
+    const refs = shape[axLetter + 'ref'];
+    const paramsToUse = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
 
     function addToAxisGroup(ref, val) {
         if(ref === 'paper' || Axes.getRefType(ref) === 'domain') return;
@@ -71,18 +71,18 @@ function calcArrayRefAutorange(gd, shape, axLetter) {
     }
 
     // group coordinates by axis reference so we can calculate the extremes for each axis
-    var axisGroups = {};
+    const axisGroups = {};
     if(shape.type === 'path' && shape.path) {
-        var segments = shape.path.match(constants.segmentRE) || [];
+        const segments = shape.path.match(constants.segmentRE) || [];
         var refIndex = 0;
         for(var i = 0; i < segments.length; i++) {
-            var segment = segments[i];
-            var command = segment.charAt(0);
-            var drawnIndex = paramsToUse[command].drawn;
+            const segment = segments[i];
+            const command = segment.charAt(0);
+            const drawnIndex = paramsToUse[command].drawn;
 
             if(drawnIndex === undefined) continue;
 
-            var params = segment.slice(1).match(constants.paramRE);
+            const params = segment.slice(1).match(constants.paramRE);
             if(params && params.length > drawnIndex) {
                 addToAxisGroup(refs[refIndex], params[drawnIndex]);
                 refIndex++;
@@ -94,9 +94,9 @@ function calcArrayRefAutorange(gd, shape, axLetter) {
     }
 
     // Convert coordinates to data values
-    var convertedGroups = {};
-    for(var axId in axisGroups) {
-        var ax = Axes.getFromId(gd, axId);
+    const convertedGroups = {};
+    for(const axId in axisGroups) {
+        const ax = Axes.getFromId(gd, axId);
         if(!ax) continue;
         var convertVal = (ax.type === 'category' || ax.type === 'multicategory') ? ax.r2c : ax.d2c;
         if(ax.type === 'date') convertVal = helpers.decodeDate(convertVal);

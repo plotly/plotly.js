@@ -136,9 +136,9 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  *     Only required if it's different from `dflt`
  */
 axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraOption, expectedLen) {
-    var axLetter = attr.charAt(attr.length - 1);
+    const axLetter = attr.charAt(attr.length - 1);
     var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
-    var refAttr = attr + 'ref';
+    const refAttr = attr + 'ref';
     var axRef = containerIn[refAttr];
 
     // Build the axis list, which we use to validate the axis references
