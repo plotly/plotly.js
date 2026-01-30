@@ -9,7 +9,7 @@ var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
-function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
     var containerIn = layoutIn[legendId] || {};
     var containerOut = Template.newContainer(layoutOut, legendId);
 
@@ -238,6 +238,10 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         });
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
+
+        const hasMultipleLegends = legendCount > 1;
+        coerce('titleclick', hasMultipleLegends ? 'toggle' : false);
+        coerce('titledoubleclick', hasMultipleLegends ? 'toggleothers' : false);
     }
 }
 
@@ -277,7 +281,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     for(i = 0; i < legends.length; i++) {
         var legendId = legends[i];
 
-        groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
+        groupDefaults(legendId, layoutIn, layoutOut, allLegendsData, legends.length);
 
         if(layoutOut[legendId]) {
             layoutOut[legendId]._id = legendId;
