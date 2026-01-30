@@ -205,14 +205,14 @@ function drawOne(gd, opts) {
     traces.exit().remove();
 
     traces.style('opacity', function(d) {
-        var legendItem = d[0];
-        var trace = legendItem.trace;
+        const legendItem = d[0];
+        const trace = legendItem.trace;
 
         // Toggle opacity of legend group titles if all items in the group are hidden
         if(legendItem.groupTitle) {
-            var groupName = trace.legendgroup;
-            var shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
-            var anyVisible = gd._fullData.concat(shapes).some(function(item) {
+            const groupName = trace.legendgroup;
+            const shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
+            const anyVisible = gd._fullData.concat(shapes).some(function(item) {
                 return item.legendgroup === groupName &&
                     (item.legend || 'legend') === legendId &&
                     item.visible === true;
@@ -255,9 +255,9 @@ function drawOne(gd, opts) {
                 }
 
                 // Toggle opacity of legend titles if all items in the legend are hidden
-                var shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
-                var anyVisible = gd._fullData.concat(shapes).some(function(item) {
-                    var inThisLegend = (item.legend || 'legend') === legendId;
+                const shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
+                const anyVisible = gd._fullData.concat(shapes).some(function(item) {
+                    const inThisLegend = (item.legend || 'legend') === legendId;
                     return inThisLegend && item.visible === true;
                 });
                 
@@ -667,18 +667,18 @@ function setupTraceToggle(g, gd, legendId) {
 
 function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
     // For now, skip title click for legends containing pie-like traces
-    var hasPie = gd._fullData.some(function(trace) {
-        var legend = trace.legend || 'legend';
-        var inThisLegend = Array.isArray(legend) ? legend.includes(legendId) : legend === legendId;
+    const hasPie = gd._fullData.some(function(trace) {
+        const legend = trace.legend || 'legend';
+        const inThisLegend = Array.isArray(legend) ? legend.includes(legendId) : legend === legendId;
         return inThisLegend && Registry.traceIs(trace, 'pie-like');
     });
     if(hasPie) return;
 
-    var doubleClickDelay = gd._context.doubleClickDelay;
+    const doubleClickDelay = gd._context.doubleClickDelay;
     var newMouseDownTime;
     var numClicks = 1;
 
-    var titleToggle = Lib.ensureSingle(scrollBox, 'rect', legendId + 'titletoggle', function(s) {
+    const titleToggle = Lib.ensureSingle(scrollBox, 'rect', legendId + 'titletoggle', function(s) {
         if(!gd._context.staticPlot) {
             s.style('cursor', 'pointer').attr('pointer-events', 'all');
         }
@@ -705,7 +705,7 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
-        var evtData = {
+        const evtData = {
             event: d3.event,
             legendId: legendId,
             data: gd.data,
@@ -715,7 +715,7 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
         };
 
         if(numClicks === 1 && legendObj.titleclick) {
-            var clickVal = Events.triggerHandler(gd, 'plotly_legendtitleclick', evtData);
+            const clickVal = Events.triggerHandler(gd, 'plotly_legendtitleclick', evtData);
             if(clickVal === false) return;
 
             legendObj._titleClickTimeout = setTimeout(function() {
@@ -725,21 +725,21 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
             if(legendObj._titleClickTimeout) clearTimeout(legendObj._titleClickTimeout);
             gd._legendMouseDownTime = 0;
 
-            var dblClickVal = Events.triggerHandler(gd, 'plotly_legendtitledoubleclick', evtData);
+            const dblClickVal = Events.triggerHandler(gd, 'plotly_legendtitledoubleclick', evtData);
             if(dblClickVal !== false && legendObj.titledoubleclick) handleTitleClick(gd, legendObj, legendObj.titledoubleclick);
         }
     });
 }
 
 function positionTitleToggle(scrollBox, legendObj, legendId) {
-    var titleToggle = scrollBox.select('.' + legendId + 'titletoggle');
+    const titleToggle = scrollBox.select('.' + legendId + 'titletoggle');
     if(!titleToggle.size()) return;
 
-    var side = legendObj.title.side || 'top';
-    var bw = legendObj.borderwidth;
+    const side = legendObj.title.side || 'top';
+    const bw = legendObj.borderwidth;
     var x = bw;
-    var width = legendObj._titleWidth + 2 * constants.titlePad;
-    var height = legendObj._titleHeight + 2 * constants.titlePad;
+    const width = legendObj._titleWidth + 2 * constants.titlePad;
+    const height = legendObj._titleHeight + 2 * constants.titlePad;
 
 
     if(side === 'top center') {

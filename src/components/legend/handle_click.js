@@ -12,15 +12,15 @@ exports.handleClick = function handleClick(g, gd, numClicks) {
     if(gd._dragged || gd._editing) return;
 
 
-    var legendItem = g.data()[0][0];
+    const legendItem = g.data()[0][0];
     if(legendItem.groupTitle && legendItem.noClick) return;
 
-    var legendId = legendItem.trace.legend || 'legend';
-    var legendObj = fullLayout[legendId];
+    const legendId = legendItem.trace.legend || 'legend';
+    const legendObj = fullLayout[legendId];
 
-    var itemClick = legendObj.itemclick;
-    var itemDoubleClick = legendObj.itemdoubleclick;
-    var groupClick = legendObj.groupclick;
+    const itemClick = legendObj.itemclick;
+    const itemDoubleClick = legendObj.itemdoubleclick;
+    const groupClick = legendObj.groupclick;
 
     if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
@@ -275,11 +275,11 @@ exports.handleClick = function handleClick(g, gd, numClicks) {
 };
 
 exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
-    var fullLayout = gd._fullLayout;
-    var fullData = gd._fullData;
-    var legendId = legendObj._id || 'legend';
-    var shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
-    var allLegendItems = fullData.concat(shapesWithLegend);
+    const fullLayout = gd._fullLayout;
+    const fullData = gd._fullData;
+    const legendId = legendObj._id || 'legend';
+    const shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
+    const allLegendItems = fullData.concat(shapesWithLegend);
 
     function isInLegend(item) {
         return (item.legend || 'legend') === legendId;
@@ -290,7 +290,7 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
 
     if(mode === 'toggle') {
         // If any item is visible in this legend, hide all. If all are hidden, show all
-        var anyVisibleHere = allLegendItems.some(function(item) {
+        const anyVisibleHere = allLegendItems.some(function(item) {
             return isInLegend(item) && item.visible === true;
         });
 
@@ -298,7 +298,7 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
         toggleOtherLegends = null;
     } else {
         // isolate this legend or set all legends to visible
-        var anyVisibleElsewhere = allLegendItems.some(function(item) {
+        const anyVisibleElsewhere = allLegendItems.some(function(item) {
             return !isInLegend(item) && item.visible === true && item.showlegend !== false;
         });
 
@@ -306,15 +306,15 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
         toggleOtherLegends = !anyVisibleElsewhere;
     }
 
-    var dataUpdate = { visible: [] };
-    var dataIndices = [];
-    var updatedShapes = (fullLayout.shapes || []).map(function(d) { return d._input; });
+    const dataUpdate = { visible: [] };
+    const dataIndices = [];
+    const updatedShapes = (fullLayout.shapes || []).map(function(d) { return d._input; });
     var shapesUpdated = false;
 
     for(var i = 0; i < allLegendItems.length; i++) {
-        var item = allLegendItems[i];
-        var shouldShow = isInLegend(item) ? toggleThisLegend : toggleOtherLegends;
-        var newVis = shouldShow ? true : 'legendonly';
+        const item = allLegendItems[i];
+        const shouldShow = isInLegend(item) ? toggleThisLegend : toggleOtherLegends;
+        const newVis = shouldShow ? true : 'legendonly';
 
         // Only update if the item is visible and the visibility is different from the new visibility
         if ((item.visible !== false) && (shouldShow !== null) && (item.visible !== newVis)) {

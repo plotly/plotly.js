@@ -239,7 +239,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
 
-        var hasMultipleLegends = legendCount > 1;
+        const hasMultipleLegends = legendCount > 1;
         coerce('titleclick', hasMultipleLegends ? 'toggle' : false);
         coerce('titledoubleclick', hasMultipleLegends ? 'toggleothers' : false);
     }
