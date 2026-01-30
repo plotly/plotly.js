@@ -7,7 +7,7 @@
       "y": [1, 1, 1, 1, 1, 1],
       "marker": {
         "size": 30,
-        "color": "white",
+        "color": "rgba(255,0,0,0.2)",
         "line": {
           "color": "black",
           "width": 3,
@@ -40,7 +40,7 @@
       "marker": {
         "size": 30,
         "symbol": "square",
-        "color": "white",
+        "color": "rgba(255,0,0,0.2)",
         "line": {
           "color": "blue",
           "width": 2,
@@ -57,8 +57,8 @@
       "marker": {
         "size": 30,
         "symbol": "circle-open",
+        "color": "green",
         "line": {
-          "color": "green",
           "width": 2,
           "dash": "dash"
         }
