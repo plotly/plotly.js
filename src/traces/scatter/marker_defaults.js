@@ -12,12 +12,10 @@ var subTypes = require('./subtypes');
  *   gradient: caller supports gradients
  *   noSelect: caller does not support selected/unselected attribute containers
  */
-module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts = {}) {
     var isBubble = subTypes.isBubble(traceIn);
     var lineColor = (traceIn.line || {}).color;
     var defaultMLC;
-
-    opts = opts || {};
 
     // marker.color inherit from line.color (even if line.color is an array)
     if (lineColor) defaultColor = lineColor;
@@ -27,13 +25,8 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.size');
     if (!opts.noAngle) {
         coerce('marker.angle');
-        if (!opts.noAngleRef) {
-            coerce('marker.angleref');
-        }
-
-        if (!opts.noStandOff) {
-            coerce('marker.standoff');
-        }
+        if (!opts.noAngleRef) coerce('marker.angleref');
+        if (!opts.noStandOff) coerce('marker.standoff');
     }
 
     coerce('marker.color', defaultColor);
@@ -55,8 +48,11 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         // mostly this is for transparent markers to behave nicely
         if (lineColor && !Array.isArray(lineColor) && traceOut.marker.color !== lineColor) {
             defaultMLC = lineColor;
-        } else if (isBubble) defaultMLC = Color.background;
-        else defaultMLC = Color.defaultLine;
+        } else if (isBubble) {
+            defaultMLC = Color.background;
+        } else {
+            defaultMLC = Color.defaultLine;
+        }
 
         coerce('marker.line.color', defaultMLC);
         if (hasColorscale(traceIn, 'marker.line')) {
@@ -64,7 +60,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         coerce('marker.line.width', isBubble ? 1 : 0);
-        coerce('marker.line.dash');
+        if (!opts.noLineDash) coerce('marker.line.dash');
     }
 
     if (isBubble) {
@@ -75,8 +71,6 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
     if (opts.gradient) {
         var gradientType = coerce('marker.gradient.type');
-        if (gradientType !== 'none') {
-            coerce('marker.gradient.color');
-        }
+        if (gradientType !== 'none') coerce('marker.gradient.color');
     }
 };
