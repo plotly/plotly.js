@@ -3159,4 +3159,56 @@ describe('legend with custom legendwidth', function () {
             })
             .then(done, done.fail);
     });
+
+    // TODO: Update this test when releasing next major version which will remove the exception for shape traces
+    it('should apply marker.line.dash to scatter traces but use solid for shape traces', (done) => {
+        const data = [
+            {
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    size: 10,
+                    line: {
+                        width: 2,
+                        dash: 'dot',
+                        color: 'blue'
+                    }
+                }
+            }
+        ];
+
+        const layout = {
+            showlegend: true,
+            shapes: [
+                {
+                    showlegend: true,
+                    type: 'circle',
+                    xref: 'paper',
+                    yref: 'paper',
+                    x0: 0.1,
+                    y0: 0.1,
+                    x1: 0.2,
+                    y1: 0.2,
+                    line: {
+                        width: 2,
+                        dash: 'dot',
+                        color: 'red'
+                    },
+                    fillcolor: 'rgba(255, 0, 0, 0.3)'
+                }
+            ]
+        };
+
+        Plotly.newPlot(gd, data, layout)
+            .then(function () {
+                const legendItems = gd.querySelectorAll('.legendpoints path.scatterpts');
+
+                expect(legendItems.length).toBe(2);
+                expect(legendItems[0].style.strokeDasharray).not.toBe('');
+                expect(legendItems[1].style.strokeDasharray).toBe('');
+            })
+            .then(done, done.fail);
+    });
 });
