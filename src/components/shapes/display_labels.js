@@ -30,17 +30,17 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
             const isMultiAxisX = Array.isArray(options.xref);
             const isMultiAxisY = Array.isArray(options.yref);
 
-            // For multi-axis shapes, derived variables are meaningless
-            // Skip them and let texttemplatefallback handle those cases.
-            const derivedX = ['dx', 'width', 'xcenter', 'slope', 'length'];
-            const derivedY = ['dy', 'height', 'ycenter', 'slope', 'length'];
-
             for (var key in shapeLabelTexttemplateVars) {
-                if (isMultiAxisX && derivedX.includes(key)) continue;
-                if (isMultiAxisY && derivedY.includes(key)) continue;
+                // For multi-axis shapes, skip variables that require single-axis calculations
+                // and let texttemplatefallback handle those cases.
+                var isFunction = typeof shapeLabelTexttemplateVars[key] === 'function';
+                var isValidForX = !isMultiAxisX || shapeLabelTexttemplateVars.simpleXVariables.includes(key);
+                var isValidForY = !isMultiAxisY || shapeLabelTexttemplateVars.simpleYVariables.includes(key);
 
-                var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
-                if (val !== undefined) templateValues[key] = val;
+                if (isFunction && isValidForX && isValidForY) {
+                    var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+                    if (val !== undefined) templateValues[key] = val;
+                }
             }
         }
         text = Lib.texttemplateStringForShapes({
