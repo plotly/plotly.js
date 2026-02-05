@@ -3,6 +3,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var pushUnique = Lib.pushUnique;
+var helpers = require('./helpers');
 
 var SHOWISOLATETIP = true;
 
@@ -277,7 +278,7 @@ exports.handleClick = function handleClick(g, gd, numClicks) {
 exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
     const fullLayout = gd._fullLayout;
     const fullData = gd._fullData;
-    const legendId = legendObj._id || 'legend';
+    const legendId = helpers.getId(legendObj);
     const shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
     const allLegendItems = fullData.concat(shapesWithLegend);
 

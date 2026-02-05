@@ -83,7 +83,7 @@ function drawOne(gd, opts) {
     var legendObj = opts || {};
 
     var fullLayout = gd._fullLayout;
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
 
     var clipId, layer;
 
@@ -558,7 +558,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
 }
 
 function drawTexts(g, gd, legendObj) {
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
     var legendItem = g.data()[0][0];
     var trace = legendItem.trace;
     var isPieLike = Registry.traceIs(trace, 'pie-like');
@@ -772,7 +772,7 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
 
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
     if(!legendObj) {
         legendObj = gd._fullLayout[legendId];
     }
@@ -877,7 +877,7 @@ function getTitleSize(legendObj) {
  */
 function computeLegendDimensions(gd, groups, traces, legendObj) {
     var fullLayout = gd._fullLayout;
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
     if(!legendObj) {
         legendObj = fullLayout[legendId];
     }
@@ -1137,6 +1137,3 @@ function getYanchor(legendObj) {
         'top';
 }
 
-function getId(legendObj) {
-    return legendObj._id || 'legend';
-}
