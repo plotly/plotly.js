@@ -10,7 +10,7 @@ var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var handleClick = require('./handle_click').handleClick;
+var handleItemClick = require('./handle_click').handleItemClick;
 var handleTitleClick = require('./handle_click').handleTitleClick;
 
 var constants = require('./constants');
@@ -552,7 +552,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            if(itemClick) handleClick(legendItem, gd, legendObj, itemClick);
+            if(itemClick) handleItemClick(legendItem, gd, legendObj, itemClick);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -561,7 +561,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
         if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
-            handleClick(legendItem, gd, legendObj, itemDoubleClick);
+            handleItemClick(legendItem, gd, legendObj, itemDoubleClick);
         }
     }
 }

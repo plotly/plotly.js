@@ -17,7 +17,7 @@ var SHOWISOLATETIP = true;
  *   - 'toggle': Toggle visibility of this item (or group if groupclick is 'togglegroup')
  *   - 'toggleothers': Show only this item, hide all others (isolation mode)
  */
-exports.handleClick = function handleClick(g, gd, legendObj, mode) {
+exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
     var fullLayout = gd._fullLayout;
 
     if(gd._dragged || gd._editing) return;
