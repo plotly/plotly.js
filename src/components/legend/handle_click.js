@@ -7,35 +7,23 @@ var helpers = require('./helpers');
 
 var SHOWISOLATETIP = true;
 
-exports.handleClick = function handleClick(g, gd, numClicks) {
+exports.handleClick = function handleClick(g, gd, legendObj, mode) {
     var fullLayout = gd._fullLayout;
 
     if(gd._dragged || gd._editing) return;
 
-
-    const legendItem = g.data()[0][0];
+    var legendItem = g.data()[0][0];
     if(legendItem.groupTitle && legendItem.noClick) return;
 
-    const legendId = legendItem.trace.legend || 'legend';
-    const legendObj = fullLayout[legendId];
+    var groupClick = legendObj.groupclick;
 
-    const itemClick = legendObj.itemclick;
-    const itemDoubleClick = legendObj.itemdoubleclick;
-    const groupClick = legendObj.groupclick;
-
-    if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
+    // Show isolate tip on first single click when default behavior is active
+    if(mode === 'toggle' && legendObj.itemdoubleclick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
     ) {
         Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long');
         SHOWISOLATETIP = false;
-    } else {
-        SHOWISOLATETIP = false;
     }
-
-    var mode;
-    if(numClicks === 1) mode = itemClick;
-    else if(numClicks === 2) mode = itemDoubleClick;
-    if(!mode) return;
 
     var toggleGroup = groupClick === 'togglegroup';
 

@@ -520,7 +520,14 @@ function getTraceWidth(d, legendObj, textGap) {
 }
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
+     var fullLayout = gd._fullLayout;
     var trace = legendItem.data()[0][0].trace;
+    var legendId = trace.legend || 'legend';
+    var legendObj = fullLayout[legendId];
+
+    var itemClick = legendObj.itemclick;
+    var itemDoubleClick = legendObj.itemdoubleclick;
+
     var evtData = {
         event: evt,
         node: legendItem.node(),
@@ -531,7 +538,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         frames: gd._transitionData._frames,
         config: gd._context,
         fullData: gd._fullData,
-        fullLayout: gd._fullLayout
+        fullLayout: fullLayout
     };
 
     if(trace._group) {
@@ -545,7 +552,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            handleClick(legendItem, gd, numClicks);
+            if(itemClick) handleClick(legendItem, gd, legendObj, itemClick);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -553,7 +560,9 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
 
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
-        if(dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
+        if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
+            handleClick(legendItem, gd, legendObj, itemDoubleClick);
+        }
     }
 }
 
@@ -1136,4 +1145,3 @@ function getYanchor(legendObj) {
         Lib.isMiddleAnchor(legendObj) ? 'middle' :
         'top';
 }
-
