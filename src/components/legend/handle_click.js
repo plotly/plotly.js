@@ -7,6 +7,16 @@ var helpers = require('./helpers');
 
 var SHOWISOLATETIP = true;
 
+/**
+ * Handles click actions on individual legend items.
+ *
+ * @param {object} g D3 selection of the legend item element
+ * @param {object} gd graph div
+ * @param {object} legendObj the legend object from fullLayout
+ * @param {string} mode toggle mode for the current action: 'toggle' | 'toggleothers'
+ *   - 'toggle': Toggle visibility of this item (or group if groupclick is 'togglegroup')
+ *   - 'toggleothers': Show only this item, hide all others (isolation mode)
+ */
 exports.handleClick = function handleClick(g, gd, legendObj, mode) {
     var fullLayout = gd._fullLayout;
 
@@ -263,6 +273,15 @@ exports.handleClick = function handleClick(g, gd, legendObj, mode) {
     }
 };
 
+/**
+ * Handles click actions on legend titles.
+ *
+ * @param {object} gd graph div (plot container)
+ * @param {object} legendObj the legend object from fullLayout
+ * @param {string} mode toggle mode for the current action: 'toggle' | 'toggleothers'
+ *   - 'toggle': show/hide all items in this legend
+ *   - 'toggleothers': isolate this legend (show its items, hide items in other legends)
+ */
 exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
     const fullLayout = gd._fullLayout;
     const fullData = gd._fullData;
