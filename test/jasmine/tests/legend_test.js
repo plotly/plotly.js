@@ -2879,12 +2879,12 @@ describe('legend title click', function() {
             ], {
                 legend: {
                     title: { text: 'Legend' },
-                    titleclick: 'toggle',
-                    titledoubleclick: false
+                    titleclick: 'toggleothers',
+                    titledoubleclick: 'toggle'
                 }
             }).then(function() {
-                expect(gd._fullLayout.legend.titleclick).toBe('toggle');
-                expect(gd._fullLayout.legend.titledoubleclick).toBe(false);
+                expect(gd._fullLayout.legend.titleclick).toBe('toggleothers');
+                expect(gd._fullLayout.legend.titledoubleclick).toBe('toggle');
             }).then(done, done.fail);
         });
     });
