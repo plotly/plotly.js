@@ -303,7 +303,6 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
         });
 
         toggleThisLegend = !anyVisibleHere;
-        toggleOtherLegends = null;
     } else {
         // isolate this legend or set all legends to visible
         const anyVisibleElsewhere = allLegendItems.some(function(item) {
@@ -321,11 +320,20 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
 
     for(var i = 0; i < allLegendItems.length; i++) {
         const item = allLegendItems[i];
-        const shouldShow = isInLegend(item) ? toggleThisLegend : toggleOtherLegends;
+        const inThisLegend = isInLegend(item);
+
+        // If item is not in this legend, skip if in toggle mode 
+        // or if item is not displayed in the legend
+        if(!inThisLegend) {
+            const notDisplayed = (item.showlegend !== true && !item.legendgroup);
+            if(mode === 'toggle' || notDisplayed) continue;
+        }
+
+        const shouldShow = inThisLegend ? toggleThisLegend : toggleOtherLegends;
         const newVis = shouldShow ? true : 'legendonly';
 
-        // Only update if the item is visible and the visibility is different from the new visibility
-        if ((item.visible !== false) && (shouldShow !== null) && (item.visible !== newVis)) {
+        // Only update if visibility would actually change
+        if((item.visible !== false) && (item.visible !== newVis)) {
             if(item._isShape) {
                 updatedShapes[item._index].visible = newVis;
                 shapesUpdated = true;
