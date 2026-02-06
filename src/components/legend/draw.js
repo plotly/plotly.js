@@ -238,22 +238,14 @@ function drawOne(gd, opts) {
 
     Lib.syncOrAsync([
         Plots.previousPromises,
-        function() { return computeLegendDimensions(gd, groups, traces, legendObj); },
+        function() { return computeLegendDimensions(gd, groups, traces, legendObj, scrollBox); },
         function() {
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
             var isPaperX = legendObj.xref === 'paper';
             var isPaperY = legendObj.yref === 'paper';
 
-            // re-calculate title position after legend width is derived. To allow for horizontal alignment
             if(title.text) {
-                horizontalAlignTitle(titleEl, legendObj, bw);
-
-                // Position click target for the title after dimensions are computed
-                if(!inHover && (legendObj.titleclick || legendObj.titledoubleclick)) {
-                    positionTitleToggle(scrollBox, legendObj, legendId);
-                }
-
                 // Toggle opacity of legend titles if all items in the legend are hidden
                 const shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
                 const anyVisible = gd._fullData.concat(shapes).some(function(item) {
@@ -740,25 +732,6 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
     });
 }
 
-function positionTitleToggle(scrollBox, legendObj, legendId) {
-    const titleToggle = scrollBox.select('.' + legendId + 'titletoggle');
-    if(!titleToggle.size()) return;
-
-    const side = legendObj.title.side || 'top';
-    const bw = legendObj.borderwidth;
-    var x = bw;
-    const width = legendObj._titleWidth + 2 * constants.titlePad;
-    const height = legendObj._titleHeight + 2 * constants.titlePad;
-
-
-    if(side === 'top center') {
-        x = bw + 0.5 * (legendObj._width - 2 * bw - width);
-    } else if(side === 'top right') {
-        x = legendObj._width - bw - width;
-    }
-
-    titleToggle.attr({ x: x, y: bw, width: width, height: height });
-}
 
 function textLayout(s, g, gd, legendObj, aTitle) {
     if(legendObj._inHover) s.attr('data-notex', true); // do not process MathJax for unified hover
@@ -884,7 +857,7 @@ function getTitleSize(legendObj) {
  *  - _width: legend width
  *  - _maxWidth (for orientation:h only): maximum width before starting new row
  */
-function computeLegendDimensions(gd, groups, traces, legendObj) {
+function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
     var fullLayout = gd._fullLayout;
     var legendId = helpers.getId(legendObj);
     if(!legendObj) {
@@ -1091,6 +1064,25 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
+
+    // align legend title horizontally
+    var titleEl = scrollBox.select('.' + legendId + 'titletext');
+    if(titleEl.node()) {
+        horizontalAlignTitle(titleEl, legendObj, bw);
+    }
+
+    // position title click target to cover the title text, parallel to traceToggle above
+    var titleToggle = scrollBox.select('.' + legendId + 'titletoggle');
+    if(titleToggle.size() && titleEl.node()) {
+        var titleX = titleEl.attr('x') || 0;
+        var pad = constants.titlePad;
+        Drawing.setRect(titleToggle,
+            titleX - pad,
+            bw,
+            legendObj._titleWidth + 2 * pad,
+            legendObj._titleHeight + 2 * pad
+        );
+    }
 }
 
 function expandMargin(gd, legendId, lx, ly) {
