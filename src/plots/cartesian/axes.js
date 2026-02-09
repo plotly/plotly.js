@@ -2005,19 +2005,36 @@ function formatCategory(ax, out) {
 }
 
 function formatMultiCategory(ax, out, hover) {
-    var v = Math.round(out.x);
-    var cats = ax._categories[v] || [];
-    var tt = cats[1] === undefined ? '' : String(cats[1]);
-    var tt2 = cats[0] === undefined ? '' : String(cats[0]);
+  var v = Math.round(out.x);
+  var cats =
+    ax._categories[v].map(function (cat) {
+      return cat;
+    }) || [];
+  var texts = cats
+    .slice()
+    .reverse()
+    .map(function (cat) {
+      return cat === undefined ? "" : String(cat);
+    });
 
-    if(hover) {
-        // TODO is this what we want?
-        out.text = tt2 + ' - ' + tt;
-    } else {
-        // setup for secondary labels
-        out.text = tt;
-        out.text2 = tt2;
-    }
+  if (hover) {
+    // TODO is this what we want?
+    var hoverText = "";
+    cats.forEach(function (text, index) {
+      text = String(text);
+      if (index < texts.length - 1) {
+        hoverText = hoverText + " " + text + " - ";
+      } else {
+        hoverText = hoverText + " " + text;
+      }
+    });
+
+    out.text = hoverText;
+  } else {
+    // setup for secondary labels
+    out.text = texts[0];
+    out.texts = texts;
+  }
 }
 
 function formatLinear(ax, out, hover, extraPrecision, hideexp) {
@@ -2766,40 +2783,72 @@ axes.drawOne = function(gd, ax, opts) {
         });
     });
 
-    if(ax.type === 'multicategory') {
-        var pad = {x: 2, y: 10}[axLetter];
+  var tickNames = ["tick"];
 
-        seq.push(function() {
-            var bboxKey = {x: 'height', y: 'width'}[axLetter];
-            var standoff = getLabelLevelBbox()[bboxKey] + pad +
-                (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
+  if (ax.type === "multicategory") {
+    ax.levels
+      .slice()
+      .reverse()
+      .slice(0, ax.levelNr - 1)
+      .forEach(function (_lvl) {
+        var pad = { x: 0 * _lvl, y: 10 }[axLetter];
 
-            return axes.drawLabels(gd, ax, {
-                vals: getSecondaryLabelVals(ax, vals),
-                layer: mainAxLayer,
-                cls: axId + 'tick2',
-                repositionOnUpdate: true,
-                secondary: true,
-                transFn: transTickFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePositionShift + standoff * majorTickSigns[4])
-            });
+        var tickName = "tick" + String(_lvl);
+        tickNames.push(tickName);
+
+        seq.push(function () {
+          var bboxKey = { x: "height", y: "width" }[axLetter];
+          var standoff =
+            _lvl * getLabelLevelBbox()[bboxKey] +
+            pad +
+            (ax._tickAngles[axId + "tick"]
+              ? ax.tickfont.size * LINE_SPACING
+              : 0);
+
+          return axes.drawLabels(gd, ax, {
+            vals: getSecondaryLabelVals(ax, vals, _lvl),
+            layer: mainAxLayer,
+            cls: axId + tickName,
+            repositionOnUpdate: true,
+            secondary: true,
+            transFn: transTickFn,
+            labelFns: axes.makeLabelFns(
+              ax,
+              mainLinePosition + standoff * majorTickSigns[4]
+            ),
+          });
+        });
+      });
+
+    tickNames = tickNames.sort();
+
+    ax.levels.forEach(function (_lvl, idx) {
+      seq.push(function () {
+        ax._depth =
+          majorTickSigns[4] *
+          (getLabelLevelBbox(tickNames.slice()[_lvl])[ax.side] -
+            mainLinePosition);
+
+        var levelDividers = dividerVals.slice().filter(function (divider) {
+          return divider.level === idx;
         });
 
-        seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePositionShift);
-
-            return drawDividers(gd, ax, {
-                vals: dividerVals,
-                layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePositionShift, majorTickSigns[4], { len: ax._depth }),
-                transFn: transTickFn
-            });
+        return drawDividers(gd, ax, {
+          vals: levelDividers,
+          layer: mainAxLayer,
+          path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], {
+            len: ax._depth,
+          }),
+          transFn: transTickFn,
+          level: _lvl,
         });
-    } else if(ax.title.hasOwnProperty('standoff')) {
-        seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePositionShift);
-        });
-    }
+      });
+    });
+} else if(ax.title.hasOwnProperty('standoff')) {
+    seq.push(function() {
+        ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePositionShift);
+    });
+}
 
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
@@ -2974,55 +3023,76 @@ function getBoundaryVals(ax, vals) {
     return out;
 }
 
-function getSecondaryLabelVals(ax, vals) {
-    var out = [];
-    var lookup = {};
+function getSecondaryLabelVals(ax, vals, level) {
+  var out = [];
+  var lookup = {};
+  var appearences = {};
+  var current;
+  var currentParent = null;
+  var parent = null;
 
-    for(var i = 0; i < vals.length; i++) {
-        var d = vals[i];
-        if(lookup[d.text2]) {
-            lookup[d.text2].push(d.x);
-        } else {
-            lookup[d.text2] = [d.x];
-        }
+  for (var i = 0; i < vals.length; i++) {
+    var d = vals[i];
+    var text = d.texts[level];
+    parent = d.texts[level + 1];
+    if (lookup[text]) {
+      if ((d.texts[level] === current) & (parent === currentParent)) {
+        lookup[text][appearences[text]].push(d.x);
+      } else {
+        appearences[text] = appearences[text] + 1;
+        lookup[text].push([d.x]);
+      }
+    } else {
+      appearences[text] = 0;
+      lookup[text] = [[d.x]];
     }
+    current = d.texts[level];
+    currentParent = d.texts[level + 1];
+  }
 
-    for(var k in lookup) {
-        out.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
-    }
+  Object.keys(lookup).forEach(function (key) {
+    lookup[key].forEach(function (pos) {
+      out.push(tickTextObj(ax, Lib.interp(pos, 0.5), key));
+    });
+  });
 
-    return out;
+  return out;
 }
 
 function getDividerVals(ax, vals) {
     var out = [];
     var i, current;
-
-    var reversed = (vals.length && vals[vals.length - 1].x < vals[0].x);
-
+  
+    var reversed = vals.length && vals[vals.length - 1].x < vals[0].x;
+  
     // never used for labels;
     // no need to worry about the other tickTextObj keys
-    var _push = function(d, bndIndex) {
-        var xb = d.xbnd[bndIndex];
-        if(xb !== null) {
-            out.push(Lib.extendFlat({}, d, {x: xb}));
-        }
+    var _push = function (d, bndIndex, level) {
+      var xb = d.xbnd[bndIndex];
+      if (xb !== null) {
+        var _out = Lib.extendFlat({}, d, { x: xb });
+        _out.level = level;
+        out.push(_out);
+      }
     };
-
-    if(ax.showdividers && vals.length) {
-        for(i = 0; i < vals.length; i++) {
-            var d = vals[i];
-            if(d.text2 !== current) {
-                _push(d, reversed ? 1 : 0);
-            }
-            current = d.text2;
+  
+    if (ax.showdividers && vals.length) {
+      ax.levels.forEach(function (_lvl) {
+        current = undefined;
+        for (i = 0; i < vals.length; i++) {
+          var d = vals[i];
+          if (d.texts[_lvl] !== current) {
+            _push(d, reversed ? 1 : 0, _lvl);
+          }
+          current = d.texts[_lvl];
+          // text2
         }
         _push(vals[i - 1], reversed ? 0 : 1);
+      });
     }
-
     return out;
-}
-
+  }
+  
 function calcLabelLevelBbox(ax, cls, mainLinePositionShift) {
     var top, bottom;
     var left, right;
@@ -4181,24 +4251,30 @@ axes.drawLabels = function(gd, ax, opts) {
  * - {fn} transFn
  */
 function drawDividers(gd, ax, opts) {
-    var cls = ax._id + 'divider';
+    var cls = ax._id + "divider";
     var vals = opts.vals;
-
-    var dividers = opts.layer.selectAll('path.' + cls)
-        .data(vals, tickDataFn);
-
-    dividers.exit().remove();
-
-    dividers.enter().insert('path', ':first-child')
-        .classed(cls, 1)
-        .classed('crisp', 1)
-        .call(Color.stroke, ax.dividercolor)
-        .style('stroke-width', Drawing.crispRound(gd, ax.dividerwidth, 1) + 'px');
-
+  
+    var dividers = opts.layer.selectAll("path." + cls).data(vals, tickDataFn);
+  
+    if (ax.type === "multicategory") {
+      if (opts.level === 0) {
+        dividers.exit().remove();
+      }
+    } else {
+      dividers.exit().remove();
+    }
+  
     dividers
-        .attr('transform', opts.transFn)
-        .attr('d', opts.path);
-}
+      .enter()
+      .insert("path", ":first-child")
+      .classed(cls, 1)
+      .classed("crisp", 1)
+      .call(Color.stroke, ax.dividercolor)
+      .style("stroke-width", Drawing.crispRound(gd, ax.dividerwidth, 1) + "px");
+  
+    dividers.attr("transform", opts.transFn).attr("d", opts.path);
+  }
+  
 
 /**
  * Get axis position in px, that is the distance for the graph's

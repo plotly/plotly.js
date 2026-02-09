@@ -3005,7 +3005,7 @@ plots.doCalcdata = function(gd, traces) {
         calcdata[i] = cd;
     }
 
-    setupAxisCategories(axList, fullData, fullLayout);
+    setupAxisCategories(axList, gd, fullLayout);
 
     // 'transform' loop - must calc container traces first
     // so that if their dependent traces can get transform properly
@@ -3013,7 +3013,7 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) transformCalci(i);
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList, fullData, fullLayout);
+    if(hasCalcTransform) setupAxisCategories(axList, gd, fullLayout);
 
     // 'regular' loop - make sure container traces (eg carpet) calc before
     // contained traces (eg contourcarpet)
@@ -3222,13 +3222,13 @@ function sortAxisCategoriesByValue(axList, gd) {
     return affectedTraces;
 }
 
-function setupAxisCategories(axList, fullData, fullLayout) {
+function setupAxisCategories(axList, gd, fullLayout) {
     var axLookup = {};
 
     function setupOne(ax) {
         ax.clearCalc();
         if(ax.type === 'multicategory') {
-            ax.setupMultiCategory(fullData);
+            ax.setupMultiCategory(gd);
         }
 
         axLookup[ax._id] = 1;
