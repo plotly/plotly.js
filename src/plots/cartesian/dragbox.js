@@ -38,9 +38,6 @@ var MINZOOM = constants.MINZOOM;
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
 
-// Current (sub)plot that initiated a scroll
-let CURRENT_SCROLLING_SUBPLOT = null;
-
 // dragBox: create an element to drag one or more axis ends
 // inputs:
 //      plotinfo - which subplot are we making dragboxes on?
@@ -470,11 +467,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        if (CURRENT_SCROLLING_SUBPLOT == null) {
-            CURRENT_SCROLLING_SUBPLOT = plotinfo.id;
+        // Store (sub)plot that initiated a scroll
+        if (gd._currentScrollingSubplot == null) {
+            gd._currentScrollingSubplot = plotinfo.id;
         }
         // Early exit to prevent jitters if this subplot didn't initiate the scroll
-        if (CURRENT_SCROLLING_SUBPLOT !== plotinfo.id) {
+        if (gd._currentScrollingSubplot !== plotinfo.id) {
             e.preventDefault();
             return;
         }
@@ -550,7 +548,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
             if(!gd._fullLayout) return;
-            CURRENT_SCROLLING_SUBPLOT = null;
+            gd._currentScrollingSubplot = null;
             scrollViewBox = [0, 0, pw, ph];
             dragTail();
         }, REDRAWDELAY);
