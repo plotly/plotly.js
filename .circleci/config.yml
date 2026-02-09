@@ -40,6 +40,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -79,6 +80,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -101,6 +103,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -123,6 +126,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -144,6 +148,7 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools: &browser-versions
           install-firefox: false
           install-geckodriver: false
@@ -165,6 +170,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -186,6 +192,7 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-firefox: false
           install-geckodriver: false
@@ -206,6 +213,7 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
+      - browser-tools/start-xvfb
       - browser-tools/install-browser-tools:
           install-chrome: false
           install-chromedriver: false
@@ -597,9 +605,15 @@ workflows:
           requires:
             - install-and-cibuild
 
-      - publish-dist
+      - publish-dist:
+          filters:
+            branches:
+              only: master
 
-      - publish-dist-node-v22
+      - publish-dist-node-v22:
+          filters:
+            branches:
+              only: master
 
       - test-stackgl-bundle
 

@@ -145,6 +145,12 @@ function getButtonGroups(gd) {
 
     // buttons common to all plot types
     var commonGroup = ['toImage'];
+    
+    // Add clipboard copy button if supported
+    if(typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
+        commonGroup.push('copyToClipboard');
+    }
+    
     if(context.showEditInChartStudio) commonGroup.push('editInChartStudio');
     else if(context.showSendToCloud) commonGroup.push('sendDataToCloud');
     addGroup(commonGroup);
