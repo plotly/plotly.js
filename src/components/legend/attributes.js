@@ -185,7 +185,8 @@ module.exports = {
             '*toggle* toggles the visibility of all items in the legend.',
             '*toggleothers* toggles the visibility of all other legends.',
             '*false* disables legend title click interactions.',
-            'Defaults to *toggle* when there are multiple legends, *false* otherwise.'
+            'Defaults to *toggle* when there are multiple legends, *false* otherwise.',
+            'Does not work for legends containing pie and pie-like traces.'
         ].join(' ')
     },
     titledoubleclick: {
@@ -197,7 +198,8 @@ module.exports = {
             '*toggle* toggles the visibility of all items in the legend.',
             '*toggleothers* toggles the visibility of all other legends.',
             '*false* disables legend title double-click interactions.',
-            'Defaults to *toggleothers* when there are multiple legends, *false* otherwise.'
+            'Defaults to *toggleothers* when there are multiple legends, *false* otherwise.',
+            'Does not currently work for legends containing pie and pie-like traces.'
         ].join(' ')
     },
     x: {
