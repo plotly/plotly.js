@@ -83,6 +83,14 @@ function createFills(gd, traceJoin, plotinfo) {
 
         var trace = d[0].trace;
 
+        // trace._ownFill and trace._nextFill may have leftover values
+        // from a previous call to createFills. They should always start as null.
+        // We clear both values in order to start with a clean slate.
+        // Note that these are DIFFERENT VARIABLES than
+        // trace._ownfill and trace._nexttrace referenced a few lines down.
+        trace._ownFill = null;
+        trace._nextFill = null;
+
         var fillData = [];
         if(trace._ownfill) fillData.push('_ownFill');
         if(trace._nexttrace) fillData.push('_nextFill');
@@ -91,9 +99,7 @@ function createFills(gd, traceJoin, plotinfo) {
 
         fillJoin.enter().append('g');
 
-        fillJoin.exit()
-            .each(function(d) { trace[d] = null; })
-            .remove();
+        fillJoin.exit().remove();
 
         fillJoin.order().each(function(d) {
             // make a path element inside the fill group, just so
@@ -282,8 +288,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     revpath = thisrevpath;
                 } else if(ownFillDir) {
                     // for fills with fill direction: ignore gaps
-                    fullpath += 'L' + thispath.substr(1);
-                    revpath = thisrevpath + ('L' + revpath.substr(1));
+                    fullpath += 'L' + thispath.slice(1);
+                    revpath = thisrevpath + ('L' + revpath.slice(1));
                 } else {
                     fullpath += 'Z' + thispath;
                     revpath = thisrevpath + 'Z' + revpath;
@@ -389,7 +395,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // For the sake of animations, wrap the points around so that
                     // the points on the axes are the first two points. Otherwise
                     // animations get a little crazy if the number of points changes.
-                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1))
+                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.slice(1))
                         .call(Drawing.singleFillStyle, gd);
 
                     // create hover polygons that extend to the axis as well.
@@ -406,7 +412,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             trace._polygons = thisPolygons;
             trace._fillElement = ownFillEl3;
         } else if(tonext) {
-            if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+            if(trace.fill.slice(0, 6) === 'tonext' && fullpath && prevRevpath) {
                 // fill to next: full trace path, plus the previous path reversed
                 if(trace.fill === 'tonext') {
                     // tonext: for use by concentric shapes, like manually constructed
@@ -428,7 +434,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // y/x, but if they *aren't*, we should ideally do more complicated
                     // things depending on whether the new endpoint projects onto the
                     // existing curve or off the end of it
-                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
+                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.slice(1) + 'Z')
                         .call(Drawing.singleFillStyle, gd);
 
                     // create hover polygons that extend to the previous trace.

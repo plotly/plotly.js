@@ -386,13 +386,13 @@ function multiplyScales(a, b) {
     if(typeof a === 'string') {
         aPrefix = a.match(/^[xy]*/)[0];
         aLen = aPrefix.length;
-        a = +a.substr(aLen);
+        a = +a.slice(aLen);
     }
 
     if(typeof b === 'string') {
         bPrefix = b.match(/^[xy]*/)[0];
         bLen = bPrefix.length;
-        b = +b.substr(bLen);
+        b = +b.slice(bLen);
     }
 
     var c = a * b;
@@ -413,7 +413,7 @@ function multiplyScales(a, b) {
     }
 
     // partial cancelation of prefixes
-    return (aLen > bLen ? aPrefix.substr(bLen) : bPrefix.substr(aLen)) + c;
+    return (aLen > bLen ? aPrefix.slice(bLen) : bPrefix.slice(aLen)) + c;
 }
 
 function finalRatios(group, fullLayout) {
@@ -428,7 +428,7 @@ function finalRatios(group, fullLayout) {
         if(typeof val === 'string') {
             var prefix = val.match(/^[xy]*/)[0];
             var pLen = prefix.length;
-            val = +val.substr(pLen);
+            val = +val.slice(pLen);
             var mult = prefix.charAt(0) === 'y' ? yRatio : (1 / yRatio);
             for(var j = 0; j < pLen; j++) {
                 val *= mult;

@@ -977,6 +977,8 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
         }
     }
 
+    const lineDash = d.mld || (markerLine || {}).dash;
+    if (lineDash) drawing.dashLine(sel, lineDash, lineWidth);
     if (d.om) {
         // open markers can't have zero linewidth, default to 1px,
         // and use fill color as stroke color

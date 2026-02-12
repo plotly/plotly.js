@@ -172,7 +172,7 @@ describe('plot schema', function() {
             );
 
             var name = np.parts[np.parts.length - 1];
-            var itemName = name.substr(0, name.length - 1);
+            var itemName = name.slice(0, name.length - 1);
 
             var itemsObj = np.get().items;
             var itemObj = itemsObj[itemName];

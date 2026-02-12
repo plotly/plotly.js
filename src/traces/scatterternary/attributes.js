@@ -126,6 +126,7 @@ module.exports = {
             line: extendFlat(
                 {
                     width: scatterMarkerLineAttrs.width,
+                    dash: scatterMarkerLineAttrs.dash,
                     editType: 'calc'
                 },
                 colorScaleAttrs('marker.line')
