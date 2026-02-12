@@ -473,6 +473,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         }
     }
 
+    // Save coordinate values so clickanywhere can be used without hoveranywhere
+    gd._hoverXVals = xvalArray;
+    gd._hoverYVals = yvalArray;
+    gd._hoverXAxes = xaArray;
+    gd._hoverYAxes = yaArray;
+
     // the pixel distance to beat as a matching point
     // in 'x' or 'y' mode this resets for each trace
     var distance = Infinity;
@@ -777,6 +783,17 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             if (spikesChanged(oldspikepoints)) {
                 createSpikelines(gd, spikePoints, spikelineOpts);
             }
+        }
+
+        if (fullLayout.hoveranywhere && !noHoverEvent && eventTarget) {
+            gd.emit('plotly_hover', {
+                event: evt,
+                points: [],
+                xaxes: xaArray,
+                yaxes: yaArray,
+                xvals: xvalArray,
+                yvals: yvalArray
+            });
         }
         return result;
     }
