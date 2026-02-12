@@ -139,7 +139,8 @@ module.exports = overrideAll(
                 colorbar: scatterMarkerAttrs.colorbar,
                 line: extendFlat(
                     {
-                        width: scatterMarkerLineAttrs.width
+                        width: scatterMarkerLineAttrs.width,
+                        dash: scatterMarkerLineAttrs.dash
                     },
                     colorAttributes('marker.line')
                 ),

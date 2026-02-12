@@ -1,0 +1,82 @@
+{
+  "data": [
+    {
+      "type": "scatter",
+      "mode": "markers",
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [1, 1, 1, 1, 1, 1],
+      "marker": {
+        "size": 30,
+        "color": "rgba(255,0,0,0.2)",
+        "line": {
+          "color": "black",
+          "width": 3,
+          "dash": ["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"]
+        }
+      },
+      "name": "Array of dashes"
+    },
+    {
+      "type": "scatter",
+      "mode": "markers",
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [2, 2, 2, 2, 2, 2],
+      "marker": {
+        "size": 30,
+        "color": "rgba(255,0,0,0.2)",
+        "line": {
+          "color": "red",
+          "width": 4,
+          "dash": "dash"
+        }
+      },
+      "name": "Single dash"
+    },
+    {
+      "type": "scatter",
+      "mode": "markers",
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [3, 3, 3, 3, 3, 3],
+      "marker": {
+        "size": 30,
+        "symbol": "square",
+        "color": "rgba(255,0,0,0.2)",
+        "line": {
+          "color": "blue",
+          "width": 2,
+          "dash": "dot"
+        }
+      },
+      "name": "Dot with squares"
+    },
+    {
+      "type": "scatter",
+      "mode": "markers",
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [4, 4, 4, 4, 4, 4],
+      "marker": {
+        "size": 30,
+        "symbol": "circle-open",
+        "color": "green",
+        "line": {
+          "width": 2,
+          "dash": "dash"
+        }
+      },
+      "name": "Open markers with dash"
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Scatter Marker Line Dash Support"
+    },
+    "xaxis": {
+      "range": [0, 7]
+    },
+    "yaxis": {
+      "range": [0, 5]
+    },
+    "width": 600,
+    "height": 400
+  }
+}
