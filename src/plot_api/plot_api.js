@@ -1713,11 +1713,6 @@ function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    // Must skip relayouting if there is ongoing zoom
-    if (gd._currentScrollingSubplot != null) {
-        return Promise.resolve(gd);
-    }
-
     var aobj = {};
     if (typeof astr === 'string') {
         aobj[astr] = val;
