@@ -9,13 +9,15 @@
       "sizemode": "scaled",
       "sizeref": 0.3,
       "anchor": "tail",
-      "colorscale": "Viridis",
-      "showscale": true,
+      "marker": {
+        "colorscale": "Viridis",
+        "showscale": true,
+        "colorbar": {
+          "title": {"text": "Magnitude"}
+        }
+      },
       "line": {
         "width": 2
-      },
-      "colorbar": {
-        "title": {"text": "Magnitude"}
       }
     }
   ],

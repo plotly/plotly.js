@@ -183,14 +183,15 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     // Apply styling using Plotly's standard styling system
     Drawing.lineGroupStyle(lineSegments, trace.line && trace.line.width, trace.line && trace.line.color, trace.line && trace.line.dash);
 
-    // If colorscale present, color arrows by magnitude |(u,v)|
+    // If colorscale present, color arrows by marker.color or magnitude |(u,v)|
     if(trace._hasColorscale) {
-        var colorFunc = Colorscale.makeColorScaleFuncFromTrace(trace);
+        var marker = trace.marker || {};
+        var colorFunc = Colorscale.makeColorScaleFuncFromTrace(marker);
         lineSegments.style('stroke', function(cdi) {
-            var cArr = trace.c;
+            var markerColor = marker.color;
             var value;
-            if(Lib.isArrayOrTypedArray(cArr) && cArr.length > cdi.i && isFinite(cArr[cdi.i])) {
-                value = cArr[cdi.i];
+            if(Lib.isArrayOrTypedArray(markerColor) && markerColor.length > cdi.i && isFinite(markerColor[cdi.i])) {
+                value = markerColor[cdi.i];
             } else {
                 var uVal = (trace.u && trace.u[cdi.i]) || 0;
                 var vVal = (trace.v && trace.v[cdi.i]) || 0;

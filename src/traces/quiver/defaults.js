@@ -20,9 +20,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var u = coerce('u');
     var v = coerce('v');
 
-    // Optional scalar field for colorscale
-    coerce('c');
-
     // If u/v are missing, default to zeros so the trace participates in calc/category logic
     if(!Lib.isArrayOrTypedArray(u) || u.length === 0) {
         traceOut.u = new Array(len);
@@ -71,10 +68,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('vhoverformat');
 
     // Colorscale defaults (adds colorscale, showscale, colorbar, etc.)
-    var withColorscale = hasColorscale(traceIn, '', 'c') || traceIn.coloraxis;
+    coerce('marker.color');
+    var withColorscale = hasColorscale(traceIn, 'marker') || (traceIn.marker || {}).coloraxis;
     traceOut._hasColorscale = !!withColorscale;
     if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: 'marker.', cLetter: 'c' });
     }
 
     // Selection styling
