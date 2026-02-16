@@ -121,6 +121,18 @@ module.exports = function calc(gd, trace) {
     trace._extremes[xa._id] = Axes.findExtremes(xa, allX, {padded: true});
     trace._extremes[ya._id] = Axes.findExtremes(ya, allY, {padded: true});
 
+    // Merge text arrays into calcdata for Drawing.textPointStyle
+    Lib.mergeArray(trace.text, cd, 'tx');
+    Lib.mergeArray(trace.textposition, cd, 'tp');
+    if(trace.textfont) {
+        Lib.mergeArrayCastPositive(trace.textfont.size, cd, 'ts');
+        Lib.mergeArray(trace.textfont.color, cd, 'tc');
+        Lib.mergeArray(trace.textfont.family, cd, 'tf');
+        Lib.mergeArray(trace.textfont.weight, cd, 'tw');
+        Lib.mergeArray(trace.textfont.style, cd, 'ty');
+        Lib.mergeArray(trace.textfont.variant, cd, 'tv');
+    }
+
     // Colorscale cmin/cmax computation: prefer provided marker.color, else magnitude
     if(trace._hasColorscale) {
         var vals = hasMarkerColorArray ? [cMin, cMax] : [normMin, normMax];
