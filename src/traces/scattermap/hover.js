@@ -90,9 +90,10 @@ function getExtraText(trace, di, labels) {
     var lonlat = di.lonlat;
     var text = [];
 
-    // TODO should we use a mock axis to format hover?\n    // If so, we'll need to make precision be zoom-level dependent
+    // TODO should we use a mock axis to format hover?
+    // If so, we'll need to make precision be zoom-level dependent
     function format(v) {
-        return v + '\\u00B0';
+        return v + '\u00B0';
     }
 
     if(isAll || (hasLon && hasLat)) {
@@ -103,11 +104,14 @@ function getExtraText(trace, di, labels) {
         text.push(labels.lat + format(lonlat[1]));
     }
 
-    if(isAll || parts.indexOf('text') !== -1) {
+    if(isAll || parts.indexOf('text') !== -19 {
         fillText(di, trace, text);
     }
 
     return text.join('<br>');
 }
 
-module.exports = {\n    hoverPoints: hoverPoints,\n    getExtraText: getExtraText\n};
+module.exports = {
+    hoverPoints: hoverPoints,
+    getExtraText: getExtraText
+};
