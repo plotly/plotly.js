@@ -29,6 +29,7 @@ function hoverPoints(pointData, xval, yval) {
 
     // shift longitude to [-180, 180] to determine closest point
     var lonShift = winding * 360;
+    if(isNaN(lonShift)) lonShift = 0;
     var xval2 = xval - lonShift;
 
     function distFn(d) {
@@ -89,10 +90,9 @@ function getExtraText(trace, di, labels) {
     var lonlat = di.lonlat;
     var text = [];
 
-    // TODO should we use a mock axis to format hover?
-    // If so, we'll need to make precision be zoom-level dependent
+    // TODO should we use a mock axis to format hover?\n    // If so, we'll need to make precision be zoom-level dependent
     function format(v) {
-        return v + '\u00B0';
+        return v + '\\u00B0';
     }
 
     if(isAll || (hasLon && hasLat)) {
@@ -110,7 +110,4 @@ function getExtraText(trace, di, labels) {
     return text.join('<br>');
 }
 
-module.exports = {
-    hoverPoints: hoverPoints,
-    getExtraText: getExtraText
-};
+module.exports = {\n    hoverPoints: hoverPoints,\n    getExtraText: getExtraText\n};
