@@ -220,8 +220,7 @@ describe('Test quiver interactions', function() {
                 x: [1, 2, 3],
                 y: [1, 2, 3],
                 u: [1, 0, -1],
-                v: [0, 1, 0],
-                showscale: false
+                v: [0, 1, 0]
             }],
             layout: {
                 margin: {l: 0, t: 0, r: 0, b: 0},
@@ -251,8 +250,7 @@ describe('Test quiver interactions', function() {
             y: [1, 2],
             u: [1, 0],
             v: [0, 1],
-            line: {color: 'red'},
-            showscale: false
+            line: {color: 'red'}
         }, {
             type: 'quiver',
             name: 'trace B',
@@ -260,8 +258,7 @@ describe('Test quiver interactions', function() {
             y: [3, 4],
             u: [-1, 0],
             v: [0, -1],
-            line: {color: 'blue'},
-            showscale: false
+            line: {color: 'blue'}
         }], {
             margin: {l: 0, t: 0, r: 0, b: 0},
             width: 400,

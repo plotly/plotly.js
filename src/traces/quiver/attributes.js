@@ -34,13 +34,6 @@ var attrs = {
         anim: true,
         description: 'Sets the y components of the arrow vectors.'
     },
-    // Optional scalar field used for colorscale mapping. If omitted, |(u,v)| is used.
-    c: {
-        valType: 'data_array',
-        editType: 'calc',
-        anim: true,
-        description: 'Sets the scalar values used to map colors via the colorscale. If not provided, the magnitude sqrt(u^2 + v^2) is used.'
-    },
     sizemode: {
         valType: 'enumerated',
         values: ['scaled', 'absolute', 'raw'],
@@ -181,6 +174,17 @@ var attrs = {
         description: 'Sets the text font.'
     }),
 
+    // Marker (for colorscale-based coloring of arrows)
+    marker: extendFlat(
+        {
+            editType: 'calc'
+        },
+        colorScaleAttrs('marker', {
+            showScaleDflt: true,
+            editTypeOverride: 'calc'
+        })
+    ),
+
     // Selection and styling
     selected: {
         line: {
@@ -236,16 +240,6 @@ var attrs = {
 
 // Extend with base attributes (includes hoverinfo, etc.)
 extendFlat(attrs, baseAttrs);
-
-// Colorscale attributes to color arrows by |(u,v)| magnitude
-extendFlat(
-    attrs,
-    colorScaleAttrs('', {
-        colorAttr: 'u/v norm',
-        showScaleDflt: true,
-        editTypeOverride: 'calc'
-    })
-);
 
 // Add hoverinfo with proper flags for quiver
 // We need to create a new object to avoid mutating the shared base attributes

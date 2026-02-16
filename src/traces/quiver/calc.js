@@ -29,7 +29,8 @@ module.exports = function calc(gd, trace) {
     var normMax = -Infinity;
     var cMin = Infinity;
     var cMax = -Infinity;
-    var hasC = Lib.isArrayOrTypedArray(trace.c);
+    var markerColor = (trace.marker || {}).color;
+    var hasMarkerColorArray = Lib.isArrayOrTypedArray(markerColor);
 
     for(var i = 0; i < len; i++) {
         var cdi = cd[i] = { i: i };
@@ -45,8 +46,8 @@ module.exports = function calc(gd, trace) {
         }
 
         // track ranges for colorscale
-        if(hasC) {
-            var ci = trace.c[i];
+        if(hasMarkerColorArray) {
+            var ci = markerColor[i];
             if(isNumeric(ci)) {
                 if(ci < cMin) cMin = ci;
                 if(ci > cMax) cMax = ci;
@@ -65,12 +66,12 @@ module.exports = function calc(gd, trace) {
     // Ensure axes are expanded and categories registered like scatter traces do
     scatterCalc.calcAxisExpansion(gd, trace, xa, ya, xVals, yVals);
 
-    // Colorscale cmin/cmax computation: prefer provided c, else magnitude
+    // Colorscale cmin/cmax computation: prefer provided marker.color, else magnitude
     if(trace._hasColorscale) {
-        var vals = hasC ? [cMin, cMax] : [normMin, normMax];
+        var vals = hasMarkerColorArray ? [cMin, cMax] : [normMin, normMax];
         colorscaleCalc(gd, trace, {
             vals: vals,
-            containerStr: '',
+            containerStr: 'marker',
             cLetter: 'c'
         });
     }

@@ -6,27 +6,29 @@
       "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
       "u": [0.5, 1.5, 2.5, 0.5, 1.5, 2.5, 0.5, 1.5, 2.5],
       "v": [0.5, 0.5, 0.5, 1.5, 1.5, 1.5, 2.5, 2.5, 2.5],
-      "c": [1, 2, 3, 2, 3, 4, 3, 4, 5],
+      "marker": {
+        "color": [1, 2, 3, 2, 3, 4, 3, 4, 5],
+        "colorscale": [
+          [0, "rgb(0,0,255)"],
+          [0.5, "rgb(0,255,0)"],
+          [1, "rgb(255,0,0)"]
+        ],
+        "showscale": true,
+        "colorbar": {
+          "title": {"text": "Custom Field"},
+          "x": 1.02
+        }
+      },
       "sizemode": "scaled",
       "sizeref": 0.25,
       "anchor": "tail",
-      "colorscale": [
-        [0, "rgb(0,0,255)"],
-        [0.5, "rgb(0,255,0)"],
-        [1, "rgb(255,0,0)"]
-      ],
-      "showscale": true,
       "line": {
         "width": 2
-      },
-      "colorbar": {
-        "title": {"text": "Custom Field"},
-        "x": 1.02
       }
     }
   ],
   "layout": {
-    "title": {"text": "Quiver with Custom Scalar Field (c)"},
+    "title": {"text": "Quiver with Custom Scalar Field"},
     "width": 600,
     "height": 500,
     "xaxis": {
