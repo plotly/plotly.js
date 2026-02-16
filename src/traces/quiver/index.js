@@ -18,6 +18,7 @@ module.exports = {
     formatLabels: require('./format_labels'),
     eventData: require('./event_data'),
     selectPoints: require('../scatter/select'),
+    colorbar: require('../scatter/marker_colorbar'),
     animatable: true,
 
     meta: {
