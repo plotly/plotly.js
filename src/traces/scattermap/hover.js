@@ -104,7 +104,7 @@ function getExtraText(trace, di, labels) {
         text.push(labels.lat + format(lonlat[1]));
     }
 
-    if(isAll || parts.indexOf('text') !== -19 {
+    if(isAll || parts.indexOf('text') !== -1) {
         fillText(di, trace, text);
     }
 
