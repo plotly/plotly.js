@@ -80,16 +80,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     lineSegments.exit().remove();
 
-    // Precompute norms for sizing
-    var uArr = trace.u || [];
-    var vArr = trace.v || [];
-    var maxNorm = 0;
-    for(var ni = 0; ni < trace._length; ni++) {
-        var uu = uArr[ni] || 0;
-        var vv = vArr[ni] || 0;
-        var nrm = Math.sqrt(uu * uu + vv * vv);
-        if(nrm > maxNorm) maxNorm = nrm;
-    }
+    // Use maxNorm precomputed in calc
+    var maxNorm = trace._maxNorm || 0;
     var sizemode = trace.sizemode || 'scaled';
     var sizeref = (trace.sizeref !== undefined) ? trace.sizeref : (sizemode === 'raw' ? 1 : 0.5);
     var anchor = trace.anchor || 'tail';

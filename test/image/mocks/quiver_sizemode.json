@@ -14,7 +14,6 @@
         "color": "red",
         "width": 2
       },
-      "showscale": false,
       "xaxis": "x",
       "yaxis": "y"
     },
@@ -32,7 +31,6 @@
         "color": "blue",
         "width": 2
       },
-      "showscale": false,
       "xaxis": "x2",
       "yaxis": "y2"
     },
@@ -50,7 +48,6 @@
         "color": "green",
         "width": 2
       },
-      "showscale": false,
       "xaxis": "x3",
       "yaxis": "y3"
     }
@@ -61,32 +58,26 @@
     "showlegend": true,
     "xaxis": {
       "domain": [0, 0.3],
-      "range": [-0.5, 2.5],
       "title": {"text": "scaled"}
     },
     "yaxis": {
-      "domain": [0, 1],
-      "range": [-0.5, 0.5]
+      "domain": [0, 1]
     },
     "xaxis2": {
       "domain": [0.35, 0.65],
-      "range": [-0.5, 2.5],
       "title": {"text": "absolute"}
     },
     "yaxis2": {
       "domain": [0, 1],
-      "anchor": "x2",
-      "range": [0.5, 1.5]
+      "anchor": "x2"
     },
     "xaxis3": {
       "domain": [0.7, 1],
-      "range": [-0.5, 2.5],
       "title": {"text": "raw"}
     },
     "yaxis3": {
       "domain": [0, 1],
-      "anchor": "x3",
-      "range": [1.5, 2.5]
+      "anchor": "x3"
     }
   }
 }
