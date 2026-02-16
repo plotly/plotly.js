@@ -193,6 +193,36 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         });
     }
 
+    // Render text labels at data points
+    var textGroup = d3.select(element).selectAll('g.text')
+        .data([cdscatter]);
+
+    textGroup.enter().append('g').classed('text', true);
+
+    Drawing.setClipUrl(textGroup, plotinfo.layerClipId, gd);
+
+    var textJoin = textGroup.selectAll('g.textpoint')
+        .data(cdscatter);
+
+    textJoin.enter().append('g').classed('textpoint', true).append('text');
+    textJoin.exit().remove();
+
+    textJoin.each(function(d) {
+        var g = d3.select(this);
+        var hasNode = Drawing.translatePoint(d, g.select('text'), xa, ya);
+        if(!hasNode) g.remove();
+    });
+
+    textJoin.selectAll('text')
+        .call(Drawing.textPointStyle, trace, gd)
+        .each(function(d) {
+            var x = xa.c2p(d.x);
+            var y = ya.c2p(d.y);
+            d3.select(this).selectAll('tspan.line').each(function() {
+                d3.select(this).attr({x: x, y: y});
+            });
+        });
+
     // Handle transitions
     if(transitionOpts && transitionOpts.duration > 0) {
         var transition = d3.transition()
