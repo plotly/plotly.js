@@ -66,12 +66,14 @@ module.exports = function calc(gd, trace) {
     scatterCalc.calcAxisExpansion(gd, trace, xa, ya, xVals, yVals);
 
     // Colorscale cmin/cmax computation: prefer provided c, else magnitude
-    var vals = hasC ? [cMin, cMax] : [normMin, normMax];
-    colorscaleCalc(gd, trace, {
-        vals: vals,
-        containerStr: '',
-        cLetter: 'c'
-    });
+    if(trace._hasColorscale) {
+        var vals = hasC ? [cMin, cMax] : [normMin, normMax];
+        colorscaleCalc(gd, trace, {
+            vals: vals,
+            containerStr: '',
+            cLetter: 'c'
+        });
+    }
 
     return cd;
 };

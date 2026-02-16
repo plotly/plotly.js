@@ -2,6 +2,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -75,8 +76,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('vhoverformat');
 
     // Colorscale defaults (adds colorscale, showscale, colorbar, etc.)
-    traceOut._hasColorscale = true;
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
+    var withColorscale = hasColorscale(traceIn, '', 'c') || traceIn.coloraxis;
+    traceOut._hasColorscale = !!withColorscale;
+    if(withColorscale) {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'c' });
+    }
 
     // Selection styling
     coerce('selected.line.color');
