@@ -68,6 +68,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('vhoverformat');
 
     // Colorscale defaults (adds colorscale, showscale, colorbar, etc.)
+    // Ensure traceOut.marker exists before colorscaleDefaults, which captures
+    // a reference to it via npMaybe at the start of its execution.
+    if(!traceOut.marker) traceOut.marker = {};
     coerce('marker.color');
     var withColorscale = hasColorscale(traceIn, 'marker') || (traceIn.marker || {}).coloraxis;
     traceOut._hasColorscale = !!withColorscale;
