@@ -16,12 +16,6 @@
   ],
   "layout": {
     "width": 500,
-    "height": 500,
-    "xaxis": {
-      "range": [-0.5, 2.5]
-    },
-    "yaxis": {
-      "range": [-0.5, 2.5]
-    }
+    "height": 500
   }
 }

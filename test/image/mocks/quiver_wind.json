@@ -26,14 +26,16 @@
       "sizemode": "scaled",
       "sizeref": 0.2,
       "anchor": "center",
-      "colorscale": "Jet",
-      "showscale": true,
+      "marker": {
+        "colorscale": "Jet",
+        "showscale": true,
+        "colorbar": {
+          "title": {"text": "Speed"},
+          "x": 1.02
+        }
+      },
       "line": {
         "width": 1.5
-      },
-      "colorbar": {
-        "title": {"text": "Speed"},
-        "x": 1.02
       }
     }
   ],
@@ -42,12 +44,10 @@
     "width": 700,
     "height": 600,
     "xaxis": {
-      "title": {"text": "X"},
-      "range": [-0.2, 3.2]
+      "title": {"text": "X"}
     },
     "yaxis": {
-      "title": {"text": "Y"},
-      "range": [-0.2, 2.2]
+      "title": {"text": "Y"}
     }
   }
 }

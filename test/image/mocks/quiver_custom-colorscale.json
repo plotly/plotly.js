@@ -30,12 +30,6 @@
   "layout": {
     "title": {"text": "Quiver with Custom Scalar Field"},
     "width": 600,
-    "height": 500,
-    "xaxis": {
-      "range": [-0.5, 2.5]
-    },
-    "yaxis": {
-      "range": [-0.5, 2.5]
-    }
+    "height": 500
   }
 }

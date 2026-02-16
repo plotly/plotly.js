@@ -13,19 +13,12 @@
       "line": {
         "color": "purple",
         "width": 2
-      },
-      "showscale": false
+      }
     }
   ],
   "layout": {
     "title": {"text": "Quiver with Zero-Length Vectors"},
     "width": 600,
-    "height": 400,
-    "xaxis": {
-      "range": [-0.5, 4.5]
-    },
-    "yaxis": {
-      "range": [0, 2]
-    }
+    "height": 400
   }
 }
