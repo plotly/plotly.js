@@ -17,7 +17,7 @@ module.exports = {
     hoverPoints: require('./hover'),
     formatLabels: require('./format_labels'),
     eventData: require('./event_data'),
-    selectPoints: require('./select_points'),
+    selectPoints: require('../scatter/select'),
     animatable: true,
 
     meta: {
