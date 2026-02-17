@@ -1264,7 +1264,7 @@ function createHoverText(hoverData, opts) {
                 bgcolor: hoverlabel.bgcolor,
                 bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
-                tracegroupgap: 7,
+                tracegroupgap: fullLayout.legend ? fullLayout.legend.tracegroupgap : undefined,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
                 orientation: 'v'
             }

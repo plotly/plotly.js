@@ -1,0 +1,1 @@
+- Unified hover: use `legend.tracegroupgap` in mock legend instead of setting a hardcoded value [[#6864](https://github.com/plotly/plotly.js/pull/6864)]
