@@ -99,10 +99,10 @@ module.exports = overrideAll(
 
         line: {
             color: lineAttrs.color,
-            width: lineAttrs.width
-
-            // TODO
-            // dash: dash
+            width: lineAttrs.width,
+            dash: extendFlat({}, scatterAttrs.line.dash, {
+                editType: 'plot'
+            })
         },
 
         connectgaps: scatterAttrs.connectgaps,
