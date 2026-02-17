@@ -235,7 +235,7 @@ module.exports = {
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in gd._fullLayout but not copied back
         // to gd.data like the others are.
-        values: ['-', 'linear', 'log', 'date', 'category', 'multicategory'],
+        values: ['-', 'linear', 'log', 'symlog', 'date', 'category', 'multicategory'],
         dflt: '-',
         editType: 'calc',
         // we forget when an axis has been autotyped, just writing the auto
@@ -247,7 +247,9 @@ module.exports = {
             'Sets the axis type.',
             'By default, plotly attempts to determined the axis type',
             'by looking into the data of the traces that referenced',
-            'the axis in question.'
+            'the axis in question.',
+            'With *symlog*, the axis is log-scaled with a linear range',
+            'around zero.'
         ].join(' ')
     },
     autotypenumbers: {

@@ -78,6 +78,16 @@ module.exports = function setConvert(ax, fullLayout) {
         } else return BADNUM;
     }
 
+    function toSymlog(v) {
+        // Using asinh as a smooth approximation to symlog
+        // TODO: Make the linear threshold configurable? Currently implicit 1.
+        return Math.asinh(v) / Math.LN10;
+    }
+
+    function fromSymlog(v) {
+        return Math.sinh(v * Math.LN10);
+    }
+
     /*
      * wrapped dateTime2ms that:
      * - accepts ms numbers for backward compatibility
@@ -241,14 +251,22 @@ module.exports = function setConvert(ax, fullLayout) {
     }
 
     // conversions among c/l/p are fairly simple - do them together for all axis types
-    ax.c2l = (ax.type === 'log') ? toLog : ensureNumber;
-    ax.l2c = (ax.type === 'log') ? fromLog : ensureNumber;
-
-    ax.l2p = l2p;
-    ax.p2l = p2l;
-
-    ax.c2p = (ax.type === 'log') ? function(v, clip) { return l2p(toLog(v, clip)); } : l2p;
-    ax.p2c = (ax.type === 'log') ? function(px) { return fromLog(p2l(px)); } : p2l;
+    if(ax.type === 'log') {
+        ax.c2l = toLog;
+        ax.l2c = fromLog;
+        ax.c2p = function(v, clip) { return l2p(toLog(v, clip)); };
+        ax.p2c = function(px) { return fromLog(p2l(px)); };
+    } else if(ax.type === 'symlog') {
+        ax.c2l = toSymlog;
+        ax.l2c = fromSymlog;
+        ax.c2p = function(v) { return l2p(toSymlog(v)); };
+        ax.p2c = function(px) { return fromSymlog(p2l(px)); };
+    } else {
+        ax.c2l = ensureNumber;
+        ax.l2c = ensureNumber;
+        ax.c2p = l2p;
+        ax.p2c = p2l;
+    }
 
     /*
      * now type-specific conversions for **ALL** other combinations
@@ -277,6 +295,25 @@ module.exports = function setConvert(ax, fullLayout) {
 
         ax.d2p = function(v, clip) { return ax.l2p(ax.d2r(v, clip)); };
         ax.p2d = function(px) { return fromLog(p2l(px)); };
+
+        ax.r2p = function(v) { return ax.l2p(cleanNumber(v)); };
+        ax.p2r = p2l;
+
+        ax.cleanPos = ensureNumber;
+    } else if(ax.type === 'symlog') {
+        // Symlog implementation using arcsinh
+        // d and c are data vals, r and l are transformed (symlogged)
+        ax.d2r = ax.d2l = function(v) { return toSymlog(cleanNumber(v)); };
+        ax.r2d = ax.r2c = function(v) { return fromSymlog(cleanNumber(v)); };
+
+        ax.d2c = ax.r2l = cleanNumber;
+        ax.c2d = ax.l2r = ensureNumber;
+
+        ax.c2r = toSymlog;
+        ax.l2d = fromSymlog;
+
+        ax.d2p = function(v) { return ax.l2p(ax.d2r(v)); };
+        ax.p2d = function(px) { return fromSymlog(p2l(px)); };
 
         ax.r2p = function(v) { return ax.l2p(cleanNumber(v)); };
         ax.p2r = p2l;
