@@ -1,6 +1,6 @@
 'use strict';
 
-var annAttrs = require('../annotations/attributes');
+var cartesianConstants = require('../../plots/cartesian/constants');
 var fontAttrs = require('../../plots/font_attributes');
 var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
@@ -8,6 +8,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 var basePlotAttributes = require('../../plots/attributes');
+var annAttrs = require('../annotations/attributes');
 const { shapeTexttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
@@ -115,9 +116,13 @@ module.exports = templatedArray('shape', {
     },
 
     xref: extendFlat({}, annAttrs.xref, {
+        arrayOk: true,
         description: [
             "Sets the shape's x coordinate axis.",
-            axisPlaceableObjs.axisRefDescription('x', 'left', 'right')
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
+            'If an array of axis IDs is provided, each `x` value will refer to the corresponding axis,',
+            'e.g., [\'x\', \'x2\'] for a rectangle, line, or circle means `x0` uses the `x` axis and `x1` uses the `x2` axis.',
+            'Path shapes using an array should have one entry for each x coordinate in the string.',
         ].join(' ')
     }),
     xsizemode: {
@@ -134,7 +139,8 @@ module.exports = templatedArray('shape', {
             'of data or plot fraction but `x0`, `x1` and x coordinates within `path`',
             'are pixels relative to `xanchor`. This way, the shape can have',
             'a fixed width while maintaining a position relative to data or',
-            'plot fraction.'
+            'plot fraction.',
+            'Note: `xsizemode` *pixel* is not supported when `xref` is an array.'
         ].join(' ')
     },
     xanchor: {
@@ -183,9 +189,13 @@ module.exports = templatedArray('shape', {
         ].join(' ')
     },
     yref: extendFlat({}, annAttrs.yref, {
+        arrayOk: true,
         description: [
             "Sets the shape's y coordinate axis.",
-            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top')
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
+            'If an array of axis IDs is provided, each `y` value will refer to the corresponding axis,',
+            'e.g., [\'y\', \'y2\'] for a rectangle, line, or circle means `y0` uses the `y` axis and `y1` uses the `y2` axis.',
+            'Path shapes using an array should have one entry for each y coordinate in the string.',
         ].join(' ')
     }),
     ysizemode: {
@@ -202,7 +212,8 @@ module.exports = templatedArray('shape', {
             'of data or plot fraction but `y0`, `y1` and y coordinates within `path`',
             'are pixels relative to `yanchor`. This way, the shape can have',
             'a fixed height while maintaining a position relative to data or',
-            'plot fraction.'
+            'plot fraction.',
+            'Note: `ysizemode` *pixel* is not supported when `yref` is an array.'
         ].join(' ')
     },
     yanchor: {

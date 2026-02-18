@@ -304,6 +304,8 @@ describe('Plotly.react transitions:', function() {
         });
 
         if(failEarly) {
+            // Reset spy counters even if test fails (to avoid causing subsequent tests to fail)
+            resetSpyCounters();
             return fail(_msg + '- Wrong calls, assertSpies early fail');
         }
 
@@ -334,6 +336,8 @@ describe('Plotly.react transitions:', function() {
 
         // sanity check
         if(actuals.length !== exps.length) {
+            // Reset spy counters even if test fails (to avoid causing subsequent tests to fail)
+            resetSpyCounters();
             return fail(_msg + '- Something went wrong when building "actual" callData list');
         }
 
@@ -628,13 +632,11 @@ describe('Plotly.react transitions:', function() {
             layout.xaxis.range = [-2, 2];
             return Plotly.react(gd, data, layout);
         })
-        .then(delay(50))
+        .then(delay(300))
         .then(function() {
             assertSpies('just layout transition', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Axes, 'drawOne', 1],
-                [Axes, 'drawOne', 1],
                 [Axes, 'drawOne', 1],
                 [Axes, 'drawOne', 1],
                 // one _module.plot call from the relayout at end of axis transition

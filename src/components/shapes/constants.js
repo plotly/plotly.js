@@ -33,7 +33,7 @@ module.exports = {
         Q: {1: true, 3: true, drawn: 3},
         C: {1: true, 3: true, 5: true, drawn: 5},
         T: {1: true, drawn: 1},
-        S: {1: true, 3: true, drawn: 5},
+        S: {1: true, 3: true, drawn: 3},
         // A: {1: true, 6: true},
         Z: {}
     },

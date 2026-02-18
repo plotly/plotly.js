@@ -91,11 +91,13 @@ function drawOne(gd, index) {
     // TODO: use d3 idioms instead of deleting and redrawing every time
     if(!options._input || options.visible !== true) return;
 
+    const isMultiAxisShape = Array.isArray(options.xref) || Array.isArray(options.yref);
+
     if(options.layer === 'above') {
         drawShape(gd._fullLayout._shapeUpperLayer);
-    } else if(options.xref === 'paper' || options.yref === 'paper') {
+    } else if(options.xref.includes('paper') || options.yref.includes('paper')) {
         drawShape(gd._fullLayout._shapeLowerLayer);
-    } else if(options.layer === 'between') {
+    } else if(options.layer === 'between' && !isMultiAxisShape) {
         drawShape(plotinfo.shapelayerBetween);
     } else {
         if(plotinfo._hadPlotinfo) {
@@ -196,13 +198,50 @@ function setClipPath(shapePath, gd, shapeOptions) {
     //
     // if axis is 'paper' or an axis with " domain" appended, then there is no
     // clip axis
-    var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
 
-    Drawing.setClipUrl(
-        shapePath,
-        clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null,
-        gd
-    );
+    const xref = shapeOptions.xref;
+    const yref = shapeOptions.yref;
+
+    // For multi-axis shapes, create a custom clip path from axis bounds
+    if(Array.isArray(xref) || Array.isArray(yref)) {
+        const clipId = 'clip' + gd._fullLayout._uid + 'shape' + shapeOptions._index;
+        const rect = getMultiAxisClipRect(gd, xref, yref);
+
+        Lib.ensureSingleById(gd._fullLayout._clips, 'clipPath', clipId, function(s) {
+            s.append('rect');
+        }).select('rect').attr(rect);
+
+        Drawing.setClipUrl(shapePath, clipId, gd);
+    } else {
+        const clipAxes = (xref + yref).replace(/paper/g, '').replace(/[xyz][0-9]* *domain/g, '');
+        Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
+    }
+}
+
+function getMultiAxisClipRect(gd, xref, yref) {
+    const gs = gd._fullLayout._size;
+
+    function getBounds(refs, isVertical) {
+        // Retrieve all existing axes from the references
+        const axes = (Array.isArray(refs) ? refs : [refs])
+            .map(r => Axes.getFromId(gd, r))
+            .filter(Boolean);
+
+        // If no valid axes, return the bounds of the larger plot area
+        if(!axes.length) {
+            return isVertical ? [gs.t, gs.t + gs.h] : [gs.l, gs.l + gs.w];
+        }
+
+        // Otherwise, we find all find and return the smallest start point
+        // and largest end point to be used as the clip bounds
+        const startBounds = axes.map(function(ax) { return ax._offset; });
+        const endBounds = axes.map(function(ax) { return ax._offset + ax._length; });
+        return [Math.min(...startBounds), Math.max(...endBounds)];
+    }
+
+    const xb = getBounds(xref, false);
+    const yb = getBounds(yref, true);
+    return {x: xb[0], y: yb[0], width: xb[1] - xb[0], height: yb[1] - yb[0]};
 }
 
 function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHelpers) {

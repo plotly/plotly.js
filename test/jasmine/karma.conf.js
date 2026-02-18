@@ -253,14 +253,22 @@ func.defaultConfig = {
     //
     // window-size values came from observing default size
     //
-    // '--ignore-gpu-blacklist' allow to test WebGL on CI (!!!)
+    // '--ignore-gpu-blocklist' allow to test WebGL on CI (!!!)
     customLaunchers: {
         _Chrome: {
             base: 'Chrome',
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--ignore-gpu-blacklist' : '',
+                isCI ? '--ignore-gpu-blocklist' : '',
+                // The following two flags are needed only for the "NoCI" tests which run in GitHub Actions.
+                // The first is needed because the GPU is not available to those runners,
+                // and therefore we need to use SwiftShader instead (which is disabled by default as of Jan 2026,
+                // hence the need for a flag to manually enable it).
+                // The second flag is needed because the Chrome browser installed by the CI job runner
+                // fails without it.
+                isCI && process.env.GITHUB_ACTIONS ? '--enable-unsafe-swiftshader' : '',
+                isCI && process.env.GITHUB_ACTIONS ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
             ]
         },
