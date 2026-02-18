@@ -29,6 +29,7 @@ function hoverPoints(pointData, xval, yval) {
 
     // shift longitude to [-180, 180] to determine closest point
     var lonShift = winding * 360;
+    if(isNaN(lonShift)) lonShift = 0;
     var xval2 = xval - lonShift;
 
     function distFn(d) {
