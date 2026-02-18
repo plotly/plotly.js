@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  browser-tools: circleci/browser-tools@1.5.1
+  browser-tools: circleci/browser-tools@2.4.0
 
 # Inspired by:
 # https://github.com/CircleCI-Public/circleci-demo-workflows/blob/workspace-forwarding/.circleci/config.yml
@@ -40,11 +40,11 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
-      - browser-tools/install-browser-tools:
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "132.0.6834.110"
+      - browser-tools/install_browser_tools:
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "133.0.6943.126"
       - attach_workspace:
           at: ~/
       - run:
@@ -79,11 +79,11 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
-      - browser-tools/install-browser-tools:
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "132.0.6834.110"
+      - browser-tools/install_browser_tools:
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "133.0.6943.126"
       - attach_workspace:
           at: ~/
       - run:
@@ -101,11 +101,11 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
-      - browser-tools/install-browser-tools:
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "132.0.6834.110"
+      - browser-tools/install_browser_tools:
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "133.0.6943.126"
       - attach_workspace:
           at: ~/
       - run:
@@ -123,11 +123,11 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
-      - browser-tools/install-browser-tools:
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "132.0.6834.110"
+      - browser-tools/install_browser_tools:
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "133.0.6943.126"
       - attach_workspace:
           at: ~/
       - run:
@@ -144,11 +144,11 @@ jobs:
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools: &browser-versions
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "143.0.7499.192"  # TEMPORARY pin until WebGL issues with 144 are resolved
+      - browser-tools/install_browser_tools: &browser-versions
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "143.0.7499.192"  # TEMPORARY pin until WebGL issues with 144 are resolved
       - attach_workspace:
           at: ~/
       - run:
@@ -165,11 +165,11 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
-      - browser-tools/install-browser-tools:
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "132.0.6834.110"
+      - browser-tools/install_browser_tools:
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "133.0.6943.126"
       - attach_workspace:
           at: ~/
       - run:
@@ -186,11 +186,11 @@ jobs:
     working_directory: ~/plotly.js
     steps:
       - run: sudo apt-get update
-      - browser-tools/install-browser-tools:
-          install-firefox: false
-          install-geckodriver: false
-          install-chrome: true
-          chrome-version: "132.0.6834.110"
+      - browser-tools/install_browser_tools:
+          install_firefox: false
+          install_geckodriver: false
+          install_chrome: true
+          chrome_version: "133.0.6943.126"
       - attach_workspace:
           at: ~/
       - run:
@@ -206,9 +206,9 @@ jobs:
       TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
-      - browser-tools/install-browser-tools:
-          install-chrome: false
-          install-chromedriver: false
+      - browser-tools/install_browser_tools:
+          install_chrome: false
+          install_chromedriver: false
       - attach_workspace:
           at: ~/
       - run:
