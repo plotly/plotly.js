@@ -17,6 +17,24 @@ var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPo
 var NEWLINES = require('../../lib/svg_text_utils').NEWLINES;
 var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
 
+function convertDash(dash, width) {
+    var dashList;
+    if (dash === 'solid') dashList = [];
+    else if (dash === 'dot') dashList = [1, 2];
+    else if (dash === 'dash') dashList = [4, 2];
+    else if (dash === 'longdash') dashList = [8, 2];
+    else if (dash === 'dashdot') dashList = [4, 2, 1, 2];
+    else if (dash === 'longdashdot') dashList = [8, 2, 1, 2];
+    else if (typeof dash === 'string') dashList = dash.split(/[\s,]+/).map(Number);
+    else dashList = dash;
+
+    if (dashList.length) {
+        return dashList.map(function (v) {
+            return (v * width) / 2;
+        });
+    }
+}
+
 module.exports = function convert(gd, calcTrace) {
     var trace = calcTrace[0].trace;
 
@@ -197,24 +215,6 @@ function makeCircleOpts(calcTrace) {
 
     function size2radius(s) {
         return s / 2;
-    }
-
-    function convertDash(dash, width) {
-        var dashList;
-        if (dash === 'solid') dashList = [];
-        else if (dash === 'dot') dashList = [1, 2];
-        else if (dash === 'dash') dashList = [4, 2];
-        else if (dash === 'longdash') dashList = [8, 2];
-        else if (dash === 'dashdot') dashList = [4, 2, 1, 2];
-        else if (dash === 'longdashdot') dashList = [8, 2, 1, 2];
-        else if (typeof dash === 'string') dashList = dash.split(/[\s,]+/).map(Number);
-        else dashList = dash;
-
-        if (dashList.length) {
-            return dashList.map(function (v) {
-                return (v * width) / 2;
-            });
-        }
     }
 
     var colorFn;

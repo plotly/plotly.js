@@ -1,0 +1,37 @@
+{
+  "data": [
+    {
+      "type": "scattermapbox",
+      "mode": "lines",
+      "lon": [-73.990, -73.988, -73.986, -73.984],
+      "lat": [40.755, 40.756, 40.757, 40.758],
+      "line": {
+        "color": "#1f77b4",
+        "width": 4,
+        "dash": "dot"
+      }
+    },
+    {
+      "type": "scattermapbox",
+      "mode": "lines",
+      "lon": [-73.985, -73.984, -73.983, -73.982],
+      "lat": [40.758, 40.759, 40.760, 40.761],
+      "line": {
+        "color": "#d62728",
+        "width": 4,
+        "dash": "dash"
+      }
+    }
+  ],
+  "layout": {
+    "title": {"text": "Scattermapbox line dash"},
+    "width": 700,
+    "height": 500,
+    "margin": {"l": 20, "r": 20, "t": 40, "b": 20},
+    "mapbox": {
+      "style": "white-bg",
+      "center": {"lon": -73.985, "lat": 40.758},
+      "zoom": 12
+    }
+  }
+}
