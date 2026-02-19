@@ -13,11 +13,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
         partition: 'y',
-        fullData: fullData
+        fullData: fullData,
+        layoutOut: layoutOut
     });
 };
 
 function handleDefaults(containerIn, containerOut, coerce, opts) {
+    var fullData = opts.fullData || [];
+    var layoutOut = opts.layoutOut || {};
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');
@@ -145,12 +148,6 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
         north === undefined
     ) {
         delete containerOut.bounds;
-
-        if(fitBounds) {
-            delete containerOut.center.lon;
-            delete containerOut.center.lat;
-            delete containerOut.zoom;
-        }
     }
 
     handleArrayContainerDefaults(containerIn, containerOut, {
