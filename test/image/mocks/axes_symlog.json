@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "x": [-1000, -100, -10, -1, -0.1, 0, 0.1, 1, 10, 100, 1000],
+      "y": [1000, 100, 10, 1, 0.1, 0, -0.1, -1, -10, -100, -1000],
+      "type": "scatter",
+      "mode": "lines+markers"
+    }
+  ],
+  "layout": {
+    "title": {"text": "Symlog axis example"},
+    "xaxis": {
+      "type": "symlog",
+      "autorange": true
+    },
+    "yaxis": {
+      "type": "symlog",
+      "autorange": true
+    }
+  }
+}

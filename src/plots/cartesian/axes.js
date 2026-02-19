@@ -4571,7 +4571,7 @@ function swapAxisGroup(gd, xIds, yIds) {
     var noSwapAttrs = [
         'anchor', 'domain', 'overlaying', 'position', 'side', 'tickangle', 'editType'
     ];
-    var numericTypes = ['linear', 'log'];
+    var numericTypes = ['linear', 'log', 'symlog'];
 
     for(i = 0; i < allAxKeys.length; i++) {
         var keyi = allAxKeys[i];

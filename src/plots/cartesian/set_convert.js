@@ -250,6 +250,9 @@ module.exports = function setConvert(ax, fullLayout) {
         };
     }
 
+    ax.l2p = l2p;
+    ax.p2l = p2l;
+
     // conversions among c/l/p are fairly simple - do them together for all axis types
     if(ax.type === 'log') {
         ax.c2l = toLog;
