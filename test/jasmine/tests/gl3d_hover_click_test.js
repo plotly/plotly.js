@@ -554,9 +554,9 @@ describe('Test gl3d trace click/hover:', function() {
         var fig = mesh3dcoloringMock;
 
         Plotly.newPlot(gd, fig)
-        .then(delay(20))
+        .then(delay(40))
         .then(function() { mouseEvent('mouseover', 200, 200); })
-        .then(delay(20))
+        .then(delay(40))
         .then(function() {
             assertHoverText(
                 'x: 0.6666667',
@@ -567,7 +567,7 @@ describe('Test gl3d trace click/hover:', function() {
             );
         })
         .then(function() { mouseEvent('mouseover', 300, 200); })
-        .then(delay(20))
+        .then(delay(40))
         .then(function() {
             assertHoverText(
                 'x: 1',
@@ -578,7 +578,7 @@ describe('Test gl3d trace click/hover:', function() {
             );
         })
         .then(function() { mouseEvent('mouseover', 300, 300); })
-        .then(delay(20))
+        .then(delay(40))
         .then(function() {
             assertHoverText(
                 'x: 1',
@@ -589,7 +589,7 @@ describe('Test gl3d trace click/hover:', function() {
             );
         })
         .then(function() { mouseEvent('mouseover', 200, 300); })
-        .then(delay(20))
+        .then(delay(40))
         .then(function() {
             assertHoverText(
                 'x: 0.6666667',
