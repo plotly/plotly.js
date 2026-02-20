@@ -251,7 +251,7 @@ function drawOne(gd, opts) {
                 const anyVisible = gd._fullData.concat(shapes).some(function(item) {
                     const legendAttr = item.legend || 'legend';
                     var inThisLegend = Array.isArray(legendAttr)
-                        ? legendAttr.some(function(legend) { return (legend || 'legend') === legendId; })
+                        ? legendAttr.includes(legendId)
                         : legendAttr === legendId;
                     return inThisLegend && item.visible === true;
                 });
@@ -515,13 +515,11 @@ function getTraceWidth(d, legendObj, textGap) {
 }
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
-     var fullLayout = gd._fullLayout;
+    var fullLayout = gd._fullLayout;
     var trace = legendItem.data()[0][0].trace;
-    var legendId = trace.legend || 'legend';
-    var legendObj = fullLayout[legendId];
 
-    var itemClick = legendObj.itemclick;
-    var itemDoubleClick = legendObj.itemdoubleclick;
+    var itemClick = legend.itemclick;
+    var itemDoubleClick = legend.itemdoubleclick;
 
     var evtData = {
         event: evt,
@@ -547,7 +545,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            if(itemClick) handleItemClick(legendItem, gd, legendObj, itemClick);
+            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -556,7 +554,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
         if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
-            handleItemClick(legendItem, gd, legendObj, itemDoubleClick);
+            handleItemClick(legendItem, gd, legend, itemDoubleClick);
         }
     }
 }
