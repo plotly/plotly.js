@@ -11,7 +11,7 @@ var DASHES = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var sortObjectKeys = require('../../lib/sort_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys').default;
 
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;
