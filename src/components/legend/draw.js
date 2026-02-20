@@ -494,7 +494,7 @@ function drawOne(gd, opts) {
                             );
                         });
                         if(clickedTrace.size() > 0) {
-                            clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
+                            clickOrDoubleClick(gd, legendObj, clickedTrace, numClicks, e);
                         }
                     }
                 });
