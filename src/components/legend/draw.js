@@ -249,7 +249,10 @@ function drawOne(gd, opts) {
                 // Toggle opacity of legend titles if all items in the legend are hidden
                 const shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
                 const anyVisible = gd._fullData.concat(shapes).some(function(item) {
-                    const inThisLegend = (item.legend || 'legend') === legendId;
+                    const legendAttr = item.legend || 'legend';
+                    var inThisLegend = Array.isArray(legendAttr)
+                        ? legendAttr.some(function(legend) { return (legend || 'legend') === legendId; })
+                        : legendAttr === legendId;
                     return inThisLegend && item.visible === true;
                 });
                 
