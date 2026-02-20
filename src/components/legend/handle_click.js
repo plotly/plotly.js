@@ -303,6 +303,7 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
         });
 
         toggleThisLegend = !anyVisibleHere;
+        toggleOtherLegends = false;
     } else {
         // isolate this legend or set all legends to visible
         const anyVisibleElsewhere = allLegendItems.some(function(item) {
