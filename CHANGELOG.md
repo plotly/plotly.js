@@ -9,6 +9,21 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.4.0] -- 2026-02-20
+
+### Added
+ - Add support for clicking legend titles to toggle visibility of all traces in legend [[#7698](https://github.com/plotly/plotly.js/pull/7698)]
+ - Add support for shapes to reference multiple axes [[#7666](https://github.com/plotly/plotly.js/pull/7666)]
+ - Add support for dashed marker lines in scatter plots [[#7673](https://github.com/plotly/plotly.js/pull/7673)], with thanks to @chrimaho for the contribution!
+
+### Changed
+- Increase axis autorange when bar charts have outside text labels, to avoid labels being clipped [[#7675](https://github.com/plotly/plotly.js/pull/7675)]
+
+### Fixed
+ - Fix issue where some traces in stacked area charts were not rendering their fill correctly after certain sequences of hide/show operations in the legend [[#7668](https://github.com/plotly/plotly.js/pull/7668)]
+ - Fix out of bounds index during scattergl animation trace type [[#7676](https://github.com/plotly/plotly.js/pull/7676)], with thanks to @BJohnBraddock for the contribution!
+
+
 ## [3.3.1] -- 2025-12-12
 
 ### Added
