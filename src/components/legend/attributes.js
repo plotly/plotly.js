@@ -176,6 +176,32 @@ module.exports = {
             '*togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph.'
         ].join(' ')
     },
+    titleclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'toggleothers', false],
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend title click.',
+            '*toggle* toggles the visibility of all items in the legend.',
+            '*toggleothers* toggles the visibility of all other legends.',
+            '*false* disables legend title click interactions.',
+            'Defaults to *toggle* when there are multiple legends, *false* otherwise.',
+            'Not supported for legends containing pie and pie-like traces.'
+        ].join(' ')
+    },
+    titledoubleclick: {
+        valType: 'enumerated',
+        values: ['toggle', 'toggleothers', false],
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend title double-click.',
+            '*toggle* toggles the visibility of all items in the legend.',
+            '*toggleothers* toggles the visibility of all other legends.',
+            '*false* disables legend title double-click interactions.',
+            'Defaults to *toggleothers* when there are multiple legends, *false* otherwise.',
+            'Not supported for legends containing pie and pie-like traces.'
+        ].join(' ')
+    },
     x: {
         valType: 'number',
         editType: 'legend',

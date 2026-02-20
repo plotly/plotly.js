@@ -3,40 +3,43 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var pushUnique = Lib.pushUnique;
+var helpers = require('./helpers');
 
 var SHOWISOLATETIP = true;
 
-module.exports = function handleClick(g, gd, numClicks) {
+/**
+ * Handles click actions on individual legend items.
+ *
+ * @param {object} g D3 selection of the legend item element
+ * @param {object} gd graph div
+ * @param {object} legendObj the legend object from fullLayout
+ * @param {string} mode toggle mode for the current action: 'toggle' | 'toggleothers'
+ *   - 'toggle': Toggle visibility of this item (or group if groupclick is 'togglegroup')
+ *   - 'toggleothers': Show only this item, hide all others (isolation mode)
+ */
+exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
     var fullLayout = gd._fullLayout;
 
     if(gd._dragged || gd._editing) return;
 
-    var itemClick = fullLayout.legend.itemclick;
-    var itemDoubleClick = fullLayout.legend.itemdoubleclick;
-    var groupClick = fullLayout.legend.groupclick;
+    var legendItem = g.data()[0][0];
+    if(legendItem.groupTitle && legendItem.noClick) return;
 
-    if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
+    var groupClick = legendObj.groupclick;
+
+    // Show isolate tip on first single click when default behavior is active
+    if(mode === 'toggle' && legendObj.itemdoubleclick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
     ) {
         Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long');
         SHOWISOLATETIP = false;
-    } else {
-        SHOWISOLATETIP = false;
     }
-
-    var mode;
-    if(numClicks === 1) mode = itemClick;
-    else if(numClicks === 2) mode = itemDoubleClick;
-    if(!mode) return;
 
     var toggleGroup = groupClick === 'togglegroup';
 
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
         [];
-
-    var legendItem = g.data()[0][0];
-    if(legendItem.groupTitle && legendItem.noClick) return;
 
     var fullData = gd._fullData;
     var shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
@@ -267,5 +270,84 @@ module.exports = function handleClick(g, gd, numClicks) {
         } else {
             Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
         }
+    }
+};
+
+/**
+ * Handles click actions on legend titles.
+ *
+ * @param {object} gd graph div (plot container)
+ * @param {object} legendObj the legend object from fullLayout
+ * @param {string} mode toggle mode for the current action: 'toggle' | 'toggleothers'
+ *   - 'toggle': show/hide all items in this legend
+ *   - 'toggleothers': isolate this legend (show its items, hide items in other legends)
+ */
+exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
+    const fullLayout = gd._fullLayout;
+    const fullData = gd._fullData;
+    const legendId = helpers.getId(legendObj);
+    const shapesWithLegend = (fullLayout.shapes || []).filter(function(d) { return d.showlegend; });
+    const allLegendItems = fullData.concat(shapesWithLegend);
+
+    function isInLegend(item) {
+        return (item.legend || 'legend') === legendId;
+    }
+
+    var toggleThisLegend;
+    var toggleOtherLegends;
+
+    if(mode === 'toggle') {
+        // If any item is visible in this legend, hide all. If all are hidden, show all
+        const anyVisibleHere = allLegendItems.some(function(item) {
+            return isInLegend(item) && item.visible === true;
+        });
+
+        toggleThisLegend = !anyVisibleHere;
+        toggleOtherLegends = false;
+    } else {
+        // isolate this legend or set all legends to visible
+        const anyVisibleElsewhere = allLegendItems.some(function(item) {
+            return !isInLegend(item) && item.visible === true && item.showlegend !== false;
+        });
+
+        toggleThisLegend = true;
+        toggleOtherLegends = !anyVisibleElsewhere;
+    }
+
+    const dataUpdate = { visible: [] };
+    const dataIndices = [];
+    const updatedShapes = (fullLayout.shapes || []).map(function(d) { return d._input; });
+    var shapesUpdated = false;
+
+    for(var i = 0; i < allLegendItems.length; i++) {
+        const item = allLegendItems[i];
+        const inThisLegend = isInLegend(item);
+
+        // If item is not in this legend, skip if in toggle mode 
+        // or if item is not displayed in the legend
+        if(!inThisLegend) {
+            const notDisplayed = (item.showlegend !== true && !item.legendgroup);
+            if(mode === 'toggle' || notDisplayed) continue;
+        }
+
+        const shouldShow = inThisLegend ? toggleThisLegend : toggleOtherLegends;
+        const newVis = shouldShow ? true : 'legendonly';
+
+        // Only update if visibility would actually change
+        if((item.visible !== false) && (item.visible !== newVis)) {
+            if(item._isShape) {
+                updatedShapes[item._index].visible = newVis;
+                shapesUpdated = true;
+            } else {
+                dataIndices.push(item.index);
+                dataUpdate.visible.push(newVis);
+            }
+        }
+    }
+
+    if(shapesUpdated) {
+        Registry.call('_guiUpdate', gd, dataUpdate, {shapes: updatedShapes}, dataIndices);
+    } else if(dataIndices.length) {
+        Registry.call('_guiRestyle', gd, dataUpdate, dataIndices);
     }
 };

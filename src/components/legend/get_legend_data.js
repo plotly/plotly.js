@@ -164,6 +164,7 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
                 trace: {
                     showlegend: firstItemTrace.showlegend,
                     legendgroup: firstItemTrace.legendgroup,
+                    legend: firstItemTrace.legend,
                     visible: opts.groupclick === 'toggleitem' ? true : firstItemTrace.visible
                 }
             });

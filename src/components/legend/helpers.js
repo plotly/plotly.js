@@ -11,3 +11,7 @@ exports.isVertical = function isVertical(legendLayout) {
 exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
+
+exports.getId = function getId(legendObj) {
+    return legendObj._id || 'legend';
+};
