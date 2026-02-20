@@ -573,4 +573,152 @@ describe('gradients', function() {
             done();
         }, done.fail);
     });
+
+    describe('custom marker functions', function() {
+        it('should accept a function as marker.symbol', function(done) {
+            var customFunc = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                mode: 'markers',
+                marker: {
+                    symbol: customFunc,
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(3);
+                
+                var firstPoint = points.node();
+                var path = firstPoint.getAttribute('d');
+                expect(path).toContain('M');
+                expect(path).toContain('L');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work with array of functions', function(done) {
+            var customFunc1 = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            var customFunc2 = function(r) {
+                return 'M' + r + ',' + r + 'H-' + r + 'V-' + r + 'H' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                mode: 'markers',
+                marker: {
+                    symbol: [customFunc1, customFunc2, customFunc1],
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(3);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work mixed with built-in symbols', function(done) {
+            var customFunc = function(r) {
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+            
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3, 4],
+                y: [2, 3, 4, 3],
+                mode: 'markers',
+                marker: {
+                    symbol: ['circle', customFunc, 'square', customFunc],
+                    size: 12
+                }
+            }])
+            .then(function() {
+                var points = d3Select(gd).selectAll('.point');
+                expect(points.size()).toBe(4);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should pass customdata to custom marker function', function(done) {
+            var receivedArgs = [];
+            var customFunc = function(r, customdata) {
+                receivedArgs.push({ r: r, customdata: customdata });
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [2, 3, 4],
+                mode: 'markers',
+                customdata: ['first', 'second', 'third'],
+                marker: {
+                    symbol: customFunc,
+                    size: 12
+                }
+            }])
+            .then(function() {
+                // Marker functions are called once per point (3 points minimum).
+                // selectedPointStyle may trigger additional passes.
+                expect(receivedArgs.length >= 3).toBe(true,
+                    'Expected at least 3 calls, got ' + receivedArgs.length);
+
+                // Verify r is passed correctly
+                expect(typeof receivedArgs[0].r).toBe('number');
+                expect(receivedArgs[0].r).toBe(6); // size/2
+
+                // Verify all customdata values were received
+                var receivedCustomdata = receivedArgs.map(function(a) { return a.customdata; });
+                expect(receivedCustomdata).toContain('first');
+                expect(receivedCustomdata).toContain('second');
+                expect(receivedCustomdata).toContain('third');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should work with object customdata', function(done) {
+            var receivedData = [];
+            var customFunc = function(r, customdata) {
+                receivedData.push(customdata);
+                if(customdata && customdata.type === 'big') {
+                    return 'M' + (r*1.5) + ',0L0,' + (r*1.5) + 'L-' + (r*1.5) + ',0L0,-' + (r*1.5) + 'Z';
+                }
+                return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+            };
+
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                mode: 'markers',
+                customdata: [{ type: 'small' }, { type: 'big' }, { type: 'small' }],
+                marker: {
+                    symbol: customFunc,
+                    size: 12
+                }
+            }])
+            .then(function() {
+                // Marker functions are called once per point (3 points minimum).
+                // selectedPointStyle may trigger additional passes.
+                expect(receivedData.length >= 3).toBe(true,
+                    'Expected at least 3 calls, got ' + receivedData.length);
+
+                // Verify all expected customdata types were received
+                var receivedTypes = receivedData.map(function(d) { return d ? d.type : null; });
+                expect(receivedTypes).toContain('small');
+                expect(receivedTypes).toContain('big');
+            })
+            .then(done, done.fail);
+        });
+    });
 });

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Custom Markers - With and Without Customdata</title>
+    <script src="../../dist/plotly.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #333; }
+        .info { background: #e7f3ff; padding: 10px; border-left: 4px solid #3b82f6; margin: 10px 0; }
+        code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h2>Custom Markers - With and Without Customdata</h2>
+    <div class="info">
+        <strong>Simple markers</strong> use <code>function(r)</code><br>
+        <strong>Data-aware markers</strong> use <code>function(r, customdata)</code>
+    </div>
+    <div id="plot" style="width: 700px; height: 400px;"></div>
+
+    <script>
+    // SIMPLE: just uses radius - diamond shape
+    function diamondMarker(r) {
+        return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
+    }
+
+    // SIMPLE: star shape
+    function starMarker(r) {
+        var points = 5, path = 'M';
+        for (var i = 0; i < points * 2; i++) {
+            var radius = i % 2 === 0 ? r : r * 0.4;
+            var ang = (i * Math.PI) / points - Math.PI / 2;
+            path += (i === 0 ? '' : 'L') +
+                    (radius * Math.cos(ang)).toFixed(2) + ',' +
+                    (radius * Math.sin(ang)).toFixed(2);
+        }
+        return path + 'Z';
+    }
+
+    // DATA-AWARE: shape depends on customdata[i]
+    function dataAwareMarker(r, customdata) {
+        var type = customdata;
+        if (type === 'big') {
+            // Larger diamond
+            var r2 = r * 1.4;
+            return 'M' + r2 + ',0L0,' + r2 + 'L-' + r2 + ',0L0,-' + r2 + 'Z';
+        }
+        if (type === 'star') {
+            // Star shape
+            var points = 5, path = 'M';
+            for (var i = 0; i < points * 2; i++) {
+                var radius = i % 2 === 0 ? r : r * 0.4;
+                var ang = (i * Math.PI) / points - Math.PI / 2;
+                path += (i === 0 ? '' : 'L') +
+                        (radius * Math.cos(ang)).toFixed(2) + ',' +
+                        (radius * Math.sin(ang)).toFixed(2);
+            }
+            return path + 'Z';
+        }
+        // Default: circle
+        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r +
+               'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
+    }
+
+    Plotly.newPlot('plot', [{
+        name: 'Simple: diamond(r)',
+        type: 'scatter',
+        x: [1, 2, 3, 4],
+        y: [1, 1, 1, 1],
+        mode: 'markers',
+        marker: { symbol: diamondMarker, size: 25, color: '#3b82f6' }
+    }, {
+        name: 'Simple: star(r)',
+        type: 'scatter',
+        x: [1, 2, 3, 4],
+        y: [2, 2, 2, 2],
+        mode: 'markers',
+        marker: { symbol: starMarker, size: 25, color: '#f59e0b' }
+    }, {
+        name: 'Data-aware: (r, customdata)',
+        type: 'scatter',
+        x: [1, 2, 3, 4],
+        y: [3, 3, 3, 3],
+        customdata: ['circle', 'big', 'star', 'circle'],
+        mode: 'markers',
+        marker: { symbol: dataAwareMarker, size: 25, color: '#10b981' }
+    }], {
+        title: 'Custom Marker Functions',
+        xaxis: { range: [0, 5] },
+        yaxis: { range: [0, 4], tickvals: [1, 2, 3], ticktext: ['Diamond', 'Star', 'Data-driven'] },
+        showlegend: true
+    });
+    </script>
+</body>
+</html>

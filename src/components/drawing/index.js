@@ -331,6 +331,8 @@ drawing.symbolList = [];
 
 Object.keys(SYMBOLDEFS).forEach(function (k) {
     var symDef = SYMBOLDEFS[k];
+    // Skip non-symbol exports (like 'align' function)
+    if (typeof symDef !== 'object' || symDef.n === undefined) return;
     var n = symDef.n;
     drawing.symbolList.push(
         n,
@@ -392,7 +394,16 @@ drawing.symbolNumber = function (v) {
     return v % 100 >= MAXSYMBOL || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r, t, s) {
+function makePointPath(symbolNumberOrFunc, r, t, s, d) {
+    // Check if a custom function was passed directly
+    if (typeof symbolNumberOrFunc === 'function') {
+        // Custom functions receive (r, customdata) and return an unrotated path.
+        // Rotation and standoff are applied automatically via align().
+        var path = symbolNumberOrFunc(r, d.data);
+        return SYMBOLDEFS.align(t, s, path);
+    }
+
+    var symbolNumber = symbolNumberOrFunc;
     var base = symbolNumber % 100;
     return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
@@ -914,17 +925,18 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
             r = d.mrc = fns.selectedSizeFn(d);
         }
 
-        // turn the symbol into a sanitized number
-        var x = drawing.symbolNumber(d.mx || marker.symbol) || 0;
+        // turn the symbol into a sanitized number (or keep function if it's a custom function)
+        var symbolValue = d.mx || marker.symbol;
+        var x = typeof symbolValue === 'function' ? symbolValue : (drawing.symbolNumber(symbolValue) || 0);
 
         // save if this marker is open
         // because that impacts how to handle colors
-        d.om = x % 200 >= 100;
+        d.om = typeof x === 'number' && x % 200 >= 100;
 
         var angle = getMarkerAngle(d, trace);
         var standoff = getMarkerStandoff(d, trace);
 
-        sel.attr('d', makePointPath(x, r, angle, standoff));
+        sel.attr('d', makePointPath(x, r, angle, standoff, d));
     }
 
     var perPointGradient = false;
@@ -1204,9 +1216,12 @@ drawing.selectedPointStyle = function (s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
+            // Handle both function and string/number symbols
+            var symbolForPath = typeof mx === 'function' ? mx : drawing.symbolNumber(mx);
+            
             pt.attr(
                 'd',
-                makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace))
+                makePointPath(symbolForPath, mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace), d)
             );
 
             // save for Drawing.selectedTextStyle
@@ -1498,7 +1513,7 @@ function applyBackoff(pt, start) {
             var endMarkerSize = endMarker.size;
             if (Lib.isArrayOrTypedArray(endMarkerSize)) endMarkerSize = endMarkerSize[endI];
 
-            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] * endMarkerSize : 0;
+            b = endMarker && typeof endMarkerSymbol !== 'function' ? (drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] || 0) * endMarkerSize : 0;
             b += drawing.getMarkerStandoff(d[endI], trace) || 0;
         }
 
