@@ -1,0 +1,83 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "tail anchor",
+      "x": [1, 1, 1],
+      "y": [0, 0, 0],
+      "u": [1, 0, -1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "line": {
+        "color": "red",
+        "width": 2
+      },
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "quiver",
+      "name": "tip anchor",
+      "x": [1, 1, 1],
+      "y": [1, 1, 1],
+      "u": [1, 0, -1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tip",
+      "line": {
+        "color": "blue",
+        "width": 2
+      },
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "quiver",
+      "name": "center anchor",
+      "x": [1, 1, 1],
+      "y": [2, 2, 2],
+      "u": [1, 0, -1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "center",
+      "line": {
+        "color": "green",
+        "width": 2
+      },
+      "xaxis": "x3",
+      "yaxis": "y3"
+    }
+  ],
+  "layout": {
+    "width": 900,
+    "height": 400,
+    "showlegend": true,
+    "xaxis": {
+      "domain": [0, 0.3],
+      "title": {"text": "tail anchor"}
+    },
+    "yaxis": {
+      "domain": [0, 1]
+    },
+    "xaxis2": {
+      "domain": [0.35, 0.65],
+      "title": {"text": "tip anchor"}
+    },
+    "yaxis2": {
+      "domain": [0, 1],
+      "anchor": "x2"
+    },
+    "xaxis3": {
+      "domain": [0.7, 1],
+      "title": {"text": "center anchor"}
+    },
+    "yaxis3": {
+      "domain": [0, 1],
+      "anchor": "x3"
+    }
+  }
+}

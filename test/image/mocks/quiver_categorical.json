@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "x": ["A", "B", "C", "A", "B", "C", "A", "B", "C"],
+      "y": ["X", "X", "X", "Y", "Y", "Y", "Z", "Z", "Z"],
+      "u": [1, 0, -1, 1, 0, -1, 1, 0, -1],
+      "v": [1, 1, 1, 0, 0, 0, -1, -1, -1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "line": {
+        "width": 2
+      },
+      "showscale": false
+    }
+  ],
+  "layout": {
+    "title": {"text": "Quiver with Categorical Axes"},
+    "width": 500,
+    "height": 500
+  }
+}

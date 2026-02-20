@@ -683,7 +683,7 @@ function getGradientDirection(reversescale, isRadial) {
 function getStyleGuide(d) {
     var trace = d[0].trace;
     var contours = trace.contours;
-    var showLine = subTypes.hasLines(trace);
+    var showLine = subTypes.hasLines(trace) || (trace.visible && trace.type === 'quiver');
     var showMarker = subTypes.hasMarkers(trace);
 
     var showFill = trace.visible && trace.fill && trace.fill !== 'none';

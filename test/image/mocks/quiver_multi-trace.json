@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "Field A",
+      "x": [0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1],
+      "u": [1, 1.5, 2, 1, 1.5, 2],
+      "v": [0.5, 1, 0.5, 1, 1.5, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.4,
+      "anchor": "tail",
+      "line": {
+        "color": "red",
+        "width": 2
+      }
+    },
+    {
+      "type": "quiver",
+      "name": "Field B",
+      "x": [3, 4, 5, 3, 4, 5],
+      "y": [0, 0, 0, 1, 1, 1],
+      "u": [-1, -1.5, -2, -1, -1.5, -2],
+      "v": [1, 0.5, 1, 0.5, 1, 0.5],
+      "sizemode": "scaled",
+      "sizeref": 0.4,
+      "anchor": "tail",
+      "line": {
+        "color": "blue",
+        "width": 2
+      }
+    }
+  ],
+  "layout": {
+    "title": {"text": "Multiple Quiver Traces"},
+    "width": 700,
+    "height": 500,
+    "showlegend": true
+  }
+}

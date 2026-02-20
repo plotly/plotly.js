@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "u": [1, 2, 3, 1, 2, 3, 1, 2, 3],
+      "v": [1, 1, 1, 2, 2, 2, 3, 3, 3],
+      "sizemode": "scaled",
+      "sizeref": 0.3,
+      "anchor": "tail",
+      "marker": {
+        "colorscale": "Viridis",
+        "showscale": true,
+        "colorbar": {
+          "title": {"text": "Magnitude"}
+        }
+      },
+      "line": {
+        "width": 2
+      }
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 500
+  }
+}

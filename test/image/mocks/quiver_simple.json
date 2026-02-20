@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "u": [1, 0, -1, 1, 0, -1, 1, 0, -1],
+      "v": [0, 1, 0, 0, 1, 0, 0, 1, 0],
+      "text": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+      "textposition": "top center",
+      "textfont": { "size": 12 },
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "line": {
+        "width": 2
+      }
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 500
+  }
+}
