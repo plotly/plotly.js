@@ -10,7 +10,8 @@ var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var handleClick = require('./handle_click');
+var handleItemClick = require('./handle_click').handleItemClick;
+var handleTitleClick = require('./handle_click').handleTitleClick;
 
 var constants = require('./constants');
 var alignmentConstants = require('../../constants/alignment');
@@ -82,7 +83,7 @@ function drawOne(gd, opts) {
     var legendObj = opts || {};
 
     var fullLayout = gd._fullLayout;
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
 
     var clipId, layer;
 
@@ -180,8 +181,14 @@ function drawOne(gd, opts) {
             .text(title.text);
 
         textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
+
+        // Set up title click if enabled and not in hover mode
+        if(!inHover && (legendObj.titleclick || legendObj.titledoubleclick)) {
+            setupTitleToggle(scrollBox, gd, legendObj, legendId);
+        }
     } else {
         scrollBox.selectAll('.' + legendId + 'titletext').remove();
+        scrollBox.selectAll('.' + legendId + 'titletoggle').remove();
     }
 
     var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
@@ -198,7 +205,22 @@ function drawOne(gd, opts) {
     traces.exit().remove();
 
     traces.style('opacity', function(d) {
-        var trace = d[0].trace;
+        const legendItem = d[0];
+        const trace = legendItem.trace;
+
+        // Toggle opacity of legend group titles if all items in the group are hidden
+        if(legendItem.groupTitle) {
+            const groupName = trace.legendgroup;
+            const shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
+            const anyVisible = gd._fullData.concat(shapes).some(function(item) {
+                return item.legendgroup === groupName &&
+                    (item.legend || 'legend') === legendId &&
+                    item.visible === true;
+            });
+
+            return anyVisible ? 1 : 0.5;
+        }
+
         if(Registry.traceIs(trace, 'pie-like')) {
             return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
         } else {
@@ -207,20 +229,34 @@ function drawOne(gd, opts) {
     })
     .each(function() { d3.select(this).call(drawTexts, gd, legendObj); })
     .call(style, gd, legendObj)
-    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd, legendId); });
+    .each(function(d) {
+        if(inHover) return;
+        // Don't create a click targets for group titles when groupclick is 'toggleitem'
+        if(d[0].groupTitle && legendObj.groupclick === 'toggleitem') return;
+        d3.select(this).call(setupTraceToggle, gd, legendId);
+    });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
-        function() { return computeLegendDimensions(gd, groups, traces, legendObj); },
+        function() { return computeLegendDimensions(gd, groups, traces, legendObj, scrollBox); },
         function() {
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
             var isPaperX = legendObj.xref === 'paper';
             var isPaperY = legendObj.yref === 'paper';
 
-            // re-calculate title position after legend width is derived. To allow for horizontal alignment
             if(title.text) {
-                horizontalAlignTitle(titleEl, legendObj, bw);
+                // Toggle opacity of legend titles if all items in the legend are hidden
+                const shapes = (fullLayout.shapes || []).filter(function(s) { return s.showlegend; });
+                const anyVisible = gd._fullData.concat(shapes).some(function(item) {
+                    const legendAttr = item.legend || 'legend';
+                    var inThisLegend = Array.isArray(legendAttr)
+                        ? legendAttr.includes(legendId)
+                        : legendAttr === legendId;
+                    return inThisLegend && item.visible === true;
+                });
+                
+                titleEl.style('opacity', anyVisible ? 1 : 0.5);
             }
 
             if(!inHover) {
@@ -458,7 +494,7 @@ function drawOne(gd, opts) {
                             );
                         });
                         if(clickedTrace.size() > 0) {
-                            clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
+                            clickOrDoubleClick(gd, legendObj, clickedTrace, numClicks, e);
                         }
                     }
                 });
@@ -479,7 +515,12 @@ function getTraceWidth(d, legendObj, textGap) {
 }
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
+    var fullLayout = gd._fullLayout;
     var trace = legendItem.data()[0][0].trace;
+
+    var itemClick = legend.itemclick;
+    var itemDoubleClick = legend.itemdoubleclick;
+
     var evtData = {
         event: evt,
         node: legendItem.node(),
@@ -490,7 +531,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         frames: gd._transitionData._frames,
         config: gd._context,
         fullData: gd._fullData,
-        fullLayout: gd._fullLayout
+        fullLayout: fullLayout
     };
 
     if(trace._group) {
@@ -504,7 +545,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            handleClick(legendItem, gd, numClicks);
+            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -512,12 +553,14 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
 
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
-        if(dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
+        if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
+            handleItemClick(legendItem, gd, legend, itemDoubleClick);
+        }
     }
 }
 
 function drawTexts(g, gd, legendObj) {
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
     var legendItem = g.data()[0][0];
     var trace = legendItem.trace;
     var isPieLike = Registry.traceIs(trace, 'pie-like');
@@ -624,6 +667,73 @@ function setupTraceToggle(g, gd, legendId) {
     });
 }
 
+function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
+    // For now, skip title click for legends containing pie-like traces
+    const hasPie = gd._fullData.some(function(trace) {
+        const legend = trace.legend || 'legend';
+        const inThisLegend = Array.isArray(legend) ? legend.includes(legendId) : legend === legendId;
+        return inThisLegend && Registry.traceIs(trace, 'pie-like');
+    });
+    if(hasPie) return;
+
+    const doubleClickDelay = gd._context.doubleClickDelay;
+    var newMouseDownTime;
+    var numClicks = 1;
+
+    const titleToggle = Lib.ensureSingle(scrollBox, 'rect', legendId + 'titletoggle', function(s) {
+        if(!gd._context.staticPlot) {
+            s.style('cursor', 'pointer').attr('pointer-events', 'all');
+        }
+        s.call(Color.fill, 'rgba(0,0,0,0)');
+    });
+
+    if(gd._context.staticPlot) return;
+
+    titleToggle.on('mousedown', function() {
+        newMouseDownTime = (new Date()).getTime();
+        if(newMouseDownTime - gd._legendMouseDownTime < doubleClickDelay) {
+            // in a click train
+            numClicks += 1;
+        } else {
+            // new click train
+            numClicks = 1;
+            gd._legendMouseDownTime = newMouseDownTime;
+        }
+    });
+    titleToggle.on('mouseup', function() {
+        if(gd._dragged || gd._editing) return;
+
+        if((new Date()).getTime() - gd._legendMouseDownTime > doubleClickDelay) {
+            numClicks = Math.max(numClicks - 1, 1);
+        }
+
+        const evtData = {
+            event: d3.event,
+            legendId: legendId,
+            data: gd.data,
+            layout: gd.layout,
+            fullData: gd._fullData,
+            fullLayout: gd._fullLayout
+        };
+
+        if(numClicks === 1 && legendObj.titleclick) {
+            const clickVal = Events.triggerHandler(gd, 'plotly_legendtitleclick', evtData);
+            if(clickVal === false) return;
+
+            legendObj._titleClickTimeout = setTimeout(function() {
+                if(gd._fullLayout) handleTitleClick(gd, legendObj, legendObj.titleclick);
+            }, doubleClickDelay);
+        } else if(numClicks === 2) {
+            if(legendObj._titleClickTimeout) clearTimeout(legendObj._titleClickTimeout);
+            gd._legendMouseDownTime = 0;
+
+            const dblClickVal = Events.triggerHandler(gd, 'plotly_legendtitledoubleclick', evtData);
+            if(dblClickVal !== false && legendObj.titledoubleclick) handleTitleClick(gd, legendObj, legendObj.titledoubleclick);
+        }
+    });
+}
+
+
 function textLayout(s, g, gd, legendObj, aTitle) {
     if(legendObj._inHover) s.attr('data-notex', true); // do not process MathJax for unified hover
     svgTextUtils.convertToTspans(s, gd, function() {
@@ -645,7 +755,7 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
 
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
     if(!legendObj) {
         legendObj = gd._fullLayout[legendId];
     }
@@ -748,9 +858,9 @@ function getTitleSize(legendObj) {
  *  - _width: legend width
  *  - _maxWidth (for orientation:h only): maximum width before starting new row
  */
-function computeLegendDimensions(gd, groups, traces, legendObj) {
+function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
     var fullLayout = gd._fullLayout;
-    var legendId = getId(legendObj);
+    var legendId = helpers.getId(legendObj);
     if(!legendObj) {
         legendObj = fullLayout[legendId];
     }
@@ -955,6 +1065,25 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
+
+    // align legend title horizontally
+    var titleEl = scrollBox.select('.' + legendId + 'titletext');
+    if(titleEl.node()) {
+        horizontalAlignTitle(titleEl, legendObj, bw);
+    }
+
+    // position title click target to cover the title text, parallel to traceToggle above
+    var titleToggle = scrollBox.select('.' + legendId + 'titletoggle');
+    if(titleToggle.size() && titleEl.node()) {
+        var titleX = titleEl.attr('x') || 0;
+        var pad = constants.titlePad;
+        Drawing.setRect(titleToggle,
+            titleX - pad,
+            bw,
+            legendObj._titleWidth + 2 * pad,
+            legendObj._titleHeight + 2 * pad
+        );
+    }
 }
 
 function expandMargin(gd, legendId, lx, ly) {
@@ -1008,8 +1137,4 @@ function getYanchor(legendObj) {
     return Lib.isBottomAnchor(legendObj) ? 'bottom' :
         Lib.isMiddleAnchor(legendObj) ? 'middle' :
         'top';
-}
-
-function getId(legendObj) {
-    return legendObj._id || 'legend';
 }

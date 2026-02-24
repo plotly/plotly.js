@@ -1454,6 +1454,7 @@ describe('sankey tests', function() {
                           positionAfterDrag = [positionBeforeDrag[0] + move[0], positionBeforeDrag[1] + move[1]];
                           return drag({node: node, dpos: move, nsteps: 10, timeDelay: 1000});
                       })
+                      .then(delay(500))
                       .then(function() {
                           // Check that the node was really moved
                           nodes = document.getElementsByClassName('sankey-node');

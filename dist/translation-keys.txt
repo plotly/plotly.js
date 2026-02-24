@@ -10,7 +10,7 @@ Click to enter X axis title                            // plots/plots.js:316
 Click to enter Y axis title                            // plots/plots.js:317
 Click to enter radial axis title                       // plots/polar/polar.js:593
 Compare data on hover                                  // components/modebar/buttons.js:234
-Double-click on legend to isolate one trace            // components/legend/handle_click.js:21
+Double-click on legend to isolate one trace            // components/legend/handle_click.js:34
 Double-click to zoom back out                          // plots/ternary/ternary.js:681
 Download plot                                          // components/modebar/buttons.js:45
 Download plot as a PNG                                 // components/modebar/buttons.js:44

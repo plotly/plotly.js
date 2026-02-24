@@ -1,6 +1,6 @@
 /**
-* plotly.js (finance) v3.3.1
-* Copyright 2012-2025, Plotly, Inc.
+* plotly.js (finance) v3.4.0
+* Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -59,7 +59,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.3.1";
+      exports.version = "3.4.0";
     }
   });
 
@@ -13283,6 +13283,8 @@ var Plotly = (() => {
       function slopeFn(shape, xa, ya) {
         return shape.type !== "line" ? void 0 : dyFn(shape, xa, ya) / dxFn(shape, xa);
       }
+      var simpleXVariables = ["x0", "x1", "y0", "y1", "dy", "height", "ycenter"];
+      var simpleYVariables = ["x0", "x1", "y0", "y1", "dx", "width", "xcenter"];
       module.exports = {
         x0: x0Fn,
         x1: x1Fn,
@@ -13295,7 +13297,9 @@ var Plotly = (() => {
         height: heightFn,
         length: lengthFn,
         xcenter: xcenterFn,
-        ycenter: ycenterFn
+        ycenter: ycenterFn,
+        simpleXVariables,
+        simpleYVariables
       };
     }
   });
@@ -13769,9 +13773,9 @@ var Plotly = (() => {
   var require_maplibre_gl = __commonJS({
     "node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       (function() {
-        if (!document.getElementById("696e55e75aaafa12d45b3ff634eadc8348f9c3015fc94984dac1ff824773eb97")) {
+        if (!document.getElementById("a75c73da1cd7a97e8992659f6aed556255838daadea9ca0c9fc3af7f1ddf63c0")) {
           var e = document.createElement("style");
-          e.id = "696e55e75aaafa12d45b3ff634eadc8348f9c3015fc94984dac1ff824773eb97";
+          e.id = "a75c73da1cd7a97e8992659f6aed556255838daadea9ca0c9fc3af7f1ddf63c0";
           e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-map:fullscreen{height:100%;width:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl-group{background:#fff;border-radius:4px}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{background-color:transparent;border:0;box-sizing:border-box;cursor:pointer;display:block;height:29px;outline:none;padding:0;width:29px}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{background-position:50%;background-repeat:no-repeat;display:block;height:100%;width:100%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}.maplibregl-ctrl button:not(:disabled):hover{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;cursor:pointer;display:block;height:23px;margin:0 0 -4px -4px;overflow:hidden;width:88px}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{background-color:#fff;border-radius:12px;box-sizing:content-box;color:#000;margin:10px;min-height:20px;padding:2px 24px 2px 0;position:relative}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{border-radius:12px;padding:2px 8px 2px 28px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{background-color:hsla(0,0%,100%,.5);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");border:0;border-radius:12px;box-sizing:border-box;cursor:pointer;display:none;height:24px;outline:none;position:absolute;right:0;top:0;width:24px}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{right:0;top:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{left:0;top:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);border:2px solid #333;border-top:#333;box-sizing:border-box;color:#333;font-size:10px;padding:0 5px}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:#fff;border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:#fff;border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:#fff;border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:#fff;border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgb(0 0 0/5%)}.maplibregl-popup-content{background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}@keyframes maplibregl-user-location-dot-pulse{0%{opacity:1;transform:scale(1)}70%{opacity:0;transform:scale(3)}to{opacity:0;transform:scale(1)}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{background:#fff;border:2px dotted #202020;height:0;left:0;opacity:.5;position:absolute;top:0;width:0}.maplibregl-cooperative-gesture-screen{align-items:center;background:rgba(0,0,0,.4);color:#fff;display:flex;font-size:1.4em;inset:0;justify-content:center;line-height:1.2;opacity:0;padding:1rem;pointer-events:none;position:absolute;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(width <= 480px){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{height:100%!important;left:0!important;position:fixed!important;top:0!important;width:100%!important;z-index:99999}`;
           document.head.appendChild(e);
         }
@@ -24235,6 +24239,8 @@ var Plotly = (() => {
             fillColor = fns.selectedColorFn(d);
           }
         }
+        const lineDash = d.mld || (markerLine || {}).dash;
+        if (lineDash) drawing.dashLine(sel, lineDash, lineWidth);
         if (d.om) {
           sel.call(Color2.stroke, fillColor).style({
             "stroke-width": (lineWidth || 1) + "px",
@@ -26523,6 +26529,7 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var axAttrs = require_layout_attributes4();
       var cleanTicks = require_clean_ticks();
+      var cartesianConstants = require_constants2();
       var constants = require_numerical();
       var ONEMAXYEAR = constants.ONEMAXYEAR;
       var ONEAVGYEAR = constants.ONEAVGYEAR;
@@ -26603,9 +26610,34 @@ var Plotly = (() => {
         };
         return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
       };
+      axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraOption, expectedLen) {
+        const axLetter = attr.charAt(attr.length - 1);
+        var axlist = gd._fullLayout._subplots[axLetter + "axis"];
+        const refAttr = attr + "ref";
+        var axRef = containerIn[refAttr];
+        if (!dflt) dflt = axlist[0] || (typeof extraOption === "string" ? extraOption : extraOption[0]);
+        axlist = axlist.concat(axlist.map((x) => x + " domain"));
+        axlist = axlist.concat(extraOption ? extraOption : []);
+        if (axRef.length > expectedLen) {
+          Lib.warn("Array attribute " + refAttr + " has more entries than expected, truncating to " + expectedLen);
+          axRef = axRef.slice(0, expectedLen);
+        } else if (axRef.length < expectedLen) {
+          Lib.warn("Array attribute " + refAttr + " has fewer entries than expected, extending with default value");
+          axRef = axRef.concat(Array(expectedLen - axRef.length).fill(dflt));
+        }
+        for (var i = 0; i < axRef.length; i++) {
+          axRef[i] = axisIds.cleanId(axRef[i], axLetter, true) || axRef[i];
+          if (!axlist.includes(axRef[i])) axRef[i] = dflt;
+        }
+        containerOut[refAttr] = axRef;
+        return axRef;
+      };
       axes.getRefType = function(ar) {
         if (ar === void 0) {
           return ar;
+        }
+        if (Array.isArray(ar)) {
+          return "array";
         }
         if (ar === "paper") {
           return "paper";
@@ -30128,6 +30160,16 @@ var Plotly = (() => {
           dflt: "togglegroup",
           editType: "legend"
         },
+        titleclick: {
+          valType: "enumerated",
+          values: ["toggle", "toggleothers", false],
+          editType: "legend"
+        },
+        titledoubleclick: {
+          valType: "enumerated",
+          values: ["toggle", "toggleothers", false],
+          editType: "legend"
+        },
         x: {
           valType: "number",
           editType: "legend"
@@ -30203,6 +30245,9 @@ var Plotly = (() => {
       exports.isReversed = function isReversed(legendLayout) {
         return (legendLayout.traceorder || "").indexOf("reversed") !== -1;
       };
+      exports.getId = function getId(legendObj) {
+        return legendObj._id || "legend";
+      };
     }
   });
 
@@ -30217,7 +30262,7 @@ var Plotly = (() => {
       var attributes = require_attributes9();
       var basePlotLayoutAttributes = require_layout_attributes2();
       var helpers = require_helpers3();
-      function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+      function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
         var containerIn = layoutIn[legendId] || {};
         var containerOut = Template.newContainer(layoutOut, legendId);
         function coerce(attr, dflt) {
@@ -30384,6 +30429,9 @@ var Plotly = (() => {
             size: Lib.bigFont(itemFont.size)
           });
           Lib.coerceFont(coerce, "title.font", dfltTitleFont);
+          const hasMultipleLegends = legendCount > 1;
+          coerce("titleclick", hasMultipleLegends ? "toggle" : false);
+          coerce("titledoubleclick", hasMultipleLegends ? "toggleothers" : false);
         }
       }
       module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
@@ -30414,7 +30462,7 @@ var Plotly = (() => {
         layoutOut._legends = [];
         for (i = 0; i < legends.length; i++) {
           var legendId = legends[i];
-          groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
+          groupDefaults(legendId, layoutIn, layoutOut, allLegendsData, legends.length);
           if (layoutOut[legendId]) {
             layoutOut[legendId]._id = legendId;
           }
@@ -30426,32 +30474,25 @@ var Plotly = (() => {
 
   // src/components/legend/handle_click.js
   var require_handle_click = __commonJS({
-    "src/components/legend/handle_click.js"(exports, module) {
+    "src/components/legend/handle_click.js"(exports) {
       "use strict";
       var Registry = require_registry();
       var Lib = require_lib();
       var pushUnique = Lib.pushUnique;
+      var helpers = require_helpers3();
       var SHOWISOLATETIP = true;
-      module.exports = function handleClick(g, gd, numClicks) {
+      exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
         var fullLayout = gd._fullLayout;
         if (gd._dragged || gd._editing) return;
-        var itemClick = fullLayout.legend.itemclick;
-        var itemDoubleClick = fullLayout.legend.itemdoubleclick;
-        var groupClick = fullLayout.legend.groupclick;
-        if (numClicks === 1 && itemClick === "toggle" && itemDoubleClick === "toggleothers" && SHOWISOLATETIP && gd.data && gd._context.showTips) {
-          Lib.notifier(Lib._(gd, "Double-click on legend to isolate one trace"), "long");
-          SHOWISOLATETIP = false;
-        } else {
-          SHOWISOLATETIP = false;
-        }
-        var mode;
-        if (numClicks === 1) mode = itemClick;
-        else if (numClicks === 2) mode = itemDoubleClick;
-        if (!mode) return;
-        var toggleGroup = groupClick === "togglegroup";
-        var hiddenSlices = fullLayout.hiddenlabels ? fullLayout.hiddenlabels.slice() : [];
         var legendItem = g.data()[0][0];
         if (legendItem.groupTitle && legendItem.noClick) return;
+        var groupClick = legendObj.groupclick;
+        if (mode === "toggle" && legendObj.itemdoubleclick === "toggleothers" && SHOWISOLATETIP && gd.data && gd._context.showTips) {
+          Lib.notifier(Lib._(gd, "Double-click on legend to isolate one trace"), "long");
+          SHOWISOLATETIP = false;
+        }
+        var toggleGroup = groupClick === "togglegroup";
+        var hiddenSlices = fullLayout.hiddenlabels ? fullLayout.hiddenlabels.slice() : [];
         var fullData = gd._fullData;
         var shapesWithLegend = (fullLayout.shapes || []).filter(function(d2) {
           return d2.showlegend;
@@ -30638,6 +30679,63 @@ var Plotly = (() => {
           }
         }
       };
+      exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
+        const fullLayout = gd._fullLayout;
+        const fullData = gd._fullData;
+        const legendId = helpers.getId(legendObj);
+        const shapesWithLegend = (fullLayout.shapes || []).filter(function(d) {
+          return d.showlegend;
+        });
+        const allLegendItems = fullData.concat(shapesWithLegend);
+        function isInLegend(item) {
+          return (item.legend || "legend") === legendId;
+        }
+        var toggleThisLegend;
+        var toggleOtherLegends;
+        if (mode === "toggle") {
+          const anyVisibleHere = allLegendItems.some(function(item) {
+            return isInLegend(item) && item.visible === true;
+          });
+          toggleThisLegend = !anyVisibleHere;
+          toggleOtherLegends = false;
+        } else {
+          const anyVisibleElsewhere = allLegendItems.some(function(item) {
+            return !isInLegend(item) && item.visible === true && item.showlegend !== false;
+          });
+          toggleThisLegend = true;
+          toggleOtherLegends = !anyVisibleElsewhere;
+        }
+        const dataUpdate = { visible: [] };
+        const dataIndices = [];
+        const updatedShapes = (fullLayout.shapes || []).map(function(d) {
+          return d._input;
+        });
+        var shapesUpdated = false;
+        for (var i = 0; i < allLegendItems.length; i++) {
+          const item = allLegendItems[i];
+          const inThisLegend = isInLegend(item);
+          if (!inThisLegend) {
+            const notDisplayed = item.showlegend !== true && !item.legendgroup;
+            if (mode === "toggle" || notDisplayed) continue;
+          }
+          const shouldShow = inThisLegend ? toggleThisLegend : toggleOtherLegends;
+          const newVis = shouldShow ? true : "legendonly";
+          if (item.visible !== false && item.visible !== newVis) {
+            if (item._isShape) {
+              updatedShapes[item._index].visible = newVis;
+              shapesUpdated = true;
+            } else {
+              dataIndices.push(item.index);
+              dataUpdate.visible.push(newVis);
+            }
+          }
+        }
+        if (shapesUpdated) {
+          Registry.call("_guiUpdate", gd, dataUpdate, { shapes: updatedShapes }, dataIndices);
+        } else if (dataIndices.length) {
+          Registry.call("_guiRestyle", gd, dataUpdate, dataIndices);
+        }
+      };
     }
   });
 
@@ -30790,6 +30888,7 @@ var Plotly = (() => {
               trace: {
                 showlegend: firstItemTrace.showlegend,
                 legendgroup: firstItemTrace.legendgroup,
+                legend: firstItemTrace.legend,
                 visible: opts.groupclick === "toggleitem" ? true : firstItemTrace.visible
               }
             });
@@ -30955,14 +31054,7 @@ var Plotly = (() => {
                 Drawing.fillGroupStyle(s2, gd, true);
               } else {
                 var gradientID = "legendfill-" + trace.uid;
-                Drawing.gradient(
-                  s2,
-                  gd,
-                  gradientID,
-                  getGradientDirection(reversescale),
-                  colorscale,
-                  "fill"
-                );
+                Drawing.gradient(s2, gd, gradientID, getGradientDirection(reversescale), colorscale, "fill");
               }
             }
           };
@@ -30970,14 +31062,7 @@ var Plotly = (() => {
             if (s2.size()) {
               var gradientID = "legendline-" + trace.uid;
               Drawing.lineGroupStyle(s2);
-              Drawing.gradient(
-                s2,
-                gd,
-                gradientID,
-                getGradientDirection(reversescale),
-                colorscale,
-                "stroke"
-              );
+              Drawing.gradient(s2, gd, gradientID, getGradientDirection(reversescale), colorscale, "stroke");
             }
           };
           var pathStart = subTypes.hasMarkers(trace) || !anyFill ? "M5,0" : (
@@ -30998,7 +31083,9 @@ var Plotly = (() => {
           var line = this3.select(".legendlines").selectAll("path").data(showLine || showGradientLine ? [dMod] : []);
           line.enter().append("path").classed("js-line", true);
           line.exit().remove();
-          line.attr("d", pathStart + (showGradientLine ? "l" + itemWidth + ",0.0001" : "h" + itemWidth)).call(showLine ? Drawing.lineGroupStyle : lineGradient);
+          line.attr("d", pathStart + (showGradientLine ? "l" + itemWidth + ",0.0001" : "h" + itemWidth)).call(
+            showLine ? Drawing.lineGroupStyle : lineGradient
+          );
         }
         function stylePoints(d) {
           var styleGuide = getStyleGuide(d);
@@ -31035,6 +31122,7 @@ var Plotly = (() => {
               dEdit.mo = boundVal("marker.opacity", Lib.mean, [0.2, 1]);
               dEdit.mlc = boundVal("marker.line.color", pickFirst);
               dEdit.mlw = boundVal("marker.line.width", Lib.mean, [0, 5], CST_MARKER_LINE_WIDTH);
+              dEdit.mld = trace._isShape ? "solid" : boundVal("marker.line.dash", pickFirst);
               tEdit.marker = {
                 sizeref: 1,
                 sizemin: 1,
@@ -31090,7 +31178,14 @@ var Plotly = (() => {
           }
           var ptsData = [];
           if (trace.visible && isWaterfall) {
-            ptsData = d[0].hasTotals ? [["increasing", "M-6,-6V6H0Z"], ["totals", "M6,6H0L-6,-6H-0Z"], ["decreasing", "M6,6V-6H0Z"]] : [["increasing", "M-6,-6V6H6Z"], ["decreasing", "M6,6V-6H-6Z"]];
+            ptsData = d[0].hasTotals ? [
+              ["increasing", "M-6,-6V6H0Z"],
+              ["totals", "M6,6H0L-6,-6H-0Z"],
+              ["decreasing", "M6,6V-6H0Z"]
+            ] : [
+              ["increasing", "M-6,-6V6H6Z"],
+              ["decreasing", "M6,6V-6H-6Z"]
+            ];
           }
           var pts = d3.select(this).select("g.legendpoints").selectAll("path.legendwaterfall").data(ptsData);
           pts.enter().append("path").classed("legendwaterfall", true).attr("transform", centerTransform).style("stroke-miterlimit", 1);
@@ -31237,7 +31332,12 @@ var Plotly = (() => {
           pts.exit().remove();
           if (pts.size()) {
             var cont = trace.marker || {};
-            var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+            var lw = boundLineWidth(
+              pieCastOption(cont.line.width, d0.pts),
+              cont.line,
+              MAX_MARKER_LINE_WIDTH,
+              CST_MARKER_LINE_WIDTH
+            );
             var opt = "pieLike";
             var tMod = Lib.minExtend(trace, { marker: { line: { width: lw } } }, opt);
             var d0Mod = Lib.minExtend(d0, { trace: tMod }, opt);
@@ -31261,16 +31361,12 @@ var Plotly = (() => {
               case "choropleth":
               case "choroplethmapbox":
               case "choroplethmap":
-                ptsData = [
-                  ["M-6,-6V6H6V-6Z"]
-                ];
+                ptsData = [["M-6,-6V6H6V-6Z"]];
                 useGradient = true;
                 break;
               case "densitymapbox":
               case "densitymap":
-                ptsData = [
-                  ["M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0"]
-                ];
+                ptsData = [["M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0"]];
                 useGradient = "radial";
                 break;
               case "cone":
@@ -31297,27 +31393,15 @@ var Plotly = (() => {
                 useGradient = true;
                 break;
               case "mesh3d":
-                ptsData = [
-                  ["M-6,6H0L-6,-6Z"],
-                  ["M6,6H0L6,-6Z"],
-                  ["M-6,-6H6L0,6Z"]
-                ];
+                ptsData = [["M-6,6H0L-6,-6Z"], ["M6,6H0L6,-6Z"], ["M-6,-6H6L0,6Z"]];
                 useGradient = false;
                 break;
               case "volume":
-                ptsData = [
-                  ["M-6,6H0L-6,-6Z"],
-                  ["M6,6H0L6,-6Z"],
-                  ["M-6,-6H6L0,6Z"]
-                ];
+                ptsData = [["M-6,6H0L-6,-6Z"], ["M6,6H0L6,-6Z"], ["M-6,-6H6L0,6Z"]];
                 useGradient = true;
                 break;
               case "isosurface":
-                ptsData = [
-                  ["M-6,6H0L-6,-6Z"],
-                  ["M6,6H0L6,-6Z"],
-                  ["M-6,-6 A12,24 0 0,0 6,-6 L0,6Z"]
-                ];
+                ptsData = [["M-6,6H0L-6,-6Z"], ["M6,6H0L6,-6Z"], ["M-6,-6 A12,24 0 0,0 6,-6 L0,6Z"]];
                 useGradient = false;
                 break;
             }
@@ -31424,7 +31508,8 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var Color2 = require_color();
       var svgTextUtils = require_svg_text_utils();
-      var handleClick = require_handle_click();
+      var handleItemClick = require_handle_click().handleItemClick;
+      var handleTitleClick = require_handle_click().handleTitleClick;
       var constants = require_constants3();
       var alignmentConstants = require_alignment();
       var LINE_SPACING = alignmentConstants.LINE_SPACING;
@@ -31478,7 +31563,7 @@ var Plotly = (() => {
       function drawOne(gd, opts) {
         var legendObj = opts || {};
         var fullLayout = gd._fullLayout;
-        var legendId = getId(legendObj);
+        var legendId = helpers.getId(legendObj);
         var clipId, layer;
         var inHover = legendObj._inHover;
         if (inHover) {
@@ -31555,8 +31640,12 @@ var Plotly = (() => {
           titleEl = Lib.ensureSingle(scrollBox, "text", legendId + "titletext");
           titleEl.attr("text-anchor", "start").call(Drawing.font, title.font).text(title.text);
           textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE);
+          if (!inHover && (legendObj.titleclick || legendObj.titledoubleclick)) {
+            setupTitleToggle(scrollBox, gd, legendObj, legendId);
+          }
         } else {
           scrollBox.selectAll("." + legendId + "titletext").remove();
+          scrollBox.selectAll("." + legendId + "titletoggle").remove();
         }
         var scrollBar = Lib.ensureSingle(legend, "rect", "scrollbar", function(s) {
           s.attr(constants.scrollBarEnterAttrs).call(Color2.fill, constants.scrollBarColor);
@@ -31568,7 +31657,18 @@ var Plotly = (() => {
         traces.enter().append("g").attr("class", "traces");
         traces.exit().remove();
         traces.style("opacity", function(d) {
-          var trace = d[0].trace;
+          const legendItem = d[0];
+          const trace = legendItem.trace;
+          if (legendItem.groupTitle) {
+            const groupName = trace.legendgroup;
+            const shapes2 = (fullLayout.shapes || []).filter(function(s) {
+              return s.showlegend;
+            });
+            const anyVisible = gd._fullData.concat(shapes2).some(function(item) {
+              return item.legendgroup === groupName && (item.legend || "legend") === legendId && item.visible === true;
+            });
+            return anyVisible ? 1 : 0.5;
+          }
           if (Registry.traceIs(trace, "pie-like")) {
             return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
           } else {
@@ -31576,13 +31676,15 @@ var Plotly = (() => {
           }
         }).each(function() {
           d3.select(this).call(drawTexts, gd, legendObj);
-        }).call(style, gd, legendObj).each(function() {
-          if (!inHover) d3.select(this).call(setupTraceToggle, gd, legendId);
+        }).call(style, gd, legendObj).each(function(d) {
+          if (inHover) return;
+          if (d[0].groupTitle && legendObj.groupclick === "toggleitem") return;
+          d3.select(this).call(setupTraceToggle, gd, legendId);
         });
         Lib.syncOrAsync([
           Plots.previousPromises,
           function() {
-            return computeLegendDimensions(gd, groups, traces, legendObj);
+            return computeLegendDimensions(gd, groups, traces, legendObj, scrollBox);
           },
           function() {
             var gs = fullLayout._size;
@@ -31590,7 +31692,15 @@ var Plotly = (() => {
             var isPaperX = legendObj.xref === "paper";
             var isPaperY = legendObj.yref === "paper";
             if (title.text) {
-              horizontalAlignTitle(titleEl, legendObj, bw);
+              const shapes2 = (fullLayout.shapes || []).filter(function(s) {
+                return s.showlegend;
+              });
+              const anyVisible = gd._fullData.concat(shapes2).some(function(item) {
+                const legendAttr = item.legend || "legend";
+                var inThisLegend = Array.isArray(legendAttr) ? legendAttr.includes(legendId) : legendAttr === legendId;
+                return inThisLegend && item.visible === true;
+              });
+              titleEl.style("opacity", anyVisible ? 1 : 0.5);
             }
             if (!inHover) {
               var lx, ly;
@@ -31769,7 +31879,7 @@ var Plotly = (() => {
                     return e.clientX >= bbox.left && e.clientX <= bbox.right && e.clientY >= bbox.top && e.clientY <= bbox.bottom;
                   });
                   if (clickedTrace.size() > 0) {
-                    clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
+                    clickOrDoubleClick(gd, legendObj, clickedTrace, numClicks, e);
                   }
                 }
               });
@@ -31786,7 +31896,10 @@ var Plotly = (() => {
         return textGap + (traceLegendWidth || legendWidth);
       }
       function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
+        var fullLayout = gd._fullLayout;
         var trace = legendItem.data()[0][0].trace;
+        var itemClick = legend.itemclick;
+        var itemDoubleClick = legend.itemdoubleclick;
         var evtData = {
           event: evt,
           node: legendItem.node(),
@@ -31797,7 +31910,7 @@ var Plotly = (() => {
           frames: gd._transitionData._frames,
           config: gd._context,
           fullData: gd._fullData,
-          fullLayout: gd._fullLayout
+          fullLayout
         };
         if (trace._group) {
           evtData.group = trace._group;
@@ -31810,17 +31923,19 @@ var Plotly = (() => {
           if (clickVal === false) return;
           legend._clickTimeout = setTimeout(function() {
             if (!gd._fullLayout) return;
-            handleClick(legendItem, gd, numClicks);
+            if (itemClick) handleItemClick(legendItem, gd, legend, itemClick);
           }, gd._context.doubleClickDelay);
         } else if (numClicks === 2) {
           if (legend._clickTimeout) clearTimeout(legend._clickTimeout);
           gd._legendMouseDownTime = 0;
           var dblClickVal = Events.triggerHandler(gd, "plotly_legenddoubleclick", evtData);
-          if (dblClickVal !== false && clickVal !== false) handleClick(legendItem, gd, numClicks);
+          if (dblClickVal !== false && clickVal !== false && itemDoubleClick) {
+            handleItemClick(legendItem, gd, legend, itemDoubleClick);
+          }
         }
       }
       function drawTexts(g, gd, legendObj) {
-        var legendId = getId(legendObj);
+        var legendId = helpers.getId(legendObj);
         var legendItem = g.data()[0][0];
         var trace = legendItem.trace;
         var isPieLike = Registry.traceIs(trace, "pie-like");
@@ -31897,6 +32012,59 @@ var Plotly = (() => {
           clickOrDoubleClick(gd, legend, g, numClicks, d3.event);
         });
       }
+      function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
+        const hasPie = gd._fullData.some(function(trace) {
+          const legend = trace.legend || "legend";
+          const inThisLegend = Array.isArray(legend) ? legend.includes(legendId) : legend === legendId;
+          return inThisLegend && Registry.traceIs(trace, "pie-like");
+        });
+        if (hasPie) return;
+        const doubleClickDelay = gd._context.doubleClickDelay;
+        var newMouseDownTime;
+        var numClicks = 1;
+        const titleToggle = Lib.ensureSingle(scrollBox, "rect", legendId + "titletoggle", function(s) {
+          if (!gd._context.staticPlot) {
+            s.style("cursor", "pointer").attr("pointer-events", "all");
+          }
+          s.call(Color2.fill, "rgba(0,0,0,0)");
+        });
+        if (gd._context.staticPlot) return;
+        titleToggle.on("mousedown", function() {
+          newMouseDownTime = (/* @__PURE__ */ new Date()).getTime();
+          if (newMouseDownTime - gd._legendMouseDownTime < doubleClickDelay) {
+            numClicks += 1;
+          } else {
+            numClicks = 1;
+            gd._legendMouseDownTime = newMouseDownTime;
+          }
+        });
+        titleToggle.on("mouseup", function() {
+          if (gd._dragged || gd._editing) return;
+          if ((/* @__PURE__ */ new Date()).getTime() - gd._legendMouseDownTime > doubleClickDelay) {
+            numClicks = Math.max(numClicks - 1, 1);
+          }
+          const evtData = {
+            event: d3.event,
+            legendId,
+            data: gd.data,
+            layout: gd.layout,
+            fullData: gd._fullData,
+            fullLayout: gd._fullLayout
+          };
+          if (numClicks === 1 && legendObj.titleclick) {
+            const clickVal = Events.triggerHandler(gd, "plotly_legendtitleclick", evtData);
+            if (clickVal === false) return;
+            legendObj._titleClickTimeout = setTimeout(function() {
+              if (gd._fullLayout) handleTitleClick(gd, legendObj, legendObj.titleclick);
+            }, doubleClickDelay);
+          } else if (numClicks === 2) {
+            if (legendObj._titleClickTimeout) clearTimeout(legendObj._titleClickTimeout);
+            gd._legendMouseDownTime = 0;
+            const dblClickVal = Events.triggerHandler(gd, "plotly_legendtitledoubleclick", evtData);
+            if (dblClickVal !== false && legendObj.titledoubleclick) handleTitleClick(gd, legendObj, legendObj.titledoubleclick);
+          }
+        });
+      }
       function textLayout(s, g, gd, legendObj, aTitle) {
         if (legendObj._inHover) s.attr("data-notex", true);
         svgTextUtils.convertToTspans(s, gd, function() {
@@ -31915,7 +32083,7 @@ var Plotly = (() => {
         }
         var mathjaxGroup = g.select("g[class*=math-group]");
         var mathjaxNode = mathjaxGroup.node();
-        var legendId = getId(legendObj);
+        var legendId = helpers.getId(legendObj);
         if (!legendObj) {
           legendObj = gd._fullLayout[legendId];
         }
@@ -31991,9 +32159,9 @@ var Plotly = (() => {
         }
         return [w, h];
       }
-      function computeLegendDimensions(gd, groups, traces, legendObj) {
+      function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
         var fullLayout = gd._fullLayout;
-        var legendId = getId(legendObj);
+        var legendId = helpers.getId(legendObj);
         if (!legendObj) {
           legendObj = fullLayout[legendId];
         }
@@ -32165,6 +32333,22 @@ var Plotly = (() => {
           }
           Drawing.setRect(traceToggle, 0, -h / 2, w, h);
         });
+        var titleEl = scrollBox.select("." + legendId + "titletext");
+        if (titleEl.node()) {
+          horizontalAlignTitle(titleEl, legendObj, bw);
+        }
+        var titleToggle = scrollBox.select("." + legendId + "titletoggle");
+        if (titleToggle.size() && titleEl.node()) {
+          var titleX = titleEl.attr("x") || 0;
+          var pad = constants.titlePad;
+          Drawing.setRect(
+            titleToggle,
+            titleX - pad,
+            bw,
+            legendObj._titleWidth + 2 * pad,
+            legendObj._titleHeight + 2 * pad
+          );
+        }
       }
       function expandMargin(gd, legendId, lx, ly) {
         var fullLayout = gd._fullLayout;
@@ -32208,9 +32392,6 @@ var Plotly = (() => {
       }
       function getYanchor(legendObj) {
         return Lib.isBottomAnchor(legendObj) ? "bottom" : Lib.isMiddleAnchor(legendObj) ? "middle" : "top";
-      }
-      function getId(legendObj) {
-        return legendObj._id || "legend";
       }
     }
   });
@@ -35125,7 +35306,7 @@ var Plotly = (() => {
           Q: { 1: true, 3: true, drawn: 3 },
           C: { 1: true, 3: true, 5: true, drawn: 5 },
           T: { 1: true, drawn: 1 },
-          S: { 1: true, 3: true, drawn: 5 },
+          S: { 1: true, 3: true, drawn: 3 },
           // A: {1: true, 6: true},
           Z: {}
         },
@@ -35186,6 +35367,18 @@ var Plotly = (() => {
           extractedCoordinates.push(pos);
         });
         return extractedCoordinates;
+      };
+      exports.countDefiningCoords = function(shapeType, path, axLetter) {
+        if (shapeType !== "path") return 2;
+        if (!path) return 0;
+        const segments = path.match(constants.segmentRE);
+        if (!segments) return 0;
+        const paramIsAxis = axLetter === "x" ? constants.paramIsX : constants.paramIsY;
+        return segments.reduce((coordCount, segment) => {
+          const segmentType = segment.charAt(0);
+          const hasDrawn = paramIsAxis[segmentType].drawn !== void 0;
+          return coordCount + (hasDrawn ? 1 : 0);
+        }, 0);
       };
       exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
         var gs = gd._fullLayout._size;
@@ -35282,73 +35475,110 @@ var Plotly = (() => {
         };
       };
       exports.getPathString = function(gd, options) {
-        var type = options.type;
-        var xRefType = Axes.getRefType(options.xref);
-        var yRefType = Axes.getRefType(options.yref);
-        var xa = Axes.getFromId(gd, options.xref);
-        var ya = Axes.getFromId(gd, options.yref);
-        var gs = gd._fullLayout._size;
-        var x2r, x2p, y2r, y2p;
-        var xShiftStart = getPixelShift(xa, options.x0shift);
-        var xShiftEnd = getPixelShift(xa, options.x1shift);
-        var yShiftStart = getPixelShift(ya, options.y0shift);
-        var yShiftEnd = getPixelShift(ya, options.y1shift);
+        const shapeType = options.type;
+        const xRefType = Axes.getRefType(options.xref);
+        const yRefType = Axes.getRefType(options.yref);
+        const gs = gd._fullLayout._size;
+        var xa, ya;
+        var xShiftStart, xShiftEnd, yShiftStart, yShiftEnd;
+        var x2p, y2p;
         var x0, x1, y0, y1;
-        if (xa) {
-          if (xRefType === "domain") {
-            x2p = function(v) {
-              return xa._offset + xa._length * v;
-            };
+        function getConverter(axis, refType, shapeType2, isVertical) {
+          var converter;
+          if (axis) {
+            if (refType === "domain") {
+              if (isVertical) {
+                converter = function(v) {
+                  return axis._offset + axis._length * (1 - v);
+                };
+              } else {
+                converter = function(v) {
+                  return axis._offset + axis._length * v;
+                };
+              }
+            } else {
+              const d2r = exports.shapePositionToRange(axis);
+              converter = function(v) {
+                return axis._offset + axis.r2p(d2r(v, true));
+              };
+              if (shapeType2 === "path" && axis.type === "date") converter = exports.decodeDate(converter);
+            }
           } else {
-            x2r = exports.shapePositionToRange(xa);
-            x2p = function(v) {
-              return xa._offset + xa.r2p(x2r(v, true));
-            };
+            if (isVertical) {
+              converter = function(v) {
+                return gs.t + gs.h * (1 - v);
+              };
+            } else {
+              converter = function(v) {
+                return gs.l + gs.w * v;
+              };
+            }
           }
-        } else {
-          x2p = function(v) {
-            return gs.l + gs.w * v;
-          };
+          return converter;
         }
-        if (ya) {
-          if (yRefType === "domain") {
-            y2p = function(v) {
-              return ya._offset + ya._length * (1 - v);
-            };
-          } else {
-            y2r = exports.shapePositionToRange(ya);
-            y2p = function(v) {
-              return ya._offset + ya.r2p(y2r(v, true));
-            };
-          }
+        if (xRefType === "array") {
+          x2p = [];
+          xa = options.xref.map(function(ref) {
+            return Axes.getFromId(gd, ref);
+          });
+          x2p = options.xref.map(function(ref, i) {
+            return getConverter(xa[i], Axes.getRefType(ref), shapeType, false);
+          });
         } else {
-          y2p = function(v) {
-            return gs.t + gs.h * (1 - v);
-          };
+          xa = Axes.getFromId(gd, options.xref);
+          x2p = getConverter(xa, xRefType, shapeType, false);
         }
-        if (type === "path") {
-          if (xa && xa.type === "date") x2p = exports.decodeDate(x2p);
-          if (ya && ya.type === "date") y2p = exports.decodeDate(y2p);
+        if (yRefType === "array") {
+          y2p = [];
+          ya = options.yref.map(function(ref) {
+            return Axes.getFromId(gd, ref);
+          });
+          y2p = options.yref.map(function(ref, i) {
+            return getConverter(ya[i], Axes.getRefType(ref), shapeType, true);
+          });
+        } else {
+          ya = Axes.getFromId(gd, options.yref);
+          y2p = getConverter(ya, yRefType, shapeType, true);
+        }
+        if (shapeType === "path") {
           return convertPath(options, x2p, y2p);
         }
-        if (options.xsizemode === "pixel") {
-          var xAnchorPos = x2p(options.xanchor);
-          x0 = xAnchorPos + options.x0 + xShiftStart;
-          x1 = xAnchorPos + options.x1 + xShiftEnd;
+        if (xRefType === "array") {
+          xShiftStart = getPixelShift(xa[0], options.x0shift);
+          xShiftEnd = getPixelShift(xa[1], options.x1shift);
+          x0 = x2p[0](options.x0) + xShiftStart;
+          x1 = x2p[1](options.x1) + xShiftEnd;
         } else {
-          x0 = x2p(options.x0) + xShiftStart;
-          x1 = x2p(options.x1) + xShiftEnd;
+          xShiftStart = getPixelShift(xa, options.x0shift);
+          xShiftEnd = getPixelShift(xa, options.x1shift);
+          if (options.xsizemode === "pixel") {
+            const xAnchorPos = x2p(options.xanchor);
+            x0 = xAnchorPos + options.x0 + xShiftStart;
+            x1 = xAnchorPos + options.x1 + xShiftEnd;
+          } else {
+            x0 = x2p(options.x0) + xShiftStart;
+            x1 = x2p(options.x1) + xShiftEnd;
+          }
         }
-        if (options.ysizemode === "pixel") {
-          var yAnchorPos = y2p(options.yanchor);
-          y0 = yAnchorPos - options.y0 + yShiftStart;
-          y1 = yAnchorPos - options.y1 + yShiftEnd;
+        if (yRefType === "array") {
+          yShiftStart = getPixelShift(ya[0], options.y0shift);
+          yShiftEnd = getPixelShift(ya[1], options.y1shift);
+          y0 = y2p[0](options.y0) + yShiftStart;
+          y1 = y2p[1](options.y1) + yShiftEnd;
         } else {
-          y0 = y2p(options.y0) + yShiftStart;
-          y1 = y2p(options.y1) + yShiftEnd;
+          yShiftStart = getPixelShift(ya, options.y0shift);
+          yShiftEnd = getPixelShift(ya, options.y1shift);
+          if (options.ysizemode === "pixel") {
+            const yAnchorPos = y2p(options.yanchor);
+            y0 = yAnchorPos - options.y0 + yShiftStart;
+            y1 = yAnchorPos - options.y1 + yShiftEnd;
+          } else {
+            y0 = y2p(options.y0) + yShiftStart;
+            y1 = y2p(options.y1) + yShiftEnd;
+          }
         }
-        if (type === "line") return "M" + x0 + "," + y0 + "L" + x1 + "," + y1;
-        if (type === "rect") return "M" + x0 + "," + y0 + "H" + x1 + "V" + y1 + "H" + x0 + "Z";
+        if (shapeType === "line") return "M" + x0 + "," + y0 + "L" + x1 + "," + y1;
+        if (shapeType === "rect") return "M" + x0 + "," + y0 + "H" + x1 + "V" + y1 + "H" + x0 + "Z";
         var cx = (x0 + x1) / 2;
         var cy = (y0 + y1) / 2;
         var rx = Math.abs(cx - x0);
@@ -35359,24 +35589,32 @@ var Plotly = (() => {
         return "M" + rightPt + rArc + " 0 1,1 " + topPt + rArc + " 0 0,1 " + rightPt + "Z";
       };
       function convertPath(options, x2p, y2p) {
-        var pathIn = options.path;
-        var xSizemode = options.xsizemode;
-        var ySizemode = options.ysizemode;
-        var xAnchor = options.xanchor;
-        var yAnchor = options.yanchor;
+        const pathIn = options.path;
+        const xSizemode = options.xsizemode;
+        const ySizemode = options.ysizemode;
+        const xAnchor = options.xanchor;
+        const yAnchor = options.yanchor;
+        const isArrayXref = Array.isArray(options.xref);
+        const isArrayYref = Array.isArray(options.yref);
+        var xVertexIndex = 0;
+        var yVertexIndex = 0;
         return pathIn.replace(constants.segmentRE, function(segment) {
           var paramNumber = 0;
           var segmentType = segment.charAt(0);
           var xParams = constants.paramIsX[segmentType];
           var yParams = constants.paramIsY[segmentType];
           var nParams = constants.numParams[segmentType];
+          const hasDrawnX = xParams.drawn !== void 0;
+          const hasDrawnY = yParams.drawn !== void 0;
+          const segmentX2p = isArrayXref ? x2p[xVertexIndex] : x2p;
+          const segmentY2p = isArrayYref ? y2p[yVertexIndex] : y2p;
           var paramString = segment.slice(1).replace(constants.paramRE, function(param) {
             if (xParams[paramNumber]) {
-              if (xSizemode === "pixel") param = x2p(xAnchor) + Number(param);
-              else param = x2p(param);
+              if (xSizemode === "pixel") param = segmentX2p(xAnchor) + Number(param);
+              else param = segmentX2p(param);
             } else if (yParams[paramNumber]) {
-              if (ySizemode === "pixel") param = y2p(yAnchor) - Number(param);
-              else param = y2p(param);
+              if (ySizemode === "pixel") param = segmentY2p(yAnchor) - Number(param);
+              else param = segmentY2p(param);
             }
             paramNumber++;
             if (paramNumber > nParams) param = "X";
@@ -35386,6 +35624,8 @@ var Plotly = (() => {
             paramString = paramString.replace(/[\s,]*X.*/, "");
             Lib.log("Ignoring extra params in segment " + segment);
           }
+          if (hasDrawnX) xVertexIndex++;
+          if (hasDrawnY) yVertexIndex++;
           return segmentType + paramString;
         });
       }
@@ -35422,9 +35662,16 @@ var Plotly = (() => {
           if (options.type !== "path") {
             var _xa = Axes.getFromId(gd, options.xref);
             var _ya = Axes.getFromId(gd, options.yref);
+            const isMultiAxisX = Array.isArray(options.xref);
+            const isMultiAxisY = Array.isArray(options.yref);
             for (var key in shapeLabelTexttemplateVars) {
-              var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
-              if (val !== void 0) templateValues[key] = val;
+              var isFunction = typeof shapeLabelTexttemplateVars[key] === "function";
+              var isValidForX = !isMultiAxisX || shapeLabelTexttemplateVars.simpleXVariables.includes(key);
+              var isValidForY = !isMultiAxisY || shapeLabelTexttemplateVars.simpleYVariables.includes(key);
+              if (isFunction && isValidForX && isValidForY) {
+                var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+                if (val !== void 0) templateValues[key] = val;
+              }
             }
           }
           text = Lib.texttemplateStringForShapes({
@@ -35467,26 +35714,26 @@ var Plotly = (() => {
             }
           }
         } else {
-          var xa = Axes.getFromId(gd, options.xref);
-          var xShiftStart = options.x0shift;
-          var xShiftEnd = options.x1shift;
-          var xRefType = Axes.getRefType(options.xref);
-          var ya = Axes.getFromId(gd, options.yref);
-          var yShiftStart = options.y0shift;
-          var yShiftEnd = options.y1shift;
-          var yRefType = Axes.getRefType(options.yref);
-          var x2p = function(v, shift) {
-            var dataToPixel = helpers.getDataToPixel(gd, xa, shift, false, xRefType);
-            return dataToPixel(v);
+          const isArrayXref = Array.isArray(options.xref);
+          const isArrayYref = Array.isArray(options.yref);
+          const xa0 = Axes.getFromId(gd, isArrayXref ? options.xref[0] : options.xref);
+          const xa1 = Axes.getFromId(gd, isArrayXref ? options.xref[1] : options.xref);
+          const ya0 = Axes.getFromId(gd, isArrayYref ? options.yref[0] : options.yref);
+          const ya1 = Axes.getFromId(gd, isArrayYref ? options.yref[1] : options.yref);
+          const xRefType0 = Axes.getRefType(isArrayXref ? options.xref[0] : options.xref);
+          const xRefType1 = Axes.getRefType(isArrayXref ? options.xref[1] : options.xref);
+          const yRefType0 = Axes.getRefType(isArrayYref ? options.yref[0] : options.yref);
+          const yRefType1 = Axes.getRefType(isArrayYref ? options.yref[1] : options.yref);
+          const x2p = function(v, shift, xa, xRefType) {
+            return helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
           };
-          var y2p = function(v, shift) {
-            var dataToPixel = helpers.getDataToPixel(gd, ya, shift, true, yRefType);
-            return dataToPixel(v);
+          const y2p = function(v, shift, ya, yRefType) {
+            return helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
           };
-          shapex0 = x2p(options.x0, xShiftStart);
-          shapex1 = x2p(options.x1, xShiftEnd);
-          shapey0 = y2p(options.y0, yShiftStart);
-          shapey1 = y2p(options.y1, yShiftEnd);
+          shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);
+          shapex1 = x2p(options.x1, options.x1shift, xa1, xRefType1);
+          shapey0 = y2p(options.y0, options.y0shift, ya0, yRefType0);
+          shapey1 = y2p(options.y1, options.y1shift, ya1, yRefType1);
         }
         var textangle = options.label.textangle;
         if (textangle === "auto") {
@@ -35979,11 +36226,12 @@ var Plotly = (() => {
         var options = o.options;
         var plotinfo = o.plotinfo;
         if (!options._input || options.visible !== true) return;
+        const isMultiAxisShape = Array.isArray(options.xref) || Array.isArray(options.yref);
         if (options.layer === "above") {
           drawShape(gd._fullLayout._shapeUpperLayer);
-        } else if (options.xref === "paper" || options.yref === "paper") {
+        } else if (options.xref.includes("paper") || options.yref.includes("paper")) {
           drawShape(gd._fullLayout._shapeLowerLayer);
-        } else if (options.layer === "between") {
+        } else if (options.layer === "between" && !isMultiAxisShape) {
           drawShape(plotinfo.shapelayerBetween);
         } else {
           if (plotinfo._hadPlotinfo) {
@@ -36052,12 +36300,38 @@ var Plotly = (() => {
         }
       }
       function setClipPath(shapePath, gd, shapeOptions) {
-        var clipAxes = (shapeOptions.xref + shapeOptions.yref).replace(/paper/g, "").replace(/[xyz][0-9]* *domain/g, "");
-        Drawing.setClipUrl(
-          shapePath,
-          clipAxes ? "clip" + gd._fullLayout._uid + clipAxes : null,
-          gd
-        );
+        const xref = shapeOptions.xref;
+        const yref = shapeOptions.yref;
+        if (Array.isArray(xref) || Array.isArray(yref)) {
+          const clipId = "clip" + gd._fullLayout._uid + "shape" + shapeOptions._index;
+          const rect = getMultiAxisClipRect(gd, xref, yref);
+          Lib.ensureSingleById(gd._fullLayout._clips, "clipPath", clipId, function(s) {
+            s.append("rect");
+          }).select("rect").attr(rect);
+          Drawing.setClipUrl(shapePath, clipId, gd);
+        } else {
+          const clipAxes = (xref + yref).replace(/paper/g, "").replace(/[xyz][0-9]* *domain/g, "");
+          Drawing.setClipUrl(shapePath, clipAxes ? "clip" + gd._fullLayout._uid + clipAxes : null, gd);
+        }
+      }
+      function getMultiAxisClipRect(gd, xref, yref) {
+        const gs = gd._fullLayout._size;
+        function getBounds(refs, isVertical) {
+          const axes = (Array.isArray(refs) ? refs : [refs]).map((r) => Axes.getFromId(gd, r)).filter(Boolean);
+          if (!axes.length) {
+            return isVertical ? [gs.t, gs.t + gs.h] : [gs.l, gs.l + gs.w];
+          }
+          const startBounds = axes.map(function(ax) {
+            return ax._offset;
+          });
+          const endBounds = axes.map(function(ax) {
+            return ax._offset + ax._length;
+          });
+          return [Math.min(...startBounds), Math.max(...endBounds)];
+        }
+        const xb = getBounds(xref, false);
+        const yb = getBounds(yref, true);
+        return { x: xb[0], y: yb[0], width: xb[1] - xb[0], height: yb[1] - yb[0] };
       }
       function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHelpers) {
         var MINWIDTH = 10;
@@ -42240,6 +42514,9 @@ var Plotly = (() => {
                   editType: "style",
                   anim: true
                 },
+                dash: extendFlat({}, dash, {
+                  arrayOk: true
+                }),
                 editType: "calc"
               },
               colorScaleAttrs("marker.line", { anim: true })
@@ -43962,8 +44239,8 @@ var Plotly = (() => {
         for (i = 0; i < shapesLen; i++) {
           var shape = layout.shapes[i];
           if (!Lib.isPlainObject(shape)) continue;
-          cleanAxRef(shape, "xref");
-          cleanAxRef(shape, "yref");
+          cleanAxRef(shape, "xref", true);
+          cleanAxRef(shape, "yref", true);
         }
         var imagesLen = Array.isArray(layout.images) ? layout.images.length : 0;
         for (i = 0; i < imagesLen; i++) {
@@ -43996,9 +44273,10 @@ var Plotly = (() => {
         }
         return layout;
       };
-      function cleanAxRef(container, attr) {
+      function cleanAxRef(container, attr, isShape = false) {
         var valIn = container[attr];
         var axLetter = attr.charAt(0);
+        if (isShape && Array.isArray(valIn)) return;
         if (valIn && valIn !== "paper") {
           container[attr] = cleanId(valIn, axLetter, true);
         }
@@ -47901,23 +48179,18 @@ var Plotly = (() => {
       var hasColorscale = require_helpers().hasColorscale;
       var colorscaleDefaults = require_defaults2();
       var subTypes = require_subtypes();
-      module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+      module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts = {}) {
         var isBubble = subTypes.isBubble(traceIn);
         var lineColor = (traceIn.line || {}).color;
         var defaultMLC;
-        opts = opts || {};
         if (lineColor) defaultColor = lineColor;
         coerce("marker.symbol");
         coerce("marker.opacity", isBubble ? 0.7 : 1);
         coerce("marker.size");
         if (!opts.noAngle) {
           coerce("marker.angle");
-          if (!opts.noAngleRef) {
-            coerce("marker.angleref");
-          }
-          if (!opts.noStandOff) {
-            coerce("marker.standoff");
-          }
+          if (!opts.noAngleRef) coerce("marker.angleref");
+          if (!opts.noStandOff) coerce("marker.standoff");
         }
         coerce("marker.color", defaultColor);
         if (hasColorscale(traceIn, "marker")) {
@@ -47932,13 +48205,17 @@ var Plotly = (() => {
         if (!opts.noLine) {
           if (lineColor && !Array.isArray(lineColor) && traceOut.marker.color !== lineColor) {
             defaultMLC = lineColor;
-          } else if (isBubble) defaultMLC = Color2.background;
-          else defaultMLC = Color2.defaultLine;
+          } else if (isBubble) {
+            defaultMLC = Color2.background;
+          } else {
+            defaultMLC = Color2.defaultLine;
+          }
           coerce("marker.line.color", defaultMLC);
           if (hasColorscale(traceIn, "marker.line")) {
             colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: "marker.line.", cLetter: "c" });
           }
           coerce("marker.line.width", isBubble ? 1 : 0);
+          if (!opts.noLineDash) coerce("marker.line.dash");
         }
         if (isBubble) {
           coerce("marker.sizeref");
@@ -47947,9 +48224,7 @@ var Plotly = (() => {
         }
         if (opts.gradient) {
           var gradientType = coerce("marker.gradient.type");
-          if (gradientType !== "none") {
-            coerce("marker.gradient.color");
-          }
+          if (gradientType !== "none") coerce("marker.gradient.color");
         }
       };
     }
@@ -48377,6 +48652,7 @@ var Plotly = (() => {
           if (marker.line) {
             Lib.mergeArray(markerLine.color, cd, "mlc");
             Lib.mergeArrayCastPositive(markerLine.width, cd, "mlw");
+            Lib.mergeArray(markerLine.dash, cd, "mld");
           }
           var markerGradient = marker.gradient;
           if (markerGradient && markerGradient.type !== "none") {
@@ -48676,17 +48952,36 @@ var Plotly = (() => {
     }
   });
 
+  // src/traces/bar/constants.js
+  var require_constants9 = __commonJS({
+    "src/traces/bar/constants.js"(exports, module) {
+      "use strict";
+      module.exports = {
+        // padding in pixels around text
+        TEXTPAD: 3,
+        // 'value' and 'label' are not really necessary for bar traces,
+        // but they were made available to `texttemplate` (maybe by accident)
+        // via tokens `%{value}` and `%{label}` starting in 1.50.0,
+        // so let's include them in the event data also.
+        eventDataKeys: ["value", "label"]
+      };
+    }
+  });
+
   // src/traces/bar/cross_trace_calc.js
   var require_cross_trace_calc = __commonJS({
     "src/traces/bar/cross_trace_calc.js"(exports, module) {
       "use strict";
       var isNumeric = require_fast_isnumeric();
-      var isArrayOrTypedArray = require_lib().isArrayOrTypedArray;
-      var BADNUM = require_numerical().BADNUM;
+      var { isArrayOrTypedArray } = require_lib();
+      var { BADNUM } = require_numerical();
       var Registry = require_registry();
       var Axes = require_axes();
-      var getAxisGroup = require_constraints().getAxisGroup;
+      var { getAxisGroup } = require_constraints();
       var Sieve = require_sieve();
+      var { TEXTPAD } = require_constants9();
+      var { LINE_SPACING } = require_alignment();
+      var { BR_TAG_ALL } = require_svg_text_utils();
       function crossTraceCalc(gd, plotinfo) {
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
@@ -48989,9 +49284,7 @@ var Plotly = (() => {
             if (offset === void 0) {
               newPoffset = [];
               for (j = 0; j < calcTrace.length; j++) {
-                newPoffset.push(
-                  initialPoffset + (initialBarwidth - newBarwidth[j]) / 2
-                );
+                newPoffset.push(initialPoffset + (initialBarwidth - newBarwidth[j]) / 2);
               }
               t.poffset = newPoffset;
             }
@@ -49081,9 +49374,12 @@ var Plotly = (() => {
               tozero = true;
             }
           }
+          const { ppadminus, ppadplus } = estimateAxisPaddingForText(fullTrace, calcTrace);
           fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero,
-            padded: true
+            padded: true,
+            ppadplus,
+            ppadminus
           });
         }
       }
@@ -49137,11 +49433,14 @@ var Plotly = (() => {
             }
           }
           if (!opts.norm) {
+            const { ppadminus, ppadplus } = estimateAxisPaddingForText(fullTrace, calcTrace);
             fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
               // N.B. we don't stack base with 'base',
               // so set tozero:true always!
               tozero: true,
-              padded: true
+              padded: true,
+              ppadplus,
+              ppadminus
             });
           }
         }
@@ -49218,11 +49517,36 @@ var Plotly = (() => {
               }
             }
           }
+          const { ppadminus, ppadplus } = estimateAxisPaddingForText(fullTrace, calcTrace);
           fullTrace._extremes[sa._id] = Axes.findExtremes(sa, pts, {
             tozero,
-            padded
+            padded,
+            ppadplus,
+            ppadminus
           });
         }
+      }
+      function estimateAxisPaddingForText(trace, calcTrace) {
+        if (trace.orientation === "v" && (trace.text || trace.texttemplate) && trace.textposition === "outside" && (trace.textangle === "auto" || trace.textangle === 0)) {
+          let countLines = function(text) {
+            if (!text || typeof text !== "string") return 0;
+            return (text.match(BR_TAG_ALL) || []).length + 1;
+          };
+          var nLines;
+          if (trace.texttemplate) {
+            nLines = countLines(trace.texttemplate);
+          } else {
+            nLines = isArrayOrTypedArray(trace.text) ? Math.max(...trace.text.map((t) => countLines(t))) : countLines(trace.text);
+          }
+          const padAmount = trace.outsidetextfont.size * LINE_SPACING * nLines + TEXTPAD;
+          return {
+            // ppadplus corresponds to the negative-direction bars and
+            // ppadminus corresponds to the positive-direction bars (for some reason)
+            ppadplus: calcTrace.some((bar) => bar.s < 0) ? padAmount : 0,
+            ppadminus: calcTrace.some((bar) => bar.s >= 0) ? padAmount : 0
+          };
+        }
+        return { ppadplus: void 0, ppadminus: void 0 };
       }
       function setHelperValuesForRoundedCorners(calcTraces, sMinByPos, sMaxByPos, pa) {
         var pLetter = getAxisLetter(pa);
@@ -49945,14 +50269,14 @@ var Plotly = (() => {
           var fills = ensureSingle(d3.select(this), "g", "fills");
           Drawing.setClipUrl(fills, plotinfo.layerClipId, gd);
           var trace = d[0].trace;
+          trace._ownFill = null;
+          trace._nextFill = null;
           var fillData = [];
           if (trace._ownfill) fillData.push("_ownFill");
           if (trace._nexttrace) fillData.push("_nextFill");
           var fillJoin = fills.selectAll("g").data(fillData, identity2);
           fillJoin.enter().append("g");
-          fillJoin.exit().each(function(d2) {
-            trace[d2] = null;
-          }).remove();
+          fillJoin.exit().remove();
           fillJoin.order().each(function(d2) {
             trace[d2] = ensureSingle(d3.select(this), "path", "js-fill");
           });
@@ -53478,7 +53802,7 @@ var Plotly = (() => {
   var require_attributes16 = __commonJS({
     "src/components/shapes/attributes.js"(exports, module) {
       "use strict";
-      var annAttrs = require_attributes11();
+      var cartesianConstants = require_constants2();
       var fontAttrs = require_font_attributes();
       var scatterLineAttrs = require_attributes12().line;
       var dash = require_attributes4().dash;
@@ -53486,6 +53810,7 @@ var Plotly = (() => {
       var templatedArray = require_plot_template().templatedArray;
       var axisPlaceableObjs = require_axis_placeable_objects();
       var basePlotAttributes = require_attributes2();
+      var annAttrs = require_attributes11();
       var { shapeTexttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var shapeLabelTexttemplateVars = require_label_texttemplate();
       module.exports = templatedArray("shape", {
@@ -53529,7 +53854,9 @@ var Plotly = (() => {
           dflt: "above",
           editType: "arraydraw"
         },
-        xref: extendFlat({}, annAttrs.xref, {}),
+        xref: extendFlat({}, annAttrs.xref, {
+          arrayOk: true
+        }),
         xsizemode: {
           valType: "enumerated",
           values: ["scaled", "pixel"],
@@ -53562,7 +53889,9 @@ var Plotly = (() => {
           max: 1,
           editType: "calc"
         },
-        yref: extendFlat({}, annAttrs.yref, {}),
+        yref: extendFlat({}, annAttrs.yref, {
+          arrayOk: true
+        }),
         ysizemode: {
           valType: "enumerated",
           values: ["scaled", "pixel"],
@@ -53738,58 +54067,109 @@ var Plotly = (() => {
         }
         var xSizeMode = coerce("xsizemode");
         var ySizeMode = coerce("ysizemode");
-        var axLetters = ["x", "y"];
-        for (var i = 0; i < 2; i++) {
-          var axLetter = axLetters[i];
+        const dflts = [0.25, 0.75];
+        const pixelDflts = [0, 10];
+        ["x", "y"].forEach((axLetter) => {
           var attrAnchor = axLetter + "anchor";
           var sizeMode = axLetter === "x" ? xSizeMode : ySizeMode;
           var gdMock = { _fullLayout: fullLayout };
           var ax;
           var pos2r;
           var r2pos;
-          var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, void 0, "paper");
-          var axRefType = Axes.getRefType(axRef);
-          if (axRefType === "range") {
-            ax = Axes.getFromId(gdMock, axRef);
-            ax._shapeIndices.push(shapeOut._index);
-            r2pos = helpers.rangeToShapePosition(ax);
-            pos2r = helpers.shapePositionToRange(ax);
-            if (ax.type === "category" || ax.type === "multicategory") {
-              coerce(axLetter + "0shift");
-              coerce(axLetter + "1shift");
+          var axRef;
+          const refAttr = axLetter + "ref";
+          const inputRef = shapeIn[refAttr];
+          if (Array.isArray(inputRef) && inputRef.length > 0) {
+            const expectedLen = helpers.countDefiningCoords(shapeType, path, axLetter);
+            axRef = Axes.coerceRefArray(shapeIn, shapeOut, gdMock, axLetter, void 0, "paper", expectedLen);
+            shapeOut["_" + axLetter + "refArray"] = true;
+          } else {
+            axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, void 0, "paper");
+          }
+          if (Array.isArray(axRef)) {
+            axRef.forEach(function(ref) {
+              if (Axes.getRefType(ref) === "range") {
+                ax = Axes.getFromId(gdMock, ref);
+                if (ax && ax._shapeIndices.indexOf(shapeOut._index) === -1) {
+                  ax._shapeIndices.push(shapeOut._index);
+                }
+              }
+            });
+            if (noPath) {
+              [0, 1].forEach(function(i) {
+                const ref = axRef[i];
+                const refType = Axes.getRefType(ref);
+                if (refType === "range") {
+                  ax = Axes.getFromId(gdMock, ref);
+                  pos2r = helpers.shapePositionToRange(ax);
+                  r2pos = helpers.rangeToShapePosition(ax);
+                  if (ax.type === "category" || ax.type === "multicategory") {
+                    coerce(axLetter + i + "shift");
+                  }
+                } else {
+                  pos2r = r2pos = Lib.identity;
+                }
+                const attr = axLetter + i;
+                const inValue = shapeIn[attr];
+                shapeIn[attr] = pos2r(shapeIn[attr], true);
+                if (sizeMode === "pixel") {
+                  coerce(attr, pixelDflts[i]);
+                } else {
+                  Axes.coercePosition(shapeOut, gdMock, coerce, ref, attr, dflts[i]);
+                }
+                shapeOut[attr] = r2pos(shapeOut[attr]);
+                shapeIn[attr] = inValue;
+                if (i === 0 && sizeMode === "pixel") {
+                  const inAnchor = shapeIn[attrAnchor];
+                  shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+                  Axes.coercePosition(shapeOut, gdMock, coerce, ref, attrAnchor, 0.25);
+                  shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+                  shapeIn[attrAnchor] = inAnchor;
+                }
+              });
             }
           } else {
-            pos2r = r2pos = Lib.identity;
-          }
-          if (noPath) {
-            var dflt0 = 0.25;
-            var dflt1 = 0.75;
-            var attr0 = axLetter + "0";
-            var attr1 = axLetter + "1";
-            var in0 = shapeIn[attr0];
-            var in1 = shapeIn[attr1];
-            shapeIn[attr0] = pos2r(shapeIn[attr0], true);
-            shapeIn[attr1] = pos2r(shapeIn[attr1], true);
-            if (sizeMode === "pixel") {
-              coerce(attr0, 0);
-              coerce(attr1, 10);
+            const axRefType = Axes.getRefType(axRef);
+            if (axRefType === "range") {
+              ax = Axes.getFromId(gdMock, axRef);
+              ax._shapeIndices.push(shapeOut._index);
+              r2pos = helpers.rangeToShapePosition(ax);
+              pos2r = helpers.shapePositionToRange(ax);
+              if (noPath && (ax.type === "category" || ax.type === "multicategory")) {
+                coerce(axLetter + "0shift");
+                coerce(axLetter + "1shift");
+              }
             } else {
-              Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
-              Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+              pos2r = r2pos = Lib.identity;
             }
-            shapeOut[attr0] = r2pos(shapeOut[attr0]);
-            shapeOut[attr1] = r2pos(shapeOut[attr1]);
-            shapeIn[attr0] = in0;
-            shapeIn[attr1] = in1;
+            if (noPath) {
+              const attr0 = axLetter + "0";
+              const attr1 = axLetter + "1";
+              const in0 = shapeIn[attr0];
+              const in1 = shapeIn[attr1];
+              shapeIn[attr0] = pos2r(shapeIn[attr0], true);
+              shapeIn[attr1] = pos2r(shapeIn[attr1], true);
+              if (sizeMode === "pixel") {
+                coerce(attr0, pixelDflts[0]);
+                coerce(attr1, pixelDflts[1]);
+              } else {
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflts[0]);
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflts[1]);
+              }
+              shapeOut[attr0] = r2pos(shapeOut[attr0]);
+              shapeOut[attr1] = r2pos(shapeOut[attr1]);
+              shapeIn[attr0] = in0;
+              shapeIn[attr1] = in1;
+            }
+            if (sizeMode === "pixel") {
+              const inAnchor = shapeIn[attrAnchor];
+              shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+              Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
+              shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+              shapeIn[attrAnchor] = inAnchor;
+            }
           }
-          if (sizeMode === "pixel") {
-            var inAnchor = shapeIn[attrAnchor];
-            shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
-            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
-            shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
-            shapeIn[attrAnchor] = inAnchor;
-          }
-        }
+        });
         if (noPath) {
           Lib.noneOrAll(shapeIn, shapeOut, ["x0", "x1", "y0", "y1"]);
         }
@@ -53881,14 +54261,26 @@ var Plotly = (() => {
           var bounds;
           var xRefType = Axes.getRefType(shape.xref);
           var yRefType = Axes.getRefType(shape.yref);
-          if (shape.xref !== "paper" && xRefType !== "domain") {
+          if (xRefType === "array") {
+            const extremesForRefArray = calcArrayRefAutorange(gd, shape, "x");
+            Object.entries(extremesForRefArray).forEach(([axID, axExtremes]) => {
+              ax = Axes.getFromId(gd, axID);
+              shape._extremes[ax._id] = Axes.findExtremes(ax, axExtremes, calcXPaddingOptions(shape));
+            });
+          } else if (shape.xref !== "paper" && xRefType !== "domain") {
             ax = Axes.getFromId(gd, shape.xref);
             bounds = shapeBounds(ax, shape, constants.paramIsX);
             if (bounds) {
               shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
             }
           }
-          if (shape.yref !== "paper" && yRefType !== "domain") {
+          if (yRefType === "array") {
+            const extremesForRefArray = calcArrayRefAutorange(gd, shape, "y");
+            Object.entries(extremesForRefArray).forEach(([axID, axExtremes]) => {
+              ax = Axes.getFromId(gd, axID);
+              shape._extremes[ax._id] = Axes.findExtremes(ax, axExtremes, calcYPaddingOptions(shape));
+            });
+          } else if (shape.yref !== "paper" && yRefType !== "domain") {
             ax = Axes.getFromId(gd, shape.yref);
             bounds = shapeBounds(ax, shape, constants.paramIsY);
             if (bounds) {
@@ -53897,6 +54289,43 @@ var Plotly = (() => {
           }
         }
       };
+      function calcArrayRefAutorange(gd, shape, axLetter) {
+        const refs = shape[axLetter + "ref"];
+        const paramsToUse = axLetter === "x" ? constants.paramIsX : constants.paramIsY;
+        function addToAxisGroup(ref, val) {
+          if (ref === "paper" || Axes.getRefType(ref) === "domain") return;
+          if (!axisGroups[ref]) axisGroups[ref] = [];
+          axisGroups[ref].push(val);
+        }
+        const axisGroups = {};
+        if (shape.type === "path" && shape.path) {
+          const segments = shape.path.match(constants.segmentRE) || [];
+          var refIndex = 0;
+          for (var i = 0; i < segments.length; i++) {
+            const segment = segments[i];
+            const command = segment.charAt(0);
+            const drawnIndex = paramsToUse[command].drawn;
+            if (drawnIndex === void 0) continue;
+            const params = segment.slice(1).match(constants.paramRE);
+            if (params && params.length > drawnIndex) {
+              addToAxisGroup(refs[refIndex], params[drawnIndex]);
+              refIndex++;
+            }
+          }
+        } else {
+          addToAxisGroup(refs[0], shape[axLetter + "0"]);
+          addToAxisGroup(refs[1], shape[axLetter + "1"]);
+        }
+        const convertedGroups = {};
+        for (const axId in axisGroups) {
+          const ax = Axes.getFromId(gd, axId);
+          if (!ax) continue;
+          var convertVal = ax.type === "category" || ax.type === "multicategory" ? ax.r2c : ax.d2c;
+          if (ax.type === "date") convertVal = helpers.decodeDate(convertVal);
+          convertedGroups[ax._id] = axisGroups[axId].map(convertVal);
+        }
+        return convertedGroups;
+      }
       function calcXPaddingOptions(shape) {
         return calcPaddingOptions(shape.line.width, shape.xsizemode, shape.x0, shape.x1, shape.path, false);
       }
@@ -54374,7 +54803,7 @@ var Plotly = (() => {
   });
 
   // src/components/updatemenus/constants.js
-  var require_constants9 = __commonJS({
+  var require_constants10 = __commonJS({
     "src/components/updatemenus/constants.js"(exports, module) {
       "use strict";
       module.exports = {
@@ -54550,7 +54979,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var handleArrayContainerDefaults = require_array_container_defaults();
       var attributes = require_attributes18();
-      var constants = require_constants9();
+      var constants = require_constants10();
       var name = constants.name;
       var buttonAttrs = attributes.buttons;
       module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
@@ -54913,7 +55342,7 @@ var Plotly = (() => {
       var svgTextUtils = require_svg_text_utils();
       var arrayEditor = require_plot_template().arrayEditor;
       var LINE_SPACING = require_alignment().LINE_SPACING;
-      var constants = require_constants9();
+      var constants = require_constants10();
       var ScrollBox = require_scrollbox();
       module.exports = function draw(gd) {
         var fullLayout = gd._fullLayout;
@@ -55326,7 +55755,7 @@ var Plotly = (() => {
   var require_updatemenus = __commonJS({
     "src/components/updatemenus/index.js"(exports, module) {
       "use strict";
-      var constants = require_constants9();
+      var constants = require_constants10();
       module.exports = {
         moduleType: "component",
         name: constants.name,
@@ -55338,7 +55767,7 @@ var Plotly = (() => {
   });
 
   // src/components/sliders/constants.js
-  var require_constants10 = __commonJS({
+  var require_constants11 = __commonJS({
     "src/components/sliders/constants.js"(exports, module) {
       "use strict";
       module.exports = {
@@ -55418,7 +55847,7 @@ var Plotly = (() => {
       var overrideAll = require_edit_types().overrideAll;
       var animationAttrs = require_animation_attributes();
       var templatedArray = require_plot_template().templatedArray;
-      var constants = require_constants10();
+      var constants = require_constants11();
       var stepsAttrs = templatedArray("step", {
         visible: {
           valType: "boolean",
@@ -55575,7 +56004,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var handleArrayContainerDefaults = require_array_container_defaults();
       var attributes = require_attributes19();
-      var constants = require_constants10();
+      var constants = require_constants11();
       var name = constants.name;
       var stepAttrs = attributes.steps;
       module.exports = function slidersDefaults(layoutIn, layoutOut) {
@@ -55666,7 +56095,7 @@ var Plotly = (() => {
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
       var arrayEditor = require_plot_template().arrayEditor;
-      var constants = require_constants10();
+      var constants = require_constants11();
       var alignmentConstants = require_alignment();
       var LINE_SPACING = alignmentConstants.LINE_SPACING;
       var FROM_TL = alignmentConstants.FROM_TL;
@@ -56083,7 +56512,7 @@ var Plotly = (() => {
   var require_sliders = __commonJS({
     "src/components/sliders/index.js"(exports, module) {
       "use strict";
-      var constants = require_constants10();
+      var constants = require_constants11();
       module.exports = {
         moduleType: "component",
         name: constants.name,
@@ -56177,7 +56606,7 @@ var Plotly = (() => {
   });
 
   // src/components/rangeslider/constants.js
-  var require_constants11 = __commonJS({
+  var require_constants12 = __commonJS({
     "src/components/rangeslider/constants.js"(exports, module) {
       "use strict";
       module.exports = {
@@ -56220,7 +56649,7 @@ var Plotly = (() => {
       "use strict";
       var axisIDs = require_axis_ids();
       var svgTextUtils = require_svg_text_utils();
-      var constants = require_constants11();
+      var constants = require_constants12();
       var LINE_SPACING = require_alignment().LINE_SPACING;
       var name = constants.name;
       function isVisible(ax) {
@@ -56338,7 +56767,7 @@ var Plotly = (() => {
       "use strict";
       var listAxes = require_axis_ids().list;
       var getAutoRange = require_autorange().getAutoRange;
-      var constants = require_constants11();
+      var constants = require_constants12();
       module.exports = function calcAutorange(gd) {
         var axes = listAxes(gd, "x", true);
         for (var i = 0; i < axes.length; i++) {
@@ -56369,7 +56798,7 @@ var Plotly = (() => {
       var axisIDs = require_axis_ids();
       var dragElement = require_dragelement();
       var setCursor = require_setcursor();
-      var constants = require_constants11();
+      var constants = require_constants12();
       module.exports = function(gd) {
         var fullLayout = gd._fullLayout;
         var rangeSliderData = fullLayout._rangeSliderData;
@@ -56934,7 +57363,7 @@ var Plotly = (() => {
   });
 
   // src/components/rangeselector/constants.js
-  var require_constants12 = __commonJS({
+  var require_constants13 = __commonJS({
     "src/components/rangeselector/constants.js"(exports, module) {
       "use strict";
       module.exports = {
@@ -56961,7 +57390,7 @@ var Plotly = (() => {
       var Template = require_plot_template();
       var handleArrayContainerDefaults = require_array_container_defaults();
       var attributes = require_attributes21();
-      var constants = require_constants12();
+      var constants = require_constants13();
       module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
         var selectorIn = containerIn.rangeselector || {};
         var selectorOut = Template.newContainer(containerOut, "rangeselector");
@@ -57078,7 +57507,7 @@ var Plotly = (() => {
       var LINE_SPACING = alignmentConstants.LINE_SPACING;
       var FROM_TL = alignmentConstants.FROM_TL;
       var FROM_BR = alignmentConstants.FROM_BR;
-      var constants = require_constants12();
+      var constants = require_constants13();
       var getUpdateObject = require_get_update_object();
       module.exports = function draw(gd) {
         var fullLayout = gd._fullLayout;
@@ -58041,7 +58470,7 @@ var Plotly = (() => {
   });
 
   // src/components/colorbar/constants.js
-  var require_constants13 = __commonJS({
+  var require_constants14 = __commonJS({
     "src/components/colorbar/constants.js"(exports, module) {
       "use strict";
       module.exports = {
@@ -58089,7 +58518,7 @@ var Plotly = (() => {
       var LINE_SPACING = alignmentConstants.LINE_SPACING;
       var FROM_TL = alignmentConstants.FROM_TL;
       var FROM_BR = alignmentConstants.FROM_BR;
-      var cn = require_constants13().cn;
+      var cn = require_constants14().cn;
       function draw(gd) {
         var fullLayout = gd._fullLayout;
         var colorBars = fullLayout._infolayer.selectAll("g." + cn.colorbar).data(makeColorBarData(gd), function(opts) {
@@ -59186,22 +59615,6 @@ var Plotly = (() => {
     }
   });
 
-  // src/traces/bar/constants.js
-  var require_constants14 = __commonJS({
-    "src/traces/bar/constants.js"(exports, module) {
-      "use strict";
-      module.exports = {
-        // padding in pixels around text
-        TEXTPAD: 3,
-        // 'value' and 'label' are not really necessary for bar traces,
-        // but they were made available to `texttemplate` (maybe by accident)
-        // via tokens `%{value}` and `%{label}` starting in 1.50.0,
-        // so let's include them in the event data also.
-        eventDataKeys: ["value", "label"]
-      };
-    }
-  });
-
   // src/traces/bar/attributes.js
   var require_attributes23 = __commonJS({
     "src/traces/bar/attributes.js"(exports, module) {
@@ -59211,7 +59624,7 @@ var Plotly = (() => {
       var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var colorScaleAttrs = require_attributes8();
       var fontAttrs = require_font_attributes();
-      var constants = require_constants14();
+      var constants = require_constants9();
       var pattern = require_attributes4().pattern;
       var extendFlat = require_extend().extendFlat;
       var textFontAttrs = fontAttrs({
@@ -60030,7 +60443,7 @@ var Plotly = (() => {
       var clearMinTextSize = uniformText.clearMinTextSize;
       var style = require_style4();
       var helpers = require_helpers12();
-      var constants = require_constants14();
+      var constants = require_constants9();
       var attributes = require_attributes23();
       var attributeText = attributes.text;
       var attributeTextPosition = attributes.textposition;
@@ -64089,7 +64502,7 @@ var Plotly = (() => {
       var uniformText = require_uniform_text();
       var recordMinTextSize = uniformText.recordMinTextSize;
       var clearMinTextSize = uniformText.clearMinTextSize;
-      var TEXTPAD = require_constants14().TEXTPAD;
+      var TEXTPAD = require_constants9().TEXTPAD;
       var helpers = require_helpers4();
       var eventData = require_event_data5();
       var isValidTextValue = require_lib().isValidTextValue;

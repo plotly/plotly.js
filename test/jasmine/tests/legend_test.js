@@ -3212,3 +3212,250 @@ describe('legend with custom legendwidth', function () {
             .then(done, done.fail);
     });
 });
+
+describe('legend title click', function() {
+    "use strict";
+
+    var gd;
+
+    beforeEach(function() { 
+        gd = createGraphDiv(); 
+    });
+    afterEach(destroyGraphDiv);
+
+    function clickTitle(legendId, clicks) {
+        return function() {
+            return new Promise(function(resolve) {
+                var selector = '.' + (legendId || 'legend') + 'titletoggle';
+                var item = d3Select(selector).node();
+                if(!item) {
+                    fail('Could not find title toggle element: ' + selector);
+                    return resolve();
+                }
+                for(var i = 0; i < (clicks || 1); i++) {
+                    item.dispatchEvent(new MouseEvent('mousedown'));
+                    item.dispatchEvent(new MouseEvent('mouseup'));
+                }
+                setTimeout(resolve, DBLCLICKDELAY + 100);
+            });
+        };
+    }
+
+    function extractVisibilities(data) {
+        return data.map(function(trace) { return trace.visible; });
+    }
+
+    function assertVisible(expectation) {
+        return function() {
+            var actual = extractVisibilities(gd._fullData);
+            expect(actual).toEqual(expectation);
+        };
+    }
+
+    function assertVisibleShapes(expectation) {
+        return function() {
+            var actual = extractVisibilities(gd._fullLayout.shapes);
+            expect(actual).toEqual(expectation);
+        };
+    }
+
+    describe('defaults', function() {
+        it('should disable title clicking by default for a single legend', function(done) {
+            Plotly.newPlot(gd, [
+                { x: [1, 2], y: [1, 2] },
+                { x: [1, 2], y: [2, 3] }
+            ], {
+                legend: { title: { text: 'Legend' } }
+            }).then(function() {
+                expect(gd._fullLayout.legend.titleclick).toBe(false);
+                expect(gd._fullLayout.legend.titledoubleclick).toBe(false);
+            }).then(done, done.fail);
+        });
+
+        it('should enable title clicking by default for multiple legends', function(done) {
+            Plotly.newPlot(gd, [
+                { x: [1, 2], y: [1, 2] },
+                { x: [1, 2], y: [2, 3] },
+                { x: [1, 2], y: [3, 4], legend: 'legend2' },
+                { x: [1, 2], y: [4, 5], legend: 'legend2' }
+            ], {
+                showlegend: true,
+                legend: { title: { text: 'Legend 1' } },
+                legend2: { title: { text: 'Legend 2' } }
+            }).then(function() {
+                expect(gd._fullLayout.legend.titleclick).toBe('toggle');
+                expect(gd._fullLayout.legend.titledoubleclick).toBe('toggleothers');
+                expect(gd._fullLayout.legend2.titleclick).toBe('toggle');
+                expect(gd._fullLayout.legend2.titledoubleclick).toBe('toggleothers');
+            }).then(done, done.fail);
+        });
+
+        it('should allow user to override titleclick and titledoubleclick', function(done) {
+            Plotly.newPlot(gd, [
+                { x: [1, 2], y: [1, 2] },
+                { x: [1, 2], y: [2, 3] }
+            ], {
+                legend: {
+                    title: { text: 'Legend' },
+                    titleclick: 'toggleothers',
+                    titledoubleclick: 'toggle'
+                }
+            }).then(function() {
+                expect(gd._fullLayout.legend.titleclick).toBe('toggleothers');
+                expect(gd._fullLayout.legend.titledoubleclick).toBe('toggle');
+            }).then(done, done.fail);
+        });
+    });
+
+    describe('toggle interactions', function() {
+        beforeEach(function(done) {
+            Plotly.newPlot(gd, [
+                { x: [1, 2], y: [1, 2] },
+                { x: [1, 2], y: [2, 3] },
+                { x: [1, 2], y: [3, 4], legend: 'legend2' },
+                { x: [1, 2], y: [4, 5], legend: 'legend2' }
+            ], {
+                showlegend: true,
+                legend: { title: { text: 'Legend 1' } },
+                legend2: { title: { text: 'Legend 2' }, y: 0.5 }
+            }).then(done);
+        });
+
+        it('should hide all traces in legend when clicking title (all visible)', function(done) {
+            Promise.resolve()
+                .then(assertVisible([true, true, true, true]))
+                .then(clickTitle('legend'))
+                .then(assertVisible(['legendonly', 'legendonly', true, true]))
+                .then(done, done.fail);
+        });
+
+        it('should show all traces in legend when clicking title (all hidden)', function(done) {
+            Plotly.restyle(gd, 'visible', 'legendonly', [0, 1])
+                .then(assertVisible(['legendonly', 'legendonly', true, true]))
+                .then(clickTitle('legend'))
+                .then(assertVisible([true, true, true, true]))
+                .then(done, done.fail);
+        });
+
+        it('should not affect traces with visible: false', function(done) {
+            Plotly.restyle(gd, 'visible', false, [0])
+                .then(assertVisible([false, true, true, true]))
+                .then(clickTitle('legend'))
+                .then(assertVisible([false, 'legendonly', true, true]))
+                .then(done, done.fail);
+        });
+    });
+
+    describe('toggleothers interactions', function() {
+        beforeEach(function(done) {
+            Plotly.newPlot(gd, [
+                { x: [1, 2], y: [1, 2] },
+                { x: [1, 2], y: [2, 3] },
+                { x: [1, 2], y: [3, 4], legend: 'legend2' },
+                { x: [1, 2], y: [4, 5], legend: 'legend2' }
+            ], {
+                showlegend: true,
+                legend: { title: { text: 'Legend 1' } },
+                legend2: { title: { text: 'Legend 2' }, y: 0.5 }
+            }).then(done);
+        });
+
+        it('should isolate this legend (hide others)', function(done) {
+            Promise.resolve()
+                .then(assertVisible([true, true, true, true]))
+                .then(clickTitle('legend', 2))
+                .then(assertVisible([true, true, 'legendonly', 'legendonly']))
+                .then(done, done.fail);
+        });
+
+        it('should restore all when already isolated', function(done) {
+            Plotly.restyle(gd, 'visible', 'legendonly', [2, 3])
+                .then(assertVisible([true, true, 'legendonly', 'legendonly']))
+                .then(clickTitle('legend', 2))
+                .then(assertVisible([true, true, true, true]))
+                .then(done, done.fail);
+        });
+    });
+
+    describe('interactions with shapes', function() {
+        beforeEach(function(done) {
+            Plotly.newPlot(gd, [
+                { x: [1, 2], y: [1, 2] },
+                { x: [1, 2], y: [2, 3] },
+                { x: [1, 2], y: [3, 4], legend: 'legend2' },
+                { x: [1, 2], y: [4, 5], legend: 'legend2' }
+            ], {
+                showlegend: true,
+                legend: { title: { text: 'Legend 1' } },
+                legend2: { title: { text: 'Legend 2' }, y: 0.5 },
+                shapes: [
+                    { showlegend: true, type: 'line', x0: 0, y0: 0, x1: 1, y1: 1 },
+                    { showlegend: true, type: 'rect', x0: 0, y0: 0, x1: 1, y1: 1, legend: 'legend2' }
+                ]
+            }).then(done);
+        });
+
+        it('should toggle shapes with traces', function(done) {
+            Promise.resolve()
+                .then(assertVisible([true, true, true, true]))
+                .then(assertVisibleShapes([true, true]))
+                .then(clickTitle('legend'))
+                .then(assertVisible(['legendonly', 'legendonly', true, true]))
+                .then(assertVisibleShapes(['legendonly', true]))
+                .then(done, done.fail);
+        });
+    });
+
+    it('should not create click target when no title text', function(done) {
+        Plotly.newPlot(gd, [
+            { x: [1, 2], y: [1, 2] },
+            { x: [1, 2], y: [2, 3] },
+            { x: [1, 2], y: [3, 4], legend: 'legend2' },
+            { x: [1, 2], y: [4, 5], legend: 'legend2' }
+        ], {
+            showlegend: true,
+            legend: {},
+            legend2: { y: 0.5 }
+        }).then(function() {
+            var titleToggle = d3Select('.legendtitletoggle');
+            expect(titleToggle.size()).toBe(0);
+        }).then(done, done.fail);
+    });
+
+    it('should have a pointer cursor on hover for clickable titles', function(done) {
+        Plotly.newPlot(gd, [
+            { x: [1, 2], y: [1, 2] },
+            { x: [1, 2], y: [2, 3] },
+            { x: [1, 2], y: [3, 4], legend: 'legend2' },
+            { x: [1, 2], y: [4, 5], legend: 'legend2' }
+        ], {
+            showlegend: true,
+            legend: { title: { text: 'Legend 1' } },
+            legend2: { title: { text: 'Legend 2' }, y: 0.5 }
+        }).then(function() {
+            var titleToggle = d3Select('.legendtitletoggle').node();
+            expect(titleToggle.style.cursor).toBe('pointer');
+        }).then(done, done.fail);
+    });
+
+    it('should not have pointer cursor on static plots', function(done) {
+        Plotly.newPlot(gd, [
+            { x: [1, 2], y: [1, 2] },
+            { x: [1, 2], y: [2, 3] },
+            { x: [1, 2], y: [3, 4], legend: 'legend2' },
+            { x: [1, 2], y: [4, 5], legend: 'legend2' }
+        ], {
+            showlegend: true,
+            legend: { title: { text: 'Legend 1' } },
+            legend2: { title: { text: 'Legend 2' }, y: 0.5 }
+        }, {
+            staticPlot: true
+        }).then(function() {
+            var titleToggle = d3Select('.legendtitletoggle').node();
+            // On static plots, the title toggle rect is created but without pointer cursor
+            if(titleToggle) {
+                expect(titleToggle.style.cursor).not.toBe('pointer');
+            }
+        }).then(done, done.fail);
+    });
+});
