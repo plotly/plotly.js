@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "type": "sankey",
+      "arrangement": "snap",
+      "node": {
+        "label": ["A", "B", "C", "D"],
+        "x": [0.1, 0.1, 0.5, 0.9],
+        "y": [0.5, 0.95, 0.95, 0.95]
+      },
+      "link": {
+        "source": [0, 0, 1, 2],
+        "target": [1, 2, 3, 3],
+        "value": [5, 3, 5, 3]
+      }
+    }
+  ],
+  "layout": {
+    "title": { "text": "Sankey with bottom-edge nodes" },
+    "width": 600,
+    "height": 400
+  }
+}
