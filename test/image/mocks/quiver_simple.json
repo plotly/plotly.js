@@ -12,8 +12,8 @@
       "sizemode": "scaled",
       "sizeref": 0.5,
       "anchor": "tail",
-      "line": {
-        "width": 2
+      "marker": {
+        "line": {"width": 2}
       }
     }
   ],

@@ -17,14 +17,12 @@
         "colorbar": {
           "title": {"text": "Custom Field"},
           "x": 1.02
-        }
+        },
+        "line": {"width": 2}
       },
       "sizemode": "scaled",
       "sizeref": 0.25,
-      "anchor": "tail",
-      "line": {
-        "width": 2
-      }
+      "anchor": "tail"
     }
   ],
   "layout": {

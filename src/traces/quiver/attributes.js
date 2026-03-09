@@ -4,10 +4,9 @@ var baseAttrs = require('../../plots/attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var fontAttrs = require('../../plots/font_attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var dash = require('../../components/drawing/attributes').dash;
-
 var extendFlat = require('../../lib/extend').extendFlat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var dash = require('../../components/drawing/attributes').dash;
 
 var attrs = {
     x: {
@@ -100,54 +99,6 @@ var attrs = {
         description: 'Deprecated alias for `arrowsize`-based sizing. Prefer using `arrowsize`.'
     },
 
-    // Line styling for arrows
-    line: {
-        color: {
-            valType: 'color',
-            dflt: '#000',
-            editType: 'style',
-            description: 'Sets the color of the arrow lines.'
-        },
-        width: {
-            valType: 'number',
-            min: 0,
-            dflt: 1,
-            editType: 'style',
-            description: 'Sets the width (in px) of the arrow lines.'
-        },
-        dash: dash,
-        shape: {
-            valType: 'enumerated',
-            values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
-            dflt: 'linear',
-            editType: 'plot',
-            description: 'Determines the line shape.'
-        },
-        smoothing: {
-            valType: 'number',
-            min: 0,
-            max: 1.3,
-            dflt: 1,
-            editType: 'plot',
-            description: 'Has an effect only if `shape` is set to *spline*. Sets the amount of smoothing.'
-        },
-        simplify: {
-            valType: 'boolean',
-            dflt: true,
-            editType: 'plot',
-            description: 'Simplifies lines by removing nearly-overlapping points.'
-        },
-        editType: 'style'
-    },
-
-    // Alias consistent with annotations; maps to line.width
-    arrowwidth: {
-        valType: 'number',
-        min: 0.1,
-        editType: 'style',
-        description: 'Sets the width (in px) of the arrow line (alias of `line.width`).'
-    },
-
     // Text and labels
     text: {
         valType: 'data_array',
@@ -174,9 +125,20 @@ var attrs = {
         description: 'Sets the text font.'
     }),
 
-    // Marker (for colorscale-based coloring of arrows)
+    // Marker: color, colorscale, and line styling for arrows
     marker: extendFlat(
         {
+            line: {
+                width: {
+                    valType: 'number',
+                    min: 0,
+                    dflt: 1,
+                    editType: 'style',
+                    description: 'Sets the width (in px) of the arrow lines.'
+                },
+                dash: dash,
+                editType: 'style'
+            },
             editType: 'calc'
         },
         colorScaleAttrs('marker', {

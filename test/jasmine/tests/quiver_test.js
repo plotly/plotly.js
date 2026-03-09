@@ -250,7 +250,7 @@ describe('Test quiver interactions', function() {
             y: [1, 2],
             u: [1, 0],
             v: [0, 1],
-            line: {color: 'red'}
+            marker: {color: 'red'}
         }, {
             type: 'quiver',
             name: 'trace B',
@@ -258,7 +258,7 @@ describe('Test quiver interactions', function() {
             y: [3, 4],
             u: [-1, 0],
             v: [0, -1],
-            line: {color: 'blue'}
+            marker: {color: 'blue'}
         }], {
             margin: {l: 0, t: 0, r: 0, b: 0},
             width: 400,

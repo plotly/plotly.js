@@ -173,11 +173,13 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     });
 
     // Apply styling using Plotly's standard styling system
-    Drawing.lineGroupStyle(lineSegments, trace.line && trace.line.width, trace.line && trace.line.color, trace.line && trace.line.dash);
+    var marker = trace.marker || {};
+    var markerLine = marker.line || {};
+    var lineColor = Lib.isArrayOrTypedArray(marker.color) ? undefined : marker.color;
+    Drawing.lineGroupStyle(lineSegments, markerLine.width, lineColor, markerLine.dash);
 
     // If colorscale present, color arrows by marker.color or magnitude |(u,v)|
     if(trace._hasColorscale) {
-        var marker = trace.marker || {};
         var colorFunc = Colorscale.makeColorScaleFuncFromTrace(marker);
         lineSegments.style('stroke', function(cdi) {
             var markerColor = marker.color;

@@ -38,22 +38,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Arrow styling
     coerce('arrowsize');
     coerce('arrow_scale'); // back-compat alias
-    coerce('arrowwidth');
     coerce('hoverdistance');
 
-    // Line styling - use coerce for proper validation
-    coerce('line.color', defaultColor);
-    // If arrowwidth is set, use it as line.width default
-    var arrowwidth = traceOut.arrowwidth;
-    if(arrowwidth !== undefined) {
-        coerce('line.width', arrowwidth);
-    } else {
-        coerce('line.width');
-    }
-    coerce('line.dash');
-    coerce('line.shape');
-    coerce('line.smoothing');
-    coerce('line.simplify');
+    // Line styling under marker.line
+    coerce('marker.line.width');
+    coerce('marker.line.dash');
 
     // Text
     coerce('text');
@@ -71,12 +60,21 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // Ensure traceOut.marker exists before colorscaleDefaults, which captures
     // a reference to it via npMaybe at the start of its execution.
     if(!traceOut.marker) traceOut.marker = {};
-    coerce('marker.color');
+    coerce('marker.color', defaultColor);
     var withColorscale = hasColorscale(traceIn, 'marker') || (traceIn.marker || {}).coloraxis;
     traceOut._hasColorscale = !!withColorscale;
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: 'marker.', cLetter: 'c' });
     }
+
+    // Provide trace.line for compat with shared code (legend, getTraceColor)
+    var markerLine = traceOut.marker.line || {};
+    var mc = traceOut.marker.color;
+    traceOut.line = {
+        width: markerLine.width,
+        color: Lib.isArrayOrTypedArray(mc) ? defaultColor : mc,
+        dash: markerLine.dash
+    };
 
     // Selection styling
     coerce('selected.line.color');

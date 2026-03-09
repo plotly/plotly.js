@@ -10,9 +10,9 @@
       "sizemode": "scaled",
       "sizeref": 0.4,
       "anchor": "tail",
-      "line": {
+      "marker": {
         "color": "red",
-        "width": 2
+        "line": {"width": 2}
       }
     },
     {
@@ -25,9 +25,9 @@
       "sizemode": "scaled",
       "sizeref": 0.4,
       "anchor": "tail",
-      "line": {
+      "marker": {
         "color": "blue",
-        "width": 2
+        "line": {"width": 2}
       }
     }
   ],

@@ -32,10 +32,8 @@
         "colorbar": {
           "title": {"text": "Speed"},
           "x": 1.02
-        }
-      },
-      "line": {
-        "width": 1.5
+        },
+        "line": {"width": 1.5}
       }
     }
   ],

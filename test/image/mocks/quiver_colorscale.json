@@ -14,10 +14,8 @@
         "showscale": true,
         "colorbar": {
           "title": {"text": "Magnitude"}
-        }
-      },
-      "line": {
-        "width": 2
+        },
+        "line": {"width": 2}
       }
     }
   ],

@@ -10,9 +10,9 @@
       "sizemode": "scaled",
       "sizeref": 0.3,
       "anchor": "tail",
-      "line": {
+      "marker": {
         "color": "red",
-        "width": 2
+        "line": {"width": 2}
       },
       "xaxis": "x",
       "yaxis": "y"
@@ -27,9 +27,9 @@
       "sizemode": "absolute",
       "sizeref": 0.3,
       "anchor": "tail",
-      "line": {
+      "marker": {
         "color": "blue",
-        "width": 2
+        "line": {"width": 2}
       },
       "xaxis": "x2",
       "yaxis": "y2"
@@ -44,9 +44,9 @@
       "sizemode": "raw",
       "sizeref": 1,
       "anchor": "tail",
-      "line": {
+      "marker": {
         "color": "green",
-        "width": 2
+        "line": {"width": 2}
       },
       "xaxis": "x3",
       "yaxis": "y3"
