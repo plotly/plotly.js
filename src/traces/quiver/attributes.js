@@ -8,6 +8,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var annotationAttrs = require('../../components/annotations/attributes');
+var scatterAttrs = require('../scatter/attributes');
 
 var attrs = {
     x: {
@@ -16,12 +17,16 @@ var attrs = {
         anim: true,
         description: 'Sets the x coordinates of the arrow locations.'
     },
+    x0: scatterAttrs.x0,
+    dx: scatterAttrs.dx,
     y: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         anim: true,
         description: 'Sets the y coordinates of the arrow locations.'
     },
+    y0: scatterAttrs.y0,
+    dy: scatterAttrs.dy,
     u: {
         valType: 'data_array',
         editType: 'calc',
