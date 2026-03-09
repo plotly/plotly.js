@@ -9,10 +9,10 @@
       "v": [1, 1, 1],
       "sizemode": "scaled",
       "sizeref": 0.5,
-      "arrowsize": 0.5,
       "anchor": "tail",
       "marker": {
         "color": "red",
+        "arrowsize": 0.5,
         "line": {"width": 1}
       }
     },
@@ -25,10 +25,10 @@
       "v": [1, 1, 1],
       "sizemode": "scaled",
       "sizeref": 0.5,
-      "arrowsize": 1.0,
       "anchor": "tail",
       "marker": {
         "color": "blue",
+        "arrowsize": 1.0,
         "line": {"width": 2}
       }
     },
@@ -41,10 +41,10 @@
       "v": [1, 1, 1],
       "sizemode": "scaled",
       "sizeref": 0.5,
-      "arrowsize": 2.0,
       "anchor": "tail",
       "marker": {
         "color": "green",
+        "arrowsize": 2.0,
         "line": {"width": 3}
       }
     }

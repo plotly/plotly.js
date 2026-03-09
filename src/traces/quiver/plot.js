@@ -102,9 +102,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var pxPerY = Math.abs(ya.c2p(cdi.y + 1) - ya.c2p(cdi.y));
         var scaleRatio = (pxPerX && pxPerY) ? (pxPerY / pxPerX) : 1;
         var baseHeadScale = 0.2;
-        var arrowScale = (trace.arrowsize !== undefined)
-            ? (baseHeadScale * trace.arrowsize)
-            : (trace.arrow_scale !== undefined ? trace.arrow_scale : baseHeadScale);
+        var markerArrowsize = (trace.marker || {}).arrowsize;
+        var arrowScale = (markerArrowsize !== undefined)
+            ? (baseHeadScale * markerArrowsize)
+            : baseHeadScale;
         // Fixed arrowhead wedge angle (radians).
         // Arrow direction is fully determined by u,v (see barbAng below);
         // this constant only controls the opening of the head.

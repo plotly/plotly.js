@@ -36,8 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('anchor');
 
     // Arrow styling
-    coerce('arrowsize');
-    coerce('arrow_scale'); // back-compat alias
+    coerce('marker.arrowsize');
     coerce('hoverdistance');
 
     // Line styling under marker.line

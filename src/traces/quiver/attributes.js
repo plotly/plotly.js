@@ -7,6 +7,7 @@ var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').ax
 var extendFlat = require('../../lib/extend').extendFlat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var annotationAttrs = require('../../components/annotations/attributes');
 
 var attrs = {
     x: {
@@ -79,26 +80,6 @@ var attrs = {
     uhoverformat: axisHoverFormat('u', 'noDate'),
     vhoverformat: axisHoverFormat('v', 'noDate'),
 
-    // Arrowhead sizing, consistent with annotations API naming
-    arrowsize: {
-        valType: 'number',
-        min: 0.3,
-        dflt: 1,
-        editType: 'calc',
-        description: [
-            'Scales the size of the arrow head relative to a base size.',
-            'Higher values produce larger heads.'
-        ].join(' ')
-    },
-    // Back-compat alias
-    arrow_scale: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        editType: 'calc',
-        description: 'Deprecated alias for `arrowsize`-based sizing. Prefer using `arrowsize`.'
-    },
-
     // Text and labels
     text: {
         valType: 'data_array',
@@ -125,9 +106,16 @@ var attrs = {
         description: 'Sets the text font.'
     }),
 
-    // Marker: color, colorscale, and line styling for arrows
+    // Marker: color, colorscale, arrowhead sizing, and line styling for arrows
     marker: extendFlat(
         {
+            arrowsize: extendFlat({}, annotationAttrs.arrowsize, {
+                editType: 'calc',
+                description: [
+                    'Sets the size of the arrow head relative to `marker.line.width`.',
+                    'A value of 1 (default) gives a head about 3x as wide as the line.'
+                ].join(' ')
+            }),
             line: {
                 width: {
                     valType: 'number',
