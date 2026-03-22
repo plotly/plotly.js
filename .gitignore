@@ -6,6 +6,10 @@ build/*
 
 dist/*.LICENSE.txt
 dist/*.css
+dist/*.js
+dist/*.min.js
+dist/plot-schema.json
+dist/translation-keys.txt
 
 npm-debug.log*
 *.sublime*

@@ -111,9 +111,18 @@ drawing.translatePoint = function (d, sel, xa, ya) {
     var y = ya.c2p(d.y);
 
     if (isNumeric(x) && isNumeric(y) && sel.node()) {
-        // for multiline text this works better
         if (sel.node().nodeName === 'text') {
             sel.attr('x', x).attr('y', y);
+        } else if (sel.node().nodeName === 'use') {
+            // For <use> markers: preserve the non-translate suffix (scale/rotate) set by singlePointStyle
+            // Read directly from DOM node since sel may be a d3 transition
+            var node = sel.node();
+            var scale = node.getAttribute('data-scale');
+            var rot = node.getAttribute('data-rot');
+            var t = strTranslate(x, y);
+            if (rot) t += ' ' + rot;
+            if (scale) t += ' scale(' + scale + ')';
+            sel.attr('transform', t);
         } else {
             sel.attr('transform', strTranslate(x, y));
         }
@@ -322,18 +331,17 @@ drawing.fillGroupStyle = function (s, gd, forLegend) {
 var SYMBOLDEFS = require('./symbol_defs');
 
 drawing.symbolNames = [];
-drawing.symbolFuncs = [];
+drawing.symbolPaths = [];
 drawing.symbolBackOffs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
 drawing.symbolNoFill = {};
 drawing.symbolList = [];
 
+var _n = 0;
 Object.keys(SYMBOLDEFS).forEach(function (k) {
     var symDef = SYMBOLDEFS[k];
-    // Skip non-symbol exports (like 'align' function)
-    if (typeof symDef !== 'object' || symDef.n === undefined) return;
-    var n = symDef.n;
+    var n = _n++;
     drawing.symbolList.push(
         n,
         String(n),
@@ -344,7 +352,7 @@ Object.keys(SYMBOLDEFS).forEach(function (k) {
         k + '-open'
     );
     drawing.symbolNames[n] = k;
-    drawing.symbolFuncs[n] = symDef.f;
+    drawing.symbolPaths[n] = symDef.p;
     drawing.symbolBackOffs[n] = symDef.backoff || 0;
 
     if (symDef.needLine) {
@@ -369,44 +377,110 @@ Object.keys(SYMBOLDEFS).forEach(function (k) {
 });
 
 var MAXSYMBOL = drawing.symbolNames.length;
-// add a dot in the middle of the symbol
 var DOTPATH = 'M0,0.5L0.5,0L0,-0.5L-0.5,0Z';
+drawing.symbolDotPath = DOTPATH;
 
-drawing.symbolNumber = function (v) {
-    if (isNumeric(v)) {
-        v = +v;
-    } else if (typeof v === 'string') {
-        var vbase = 0;
-        if (v.indexOf('-open') > 0) {
-            vbase = 100;
-            v = v.replace('-open', '');
-        }
-        if (v.indexOf('-dot') > 0) {
-            vbase += 200;
-            v = v.replace('-dot', '');
-        }
-        v = drawing.symbolNames.indexOf(v);
-        if (v >= 0) {
-            v += vbase;
-        }
+// Pre-build all four variant paths for every symbol, indexed by the legacy
+// numeric code (same encoding the user types as `symbol: N`):
+//   [0,   100)  closed       (base path)
+//   [100, 200)  open         (same base path — open/closed is CSS-only)
+//   [200, 300)  closed-dot   (base + dot sub-path)
+//   [300, 400)  open-dot     (same as closed-dot — open is CSS-only)
+//
+// Symbols with noDot leave the dot-variant slots undefined (those variants are invalid).
+for(var _i = 0; _i < MAXSYMBOL; _i++) {
+    drawing.symbolPaths[_i + 100] = drawing.symbolPaths[_i]; // open = same path
+    if(!drawing.symbolNoDot[_i]) {
+        drawing.symbolPaths[_i + 200] = drawing.symbolPaths[_i] + DOTPATH;
+        drawing.symbolPaths[_i + 300] = drawing.symbolPaths[_i] + DOTPATH;
+    }
+}
+
+/**
+ * Unified symbol lookup.
+ * Accepts a built-in name ('circle', 'circle-open', 'circle-dot', …),
+ * a legacy numeric code (0, 100, 200, 300, …), or a raw SVG path string
+ * (any string starting with 'M'/'m').
+ *
+ * Returns {n, path, open, dot, backoff, noDot, noFill}.
+ * n matches the legacy numeric encoding unambiguously:
+ *   n = idx + (open ? 100 : 0) + (dot ? 200 : 0)
+ * so lookupSymbol(100).n === 100, lookupSymbol('circle-open').n === 100, etc.
+ * n is null for custom SVG paths (id assigned per-SVG by ensureSymbolDef).
+ * Returns null for unrecognised input (callers should fall back to circle).
+ */
+drawing.lookupSymbol = function (v) {
+    // Raw SVG path — no deterministic n; ensureSymbolDef will assign a per-SVG id.
+    if (typeof v === 'string' && /^[Mm]/.test(v)) {
+        return { n: null, path: v, open: false, dot: false, backoff: 0, noDot: false, noFill: false };
     }
 
-    return v % 100 >= MAXSYMBOL || v >= 400 ? 0 : Math.floor(Math.max(v, 0));
+    var name, open = false, dot = false, idx;
+    if (isNumeric(v)) {
+        var n = Math.floor(Math.max(+v, 0));
+        if (n >= 400) return null;
+        open = n % 200 >= 100;
+        dot  = n >= 200;
+        idx  = n % 100;
+        if (idx >= MAXSYMBOL) return null;
+        name = drawing.symbolNames[idx];
+    } else if (typeof v === 'string') {
+        if (v.indexOf('-open') > 0) { open = true; v = v.replace('-open', ''); }
+        if (v.indexOf('-dot') > 0)  { dot  = true; v = v.replace('-dot',  ''); }
+        idx = drawing.symbolNames.indexOf(v);
+        if (idx < 0) return null;
+        name = v;
+    } else {
+        return null;
+    }
+
+    var symN = idx + (open ? 100 : 0) + (dot ? 200 : 0);
+    return {
+        n:    symN,
+        name: name,
+        path: drawing.symbolPaths[symN],
+        open: open,
+        dot:  dot,
+        backoff: drawing.symbolBackOffs[idx] || 0,
+        noDot:   !!drawing.symbolNoDot[idx],
+        noFill:  !!drawing.symbolNoFill[idx]
+    };
 };
 
-function makePointPath(symbolNumberOrFunc, r, t, s, d) {
-    // Check if a custom function was passed directly
-    if (typeof symbolNumberOrFunc === 'function') {
-        // Custom functions receive (r, customdata) and return an unrotated path.
-        // Rotation and standoff are applied automatically via align().
-        var path = symbolNumberOrFunc(r, d.data);
-        return SYMBOLDEFS.align(t, s, path);
-    }
+// sym.n already equals the legacy numeric encoding, so symbolNumber is a simple wrapper.
+drawing.symbolNumber = function (v) {
+    var sym = drawing.lookupSymbol(v);
+    if (!sym || !sym.name) return 0;
+    return sym.n;
+};
 
-    var symbolNumber = symbolNumberOrFunc;
-    var base = symbolNumber % 100;
-    return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
-}
+drawing.ensureSymbolDef = function (gd, sym) {
+    var defs = gd._fullLayout._defs;
+    var node = defs.node();
+    // Per-SVG map: built-ins keyed by sym.n (each variant gets its own <symbol>);
+    // custom SVG paths keyed by path string → 'c0', 'c1', …
+    // Stored on the <defs> DOM node so it is freed when the SVG is removed.
+    var symMap = node._symMap || (node._symMap = {});
+
+    // Use sym.n as key for built-ins; sym.path for custom (sym.n === null).
+    var key = sym.n !== null ? sym.n : sym.path;
+    if(key in symMap) return symMap[key];
+
+    var id;
+    if(sym.n !== null) {
+        id = sym.name + (sym.open ? '-open' : '') + (sym.dot ? '-dot' : '');
+    } else {
+        if(!node._customSymCount) node._customSymCount = 0;
+        id = 'c' + node._customSymCount++;
+    }
+    symMap[key] = id;
+
+    defs.append('symbol')
+        .attr('id', id)
+        .attr('overflow', 'visible')
+        .append('path').attr('d', sym.path);
+    return id;
+};
 
 var stopFormatter = numberFormat('~f');
 var gradientInfo = {
@@ -925,18 +999,36 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
             r = d.mrc = fns.selectedSizeFn(d);
         }
 
-        // turn the symbol into a sanitized number (or keep function if it's a custom function)
         var symbolValue = d.mx || marker.symbol;
-        var x = typeof symbolValue === 'function' ? symbolValue : (drawing.symbolNumber(symbolValue) || 0);
+        var sym = drawing.lookupSymbol(symbolValue) || drawing.lookupSymbol(0);
 
-        // save if this marker is open
-        // because that impacts how to handle colors
-        d.om = typeof x === 'number' && x % 200 >= 100;
+        // save if this marker is open (impacts color handling)
+        d.om = sym.open;
 
         var angle = getMarkerAngle(d, trace);
         var standoff = getMarkerStandoff(d, trace);
+        var scale = r / 20;
 
-        sel.attr('d', makePointPath(x, r, angle, standoff, d));
+        // Build rotation/standoff suffix for transforms
+        var rot = '';
+        if (angle) rot += 'rotate(' + angle + ')';
+        if (standoff) rot += (rot ? ' ' : '') + 'translate(0,' + standoff + ')';
+
+        sel.attr('href', '#' + drawing.ensureSymbolDef(gd, sym))
+            .attr('data-scale', scale)
+            .attr('data-rot', rot || null);
+
+        // Update full transform: keep existing translate (from translatePoint), append rot+scale
+        // Use node.getAttribute() since sel may be a d3 transition (no getter support)
+        var node = sel.node();
+        var curT = node ? (node.getAttribute('transform') || '') : '';
+        var tPart = curT.match(/^translate\([^)]*\)/);
+        var newT = (tPart ? tPart[0] : '');
+        if (rot) newT += ' ' + rot;
+        newT += ' scale(' + scale + ')';
+        sel.attr('transform', newT.trim());
+
+        sel.style('vector-effect', gd._context.staticPlot ? 'none' : 'non-scaling-stroke');
     }
 
     var perPointGradient = false;
@@ -1213,16 +1305,16 @@ drawing.selectedPointStyle = function (s, trace) {
 
     if (fns.selectedSizeFn) {
         seq.push(function (pt, d) {
-            var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
-
-            // Handle both function and string/number symbols
-            var symbolForPath = typeof mx === 'function' ? mx : drawing.symbolNumber(mx);
-            
-            pt.attr(
-                'd',
-                makePointPath(symbolForPath, mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace), d)
-            );
+            var scale = mrc2 / 20;
+            var node = pt.node();
+            var rot = node ? (node.getAttribute('data-rot') || '') : '';
+            var curT = node ? (node.getAttribute('transform') || '') : '';
+            var tPart = curT.match(/^translate\([^)]*\)/);
+            var newT = (tPart ? tPart[0] : '');
+            if (rot) newT += ' ' + rot;
+            newT += ' scale(' + scale + ')';
+            pt.attr('data-scale', scale).attr('transform', newT.trim());
 
             // save for Drawing.selectedTextStyle
             d.mrc2 = mrc2;
@@ -1513,7 +1605,7 @@ function applyBackoff(pt, start) {
             var endMarkerSize = endMarker.size;
             if (Lib.isArrayOrTypedArray(endMarkerSize)) endMarkerSize = endMarkerSize[endI];
 
-            b = endMarker && typeof endMarkerSymbol !== 'function' ? (drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] || 0) * endMarkerSize : 0;
+            b = endMarker ? ((drawing.lookupSymbol(endMarkerSymbol) || {}).backoff || 0) * endMarkerSize : 0;
             b += drawing.getMarkerStandoff(d[endI], trace) || 0;
         }
 

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Custom Markers - With and Without Customdata</title>
+    <title>Custom Markers - Static SVG Paths (New API)</title>
     <script src="../../dist/plotly.js"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
@@ -12,83 +12,51 @@
     </style>
 </head>
 <body>
-    <h2>Custom Markers - With and Without Customdata</h2>
+    <h2>Custom Markers - Static SVG Paths at r=20</h2>
     <div class="info">
-        <strong>Simple markers</strong> use <code>function(r)</code><br>
-        <strong>Data-aware markers</strong> use <code>function(r, customdata)</code>
+        <strong>New API:</strong> <code>marker.symbol</code> accepts SVG path strings precomputed
+        at r=20. Plotly scales them by <code>size/20</code>. Use an array for per-point shapes.<br>
+        Rotation is applied as <code>transform="rotate()"</code> via <code>marker.angle</code>.
     </div>
     <div id="plot" style="width: 700px; height: 400px;"></div>
 
     <script>
-    // SIMPLE: just uses radius - diamond shape
-    function diamondMarker(r) {
-        return 'M' + r + ',0L0,' + r + 'L-' + r + ',0L0,-' + r + 'Z';
-    }
-
-    // SIMPLE: star shape
-    function starMarker(r) {
-        var points = 5, path = 'M';
-        for (var i = 0; i < points * 2; i++) {
-            var radius = i % 2 === 0 ? r : r * 0.4;
-            var ang = (i * Math.PI) / points - Math.PI / 2;
-            path += (i === 0 ? '' : 'L') +
-                    (radius * Math.cos(ang)).toFixed(2) + ',' +
-                    (radius * Math.sin(ang)).toFixed(2);
-        }
-        return path + 'Z';
-    }
-
-    // DATA-AWARE: shape depends on customdata[i]
-    function dataAwareMarker(r, customdata) {
-        var type = customdata;
-        if (type === 'big') {
-            // Larger diamond
-            var r2 = r * 1.4;
-            return 'M' + r2 + ',0L0,' + r2 + 'L-' + r2 + ',0L0,-' + r2 + 'Z';
-        }
-        if (type === 'star') {
-            // Star shape
-            var points = 5, path = 'M';
-            for (var i = 0; i < points * 2; i++) {
-                var radius = i % 2 === 0 ? r : r * 0.4;
-                var ang = (i * Math.PI) / points - Math.PI / 2;
-                path += (i === 0 ? '' : 'L') +
-                        (radius * Math.cos(ang)).toFixed(2) + ',' +
-                        (radius * Math.sin(ang)).toFixed(2);
-            }
-            return path + 'Z';
-        }
-        // Default: circle
-        return 'M' + r + ',0A' + r + ',' + r + ' 0 1,1 0,-' + r +
-               'A' + r + ',' + r + ' 0 0,1 ' + r + ',0Z';
-    }
+    // Static SVG paths at r=20 — Plotly scales by size/20
+    var DIAMOND = 'M20,0L0,20L-20,0L0,-20Z';
+    var STAR = 'M0.00,-20.00L4.70,-6.47L19.02,-6.18L7.61,2.47L11.76,16.18' +
+               'L0.00,8.00L-11.76,16.18L-7.61,2.47L-19.02,-6.18L-4.70,-6.47Z';
+    var BIG_DIAMOND = 'M28,0L0,28L-28,0L0,-28Z';  // 1.4× diamond (effectively r=28)
 
     Plotly.newPlot('plot', [{
-        name: 'Simple: diamond(r)',
+        name: 'Diamond',
         type: 'scatter',
         x: [1, 2, 3, 4],
         y: [1, 1, 1, 1],
         mode: 'markers',
-        marker: { symbol: diamondMarker, size: 25, color: '#3b82f6' }
+        marker: { symbol: DIAMOND, size: 25, color: '#3b82f6' }
     }, {
-        name: 'Simple: star(r)',
+        name: 'Star',
         type: 'scatter',
         x: [1, 2, 3, 4],
         y: [2, 2, 2, 2],
         mode: 'markers',
-        marker: { symbol: starMarker, size: 25, color: '#f59e0b' }
+        marker: { symbol: STAR, size: 25, color: '#f59e0b' }
     }, {
-        name: 'Data-aware: (r, customdata)',
+        name: 'Per-point: normal / big / star',
         type: 'scatter',
         x: [1, 2, 3, 4],
         y: [3, 3, 3, 3],
-        customdata: ['circle', 'big', 'star', 'circle'],
         mode: 'markers',
-        marker: { symbol: dataAwareMarker, size: 25, color: '#10b981' }
+        // Each point gets its own symbol path (was: function(r, customdata) { ... })
+        marker: {
+            symbol: [DIAMOND, BIG_DIAMOND, STAR, DIAMOND],
+            size: 25,
+            color: '#10b981'
+        }
     }], {
-        title: 'Custom Marker Functions',
+        title: 'Custom Markers — SVG path strings at r=20',
         xaxis: { range: [0, 5] },
-        yaxis: { range: [0, 4], tickvals: [1, 2, 3], ticktext: ['Diamond', 'Star', 'Data-driven'] },
+        yaxis: { range: [0, 4], tickvals: [1, 2, 3], ticktext: ['Diamond', 'Star', 'Per-point'] },
         showlegend: true
     });
     </script>

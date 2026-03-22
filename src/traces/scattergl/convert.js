@@ -458,41 +458,77 @@ var SYMBOL_SDF_SIZE = constants.SYMBOL_SDF_SIZE;
 var SYMBOL_SIZE = constants.SYMBOL_SIZE;
 var SYMBOL_STROKE = constants.SYMBOL_STROKE;
 var SYMBOL_SDF = {};
-var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
+// Small circle path (r=1) used as center dot in SDF symbol rendering
+var SYMBOL_SVG_CIRCLE = 'M1,0A1,1 0 1,1 0,-1A1,1 0 0,1 1,0Z';
+
+// Rotate an SVG path string by angleDeg degrees around the origin, for use
+// in the SDF (signed-distance-field) pipeline where svg-path-sdf only accepts
+// a flat path string and has no SVG-transform support.
+// SVG markers (scatter/box) rotate via transform="rotate(...)" on <use> instead.
+// Only handles M/L/H/V/A commands (sufficient for all built-in symbol paths).
+function rotatePath(path, angleDeg) {
+    if (!angleDeg || angleDeg % 360 === 0) return path;
+    var t = angleDeg * Math.PI / 180;
+    var cosT = Math.cos(t);
+    var sinT = Math.sin(t);
+    function rot(x, y) { return [x * cosT - y * sinT, x * sinT + y * cosT]; }
+    // Parse path commands with a simple regex
+    return path.replace(/([MLHVAZmlhva])([^MLHVAZmlhva]*)/g, function(_, op, args) {
+        var nums = args.trim() ? args.trim().split(/[\s,]+/).map(Number) : [];
+        var u = op.toUpperCase();
+        if (u === 'Z') return op;
+        if (u === 'M' || u === 'L') {
+            var p = rot(nums[0], nums[1]);
+            return op + p[0] + ',' + p[1];
+        }
+        if (u === 'H') {
+            var ph = rot(nums[0], 0);
+            return 'L' + ph[0] + ',' + ph[1];
+        }
+        if (u === 'V') {
+            var pv = rot(0, nums[0]);
+            return 'L' + pv[0] + ',' + pv[1];
+        }
+        if (u === 'A') {
+            // args: rx ry x-rotation large-arc-flag sweep-flag x y
+            var pa = rot(nums[5], nums[6]);
+            return op + nums[0] + ',' + nums[1] + ' ' + (nums[2] + angleDeg) + ' ' + nums[3] + ' ' + nums[4] + ' ' + pa[0] + ',' + pa[1];
+        }
+        return op + args;
+    });
+}
 
 function getSymbolSdf(d, trace) {
     var symbol = d.mx;
     if (symbol === 'circle') return null;
 
     var symbolPath, symbolSdf;
-    var symbolNumber = Drawing.symbolNumber(symbol);
-    var symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
-    var symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
-    var symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
-
+    var sym = Drawing.lookupSymbol(symbol);
     var isDot = helpers.isDotSymbol(symbol);
 
     // until we may handle angles in shader?
-    if (d.ma) symbol += '_' + d.ma;
+    var cacheKey = symbol;
+    if (d.ma) cacheKey += '_' + d.ma;
 
     // get symbol sdf from cache or generate it
-    if (SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
+    if (SYMBOL_SDF[cacheKey]) return SYMBOL_SDF[cacheKey];
 
     var angle = Drawing.getMarkerAngle(d, trace);
-    if (isDot && !symbolNoDot) {
-        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1, angle) + SYMBOL_SVG_CIRCLE;
+    var basePath = rotatePath(sym.path, angle);
+    if (isDot && !sym.noDot) {
+        symbolPath = basePath + SYMBOL_SVG_CIRCLE;
     } else {
-        symbolPath = symbolFunc(SYMBOL_SIZE, angle);
+        symbolPath = basePath;
     }
 
     symbolSdf = svgSdf(symbolPath, {
         w: SYMBOL_SDF_SIZE,
         h: SYMBOL_SDF_SIZE,
         viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
-        stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
+        stroke: sym.noFill ? SYMBOL_STROKE : -SYMBOL_STROKE
     });
 
-    SYMBOL_SDF[symbol] = symbolSdf;
+    SYMBOL_SDF[cacheKey] = symbolSdf;
 
     return symbolSdf || null;
 }

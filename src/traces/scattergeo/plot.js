@@ -45,9 +45,9 @@ function plot(gd, geo, calcData) {
         }
 
         if(subTypes.hasMarkers(trace)) {
-            s.selectAll('path.point')
+            s.selectAll('use.point')
                 .data(Lib.identity)
-             .enter().append('path')
+             .enter().append('use')
                 .classed('point', true)
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
