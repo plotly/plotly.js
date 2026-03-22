@@ -407,7 +407,7 @@ for(var _i = 0; _i < MAXSYMBOL; _i++) {
  *   n = idx + (open ? 100 : 0) + (dot ? 200 : 0)
  * so lookupSymbol(100).n === 100, lookupSymbol('circle-open').n === 100, etc.
  * n is null for custom SVG paths (id assigned per-SVG by ensureSymbolDef).
- * Returns null for unrecognised input (callers should fall back to circle).
+ * Throws an Error for unrecognised input.
  */
 drawing.lookupSymbol = function (v) {
     // Raw SVG path — no deterministic n; ensureSymbolDef will assign a per-SVG id.
@@ -418,20 +418,20 @@ drawing.lookupSymbol = function (v) {
     var name, open = false, dot = false, idx;
     if (isNumeric(v)) {
         var n = Math.floor(Math.max(+v, 0));
-        if (n >= 400) return null;
+        if (n >= 400) throw new Error('Unknown marker symbol: ' + v);
         open = n % 200 >= 100;
         dot  = n >= 200;
         idx  = n % 100;
-        if (idx >= MAXSYMBOL) return null;
+        if (idx >= MAXSYMBOL) throw new Error('Unknown marker symbol: ' + v);
         name = drawing.symbolNames[idx];
     } else if (typeof v === 'string') {
         if (v.indexOf('-open') > 0) { open = true; v = v.replace('-open', ''); }
         if (v.indexOf('-dot') > 0)  { dot  = true; v = v.replace('-dot',  ''); }
         idx = drawing.symbolNames.indexOf(v);
-        if (idx < 0) return null;
+        if (idx < 0) throw new Error('Unknown marker symbol: ' + v);
         name = v;
     } else {
-        return null;
+        throw new Error('Unknown marker symbol: ' + v);
     }
 
     var symN = idx + (open ? 100 : 0) + (dot ? 200 : 0);
@@ -449,9 +449,7 @@ drawing.lookupSymbol = function (v) {
 
 // sym.n already equals the legacy numeric encoding, so symbolNumber is a simple wrapper.
 drawing.symbolNumber = function (v) {
-    var sym = drawing.lookupSymbol(v);
-    if (!sym || !sym.name) return 0;
-    return sym.n;
+    return drawing.lookupSymbol(v).n;
 };
 
 drawing.ensureSymbolDef = function (gd, sym) {
@@ -1000,7 +998,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
         }
 
         var symbolValue = d.mx || marker.symbol;
-        var sym = drawing.lookupSymbol(symbolValue) || drawing.lookupSymbol(0);
+        var sym = drawing.lookupSymbol(symbolValue);
 
         // save if this marker is open (impacts color handling)
         d.om = sym.open;
@@ -1605,7 +1603,12 @@ function applyBackoff(pt, start) {
             var endMarkerSize = endMarker.size;
             if (Lib.isArrayOrTypedArray(endMarkerSize)) endMarkerSize = endMarkerSize[endI];
 
-            b = endMarker ? ((drawing.lookupSymbol(endMarkerSymbol) || {}).backoff || 0) * endMarkerSize : 0;
+            if(endMarker) {
+                var endMarkerSym = drawing.lookupSymbol(endMarkerSymbol);
+                b = (endMarkerSym.backoff || 0) * endMarkerSize;
+            } else {
+                b = 0;
+            }
             b += drawing.getMarkerStandoff(d[endI], trace) || 0;
         }
 
