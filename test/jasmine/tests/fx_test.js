@@ -234,6 +234,37 @@ describe('Fx defaults', function() {
             }
         });
     });
+
+    it('should coerce hoversort only for unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'x unified',
+            hoversort: 'value descending'
+        });
+        expect(out.layout.hoversort).toBe('value descending');
+    });
+
+    it('should not coerce hoversort for non-unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'closest',
+            hoversort: 'value descending'
+        });
+        expect(out.layout.hoversort).toBeUndefined();
+    });
+
+    it('should default hoversort to trace', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'x unified'
+        });
+        expect(out.layout.hoversort).toBe('trace');
+    });
+
+    it('should coerce hoversort for y unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'y unified',
+            hoversort: 'value ascending'
+        });
+        expect(out.layout.hoversort).toBe('value ascending');
+    });
 });
 
 describe('relayout', function() {

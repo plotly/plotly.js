@@ -7315,3 +7315,228 @@ describe('hoverlabel.showarrow', function() {
         .then(done, done.fail);
     });
 });
+
+describe('hoversort', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(gd, opts) {
+        Fx.hover(gd, opts);
+        Lib.clearThrottle();
+    }
+
+    function getHoverLabel() {
+        var hoverLayer = d3Select('g.hoverlayer');
+        return hoverLayer.select('g.legend');
+    }
+
+    function assertLabel(expectation) {
+        var hover = getHoverLabel();
+        var title = hover.select('text.legendtitletext');
+        var traces = hover.selectAll('g.traces');
+
+        if(expectation.title) {
+            expect(title.text()).toBe(expectation.title);
+        }
+
+        expect(traces.size()).toBe(expectation.items.length, 'has the incorrect number of items');
+        traces.each(function(_, i) {
+            var e = d3Select(this);
+            expect(e.select('text').text()).toBe(expectation.items[i]);
+        });
+    }
+
+    it('should sort unified hover items by value descending', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'small', y: [1, 2, 3]},
+                {name: 'large', y: [10, 20, 30]},
+                {name: 'medium', y: [5, 10, 15]}
+            ],
+            layout: {
+                hovermode: 'x unified',
+                hoversort: 'value descending',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 2 });
+            assertLabel({title: '2', items: [
+                'large : 30',
+                'medium : 15',
+                'small : 3'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should sort unified hover items by value ascending', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'small', y: [1, 2, 3]},
+                {name: 'large', y: [10, 20, 30]},
+                {name: 'medium', y: [5, 10, 15]}
+            ],
+            layout: {
+                hovermode: 'x unified',
+                hoversort: 'value ascending',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 2 });
+            assertLabel({title: '2', items: [
+                'small : 3',
+                'medium : 15',
+                'large : 30'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should default to trace index order', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'small', y: [1, 2, 3]},
+                {name: 'large', y: [10, 20, 30]},
+                {name: 'medium', y: [5, 10, 15]}
+            ],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 2 });
+            assertLabel({title: '2', items: [
+                'small : 3',
+                'large : 30',
+                'medium : 15'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should sort by value descending with bar charts', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'A', type: 'bar', y: [5, 10, 15]},
+                {name: 'B', type: 'bar', y: [20, 25, 30]},
+                {name: 'C', type: 'bar', y: [1, 2, 3]}
+            ],
+            layout: {
+                hovermode: 'x unified',
+                hoversort: 'value descending',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 1 });
+            assertLabel({title: '1', items: [
+                'B : 25',
+                'A : 10',
+                'C : 2'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should sort by value descending with y unified hovermode', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'first', x: [1, 10, 5]},
+                {name: 'second', x: [20, 2, 15]},
+                {name: 'third', x: [8, 8, 8]}
+            ],
+            layout: {
+                hovermode: 'y unified',
+                hoversort: 'value descending',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            _hover(gd, { yval: 0 });
+            assertLabel({title: '0', items: [
+                'second : 20',
+                'third : 8',
+                'first : 1'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should fall back to trace index when values are equal', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'A', y: [5, 10, 10]},
+                {name: 'B', y: [5, 20, 10]},
+                {name: 'C', y: [5, 5, 10]}
+            ],
+            layout: {
+                hovermode: 'x unified',
+                hoversort: 'value descending',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            // At xval=0, all values are 5 - should keep trace order
+            _hover(gd, { xval: 0 });
+            assertLabel({title: '0', items: [
+                'A : 5',
+                'B : 5',
+                'C : 5'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should dynamically update sort via relayout', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {name: 'low', y: [1, 2, 3]},
+                {name: 'high', y: [10, 20, 30]}
+            ],
+            layout: {
+                hovermode: 'x unified',
+                hoversort: 'trace',
+                showlegend: false,
+                width: 500,
+                height: 500
+            }
+        })
+        .then(function() {
+            _hover(gd, { xval: 1 });
+            assertLabel({title: '1', items: [
+                'low : 2',
+                'high : 20'
+            ]});
+
+            return Plotly.relayout(gd, 'hoversort', 'value descending');
+        })
+        .then(function() {
+            _hover(gd, { xval: 1 });
+            assertLabel({title: '1', items: [
+                'high : 20',
+                'low : 2'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+});
