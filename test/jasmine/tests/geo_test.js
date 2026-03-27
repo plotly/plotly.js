@@ -882,7 +882,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'lon', 'lat', 'location', 'marker.size'
+                    'lon', 'lat', 'location', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
                 expect(cnt).toEqual(1);
             });
@@ -947,7 +947,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'lon', 'lat', 'location', 'marker.size'
+                    'lon', 'lat', 'location', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -979,7 +979,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'lon', 'lat', 'location', 'marker.size'
+                    'lon', 'lat', 'location', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1008,7 +1008,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'location', 'z', 'ct'
+                    'location', 'z', 'ct', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1036,7 +1036,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'location', 'z', 'ct'
+                    'location', 'z', 'ct', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1068,7 +1068,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'location', 'z', 'ct'
+                    'location', 'z', 'ct', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1792,7 +1792,7 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
-                'location', 'text', 'marker.size'
+                'location', 'text', 'marker.size', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1896,7 +1896,7 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
-                'location', 'text', 'marker.size'
+                'location', 'text', 'marker.size', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1937,7 +1937,7 @@ describe('Test event property of interactions on a geo plot:', function() {
                 expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat',
-                    'location', 'text', 'marker.size'
+                    'location', 'text', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');

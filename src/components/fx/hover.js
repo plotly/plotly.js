@@ -167,6 +167,11 @@ exports.loneHover = function loneHover(hoverItems, opts) {
                 y1: y1 + gTop
             };
 
+            // xPixel/yPixel are pixel coordinates of the hover point's center,
+            // relative to the top-left corner of the graph div
+            eventData.xPixel = (_x0 + _x1) / 2;
+            eventData.yPixel = (_y0 + _y1) / 2;
+
             if (opts.inOut_bbox) {
                 opts.inOut_bbox.push(eventData.bbox);
             }
@@ -471,6 +476,14 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             Lib.warn('Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
         }
+    }
+
+    // Save coordinate values so clickanywhere can be used without hoveranywhere
+    if (fullLayout.clickanywhere) {
+        gd._hoverXVals = xvalArray;
+        gd._hoverYVals = yvalArray;
+        gd._hoverXAxes = xaArray;
+        gd._hoverYAxes = yaArray;
     }
 
     // the pixel distance to beat as a matching point
@@ -778,6 +791,18 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 createSpikelines(gd, spikePoints, spikelineOpts);
             }
         }
+
+        if (fullLayout.hoveranywhere && !noHoverEvent && eventTarget) {
+            var oldHoverData = gd._hoverdata;
+            if (oldHoverData && oldHoverData.length) {
+                gd.emit('plotly_unhover', {
+                    event: evt,
+                    points: oldHoverData
+                });
+                gd._hoverdata = [];
+            }
+            emitHover([]);
+        }
         return result;
     }
 
@@ -877,6 +902,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 y0: y0 + gTop,
                 y1: y1 + gTop
             };
+
+            eventData.xPixel = (_x0 + _x1) / 2;
+            eventData.yPixel = (_y0 + _y1) / 2;
         }
 
         pt.eventData = [eventData];
@@ -914,23 +942,28 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     }
 
     // don't emit events if called manually
-    if (!eventTarget || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
+    var _hoverChanged = hoverChanged(gd, evt, oldhoverdata);
+    if (!eventTarget || noHoverEvent || (!_hoverChanged && !fullLayout.hoveranywhere)) return;
 
-    if (oldhoverdata) {
+    if (oldhoverdata && _hoverChanged) {
         gd.emit('plotly_unhover', {
             event: evt,
             points: oldhoverdata
         });
     }
 
-    gd.emit('plotly_hover', {
-        event: evt,
-        points: gd._hoverdata,
-        xaxes: xaArray,
-        yaxes: yaArray,
-        xvals: xvalArray,
-        yvals: yvalArray
-    });
+    emitHover(gd._hoverdata);
+
+    function emitHover(points) {
+        gd.emit('plotly_hover', {
+            event: evt,
+            points: points,
+            xaxes: xaArray,
+            yaxes: yaArray,
+            xvals: xvalArray,
+            yvals: yvalArray
+        });
+    }
 }
 
 function hoverDataKey(d) {

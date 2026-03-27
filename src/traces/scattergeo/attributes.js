@@ -48,7 +48,9 @@ module.exports = overrideAll(
                 'to regions on the map.',
                 'Values *ISO-3*, *USA-states*, *country names* correspond to features on',
                 'the base map and value *geojson-id* corresponds to features from a custom',
-                'GeoJSON linked to the `geojson` attribute.'
+                'GeoJSON linked to the `geojson` attribute.',
+                '*USA-states* accepts both two-letter abbreviations (e.g. *CA*) and',
+                'full state names (e.g. *California*).'
             ].join(' ')
         },
 

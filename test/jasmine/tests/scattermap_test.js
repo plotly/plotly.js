@@ -996,7 +996,7 @@ describe('Test plotly events on a scattermap plot:', function() {
             var pt = futureData.points[0];
 
             expect(Object.keys(pt).sort()).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1043,7 +1043,7 @@ describe('Test plotly events on a scattermap plot:', function() {
             //     evt = futureData.event;
 
             // expect(Object.keys(pt).sort()).toEqual([
-            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
             // ].sort());
 
             // expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1077,7 +1077,7 @@ describe('Test plotly events on a scattermap plot:', function() {
             var pt = futureData.points[0];
 
             expect(Object.keys(pt).sort()).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1105,7 +1105,7 @@ describe('Test plotly events on a scattermap plot:', function() {
                 var pt = futureData.points[0];
 
                 expect(Object.keys(pt).sort()).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
                 ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1175,7 +1175,7 @@ describe('Test plotly events on a scattermap plot when css transform is present:
             var pt = futureData.points[0];
 
             expect(Object.keys(pt).sort()).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1205,7 +1205,7 @@ describe('Test plotly events on a scattermap plot when css transform is present:
             var pt = futureData.points[0];
 
             expect(Object.keys(pt).sort()).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -1233,7 +1233,7 @@ describe('Test plotly events on a scattermap plot when css transform is present:
                 var pt = futureData.points[0];
 
                 expect(Object.keys(pt).sort()).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox', 'xPixel', 'yPixel'
                 ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
