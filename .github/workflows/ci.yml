@@ -16,6 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
+          # TODO: Update this version to match library
           node-version: '18.20.4'
           cache: 'npm'
 
@@ -249,8 +250,8 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install kaleido, plotly.io and required fonts
-        run: .circleci/env_image.sh
+      - name: Install Kaleido, plotly.io and required fonts
+        run: .github/scripts/env_image.sh
 
       - name: Create all png files
         run: .github/scripts/test.sh make-baselines
@@ -310,7 +311,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install kaleido, plotly.io and required fonts
-        run: .circleci/env_image.sh
+        run: .github/scripts/env_image.sh
 
       - name: Create all png files (b64)
         run: .github/scripts/test.sh make-baselines-b64
@@ -370,7 +371,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install kaleido, plotly.io and required fonts
-        run: .circleci/env_image.sh
+        run: .github/scripts/env_image.sh
 
       - name: Create png files (virtual-webgl)
         run: .github/scripts/test.sh make-baselines-virtual-webgl
@@ -423,7 +424,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install kaleido, plotly.io and required fonts
-        run: .circleci/env_image.sh
+        run: .github/scripts/env_image.sh
 
       - name: Create mathjax v3 png files
         run: .github/scripts/test.sh make-baselines-mathjax3
@@ -478,7 +479,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install kaleido, plotly.io and required fonts
-        run: .circleci/env_image.sh
+        run: .github/scripts/env_image.sh
 
       - name: Install poppler-utils for eps export
         run: |
@@ -559,7 +560,7 @@ jobs:
           cache: 'npm'
 
       - name: Set up build environment
-        run: .circleci/env_build.sh
+        run: .github/scripts/env_build.sh
 
       - name: Preview CHANGELOG for next release (only on master)
         if: github.ref == 'refs/heads/master'
@@ -617,7 +618,7 @@ jobs:
           cache: 'npm'
 
       - name: Set up build environment
-        run: .circleci/env_build.sh
+        run: .github/scripts/env_build.sh
 
       - name: Preview CHANGELOG for next release (only on master)
         if: github.ref == 'refs/heads/master'
@@ -688,6 +689,7 @@ jobs:
           path: stackgl_modules/index.js
 
   test-topojson-build:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -707,7 +709,7 @@ jobs:
         run: diff -qr topojson/dist topojson/dist_backup
 
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: failure()
         with:
           name: topojson-dist
           retention-days: 7
