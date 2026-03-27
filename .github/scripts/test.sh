@@ -36,6 +36,9 @@ retry () {
     fi
 }
 
+# Ensure output directories exist (not present in fresh GHA checkout)
+mkdir -p build/test_images
+
 case $1 in
 
     no-gl-jasmine)
