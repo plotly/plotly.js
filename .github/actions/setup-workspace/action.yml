@@ -1,0 +1,26 @@
+name: 'Setup Workspace'
+description: 'Setup Node.js, install dependencies, and download build artifacts'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    default: '18.20.4'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+      env:
+        NODE_OPTIONS: '--max-old-space-size=4096'
+
+    - uses: actions/download-artifact@v8
+      with:
+        name: build-output
+        path: .

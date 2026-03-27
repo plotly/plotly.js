@@ -1,0 +1,19 @@
+name: 'Setup Chrome'
+description: 'Install Chrome and set CHROME_BIN environment variable'
+
+inputs:
+  chrome-version:
+    description: 'Chrome version to install'
+    default: '135.0.7049.95'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: browser-actions/setup-chrome@v2
+      id: setup-chrome
+      with:
+        chrome-version: ${{ inputs.chrome-version }}
+
+    - name: Set Chrome binary path
+      run: echo "CHROME_BIN=${{ steps.setup-chrome.outputs.chrome-path }}" >> $GITHUB_ENV
+      shell: bash
