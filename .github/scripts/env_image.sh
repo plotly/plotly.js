@@ -12,4 +12,4 @@ sudo fc-cache -f
 sudo python3 -m pip install kaleido==0.2.1 plotly==6.6.0 --progress-bar off
 
 # install numpy i.e. to convert arrays to typed arrays
-sudo python3 -m pip install numpy==1.24.2
+sudo python3 -m pip install numpy==2.4.3
