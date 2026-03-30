@@ -6,6 +6,7 @@ import plotly.io as pio
 root = os.getcwd()
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
 dirOut = os.path.join(root, 'build', 'test_images')
+os.makedirs(dirOut, exist_ok=True)
 
 pio.templates.default = 'none'
 pio.kaleido.scope.plotlyjs = os.path.join(root, 'build', 'plotly.js')

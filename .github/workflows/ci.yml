@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # TODO: Update this version to match library
   NODE_VERSION: '18.20.4'
 
 jobs:
@@ -23,7 +24,6 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          # TODO: Update this version to match library
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
