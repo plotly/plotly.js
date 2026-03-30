@@ -3,9 +3,12 @@ var pixelmatch = require('pixelmatch');
 var PNG = require('pngjs').PNG;
 var fs = require('fs');
 
+var constants = require('../../tasks/util/constants');
 var common = require('../../tasks/util/common');
 var getMockList = require('./assets/get_mock_list');
 var getImagePaths = require('./assets/get_image_paths');
+
+fs.mkdirSync(constants.pathToTestImagesDiff, { recursive: true });
 
 /**
  *  Image pixel comparison test script.
