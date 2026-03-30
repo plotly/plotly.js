@@ -59,24 +59,32 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run hover_label test in UTC timezone
-        run: date && npm run test-jasmine hover_label
+        uses: coactions/setup-xvfb@v1
         env:
           TZ: 'UTC'
+        with:
+          run: npm run test-jasmine hover_label
 
       - name: Run hover_label test in Europe/Berlin timezone
-        run: date && npm run test-jasmine hover_label
+        uses: coactions/setup-xvfb@v1
         env:
           TZ: 'Europe/Berlin'
+        with:
+          run: npm run test-jasmine hover_label
 
       - name: Run hover_label test in Asia/Tokyo timezone
-        run: date && npm run test-jasmine hover_label
+        uses: coactions/setup-xvfb@v1
         env:
           TZ: 'Asia/Tokyo'
+        with:
+          run: npm run test-jasmine hover_label
 
       - name: Run hover_label test in America/Toronto timezone
-        run: date && npm run test-jasmine hover_label
+        uses: coactions/setup-xvfb@v1
         env:
           TZ: 'America/Toronto'
+        with:
+          run: npm run test-jasmine hover_label
 
   no-gl-jasmine:
     needs: install-and-cibuild
@@ -95,7 +103,9 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run jasmine tests (no-gl, shard ${{ matrix.shard }})
-        run: .github/scripts/test.sh no-gl-jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh no-gl-jasmine
 
   webgl-jasmine:
     needs: install-and-cibuild
@@ -114,7 +124,9 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run jasmine tests (webgl, shard ${{ matrix.shard }})
-        run: .github/scripts/test.sh webgl-jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh webgl-jasmine
 
   virtual-webgl-jasmine:
     needs: install-and-cibuild
@@ -133,7 +145,9 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run jasmine tests (virtual-webgl, shard ${{ matrix.shard }})
-        run: .github/scripts/test.sh virtual-webgl-jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh virtual-webgl-jasmine
 
   webgl-jasmine-chromeLatest:
     needs: install-and-cibuild
@@ -154,7 +168,9 @@ jobs:
           chrome-version: '143.0.7499.192'
 
       - name: Run jasmine tests (webgl chromeLatest, shard ${{ matrix.shard }})
-        run: .github/scripts/test.sh webgl-jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh webgl-jasmine
 
   flaky-no-gl-jasmine:
     needs: install-and-cibuild
@@ -169,7 +185,9 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run flaky jasmine tests
-        run: .github/scripts/test.sh flaky-no-gl-jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh flaky-no-gl-jasmine
 
   bundle-jasmine:
     needs: install-and-cibuild
@@ -182,7 +200,9 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run bundle jasmine tests
-        run: .github/scripts/test.sh bundle-jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh bundle-jasmine
 
   mathjax-firefoxLatest:
     needs: install-and-cibuild
@@ -196,7 +216,9 @@ jobs:
       - uses: browser-actions/setup-firefox@v1
 
       - name: Test MathJax on firefox-latest
-        run: .github/scripts/test.sh mathjax-firefox
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: .github/scripts/test.sh mathjax-firefox
 
   # ============================================================
   # noCI tests (merged from test.yml)
@@ -210,7 +232,9 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run noCI tests
-        run: ./tasks/noci_test.sh jasmine
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: ./tasks/noci_test.sh jasmine
 
   # ============================================================
   # Image baseline generation and comparison

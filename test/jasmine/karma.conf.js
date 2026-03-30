@@ -260,7 +260,6 @@ func.defaultConfig = {
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--headless=new' : '',
                 isCI ? '--ignore-gpu-blocklist' : '',
                 isCI && process.env.GITHUB_ACTIONS ? '--enable-unsafe-swiftshader' : '',
                 isCI && process.env.GITHUB_ACTIONS ? '--no-sandbox' : '',
@@ -269,10 +268,7 @@ func.defaultConfig = {
         },
         _Firefox: {
             base: 'Firefox',
-            flags: [
-                '--width=' + argv.width, '--height=' + argv.height,
-                isCI ? '--headless' : ''
-            ],
+            flags: ['--width=' + argv.width, '--height=' + argv.height],
             prefs: {
                 'devtools.toolbox.zoomValue': '1.5',
                 'devtools.toolbox.host': 'window',
