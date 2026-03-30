@@ -260,13 +260,8 @@ func.defaultConfig = {
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
+                isCI ? '--headless' : '',
                 isCI ? '--ignore-gpu-blocklist' : '',
-                // The following two flags are needed only for the "NoCI" tests which run in GitHub Actions.
-                // The first is needed because the GPU is not available to those runners,
-                // and therefore we need to use SwiftShader instead (which is disabled by default as of Jan 2026,
-                // hence the need for a flag to manually enable it).
-                // The second flag is needed because the Chrome browser installed by the CI job runner
-                // fails without it.
                 isCI && process.env.GITHUB_ACTIONS ? '--enable-unsafe-swiftshader' : '',
                 isCI && process.env.GITHUB_ACTIONS ? '--no-sandbox' : '',
                 isBundleTest && basename(testFileGlob) === 'no_webgl' ? '--disable-webgl' : ''
@@ -274,7 +269,10 @@ func.defaultConfig = {
         },
         _Firefox: {
             base: 'Firefox',
-            flags: ['--width=' + argv.width, '--height=' + argv.height],
+            flags: [
+                '--width=' + argv.width, '--height=' + argv.height,
+                isCI ? '--headless' : ''
+            ],
             prefs: {
                 'devtools.toolbox.zoomValue': '1.5',
                 'devtools.toolbox.host': 'window',
