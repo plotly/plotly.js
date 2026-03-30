@@ -985,7 +985,7 @@ describe('heatmap hover', function() {
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         it('should find closest point (case 1) and should', function() {
             var pt = _hover(gd, 0.5, 0.5)[0];
@@ -1011,7 +1011,7 @@ describe('heatmap hover', function() {
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         it('should find closest point (case 1) and should', function() {
             var pt = _hover(gd, 3, 1)[0];
@@ -1035,7 +1035,7 @@ describe('heatmap hover', function() {
             .then(done);
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         it('should find closest point and should', function(done) {
             var pt = _hover(gd, 0.5, 0.5)[0];
@@ -1063,7 +1063,7 @@ describe('heatmap hover', function() {
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         function checkData() {
             var pt = _hover(gd, -4, 6)[0];
@@ -1100,7 +1100,7 @@ describe('heatmap hover', function() {
                 }]
             }).then(done);
         });
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         it('should not display hover on missing data and hoverongaps is disabled', function() {
             var hoverData;

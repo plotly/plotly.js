@@ -13,7 +13,7 @@ var mouseEvent = require('../assets/mouse_event');
 
 var selectButton = require('../assets/modebar_button');
 var drag = require('../assets/drag');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 var getNodeCoords = require('../assets/get_node_coords');
 var delay = require('../assets/delay');
 
@@ -79,7 +79,7 @@ describe('main plot pan', function() {
         var precision = 5;
 
         var originalX = [-0.5251046025104602, 5.5];
-        var originalY = [-1.6340975059013805, 7.166241526218911];
+        var originally = [-1.6340975059013805, 7.166241526218911];
 
         var newX = [-1.905857740585774, 4.119246861924687];
         var newY = [-0.3769062155984817, 8.42343281652181];
@@ -129,7 +129,7 @@ describe('main plot pan', function() {
             var buttonPan = selectButton(modeBar, 'pan2d');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
 
             // Switch to pan mode
             expect(buttonPan.isActive()).toBe(false); // initially, zoom is active
@@ -138,13 +138,13 @@ describe('main plot pan', function() {
 
             // Switching mode must not change visible range
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
         })
         .then(delay(MODEBAR_DELAY))
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
-            _runDrag(originalX, newX, originalY, newY);
+            _runDrag(originalX, newX, originally, newY);
         })
         .then(delay(MODEBAR_DELAY))
         .then(function() {
@@ -154,7 +154,7 @@ describe('main plot pan', function() {
         })
         .then(function() {
             relayoutCallback.calls.reset();
-            _runDrag(originalX, originalX, originalY, newY);
+            _runDrag(originalX, originalX, originally, newY);
         })
         .then(delay(MODEBAR_DELAY))
         .then(function() {
@@ -166,7 +166,7 @@ describe('main plot pan', function() {
         })
         .then(function() {
             relayoutCallback.calls.reset();
-            _runDrag(originalX, originalX, originalY, originalY);
+            _runDrag(originalX, originalX, originally, originally);
         })
         .then(delay(MODEBAR_DELAY))
         .then(function() {
@@ -176,7 +176,7 @@ describe('main plot pan', function() {
         })
         .then(function() {
             relayoutCallback.calls.reset();
-            _runDrag(originalX, newX, originalY, originalY);
+            _runDrag(originalX, newX, originally, originally);
         })
         .then(delay(MODEBAR_DELAY))
         .then(function() {
@@ -327,7 +327,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     function doDblClick(subplot, directions) {
         return function() {
             gd._mouseDownTime = 0; // ensure independence from any previous clicks
-            return doubleClick(getDragger(subplot, directions));
+            return double-click(getDragger(subplot, directions));
         };
     }
 

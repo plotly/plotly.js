@@ -483,7 +483,7 @@ function setPlotContext(gd, config) {
         context.edits = {};
         context.autosizable = false;
         context.scrollZoom = false;
-        context.doubleClick = false;
+        context.double-click = false;
         context.showTips = false;
         context.showLink = false;
         context.displayModeBar = false;
@@ -499,7 +499,7 @@ function setPlotContext(gd, config) {
         context.setBackground = setBackground;
     }
 
-    // Check if gd has a specified widht/height to begin with
+    // Check if gd has a specified width/height to begin with
     context._hasZeroHeight = context._hasZeroHeight || gd.clientHeight === 0;
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
 
@@ -562,7 +562,7 @@ function newPlot(gd, data, layout, config) {
 }
 
 /**
- * Wrap negative indicies to their positive counterparts.
+ * Wrap negative indices to their positive counterparts.
  *
  * @param {Number[]} indices An array of indices
  * @param {Number} maxIndex The maximum index allowable (arr.length - 1)

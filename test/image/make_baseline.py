@@ -19,7 +19,7 @@ plotlyjs_with_virtual_webgl = os.path.join(root, 'build', 'plotly_with_virtual-w
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
 dirOut = os.path.join(root, 'build', 'test_images')
 
-# N.B. equal is the falg to write to baselines not test_images
+# N.B. equal is the flag to write to baselines not test_images
 
 if '=' in args :
     args = args[args.index('=') + 1:]

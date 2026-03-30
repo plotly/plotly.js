@@ -819,7 +819,7 @@ function persistOriginalPlace(nodes) {
     var i;
     for(i = 0; i < nodes.length; i++) {
         nodes[i].originalX = (nodes[i].x0 + nodes[i].x1) / 2;
-        nodes[i].originalY = (nodes[i].y0 + nodes[i].y1) / 2;
+        nodes[i].originally = (nodes[i].y0 + nodes[i].y1) / 2;
         if(distinctLayerPositions.indexOf(nodes[i].originalX) === -1) {
             distinctLayerPositions.push(nodes[i].originalX);
         }

@@ -50,7 +50,7 @@ describe('Test click interactions:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function doubleClick(x, y) {
+    function double-click(x, y) {
         return doubleClickRaw(x, y).then(function() {
             return Plots.previousPromises(gd);
         });
@@ -418,7 +418,7 @@ describe('Test click interactions:', function() {
         });
 
         it('should return null', function(done) {
-            doubleClick(pointPos[0], pointPos[1])
+            double-click(pointPos[0], pointPos[1])
             .then(function() {
                 expect(futureData).toBe(null);
             })
@@ -708,7 +708,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
@@ -728,7 +728,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
@@ -743,12 +743,12 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
@@ -763,7 +763,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             })
             .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -801,12 +801,12 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
@@ -815,7 +815,7 @@ describe('Test click interactions:', function() {
         });
 
         it('when set to \'reset\' should work when \'autorange\' is on', function(done) {
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { double-click: 'reset' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -824,7 +824,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
@@ -835,7 +835,7 @@ describe('Test click interactions:', function() {
         it('when set to \'reset\' should reset to set range on double click', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { double-click: 'reset' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -844,7 +844,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
@@ -855,11 +855,11 @@ describe('Test click interactions:', function() {
         it('when set to \'reset\' should reset on all double clicks', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'reset' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { double-click: 'reset' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
@@ -868,7 +868,7 @@ describe('Test click interactions:', function() {
         });
 
         it('when set to \'autosize\' should work when \'autorange\' is on', function(done) {
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { double-click: 'autosize' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -877,7 +877,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
@@ -888,7 +888,7 @@ describe('Test click interactions:', function() {
         it('when set to \'autosize\' should set to autorange on double click', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { double-click: 'autosize' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -897,7 +897,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
@@ -908,11 +908,11 @@ describe('Test click interactions:', function() {
         it('when set to \'autosize\' should reset on all double clicks', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { doubleClick: 'autosize' }).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { double-click: 'autosize' }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                return doubleClick(blankPos[0], blankPos[1]);
+                return double-click(blankPos[0], blankPos[1]);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
@@ -936,7 +936,7 @@ describe('Test click interactions:', function() {
                         range: [0, 4]
                     },
                     yaxis: {
-                        titel: 'yaxis',
+                        title: 'yaxis',
                         range: [-1, 5]
                     },
                     yaxis2: {
@@ -999,7 +999,7 @@ describe('Test click interactions:', function() {
                     y2Rng: [-1, 1]
                 });
             })
-            .then(function() { return doubleClick(250, 250); })
+            .then(function() { return double-click(250, 250); })
             .then(function() {
                 _assert('after double click autorange', {
                     xRng: [0.788, 4.211],
@@ -1007,7 +1007,7 @@ describe('Test click interactions:', function() {
                     y2Rng: [-1, 1]
                 });
             })
-            .then(function() { return doubleClick(250, 250); })
+            .then(function() { return double-click(250, 250); })
             .then(function() {
                 // more info in: https://github.com/plotly/plotly.js/issues/2718
                 _assert('after 2nd double click autorange (does not reset as rangeInitial is not set)', {
@@ -1033,13 +1033,13 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 3]);
 
-                return doubleClick(300, 300);
+                return double-click(300, 300);
             })
             .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2, 3.2]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0.8, 4.2]);
 
-                return doubleClick(300, 300);
+                return double-click(300, 300);
             })
             .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([1, 3.2]);
@@ -1048,7 +1048,7 @@ describe('Test click interactions:', function() {
             .then(done, done.fail);
         });
 
-        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (insiderange and inside tick lables)', function(done) {
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st and 2nd double clicks (insiderange and inside tick labels)', function(done) {
             mockCopy = setRanges(mockCopy);
 
             Plotly.newPlot(gd, [{
@@ -1062,12 +1062,12 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068], 1);
 
-                return doubleClick(300, 300);
+                return double-click(300, 300);
             })
             .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-0.2019, 3.249], 1);
 
-                return doubleClick(300, 300);
+                return double-click(300, 300);
             })
             .then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([1, 2.068], 1);

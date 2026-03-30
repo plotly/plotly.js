@@ -85,7 +85,7 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         // Collect the complete set of all positions across ALL traces.
         // Start with the first trace, then interleave items from later traces
         // as needed.
-        // Fill in mising items as we go.
+        // Fill in missing items as we go.
         cd0 = calcTraces[indices[0]];
         var allPositions = new Array(cd0.length);
         for(i = 0; i < cd0.length; i++) {

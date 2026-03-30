@@ -11,7 +11,7 @@ var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doub
  * to specify modifier keys. See `click` function
  * for more info.
  */
-module.exports = function doubleClick(x, y, clickOpts) {
+module.exports = function double-click(x, y, clickOpts) {
     if(typeof x === 'object') {
         var coords = getNodeCoords(x, y);
         x = coords.x;

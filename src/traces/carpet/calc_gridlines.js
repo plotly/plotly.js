@@ -278,10 +278,10 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
         }
     } else {
         // If the lines do not fall along the axes, then we have to interpolate
-        // the contro points and so some math to figure out where the lines are
+        // the control points and so some math to figure out where the lines are
         // in the first place.
 
-        // Compute the integer boudns of tick0 + n * dtick that fall within the range
+        // Compute the integer bounds of tick0 + n * dtick that fall within the range
         // (roughly speaking):
         // Give this a nice generous epsilon. We use at as * (1 + eps) in order to make
         // inequalities a little tolerant in a more or less correct manner:

@@ -412,7 +412,7 @@ function multiplyScales(a, b) {
         return c;
     }
 
-    // partial cancelation of prefixes
+    // partial cancellation of prefixes
     return (aLen > bLen ? aPrefix.slice(bLen) : bPrefix.slice(aLen)) + c;
 }
 

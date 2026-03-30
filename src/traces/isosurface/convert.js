@@ -376,10 +376,10 @@ function generateIsoMeshes(data) {
         );
     }
 
-    function getXYZV(indecies) {
+    function getXYZV(indices) {
         var xyzv = [];
         for(var q = 0; q < 4; q++) {
-            var index = indecies[q];
+            var index = indices[q];
             xyzv.push(
                 [
                     data._x[index],

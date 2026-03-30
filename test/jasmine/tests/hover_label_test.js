@@ -14,7 +14,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var delay = require('../assets/delay');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 
 var touchEvent = require('../assets/touch_event');
 var negateIf = require('../assets/negate_if');
@@ -2498,7 +2498,7 @@ describe('hover info on stacked subplots', function() {
         var mock = Lib.extendDeep(require('../../image/mocks/stacked_subplots_shared_yaxis.json'));
         mock.data[0].name = 'Who put the bomp in the bomp bah bomp bah bomp';
         mock.data[0].hoverlabel = {namelength: -1};
-        mock.data[1].name = 'Who put the ram in the rama lama ding dong';
+        mock.data[1].name = 'Who put the ram in the rama llama ding dong';
         mock.data[1].hoverlabel = {namelength: [2, 4]};
         mock.data[2].name = 'Who put the bop in the bop shoo bop shoo bop';
         mock.layout.hoverlabel = {namelength: 10};
@@ -3178,7 +3178,7 @@ describe('hover on fill', function() {
             assertLabelsCorrect([295, 218], [275.1, 166], 'trace 2');
 
             // trigger an autoscale redraw, which goes through dragElement
-            return doubleClick(237, 251);
+            return double-click(237, 251);
         }).then(function() {
             // then make sure we can still select a *different* item afterward
             assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
@@ -5040,7 +5040,7 @@ describe('hover label rotation:', function() {
     }
 
     describe('when a single pt is picked', function() {
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         beforeAll(function(done) {
             gd = createGraphDiv();
@@ -5088,7 +5088,7 @@ describe('hover label rotation:', function() {
     });
 
     describe('when multiple pts are picked', function() {
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         beforeAll(function(done) {
             gd = createGraphDiv();

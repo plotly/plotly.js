@@ -206,7 +206,7 @@ describe('makeTemplate', function() {
     });
 });
 
-// statics of template application are all covered by the template mock
+// statistics of template application are all covered by the template mock
 // but we still need to manage the interactions
 describe('template interactions', function() {
     var gd;

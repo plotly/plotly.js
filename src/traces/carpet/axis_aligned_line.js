@@ -2,7 +2,7 @@
 
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
-/* This function retrns a set of control points that define a curve aligned along
+/* This function returns a set of control points that define a curve aligned along
  * either the a or b axis. Exactly one of a or b must be an array defining the range
  * spanned.
  *

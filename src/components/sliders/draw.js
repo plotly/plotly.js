@@ -589,7 +589,7 @@ function normalizedValueToPosition(sliderOpts, normalizedPosition) {
         (dims.inputAreaLength - 2 * constants.stepInset) * Math.min(1, Math.max(0, normalizedPosition));
 }
 
-// Convert a position relative to the slider group to a nubmer in [0, 1]
+// Convert a position relative to the slider group to a number in [0, 1]
 function positionToNormalizedValue(sliderOpts, position) {
     var dims = sliderOpts._dims;
     return Math.min(1, Math.max(0, (position - constants.stepInset - dims.inputAreaStart) / (dims.inputAreaLength - 2 * constants.stepInset - 2 * dims.inputAreaStart)));

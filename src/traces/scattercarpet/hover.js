@@ -11,7 +11,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     // if hovering on a fill, we don't show any point data so the label is
     // unchanged from what scatter gives us - except that it needs to
-    // be constrained to the trianglular plot area, not just the rectangular
+    // be constrained to the triangular plot area, not just the rectangular
     // area defined by the synthetic x and y axes
     // TODO: in some cases the vertical middle of the shape is not within
     // the triangular viewport at all, so the label can become disconnected

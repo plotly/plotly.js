@@ -1857,7 +1857,7 @@ function rotate(t, xy) {
 var previousLon;
 var previousLat;
 var previousX;
-var previousY;
+var previously;
 var previousI;
 var previousTraceUid;
 
@@ -1945,7 +1945,7 @@ function getMarkerAngle(d, trace) {
         if (ref === 'previous' && !trace._geo) {
             if (previousTraceUid === trace.uid && d.i === previousI + 1 && isNumeric(x) && isNumeric(y)) {
                 var dX = x - previousX;
-                var dY = y - previousY;
+                var dY = y - previously;
 
                 var shape = trace.line ? trace.line.shape || '' : '';
 
@@ -1961,7 +1961,7 @@ function getMarkerAngle(d, trace) {
     }
 
     previousX = x;
-    previousY = y;
+    previously = y;
     previousI = d.i;
     previousTraceUid = trace.uid;
 

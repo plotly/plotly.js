@@ -129,13 +129,13 @@ describe('Test color:', function() {
             expect(container1).toEqual(expectedContainer1);
 
             var container2 = {
-                anull: null,
+                annul: null,
                 anundefined: undefined,
                 color: null,
                 anarray: [null, {color: 'rgb(0.1, 0.1, 0.1)'}]
             };
             var expectedContainer2 = {
-                anull: null,
+                annul: null,
                 anundefined: undefined,
                 color: null,
                 anarray: [null, {color: 'rgb(0.1, 0.1, 0.1)'}]

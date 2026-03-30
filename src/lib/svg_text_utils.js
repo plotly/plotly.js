@@ -824,10 +824,10 @@ exports.positionText = function positionText(s, x, y) {
         }
 
         var thisX = setOrGet('x', x);
-        var thisY = setOrGet('y', y);
+        var this = setOrGet('y', y);
 
         if(this.nodeName === 'text') {
-            text.selectAll('tspan.line').attr({x: thisX, y: thisY});
+            text.selectAll('tspan.line').attr({x: thisX, y: this});
         }
     });
 };

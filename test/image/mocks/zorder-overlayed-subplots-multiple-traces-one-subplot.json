@@ -92,7 +92,7 @@
   "layout": {
     "showlegend": true,
     "title": {
-      "text": "zorder overlayed subplots",
+      "text": "zorder overlaid subplots",
       "subtitle": {
         "text": "case of multiple traces in one subplot"
       }

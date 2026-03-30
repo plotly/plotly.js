@@ -424,13 +424,13 @@ describe('contour calc', function() {
                 [spec.start, spec.end, 'normal'],
                 [spec.end, spec.start, 'reversed']
             ].forEach(function(v) {
-                var startIn = v[0];
+                var starting = v[0];
                 var endIn = v[1];
                 var order = v[2];
 
                 var out = _calc({
                     z: [[1, 2], [3, 4]],
-                    contours: {start: startIn, end: endIn},
+                    contours: {start: starting, end: endIn},
                     ncontours: spec.ncontours
                 }).trace;
 
@@ -701,7 +701,7 @@ describe('contour hover', function() {
                 }]
             }).then(done);
         });
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         it('should not display hover on missing data and hoverongaps is disabled', function() {
             var hoverData;
@@ -731,7 +731,7 @@ describe('contour hover', function() {
             .then(done);
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         it('should find closest point and should', function() {
             var pt = _hover(gd, 2, 3)[0];

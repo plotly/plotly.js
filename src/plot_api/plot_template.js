@@ -144,7 +144,7 @@ exports.newContainer = function(container, name, baseName) {
  *     newItem(itemIn): create an output item, bare except for the correct
  *         template and name(s), as the base for supplyDefaults
  *     defaultItems(): to be called after all newItem calls, return any
- *         specific template items that have not already beeen included,
+ *         specific template items that have not already been included,
  *         also as bare output items ready for supplyDefaults.
  */
 exports.arrayTemplater = function(container, name, inclusionAttr) {

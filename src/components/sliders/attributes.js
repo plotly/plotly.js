@@ -48,7 +48,7 @@ var stepsAttrs = templatedArray('step', {
     value: {
         valType: 'string',
         description: [
-            'Sets the value of the slider step, used to refer to the step programatically.',
+            'Sets the value of the slider step, used to refer to the step programmatically.',
             'Defaults to the slider label if not provided.'
         ].join(' ')
     },

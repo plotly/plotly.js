@@ -11,7 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var negateIf = require('../assets/negate_if');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
@@ -740,7 +740,7 @@ describe('Test polar interactions:', function() {
     function _doubleClick(pos) {
         gd._mouseDownTime = 0;
         eventData = '';
-        return doubleClick(pos[0], pos[1]);
+        return double-click(pos[0], pos[1]);
     }
 
     var modClickOpts = {
@@ -761,7 +761,7 @@ describe('Test polar interactions:', function() {
         cancelContext: true
     };
 
-    it('should trigger hover/unhover/click/doubleclick events', function(done) {
+    it('should trigger hover/unhover/click/double-click events', function(done) {
         var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var ptPos = [250, 200];
         var blankPos = [200, 120];

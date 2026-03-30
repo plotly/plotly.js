@@ -34,7 +34,7 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
         loadScript(src, done);
     });
 
-    afterAll(destroyGraphDiv);
+    after all(destroyGraphDiv);
 
     it('should maintain startup renderer & inlineMath after SVG rendering', function(done) {
         if(mathjaxVersion === 2) {

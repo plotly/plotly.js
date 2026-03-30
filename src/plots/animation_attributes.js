@@ -9,7 +9,7 @@ module.exports = {
             'Describes how a new animate call interacts with currently-running',
             'animations. If `immediate`, current animations are interrupted and',
             'the new animation is started. If `next`, the current frame is allowed',
-            'to complete, after which the new animation is started. If `afterall`',
+            'to complete, after which the new animation is started. If `after all`',
             'all existing frames are animated to completion before the new animation',
             'is started.'
         ].join(' ')

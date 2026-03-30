@@ -724,7 +724,7 @@ describe('scattermap hover', function() {
         Plotly.newPlot(gd, data, { autosize: true }).then(done);
     });
 
-    afterAll(function() {
+    after all(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
     });
@@ -985,7 +985,7 @@ describe('Test plotly events on a scattermap plot:', function() {
             });
         });
 
-        it('@gl should not be trigged when not on data points', function() {
+        it('@gl should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1]);
             expect(futureData).toBe(null);
         });
@@ -1026,7 +1026,7 @@ describe('Test plotly events on a scattermap plot:', function() {
             });
         });
 
-        it('@gl should not be trigged when not on data points', function() {
+        it('@gl should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
             expect(futureData).toBe(null);
         });
@@ -1164,7 +1164,7 @@ describe('Test plotly events on a scattermap plot when css transform is present:
             });
         });
 
-        it('@gl should not be trigged when not on data points', function() {
+        it('@gl should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1]);
             expect(futureData).toBe(null);
         });
@@ -1257,7 +1257,7 @@ describe('scattermap restyle', function() {
         gd = createGraphDiv();
     });
 
-    afterAll(function() {
+    after all(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
     });

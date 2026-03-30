@@ -364,7 +364,7 @@ module.exports = {
                 editType: 'calc',
                 dflt: false,
                 description: [
-                    'Sets a treshold value drawn as a line.'
+                    'Sets a threshold value drawn as a line.'
                 ].join(' ')
             },
             editType: 'plot'

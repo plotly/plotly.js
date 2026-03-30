@@ -171,7 +171,7 @@ queue.redo = function redo(gd) {
 /**
  * Called by undo/redo to make the actual changes.
  *
- * Not meant to be called publically, but included for mocking out in tests.
+ * Not meant to be called publicly, but included for mocking out in tests.
  *
  * @param gd
  * @param func

@@ -154,7 +154,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
     var isHorizontal = orientation === 'h';
     var isPaperY = yref === 'paper';
     var isPaperX = xref === 'paper';
-    var defaultX, defaultY, defaultYAnchor;
+    var defaultX, default, defaultYAnchor;
     var defaultXAnchor = 'left';
 
     if(isHorizontal) {
@@ -162,10 +162,10 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
 
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
             if(isPaperY) {
-                defaultY = 1.1;
+                default = 1.1;
                 defaultYAnchor = 'bottom';
             } else {
-                defaultY = 1;
+                default = 1;
                 defaultYAnchor = 'top';
             }
         } else {
@@ -173,15 +173,15 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
             //   to avoid https://github.com/plotly/plotly.js/issues/1199
             //   in v3
             if(isPaperY) {
-                defaultY = -0.1;
+                default = -0.1;
                 defaultYAnchor = 'top';
             } else {
-                defaultY = 0;
+                default = 0;
                 defaultYAnchor = 'bottom';
             }
         }
     } else {
-        defaultY = 1;
+        default = 1;
         defaultYAnchor = 'auto';
         if(isPaperX) {
             defaultX = 1.02;
@@ -207,7 +207,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
             editType: 'legend',
             min: isPaperY ? -2 : 0,
             max: isPaperY ? 3 : 1,
-            dflt: defaultY,
+            dflt: default,
         }
     }, 'y');
 

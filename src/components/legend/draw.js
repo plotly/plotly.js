@@ -970,7 +970,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
                     // not on the first column already
                     groupOffsetX > 0 &&
 
-                    // goes beyound limit
+                    // goes beyond limit
                     next + bw + groupOffsetX > legendObj._maxWidth
                 ) {
                     maxRowWidth = Math.max(maxRowWidth, groupOffsetX);

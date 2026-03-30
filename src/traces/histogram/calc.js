@@ -327,7 +327,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
 
         // Edge case: single-valued histogram overlaying others
         // Use them all together to calculate the bin size for the single-valued one
-        // Don't re-calculate bin width if user manually specified it (checing in bingroup=='' or xbins is defined)
+        // Don't re-calculate bin width if user manually specified it (checking in bingroup=='' or xbins is defined)
         if(isOverlay && !Registry.traceIs(trace, '2dMap') && newBinSpec._dataSpan === 0 &&
         pa.type !== 'category' && pa.type !== 'multicategory' &&
         trace.bingroup === '' && (typeof trace.xbins === 'undefined')) {
@@ -370,15 +370,15 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
     var traceInputBins = trace._input[binAttr] || {};
     var traceBinOptsCalc = Lib.extendFlat({}, binOpts);
     var mainStart = binOpts.start;
-    var startIn = pa.r2l(traceInputBins.start);
-    var hasStart = startIn !== undefined;
-    if((binOpts.startFound || hasStart) && startIn !== pa.r2l(mainStart)) {
+    var starting = pa.r2l(traceInputBins.start);
+    var hasStart = starting !== undefined;
+    if((binOpts.startFound || hasStart) && starting !== pa.r2l(mainStart)) {
         // We have an explicit start to reconcile across traces
         // if this trace has an explicit start, shift it down to a bin edge
         // if another trace had an explicit start, shift it down to a
         // bin edge past our data
         var traceStart = hasStart ?
-            startIn :
+            starting :
             Lib.aggNums(Math.min, null, pos0);
 
         var dummyAx = {

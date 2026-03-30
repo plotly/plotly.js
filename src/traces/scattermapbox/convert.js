@@ -127,7 +127,7 @@ module.exports = function convert(gd, calcTrace) {
 
             if ('angle' in trace.marker && trace.marker.angle !== 'auto') {
                 Lib.extendFlat(symbol.layout, {
-                    // unfortunately cant use {angle} do to this issue:
+                    // unfortunately can't use {angle} do to this issue:
                     // https://github.com/mapbox/mapbox-gl-js/issues/873
                     'icon-rotate': {
                         type: 'identity',

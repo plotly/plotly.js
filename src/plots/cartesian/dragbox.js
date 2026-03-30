@@ -35,7 +35,7 @@ var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
-// flag for showing "doubleclick to zoom out" only at the beginning
+// flag for showing "double-click to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
 
 // dragBox: create an element to drag one or more axis ends
@@ -51,7 +51,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // mouseDown stores ms of first mousedown event in the last
     // `gd._context.doubleClickDelay` ms on the drag bars
     // numClicks stores how many mousedowns have been seen
-    // within `gd._context.doubleClickDelay` so we can check for click or doubleclick events
+    // within `gd._context.doubleClickDelay` so we can check for click or double-click events
     // dragged stores whether a drag has occurred, so we don't have to
     // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
     var zoomlayer = gd._fullLayout._zoomlayer;
@@ -256,7 +256,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         removeZoombox(gd);
 
-        if(numClicks === 2 && !singleEnd) doubleClick();
+        if(numClicks === 2 && !singleEnd) double-click();
 
         if(isMainDrag) {
             if(clickmode.indexOf('select') > -1) {
@@ -761,10 +761,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         Axes.redrawComponents(gd, activeAxIds);
     }
 
-    function doubleClick() {
+    function double-click() {
         if(gd._transitioningWithDuration) return;
 
-        var doubleClickConfig = gd._context.doubleClick;
+        var doubleClickConfig = gd._context.double-click;
 
         var axList = [];
         if(xActive) axList = axList.concat(xaxes);

@@ -11,7 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 var drag = require('../assets/drag');
 var getClientPosition = require('../assets/get_client_position');
 
@@ -237,7 +237,7 @@ describe('ternary plots', function() {
 
             drag({path: [[383, 213], [293, 243]]})
             .then(function() { assertRange(gd, [0.4435, 0.2462, 0.1523]); })
-            .then(function() { return doubleClick(pointPos[0], pointPos[1]); })
+            .then(function() { return double-click(pointPos[0], pointPos[1]); })
             .then(function() { assertRange(gd, [0, 0, 0]); })
             .then(done, done.fail);
         });
@@ -263,7 +263,7 @@ describe('ternary plots', function() {
 
             drag({path: [[390, 220], [300, 250]], noCover: true})
             .then(function() { assertRange(gd, range); })
-            .then(function() { return doubleClick(390, 220); })
+            .then(function() { return double-click(390, 220); })
             .then(function() { assertRange(gd, range); })
             .then(done, done.fail);
         });
@@ -592,7 +592,7 @@ describe('ternary plots when css transform is present', function() {
 
         drag({path: [[scale * 383, scale * 213], [scale * 293, scale * 243]]})
         .then(function() { assertRange(gd, [0.4486, 0.2480, 0.1453]); })
-        .then(function() { return doubleClick(pointPos[0], pointPos[1]); })
+        .then(function() { return double-click(pointPos[0], pointPos[1]); })
         .then(function() { assertRange(gd, [0, 0, 0]); })
         .then(done, done.fail);
     });
@@ -819,7 +819,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
             .then(done);
         });
 
-        it('should not be trigged when not on data points', function() {
+        it('should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1]);
             expect(futureData).toBe(null);
         });

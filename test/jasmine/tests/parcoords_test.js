@@ -1521,7 +1521,7 @@ describe('parcoords constraint interactions - without defined axis ranges', func
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
-    afterAll(function() {
+    after all(function() {
         destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
@@ -1806,7 +1806,7 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
-    afterAll(function() {
+    after all(function() {
         destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
@@ -1889,7 +1889,7 @@ describe('parcoords constraint click interactions - with pre-defined constraint 
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
-    afterAll(function() {
+    after all(function() {
         destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });

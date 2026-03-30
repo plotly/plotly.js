@@ -451,7 +451,7 @@ describe('Test animate API', function() {
     // The tests above use promises to ensure ordering, but the tests below this call Plotly.animate
     // without chaining promises which would result in race conditions. This is not invalid behavior,
     // but it doesn't ensure proper ordering and completion, so these must be performed with finite
-    // duration. Stricly speaking, these tests *do* involve race conditions, but the finite duration
+    // duration. Strictly speaking, these tests *do* involve race conditions, but the finite duration
     // prevents that from causing problems.
     describe('Calling Plotly.animate synchronously in series', function() {
         var animOpts;

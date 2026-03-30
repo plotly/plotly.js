@@ -408,7 +408,7 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
     setFont(cellText);
     populateCellText(cellText, tableControlView, allColumnBlock, gd);
 
-    // doing this at the end when text, and text stlying are set
+    // doing this at the end when text, and text styling are set
     setCellHeightAndPositionY(columnCell);
 }
 

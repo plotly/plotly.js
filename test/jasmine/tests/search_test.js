@@ -15,7 +15,7 @@ describe('Test search.js:', function() {
             expect(Lib.findBin(1, [0, 1, 3], true)).toBe(0);
         });
 
-        it('should work on decending arrays', function() {
+        it('should work on descending arrays', function() {
             expect(Lib.findBin(-10000, [3, 1, 0])).toBe(2);
             expect(Lib.findBin(0.5, [3, 1, 0])).toBe(1);
             expect(Lib.findBin(2, [3, 1, 0])).toBe(0);

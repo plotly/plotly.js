@@ -2955,13 +2955,13 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "winkel tripel",
+      "name": "winkel triple",
       "geo": "geo81",
       "type": "choropleth",
       "locations": ["CAN"],
       "z": [1],
       "showscale": false,
-      "hovertemplate": "winkel tripel"
+      "hovertemplate": "winkel triple"
     },
     {
       "geo": "geo81",
@@ -2982,7 +2982,7 @@
       "geo": "geo81",
       "type": "scattergeo",
       "mode": "text",
-      "text": ["winkel<br>tripel"],
+      "text": ["winkel<br>triple"],
       "textfont": {
         "color": "darkred",
         "family": "Gravitas One, cursive"
@@ -4873,7 +4873,7 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "winkel tripel"
+        "type": "winkel triple"
       },
       "lonaxis": {
         "showgrid": true,

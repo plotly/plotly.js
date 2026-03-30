@@ -533,12 +533,12 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         } else {
             var has = function(str) { return dragMode.indexOf(str) !== -1; };
             var hasN = has('n');
-            var hasS = has('s');
+            var hash = has('s');
             var hasW = has('w');
             var hasE = has('e');
 
             var newN = hasN ? n0 + dy : n0;
-            var newS = hasS ? s0 + dy : s0;
+            var newS = hash ? s0 + dy : s0;
             var newW = hasW ? w0 + dx : w0;
             var newE = hasE ? e0 + dx : e0;
 
@@ -546,7 +546,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
                 // Do things in opposing direction for y-axis.
                 // Hint: for data-sized shapes the reversal of axis direction is done in p2y.
                 if(hasN) newN = n0 - dy;
-                if(hasS) newS = s0 - dy;
+                if(hash) newS = s0 - dy;
             }
 
             // Update shape eventually. Again, be aware of the

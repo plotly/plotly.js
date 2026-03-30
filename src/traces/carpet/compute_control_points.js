@@ -279,7 +279,7 @@ module.exports = function computeControlPoints(xe, ye, x, y, asmoothing, bsmooth
 
     if(asmoothing && bsmoothing) {
         // Do one more pass, this time recomputing exactly what we just computed.
-        // It's overdetermined since we're peforming catmull-rom in two directions,
+        // It's overdetermined since we're performing catmull-rom in two directions,
         // so we'll just average the overdetermined. These points don't lie along the
         // grid lines, so note that only grid lines will follow normal plotly spline
         // interpolation.

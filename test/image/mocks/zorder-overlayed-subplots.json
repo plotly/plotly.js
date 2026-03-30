@@ -44,7 +44,7 @@
   "layout": {
     "showlegend": true,
     "title": {
-      "text": "zorder overlayed subplots"
+      "text": "zorder overlaid subplots"
     },
     "width": 600,
     "height": 400,

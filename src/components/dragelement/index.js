@@ -57,13 +57,13 @@ dragElement.unhoverRaw = unhover.raw;
  *          executed on mouseup, ONLY if we exceeded MINDRAG (so you can be
  *          sure that moveFn has been called at least once)
  *          numClicks is how many clicks we've registered within
- *          a doubleclick time
+ *          a double-click time
  *          e is the original mouseup event
  *      clickFn (optional) function(numClicks, e)
  *          executed on mouseup if we have NOT exceeded MINDRAG (ie moveFn
  *          has not been called at all)
  *          numClicks is how many clicks we've registered within
- *          a doubleclick time
+ *          a double-click time
  *          e is the original mousedown event
  *      clampFn (optional, function(dx, dy) return [dx2, dy2])
  *          Provide custom clamping function for small displacements.

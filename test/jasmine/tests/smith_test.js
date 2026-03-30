@@ -11,7 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 
 describe('Test smith plots defaults:', function() {
     var layoutOut;
@@ -271,7 +271,7 @@ describe('Test smith interactions:', function() {
     function _doubleClick(pos) {
         gd._mouseDownTime = 0;
         eventData = '';
-        return doubleClick(pos[0], pos[1]);
+        return double-click(pos[0], pos[1]);
     }
 
     var modClickOpts = {
@@ -292,7 +292,7 @@ describe('Test smith interactions:', function() {
         cancelContext: true
     };
 
-    it('should trigger hover/unhover/click/doubleclick events', function(done) {
+    it('should trigger hover/unhover/click/double-click events', function(done) {
         var fig = Lib.extendDeep({}, basicMock);
         var ptPos = [400, 60];
         var blankPos = [400, 100];

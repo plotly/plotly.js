@@ -1571,7 +1571,7 @@ function autoTickRound(ax) {
         var tick0len = tick0str.length;
 
         if(String(dtick).charAt(0) === 'M') {
-            // any tick0 more specific than a year: alway show the full date
+            // any tick0 more specific than a year: always show the full date
             if(tick0len > 10 || tick0str.slice(5) !== '01-01') ax._tickround = 'd';
             // show the month unless ticks are full multiples of a year
             else ax._tickround = (+(dtick.slice(1)) % 12 === 0) ? 'y' : 'm';

@@ -8,7 +8,7 @@
  * on repeated arithmetic.
  *
  * Take note that we don't search for the correct range in this function. The
- * reason is for consistency due to the corrresponding derivative function. In
+ * reason is for consistency due to the corresponding derivative function. In
  * particular, the derivatives aren't continuous across cells, so it's important
  * to be able control whether the derivative at a cell boundary is approached
  * from one side or the other.

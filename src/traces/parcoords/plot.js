@@ -111,7 +111,7 @@ var exports = module.exports = function plot(gd, cdModule) {
             });
 
         // TODO: we can't really store this part of the interaction state
-        // directly as below, since it incudes data arrays. If we want to
+        // directly as below, since it includes data arrays. If we want to
         // persist column order we may have to do something special for this
         // case to just store the order itself.
         // Registry.call('_storeDirectGUIEdit',

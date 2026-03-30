@@ -303,7 +303,7 @@ exports.ms2DateTime = function(ms, r, calendar) {
 // For converting old-style milliseconds to date strings,
 // we use the local timezone rather than UTC like we use
 // everywhere else, both for backward compatibility and
-// because that's how people mostly use javasript date objects.
+// because that's how people mostly use javascript date objects.
 // Clip one extra day off our date range though so we can't get
 // thrown beyond the range by the timezone shift.
 exports.ms2DateTimeLocal = function(ms) {

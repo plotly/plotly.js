@@ -1261,7 +1261,7 @@ describe('annotation effects', function() {
         .then(done, done.fail);
     });
 
-    it('works date sting data-referenced with arrow', function(done) {
+    it('works date string data-referenced with arrow', function(done) {
         gd = createGraphDiv();
 
         Plotly.newPlot(gd, [{

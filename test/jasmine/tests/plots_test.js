@@ -321,7 +321,7 @@ describe('Test Plots', function() {
                     .then(done);
             });
 
-            afterAll(destroyGraphDiv);
+            after all(destroyGraphDiv);
 
             it('should resize the plot clip', function() {
                 var uid = gd._fullLayout._uid;

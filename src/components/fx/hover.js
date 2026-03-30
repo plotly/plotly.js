@@ -273,7 +273,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     }
 
     // if the user passed in an array of subplots,
-    // use those instead of finding overlayed plots
+    // use those instead of finding overlaid plots
     var subplots = Array.isArray(subplot) ? subplot : [subplot];
 
     var spId;
@@ -1448,7 +1448,7 @@ function createHoverText(hoverData, opts) {
         }
         lx += HOVERTEXTPAD;
 
-        // vertical alignement to end up on screen
+        // vertical alignment to end up on screen
         if (lyBottom + tHeight < outerHeight && lyBottom >= 0) {
             ly = lyBottom;
         } else if (lyTop + tHeight < outerHeight && lyTop >= 0) {

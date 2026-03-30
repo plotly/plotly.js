@@ -2441,8 +2441,8 @@ var sign = __webpack_require__(5716)
 
 module.exports = rationalize
 
-function rationalize(numer, denom) {
-  var snumer = sign(numer)
+function rationalize(number, denom) {
+  var snumer = sign(number)
   var sdenom = sign(denom)
   if(snumer === 0) {
     return [num2bn(0), num2bn(1)]
@@ -2451,14 +2451,14 @@ function rationalize(numer, denom) {
     return [num2bn(0), num2bn(0)]
   }
   if(sdenom < 0) {
-    numer = numer.neg()
+    number = number.neg()
     denom = denom.neg()
   }
-  var d = numer.gcd(denom)
+  var d = number.gcd(denom)
   if(d.cmpn(1)) {
-    return [ numer.div(d), denom.div(d) ]
+    return [ number.div(d), denom.div(d) ]
   }
-  return [ numer, denom ]
+  return [ number, denom ]
 }
 
 
@@ -2856,15 +2856,15 @@ function horizontalOrder(a, b) {
     bl = b[1]
     br = b[0]
   } else {
-    var alo = Math.min(a[0][1], a[1][1])
+    var also = Math.min(a[0][1], a[1][1])
     var ahi = Math.max(a[0][1], a[1][1])
     var blo = Math.min(b[0][1], b[1][1])
     var bhi = Math.max(b[0][1], b[1][1])
     if(ahi < blo) {
       return ahi - blo
     }
-    if(alo > bhi) {
-      return alo - bhi
+    if(also > bhi) {
+      return also - bhi
     }
     return ahi - bhi
   }
@@ -3337,7 +3337,7 @@ function isBN(x) {
  * current FF6.0a1 API is that WeakMap.prototype is itself a WeakMap
  * providing ambient mutability and an ambient communications
  * channel. Thus, if a WeakMap is already present and has this
- * problem, repairES5.js wraps it in a safe wrappper in order to
+ * problem, repairES5.js wraps it in a safe wrapper in order to
  * prevent access to this channel. (See
  * PATCH_MUTABLE_FROZEN_WEAKMAP_PROTO in repairES5.js).
  */
@@ -3366,7 +3366,7 @@ function isBN(x) {
   }
 
   /**
-   * In some cases (current Firefox), we must make a choice betweeen a
+   * In some cases (current Firefox), we must make a choice between a
    * WeakMap which is capable of using all varieties of host objects as
    * keys and one which is capable of safely using proxies as keys. See
    * comments below about HostWeakMap and DoubleWeakMap for details.
@@ -3900,7 +3900,7 @@ function isBN(x) {
           };
         }
 
-        function ddelete(key) {
+        function delete(key) {
           var result = !!hmap['delete'](key);
           if (omap) { return omap.delete___(key) || result; }
           return result;
@@ -3910,7 +3910,7 @@ function isBN(x) {
           get___:    { value: constFunc(dget) },
           has___:    { value: constFunc(dhas) },
           set___:    { value: constFunc(dset) },
-          delete___: { value: constFunc(ddelete) },
+          delete___: { value: constFunc(delete) },
           permitHostObjects___: { value: constFunc(function(token) {
             if (token === weakMapPermitHostObjects) {
               enableSwitching = true;
@@ -8122,7 +8122,7 @@ function copy (out, a) {
 module.exports = squaredDistance;
 
 /**
- * Calculates the squared euclidian distance between two vec3's
+ * Calculates the squared euclidean distance between two vec3's
  *
  * @param {vec3} a the first operand
  * @param {vec3} b the second operand
@@ -9445,10 +9445,10 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 
   //Return data
-  var coallesced = coallesceUniforms(uniforms, true)
+  var coalesced = coallesceUniforms(uniforms, true)
   return {
-    get: identity(processObject(coallesced)),
-    set: makeSetter(coallesced),
+    get: identity(processObject(coalesced)),
+    set: makeSetter(coalesced),
     enumerable: true,
     configurable: true
   }
@@ -10715,11 +10715,11 @@ function barycentricCircumcenter(points) {
   var y = new Array(N)
   for(var i=0; i<N; ++i) {
     var h = x[i]
-    var numer = 0.0
+    var number = 0.0
     for(var j=0; j<h.length; ++j) {
-      numer += h[j]
+      number += h[j]
     }
-    y[i] =  numer / denom
+    y[i] =  number / denom
   }
 
   return y
@@ -15311,7 +15311,7 @@ exports.y = mouseRelativeY
 module.exports = distance
 
 /**
- * Calculates the euclidian distance between two vec4's
+ * Calculates the euclidean distance between two vec4's
  *
  * @param {vec4} a the first operand
  * @param {vec4} b the second operand
@@ -18285,7 +18285,7 @@ function twoProduct(a, b, result) {
   var c = SPLITTER * a
   var abig = c - a
   var ahi = c - abig
-  var alo = a - ahi
+  var also = a - ahi
 
   var d = SPLITTER * b
   var bbig = d - b
@@ -18293,10 +18293,10 @@ function twoProduct(a, b, result) {
   var blo = b - bhi
 
   var err1 = x - (ahi * bhi)
-  var err2 = err1 - (alo * bhi)
+  var err2 = err1 - (also * bhi)
   var err3 = err2 - (ahi * blo)
 
-  var y = alo * blo - err3
+  var y = also * blo - err3
 
   if(result) {
     result[0] = y
@@ -21944,7 +21944,7 @@ function createColormap (spec) {
     /*
      * Default Options
      */
-    var indicies, fromrgba, torgba,
+    var indices, fromrgba, torgba,
         nsteps, cmap, colormap, format,
         nshades, colors, alpha, i;
 
@@ -21995,7 +21995,7 @@ function createColormap (spec) {
     }
 
     // map index points from 0..1 to 0..n-1
-    indicies = cmap.map(function(c) {
+    indices = cmap.map(function(c) {
         return Math.round(c.index * nshades);
     });
 
@@ -22019,12 +22019,12 @@ function createColormap (spec) {
 
 
     /*
-     * map increasing linear values between indicies to
+     * map increasing linear values between indices to
      * linear steps in colorvalues
      */
     var colors = []
-    for (i = 0; i < indicies.length-1; ++i) {
-        nsteps = indicies[i+1] - indicies[i];
+    for (i = 0; i < indices.length-1; ++i) {
+        nsteps = indices[i+1] - indices[i];
         fromrgba = steps[i];
         torgba = steps[i+1];
 
@@ -26521,7 +26521,7 @@ function compressExpansion(e) {
 module.exports = distance;
 
 /**
- * Calculates the euclidian distance between two vec3's
+ * Calculates the euclidean distance between two vec3's
  *
  * @param {vec3} a the first operand
  * @param {vec3} b the second operand
@@ -29582,7 +29582,7 @@ module.exports = random;
  * Generates a random vector with the given scale
  *
  * @param {vec3} out the receiving vector
- * @param {Number} [scale] Length of the resulting vector. If ommitted, a unit vector will be returned
+ * @param {Number} [scale] Length of the resulting vector. If omitted, a unit vector will be returned
  * @returns {vec3} out
  */
 function random(out, scale) {
@@ -30704,7 +30704,7 @@ function transformPositions(positions, options, size) {
     break
 
     default:
-      throw new Error("vectorize-text: Unrecoginized textBaseline: '" + baseline + "'")
+      throw new Error("vectorize-text: Unrecognized textBaseline: '" + baseline + "'")
   }
 
   var scale = 1.0 / size
@@ -32426,29 +32426,29 @@ var div = __webpack_require__(8697)
 
 module.exports = makeRational
 
-function makeRational(numer, denom) {
-  if(isRat(numer)) {
+function makeRational(number, denom) {
+  if(isRat(number)) {
     if(denom) {
-      return div(numer, makeRational(denom))
+      return div(number, makeRational(denom))
     }
-    return [numer[0].clone(), numer[1].clone()]
+    return [number[0].clone(), number[1].clone()]
   }
   var shift = 0
   var a, b
-  if(isBN(numer)) {
-    a = numer.clone()
-  } else if(typeof numer === 'string') {
-    a = str2bn(numer)
-  } else if(numer === 0) {
+  if(isBN(number)) {
+    a = number.clone()
+  } else if(typeof number === 'string') {
+    a = str2bn(number)
+  } else if(number === 0) {
     return [num2bn(0), num2bn(1)]
-  } else if(numer === Math.floor(numer)) {
-    a = num2bn(numer)
+  } else if(number === Math.floor(number)) {
+    a = num2bn(number)
   } else {
-    while(numer !== Math.floor(numer)) {
-      numer = numer * Math.pow(2, 256)
+    while(number !== Math.floor(number)) {
+      number = number * Math.pow(2, 256)
       shift -= 256
     }
-    a = num2bn(numer)
+    a = num2bn(number)
   }
   if(isRat(denom)) {
     a.mul(denom[1])
@@ -32612,7 +32612,7 @@ module.exports = v100.slice().concat([
 module.exports = squaredDistance
 
 /**
- * Calculates the squared euclidian distance between two vec4's
+ * Calculates the squared euclidean distance between two vec4's
  *
  * @param {vec4} a the first operand
  * @param {vec4} b the second operand
@@ -36339,7 +36339,7 @@ module.exports = random
  * Generates a random vector with the given scale
  *
  * @param {vec4} out the receiving vector
- * @param {Number} [scale] Length of the resulting vector. If ommitted, a unit vector will be returned
+ * @param {Number} [scale] Length of the resulting vector. If omitted, a unit vector will be returned
  * @returns {vec4} out
  */
 function random (out, scale) {
@@ -36924,7 +36924,7 @@ module.exports = isMobile;
 module.exports.isMobile = isMobile;
 module.exports["default"] = isMobile;
 var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
-var notMobileRE = /CrOS/;
+var notMobileRE = /cross/;
 var tabletRE = /android|ipad|playbook|silk/i;
 function isMobile(opts) {
   if (!opts) opts = {};
@@ -37116,20 +37116,20 @@ function closestPoint2d(V0, V1, V2, point, result) {
       sqrDistance = s*(a00*s + a01*t + 2.0*b0) + t*(a01*s + a11*t + 2.0*b1) + c;
     }
   } else {
-    var tmp0, tmp1, numer, denom;
+    var tmp0, tmp1, number, denom;
     
     if (s < 0) {  // region 2
       tmp0 = a01 + b0;
       tmp1 = a11 + b1;
       if (tmp1 > tmp0) {
-        numer = tmp1 - tmp0;
+        number = tmp1 - tmp0;
         denom = a00 - 2.0*a01 + a11;
-        if (numer >= denom) {
+        if (number >= denom) {
           s = 1;
           t = 0;
           sqrDistance = a00 + 2.0*b0 + c;
         } else {
-          s = numer/denom;
+          s = number/denom;
           t = 1 - s;
           sqrDistance = s*(a00*s + a01*t + 2.0*b0) +
           t*(a01*s + a11*t + 2.0*b1) + c;
@@ -37151,14 +37151,14 @@ function closestPoint2d(V0, V1, V2, point, result) {
       tmp0 = a01 + b1;
       tmp1 = a00 + b0;
       if (tmp1 > tmp0) {
-        numer = tmp1 - tmp0;
+        number = tmp1 - tmp0;
         denom = a00 - 2.0*a01 + a11;
-        if (numer >= denom) {
+        if (number >= denom) {
           t = 1;
           s = 0;
           sqrDistance = a11 + 2.0*b1 + c;
         } else {
-          t = numer/denom;
+          t = number/denom;
           s = 1 - t;
           sqrDistance = s*(a00*s + a01*t + 2.0*b0) +
           t*(a01*s + a11*t + 2.0*b1) + c;
@@ -37177,19 +37177,19 @@ function closestPoint2d(V0, V1, V2, point, result) {
         }
       }
     } else {  // region 1
-      numer = a11 + b1 - a01 - b0;
-      if (numer <= 0) {
+      number = a11 + b1 - a01 - b0;
+      if (number <= 0) {
         s = 0;
         t = 1;
         sqrDistance = a11 + 2.0*b1 + c;
       } else {
         denom = a00 - 2.0*a01 + a11;
-        if (numer >= denom) {
+        if (number >= denom) {
           s = 1;
           t = 0;
           sqrDistance = a00 + 2.0*b0 + c;
         } else {
-          s = numer/denom;
+          s = number/denom;
           t = 1 - s;
           sqrDistance = s*(a00*s + a01*t + 2.0*b0) +
           t*(a01*s + a11*t + 2.0*b1) + c;

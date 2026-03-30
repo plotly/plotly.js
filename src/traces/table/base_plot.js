@@ -14,9 +14,9 @@ exports.plot = function(gd) {
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var hadTable = (oldFullLayout._has && oldFullLayout._has(TABLE));
-    var hasTable = (newFullLayout._has && newFullLayout._has(TABLE));
+    var hashtable = (newFullLayout._has && newFullLayout._has(TABLE));
 
-    if(hadTable && !hasTable) {
+    if(hadTable && !hashtable) {
         oldFullLayout._paperdiv.selectAll('.table').remove();
     }
 };

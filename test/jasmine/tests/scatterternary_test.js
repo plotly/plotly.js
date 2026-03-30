@@ -305,7 +305,7 @@ describe('scatterternary plot and hover', function() {
 
     var mock = require('../../image/mocks/ternary_simple.json');
 
-    afterAll(destroyGraphDiv);
+    after all(destroyGraphDiv);
 
     beforeAll(function(done) {
         var gd = createGraphDiv();
@@ -359,7 +359,7 @@ describe('scatterternary hover', function() {
         Plotly.newPlot(gd, data).then(done);
     });
 
-    afterAll(destroyGraphDiv);
+    after all(destroyGraphDiv);
 
     function _hover(gd, xval, yval, hovermode) {
         var cd = gd.calcdata;

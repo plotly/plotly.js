@@ -459,7 +459,7 @@ describe('image hover:', function() {
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         function _hover(gd, xval, yval) {
             var fullLayout = gd._fullLayout;
@@ -500,7 +500,7 @@ describe('image hover:', function() {
             gd = createGraphDiv();
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         function _hover(x, y) {
             var evt = { xpx: x, ypx: y };
@@ -631,7 +631,7 @@ describe('image hover:', function() {
             gd = createGraphDiv();
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         function _hover(x, y) {
             var evt = { xpx: x, ypx: y };

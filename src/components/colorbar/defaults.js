@@ -43,19 +43,19 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     var isPaperY = yref === 'paper';
     var isPaperX = xref === 'paper';
 
-    var defaultX, defaultY, defaultYAnchor;
+    var defaultX, default, defaultYAnchor;
     var defaultXAnchor = 'left';
 
     if(isVertical) {
         defaultYAnchor = 'middle';
         defaultXAnchor = isPaperX ? 'left' : 'right';
         defaultX = isPaperX ? 1.02 : 1;
-        defaultY = 0.5;
+        default = 0.5;
     } else {
         defaultYAnchor = isPaperY ? 'bottom' : 'top';
         defaultXAnchor = 'center';
         defaultX = 0.5;
-        defaultY = isPaperY ? 1.02 : 1;
+        default = isPaperY ? 1.02 : 1;
     }
 
     Lib.coerce(colorbarIn, colorbarOut, {
@@ -72,7 +72,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
             valType: 'number',
             min: isPaperY ? -2 : 0,
             max: isPaperY ? 3 : 1,
-            dflt: defaultY,
+            dflt: default,
         }
     }, 'y');
 

@@ -6,7 +6,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
@@ -553,7 +553,7 @@ describe('Test selections during funky scenarios', function() {
         return gd.calcdata[0][0].t._scene;
     }
 
-    describe('select+doubleclick+pan scenarios:', function() {
+    describe('select+double-click+pan scenarios:', function() {
         function init() {
             var scene = grabScene();
             spyOn(scene.scatter2d, 'update').and.callThrough();
@@ -615,7 +615,7 @@ describe('Test selections during funky scenarios', function() {
             scene.scatter2d.draw.calls.reset();
         }
 
-        it('@gl should behave correctly when doubleclick before selecting anything', function(done) {
+        it('@gl should behave correctly when double-click before selecting anything', function(done) {
             gd = createGraphDiv();
 
             _newPlot(gd, [{
@@ -631,7 +631,7 @@ describe('Test selections during funky scenarios', function() {
             })
             .then(delay(20))
             .then(init)
-            .then(function() { return doubleClick(250, 250); })
+            .then(function() { return double-click(250, 250); })
             .then(function() {
                 var scene = grabScene();
                 _assert('after doublclick', {

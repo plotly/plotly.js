@@ -2265,7 +2265,7 @@ plots.computeFrame = function(gd, frameName) {
     // here since they're otherwise fine for looking up frames as long as they're
     // properly cast to strings. We really just want to ensure here that this
     // 1) doesn't fail, and
-    // 2) doens't give an incorrect answer (which String(frameName) would)
+    // 2) doesn't give an incorrect answer (which String(frameName) would)
     if(!frameName) {
         throw new Error('computeFrame must be given a string frame name');
     }

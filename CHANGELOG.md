@@ -311,7 +311,7 @@ Drop support for deprecated `bardir` attribute (use `orientation` instead) [[#72
 ## [2.35.1] -- 2024-09-09
 
 ### Fixed
- - Fix rendering traces with `zorder` on overlayed subplots case of multiple traces in each subplot [[#7141](https://github.com/plotly/plotly.js/pull/7141)]
+ - Fix rendering traces with `zorder` on overlaid subplots case of multiple traces in each subplot [[#7141](https://github.com/plotly/plotly.js/pull/7141)]
  - Fix missing CSS for map(maplibre) subplots when used offline [[#7140](https://github.com/plotly/plotly.js/pull/7140)],
    with thanks to @birkskyum for the contribution!
 
@@ -1297,7 +1297,7 @@ Drop support for deprecated `bardir` attribute (use `orientation` instead) [[#72
  - Improve attribute compression and avoid redundant copyright comments in non-minified
    bundles [[#5426](https://github.com/plotly/plotly.js/pull/5426), [#5429](https://github.com/plotly/plotly.js/pull/5429), [#5439](https://github.com/plotly/plotly.js/pull/5439)]
  - Provide links to all pull requests in the changelog [[#5469](https://github.com/plotly/plotly.js/pull/5469)]
- - Provide documention for creating custom bundles and improve readme files [[#5702](https://github.com/plotly/plotly.js/pull/#5702), [#5703](https://github.com/plotly/plotly.js/pull/#5703), [#5704](https://github.com/plotly/plotly.js/pull/#5704), [#5705](https://github.com/plotly/plotly.js/pull/#5705), [#5713](https://github.com/plotly/plotly.js/pull/#5713)]
+ - Provide documentation for creating custom bundles and improve readme files [[#5702](https://github.com/plotly/plotly.js/pull/#5702), [#5703](https://github.com/plotly/plotly.js/pull/#5703), [#5704](https://github.com/plotly/plotly.js/pull/#5704), [#5705](https://github.com/plotly/plotly.js/pull/#5705), [#5713](https://github.com/plotly/plotly.js/pull/#5713)]
  - Provide a link to plotly.js dependencies when publishing various plotly.js-dist packages to npm [[#5711](https://github.com/plotly/plotly.js/pull/5711)]
  - Adjust npm publish script to use relevant tag e.g. "rc" when publishing various plotly.js-dist packages [[#5467](https://github.com/plotly/plotly.js/pull/5467)]
  - Place CDN publish script inside plotly.js repository [[#5468](https://github.com/plotly/plotly.js/pull/5468), [#5470](https://github.com/plotly/plotly.js/pull/5470)]
@@ -4043,7 +4043,7 @@ First 2019 release.
 - Thorough `mesh3d` attribute descriptions [#593]
 
 ### Changed
-- Generalize hover picking routine (to make more easily re-usable for other plot
+- Generalize hover picking routine (to make more easily reusable for other plot
   types) [#575, #631]
 
 ### Fixed
@@ -4296,7 +4296,7 @@ First 2019 release.
   supplied no longer results in an uncaught error [#258]
 - Axis attributes `hoverformat`, `tickprefix`, `ticksuffix` are honored even
   when `showticklabels` is set to false [#267]
-- Config option `doubleClick` set to `'reset'` now properly handles auto-ranged
+- Config option `double-click` set to `'reset'` now properly handles auto-ranged
   axes [#285]
 
 

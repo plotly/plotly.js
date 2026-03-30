@@ -1650,7 +1650,7 @@ describe('legend interaction', function () {
             });
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         describe('single click', function () {
             it('should hide slice', function (done) {
@@ -1743,7 +1743,7 @@ describe('legend interaction', function () {
             });
         });
 
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         describe('single click', function () {
             it('should hide series', function (done) {
@@ -1827,7 +1827,7 @@ describe('legend interaction', function () {
     });
 
     describe('carpet plots', function () {
-        afterAll(destroyGraphDiv);
+        after all(destroyGraphDiv);
 
         function _click(index) {
             return function () {
@@ -2495,7 +2495,7 @@ describe('legend interaction', function () {
             });
         });
 
-        describe('custom legend click/doubleclick handlers', function () {
+        describe('custom legend click/double-click handlers', function () {
             var fig, to;
 
             beforeEach(function () {
@@ -2532,7 +2532,7 @@ describe('legend interaction', function () {
                     .catch(failTest);
             });
 
-            it('should call custom doubleclick handler before default handler', function (done) {
+            it('should call custom double-click handler before default handler', function (done) {
                 Plotly.newPlot(gd, fig)
                     .then(function () {
                         var gotCalled = false;
@@ -2573,7 +2573,7 @@ describe('legend interaction', function () {
                     .catch(failTest);
             });
 
-            it('should not call default doubleclick handle if custom handler return *false*', function (done) {
+            it('should not call default double-click handle if custom handler return *false*', function (done) {
                 Plotly.newPlot(gd, fig)
                     .then(function () {
                         gd.on('plotly_legenddoubleclick', function (d) {
@@ -2595,7 +2595,7 @@ describe('legend interaction', function () {
             });
         });
 
-        describe('legend click/doubleclick event data', function () {
+        describe('legend click/double-click event data', function () {
             function _assert(act, exp) {
                 for (var k in exp) {
                     if (k === 'event' || k === 'node') {

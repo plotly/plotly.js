@@ -168,7 +168,7 @@ var configAttributes = {
             'Set `scrollZoom` to *false* to disable scrolling for all subplots.'
         ].join(' ')
     },
-    doubleClick: {
+    double-click: {
         valType: 'enumerated',
         values: [false, 'reset', 'autosize', 'reset+autosize'],
         dflt: 'reset+autosize',

@@ -76,7 +76,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
 
     /*
      * We need aspectratio object in all the Layouts as it is dynamically set
-     * in the calculation steps, ie, we cant set the correct data now, it happens later.
+     * in the calculation steps, ie, we can't set the correct data now, it happens later.
      * We must also account for the case the user sends bad ratio data with 'manual' set
      * for the mode. In this case we must force change it here as the default coerce
      * misses it above.

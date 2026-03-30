@@ -987,7 +987,7 @@
       },
       "oceancolor": "rgb(0, 255, 255)",
       "projection": {
-        "type": "winkel tripel",
+        "type": "winkel triple",
         "rotation": {
           "lon": -90
         }

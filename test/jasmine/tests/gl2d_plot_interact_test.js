@@ -405,7 +405,7 @@ describe('Test gl2d plot interactions:', function() {
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5806379476536665, 6.218528262566369];
+        var originally = [-0.5806379476536665, 6.218528262566369];
         var newX = [-0.5516431924882629, 5.082159624413145];
         var newY = [-1.7947747709072441, 5.004391439312791];
         var precision = 1;
@@ -416,7 +416,7 @@ describe('Test gl2d plot interactions:', function() {
             expect(gd.layout.xaxis.autorange).toBe(true);
             expect(gd.layout.yaxis.autorange).toBe(true);
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
 
             // Switch to pan mode
             var buttonPan = selectButton(gd._fullLayout._modeBar, 'pan2d');
@@ -426,7 +426,7 @@ describe('Test gl2d plot interactions:', function() {
 
             // Switching mode must not change visible range
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
         })
         .then(delay(20))
         .then(function() {
@@ -446,7 +446,7 @@ describe('Test gl2d plot interactions:', function() {
             expect(gd.layout.xaxis.autorange).toBe(false);
             expect(gd.layout.yaxis.autorange).toBe(false);
             expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
         })
         .then(function() {
             // Drag scene back along the X axis
@@ -454,7 +454,7 @@ describe('Test gl2d plot interactions:', function() {
         })
         .then(function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
         })
         .then(function() {
             // Drag scene along the Y axis
@@ -470,7 +470,7 @@ describe('Test gl2d plot interactions:', function() {
         })
         .then(function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
         })
         .then(function() {
             // Drag scene along both the X and Y axis
@@ -486,7 +486,7 @@ describe('Test gl2d plot interactions:', function() {
         })
         .then(function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originally, precision);
         })
         .then(delay(20))
         .then(function() {

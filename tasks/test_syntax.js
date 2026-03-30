@@ -49,7 +49,7 @@ function assertJasmineSuites() {
                     logs.push([
                         bn, lineInfo,
                         'contains either a *fdescribe*, *fit*,',
-                        '*xdescribe* or *xit* block.'
+                        '*describe* or *xit* block.'
                     ].join(' '));
                 }
 

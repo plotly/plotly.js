@@ -733,8 +733,8 @@ function comboTests(testCombos, test) {
 // return a list of strings, each describing a corresponding test
 // describe is a function taking a combination and returning a description of
 // the test
-function comboTestDescriptions(testCombos, desribe) {
-    var ret = testCombos.map(desribe);
+function comboTestDescriptions(testCombos, describe) {
+    var ret = testCombos.map(describe);
     return ret;
 }
 

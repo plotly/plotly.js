@@ -486,7 +486,7 @@ exports.hasParent = function (aobj, attr) {
  * @param {object} gd
  * @param {[integer]} traces: trace indices to search for axes to clear the types of
  * @param {object} layoutUpdate: any update being done concurrently to the layout,
- *   which may supercede clearing the axis types
+ *   which may supersede clearing the axis types
  */
 exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
     for (var i = 0; i < traces.length; i++) {

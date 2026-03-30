@@ -400,7 +400,7 @@ module.exports = {
             description: [
                 'Sets the gradient start value.',
                 'It is given as the absolute position on the axis determined by',
-                'the orientiation. E.g., if orientation is *horizontal*, the',
+                'the orientation. E.g., if orientation is *horizontal*, the',
                 'gradient will be horizontal and start from the x-position',
                 'given by start. If omitted, the gradient starts at the lowest',
                 'value of the trace along the respective axis.',
@@ -413,7 +413,7 @@ module.exports = {
             description: [
                 'Sets the gradient end value.',
                 'It is given as the absolute position on the axis determined by',
-                'the orientiation. E.g., if orientation is *horizontal*, the',
+                'the orientation. E.g., if orientation is *horizontal*, the',
                 'gradient will be horizontal and end at the x-position',
                 'given by end. If omitted, the gradient ends at the highest',
                 'value of the trace along the respective axis.',

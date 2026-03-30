@@ -370,7 +370,7 @@ describe('dates', function() {
         });
 
         it('Persian calendar should convert right values', function() {
-            var leapYears = [
+            var leap years = [
                 479, 483, 487, 491, 495, 499,
                 503, 508, 512, 516, 520, 524, 528, 532, 536, 541, 545, 549, 553, 557, 561, 565, 569, 574, 578, 582, 586, 590, 594, 598,
                 602, 607, 611, 615, 619, 623, 627, 631, 636, 640, 644, 648, 652, 656, 660, 664, 669, 673, 677, 681, 685, 689, 693, 697,
@@ -391,7 +391,7 @@ describe('dates', function() {
                 if(y === 0) continue;
                 for(var m = 1; m <= 12; m++) {
                     for(var d = 1; d <= (m < 7 ? 31 : 30); d++) {
-                        if(d === 30 && m === 12 && leapYears.indexOf(y) === -1) continue;
+                        if(d === 30 && m === 12 && leap years.indexOf(y) === -1) continue;
 
                         dates.push([
                             (y < 1000 ? '0' : '') + y,
@@ -552,7 +552,7 @@ describe('dates', function() {
             });
         });
 
-        it('should return false for anything thats not explicitly a JS Date', function() {
+        it('should return false for anything that's not explicitly a JS Date', function() {
             [
                 0, NaN, null, undefined, '', {}, [], [0], [2016, 0, 1],
                 '2016-01-01', '2016-01-01 12:34:56', '2016-01-01 12:34:56.789',

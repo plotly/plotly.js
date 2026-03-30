@@ -1778,7 +1778,7 @@ describe('Test event property of interactions on a geo plot:', function() {
             .then(done);
         });
 
-        it('should not be trigged when not on data points', function() {
+        it('should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1]);
             expect(futureData).toBe(null);
         });
@@ -1831,7 +1831,7 @@ describe('Test event property of interactions on a geo plot:', function() {
             .then(done);
         });
 
-        it('should not be trigged when not on data points', function() {
+        it('should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1], clickOpts);
             expect(futureData).toBe(null);
         });

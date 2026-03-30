@@ -514,7 +514,7 @@ describe('sankey tests', function() {
                   });
 
                   // Check that ghost nodes used for animations:
-                  // 1) are drawn first so they apear behind
+                  // 1) are drawn first so they appear behind
                   var seeRealNode = false;
                   var sankeyNodes = d3SelectAll('.sankey .sankey-node');
                   sankeyNodes.each(function(d, i) {
@@ -1779,7 +1779,7 @@ describe('sankey layout generators', function() {
                 var updatedGraph = moveNode(sankey, graph, nodeIndex, delta);
                 var updatedLink = updatedGraph.links[linkIndex];
 
-                // End up with a cirular link on bottom
+                // End up with a circular link on bottom
                 expect(updatedLink.circular).toBeTruthy();
                 expect(updatedLink.circularLinkType).toEqual('bottom');
                 expect(updatedLink.y1).toBeCloseTo(linkY1 + delta[1] + offsetTopToBottom, 0);

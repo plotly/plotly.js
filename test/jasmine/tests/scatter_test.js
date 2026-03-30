@@ -667,7 +667,7 @@ describe('end-to-end scatter tests', function() {
             var points = d3SelectAll('g.scatterlayer').selectAll('.point');
 
             // Rather than just duplicating the logic, let's be explicit about
-            // what's expected. Specifially, only null and undefined (the default)
+            // what's expected. Specifically, only null and undefined (the default)
             // do *not* add the class.
             var expected = [false, false, true, true, true, true, false];
 

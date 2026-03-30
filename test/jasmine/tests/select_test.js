@@ -4,7 +4,7 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 var click = require('../assets/click');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -141,7 +141,7 @@ function assertEventCounts(selecting, selected, deselect, msg) {
 // TODO: in v3, when we get rid of the `plotly_selected->undefined` event, these will
 // change to BOXEVENTS = [1, 1, 1], LASSOEVENTS = [4, 1, 1]. See also _run down below
 //
-// events for box or lasso select mouse moves then a doubleclick
+// events for box or lasso select mouse moves then a double-click
 var NOEVENTS = [0, 0, 0];
 // deselect used to give an extra plotly_selected event on the first click
 // with undefined event data - but now that's gone, since `clickFn` handles this.
@@ -323,7 +323,7 @@ describe('Click-to-select', function() {
             expect(gd.data[2].selectedpoints).toEqual([0]);
         })
         .then(function() {
-            return doubleClick(200, 200); // Clear selection
+            return double-click(200, 200); // Clear selection
         })
         .then(function() {
             drag([[200, 100], [200, 300], [300, 300], [300, 100], [200, 100]]);
@@ -348,7 +348,7 @@ describe('Click-to-select', function() {
             expect(gd.data[2].selectedpoints).toEqual([0]);
         })
         .then(function() {
-            return doubleClick(200, 200); // Clear selection
+            return double-click(200, 200); // Clear selection
         })
         .then(function() {
             drag([[200, 100], [300, 300]]);
@@ -750,7 +750,7 @@ describe('Click-to-select', function() {
             var x = 100;
             var y = 100;
             drag([[x, y], [x, y]]); // first empty drag
-            return doubleClick(x, y); // then double click
+            return double-click(x, y); // then double click
         })
         .then(function() {
             assertSelectionCleared();
@@ -931,7 +931,7 @@ describe('Test select box and lasso in general:', function() {
                     y: [0.10209191961595454, 24.512223978291406]
                 }, 'with the correct selected range');
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(deselectPromise)
             .then(function() {
@@ -1023,7 +1023,7 @@ describe('Test select box and lasso in general:', function() {
                     customdata: 'customdata-12.5'
                 }], 'with the correct selecting points (1)');
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
@@ -1072,7 +1072,7 @@ describe('Test select box and lasso in general:', function() {
                     y: [0.10209191961595454, 24.512223978291406]
                 }, 'with the correct selected range');
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(deselectPromise)
             .then(function() {
@@ -1104,7 +1104,7 @@ describe('Test select box and lasso in general:', function() {
 
                 resetEvents(gd);
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(relayoutPromise)
             .then(function() {
@@ -1117,7 +1117,7 @@ describe('Test select box and lasso in general:', function() {
         it('should clear fake selections on doubleclick', function(done) {
             resetEvents(gd);
 
-            doubleClick(250, 200);
+            double-click(250, 200);
 
             relayoutPromise.then(function() {
                 expect(gd.layout.selections.length).toBe(0, 'fake selections are cleared');
@@ -1169,7 +1169,7 @@ describe('Test select box and lasso in general:', function() {
                 expect(selectedData.lassoPoints.y).toBeCloseToArray(
                     [4.648, 1.342, 1.247, 4.821], 'lasso points y coords');
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(deselectPromise)
             .then(function() {
@@ -1187,7 +1187,7 @@ describe('Test select box and lasso in general:', function() {
                 expect(selectingCnt).toBe(3, 'with the correct selecting count');
                 expect(gd.data[0].selectedpoints).toEqual([10]);
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(deselectPromise)
             .then(function() {
@@ -1205,7 +1205,7 @@ describe('Test select box and lasso in general:', function() {
                 expect(selectingCnt).toBe(3, 'with the correct selecting count');
                 expect(gd._fullData[0].selectedpoints).toEqual([10]);
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(deselectPromise)
             .then(function() {
@@ -1238,7 +1238,7 @@ describe('Test select box and lasso in general:', function() {
                     y: 2.75,
                 }], 'with the correct selected points (2)');
 
-                return doubleClick(250, 200);
+                return double-click(250, 200);
             })
             .then(deselectPromise)
             .then(function() {
@@ -1335,7 +1335,7 @@ describe('Test select box and lasso in general:', function() {
         var layout = {
             dragmode: 'select',
             width: 400,
-            heigth: 400,
+            height: 400,
         };
         var gd = createGraphDiv();
 
@@ -1390,7 +1390,7 @@ describe('Test select box and lasso in general:', function() {
         .then(_drag)
         .then(_scroll)
         .then(function() {
-            // make sure it works the 2nd time aroung
+            // make sure it works the 2nd time around
             assertSelectionNodes(0, 0);
         })
         .then(done, done.fail);
@@ -1574,7 +1574,7 @@ describe('Test select box and lasso in general:', function() {
               // with a double click, users might hold the Shift key by accident.
               // This test ensures selection is cleared as expected although
               // the Shift key is held and no selection state is retained in any way.
-              return doubleClick(500, 200, { shiftKey: true });
+              return double-click(500, 200, { shiftKey: true });
           })
           .then(function() {
               _assertSelectedPoints(null);
@@ -1633,7 +1633,7 @@ describe('Test select box and lasso in general:', function() {
                 yrng: [0, 3],
                 selpts: null
             });
-            return doubleClick(200, 200);
+            return double-click(200, 200);
         })
         .then(function() {
             _assert('after double-click under dragmode zoom', {
@@ -1657,7 +1657,7 @@ describe('Test select box and lasso in general:', function() {
                 yrng: [0, 3],
                 selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
             });
-            return doubleClick(200, 200);
+            return double-click(200, 200);
         })
         .then(function() {
             _assert('after double-click under dragmode select', {
@@ -1689,7 +1689,7 @@ describe('Test select box and lasso in general:', function() {
                 yrng: [0, 20],
                 selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
             });
-            return doubleClick(200, 200);
+            return double-click(200, 200);
         })
         .then(function() {
             _assert('after double-click under dragmode pan', {
@@ -2043,9 +2043,9 @@ describe('Test select box and lasso per trace:', function() {
                 // TODO: in v3 when we remove the `plotly_selecting->undefined` the Math.max(...)
                 // in the middle here will turn into just eventCounts[1].
                 // It's just here because one of the selected events is generated during
-                // doubleclick so hasn't happened yet when we're testing this.
+                // double-click so hasn't happened yet when we're testing this.
                 assertEventCounts(eventCounts[0], Math.max(0, eventCounts[1] - 1), 0, msg + ' (before dblclick)');
-                return doubleClick(dblClickPos[0], dblClickPos[1]);
+                return double-click(dblClickPos[0], dblClickPos[1]);
             })
             .then(eventCounts[2] ? deselectPromise : Promise.resolve())
             .then(function() {
@@ -3558,7 +3558,7 @@ describe('Test that selection styles propagate to range-slider plot:', function(
         .then(function() {
             _assert('after empty selection', [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]);
         })
-        .then(function() { return doubleClick(200, 200); })
+        .then(function() { return double-click(200, 200); })
         .then(function() {
             _assert('after double-click reset', [1, 1, 1, 1, 1, 1, 1]);
         })
@@ -3589,7 +3589,7 @@ describe('Test that selection styles propagate to range-slider plot:', function(
         .then(function() {
             _assert('after empty selection', [0.3, 0.3]);
         })
-        .then(function() { return doubleClick(200, 200); })
+        .then(function() { return double-click(200, 200); })
         .then(function() {
             _assert('after double-click reset', [1, 1]);
         })

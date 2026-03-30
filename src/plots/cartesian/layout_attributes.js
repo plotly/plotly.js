@@ -34,7 +34,7 @@ var tickmode = extendFlat({}, minorTickmode, {
     values: minorTickmode.values.slice().concat(['sync']),
     description: [
         minorTickmode.description,
-        'If *sync*, the number of ticks will sync with the overlayed axis',
+        'If *sync*, the number of ticks will sync with the overlaid axis',
         'set by `overlaying` property.'
     ].join(' ')
 });

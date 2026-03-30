@@ -400,7 +400,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
             if(numClicks === 2) {
-                // clear selection on doubleclick
+                // clear selection on double-click
                 outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
@@ -1468,7 +1468,7 @@ function convert(ax, d) {
 function castMultiPolygon(allPolygons) {
     var len = allPolygons.length;
 
-    // descibe multi polygons in one polygon
+    // describe multi polygons in one polygon
     var p = [];
     for(var i = 0; i < len; i++) {
         var polygon = allPolygons[i];

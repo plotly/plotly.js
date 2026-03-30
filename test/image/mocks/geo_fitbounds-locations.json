@@ -1397,19 +1397,19 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "winkel tripel",
+      "name": "winkel triple",
       "geo": "geo81",
       "type": "choropleth",
       "locations": ["AUS"],
       "z": [10],
       "showscale": false,
-      "hovertemplate": "winkel tripel"
+      "hovertemplate": "winkel triple"
     },
     {
       "geo": "geo81",
       "type": "scattergeo",
       "mode": "text",
-      "text": "winkel<br>tripel",
+      "text": "winkel<br>triple",
       "locations": ["AUS"],
       "hoverinfo": "skip"
     },
@@ -3268,7 +3268,7 @@
         "column": 10
       },
       "projection": {
-        "type": "winkel tripel"
+        "type": "winkel triple"
       },
       "fitbounds": "locations",
       "lonaxis": {

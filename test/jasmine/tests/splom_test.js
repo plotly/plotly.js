@@ -12,7 +12,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
-var doubleClick = require('../assets/double_click');
+var double-click = require('../assets/double_click');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -1720,7 +1720,7 @@ describe('Test splom select:', function() {
                 unselectBatch: [0, 2]
             });
         })
-        .then(function() { return doubleClick(100, 100); })
+        .then(function() { return double-click(100, 100); })
         .then(function() {
             _assert('after dblclick clearing selection', {
                 updateCnt: 1,  // reset to 'base' styles

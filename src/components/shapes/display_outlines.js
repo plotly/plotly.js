@@ -124,7 +124,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
             var _dx = dx;
             var _dy = dy;
             if(dragOptions.isActiveSelection) {
-                // handle an edge contoller for rect selections
+                // handle an edge controller for rect selections
                 var nextPoint = getNextPoint(cell, indexJ);
                 if(nextPoint[1] === cell[indexJ][1]) { // a vertical edge
                     _dy = 0;

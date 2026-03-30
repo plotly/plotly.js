@@ -1446,7 +1446,7 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
                 }
             })
         .each(function(d) {
-            // Update attriubutes of <tspan> elements
+            // Update attributes of <tspan> elements
             var newX;
             var newAnchor;
             if(catInRightDim(d)) {
@@ -2089,7 +2089,7 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  * @property {Number} height
  *  Height for this category (pixels)
  * @property {Number} y
- *  Y position of this cateogry with respect to the Figure (pixels)
+ *  Y position of this category with respect to the Figure (pixels)
  * @property {Array.<CategoryBandViewModel>} bands
  *  Array of color bands inside the category
  * @property {ParcatsViewModel} parcatsViewModel

@@ -7997,7 +7997,7 @@ describe('more react tests', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should sort catgories on matching axes using react and relink using relayout', function(done) {
+    it('should sort categories on matching axes using react and relink using relayout', function(done) {
         var fig = {
             data: [{
                 yaxis: 'y',

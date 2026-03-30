@@ -4983,7 +4983,7 @@ var Plotly = (() => {
           }
           function apportion(v, w, ancestor) {
             if (w) {
-              var vip = v, vop = v, vim = w, vom = vip.parent.children[0], sip = vip.m, sop = vop.m, sim = vim.m, som = vom.m, shift;
+              var vip = v, vop = v, vim = w, vom = vip.parent.children[0], sip = vip.m, sop = vop.m, sim = vim.m, some = vom.m, shift;
               while (vim = d3_layout_treeRight(vim), vip = d3_layout_treeLeft(vip), vim && vip) {
                 vom = d3_layout_treeLeft(vom);
                 vop = d3_layout_treeRight(vop);
@@ -4996,7 +4996,7 @@ var Plotly = (() => {
                 }
                 sim += vim.m;
                 sip += vip.m;
-                som += vom.m;
+                some += vom.m;
                 sop += vop.m;
               }
               if (vim && !d3_layout_treeRight(vop)) {
@@ -5005,7 +5005,7 @@ var Plotly = (() => {
               }
               if (vip && !d3_layout_treeLeft(vom)) {
                 vom.t = vip;
-                vom.m += sip - som;
+                vom.m += sip - some;
                 ancestor = v;
               }
             }
@@ -11416,7 +11416,7 @@ var Plotly = (() => {
           extras: [true, false],
           dflt: "gl3d+geo+map"
         },
-        doubleClick: {
+        double-click: {
           valType: "enumerated",
           values: [false, "reset", "autosize", "reset+autosize"],
           dflt: "reset+autosize"
@@ -12923,8 +12923,8 @@ var Plotly = (() => {
       module.exports = {
         mode: {
           valType: "enumerated",
-          dflt: "afterall",
-          values: ["immediate", "next", "afterall"]
+          dflt: "after all",
+          values: ["immediate", "next", "after all"]
         },
         direction: {
           valType: "enumerated",
@@ -14939,7 +14939,7 @@ var Plotly = (() => {
       module.exports.isMobile = isMobile;
       module.exports.default = isMobile;
       var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
-      var notMobileRE = /CrOS/;
+      var notMobileRE = /cross/;
       var tabletRE = /android|ipad|playbook|silk/i;
       function isMobile(opts) {
         if (!opts) opts = {};
@@ -20609,9 +20609,9 @@ var Plotly = (() => {
             return val;
           }
           var thisX = setOrGet("x", x);
-          var thisY = setOrGet("y", y);
+          var this = setOrGet("y", y);
           if (this.nodeName === "text") {
-            text.selectAll("tspan.line").attr({ x: thisX, y: thisY });
+            text.selectAll("tspan.line").attr({ x: thisX, y: this });
           }
         });
       };
@@ -22315,18 +22315,18 @@ var Plotly = (() => {
         var xref = coerce("xref");
         var isPaperY = yref === "paper";
         var isPaperX = xref === "paper";
-        var defaultX, defaultY, defaultYAnchor;
+        var defaultX, default, defaultYAnchor;
         var defaultXAnchor = "left";
         if (isVertical) {
           defaultYAnchor = "middle";
           defaultXAnchor = isPaperX ? "left" : "right";
           defaultX = isPaperX ? 1.02 : 1;
-          defaultY = 0.5;
+          default = 0.5;
         } else {
           defaultYAnchor = isPaperY ? "bottom" : "top";
           defaultXAnchor = "center";
           defaultX = 0.5;
-          defaultY = isPaperY ? 1.02 : 1;
+          default = isPaperY ? 1.02 : 1;
         }
         Lib.coerce(colorbarIn, colorbarOut, {
           x: {
@@ -22341,7 +22341,7 @@ var Plotly = (() => {
             valType: "number",
             min: isPaperY ? -2 : 0,
             max: isPaperY ? 3 : 1,
-            dflt: defaultY
+            dflt: default
           }
         }, "y");
         coerce("xanchor", defaultXAnchor);
@@ -24873,7 +24873,7 @@ var Plotly = (() => {
       var previousLon;
       var previousLat;
       var previousX;
-      var previousY;
+      var previously;
       var previousI;
       var previousTraceUid;
       function getMarkerAngle(d, trace) {
@@ -24941,7 +24941,7 @@ var Plotly = (() => {
           if (ref === "previous" && !trace._geo) {
             if (previousTraceUid === trace.uid && d.i === previousI + 1 && isNumeric(x) && isNumeric(y)) {
               var dX = x - previousX;
-              var dY = y - previousY;
+              var dY = y - previously;
               var shape = trace.line ? trace.line.shape || "" : "";
               var lastShapeChar = shape.slice(shape.length - 1);
               if (lastShapeChar === "h") dY = 0;
@@ -24953,7 +24953,7 @@ var Plotly = (() => {
           }
         }
         previousX = x;
-        previousY = y;
+        previously = y;
         previousI = d.i;
         previousTraceUid = trace.uid;
         return angle;
@@ -30368,29 +30368,29 @@ var Plotly = (() => {
         var isHorizontal = orientation === "h";
         var isPaperY = yref === "paper";
         var isPaperX = xref === "paper";
-        var defaultX, defaultY, defaultYAnchor;
+        var defaultX, default, defaultYAnchor;
         var defaultXAnchor = "left";
         if (isHorizontal) {
           defaultX = 0;
           if (Registry.getComponentMethod("rangeslider", "isVisible")(layoutIn.xaxis)) {
             if (isPaperY) {
-              defaultY = 1.1;
+              default = 1.1;
               defaultYAnchor = "bottom";
             } else {
-              defaultY = 1;
+              default = 1;
               defaultYAnchor = "top";
             }
           } else {
             if (isPaperY) {
-              defaultY = -0.1;
+              default = -0.1;
               defaultYAnchor = "top";
             } else {
-              defaultY = 0;
+              default = 0;
               defaultYAnchor = "bottom";
             }
           }
         } else {
-          defaultY = 1;
+          default = 1;
           defaultYAnchor = "auto";
           if (isPaperX) {
             defaultX = 1.02;
@@ -30414,7 +30414,7 @@ var Plotly = (() => {
             editType: "legend",
             min: isPaperY ? -2 : 0,
             max: isPaperY ? 3 : 1,
-            dflt: defaultY
+            dflt: default
           }
         }, "y");
         coerce("traceorder", defaultOrder);
@@ -32260,7 +32260,7 @@ var Plotly = (() => {
               var next = maxWidthInGroup + itemGap;
               if (
                 // not on the first column already
-                groupOffsetX > 0 && // goes beyound limit
+                groupOffsetX > 0 && // goes beyond limit
                 next + bw + groupOffsetX > legendObj._maxWidth
               ) {
                 maxRowWidth = Math.max(maxRowWidth, groupOffsetX);
@@ -36576,16 +36576,16 @@ var Plotly = (() => {
               return dragMode.indexOf(str) !== -1;
             };
             var hasN = has("n");
-            var hasS = has("s");
+            var hash = has("s");
             var hasW = has("w");
             var hasE = has("e");
             var newN = hasN ? n0 + dy : n0;
-            var newS = hasS ? s0 + dy : s0;
+            var newS = hash ? s0 + dy : s0;
             var newW = hasW ? w0 + dx : w0;
             var newE = hasE ? e0 + dx : e0;
             if (yPixelSized) {
               if (hasN) newN = n0 - dy;
-              if (hasS) newS = s0 - dy;
+              if (hash) newS = s0 - dy;
             }
             if (!yPixelSized && newS - newN > MINHEIGHT || yPixelSized && newN - newS > MINHEIGHT) {
               modifyItem(optN, shapeOptions[optN] = yPixelSized ? newN : p2y(newN));
@@ -43024,7 +43024,7 @@ var Plotly = (() => {
           }
           var clickmode = gd2._fullLayout.clickmode;
           removeZoombox(gd2);
-          if (numClicks === 2 && !singleEnd) doubleClick();
+          if (numClicks === 2 && !singleEnd) double-click();
           if (isMainDrag) {
             if (clickmode.indexOf("select") > -1) {
               selectOnClick(evt, gd2, xaxes, yaxes, plotinfo.id, dragOptions);
@@ -43410,9 +43410,9 @@ var Plotly = (() => {
           }
           Axes.redrawComponents(gd, activeAxIds);
         }
-        function doubleClick() {
+        function double-click() {
           if (gd._transitioningWithDuration) return;
-          var doubleClickConfig = gd._context.doubleClick;
+          var doubleClickConfig = gd._context.double-click;
           var axList = [];
           if (xActive) axList = axList.concat(xaxes);
           if (yActive) axList = axList.concat(yaxes);
@@ -44848,7 +44848,7 @@ var Plotly = (() => {
           context.edits = {};
           context.autosizable = false;
           context.scrollZoom = false;
-          context.doubleClick = false;
+          context.double-click = false;
           context.showTips = false;
           context.showLink = false;
           context.displayModeBar = false;
@@ -75777,7 +75777,7 @@ void main() {
                 if (binding.buffer) {
                   gl.enableVertexAttribArray(i2);
                   binding.buffer.bind();
-                  gl.vertexAttribPointer(i2, binding.size, binding.type, binding.normalized, binding.stride, binding.offfset);
+                  gl.vertexAttribPointer(i2, binding.size, binding.type, binding.normalized, binding.stride, binding.offset);
                   if (exti && binding.divisor) {
                     exti.vertexAttribDivisorANGLE(i2, binding.divisor);
                   }
@@ -83203,7 +83203,7 @@ void main() {
           lower: o.lower !== void 0 ? o.lower : "x",
           descent: o.descent !== void 0 ? o.descent : "p",
           ascent: o.ascent !== void 0 ? o.ascent : "h",
-          tittle: o.tittle !== void 0 ? o.tittle : "i",
+          title: o.title !== void 0 ? o.title : "i",
           overshoot: o.overshoot !== void 0 ? o.overshoot : "O"
         };
         var l = Math.ceil(fs * 1.5);
@@ -83259,11 +83259,11 @@ void main() {
           result.lower = firstTop(ctx.getImageData(0, 0, l, l));
           result.xHeight = result.baseline - result.lower;
         }
-        if (chars.tittle) {
+        if (chars.title) {
           ctx.clearRect(0, 0, l, l);
           ctx.textBaseline = "top";
-          ctx.fillText(chars.tittle, 0, 0);
-          result.tittle = firstTop(ctx.getImageData(0, 0, l, l));
+          ctx.fillText(chars.title, 0, 0);
+          result.title = firstTop(ctx.getImageData(0, 0, l, l));
         }
         if (chars.ascent) {
           ctx.clearRect(0, 0, l, l);
@@ -83444,7 +83444,7 @@ void main() {
           primitive: "points",
           viewport: regl.this("viewport"),
           vert: "\n			precision highp float;\n			attribute float width, charOffset, char;\n			attribute vec2 position;\n			uniform float fontSize, charStep, em, align, baseline;\n			uniform vec4 viewport;\n			uniform vec4 color;\n			uniform vec2 atlasSize, atlasDim, scale, translate, positionOffset;\n			varying vec2 charCoord, charId;\n			varying float charWidth;\n			varying vec4 fontColor;\n			void main () {\n				vec2 offset = floor(em * (vec2(align + charOffset, baseline)\n					+ vec2(positionOffset.x, -positionOffset.y)))\n					/ (viewport.zw * scale.xy);\n\n				vec2 position = (position + translate) * scale;\n				position += offset * scale;\n\n				charCoord = position * viewport.zw + viewport.xy;\n\n				gl_Position = vec4(position * 2. - 1., 0, 1);\n\n				gl_PointSize = charStep;\n\n				charId.x = mod(char, atlasDim.x);\n				charId.y = floor(char / atlasDim.x);\n\n				charWidth = width * em;\n\n				fontColor = color / 255.;\n			}",
-          frag: "\n			precision highp float;\n			uniform float fontSize, charStep, opacity;\n			uniform vec2 atlasSize;\n			uniform vec4 viewport;\n			uniform sampler2D atlas;\n			varying vec4 fontColor;\n			varying vec2 charCoord, charId;\n			varying float charWidth;\n\n			float lightness(vec4 color) {\n				return color.r * 0.299 + color.g * 0.587 + color.b * 0.114;\n			}\n\n			void main () {\n				vec2 uv = gl_FragCoord.xy - charCoord + charStep * .5;\n				float halfCharStep = floor(charStep * .5 + .5);\n\n				// invert y and shift by 1px (FF expecially needs that)\n				uv.y = charStep - uv.y;\n\n				// ignore points outside of character bounding box\n				float halfCharWidth = ceil(charWidth * .5);\n				if (floor(uv.x) > halfCharStep + halfCharWidth ||\n					floor(uv.x) < halfCharStep - halfCharWidth) return;\n\n				uv += charId * charStep;\n				uv = uv / atlasSize;\n\n				vec4 color = fontColor;\n				vec4 mask = texture2D(atlas, uv);\n\n				float maskY = lightness(mask);\n				// float colorY = lightness(color);\n				color.a *= maskY;\n				color.a *= opacity;\n\n				// color.a += .1;\n\n				// antialiasing, see yiq color space y-channel formula\n				// color.rgb += (1. - color.rgb) * (1. - mask.rgb);\n\n				gl_FragColor = color;\n			}"
+          frag: "\n			precision highp float;\n			uniform float fontSize, charStep, opacity;\n			uniform vec2 atlasSize;\n			uniform vec4 viewport;\n			uniform sampler2D atlas;\n			varying vec4 fontColor;\n			varying vec2 charCoord, charId;\n			varying float charWidth;\n\n			float lightness(vec4 color) {\n				return color.r * 0.299 + color.g * 0.587 + color.b * 0.114;\n			}\n\n			void main () {\n				vec2 uv = gl_FragCoord.xy - charCoord + charStep * .5;\n				float halfCharStep = floor(charStep * .5 + .5);\n\n				// invert y and shift by 1px (FF especially needs that)\n				uv.y = charStep - uv.y;\n\n				// ignore points outside of character bounding box\n				float halfCharWidth = ceil(charWidth * .5);\n				if (floor(uv.x) > halfCharStep + halfCharWidth ||\n					floor(uv.x) < halfCharStep - halfCharWidth) return;\n\n				uv += charId * charStep;\n				uv = uv / atlasSize;\n\n				vec4 color = fontColor;\n				vec4 mask = texture2D(atlas, uv);\n\n				float maskY = lightness(mask);\n				// float colorY = lightness(color);\n				color.a *= maskY;\n				color.a *= opacity;\n\n				// color.a += .1;\n\n				// antialiasing, see yiq color space y-channel formula\n				// color.rgb += (1. - color.rgb) * (1. - mask.rgb);\n\n				gl_FragColor = color;\n			}"
         });
         var atlas = {};
         return { regl, draw, atlas };
@@ -87427,7 +87427,7 @@ void main() {
                 if (binding.buffer) {
                   gl.enableVertexAttribArray(i2);
                   binding.buffer.bind();
-                  gl.vertexAttribPointer(i2, binding.size, binding.type, binding.normalized, binding.stride, binding.offfset);
+                  gl.vertexAttribPointer(i2, binding.size, binding.type, binding.normalized, binding.stride, binding.offset);
                   if (exti && binding.divisor) {
                     exti.vertexAttribDivisorANGLE(i2, binding.divisor);
                   }
@@ -93175,13 +93175,13 @@ void main() {
       var vendors = ["moz", "webkit"];
       var suffix = "AnimationFrame";
       var raf = root["request" + suffix];
-      var caf = root["cancel" + suffix] || root["cancelRequest" + suffix];
+      var calf = root["cancel" + suffix] || root["cancelRequest" + suffix];
       for (i = 0; !raf && i < vendors.length; i++) {
         raf = root[vendors[i] + "Request" + suffix];
-        caf = root[vendors[i] + "Cancel" + suffix] || root[vendors[i] + "CancelRequest" + suffix];
+        calf = root[vendors[i] + "Cancel" + suffix] || root[vendors[i] + "CancelRequest" + suffix];
       }
       var i;
-      if (!raf || !caf) {
+      if (!raf || !calf) {
         last = 0, id = 0, queue = [], frameDuration = 1e3 / 60;
         raf = function(callback) {
           if (queue.length === 0) {
@@ -93210,7 +93210,7 @@ void main() {
           });
           return id;
         };
-        caf = function(handle) {
+        calf = function(handle) {
           for (var i2 = 0; i2 < queue.length; i2++) {
             if (queue[i2].handle === handle) {
               queue[i2].cancelled = true;
@@ -93226,14 +93226,14 @@ void main() {
         return raf.call(root, fn);
       };
       module.exports.cancel = function() {
-        caf.apply(root, arguments);
+        calf.apply(root, arguments);
       };
       module.exports.polyfill = function(object) {
         if (!object) {
           object = root;
         }
         object.requestAnimationFrame = raf;
-        object.cancelAnimationFrame = caf;
+        object.cancelAnimationFrame = calf;
       };
     }
   });
@@ -93271,7 +93271,7 @@ void main() {
       var pick = require_pick_by_alias();
       var getBounds = require_array_bounds();
       var raf = require_raf();
-      var arrRange = require_array_range();
+      var arrange = require_array_range();
       var rect = require_parse_rect();
       var flatten = require_flatten_vertex_data();
       module.exports = SPLOM;
@@ -93490,7 +93490,7 @@ void main() {
           for (let i = 0; i < args.length; i++) {
             if (typeof args[i] === "number") {
               let { passes, passOffset } = this.traces[args[i]];
-              idx.push(...arrRange(passOffset, passOffset + passes.length));
+              idx.push(...arrange(passOffset, passOffset + passes.length));
             } else if (args[i].length) {
               let els = args[i];
               let { passes, passOffset } = this.traces[i];
@@ -95534,13 +95534,13 @@ void main() {
               var dim = initialDims[i];
               var ranges = dim.brush.filter.get();
               if (ranges.length < 2) continue;
-              var prevEnd = expandedPixelRange(ranges[0])[1];
+              var prevent = expandedPixelRange(ranges[0])[1];
               for (j = 1; j < ranges.length; j++) {
                 var nextRange = expandedPixelRange(ranges[j]);
-                for (k = prevEnd + 1; k < nextRange[0]; k++) {
+                for (k = prevent + 1; k < nextRange[0]; k++) {
                   mask[k * 8 + v] &= ~bitMask;
                 }
-                prevEnd = Math.max(prevEnd, nextRange[1]);
+                prevent = Math.max(prevent, nextRange[1]);
               }
             }
           }
@@ -96608,8 +96608,8 @@ void main() {
         /** Determine whether this date is in a leap year.
             @memberof CDate
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not. */
-        leapYear: function() {
-          return this._calendar.leapYear(this);
+        leap year: function() {
+          return this._calendar.leap year(this);
         },
         /** Retrieve the epoch designator for this date, e.g. BCE or CE.
             @memberof CDate
@@ -96863,7 +96863,7 @@ void main() {
             this.minDay,
             _exports.local.invalidYear || _exports.regionalOptions[""].invalidYear
           );
-          return this.leapYear(date) ? 366 : 365;
+          return this.leap year(date) ? 366 : 365;
         },
         /** Retrieve the day of the year for a date.
             @memberof BaseCalendar
@@ -97081,7 +97081,7 @@ void main() {
             @param year {CDate|number} The date to validate or the year to validate.
             @param [month] {number} The month to validate.
             @param [day] {number} The day to validate.
-            @param error {string} Rrror message if invalid.
+            @param error {string} Error message if invalid.
             @throws Error if different calendars used or invalid date. */
         _validate: function(year, month, day, error) {
           if (year.year) {
@@ -97179,7 +97179,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(
             year,
             this.minMonth,
@@ -97214,7 +97214,7 @@ void main() {
             this.minDay,
             _exports.local.invalidMonth || _exports.regionalOptions[""].invalidMonth
           );
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof GregorianCalendar
@@ -98050,7 +98050,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           return this.intercalaryMonth(year) !== 0;
         },
         /** Determine the week of the year for a date - ISO 8601.
@@ -98078,7 +98078,7 @@ void main() {
             @return {number} The number of months.
             @throws Error if an invalid year or a different calendar used. */
         monthsInYear: function(year) {
-          return this.leapYear(year) ? 13 : 12;
+          return this.leap year(year) ? 13 : 12;
         },
         /** Retrieve the number of days in a month.
             @memberof ChineseCalendar
@@ -98838,7 +98838,7 @@ void main() {
               "Mesh",
               "Pat",
               "Pad",
-              "Pash",
+              "Hash",
               "Pao",
               "Epi",
               "Meso",
@@ -98858,7 +98858,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           var year = date.year() + (date.year() < 0 ? 1 : 0);
           return year % 4 === 3 || year % 4 === -1;
@@ -98897,7 +98897,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 13 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 13 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof CopticCalendar
@@ -99026,7 +99026,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           return false;
         },
@@ -99241,7 +99241,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           var year = date.year() + (date.year() < 0 ? 1 : 0);
           return year % 4 === 3 || year % 4 === -1;
@@ -99280,7 +99280,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 13 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 13 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof EthiopianCalendar
@@ -99409,7 +99409,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           return this._leapYear(date.year());
         },
@@ -99466,7 +99466,7 @@ void main() {
             year = year.year();
           }
           this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return month === 12 && this.leapYear(year) ? 30 : (
+          return month === 12 && this.leap year(year) ? 30 : (
             // Adar I
             month === 8 && mod(this.daysInYear(year), 10) === 5 ? 30 : (
               // Cheshvan in shlemah year
@@ -99496,7 +99496,7 @@ void main() {
             @throws Error if an invalid date or a different calendar used. */
         extraInfo: function(year, month, day) {
           var date = this._validate(year, month, day, main.local.invalidDate);
-          return { yearType: (this.leapYear(date) ? "embolismic" : "common") + " " + ["deficient", "regular", "complete"][this.daysInYear(date) % 10 - 3] };
+          return { yearType: (this.leap year(date) ? "embolismic" : "common") + " " + ["deficient", "regular", "complete"][this.daysInYear(date) % 10 - 3] };
         },
         /** Retrieve the Julian date equivalent for this date,
             i.e. days since January 1, 4713 BCE Greenwich noon.
@@ -99666,7 +99666,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           return (date.year() * 11 + 14) % 30 < 11;
         },
@@ -99688,7 +99688,7 @@ void main() {
             @return {number} The number of days.
             @throws Error if an invalid year or a different calendar used. */
         daysInYear: function(year) {
-          return this.leapYear(year) ? 355 : 354;
+          return this.leap year(year) ? 355 : 354;
         },
         /** Retrieve the number of days in a month.
             @memberof IslamicCalendar
@@ -99698,7 +99698,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof IslamicCalendar
@@ -99823,7 +99823,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           var year = date.year() < 0 ? date.year() + 1 : date.year();
           return year % 4 === 0;
@@ -99848,7 +99848,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof JulianCalendar
@@ -100115,7 +100115,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           return false;
         },
@@ -100364,7 +100364,7 @@ void main() {
             ],
             monthNamesShort: ["Che", "Vai", "Jet", "Har", "Saw", "Bha", "Ass", "Kat", "Mgr", "Poh", "Mgh", "Pha"],
             dayNames: ["Somvaar", "Mangalvar", "Budhvaar", "Veervaar", "Shukarvaar", "Sanicharvaar", "Etvaar"],
-            dayNamesShort: ["Som", "Mangal", "Budh", "Veer", "Shukar", "Sanichar", "Et"],
+            dayNamesShort: ["Some", "Mangal", "Budh", "Veer", "Shukar", "Sanichar", "Et"],
             dayNamesMin: ["So", "Ma", "Bu", "Ve", "Sh", "Sa", "Et"],
             digits: null,
             dateFormat: "dd-mm-yyyy",
@@ -100377,14 +100377,14 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(
             year,
             this.minMonth,
             this.minDay,
             main.local.invalidYear || main.regionalOptions[""].invalidYear
           );
-          return gregorian.leapYear(date.year() + (date.year() < 1 ? 1 : 0) + 1469);
+          return gregorian.leap year(date.year() + (date.year() < 1 ? 1 : 0) + 1469);
         },
         /** Determine the week of the year for a date.
             @memberof NanakshahiCalendar
@@ -100406,7 +100406,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof NanakshahiCalendar
@@ -100531,7 +100531,7 @@ void main() {
             ],
             monthNamesShort: ["Bai", "Je", "As", "Shra", "Bha", "Ash", "Kar", "Mang", "Pau", "Ma", "Fal", "Chai"],
             dayNames: ["Aaitabaar", "Sombaar", "Manglbaar", "Budhabaar", "Bihibaar", "Shukrabaar", "Shanibaar"],
-            dayNamesShort: ["Aaita", "Som", "Mangl", "Budha", "Bihi", "Shukra", "Shani"],
+            dayNamesShort: ["Aaita", "Some", "Mangl", "Budha", "Bihi", "Shukra", "Shani"],
             dayNamesMin: ["Aai", "So", "Man", "Bu", "Bi", "Shu", "Sha"],
             digits: null,
             dateFormat: "dd/mm/yyyy",
@@ -100544,7 +100544,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           return this.daysInYear(year) !== this.daysPerYear;
         },
         /** Determine the week of the year for a date.
@@ -100895,7 +100895,7 @@ void main() {
               "Bahman",
               "Esfand"
             ],
-            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "Mor", "Sha", "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"],
+            monthNamesShort: ["Far", "Ord", "Kho", "Tir", "More", "Sha", "Meh", "Aba", "Aza", "Dey", "Bah", "Esf"],
             dayNames: ["Yekshanbeh", "Doshanbeh", "Seshanbeh", "Chah\u0101rshanbeh", "Panjshanbeh", "Jom'eh", "Shanbeh"],
             dayNamesShort: ["Yek", "Do", "Se", "Cha", "Panj", "Jom", "Sha"],
             dayNamesMin: ["Ye", "Do", "Se", "Ch", "Pa", "Jo", "Sh"],
@@ -100910,7 +100910,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           return _leapYear(date.year());
         },
@@ -100934,7 +100934,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 12 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof PersianCalendar
@@ -101079,10 +101079,10 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           var year = this._t2gYear(date.year());
-          return gregorianCalendar.leapYear(year);
+          return gregorianCalendar.leap year(year);
         },
         /** Determine the week of the year for a date - ISO 8601.
             @memberof TaiwanCalendar
@@ -101104,7 +101104,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof TaiwanCalendar
@@ -101243,10 +101243,10 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           var year = this._t2gYear(date.year());
-          return gregorianCalendar.leapYear(year);
+          return gregorianCalendar.leap year(year);
         },
         /** Determine the week of the year for a date - ISO 8601.
             @memberof ThaiCalendar
@@ -101268,7 +101268,7 @@ void main() {
             @throws Error if an invalid month/year or a different calendar used. */
         daysInMonth: function(year, month) {
           var date = this._validate(year, month, this.minDay, main.local.invalidMonth);
-          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leapYear(date.year()) ? 1 : 0);
+          return this.daysPerMonth[date.month() - 1] + (date.month() === 2 && this.leap year(date.year()) ? 1 : 0);
         },
         /** Determine whether this date is a week day.
             @memberof ThaiCalendar
@@ -101398,7 +101398,7 @@ void main() {
             @param year {CDate|number} The date to examine or the year to examine.
             @return {boolean} <code>true</code> if this is a leap year, <code>false</code> if not.
             @throws Error if an invalid year or a different calendar used. */
-        leapYear: function(year) {
+        leap year: function(year) {
           var date = this._validate(year, this.minMonth, this.minDay, main.local.invalidYear);
           return this.daysInYear(date.year()) === 355;
         },

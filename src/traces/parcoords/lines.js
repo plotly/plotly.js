@@ -538,13 +538,13 @@ module.exports = function(canvasGL, d) {
                 var ranges = dim.brush.filter.get();
                 if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
 
-                var prevEnd = expandedPixelRange(ranges[0])[1];
+                var prevent = expandedPixelRange(ranges[0])[1];
                 for(j = 1; j < ranges.length; j++) {
                     var nextRange = expandedPixelRange(ranges[j]);
-                    for(k = prevEnd + 1; k < nextRange[0]; k++) {
+                    for(k = prevent + 1; k < nextRange[0]; k++) {
                         mask[k * 8 + v] &= ~bitMask;
                     }
-                    prevEnd = Math.max(prevEnd, nextRange[1]);
+                    prevent = Math.max(prevent, nextRange[1]);
                 }
             }
         }

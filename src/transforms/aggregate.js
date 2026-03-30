@@ -167,11 +167,11 @@ exports.supplyDefaults = function(transformIn, traceOut) {
         aggregationOut = {_index: i};
         var target = coercei('target');
         var func = coercei('func');
-        var enabledi = coercei('enabled');
+        var enabled = coercei('enabled');
 
         // add this aggregation to the output only if it's the first instance
         // of a valid target attribute - or an unused target attribute with "count"
-        if(enabledi && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
+        if(enabled && target && (arrayAttrs[target] || (func === 'count' && arrayAttrs[target] === undefined))) {
             if(func === 'stddev') coercei('funcmode');
 
             arrayAttrs[target] = 0;
