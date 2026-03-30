@@ -260,7 +260,7 @@ func.defaultConfig = {
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--headless' : '',
+                isCI ? '--headless=new' : '',
                 isCI ? '--ignore-gpu-blocklist' : '',
                 isCI && process.env.GITHUB_ACTIONS ? '--enable-unsafe-swiftshader' : '',
                 isCI && process.env.GITHUB_ACTIONS ? '--no-sandbox' : '',
