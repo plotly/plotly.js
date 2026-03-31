@@ -1,12 +1,11 @@
-var minimist = require('minimist');
-var pixelmatch = require('pixelmatch');
-var PNG = require('pngjs').PNG;
-var fs = require('fs');
-
-var constants = require('../../tasks/util/constants');
-var common = require('../../tasks/util/common');
-var getMockList = require('./assets/get_mock_list');
-var getImagePaths = require('./assets/get_image_paths');
+const common = require('../../tasks/util/common');
+const constants = require('../../tasks/util/constants');
+const getImagePaths = require('./assets/get_image_paths');
+const getMockList = require('./assets/get_mock_list');
+const fs = require('fs');
+const minimist = require('minimist');
+const pixelmatch = require('pixelmatch');
+const { PNG } = require('pngjs');
 
 fs.mkdirSync(constants.pathToTestImagesDiff, { recursive: true });
 
@@ -35,47 +34,59 @@ fs.mkdirSync(constants.pathToTestImagesDiff, { recursive: true });
  *
  */
 
-var argv = minimist(process.argv.slice(2), {});
+const argv = minimist(process.argv.slice(2), {});
 
 // If no pattern is provided, all mocks are compared
-if (argv._.length === 0) {
-    argv._.push('');
-}
+if (argv._.length === 0) argv._.push('');
 
 // Build list of mocks to compare
-var allMockList = [];
-var mathjax3;
-var virtualWebgl = false;
-argv._.forEach(function (pattern) {
+let allMockList = [];
+let mathjax3 = false;
+let virtualWebgl = false;
+argv._.forEach((pattern) => {
     if (pattern === 'mathjax3') {
         mathjax3 = true;
     } else if (pattern === 'virtual-webgl') {
         virtualWebgl = true;
         allMockList = getMockList('');
     } else {
-        var mockList = getMockList(pattern);
-
-        if (mockList.length === 0) {
-            throw 'No mocks found with pattern ' + pattern;
-        }
+        const mockList = getMockList(pattern);
+        if (mockList.length === 0) throw 'No mocks found with pattern ' + pattern;
 
         allMockList = allMockList.concat(mockList);
     }
 });
 
-var blacklist = [
+const skipped = new Set();
+const failed = new Set();
+const disallowList = new Set([
     'map_angles',
     'map_stamen-style',
     'map_predefined-styles2',
     'map_scattercluster',
     'map_fonts-supported-open-sans',
     'map_fonts-supported-open-sans-weight'
-];
+]);
+const flakyList = new Set(['gl3d_bunny-hull']);
+const flakyListMaps = new Set([
+    // more flaky
+    'map_density0-legend',
+    'map_osm-style',
+    'map_predefined-styles1',
+    'map_predefined-styles2'
+]);
+const flakyListVirtualWebgl = new Set([
+    'gl3d_ibm-plot',
+    'gl3d_isosurface_2surfaces-checker_spaceframe',
+    'gl3d_opacity-scaling-spikes',
+    'gl3d_cone-wind',
+    'gl3d_isosurface_math',
+    'gl3d_scatter3d-blank-text',
+    'gl3d_mesh3d_surface3d_scatter3d_line3d_error3d_log_reversed_ranges'
+]);
 
 if (virtualWebgl) {
-    allMockList = allMockList.filter(function (a) {
-        return a.slice(0, 2) === 'gl';
-    });
+    allMockList = allMockList.filter((a) => a.startsWith('gl'));
 }
 
 if (mathjax3) {
@@ -90,121 +101,62 @@ if (mathjax3) {
         'ternary-mathjax-title-place-subtitle'
     ];
 }
+allMockList = new Set(allMockList);
 
-// To get rid of duplicates
-function unique(value, index, self) {
-    return self.indexOf(value) === index;
-}
-allMockList = allMockList.filter(unique);
+for (let mockName of allMockList) {
+    if (disallowList.has(mockName)) continue;
 
-var skipped = [];
-var failed = [];
-var fail = function (mockName) {
-    if (failed.indexOf(mockName) === -1) {
-        failed.push(mockName);
-    }
-};
-
-for (var i = 0; i < allMockList.length; i++) {
-    var mockName = allMockList[i];
-
-    // skip blacklist
-    if (blacklist.indexOf(mockName) !== -1) continue;
-
-    var flakyMap =
-        [
-            // more flaky
-            'map_density0-legend',
-            'map_osm-style',
-            'map_predefined-styles1',
-            'map_predefined-styles2'
-        ].indexOf(mockName) !== -1;
-
-    var otherFlaky =
-        [
-            // list flaky mocks other than maps:
-            'gl3d_bunny-hull'
-        ].indexOf(mockName) !== -1;
-
-    var threshold = flakyMap ? 1 : otherFlaky ? 0.15 : 0;
+    let threshold;
+    if (flakyListMaps.has(mockName)) threshold = 1;
+    else if (flakyList.has(mockName)) threshold = 0.15;
+    else threshold = 0;
 
     if (mathjax3) mockName = 'mathjax3___' + mockName;
 
-    var imagePaths = getImagePaths(mockName);
-    var base = imagePaths.baseline;
-    var test = imagePaths.test;
+    const { baseline: base, test, diff } = getImagePaths(mockName);
 
     if (!common.doesFileExist(test) && !mathjax3) {
         console.log('- skip:', mockName);
-        skipped.push(mockName);
+        skipped.add(mockName);
         continue;
     }
     console.log('+ test:', mockName);
 
-    var img0 = PNG.sync.read(fs.readFileSync(base));
-    var img1 = PNG.sync.read(fs.readFileSync(test));
-    var s0, s1, key;
-
-    key = 'width';
-    s0 = img0[key];
-    s1 = img0[key];
-    if (s0 !== s1) {
-        console.error(key + 's do not match: ' + s0 + ' vs ' + s1);
-        fail(mockName);
+    const img0 = PNG.sync.read(fs.readFileSync(base));
+    const img1 = PNG.sync.read(fs.readFileSync(test));
+    for (const key of ['height', 'width']) {
+        const length0 = img0[key];
+        const length1 = img1[key];
+        if (length0 !== length1) {
+            console.error(key + 's do not match: ' + length0 + ' vs ' + length1);
+            failed.add(mockName);
+        }
     }
-
-    key = 'height';
-    s0 = img0[key];
-    s1 = img0[key];
-    if (s0 !== s1) {
-        console.error(key + 's do not match: ' + s0 + ' vs ' + s1);
-        fail(mockName);
-    }
-
-    var width = img0.width;
-    var height = img0.height;
-
-    var diff = new PNG({
-        width: width,
-        height: height
-    });
 
     if (virtualWebgl) {
-        threshold = Math.max(0.4, threshold);
-        if (
-            [
-                'gl3d_ibm-plot',
-                'gl3d_isosurface_2surfaces-checker_spaceframe',
-                'gl3d_opacity-scaling-spikes',
-                'gl3d_cone-wind',
-                'gl3d_isosurface_math',
-                'gl3d_scatter3d-blank-text',
-                'gl3d_mesh3d_surface3d_scatter3d_line3d_error3d_log_reversed_ranges'
-            ].indexOf(mockName) !== -1
-        )
-            threshold = 0.7;
+        if (flakyListVirtualWebgl.has(mockName)) threshold = 0.7;
+        else threshold = Math.max(0.4, threshold);
     }
 
-    var numDiffPixels = pixelmatch(img0.data, img1.data, diff.data, width, height, {
-        threshold: threshold
-    });
+    const { height, width } = img0;
+    const imageDiff = new PNG({ width, height });
+    const numDiffPixels = pixelmatch(img0.data, img1.data, imageDiff.data, width, height, { threshold });
 
     if (numDiffPixels) {
-        fs.writeFileSync(imagePaths.diff, PNG.sync.write(diff));
-
+        fs.writeFileSync(diff, PNG.sync.write(imageDiff));
         console.error('pixels do not match: ' + numDiffPixels);
-        fail(mockName);
+        failed.add(mockName);
     } else {
         // remove when identical
-        fs.unlinkSync(imagePaths.test);
+        fs.unlinkSync(test);
     }
 }
 
-if (failed.length || skipped.length) {
+if (failed.size || skipped.size) {
     throw JSON.stringify(
         {
-            failed: failed,
-            skipped: skipped
+            failed: Array.from(failed),
+            skipped: Array.from(skipped)
         },
         null,
         2
