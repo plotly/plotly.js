@@ -59,28 +59,28 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run hover_label test in UTC timezone
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         env:
           TZ: 'UTC'
         with:
           run: npm run test-jasmine hover_label
 
       - name: Run hover_label test in Europe/Berlin timezone
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         env:
           TZ: 'Europe/Berlin'
         with:
           run: npm run test-jasmine hover_label
 
       - name: Run hover_label test in Asia/Tokyo timezone
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         env:
           TZ: 'Asia/Tokyo'
         with:
           run: npm run test-jasmine hover_label
 
       - name: Run hover_label test in America/Toronto timezone
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         env:
           TZ: 'America/Toronto'
         with:
@@ -103,7 +103,7 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run jasmine tests (no-gl, shard ${{ matrix.shard }})
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh no-gl-jasmine
 
@@ -124,7 +124,7 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run jasmine tests (webgl, shard ${{ matrix.shard }})
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh webgl-jasmine
 
@@ -145,7 +145,7 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run jasmine tests (virtual-webgl, shard ${{ matrix.shard }})
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh virtual-webgl-jasmine
 
@@ -168,7 +168,7 @@ jobs:
           chrome-version: '143.0.7499.192'
 
       - name: Run jasmine tests (webgl chromeLatest, shard ${{ matrix.shard }})
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh webgl-jasmine
 
@@ -185,7 +185,7 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run flaky jasmine tests
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh flaky-no-gl-jasmine
 
@@ -200,7 +200,7 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run bundle jasmine tests
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh bundle-jasmine
 
@@ -216,7 +216,7 @@ jobs:
       - uses: browser-actions/setup-firefox@v1
 
       - name: Test MathJax on firefox-latest
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: .github/scripts/test.sh mathjax-firefox
 
@@ -232,7 +232,7 @@ jobs:
       - uses: ./.github/actions/setup-chrome
 
       - name: Run noCI tests
-        uses: coactions/setup-xvfb@v1
+        uses: ./.github/actions/run-xvfb
         with:
           run: ./tasks/noci_test.sh jasmine
 
