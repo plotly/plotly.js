@@ -4,6 +4,7 @@ const getImagePaths = require('./assets/get_image_paths');
 const getMockList = require('./assets/get_mock_list');
 const fs = require('fs');
 const minimist = require('minimist');
+const path = require('path');
 const pixelmatch = require('pixelmatch');
 const { PNG } = require('pngjs');
 
@@ -59,14 +60,8 @@ argv._.forEach((pattern) => {
 
 const skipped = new Set();
 const failed = new Set();
-const disallowList = new Set([
-    'map_angles',
-    'map_stamen-style',
-    'map_predefined-styles2',
-    'map_scattercluster',
-    'map_fonts-supported-open-sans',
-    'map_fonts-supported-open-sans-weight'
-]);
+const disallowListPath = path.join(__dirname, 'disallow_list.json');
+const disallowList = new Set(JSON.parse(fs.readFileSync(disallowListPath)));
 const flakyList = new Set(['gl3d_bunny-hull']);
 const flakyListMaps = new Set([
     // more flaky
