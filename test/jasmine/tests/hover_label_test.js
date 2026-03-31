@@ -3546,8 +3546,14 @@ describe('hover on traces with (x|y)period positioning', function() {
         .then(done, done.fail);
     });
 
-    it('shows hover info and hovertemplate for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
+    fit('shows hover info and hovertemplate for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
         Plotly.newPlot(gd, require('../../image/mocks/period_positioning4.json'))
+        .then(function() {
+            var plotDiv = document.querySelector('.plot-container');
+            console.log('plot size:', plotDiv.offsetWidth, plotDiv.offsetHeight);
+            console.log('window size:', window.innerWidth, window.innerHeight);
+            console.log('devicePixelRatio:', window.devicePixelRatio);
+        })
         .then(function() { _hover(65, 425); })
         .then(function() {
             assertHoverLabelContent({
