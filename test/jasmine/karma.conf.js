@@ -38,7 +38,7 @@ var argv = minimist(process.argv.slice(4), {
         failFast: false,
         doNotFailOnEmptyTestSuite: false,
         width: '1035',
-        height: '617',
+        height: isCI ? '800' : '617',
         verbose: false,
         showSkipped: isCI
     }
