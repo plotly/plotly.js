@@ -9,7 +9,5 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: coactions/setup-xvfb@v1
-      with:
-        options: -screen 0 1280x1024x24
-        run: ${{ inputs.run }}
+    - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" ${{ inputs.run }}
+      shell: bash
