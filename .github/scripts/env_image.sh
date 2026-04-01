@@ -9,11 +9,11 @@ sudo apt install fontconfig
 sudo fc-cache -f
 
 # install Kaleido & Plotly
-uv pip install kaleido==1.2 plotly==6.6.0 --no-progress
+uv pip install --system kaleido==1.2 plotly==6.6.0 --no-progress
 
 # install numpy i.e. to convert arrays to typed arrays
-uv pip install numpy==2.4.3
+uv pip install --system numpy==2.4.3
 
 # verify version of python and versions of installed python packages
 python --version
-uv pip freeze
+uv pip freeze --system
