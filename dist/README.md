@@ -229,7 +229,7 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.9 MB | 1.2 MB | 398.2 kB |
+| 2.9 MB | 1.2 MB | 398.3 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-finance-3.4.0.js
