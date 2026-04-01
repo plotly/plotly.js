@@ -117,6 +117,13 @@ for (let mockName of allMockList) {
     }
     console.log('+ test:', mockName);
 
+    if (!common.doesFileExist(base)) {
+        console.error('baseline image missing');
+        fs.copyFileSync(test, diff);
+        failed.add(mockName);
+        continue;
+    }
+
     const img0 = PNG.sync.read(fs.readFileSync(base));
     const img1 = PNG.sync.read(fs.readFileSync(test));
     for (const key of ['height', 'width']) {
