@@ -124,6 +124,11 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
+    make-exports)
+        python test/image/make_exports.py || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
     test-image)
         node test/image/compare_pixels_test.js || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
