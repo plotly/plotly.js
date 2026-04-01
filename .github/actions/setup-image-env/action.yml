@@ -1,0 +1,26 @@
+name: 'Setup Image Environment'
+description: 'Setup Python, uv, and install Kaleido/plotly with required fonts'
+
+inputs:
+  python-version:
+    description: 'Python version to use'
+    default: '3.12'
+  uv-version:
+    description: 'uv version to use'
+    default: '0.11.2'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        version: ${{ inputs.uv-version }}
+
+    - name: Install Kaleido, plotly.io and required fonts
+      run: .github/scripts/env_image.sh
+      shell: bash

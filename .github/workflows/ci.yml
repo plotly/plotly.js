@@ -253,12 +253,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-workspace
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Install Kaleido, plotly.io and required fonts
-        run: .github/scripts/env_image.sh
+      - uses: ./.github/actions/setup-image-env
 
       - name: Create all png files
         run: .github/scripts/test.sh make-baselines
@@ -320,12 +315,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-workspace
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Install kaleido, plotly.io and required fonts
-        run: .github/scripts/env_image.sh
+      - uses: ./.github/actions/setup-image-env
 
       - name: Create all png files (b64)
         run: .github/scripts/test.sh make-baselines-b64
@@ -387,12 +377,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-workspace
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Install kaleido, plotly.io and required fonts
-        run: .github/scripts/env_image.sh
+      - uses: ./.github/actions/setup-image-env
 
       - name: Create png files (virtual-webgl)
         run: .github/scripts/test.sh make-baselines-virtual-webgl
@@ -447,12 +432,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-workspace
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Install kaleido, plotly.io and required fonts
-        run: .github/scripts/env_image.sh
+      - uses: ./.github/actions/setup-image-env
 
       - name: Create mathjax v3 png files
         run: .github/scripts/test.sh make-baselines-mathjax3
@@ -509,12 +489,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-workspace
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Install kaleido, plotly.io and required fonts
-        run: .github/scripts/env_image.sh
+      - uses: ./.github/actions/setup-image-env
 
       - name: Install poppler-utils for eps export
         run: |
