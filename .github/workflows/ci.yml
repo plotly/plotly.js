@@ -221,7 +221,7 @@ jobs:
           run: .github/scripts/test.sh mathjax-firefox
 
   # ============================================================
-  # noCI tests (merged from test.yml)
+  # noCI tests
   # ============================================================
   noci-jasmine:
     needs: install-and-cibuild
