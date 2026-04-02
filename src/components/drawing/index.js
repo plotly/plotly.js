@@ -338,10 +338,9 @@ drawing.symbolNoDot = {};
 drawing.symbolNoFill = {};
 drawing.symbolList = [];
 
-var _n = 0;
 Object.keys(SYMBOLDEFS).forEach(function (k) {
     var symDef = SYMBOLDEFS[k];
-    var n = _n++;
+    var n = symDef.n;
     drawing.symbolList.push(
         n,
         String(n),
