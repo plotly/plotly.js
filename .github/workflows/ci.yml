@@ -287,10 +287,6 @@ jobs:
           echo "::warning::Image Diff Detected: baseline images may need to be updated."
           echo "Download the baseline images from the artifacts of this workflow run."
           echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
-          mkdir -p build/baselines
-          for f in build/test_images/*.png; do
-            [ -f "$f" ] && cp "test/image/baselines/$(basename "$f")" build/baselines/ 2>/dev/null || true
-          done
 
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -298,7 +294,6 @@ jobs:
           name: baselines-default-diff
           retention-days: 7
           path: |
-            build/baselines/
             build/test_images/
             build/test_images_diff/
 
@@ -349,10 +344,6 @@ jobs:
           echo "::warning::Image Diff Detected: baseline images may need to be updated."
           echo "Download the baseline images from the artifacts of this workflow run."
           echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
-          mkdir -p build/baselines
-          for f in build/test_images/*.png; do
-            [ -f "$f" ] && cp "test/image/baselines/$(basename "$f")" build/baselines/ 2>/dev/null || true
-          done
 
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -360,7 +351,6 @@ jobs:
           name: baselines-b64-diff
           retention-days: 7
           path: |
-            build/baselines/
             build/test_images/
             build/test_images_diff/
 
@@ -411,10 +401,6 @@ jobs:
           echo "::warning::Image Diff Detected: baseline images may need to be updated."
           echo "Download the baseline images from the artifacts of this workflow run."
           echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
-          mkdir -p build/baselines
-          for f in build/test_images/*.png; do
-            [ -f "$f" ] && cp "test/image/baselines/$(basename "$f")" build/baselines/ 2>/dev/null || true
-          done
 
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -422,7 +408,6 @@ jobs:
           name: baselines-virtual-webgl-diff
           retention-days: 7
           path: |
-            build/baselines/
             build/test_images/
             build/test_images_diff/
 
@@ -465,10 +450,6 @@ jobs:
           echo "::warning::Image Diff Detected: baseline images may need to be updated."
           echo "Download the baseline images from the artifacts of this workflow run."
           echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
-          mkdir -p build/baselines
-          for f in build/test_images/*.png; do
-            [ -f "$f" ] && cp "test/image/baselines/$(basename "$f")" build/baselines/ 2>/dev/null || true
-          done
 
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -476,7 +457,6 @@ jobs:
           name: baselines-mathjax3-diff
           retention-days: 7
           path: |
-            build/baselines/
             build/test_images/
             build/test_images_diff/
 
