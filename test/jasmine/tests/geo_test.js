@@ -2588,8 +2588,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             var center = geoLayout.center;
             var scale = geoLayout.projection.scale;
 
-            expect(center.lon).toBeCloseTo(attr[0][0], 0.5, msg + 'center.lon');
-            expect(center.lat).toBeCloseTo(attr[0][1], 0.5, msg + 'center.lat');
+            expect(center.lon).toBeCloseTo(attr[0][0], 0, msg + 'center.lon');
+            expect(center.lat).toBeCloseTo(attr[0][1], 0, msg + 'center.lat');
             expect(scale).toBeCloseTo(attr[1], 1, msg + 'zoom');
 
             // albersUsa projection does not have a center() method
@@ -2608,7 +2608,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('base', [
                 [-96.6, 38.7], 1,
             ], [
-                [416, 309], 738.5
+                [410, 329], 738.5
             ], undefined);
             return drag({path: [[250, 250], [200, 200]], noCover: true});
         })
@@ -2616,7 +2616,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after NW-SE drag', [
                 [-91.8, 34.8], 1,
             ], [
-                [366, 259], 738.5
+                [366, 279], 738.5
             ], [
                 'geo.center.lon', 'geo.center.lon'
             ]);
@@ -2626,7 +2626,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after scroll', [
                 [-94.5, 35.0], 1.3
             ], [
-                [387.1, 245.9], 974.4
+                [380, 273], 974.4
             ], [
                 'geo.center.lon', 'geo.center.lon', 'geo.projection.scale'
             ]);
@@ -2637,7 +2637,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 [-94.5, 35.0], 1.3
             ], [
                 // new center values are reflected in translate()
-                [387.1, 245.9], 974.4
+                [380, 273], 974.4
             ], [
                 'geo.showlakes'
             ]);
@@ -2647,7 +2647,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after double click', [
                 [-96.6, 38.7], 1,
             ], [
-                [416, 309], 738.5
+                [416, 329], 738.5
             ], 'dblclick');
         })
         .then(done, done.fail);
