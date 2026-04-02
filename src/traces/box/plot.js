@@ -198,7 +198,7 @@ function plotPoints(sel, axes, trace, t) {
 
     gPoints.exit().remove();
 
-    var paths = gPoints.selectAll('path')
+    var paths = gPoints.selectAll('use')
         .data(function(d) {
             var i;
             var pts = d.pts2;
@@ -270,7 +270,7 @@ function plotPoints(sel, axes, trace, t) {
             return pts;
         });
 
-    paths.enter().append('path')
+    paths.enter().append('use')
         .classed('point', true);
 
     paths.exit().remove();

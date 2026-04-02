@@ -517,11 +517,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         // marker points
 
-        selection = points.selectAll('path.point');
+        selection = points.selectAll('use.point');
 
         join = selection.data(markerFilter, keyFunc);
 
-        var enter = join.enter().append('path')
+        var enter = join.enter().append('use')
             .classed('point', true);
 
         if(hasTransition) {

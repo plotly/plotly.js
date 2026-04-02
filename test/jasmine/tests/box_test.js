@@ -1122,7 +1122,7 @@ describe('Test box restyle:', function() {
             var trace3 = d3Select(gd).select('.boxlayer > .trace');
             _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
             _assertOne(msg, exp, trace3, 'meanlineCnt', 'path.mean');
-            _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
+            _assertOne(msg, exp, trace3, 'ptsCnt', 'use.point');
         }
 
         Plotly.newPlot(gd, fig)

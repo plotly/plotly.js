@@ -257,9 +257,9 @@ module.exports = function style(s, gd, legend) {
 
         var ptgroup = d3.select(this).select('g.legendpoints');
 
-        var pts = ptgroup.selectAll('path.scatterpts').data(showMarker ? dMod : []);
+        var pts = ptgroup.selectAll('use.scatterpts').data(showMarker ? dMod : []);
         // make sure marker is on the bottom, in case it enters after text
-        pts.enter().insert('path', ':first-child').classed('scatterpts', true).attr('transform', centerTransform);
+        pts.enter().insert('use', ':first-child').classed('scatterpts', true).attr('transform', centerTransform);
         pts.exit().remove();
         pts.call(Drawing.pointStyle, tMod, gd);
 

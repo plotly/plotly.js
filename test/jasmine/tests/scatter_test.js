@@ -27,9 +27,8 @@ var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
 var getColor = function(node) { return node.style.fill; };
 var getMarkerSize = function(node) {
-    // find path arc multiply by 2 to get the corresponding marker.size value
-    // (works for circles only)
-    return d3Select(node).attr('d').split('A')[1].split(',')[0] * 2;
+    // data-scale = r/20, marker.size = r*2, so size = data-scale * 40
+    return Number(node.getAttribute('data-scale')) * 40;
 };
 
 describe('Test scatter', function() {

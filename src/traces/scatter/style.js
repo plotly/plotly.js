@@ -33,7 +33,7 @@ function style(gd) {
 }
 
 function stylePoints(sel, trace, gd) {
-    Drawing.pointStyle(sel.selectAll('path.point'), trace, gd);
+    Drawing.pointStyle(sel.selectAll('use.point'), trace, gd);
 }
 
 function styleText(sel, trace, gd) {
@@ -44,7 +44,7 @@ function styleOnSelect(gd, cd, sel) {
     var trace = cd[0].trace;
 
     if(trace.selectedpoints) {
-        Drawing.selectedPointStyle(sel.selectAll('path.point'), trace);
+        Drawing.selectedPointStyle(sel.selectAll('use.point'), trace);
         Drawing.selectedTextStyle(sel.selectAll('text'), trace);
     } else {
         stylePoints(sel, trace, gd);

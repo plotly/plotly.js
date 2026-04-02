@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Weather Map Demo - SVG Symbol/Use Rendering</title>
+    <script src="../../dist/plotly.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        #weatherMap { width: 100%; max-width: 800px; height: 400px; }
+        .legend { margin-top: 10px; font-size: 14px; }
+        .info { background: #e7f3ff; padding: 10px; border-left: 4px solid #3b82f6; margin: 10px 0; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <h1>Weather Map Demo</h1>
+    <p>Custom markers using static SVG path strings at r=20, scaled by <code>size/20</code>.</p>
+    <div class="info">
+        <strong>New API:</strong> <code>marker.symbol</code> accepts an array of SVG path strings
+        precomputed at r=20. Rotation is applied via <code>marker.angle</code> using
+        <code>transform="rotate()"</code> on each <code>&lt;use&gt;</code> element.
+    </div>
+    <div id="weatherMap"></div>
+    <div class="legend">
+        <strong>Legend:</strong> ☀️ Sunny | ☁️ Cloudy | 🌬️ Wind (more barbs = stronger)
+    </div>
+
+    <script>
+    // Precomputed SVG path strings at r=20.
+    // Plotly scales them by size/20 and applies marker.angle as SVG transform="rotate(angle)".
+
+    // Sun: inner circle (r=10) with 8 rays from r=12 to r=18
+    var SUN_PATH = 'M10,0A10,10 0 1,1 0,-10A10,10 0 0,1 10,0Z' +
+        'M12,0L18,0M8.49,8.49L12.73,12.73' +
+        'M0,12L0,18M-8.49,8.49L-12.73,12.73' +
+        'M-12,0L-18,0M-8.49,-8.49L-12.73,-12.73' +
+        'M0,-12L0,-18M8.49,-8.49L12.73,-12.73';
+
+    // Cloud shape
+    var CLOUD_PATH = 'M-12,4A7,7 0 1,1 -2,-4A8,8 0 1,1 10,-2A6,6 0 1,1 14,4L-12,4Z';
+
+    // Wind barbs: staff (staffLen=24) pointing up with 1–3 barbs (barbLen=12, spacing=6)
+    var WIND_PATH = {
+        1: 'M0,24L0,-24M0,-24L12,-18',
+        2: 'M0,24L0,-24M0,-24L12,-18M0,-18L12,-12',
+        3: 'M0,24L0,-24M0,-24L12,-18M0,-18L12,-12M0,-12L12,-6'
+    };
+
+    // Cities with weather + wind arrows forming a jet stream pattern (W to E, curving south)
+    var locations = [
+        // Cities
+        { name: 'Seattle',       lon: -122, lat: 47, weather: { type: 'cloudy' } },
+        { name: 'San Francisco', lon: -122, lat: 38, weather: { type: 'sunny' } },
+        { name: 'Denver',        lon: -105, lat: 40, weather: { type: 'sunny' } },
+        { name: 'Chicago',       lon: -88,  lat: 42, weather: { type: 'cloudy' } },
+        { name: 'New York',      lon: -74,  lat: 41, weather: { type: 'cloudy' } },
+        { name: 'Miami',         lon: -80,  lat: 26, weather: { type: 'sunny' } },
+        { name: 'Dallas',        lon: -97,  lat: 33, weather: { type: 'sunny' } },
+        // Wind arrows - jet stream curving from NW to SE
+        { name: 'E 3',   lon: -115, lat: 46, weather: { type: 'wind', direction: 100, speed: 3 } },
+        { name: 'ESE 3', lon: -108, lat: 44, weather: { type: 'wind', direction: 110, speed: 3 } },
+        { name: 'SE 2',  lon: -100, lat: 42, weather: { type: 'wind', direction: 120, speed: 2 } },
+        { name: 'SE 2',  lon: -93,  lat: 39, weather: { type: 'wind', direction: 130, speed: 2 } },
+        { name: 'SSE 1', lon: -85,  lat: 36, weather: { type: 'wind', direction: 150, speed: 1 } },
+        { name: 'S 1',   lon: -78,  lat: 33, weather: { type: 'wind', direction: 170, speed: 1 } }
+    ];
+
+    // Build per-point symbol array (SVG path strings at r=20)
+    var symbols = locations.map(function(l) {
+        if (l.weather.type === 'sunny')  return SUN_PATH;
+        if (l.weather.type === 'cloudy') return CLOUD_PATH;
+        if (l.weather.type === 'wind')   return WIND_PATH[Math.min(l.weather.speed || 1, 3)];
+        return 'circle';
+    });
+
+    var colors = locations.map(function(l) {
+        if (l.weather.type === 'sunny')  return '#FFD700';
+        if (l.weather.type === 'cloudy') return '#708090';
+        if (l.weather.type === 'wind')   return '#4169E1';
+        return '#333';
+    });
+
+    // Wind direction drives marker.angle; SVG applies it as transform="rotate(angle)" on <use>
+    var angles = locations.map(function(l) {
+        return l.weather.type === 'wind' ? l.weather.direction : 0;
+    });
+
+    Plotly.newPlot('weatherMap', [{
+        type: 'scatter',
+        mode: 'markers+text',
+        x: locations.map(function(l) { return l.lon; }),
+        y: locations.map(function(l) { return l.lat; }),
+        text: locations.map(function(l) { return l.name; }),
+        textposition: 'bottom center',
+        hoverinfo: 'text',
+        marker: {
+            symbol: symbols,   // per-point SVG path strings at r=20
+            size: 30,          // scale = 30/20 = 1.5×
+            color: colors,
+            line: { width: 2, color: '#333' },
+            angle: angles      // rotation via SVG transform="rotate(...)" on <use>
+        }
+    }], {
+        title: 'Weather Map Demo (SVG symbol/use rendering)',
+        xaxis: { title: 'Longitude', range: [-130, -70], gridcolor: '#ddd' },
+        yaxis: { title: 'Latitude', range: [20, 52], scaleanchor: 'x', gridcolor: '#ddd' },
+        showlegend: false,
+        margin: { l: 50, r: 20, t: 40, b: 40 },
+        paper_bgcolor: '#f8f8f8',
+        plot_bgcolor: '#e8f4f8'
+    });
+    </script>
+</body>
+</html>
