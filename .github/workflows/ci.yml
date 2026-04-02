@@ -2,11 +2,12 @@ name: CI
 
 on:
   push:
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
