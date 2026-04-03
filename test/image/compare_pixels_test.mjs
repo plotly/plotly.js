@@ -1,12 +1,12 @@
-const common = require('../../tasks/util/common');
-const constants = require('../../tasks/util/constants');
-const getImagePaths = require('./assets/get_image_paths');
-const getMockList = require('./assets/get_mock_list');
-const fs = require('fs');
-const minimist = require('minimist');
-const path = require('path');
-const pixelmatch = require('pixelmatch');
-const { PNG } = require('pngjs');
+import fs from 'fs';
+import minimist from 'minimist';
+import path from 'path';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
+import common from '../../tasks/util/common.js';
+import constants from '../../tasks/util/constants.js';
+import getImagePaths from './assets/get_image_paths.js';
+import getMockList from './assets/get_mock_list.js';
 
 fs.mkdirSync(constants.pathToTestImagesDiff, { recursive: true });
 
@@ -60,7 +60,7 @@ argv._.forEach((pattern) => {
 
 const skipped = new Set();
 const failed = new Set();
-const disallowListPath = path.join(__dirname, 'disallow_list.json');
+const disallowListPath = path.join(import.meta.dirname, 'disallow_list.json');
 const disallowList = new Set(JSON.parse(fs.readFileSync(disallowListPath)));
 const flakyList = new Set(['gl3d_bunny-hull']);
 const flakyListMaps = new Set([
