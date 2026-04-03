@@ -1,0 +1,21 @@
+{
+  "compare_disallow": [
+    "map_angles",
+    "map_fonts-supported-open-sans-weight",
+    "map_fonts-supported-open-sans",
+    "map_layers",
+    "map_predefined-styles2",
+    "map_scattercluster",
+    "map_stamen-style"
+  ],
+  "compare_mathjax3": [
+    "legend_mathjax_title_and_items",
+    "mathjax",
+    "parcats_grid_subplots",
+    "table_latex_multitrace_scatter",
+    "table_plain_birds",
+    "table_wrapped_birds",
+    "ternary-mathjax",
+    "ternary-mathjax-title-place-subtitle"
+  ]
+}

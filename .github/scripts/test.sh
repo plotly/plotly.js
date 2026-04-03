@@ -108,7 +108,8 @@ case $1 in
         ;;
 
     make-baselines-mathjax3)
-        python test/image/make_baseline.py mathjax3    legend_mathjax_title_and_items mathjax parcats_grid_subplots table_latex_multitrace_scatter table_plain_birds table_wrapped_birds ternary-mathjax ternary-mathjax-title-place-subtitle || EXIT_STATE=$?
+        MATHJAX3_MOCKS=$(jq -r '.compare_mathjax3 | join(" ")' test/image/compare_pixels_collections.json)
+        python test/image/make_baseline.py mathjax3 $MATHJAX3_MOCKS || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

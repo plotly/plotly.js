@@ -63,9 +63,10 @@ argv._.forEach((pattern) => {
 
 const skipped = new Set();
 const failed = new Set();
-// TODO: In Node 20+, replace with: import disallowListData from './disallow_list.json' with { type: 'json' };
-const disallowListPath = path.join(__dirname, 'disallow_list.json');
-const disallowList = new Set(JSON.parse(fs.readFileSync(disallowListPath)));
+// TODO: In Node 20+, replace with: import collections from './compare_pixels_collections.json' with { type: 'json' };
+const collectionsPath = path.join(__dirname, 'compare_pixels_collections.json');
+const collections = JSON.parse(fs.readFileSync(collectionsPath));
+const disallowList = new Set(collections.compare_disallow);
 const flakyList = new Set(['gl3d_bunny-hull']);
 const flakyListMaps = new Set([
     // more flaky
@@ -89,16 +90,7 @@ if (virtualWebgl) {
 }
 
 if (mathjax3) {
-    allMockList = [
-        'legend_mathjax_title_and_items',
-        'mathjax',
-        'parcats_grid_subplots',
-        'table_latex_multitrace_scatter',
-        'table_plain_birds',
-        'table_wrapped_birds',
-        'ternary-mathjax',
-        'ternary-mathjax-title-place-subtitle'
-    ];
+    allMockList = collections.compare_mathjax3;
 }
 allMockList = new Set(allMockList);
 

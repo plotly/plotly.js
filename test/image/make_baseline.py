@@ -68,9 +68,9 @@ if len(args) > 0:
 else:
     allNames = ALL_MOCKS
 
-with open(os.path.join(root, "test", "image", "disallow_list.json"), "r") as f:
+with open(os.path.join(root, "test", "image", "compare_pixels_collections.json"), "r") as f:
     # unable to generate baselines for the following mocks
-    disallowList = set(json.load(f))
+    disallowList = set(json.load(f)["compare_disallow"])
 allNames = [a for a in allNames if a not in disallowList]
 
 if len(allNames) == 0:
