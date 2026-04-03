@@ -3,10 +3,13 @@ import minimist from 'minimist';
 import path from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import { fileURLToPath } from 'url';
 import common from '../../tasks/util/common.js';
 import constants from '../../tasks/util/constants.js';
 import getImagePaths from './assets/get_image_paths.js';
 import getMockList from './assets/get_mock_list.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 fs.mkdirSync(constants.pathToTestImagesDiff, { recursive: true });
 
@@ -60,7 +63,8 @@ argv._.forEach((pattern) => {
 
 const skipped = new Set();
 const failed = new Set();
-const disallowListPath = path.join(import.meta.dirname, 'disallow_list.json');
+// TODO: In Node 20+, replace with: import disallowListData from './disallow_list.json' with { type: 'json' };
+const disallowListPath = path.join(__dirname, 'disallow_list.json');
 const disallowList = new Set(JSON.parse(fs.readFileSync(disallowListPath)));
 const flakyList = new Set(['gl3d_bunny-hull']);
 const flakyListMaps = new Set([
