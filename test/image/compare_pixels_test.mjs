@@ -121,49 +121,67 @@ for (let mockName of allMockList) {
     }
     console.log('+ test:', mockName);
 
-    if (!common.doesFileExist(base)) {
-        console.error('baseline image missing');
-        fs.copyFileSync(test, diff);
-        failed.add(mockName);
-        continue;
-    }
-
-    const img0 = PNG.sync.read(fs.readFileSync(base));
-    const img1 = PNG.sync.read(fs.readFileSync(test));
-    let dimensionMismatch = false;
-    for (const key of ['height', 'width']) {
-        const length0 = img0[key];
-        const length1 = img1[key];
-        if (length0 !== length1) {
-            console.error(key + 's do not match: ' + length0 + ' vs ' + length1);
-            dimensionMismatch = true;
+    try {
+        if (!common.doesFileExist(base)) {
+            console.error('baseline image missing');
+            fs.copyFileSync(test, diff);
+            failed.add(mockName);
+            continue;
         }
-    }
 
-    if (dimensionMismatch) {
-        fs.copyFileSync(test, diff);
+        const img0 = PNG.sync.read(fs.readFileSync(base));
+        const img1 = PNG.sync.read(fs.readFileSync(test));
+        let dimensionMismatch = false;
+        for (const key of ['height', 'width']) {
+            const length0 = img0[key];
+            const length1 = img1[key];
+            if (length0 !== length1) {
+                console.error(key + 's do not match: ' + length0 + ' vs ' + length1);
+                dimensionMismatch = true;
+            }
+        }
+
+        if (dimensionMismatch) {
+            fs.copyFileSync(test, diff);
+            failed.add(mockName);
+            continue;
+        }
+
+        if (virtualWebgl) {
+            if (flakyListVirtualWebgl.has(mockName)) threshold = 0.7;
+            else threshold = Math.max(0.4, threshold);
+        }
+
+        const { height, width } = img0;
+        const imageDiff = new PNG({ width, height });
+        const numDiffPixels = pixelmatch(img0.data, img1.data, imageDiff.data, width, height, { threshold });
+
+        if (numDiffPixels) {
+            fs.writeFileSync(diff, PNG.sync.write(imageDiff));
+            console.error('pixels do not match: ' + numDiffPixels);
+            failed.add(mockName);
+        } else {
+            // remove when identical
+            fs.unlinkSync(test);
+        }
+    } catch (e) {
+        console.error('error comparing ' + mockName + ':', e);
         failed.add(mockName);
-        continue;
-    }
-
-    if (virtualWebgl) {
-        if (flakyListVirtualWebgl.has(mockName)) threshold = 0.7;
-        else threshold = Math.max(0.4, threshold);
-    }
-
-    const { height, width } = img0;
-    const imageDiff = new PNG({ width, height });
-    const numDiffPixels = pixelmatch(img0.data, img1.data, imageDiff.data, width, height, { threshold });
-
-    if (numDiffPixels) {
-        fs.writeFileSync(diff, PNG.sync.write(imageDiff));
-        console.error('pixels do not match: ' + numDiffPixels);
-        failed.add(mockName);
-    } else {
-        // remove when identical
-        fs.unlinkSync(test);
     }
 }
+
+// Debug: list contents of diff folder
+console.log('\n=== build/test_images/ ===');
+try {
+    const testFiles = fs.readdirSync(constants.pathToTestImages);
+    console.log(testFiles.length + ' files:', testFiles.join(', '));
+} catch { console.log('(empty or missing)'); }
+
+console.log('=== build/test_images_diff/ ===');
+try {
+    const diffFiles = fs.readdirSync(constants.pathToTestImagesDiff);
+    console.log(diffFiles.length + ' files:', diffFiles.join(', '));
+} catch { console.log('(empty or missing)'); }
 
 if (failed.size || skipped.size) {
     throw JSON.stringify(

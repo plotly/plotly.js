@@ -280,6 +280,13 @@ jobs:
 
       - name: Compare pixels
         run: .github/scripts/test.sh test-image
+      - name: List diff folder contents
+        if: failure()
+        run: |
+          echo "=== build/test_images/ ==="
+          ls -la build/test_images/ 2>/dev/null || echo "(empty or missing)"
+          echo "=== build/test_images_diff/ ==="
+          ls -la build/test_images_diff/ 2>/dev/null || echo "(empty or missing)"
       - name: IMAGE DIFF DETECTED
         if: failure()
         run: |
