@@ -93,6 +93,8 @@ async def make_baselines_async():
             outName = name
             if mathjax_version == 3:
                 outName = "mathjax3___" + name
+            if virtual_webgl_version == 1:
+                outName = "virtual-webgl___" + outName
 
             print(outName)
 

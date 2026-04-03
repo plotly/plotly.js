@@ -75,16 +75,6 @@ const flakyListMaps = new Set([
     'map_predefined-styles1',
     'map_predefined-styles2'
 ]);
-const flakyListVirtualWebgl = new Set([
-    'gl3d_ibm-plot',
-    'gl3d_isosurface_2surfaces-checker_spaceframe',
-    'gl3d_opacity-scaling-spikes',
-    'gl3d_cone-wind',
-    'gl3d_isosurface_math',
-    'gl3d_scatter3d-blank-text',
-    'gl3d_mesh3d_surface3d_scatter3d_line3d_error3d_log_reversed_ranges'
-]);
-
 if (virtualWebgl) {
     allMockList = allMockList.filter((a) => a.startsWith('gl') || a.startsWith('map'));
 }
@@ -103,6 +93,7 @@ for (let mockName of allMockList) {
     else threshold = 0;
 
     if (mathjax3) mockName = 'mathjax3___' + mockName;
+    if (virtualWebgl) mockName = 'virtual-webgl___' + mockName;
 
     const { baseline: base, test, diff } = getImagePaths(mockName);
 
@@ -137,11 +128,6 @@ for (let mockName of allMockList) {
             fs.copyFileSync(test, diff);
             failed.add(mockName);
             continue;
-        }
-
-        if (virtualWebgl) {
-            if (flakyListVirtualWebgl.has(mockName)) threshold = 0.7;
-            else threshold = Math.max(0.4, threshold);
         }
 
         const { height, width } = img0;
