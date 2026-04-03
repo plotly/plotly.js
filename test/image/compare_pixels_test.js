@@ -126,13 +126,20 @@ for (let mockName of allMockList) {
 
     const img0 = PNG.sync.read(fs.readFileSync(base));
     const img1 = PNG.sync.read(fs.readFileSync(test));
+    let dimensionMismatch = false;
     for (const key of ['height', 'width']) {
         const length0 = img0[key];
         const length1 = img1[key];
         if (length0 !== length1) {
             console.error(key + 's do not match: ' + length0 + ' vs ' + length1);
-            failed.add(mockName);
+            dimensionMismatch = true;
         }
+    }
+
+    if (dimensionMismatch) {
+        fs.copyFileSync(test, diff);
+        failed.add(mockName);
+        continue;
     }
 
     if (virtualWebgl) {
