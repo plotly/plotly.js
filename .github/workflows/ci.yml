@@ -279,8 +279,7 @@ jobs:
           merge-multiple: true
 
       - name: Compare pixels
-        run: .github/scripts/test.sh test-image ; find build -maxdepth 1 -type f -delete
-
+        run: .github/scripts/test.sh test-image
       - name: IMAGE DIFF DETECTED
         if: failure()
         run: |
@@ -336,8 +335,7 @@ jobs:
           merge-multiple: true
 
       - name: Compare pixels
-        run: .github/scripts/test.sh test-image ; find build -maxdepth 1 -type f -delete
-
+        run: .github/scripts/test.sh test-image
       - name: IMAGE DIFF DETECTED
         if: failure()
         run: |
@@ -393,8 +391,7 @@ jobs:
           merge-multiple: true
 
       - name: Compare pixels
-        run: .github/scripts/test.sh test-image-virtual-webgl ; find build -maxdepth 1 -type f -delete
-
+        run: .github/scripts/test.sh test-image-virtual-webgl
       - name: IMAGE DIFF DETECTED
         if: failure()
         run: |
@@ -499,8 +496,7 @@ jobs:
           path: build/
 
       - name: Test export sizes
-        run: node test/image/export_test.js ; find build -maxdepth 1 -type f -delete
-
+        run: node test/image/export_test.js
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
