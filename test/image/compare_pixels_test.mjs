@@ -85,7 +85,7 @@ const flakyListVirtualWebgl = new Set([
 ]);
 
 if (virtualWebgl) {
-    allMockList = allMockList.filter((a) => a.startsWith('gl'));
+    allMockList = allMockList.filter((a) => a.startsWith('gl') || a.startsWith('map'));
 }
 
 if (mathjax3) {
