@@ -130,17 +130,17 @@ case $1 in
         ;;
 
     test-image)
-        node test/image/compare_pixels_test.js || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
+        node test/image/compare_pixels_test.mjs || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     test-image-mathjax3)
-        node test/image/compare_pixels_test.js mathjax3 || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
+        node test/image/compare_pixels_test.mjs mathjax3 || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     test-image-virtual-webgl)
-        node test/image/compare_pixels_test.js virtual-webgl || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
+        node test/image/compare_pixels_test.mjs virtual-webgl || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
