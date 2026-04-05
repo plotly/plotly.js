@@ -1,0 +1,1 @@
+ - Set default layout.axis.tickmode to 'sync' when axis is overlaying [[#7684](https://github.com/plotly/plotly.js/pull/7684)]
