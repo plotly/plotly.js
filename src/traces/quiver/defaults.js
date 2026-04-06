@@ -11,6 +11,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    // Quiver requires explicit x and y inputs (no x0/dx or y0/dy fallback).
+    // Check presence on traceIn and let handleXYDefaults validate lengths.
+    if(traceIn.x === undefined || traceIn.y === undefined) {
+        traceOut.visible = false;
+        return;
+    }
+
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;

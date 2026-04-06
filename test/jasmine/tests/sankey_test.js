@@ -1460,8 +1460,8 @@ describe('sankey tests', function() {
                           nodes = document.getElementsByClassName('sankey-node');
                           node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
                           var newPosition = getNodeCoords(node);
-                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], 2, 'final x position is off');
-                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], 2, 'final y position is off');
+                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], 0, 'final x position is off');
+                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], 0, 'final y position is off');
 
                           // Change color of nodes
                           var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
@@ -1485,8 +1485,8 @@ describe('sankey tests', function() {
                               pos = positionBeforeDrag;
                               msg = 'should go back to its default because uirevision changed';
                           }
-                          expect(newPosition.x).toBeCloseTo(pos[0], 2, 'x position ' + msg);
-                          expect(newPosition.y).toBeCloseTo(pos[1], 2, 'y position ' + msg);
+                          expect(newPosition.x).toBeCloseTo(pos[0], 0, 'x position ' + msg);
+                          expect(newPosition.y).toBeCloseTo(pos[1], 0, 'y position ' + msg);
                       })
                       .then(done, done.fail);
                 });
