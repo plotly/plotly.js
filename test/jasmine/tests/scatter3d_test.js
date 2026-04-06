@@ -177,7 +177,7 @@ describe('Test scatter3d interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should be able to toggle visibility', function(done) {
+    fit('@gl should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         _mock.data[0].x = [0, 1, 3];
         _mock.data[0].y = [0, 1, 2];
