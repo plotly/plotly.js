@@ -17,3 +17,9 @@ runs:
     - name: Set Chrome binary path
       run: echo "CHROME_BIN=${{ steps.setup-chrome.outputs.chrome-path }}" >> $GITHUB_ENV
       shell: bash
+
+    - name: Verify Chrome version
+      run: |
+        echo "Chrome path: $CHROME_BIN"
+        $CHROME_BIN --version
+      shell: bash

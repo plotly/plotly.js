@@ -231,6 +231,8 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-workspace
       - uses: ./.github/actions/setup-chrome
+        with:
+          chrome-version: 'stable'
 
       - name: Run noCI tests
         uses: ./.github/actions/run-xvfb
