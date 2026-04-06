@@ -123,7 +123,7 @@ describe('Test scatter3d interactions:', function() {
     mock2.data[0].surfaceaxis = 2;
     mock2.layout.showlegend = true;
 
-    it('@gl should be able to reversibly change trace type', function(done) {
+    fit('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
@@ -161,7 +161,7 @@ describe('Test scatter3d interactions:', function() {
         .then(done, done.fail);
     });
 
-    fit('@gl should be able to delete the last trace', function(done) {
+    it('@gl should be able to delete the last trace', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         Plotly.newPlot(gd, _mock)
