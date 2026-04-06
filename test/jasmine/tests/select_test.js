@@ -2668,12 +2668,14 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([
                             [0, 281, 'Purchases'],
                             [0, 269, 'Material expenses'],
+                            [0, 191, 'Personnel expenses'],
+                            [0, 179, 'Other expenses'],
                         ]);
                         assertSelectedPoints({
-                            0: [5, 6]
+                            0: [5, 6, 7, 8]
                         });
                     },
-                    null, [3, 2, 1], 'waterfall lasso'
+                    null, [4, 2, 1], 'waterfall lasso'
                 );
             })
             .then(function() {
@@ -2717,13 +2719,14 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([
                             [0, 331.5, 'Author: etpinard'],
                             [1, 53.5, 'Pull requests'],
+                            [1, 15.5, 'Author: etpinard'],
                         ]);
                         assertSelectedPoints({
                             0: [2],
-                            1: [1]
+                            1: [1, 2]
                         });
                     },
-                    null, [3, 2, 1], 'funnel lasso'
+                    null, [4, 2, 1], 'funnel lasso'
                 );
             })
             .then(done, done.fail);
