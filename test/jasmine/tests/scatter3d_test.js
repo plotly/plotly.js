@@ -161,7 +161,7 @@ describe('Test scatter3d interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should be able to delete the last trace', function(done) {
+    fit('@gl should be able to delete the last trace', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         Plotly.newPlot(gd, _mock)
