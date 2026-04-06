@@ -195,7 +195,17 @@ describe('Test scatter3d interactions:', function() {
         var order0 = [0, 0, 0, 0, 0, 1, 2];
 
         function assertObjects(expected) {
-            var objects = gd._fullLayout.scene._scene.glplot.objects;
+            var scene = gd._fullLayout.scene;
+            var _scene = scene && scene._scene;
+            var glplot = _scene && _scene.glplot;
+            var objects = glplot && glplot.objects;
+            console.log('assertObjects debug:',
+                'scene:', !!scene,
+                '_scene:', !!_scene,
+                'glplot:', !!glplot,
+                'objects:', objects,
+                'objects type:', Object.prototype.toString.call(objects)
+            );
             var actual = objects.map(function(o) {
                 return o._trace.data.index;
             });
