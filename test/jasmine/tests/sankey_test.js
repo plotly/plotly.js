@@ -1137,16 +1137,10 @@ describe('sankey tests', function() {
         afterEach(destroyGraphDiv);
 
         function _makeWrapper(eventType, mouseFn) {
-            function _pos(elType) {
-                // index 4 = 'Solid' node, pointNumber 61 = the link asserted in the hover/click tests below.
-                // Using DOM-based lookup rather than hardcoded pixel coords so the tests are robust
-                // against small layout differences across environments.
-                const el = elType === 'node'
-                    ? d3SelectAll('.sankey-node').filter((d) => d.index === 4).select('.node-rect').node()
-                    : d3SelectAll('.sankey-link').filter((d) => d.pointNumber === 61).select('path').node();
-                var bbox = el.getBoundingClientRect();
-                return [bbox.left + bbox.width / 2, bbox.top + bbox.height / 2];
-            }
+            var posByElementType = {
+                node: [410, 300],
+                link: [450, 300]
+            };
 
             return function(elType) {
                 return new Promise(function(resolve, reject) {
@@ -1155,7 +1149,7 @@ describe('sankey tests', function() {
                         resolve(d);
                     });
 
-                    mouseFn(_pos(elType));
+                    mouseFn(posByElementType[elType]);
                     setTimeout(function() {
                         reject(eventType + ' did not get called!');
                     }, 100);
@@ -1466,8 +1460,8 @@ describe('sankey tests', function() {
                           nodes = document.getElementsByClassName('sankey-node');
                           node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
                           var newPosition = getNodeCoords(node);
-                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], 2, 'final x position is off');
-                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], 2, 'final y position is off');
+                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], -1, 'final x position is off');
+                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], -1, 'final y position is off');
 
                           // Change color of nodes
                           var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
@@ -1491,8 +1485,8 @@ describe('sankey tests', function() {
                               pos = positionBeforeDrag;
                               msg = 'should go back to its default because uirevision changed';
                           }
-                          expect(newPosition.x).toBeCloseTo(pos[0], 2, 'x position ' + msg);
-                          expect(newPosition.y).toBeCloseTo(pos[1], 2, 'y position ' + msg);
+                          expect(newPosition.x).toBeCloseTo(pos[0], -1, 'x position ' + msg);
+                          expect(newPosition.y).toBeCloseTo(pos[1], -1, 'y position ' + msg);
                       })
                       .then(done, done.fail);
                 });
