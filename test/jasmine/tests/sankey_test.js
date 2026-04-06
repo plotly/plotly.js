@@ -1137,10 +1137,16 @@ describe('sankey tests', function() {
         afterEach(destroyGraphDiv);
 
         function _makeWrapper(eventType, mouseFn) {
-            var posByElementType = {
-                node: [410, 300],
-                link: [450, 300]
-            };
+            function _pos(elType) {
+                // index 4 = 'Solid' node, pointNumber 61 = the link asserted in the hover/click tests below.
+                // Using DOM-based lookup rather than hardcoded pixel coords so the tests are robust
+                // against small layout differences across environments.
+                const el = elType === 'node'
+                    ? d3SelectAll('.sankey-node').filter((d) => d.index === 4).select('.node-rect').node()
+                    : d3SelectAll('.sankey-link').filter((d) => d.pointNumber === 61).select('path').node();
+                var bbox = el.getBoundingClientRect();
+                return [bbox.left + bbox.width / 2, bbox.top + bbox.height / 2];
+            }
 
             return function(elType) {
                 return new Promise(function(resolve, reject) {
@@ -1149,7 +1155,7 @@ describe('sankey tests', function() {
                         resolve(d);
                     });
 
-                    mouseFn(posByElementType[elType]);
+                    mouseFn(_pos(elType));
                     setTimeout(function() {
                         reject(eventType + ' did not get called!');
                     }, 100);

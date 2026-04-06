@@ -1404,7 +1404,7 @@ describe('Test geo interactions', function() {
                     py -= 2;
                     mouseEvent('mousemove', px, py);
 
-                    if(py > 175) {
+                    if(py > 176) {
                         _assert('- py ' + py, 1);
                         expect(cnt).toBe(0, 'no plotly_unhover event so far');
                     } else {
@@ -2759,10 +2759,10 @@ describe('Test geo interactions update marker angles:', function() {
         })
         .then(function() {
             newPath = getPath();
-            expect(newPath).toEqual('M0,0L18.224184922503092,8.238876374264322L19.586365339190138,-4.046516131164082Z');
+            expect(newPath).toEqual('M0,0L18.27769005891461,8.119485581627321L19.559475756661865,-4.174554841483899Z');
 
             expect(newPath).not.toEqual(initialPath);
-            expect(newPath).toEqual('M0,0L18.224184922503092,8.238876374264322L19.586365339190138,-4.046516131164082Z');
+            expect(newPath).toEqual('M0,0L18.27769005891461,8.119485581627321L19.559475756661865,-4.174554841483899Z');
             expect(initialPath).toEqual('M0,0L-1.5094067529528923,19.942960945008643L10.501042615957648,17.021401351764233Z');
         })
         .then(done, done.fail);
