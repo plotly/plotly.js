@@ -1876,8 +1876,18 @@ describe('Test select box and lasso in general:', function() {
             }).then(function() {
                 return Plotly.relayout(gd, 'dragmode', 'select');
             }).then(function() {
+                var plots = gd._fullLayout._plots;
+                Object.keys(plots).forEach(function(id) {
+                    var p = plots[id];
+                    var xa = p.xaxis, ya = p.yaxis;
+                    if(xa && ya) {
+                        console.log('[subplot ' + id + '] x: ' + xa._offset + '-' + (xa._offset + xa._length) +
+                                    ', y: ' + ya._offset + '-' + (ya._offset + ya._length));
+                    }
+                });
                 return drag([[150, 450], [650, 350]]);
             }).then(function() {
+                console.log('[after drag 1] selectedpoints:', gd.data.map(function(t) { return t.selectedpoints; }));
                 expect(gd.data[0].selectedpoints).toBe(undefined);
                 expect(gd.data[1].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[2].selectedpoints).toBe(undefined);
@@ -1885,6 +1895,7 @@ describe('Test select box and lasso in general:', function() {
             }).then(function() {
                 return drag([[150, 100], [600, 200]]);
             }).then(function() {
+                console.log('[after drag 2] selectedpoints:', gd.data.map(function(t) { return t.selectedpoints; }));
                 expect(gd.data[0].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[1].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[2].selectedpoints).toEqual([1]);
@@ -1892,6 +1903,7 @@ describe('Test select box and lasso in general:', function() {
             }).then(function() {
                 return drag([[600, 150], [650, 150]]); // Extend existing selection
             }).then(function() {
+                console.log('[after drag 3] selectedpoints:', gd.data.map(function(t) { return t.selectedpoints; }));
                 expect(gd.data[0].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[1].selectedpoints).toEqual([1, 2]);
                 expect(gd.data[2].selectedpoints).toEqual([1, 2]);
