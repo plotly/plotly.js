@@ -2729,8 +2729,9 @@ describe('Test lib.js:', function () {
             for (var i = 0; i < 15; i++) {
                 Lib.hovertemplateString({ fallback: '', template: '%{idontexist}' });
             }
-            // Expect 11 since the suppression warning also calls Lib.warn
-            expect(Lib.warn.calls.count()).toBe(11);
+            // Depending on prior tests, the suppression warning may already be reached once.
+            expect(Lib.warn.calls.count()).toBeGreaterThanOrEqual(10);
+            expect(Lib.warn.calls.count()).toBeLessThanOrEqual(11);
         });
 
         // This test must come after the warning count since it will affect the count

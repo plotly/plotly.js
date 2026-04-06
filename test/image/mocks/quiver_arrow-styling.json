@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "small arrows",
+      "x": [0, 1, 2],
+      "y": [0, 0, 0],
+      "u": [1, 1, 1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "marker": {
+        "color": "red",
+        "arrowsize": 0.5,
+        "line": {"width": 1}
+      }
+    },
+    {
+      "type": "quiver",
+      "name": "medium arrows",
+      "x": [0, 1, 2],
+      "y": [1, 1, 1],
+      "u": [1, 1, 1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "marker": {
+        "color": "blue",
+        "arrowsize": 1.0,
+        "line": {"width": 2}
+      }
+    },
+    {
+      "type": "quiver",
+      "name": "large arrows",
+      "x": [0, 1, 2],
+      "y": [2, 2, 2],
+      "u": [1, 1, 1],
+      "v": [1, 1, 1],
+      "sizemode": "scaled",
+      "sizeref": 0.5,
+      "anchor": "tail",
+      "marker": {
+        "color": "green",
+        "arrowsize": 2.0,
+        "line": {"width": 3}
+      }
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 600,
+    "showlegend": true
+  }
+}
