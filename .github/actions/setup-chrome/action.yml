@@ -4,7 +4,7 @@ description: 'Install Chrome and set CHROME_BIN environment variable'
 inputs:
   chrome-version:
     description: 'Chrome version to install'
-    default: '135.0.7049.95'
+    default: '136.0.7103.113'
 
 runs:
   using: 'composite'
