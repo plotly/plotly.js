@@ -123,7 +123,7 @@ describe('Test scatter3d interactions:', function() {
     mock2.data[0].surfaceaxis = 2;
     mock2.layout.showlegend = true;
 
-    fit('@gl should be able to reversibly change trace type', function(done) {
+    it('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
@@ -177,7 +177,7 @@ describe('Test scatter3d interactions:', function() {
         .then(done, done.fail);
     });
 
-    fit('@gl should be able to toggle visibility', function(done) {
+    it('@gl should be able to toggle visibility', function(done) {
         var originalOnerror = window.onerror;
         window.onerror = function(msg, src, line, col, err) {
             console.error('Uncaught error during toggle visibility test:',
