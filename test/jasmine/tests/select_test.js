@@ -2311,7 +2311,7 @@ describe('Test select box and lasso per trace:', function() {
                     [[150, 150], [300, 300]],
                     function() {
                         assertPoints([['NY', 10]]);
-                        assertRanges([[-83.32, 46.13], [-74.00, 39.29]]);
+                        assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                         assertSelectedPoints({0: [0]});
                     },
                     null, BOXEVENTS, 'choroplethmap select'
@@ -2327,8 +2327,8 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([['MA', 20]]);
                         assertSelectedPoints({0: [1]});
                         assertLassoPoints([
-                            [-74.00, 43.937], [-74.00, 39.294], [-67.79, 39.294],
-                            [-67.79, 43.937], [-74.00, 43.937]
+                            [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                            [-67.84, 43.936], [-74.06, 43.936]
                         ]);
                     },
                     null, LASSOEVENTS, 'choroplethmap lasso'
@@ -3351,7 +3351,7 @@ describe('Test select box and lasso per trace:', function() {
                 [[150, 150], [300, 300]],
                 function() {
                     assertPoints([['NY', 10]]);
-                    assertRanges([[-83.32, 46.13], [-74.00, 39.29]]);
+                    assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                     assertSelectedPoints({0: [0], 3: []});
                 },
                 null, BOXEVENTS, 'choroplethmap select'
@@ -3367,8 +3367,8 @@ describe('Test select box and lasso per trace:', function() {
                     assertPoints([['MA', 20], []]);
                     assertSelectedPoints({0: [1], 3: [0]});
                     assertLassoPoints([
-                        [-74.00, 43.937], [-74.00, 39.294], [-67.79, 39.294],
-                        [-67.79, 43.937], [-74.00, 43.937]
+                        [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                        [-67.84, 43.936], [-74.06, 43.936]
                     ]);
                 },
                 null, LASSOEVENTS, 'choroplethmap lasso'
