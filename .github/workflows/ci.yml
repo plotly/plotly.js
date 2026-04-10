@@ -114,6 +114,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # There's a race condition with one of the tests in shard 6, so run it first to avoid it
         shard: [6, 0, 1, 2, 3, 4, 5, 7]
     env:
       TZ: 'America/Anchorage'

@@ -178,16 +178,6 @@ describe('Test scatter3d interactions:', function() {
     });
 
     it('@gl should be able to toggle visibility', function(done) {
-        var originalOnerror = window.onerror;
-        window.onerror = function(msg, src, line, col, err) {
-            console.error('Uncaught error during toggle visibility test:',
-                msg, 'at', src + ':' + line + ':' + col,
-                err && err.stack ? '\nStack: ' + err.stack : ''
-            );
-            return false;
-        };
-        var cleanup = function(x) { window.onerror = originalOnerror; return x; };
-
         var _mock = Lib.extendDeep({}, mock2);
         _mock.data[0].x = [0, 1, 3];
         _mock.data[0].y = [0, 1, 2];
@@ -205,24 +195,7 @@ describe('Test scatter3d interactions:', function() {
         var order0 = [0, 0, 0, 0, 0, 1, 2];
 
         function assertObjects(expected) {
-            var fullLayout = gd._fullLayout;
-            var scene = fullLayout && fullLayout.scene;
-            var _scene = scene && scene._scene;
-            var glplot = _scene && _scene.glplot;
-            var objects = glplot && glplot.objects;
-            console.log('assertObjects debug:',
-                'fullLayout:', !!fullLayout,
-                'scene:', !!scene,
-                '_scene:', !!_scene,
-                'glplot:', !!glplot,
-                'objects:', objects,
-                'objects type:', Object.prototype.toString.call(objects)
-            );
-            if(!objects) {
-                fail('assertObjects: glplot.objects is not available (fullLayout=' + !!fullLayout +
-                    ', scene=' + !!scene + ', _scene=' + !!_scene + ', glplot=' + !!glplot + ')');
-                return;
-            }
+            var objects = gd._fullLayout.scene._scene.glplot.objects;
             var actual = objects.map(function(o) {
                 return o._trace.data.index;
             });
@@ -265,7 +238,6 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertObjects(order0);
         })
-        .then(cleanup, cleanup)
         .then(done, done.fail);
     });
 
