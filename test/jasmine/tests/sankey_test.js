@@ -1308,8 +1308,11 @@ describe('sankey tests', function() {
                   .then(function() {
                       var nodes = document.getElementsByClassName('sankey-node');
                       Array.from(nodes).forEach(function(n, i) {
-                          var r = n.getBoundingClientRect();
-                          console.log('node', i, {x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2, r: r});
+                          var rect = n.querySelector('.node-rect');
+                          if(rect) {
+                              var r = rect.getBoundingClientRect();
+                              console.log('node', i, 'rect', {x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2, w: r.width, h: r.height});
+                          }
                       });
                   })
                   .then(assertNoHoverEvents('node'))
