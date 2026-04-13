@@ -1306,17 +1306,7 @@ describe('sankey tests', function() {
             Plotly.newPlot(gd, fig)
                   .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
                   .then(function() {
-                      var nodes = document.getElementsByClassName('sankey-node');
-                      Array.from(nodes).forEach(function(n, i) {
-                          var rect = n.querySelector('.node-rect');
-                          if(rect) {
-                              var r = rect.getBoundingClientRect();
-                              var cx = (r.left + r.right) / 2;
-                              var cy = (r.top + r.bottom) / 2;
-                              var el = document.elementFromPoint(cx, cy);
-                              console.log('node', i, 'rect', {x: cx, y: cy, w: r.width, h: r.height, elementFromPoint: el, class: el && el.className.baseVal});
-                          }
-                      });
+                      console.log('SVG:', gd.querySelector('.main-svg').outerHTML);
                   })
                   .then(assertNoHoverEvents('node'))
                   .then(done, done.fail);
