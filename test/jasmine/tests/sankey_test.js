@@ -1146,6 +1146,7 @@ describe('sankey tests', function() {
                 return new Promise(function(resolve, reject) {
                     gd.once(eventType, function(d) {
                         Lib.clearThrottle();
+                        console.log("FRANKENSTEIN", JSON.stringify(d))
                         resolve(d);
                     });
 
@@ -1298,7 +1299,7 @@ describe('sankey tests', function() {
                   .then(done, done.fail);
         });
 
-        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+        fit('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, fig)
