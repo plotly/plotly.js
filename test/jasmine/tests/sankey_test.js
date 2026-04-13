@@ -1146,7 +1146,8 @@ describe('sankey tests', function() {
                 return new Promise(function(resolve, reject) {
                     gd.once(eventType, function(d) {
                         Lib.clearThrottle();
-                        console.log("FRANKENSTEIN", JSON.stringify(d))
+                        const { label, value, pointNumber, x0, x1, y0, y1 } = d.points[0];
+                        console.log('FRANKENSTEIN', { label, value, pointNumber, x0, x1, y0, y1 });
                         resolve(d);
                     });
 
