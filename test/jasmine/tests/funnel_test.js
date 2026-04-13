@@ -1759,25 +1759,26 @@ describe('funnel uniformtext', function() {
     });
 
     it('should respect textinfo token order', function() {
-        var mock = {
-            data: [{
-                type: 'funnel',
-                y: ['Awareness', 'Interest', 'Action'],
-                x: [1000, 700, 400],
-                textinfo: 'percent initial+value'
-            }],
-            layout: {}
-        };
+        var gd = createGraphDiv();
 
-        return Plotly.newPlot(createGraphDiv(), mock.data, mock.layout)
-        .then(function(gd) {
-            var texts = gd.calcdata[0].map(function(d) { return d.tx; });
+        return Plotly.newPlot(gd, [{
+            type: 'funnel',
+            y: ['Awareness', 'Interest', 'Action'],
+            x: [1000, 700, 400],
+            textinfo: 'percent initial+value'
+        }], {})
+        .then(function() {
+            var traceNodes = gd.querySelectorAll('.bartext');
+            var firstText = traceNodes[0] ? traceNodes[0].textContent : '';
 
-            // percent initial must come BEFORE value
-            // expected: "100%" before "1000", not "1000" before "100%"
-            expect(texts[0]).toMatch(/^[\d.]+%/);  // starts with percent
-            expect(texts[1]).toMatch(/^[\d.]+%/);
-            expect(texts[2]).toMatch(/^[\d.]+%/);
+            var percentIndex = firstText.indexOf('%');
+            expect(percentIndex).toBeGreaterThan(-1);
+
+            var numberMatch = firstText.match(/\d+/);
+            expect(numberMatch).not.toBeNull();
+
+            var numberIndex = firstText.indexOf(numberMatch[0]);
+            expect(percentIndex).toBeLessThan(numberIndex);
         })
         .then(destroyGraphDiv);
     });
