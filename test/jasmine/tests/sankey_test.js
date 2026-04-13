@@ -1305,6 +1305,13 @@ describe('sankey tests', function() {
 
             Plotly.newPlot(gd, fig)
                   .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
+                  .then(function() {
+                      var nodes = document.getElementsByClassName('sankey-node');
+                      Array.from(nodes).forEach(function(n, i) {
+                          var r = n.getBoundingClientRect();
+                          console.log('node', i, {x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2, r: r});
+                      });
+                  })
                   .then(assertNoHoverEvents('node'))
                   .then(done, done.fail);
         });
