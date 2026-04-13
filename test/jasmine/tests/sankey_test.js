@@ -1138,7 +1138,7 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [429, 279],
+                node: [415, 279],
                 link: [450, 300]
             };
 
@@ -1311,7 +1311,10 @@ describe('sankey tests', function() {
                           var rect = n.querySelector('.node-rect');
                           if(rect) {
                               var r = rect.getBoundingClientRect();
-                              console.log('node', i, 'rect', {x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2, w: r.width, h: r.height});
+                              var cx = (r.left + r.right) / 2;
+                              var cy = (r.top + r.bottom) / 2;
+                              var el = document.elementFromPoint(cx, cy);
+                              console.log('node', i, 'rect', {x: cx, y: cy, w: r.width, h: r.height, elementFromPoint: el, class: el && el.className.baseVal});
                           }
                       });
                   })
