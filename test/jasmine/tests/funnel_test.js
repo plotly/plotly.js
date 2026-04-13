@@ -1768,17 +1768,25 @@ describe('funnel uniformtext', function() {
             textinfo: 'percent initial+value'
         }], {})
         .then(function() {
-            var traceNodes = gd.querySelectorAll('.bartext');
-            var firstText = traceNodes[0] ? traceNodes[0].textContent : '';
+            var cd = gd.calcdata[0];
 
-            var percentIndex = firstText.indexOf('%');
-            expect(percentIndex).toBeGreaterThan(-1);
+            cd.forEach(function(d) {
+                var txt = d.tx;
+                expect(txt).toBeDefined();
 
-            var numberMatch = firstText.match(/\d+/);
-            expect(numberMatch).not.toBeNull();
+                var percentIndex = txt.indexOf('%');
+                expect(percentIndex).toBeGreaterThan(-1);
 
-            var numberIndex = firstText.indexOf(numberMatch[0]);
-            expect(percentIndex).toBeLessThan(numberIndex);
+                var firstNumberIndex = txt.search(/\d/);
+                expect(firstNumberIndex).toBeGreaterThan(-1);
+
+                // percent part starts early (e.g. "70%")
+                expect(percentIndex).toBeGreaterThan(firstNumberIndex);
+
+                // value number must exist AFTER percent
+                var afterPercent = txt.slice(percentIndex + 1);
+                expect(afterPercent.match(/\d+/)).not.toBeNull();
+            });
         })
         .then(destroyGraphDiv);
     });
