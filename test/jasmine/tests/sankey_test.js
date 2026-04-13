@@ -1138,7 +1138,7 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [410, 280],
+                node: [420, 280],
                 link: [450, 300]
             };
 
