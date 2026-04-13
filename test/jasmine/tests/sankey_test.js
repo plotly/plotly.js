@@ -1138,7 +1138,7 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [415, 279],
+                node: [410, 300],
                 link: [450, 300]
             };
 
@@ -1305,14 +1305,11 @@ describe('sankey tests', function() {
                   .then(done, done.fail);
         });
 
-        fit('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, fig)
                   .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
-                  .then(function() {
-                      console.log('SVG:', gd.querySelector('.main-svg').outerHTML);
-                  })
                   .then(assertNoHoverEvents('node'))
                   .then(done, done.fail);
         });
