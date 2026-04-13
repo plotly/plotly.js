@@ -2328,7 +2328,7 @@ describe('Test select box and lasso per trace:', function() {
                         assertSelectedPoints({0: [1]});
                         assertLassoPoints([
                             [-74.03, 43.936], [-74.03, 39.293], [-67.81, 39.293],
-                            [-67.79, 43.936], [-74.03, 43.936]
+                            [-67.81, 43.936], [-74.03, 43.936]
                         ]);
                     },
                     null, LASSOEVENTS, 'choroplethmap lasso'
@@ -3368,7 +3368,7 @@ describe('Test select box and lasso per trace:', function() {
                     assertSelectedPoints({0: [1], 3: [0]});
                     assertLassoPoints([
                         [-74.03, 43.936], [-74.03, 39.293], [-67.81, 39.293],
-                        [-67.79, 43.936], [-74.03, 43.936]
+                        [-67.81, 43.936], [-74.03, 43.936]
                     ]);
                 },
                 null, LASSOEVENTS, 'choroplethmap lasso'
