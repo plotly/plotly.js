@@ -1123,14 +1123,15 @@ function calcTextinfo(cd, index, xa, ya) {
         var final = cdi.v;
         var initial = final - delta;
 
-        if (hasFlag('initial')) text.push(formatNumber(initial));
-        if (hasFlag('delta')) text.push(formatNumber(delta));
-        if (hasFlag('final')) text.push(formatNumber(final));
+        for (var j = 0; j < parts.length; j++) {
+            var wPart = parts[j].trim();
+            if (wPart === 'initial') text.push(formatNumber(initial));
+            else if (wPart === 'delta') text.push(formatNumber(delta));
+            else if (wPart === 'final') text.push(formatNumber(final));
+        }
     }
 
     if (isFunnel) {
-        if (hasFlag('value')) text.push(formatNumber(cdi.s));
-
         var nPercent = 0;
         if (hasFlag('percent initial')) nPercent++;
         if (hasFlag('percent previous')) nPercent++;
@@ -1138,20 +1139,23 @@ function calcTextinfo(cd, index, xa, ya) {
 
         var hasMultiplePercents = nPercent > 1;
 
-        if (hasFlag('percent initial')) {
-            tx = Lib.formatPercent(cdi.begR);
-            if (hasMultiplePercents) tx += ' of initial';
-            text.push(tx);
-        }
-        if (hasFlag('percent previous')) {
-            tx = Lib.formatPercent(cdi.difR);
-            if (hasMultiplePercents) tx += ' of previous';
-            text.push(tx);
-        }
-        if (hasFlag('percent total')) {
-            tx = Lib.formatPercent(cdi.sumR);
-            if (hasMultiplePercents) tx += ' of total';
-            text.push(tx);
+        for (var k = 0; k < parts.length; k++) {
+            var part = parts[k].trim();
+            if (part === 'value') {
+                text.push(formatNumber(cdi.s));
+            } else if (part === 'percent initial') {
+                tx = Lib.formatPercent(cdi.begR);
+                if (hasMultiplePercents) tx += ' of initial';
+                text.push(tx);
+            } else if (part === 'percent previous') {
+                tx = Lib.formatPercent(cdi.difR);
+                if (hasMultiplePercents) tx += ' of previous';
+                text.push(tx);
+            } else if (part === 'percent total') {
+                tx = Lib.formatPercent(cdi.sumR);
+                if (hasMultiplePercents) tx += ' of total';
+                text.push(tx);
+            }
         }
     }
 

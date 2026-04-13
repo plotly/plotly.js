@@ -1757,4 +1757,29 @@ describe('funnel uniformtext', function() {
         }))
         .then(done, done.fail);
     });
+
+    it('should respect textinfo token order', function() {
+        var mock = {
+            data: [{
+                type: 'funnel',
+                y: ['Awareness', 'Interest', 'Action'],
+                x: [1000, 700, 400],
+                textinfo: 'percent initial+value'
+            }],
+            layout: {}
+        };
+
+        return Plotly.newPlot(createGraphDiv(), mock.data, mock.layout)
+        .then(function(gd) {
+            var texts = gd.calcdata[0].map(function(d) { return d.tx; });
+
+            // percent initial must come BEFORE value
+            // expected: "100%" before "1000", not "1000" before "100%"
+            expect(texts[0]).toMatch(/^[\d.]+%/);  // starts with percent
+            expect(texts[1]).toMatch(/^[\d.]+%/);
+            expect(texts[2]).toMatch(/^[\d.]+%/);
+        })
+        .then(destroyGraphDiv);
+    });
+
 });
