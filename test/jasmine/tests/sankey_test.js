@@ -1144,12 +1144,17 @@ describe('sankey tests', function() {
 
             return function(elType) {
                 return new Promise(function(resolve, reject) {
-                    gd.once(eventType, function(d) {
+                    const handler = (d) => {
                         Lib.clearThrottle();
-                        const { label, value, pointNumber, x0, x1, y0, y1 } = d.points[0];
-                        console.log('FRANKENSTEIN', { label, value, pointNumber, x0, x1, y0, y1 });
+                        const isNode = d.points[0].hasOwnProperty('sourceLinks');
+                        const isExpectedType = (elType === 'node') ? isNode : !isNode;
+                        if (!isExpectedType) {
+                            gd.once(eventType, handler);
+                            return;
+                        }
                         resolve(d);
-                    });
+                    }
+                    gd.once(eventType, handler);
 
                     mouseFn(posByElementType[elType]);
                     setTimeout(function() {
