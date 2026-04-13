@@ -21,6 +21,15 @@ runs:
       with:
         version: ${{ inputs.uv-version }}
 
+    - name: Cache apt font packages
+      uses: actions/cache@v4
+      id: apt-cache
+      with:
+        path: ~/.cache/apt-fonts
+        key: apt-fonts-${{ runner.os }}-${{ hashFiles('.github/scripts/env_image.sh') }}
+
     - name: Install Kaleido, plotly.io and required fonts
       run: .github/scripts/env_image.sh
       shell: bash
+      env:
+        APT_CACHE_HIT: ${{ steps.apt-cache.outputs.cache-hit }}
