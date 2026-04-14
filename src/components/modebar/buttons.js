@@ -85,6 +85,16 @@ modeBarButtons.editInChartStudio = {
     }
 };
 
+modeBarButtons.uploadToCloud = {
+    name: 'uploadToCloud',
+    title: function(gd) { return _(gd, 'Upload to Cloud'); },
+    icon: Icons.disk,
+    click: function(gd) {
+        var fig = Plots.graphJson(gd, false, 'keepdata', 'object', true, true);
+        alert(JSON.stringify(fig, null, 2));
+    }
+};
+
 modeBarButtons.zoom2d = {
     name: 'zoom2d',
     _cat: 'zoom',
