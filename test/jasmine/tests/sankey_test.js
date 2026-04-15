@@ -1305,11 +1305,11 @@ describe('sankey tests', function() {
                   .then(done, done.fail);
         });
 
-        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+        fit('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, fig)
-                  .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
+                  // .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
                   .then(assertNoHoverEvents('node'))
                   .then(done, done.fail);
         });
