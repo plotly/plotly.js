@@ -1309,7 +1309,7 @@ describe('sankey tests', function() {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, fig)
-                  // .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
+                  .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
                   .then(assertNoHoverEvents('node'))
                   .then(done, done.fail);
         });
