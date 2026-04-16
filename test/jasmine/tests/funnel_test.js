@@ -1758,10 +1758,8 @@ describe('funnel uniformtext', function() {
         .then(done, done.fail);
     });
 
-    it('should respect textinfo token order', function() {
-        var gd = createGraphDiv();
-
-        return Plotly.newPlot(gd, [{
+    it('should respect textinfo token order', function(done) {
+        Plotly.newPlot(gd, [{
             type: 'funnel',
             y: ['Awareness', 'Interest', 'Action'],
             x: [1000, 700, 400],
@@ -1769,29 +1767,14 @@ describe('funnel uniformtext', function() {
         }], {})
         .then(function() {
             var textEls = gd.querySelectorAll('text.bartext');
-
-            expect(textEls.length).toBeGreaterThan(0);
-
-            for(var i = 0; i < textEls.length; i++) {
-                var txt = textEls[i].textContent;
-                if(!txt || txt.length === 0) continue;
-
-                var percentIndex = txt.indexOf('%');
-                expect(percentIndex).toBeGreaterThan(-1);
-
-                var firstNumberIndex = txt.search(/\d/);
-                expect(firstNumberIndex).toBeGreaterThan(-1);
-
-                // percent sign must appear AFTER first digit (e.g. "70%")
-                // but BEFORE the value number that follows
-                expect(percentIndex).toBeGreaterThan(firstNumberIndex);
-
-                // value number must exist AFTER percent
-                var afterPercent = txt.slice(percentIndex + 1);
-                expect(afterPercent.match(/\d+/)).not.toBeNull();
-            }
+            var textContent = Array.from(textEls).map(function(el) {
+                return el.textContent;
+            });
+            expect(textContent[0]).toBe('100%1000');
+            expect(textContent[1]).toBe('70%700');
+            expect(textContent[2]).toBe('40%400');
         })
-        .then(destroyGraphDiv);
+        .then(done, done.fail);
     });
 
 });

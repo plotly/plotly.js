@@ -1229,24 +1229,24 @@ function formatSliceLabel(gd, pt, cd0) {
     var textinfo = trace.textinfo;
     if (!texttemplate && textinfo && textinfo !== 'none') {
         var parts = textinfo.split('+');
-        var hasFlag = function (flag) {
-            return parts.indexOf(flag) !== -1;
-        };
-        var hasLabel = hasFlag('label');
-        var hasText = hasFlag('text');
-        var hasValue = hasFlag('value');
-        var hasPercent = hasFlag('percent');
-
         var separators = fullLayout.separators;
-        var text;
+        var text = [];
+        var tx;
 
-        text = hasLabel ? [pt.label] : [];
-        if (hasText) {
-            var tx = helpers.getFirstFilled(trace.text, pt.pts);
-            if (isValidTextValue(tx)) text.push(tx);
+        for(var part in parts) {
+            part = parts[part];
+
+            if(part === 'label') {
+                text.push(pt.label);
+            } else if(part === 'text') {
+                tx = helpers.getFirstFilled(trace.text, pt.pts);
+                if(isValidTextValue(tx)) text.push(tx);
+            } else if(part === 'value') {
+                text.push(helpers.formatPieValue(pt.v, separators));
+            } else if(part === 'percent') {
+                text.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
+            }
         }
-        if (hasValue) text.push(helpers.formatPieValue(pt.v, separators));
-        if (hasPercent) text.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
         pt.text = text.join('<br>');
     }
 

@@ -1199,6 +1199,27 @@ describe('Test sunburst restyle:', function () {
             .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
             .then(done, done.fail);
     });
+
+    it('should respect textinfo token order', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'sunburst',
+            labels: ['Root', 'A', 'B'],
+            parents: ['', 'Root', 'Root'],
+            values: [0, 10, 20],
+            textinfo: 'value+label'
+        }], {})
+        .then(function() {
+            var layer = d3Select(gd).select('.sunburstlayer');
+            var textContent = [];
+            layer.selectAll('text.slicetext').each(function() {
+                textContent.push(this.textContent);
+            });
+            expect(textContent[0]).toBe('0Root');
+            expect(textContent[1]).toBe('20B');
+            expect(textContent[2]).toBe('10A');
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('Test sunburst tweening:', function () {

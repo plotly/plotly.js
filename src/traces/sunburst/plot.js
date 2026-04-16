@@ -544,58 +544,41 @@ exports.formatSliceLabel = function (pt, entry, trace, cd, fullLayout) {
 
     if (!texttemplate) {
         var parts = textinfo.split('+');
-        var hasFlag = function (flag) {
-            return parts.indexOf(flag) !== -1;
-        };
         var thisText = [];
         var tx;
 
-        if (hasFlag('label') && cdi.label) {
-            thisText.push(cdi.label);
+        var nPercent = 0;
+        for(var p = 0; p < parts.length; p++) {
+            var f = parts[p];
+            if(f === 'percent parent' || f === 'percent entry' || f === 'percent root') nPercent++;
         }
+        var hasMultiplePercents = nPercent > 1;
 
-        if (cdi.hasOwnProperty('v') && hasFlag('value')) {
-            thisText.push(helpers.formatValue(cdi.v, separators));
-        }
+        for(var part in parts) {
+            part = parts[part];
 
-        if (!isRoot) {
-            if (hasFlag('current path')) {
+            if(part === 'label' && cdi.label) {
+                thisText.push(cdi.label);
+            } else if(part === 'value' && cdi.hasOwnProperty('v')) {
+                thisText.push(helpers.formatValue(cdi.v, separators));
+            } else if(part === 'text') {
+                tx = Lib.castOption(trace, cdi.i, 'text');
+                if(Lib.isValidTextValue(tx)) thisText.push(tx);
+            } else if(!isRoot && part === 'current path') {
                 thisText.push(helpers.getPath(pt.data));
+            } else if(!isRoot && part === 'percent parent') {
+                tx = helpers.formatPercent(val / helpers.getValue(parent), separators);
+                if(hasMultiplePercents) tx += ' of parent';
+                thisText.push(tx);
+            } else if(!isRoot && part === 'percent entry') {
+                tx = helpers.formatPercent(val / helpers.getValue(entry), separators);
+                if(hasMultiplePercents) tx += ' of entry';
+                thisText.push(tx);
+            } else if(!isRoot && part === 'percent root') {
+                tx = helpers.formatPercent(val / helpers.getValue(hierarchy), separators);
+                if(hasMultiplePercents) tx += ' of root';
+                thisText.push(tx);
             }
-
-            var nPercent = 0;
-            if (hasFlag('percent parent')) nPercent++;
-            if (hasFlag('percent entry')) nPercent++;
-            if (hasFlag('percent root')) nPercent++;
-            var hasMultiplePercents = nPercent > 1;
-
-            if (nPercent) {
-                var percent;
-                var addPercent = function (key) {
-                    tx = helpers.formatPercent(percent, separators);
-
-                    if (hasMultiplePercents) tx += ' of ' + key;
-                    thisText.push(tx);
-                };
-
-                if (hasFlag('percent parent') && !isRoot) {
-                    percent = val / helpers.getValue(parent);
-                    addPercent('parent');
-                }
-                if (hasFlag('percent entry')) {
-                    percent = val / helpers.getValue(entry);
-                    addPercent('entry');
-                }
-                if (hasFlag('percent root')) {
-                    percent = val / helpers.getValue(hierarchy);
-                    addPercent('root');
-                }
-            }
-        }
-
-        if (hasFlag('text')) {
-            tx = Lib.castOption(trace, cdi.i, 'text');
-            if (Lib.isValidTextValue(tx)) thisText.push(tx);
         }
 
         return thisText.join('<br>');

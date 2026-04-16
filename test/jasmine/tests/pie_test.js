@@ -909,6 +909,26 @@ describe('Pie traces', function() {
         }))
         .then(done, done.fail);
     });
+
+    it('should respect textinfo token order', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'pie',
+            labels: ['A', 'B', 'C'],
+            values: [10, 20, 70],
+            textinfo: 'percent+label',
+            sort: false
+        }], {})
+        .then(function() {
+            var textEls = gd.querySelectorAll('text.slicetext');
+            var textContent = Array.from(textEls).map(function(el) {
+                return el.textContent;
+            });
+            expect(textContent[0]).toBe('10%A');
+            expect(textContent[1]).toBe('20%B');
+            expect(textContent[2]).toBe('70%C');
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('Pie texttemplate:', function() {
