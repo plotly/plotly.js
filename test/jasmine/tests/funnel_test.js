@@ -1770,6 +1770,7 @@ describe('funnel uniformtext', function() {
             var textContent = Array.from(textEls).map(function(el) {
                 return el.textContent;
             });
+            expect(textContent.length).toBe(3);
             expect(textContent[0]).toBe('100%1000');
             expect(textContent[1]).toBe('70%700');
             expect(textContent[2]).toBe('40%400');

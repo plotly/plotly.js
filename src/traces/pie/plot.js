@@ -1232,10 +1232,8 @@ function formatSliceLabel(gd, pt, cd0) {
         var separators = fullLayout.separators;
         var text = [];
         var tx;
-
-        for(var part in parts) {
-            part = parts[part];
-
+        for(var i in parts) {
+            var part = parts[i];
             if(part === 'label') {
                 text.push(pt.label);
             } else if(part === 'text') {

@@ -1107,16 +1107,13 @@ function calcTextinfo(cd, index, xa, ya) {
 
     var nPercent = 0;
     if(isFunnel) {
-        for(var p = 0; p < parts.length; p++) {
-            var f = parts[p];
-            if(f === 'percent initial' || f === 'percent previous' || f === 'percent total') nPercent++;
-        }
+        if(hasFlag('percent initial')) nPercent++;
+        if(hasFlag('percent previous')) nPercent++;
+        if(hasFlag('percent total')) nPercent++;
     }
     var hasMultiplePercents = nPercent > 1;
-
-    for(var part in parts) {
-        part = parts[part];
-
+    for(var i in parts) {
+        var part = parts[i];
         if(part === 'label') {
             text.push(formatLabel(cdi.p));
         } else if(part === 'text') {

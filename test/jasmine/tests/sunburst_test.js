@@ -1173,7 +1173,7 @@ describe('Test sunburst restyle:', function () {
             .then(_restyle({ textinfo: 'none' }))
             .then(_assert('no textinfo', ['', '', '', '']))
             .then(_restyle({ textinfo: 'label+text+value' }))
-            .then(_assert('show everything', ['Root\n0\nnode0', 'B\n2\nnode2', 'A\n1\nnode1', 'b\n3\nnode3']))
+            .then(_assert('show everything', ['Root\nnode0\n0', 'B\nnode2\n2', 'A\nnode1\n1', 'b\nnode3\n3']))
             .then(_restyle({ textinfo: null }))
             .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
             // now change insidetextorientation to 'horizontal'
@@ -1206,7 +1206,7 @@ describe('Test sunburst restyle:', function () {
             labels: ['Root', 'A', 'B'],
             parents: ['', 'Root', 'Root'],
             values: [0, 10, 20],
-            textinfo: 'value+label'
+            textinfo: 'percent root+value+label'
         }], {})
         .then(function() {
             var layer = d3Select(gd).select('.sunburstlayer');
@@ -1214,9 +1214,10 @@ describe('Test sunburst restyle:', function () {
             layer.selectAll('text.slicetext').each(function() {
                 textContent.push(this.textContent);
             });
+            expect(textContent.length).toBe(3);
             expect(textContent[0]).toBe('0Root');
-            expect(textContent[1]).toBe('20B');
-            expect(textContent[2]).toBe('10A');
+            expect(textContent[1]).toBe('33%20B');
+            expect(textContent[2]).toBe('17%10A');
         })
         .then(done, done.fail);
     });

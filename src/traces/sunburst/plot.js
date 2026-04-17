@@ -553,10 +553,8 @@ exports.formatSliceLabel = function (pt, entry, trace, cd, fullLayout) {
             if(f === 'percent parent' || f === 'percent entry' || f === 'percent root') nPercent++;
         }
         var hasMultiplePercents = nPercent > 1;
-
-        for(var part in parts) {
-            part = parts[part];
-
+        for(var i in parts) {
+            var part = parts[i];
             if(part === 'label' && cdi.label) {
                 thisText.push(cdi.label);
             } else if(part === 'value' && cdi.hasOwnProperty('v')) {
