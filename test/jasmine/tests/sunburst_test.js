@@ -1173,7 +1173,7 @@ describe('Test sunburst restyle:', function () {
             .then(_restyle({ textinfo: 'none' }))
             .then(_assert('no textinfo', ['', '', '', '']))
             .then(_restyle({ textinfo: 'label+text+value' }))
-            .then(_assert('show everything', ['Root\nnode0\n0', 'B\nnode2\n2', 'A\nnode1\n1', 'b\nnode3\n3']))
+            .then(_assert('show everything', ['Root\n0\nnode0', 'B\n2\nnode2', 'A\n1\nnode1', 'b\n3\nnode3']))
             .then(_restyle({ textinfo: null }))
             .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
             // now change insidetextorientation to 'horizontal'
