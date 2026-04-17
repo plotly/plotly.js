@@ -1162,7 +1162,7 @@ describe('Test sunburst restyle:', function () {
         }
 
         Plotly.newPlot(gd, mock)
-            .then(_assert('base', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+            .then(_assert('base', ['node0\nRoot', 'node2\nB', 'node1\nA', 'node3\nb']))
             .then(function () {
                 spyOn(Plots, 'doCalcdata').and.callThrough();
             })
@@ -1173,9 +1173,9 @@ describe('Test sunburst restyle:', function () {
             .then(_restyle({ textinfo: 'none' }))
             .then(_assert('no textinfo', ['', '', '', '']))
             .then(_restyle({ textinfo: 'label+text+value' }))
-            .then(_assert('show everything', ['Root\n0\nnode0', 'B\n2\nnode2', 'A\n1\nnode1', 'b\n3\nnode3']))
+            .then(_assert('show everything', ['Root\nnode0\n0', 'B\nnode2\n2', 'A\nnode1\n1', 'b\nnode3\n3']))
             .then(_restyle({ textinfo: null }))
-            .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
+            .then(_assert('back to dflt', ['node0\nRoot', 'node2\nB', 'node1\nA', 'node3\nb']))
             // now change insidetextorientation to 'horizontal'
             .then(_restyle({ insidetextorientation: 'horizontal' }))
             .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
@@ -1216,8 +1216,8 @@ describe('Test sunburst restyle:', function () {
             });
             expect(textContent.length).toBe(3);
             expect(textContent[0]).toBe('0Root');
-            expect(textContent[1]).toBe('33%20B');
-            expect(textContent[2]).toBe('17%10A');
+            expect(textContent[1]).toBe('67%20B');
+            expect(textContent[2]).toBe('33%10A');
         })
         .then(done, done.fail);
     });
