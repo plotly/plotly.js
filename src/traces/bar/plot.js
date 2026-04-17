@@ -1105,6 +1105,10 @@ function calcTextinfo(cd, index, xa, ya) {
     var text = [];
     var tx;
 
+    function hasFlag(flag) {
+        return parts.indexOf(flag) !== -1;
+    }
+
     var nPercent = 0;
     if(isFunnel) {
         if(hasFlag('percent initial')) nPercent++;
