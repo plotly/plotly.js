@@ -267,7 +267,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             delete axLayoutOut.spikesnap;
         }
 
-        // If it exists, the the domain of the axis for the anchor of the overlaying axis
+        // If it exists, the domain of the axis for the anchor of the overlaying axis
         var overlayingAxis = id2name(axLayoutIn.overlaying);
         var overlayingAnchorDomain = [0, 1];
 

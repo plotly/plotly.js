@@ -499,7 +499,7 @@ function setPlotContext(gd, config) {
         context.setBackground = setBackground;
     }
 
-    // Check if gd has a specified widht/height to begin with
+    // Check if gd has a specified width/height to begin with
     context._hasZeroHeight = context._hasZeroHeight || gd.clientHeight === 0;
     context._hasZeroWidth = context._hasZeroWidth || gd.clientWidth === 0;
 
