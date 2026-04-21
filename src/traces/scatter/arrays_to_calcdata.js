@@ -38,6 +38,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
         if(marker.line) {
             Lib.mergeArray(markerLine.color, cd, 'mlc');
             Lib.mergeArrayCastPositive(markerLine.width, cd, 'mlw');
+            Lib.mergeArray(markerLine.dash, cd, 'mld');
         }
 
         var markerGradient = marker.gradient;

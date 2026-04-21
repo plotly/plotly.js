@@ -2170,7 +2170,7 @@ describe('A bar plot', function() {
 
     function getArea(path) {
         var pos = path
-            .substr(1, path.length - 2)
+            .slice(1, path.length - 1)
             .replace('V', ',')
             .replace('H', ',')
             .replace('V', ',')
@@ -3258,7 +3258,7 @@ describe('bar uniformtext', function() {
                 if(pos0 !== -1) {
                     pos0 += 'scale('.length;
                     var pos1 = transform.indexOf(')', pos0);
-                    scale = +(transform.substring(pos0, pos1));
+                    scale = +(transform.slice(pos0, pos1));
                 }
 
                 expect(opts.scales[i]).toBeCloseTo(scale, 1, 'scale for element ' + i, msg);

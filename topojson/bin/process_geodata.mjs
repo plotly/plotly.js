@@ -215,14 +215,12 @@ async function createLakesLayer({ name, resolution, source }) {
 
 async function createSubunitsLayer({ name, resolution, source }) {
     // Only include USA for 'usa' scope since the UN and NE borders don't match exactly and slivers of Canada creep in
-    const filter = (name === 'usa' ? ['USA'] : ['AUS', 'BRA', 'CAN', 'USA'])
-        .map((id) => `adm0_a3 === "${id}"`)
-        .join(' || ');
+    const filter = name === 'usa' ? 'adm0_a3 === "USA"' : config.filters.subunits;
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
     const commands = [
         inputFilePath,
-        `-filter "${filter}"`,
+        `-filter '${filter}'`,
         `-clip ${outputDirGeojson}/${name}_${resolution}m/countries.geojson`, // Clip to the continent
         `-o ${outputFilePath}`
     ].join(' ');

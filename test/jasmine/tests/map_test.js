@@ -21,7 +21,8 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var SORTED_EVENT_KEYS = [
     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
     'lon', 'lat',
-    'bbox'
+    'bbox',
+    'xPixel', 'yPixel'
 ].sort();
 
 var TRANSITION_DELAY = 500;

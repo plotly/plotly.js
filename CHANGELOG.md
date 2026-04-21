@@ -9,6 +9,38 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.5.0] -- 2026-04-03
+
+### Added
+ - Add `hoveranywhere` and `clickanywhere` layout attributes to emit hover and click events anywhere in the plot area, not just over traces [[#7707](https://github.com/plotly/plotly.js/pull/7707)]
+ - Add `displayNotifier` configuration property to set the display of notifier in the top right area of the viewport [[#7730](https://github.com/plotly/plotly.js/pull/7730)], with thanks to @silversonicaxel for the contribution!
+- Update USA location lookup for `scattergeo` and `choropleth` traces to use both location names and abbreviations [[7731](https://github.com/plotly/plotly.js/pull/7731)]
+
+
+## [3.4.0] -- 2026-02-20
+
+### Added
+ - Add support for clicking legend titles to toggle visibility of all traces in legend [[#7698](https://github.com/plotly/plotly.js/pull/7698)]
+ - Add support for shapes to reference multiple axes [[#7666](https://github.com/plotly/plotly.js/pull/7666)]
+ - Add support for dashed marker lines in scatter plots [[#7673](https://github.com/plotly/plotly.js/pull/7673)], with thanks to @chrimaho for the contribution!
+
+### Changed
+- Increase axis autorange when bar charts have outside text labels, to avoid labels being clipped [[#7675](https://github.com/plotly/plotly.js/pull/7675)]
+
+### Fixed
+ - Fix issue where some traces in stacked area charts were not rendering their fill correctly after certain sequences of hide/show operations in the legend [[#7668](https://github.com/plotly/plotly.js/pull/7668)]
+ - Fix out of bounds index during scattergl animation trace type [[#7676](https://github.com/plotly/plotly.js/pull/7676)], with thanks to @BJohnBraddock for the contribution!
+
+
+## [3.3.1] -- 2025-12-12
+
+### Added
+- Add support for arrays for the pie properties `showlegend` and `legend`, so that these can be configured per slice. [[#7580](https://github.com/plotly/plotly.js/pull/7580)], with thanks to @my-tien for the contribution!
+
+### Changed
+ - Replace deprecated `String.substr()` with `String.slice()` [[#7662](https://github.com/plotly/plotly.js/pull/7662)], with thanks to @JBR-0100 for the contribution!
+
+
 ## [3.3.0] -- 2025-11-14
 
 ### Added

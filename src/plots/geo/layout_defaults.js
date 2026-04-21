@@ -73,7 +73,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
             var dfltSpans = constants[axisName + 'Span'];
             var hSpan = (dfltSpans[projType] || dfltSpans['*']) / 2;
             var rot = coerce(
-                'projection.rotation.' + axisName.substr(0, 3),
+                'projection.rotation.' + axisName.slice(0, 3),
                 scopeParams.projRotate[i]
             );
             rangeDflt = [rot - hSpan, rot + hSpan];

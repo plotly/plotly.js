@@ -830,7 +830,7 @@ describe('Test axes', function() {
         it('breaks scaleanchor loops and drops conflicting ratios', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
+                warnings.push(msg.slice(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -865,7 +865,7 @@ describe('Test axes', function() {
         it('silently drops invalid scaleanchor values', function() {
             var warnings = [];
             spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg.substr(0, msg.indexOf(' to avoid')));
+                warnings.push(msg.slice(0, msg.indexOf(' to avoid')));
             });
 
             layoutIn = {
@@ -1719,13 +1719,72 @@ describe('Test axes', function() {
                 width: 600,
                 height: 600
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.12, 2]);
 
                 return Plotly.relayout(gd, {
                     'xaxis.insiderange': [1, 3]
                 });
             }).then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.889, 3]);
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.879, 3]);
+            }).then(done, done.fail);
+        });
+    });
+
+    describe('minallowed / maxallowed', function() {
+        // regression test for https://github.com/plotly/plotly.js/issues/7717
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+        afterEach(destroyGraphDiv);
+
+        function expectForward(done, minallowed) {
+            Plotly.newPlot(gd, [{
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }], {
+                xaxis: { minallowed: minallowed }
+            }).then(function() {
+                var r = gd._fullLayout.xaxis.range;
+                expect(r[0]).toBeLessThan(r[1], 'axis should not be reversed for minallowed=' + minallowed);
+                expect(r[0]).toBe(minallowed, 'axis min should be pinned at minallowed');
+            }).then(done, done.fail);
+        }
+
+        it('does not reverse axis when minallowed exceeds default range max', function(done) {
+            expectForward(done, 7);
+        });
+
+        it('does not reverse axis when minallowed equals default range max', function(done) {
+            expectForward(done, 6);
+        });
+
+        it('does not reverse axis when minallowed is well above default range max', function(done) {
+            expectForward(done, 100);
+        });
+
+        it('keeps explicit autorange:reversed even when minallowed is set', function(done) {
+            Plotly.newPlot(gd, [{
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }], {
+                xaxis: { autorange: 'reversed', minallowed: 7 }
+            }).then(function() {
+                var r = gd._fullLayout.xaxis.range;
+                expect(r[0]).toBeGreaterThan(r[1], 'axis should remain reversed');
+                expect(r[1]).toBe(7, 'min slot (range[1] when reversed) should be minallowed');
+            }).then(done, done.fail);
+        });
+
+        it('does not reverse axis when maxallowed is below default range min', function(done) {
+            Plotly.newPlot(gd, [{
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                y: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }], {
+                xaxis: { maxallowed: -2 }
+            }).then(function() {
+                var r = gd._fullLayout.xaxis.range;
+                expect(r[0]).toBeLessThan(r[1], 'axis should not be reversed');
+                expect(r[1]).toBe(-2, 'axis max should be pinned at maxallowed');
             }).then(done, done.fail);
         });
     });
@@ -8149,11 +8208,11 @@ describe('more react tests', function() {
 
         Plotly.newPlot(gd, fig1)
         .then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.110, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.12, 2]);
 
             return Plotly.react(gd, fig2);
         }).then(function() {
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.164, 2]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.173, 2]);
         }).then(done, done.fail);
     });
 });

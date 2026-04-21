@@ -59,6 +59,12 @@ function slopeFn(shape, xa, ya) {
     );
 }
 
+// Variables valid for multi-axis shape references (xref/yref as arrays).
+// When a shape spans multiple axes, only these variables can be computed
+// because other variables require single-axis calculations.
+var simpleXVariables = ['x0', 'x1', 'y0', 'y1', 'dy', 'height', 'ycenter'];
+var simpleYVariables = ['x0', 'x1', 'y0', 'y1', 'dx', 'width', 'xcenter'];
+
 module.exports = {
     x0: x0Fn,
     x1: x1Fn,
@@ -72,4 +78,6 @@ module.exports = {
     length: lengthFn,
     xcenter: xcenterFn,
     ycenter: ycenterFn,
+    simpleXVariables: simpleXVariables,
+    simpleYVariables: simpleYVariables,
 };

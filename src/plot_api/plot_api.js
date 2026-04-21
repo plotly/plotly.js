@@ -1436,7 +1436,7 @@ function _restyle(gd, aobj, traces) {
         if (attr in aobj || helpers.hasParent(aobj, attr)) return;
 
         var extraparam;
-        if (attr.substr(0, 6) === 'LAYOUT') {
+        if (attr.slice(0, 6) === 'LAYOUT') {
             extraparam = layoutNP(gd.layout, attr.replace('LAYOUT', ''));
         } else {
             var tracei = traces[i];
@@ -1495,7 +1495,7 @@ function _restyle(gd, aobj, traces) {
 
         redoit[ai] = vi;
 
-        if (ai.substr(0, 6) === 'LAYOUT') {
+        if (ai.slice(0, 6) === 'LAYOUT') {
             param = layoutNP(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
@@ -1520,7 +1520,7 @@ function _restyle(gd, aobj, traces) {
             if (newVal === undefined) continue;
 
             var finalPart = param.parts[param.parts.length - 1];
-            var prefix = ai.substr(0, ai.length - finalPart.length - 1);
+            var prefix = ai.slice(0, ai.length - finalPart.length - 1);
             var prefixDot = prefix ? prefix + '.' : '';
             var innerContFull = prefix ? nestedProperty(contFull, prefix).get() : contFull;
 
@@ -1872,7 +1872,7 @@ function _relayout(gd, aobj) {
     for (i = 0; i < keys.length; i++) {
         if (keys[i].indexOf('allaxes') === 0) {
             for (j = 0; j < axes.length; j++) {
-                var scene = axes[j]._id.substr(1);
+                var scene = axes[j]._id.slice(1);
                 var axisAttr = scene.indexOf('scene') !== -1 ? scene + '.' : '';
                 var newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
 
@@ -2369,7 +2369,7 @@ function findUIPattern(key, patternSpecs) {
         var match = key.match(spec.pattern);
         if (match) {
             var head = match[1] || '';
-            return { head: head, tail: key.substr(head.length + 1), attr: spec.attr };
+            return { head: head, tail: key.slice(head.length + 1), attr: spec.attr };
         }
     }
 }
@@ -2446,7 +2446,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
                     }
                     newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                     continue;
-                } else if (tail === 'autorange' || tail.substr(0, 6) === 'range[') {
+                } else if (tail === 'autorange' || tail.slice(0, 6) === 'range[') {
                     // Special case for (auto)range since we push it back into the layout
                     // so all null should be treated equivalently to autorange: true with any range
                     var pre0 = layoutPreGUI[head + '.range[0]'];
@@ -2478,7 +2478,7 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
         // so remove it from _preGUI for next time.
         delete layoutPreGUI[key];
 
-        if (match && match.tail.substr(0, 6) === 'range[') {
+        if (match && match.tail.slice(0, 6) === 'range[') {
             newRangeAccepted[match.head] = 1;
         }
     }

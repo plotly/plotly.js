@@ -119,7 +119,7 @@ describe('Test click interactions:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'bbox',
-                'x', 'y', 'xaxis', 'yaxis'
+                'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
             ].sort());
             expect(pt.curveNumber).toEqual(0);
             expect(pt.pointNumber).toEqual(11);
@@ -153,7 +153,7 @@ describe('Test click interactions:', function() {
                 expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'bbox',
-                    'x', 'y', 'xaxis', 'yaxis'
+                    'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
                 ].sort());
                 expect(pt.curveNumber).toEqual(0);
                 expect(pt.pointNumber).toEqual(11);
@@ -225,7 +225,7 @@ describe('Test click interactions:', function() {
                 expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'bbox',
-                    'x', 'y', 'xaxis', 'yaxis'
+                    'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
                 ].sort());
                 expect(pt.curveNumber).toEqual(0);
                 expect(pt.pointNumber).toEqual(11);
@@ -315,7 +315,7 @@ describe('Test click interactions:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'bbox',
-                'x', 'y', 'xaxis', 'yaxis'
+                'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
             ].sort());
             expect(pt.curveNumber).toEqual(0);
             expect(pt.pointNumber).toEqual(11);
@@ -349,7 +349,7 @@ describe('Test click interactions:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'bbox',
-                'x', 'y', 'xaxis', 'yaxis'
+                'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
             ].sort());
             expect(pt.curveNumber).toEqual(0);
             expect(pt.pointNumber).toEqual(11);
@@ -387,7 +387,7 @@ describe('Test click interactions:', function() {
                 expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'bbox',
-                    'x', 'y', 'xaxis', 'yaxis'
+                    'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
                 ].sort());
                 expect(pt.curveNumber).toEqual(0);
                 expect(pt.pointNumber).toEqual(11);

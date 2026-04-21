@@ -355,7 +355,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 proto.drawAxes = function(doTitles) {
     var _this = this;
     var gd = _this.graphDiv;
-    var titlesuffix = _this.id.substr(7) + 'title';
+    var titlesuffix = _this.id.slice(7) + 'title';
     var layers = _this.layers;
     var aaxis = _this.aaxis;
     var baxis = _this.baxis;
@@ -677,7 +677,7 @@ proto.initInteractions = function() {
         Registry.call('_guiRelayout', gd, makeUpdate(mins));
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
+            Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long', gd);
             SHOWZOOMOUTTIP = false;
         }
     }

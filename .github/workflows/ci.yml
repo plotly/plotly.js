@@ -1,0 +1,755 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      stackgl_modules: ${{ steps.check.outputs.stackgl_modules }}
+      topojson: ${{ steps.check.outputs.topojson }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+          fi
+          if git diff --name-only "$BASE"...HEAD -- topojson/ | grep -q .; then
+            echo "topojson=true" >> "$GITHUB_OUTPUT"
+          fi
+          if git diff --name-only "$BASE"...HEAD -- stackgl_modules/ | grep -q .; then
+            echo "stackgl_modules=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ============================================================
+  # Root build job - all dependent jobs fan out from here
+  # ============================================================
+  install-and-cibuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Pretest
+        run: npm run pretest
+
+      - name: CI-Build
+        run: npm run cibuild
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: build-output
+          retention-days: 3
+          path: |
+            build/
+            lib/
+            src/version.js
+
+  # ============================================================
+  # Jasmine browser tests
+  # ============================================================
+  timezone-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run hover_label test in UTC timezone
+        uses: ./.github/actions/run-xvfb
+        env:
+          TZ: 'UTC'
+        with:
+          run: npm run test-jasmine hover_label
+
+      - name: Run hover_label test in Europe/Berlin timezone
+        uses: ./.github/actions/run-xvfb
+        env:
+          TZ: 'Europe/Berlin'
+        with:
+          run: npm run test-jasmine hover_label
+
+      - name: Run hover_label test in Asia/Tokyo timezone
+        uses: ./.github/actions/run-xvfb
+        env:
+          TZ: 'Asia/Tokyo'
+        with:
+          run: npm run test-jasmine hover_label
+
+      - name: Run hover_label test in America/Toronto timezone
+        uses: ./.github/actions/run-xvfb
+        env:
+          TZ: 'America/Toronto'
+        with:
+          run: npm run test-jasmine hover_label
+
+  no-gl-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    env:
+      TZ: 'America/Anchorage'
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 4
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run jasmine tests (no-gl, shard ${{ matrix.shard }})
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh no-gl-jasmine
+
+  webgl-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    env:
+      TZ: 'America/Anchorage'
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run jasmine tests (webgl, shard ${{ matrix.shard }})
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh webgl-jasmine
+
+  virtual-webgl-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    env:
+      TZ: 'America/Anchorage'
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run jasmine tests (virtual-webgl, shard ${{ matrix.shard }})
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh virtual-webgl-jasmine
+
+  webgl-jasmine-chromeLatest:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    env:
+      TZ: 'America/Anchorage'
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+        with:
+          chrome-version: '143.0.7499.192'
+
+      - name: Run jasmine tests (webgl chromeLatest, shard ${{ matrix.shard }})
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh webgl-jasmine
+
+  flaky-no-gl-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    env:
+      TZ: 'America/Anchorage'
+      SHARD_INDEX: 0
+      SHARD_TOTAL: 1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run flaky jasmine tests
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh flaky-no-gl-jasmine
+
+  bundle-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    env:
+      TZ: 'America/Anchorage'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run bundle jasmine tests
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh bundle-jasmine
+
+  mathjax-firefoxLatest:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    env:
+      TZ: 'America/Anchorage'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: browser-actions/setup-firefox@fcf821c621167805dd63a29662bd7cb5676c81a8 # v1
+
+      - name: Test MathJax on firefox-latest
+        uses: ./.github/actions/run-xvfb
+        with:
+          run: .github/scripts/test.sh mathjax-firefox
+
+  # ============================================================
+  # noCI tests
+  # ============================================================
+  noci-jasmine:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+        with:
+          chrome-version: 'stable'
+
+      - name: Run noCI tests
+        uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1
+        with:
+          run: ./tasks/noci_test.sh jasmine
+
+  # ============================================================
+  # Image baseline generation and comparison
+  # ============================================================
+  make-baselines:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: ./.github/actions/setup-image-env
+
+      - name: Create all png files
+        run: .github/scripts/test.sh make-baselines
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: baselines-default-${{ matrix.shard }}
+          retention-days: 3
+          path: build/test_images/
+
+  test-baselines:
+    needs: make-baselines
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: baselines-default-*
+          path: build/test_images/
+          merge-multiple: true
+
+      - name: Compare pixels
+        run: .github/scripts/test.sh test-image
+      - name: List diff folder contents
+        if: failure()
+        run: |
+          echo "=== build/test_images/ ==="
+          ls -la build/test_images/ 2>/dev/null || echo "(empty or missing)"
+          echo "=== build/test_images_diff/ ==="
+          ls -la build/test_images_diff/ 2>/dev/null || echo "(empty or missing)"
+      - name: IMAGE DIFF DETECTED
+        if: failure()
+        run: |
+          echo "::warning::Image Diff Detected: baseline images may need to be updated."
+          echo "Download the baseline images from the artifacts of this workflow run."
+          echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload test-baselines image diffs
+        if: failure()
+        with:
+          name: baselines-default-diff
+          retention-days: 7
+          path: |
+            build/test_images/
+            build/test_images_diff/
+
+  make-baselines-b64:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: ./.github/actions/setup-image-env
+
+      - name: Create all png files (b64)
+        run: .github/scripts/test.sh make-baselines-b64
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: baselines-b64-${{ matrix.shard }}
+          retention-days: 3
+          path: build/test_images/
+
+  test-baselines-b64:
+    needs: make-baselines-b64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: baselines-b64-*
+          path: build/test_images/
+          merge-multiple: true
+
+      - name: Compare pixels
+        run: .github/scripts/test.sh test-image
+      - name: IMAGE DIFF DETECTED
+        if: failure()
+        run: |
+          echo "::warning::Image Diff Detected: baseline images may need to be updated."
+          echo "Download the baseline images from the artifacts of this workflow run."
+          echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload test-baselines-b64 image diffs
+        if: failure()
+        with:
+          name: baselines-b64-diff
+          retention-days: 7
+          path: |
+            build/test_images/
+            build/test_images_diff/
+
+  make-baselines-virtual-webgl:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
+      SHARD_TOTAL: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: ./.github/actions/setup-image-env
+
+      - name: Create png files (virtual-webgl)
+        run: .github/scripts/test.sh make-baselines-virtual-webgl
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: baselines-virtual-webgl-${{ matrix.shard }}
+          retention-days: 3
+          path: build/test_images/
+
+  test-baselines-virtual-webgl:
+    needs: make-baselines-virtual-webgl
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: baselines-virtual-webgl-*
+          path: build/test_images/
+          merge-multiple: true
+
+      - name: Compare pixels
+        run: .github/scripts/test.sh test-image-virtual-webgl
+      - name: IMAGE DIFF DETECTED
+        if: failure()
+        run: |
+          echo "::warning::Image Diff Detected: baseline images may need to be updated."
+          echo "Download the baseline images from the artifacts of this workflow run."
+          echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload test-baselines-virtual-webgl image diffs
+        if: failure()
+        with:
+          name: baselines-virtual-webgl-diff
+          retention-days: 7
+          path: |
+            build/test_images/
+            build/test_images_diff/
+
+  make-baselines-mathjax3:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: ./.github/actions/setup-image-env
+
+      - name: Create mathjax v3 png files
+        run: .github/scripts/test.sh make-baselines-mathjax3
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: baselines-mathjax3
+          retention-days: 3
+          path: build/test_images/
+
+  test-baselines-mathjax3:
+    needs: make-baselines-mathjax3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: baselines-mathjax3
+          path: build/test_images/
+
+      - name: Compare pixels of mathjax v3 baselines
+        run: .github/scripts/test.sh test-image-mathjax3
+
+      - name: IMAGE DIFF DETECTED
+        if: failure()
+        run: |
+          echo "::warning::Image Diff Detected: baseline images may need to be updated."
+          echo "Download the baseline images from the artifacts of this workflow run."
+          echo "Add the new images to 'test/image/baselines/' and commit them to this pull request."
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload test-baselines-mathjax3 image diffs
+        if: failure()
+        with:
+          name: baselines-mathjax3-diff
+          retention-days: 7
+          path: |
+            build/test_images/
+            build/test_images_diff/
+
+  # ============================================================
+  # Export generation and testing
+  # ============================================================
+  make-exports:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: ./.github/actions/setup-image-env
+
+      - name: Install poppler-utils for eps export
+        run: |
+          sudo apt-get update --allow-releaseinfo-change
+          sudo apt-get install poppler-utils
+
+      - name: Create svg, jpg, jpeg, webp, pdf and eps files
+        run: .github/scripts/test.sh make-exports
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: exports
+          retention-days: 3
+          path: build/
+
+  test-exports:
+    needs: make-exports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: exports
+          path: build/
+
+      - name: Test export sizes
+        run: node test/image/export_test.js
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: failure()
+        name: Upload test-exports diffs
+        with:
+          name: exports-diff
+          retention-days: 7
+          path: build/
+
+  # ============================================================
+  # Validation jobs
+  # ============================================================
+  mock-validation:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Test validation using node.js and jsdom
+        run: npm run test-plain-obj
+
+      - name: Validate mocks
+        run: npm run test-mock
+
+  source-syntax:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Run syntax tests on source files
+        run: .github/scripts/test.sh source-syntax
+
+  # ============================================================
+  # Standalone jobs (no dependencies on install-and-cibuild)
+  # ============================================================
+  publish-dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Set up build environment
+        run: .github/scripts/env_build.sh
+
+      - name: Preview CHANGELOG for next release (only on master)
+        if: github.ref == 'refs/heads/master'
+        run: npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
+
+      - name: Set draft version in package.json
+        run: |
+          node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" $(git describe)
+
+      - name: View package.json diff between previous and next releases
+        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+
+      - name: Build dist/
+        run: npm run build
+
+      # Upload library uncompressed to allow for testing in REPLs
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload uncompressed plotly.js built from PR, using Node 22
+        with:
+          retention-days: 30
+          archive: false
+          path: dist/plotly.js
+      
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload Node 18 archive of plotly.js build folder
+        with:
+          name: dist-node18
+          retention-days: 7
+          path: dist/
+
+      - name: View dist/README.md diff between previous and next releases
+        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
+
+      - name: Preview plot-schema diff (only on master)
+        if: github.ref == 'refs/heads/master'
+        run: git --no-pager diff tags/$(git describe --tags --abbrev=0) dist/plot-schema.json || true
+
+      - name: Test plot-schema.json diff
+        run: diff --unified --color dist/plot-schema.json test/plot-schema.json
+
+  publish-dist-node-v22:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: '22.14.0'
+          cache: 'npm'
+
+      - name: Set up build environment
+        run: .github/scripts/env_build.sh
+
+      - name: Preview CHANGELOG for next release (only on master)
+        if: github.ref == 'refs/heads/master'
+        run: npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
+
+      - name: Set draft version in package.json
+        run: |
+          node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" $(git describe)
+
+      - name: View package.json diff between previous and next releases
+        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+
+      - name: Build dist/
+        run: npm run build
+      
+      # This is necessary to avoid a naming collision with the upload from the Node 18 build
+      - name: Copy library for upload
+        run: cp dist/plotly.js dist/plotly.node22.js
+
+      # Upload library uncompressed to allow for testing in REPLs
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload uncompressed plotly.js built from PR, using Node 22
+        with:
+          retention-days: 30
+          archive: false
+          path: dist/plotly.node22.js
+
+      - name: Remove copy of library
+        run: rm dist/plotly.node22.js
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload Node 22 archive of plotly.js build folder
+        with:
+          name: dist-node22
+          retention-days: 7
+          path: dist/
+
+      - name: View dist/README.md diff between previous and next releases
+        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
+
+      - name: Preview plot-schema diff (only on master)
+        if: github.ref == 'refs/heads/master'
+        run: git --no-pager diff tags/$(git describe --tags --abbrev=0) dist/plot-schema.json || true
+
+      - name: Test plot-schema.json diff
+        run: diff --unified --color dist/plot-schema.json test/plot-schema.json
+
+  test-stackgl-bundle:
+    needs: detect-changes
+    if: >-
+      (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch) ||
+      needs.detect-changes.outputs.stackgl_modules == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Set up build environment
+        run: cd stackgl_modules && npm ci
+
+      - name: Bundle bundle-stackgl/index.js
+        run: cd stackgl_modules && cp index.js INDEX.js && npm run bundle-stackgl
+
+      - name: Test stackgl_modules/index.js diff
+        run: diff --unified --color stackgl_modules/INDEX.js stackgl_modules/index.js
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload archive of stackgl_modules bundle
+        if: failure()
+        with:
+          name: stackgl-bundle
+          retention-days: 7
+          path: stackgl_modules/index.js
+
+  test-topojson-build:
+    needs: detect-changes
+    if: >-
+      (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch) ||
+      needs.detect-changes.outputs.topojson == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Set up build environment
+        run: cd topojson && npm ci
+
+      - name: Build topojson
+        run: cd topojson && mv dist dist_backup && npm run build
+
+      - name: Compare existing files with newly built files
+        run: diff -qr topojson/dist topojson/dist_backup
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload archive of topojson files
+        if: failure()
+        with:
+          name: topojson-dist
+          retention-days: 7
+          path: topojson/dist/

@@ -96,7 +96,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             }
 
             if(hasBothSides) {
-                path = pathPos + 'L' + pathNeg.substr(1) + 'Z';
+                path = pathPos + 'L' + pathNeg.slice(1) + 'Z';
             } else {
                 var startPt = [posCenterPx, valAxis.c2p(density[0].t)];
                 var endPt = [posCenterPx, valAxis.c2p(density[len - 1].t)];
@@ -107,9 +107,9 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                 }
 
                 if(hasPositiveSide) {
-                    path = 'M' + startPt + 'L' + pathPos.substr(1) + 'L' + endPt;
+                    path = 'M' + startPt + 'L' + pathPos.slice(1) + 'L' + endPt;
                 } else {
-                    path = 'M' + endPt + 'L' + pathNeg.substr(1) + 'L' + startPt;
+                    path = 'M' + endPt + 'L' + pathNeg.slice(1) + 'L' + startPt;
                 }
             }
             pathSel.attr('d', path);

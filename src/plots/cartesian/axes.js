@@ -14,6 +14,7 @@ var Drawing = require('../../components/drawing');
 
 var axAttrs = require('./layout_attributes');
 var cleanTicks = require('./clean_ticks');
+var cartesianConstants = require('./constants');
 
 var constants = require('../../constants/numerical');
 var ONEMAXYEAR = constants.ONEMAXYEAR;
@@ -125,6 +126,48 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
 };
 
 /*
+ * Coerce an array of axis references. Used by shapes for per-coordinate axis references.
+ *
+ * attr: the attribute we're generating a reference for. Should end in 'x' or 'y'
+ *     but can be prefixed, like 'ax' for annotation's arrow x
+ * dflt: the default to coerce to, or blank to use the first axis (falling back on
+ *     extraOption if there is no axis)
+ * extraOption: aside from existing axes with this letter, what non-axis value is allowed?
+ *     Only required if it's different from `dflt`
+ */
+axes.coerceRefArray = function(containerIn, containerOut, gd, attr, dflt, extraOption, expectedLen) {
+    const axLetter = attr.charAt(attr.length - 1);
+    var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
+    const refAttr = attr + 'ref';
+    var axRef = containerIn[refAttr];
+
+    // Build the axis list, which we use to validate the axis references
+    if(!dflt) dflt = axlist[0] || (typeof extraOption === 'string' ? extraOption : extraOption[0]);
+    axlist = axlist.concat(axlist.map(x => x + ' domain'));
+    axlist = axlist.concat(extraOption ? extraOption : []);
+
+    // Handle array length mismatch
+    if(axRef.length > expectedLen) {
+        // if the array is longer than the expected length, truncate it
+        Lib.warn('Array attribute ' + refAttr + ' has more entries than expected, truncating to ' + expectedLen);
+        axRef = axRef.slice(0, expectedLen);
+    } else if(axRef.length < expectedLen) {
+        // if the array is shorter than the expected length, extend using the default value
+        Lib.warn('Array attribute ' + refAttr + ' has fewer entries than expected, extending with default value');
+        axRef = axRef.concat(Array(expectedLen - axRef.length).fill(dflt));
+    }
+
+    // Clean all axis references, replace with default if invalid
+    for(var i = 0; i < axRef.length; i++) {
+        axRef[i] = axisIds.cleanId(axRef[i], axLetter, true) || axRef[i];
+        if(!axlist.includes(axRef[i])) axRef[i] = dflt;
+    }
+
+    containerOut[refAttr] = axRef;
+    return axRef;
+};
+
+/*
  * Get the type of an axis reference. This can be 'range', 'domain', or 'paper'.
  * This assumes ar is a valid axis reference and returns 'range' if it doesn't
  * match the patterns for 'paper' or 'domain'.
@@ -134,6 +177,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  */
 axes.getRefType = function(ar) {
     if(ar === undefined) { return ar; }
+    if(Array.isArray(ar)) { return 'array'; }
     if(ar === 'paper') { return 'paper'; }
     if(ar === 'pixel') { return 'pixel'; }
     if(/( domain)$/.test(ar)) { return 'domain'; } else { return 'range'; }
@@ -526,7 +570,7 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
     var threshold = 0.8;
 
     if(stats.exactDays > threshold) {
-        var numMonths = Number(dtick.substr(1));
+        var numMonths = Number(dtick.slice(1));
 
         if((stats.exactYears > threshold) && (numMonths % 12 === 0)) {
             // The exact middle of a non-leap-year is 1.5 days into July
@@ -1528,9 +1572,9 @@ function autoTickRound(ax) {
 
         if(String(dtick).charAt(0) === 'M') {
             // any tick0 more specific than a year: alway show the full date
-            if(tick0len > 10 || tick0str.substr(5) !== '01-01') ax._tickround = 'd';
+            if(tick0len > 10 || tick0str.slice(5) !== '01-01') ax._tickround = 'd';
             // show the month unless ticks are full multiples of a year
-            else ax._tickround = (+(dtick.substr(1)) % 12 === 0) ? 'y' : 'm';
+            else ax._tickround = (+(dtick.slice(1)) % 12 === 0) ? 'y' : 'm';
         } else if((dtick >= ONEDAY && tick0len <= 10) || (dtick >= ONEDAY * 15)) ax._tickround = 'd';
         else if((dtick >= ONEMIN && tick0len <= 16) || (dtick >= ONEHOUR)) ax._tickround = 'M';
         else if((dtick >= ONESEC && tick0len <= 19) || (dtick >= ONEMIN)) ax._tickround = 'S';
@@ -1549,7 +1593,7 @@ function autoTickRound(ax) {
     } else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
         // linear or log (except D1, D2)
         var rng = ax.range.map(ax.r2d || Number);
-        if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
+        if(!isNumeric(dtick)) dtick = Number(dtick.slice(1));
         // 2 digits past largest digit of dtick
         ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
@@ -1582,7 +1626,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
 
     // everything else is a string, one character plus a number
     var tType = dtick.charAt(0);
-    var dtSigned = axSign * Number(dtick.substr(1));
+    var dtSigned = axSign * Number(dtick.slice(1));
 
     // Dates: months (or years - see Lib.incrementMonth)
     if(tType === 'M') return Lib.incrementMonth(x, dtSigned, calendar);
@@ -1627,7 +1671,7 @@ axes.tickFirst = function(ax, opts) {
     }
 
     var tType = dtick.charAt(0);
-    var dtNum = Number(dtick.substr(1));
+    var dtNum = Number(dtick.slice(1));
 
     // Dates: months (or years)
     if(tType === 'M') {
@@ -1825,8 +1869,8 @@ function formatDate(ax, out, hover, extraPrecision) {
 
     var splitIndex = dateStr.indexOf('\n');
     if(splitIndex !== -1) {
-        headStr = dateStr.substr(splitIndex + 1);
-        dateStr = dateStr.substr(0, splitIndex);
+        headStr = dateStr.slice(splitIndex + 1);
+        dateStr = dateStr.slice(0, splitIndex);
     }
 
     if(extraPrecision) {
@@ -2163,12 +2207,12 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(tickRound === 0) v = String(Math.floor(v));
         else if(tickRound < 0) {
             v = String(Math.round(v));
-            v = v.substr(0, v.length + tickRound);
+            v = v.slice(0, Math.max(0, v.length + tickRound));
             for(var i = tickRound; i < 0; i++) v += '0';
         } else {
             v = String(v);
             var dp = v.indexOf('.') + 1;
-            if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
+            if(dp) v = v.slice(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
         v = Lib.numSeparate(v, ax._separators, separatethousands);
@@ -2289,8 +2333,8 @@ axes.getSubplots = function(gd, ax) {
     var out = ax ? axes.findSubplotsWithAxis(allSubplots, ax) : allSubplots;
 
     out.sort(function(a, b) {
-        var aParts = a.substr(1).split('y');
-        var bParts = b.substr(1).split('y');
+        var aParts = a.slice(1).split('y');
+        var bParts = b.slice(1).split('y');
 
         if(aParts[0] === bParts[0]) return +aParts[1] - +bParts[1];
         return +aParts[0] - +bParts[0];

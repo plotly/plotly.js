@@ -42,8 +42,8 @@ function makeSchema(plotlyPath, schemaPath) {
     const Plotly = plotlyNode(plotlyPath);
     const obj = Plotly.PlotSchema.get();
     const sortedObj = sortObject(obj);
-    const plotSchemaRaw = JSON.stringify(obj, null, 1);
-    const plotSchemaStr = JSON.stringify(sortedObj, null, 1);
+    const plotSchemaRaw = JSON.stringify(obj, null, 2);
+    const plotSchemaStr = JSON.stringify(sortedObj, null, 2);
 
     fs.writeFileSync(schemaPath, plotSchemaStr);
 

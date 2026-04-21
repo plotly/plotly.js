@@ -7,12 +7,14 @@ var NOTEDATA = [];
 
 /**
  * notifier
- * @param {String} text The person's user name
- * @param {Number} [delay=1000] The delay time in milliseconds
- *          or 'long' which provides 2000 ms delay time.
+ * @param {string} text - The message to display in the notification
+ * @param {number|'long'|'stick'} [displayLength=1000] - Display duration in ms,
+ *     'long' for 3000ms, or 'stick' to keep until manually closed
+ * @param {object} [gd] - Plot div; if provided and gd._context.displayNotifier === false, notification is suppressed
  * @return {undefined} this function does not return a value
  */
-module.exports = function(text, displayLength) {
+module.exports = function(text, displayLength, gd) {
+    if(gd?._context?.displayNotifier === false) return;
     if(NOTEDATA.indexOf(text) !== -1) return;
 
     NOTEDATA.push(text);
@@ -63,15 +65,15 @@ module.exports = function(text, displayLength) {
 
             if(displayLength === 'stick') {
                 note.transition()
-                        .duration(350)
-                        .style('opacity', 1);
+                    .duration(350)
+                    .style('opacity', 1);
             } else {
                 note.transition()
-                        .duration(700)
-                        .style('opacity', 1)
+                    .duration(700)
+                    .style('opacity', 1)
                     .transition()
-                        .delay(ts)
-                        .call(killNote);
+                    .delay(ts)
+                    .call(killNote);
             }
         });
 };

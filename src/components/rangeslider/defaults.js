@@ -45,10 +45,10 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     if(subplots) {
         var yIds = subplots.cartesian
             .filter(function(subplotId) {
-                return subplotId.substr(0, subplotId.indexOf('y')) === axisIds.name2id(axName);
+                return subplotId.slice(0, Math.max(0, subplotId.indexOf('y'))) === axisIds.name2id(axName);
             })
             .map(function(subplotId) {
-                return subplotId.substr(subplotId.indexOf('y'), subplotId.length);
+                return subplotId.slice(subplotId.indexOf('y'), subplotId.length);
             });
         var yNames = Lib.simpleMap(yIds, axisIds.id2name);
         for(var i = 0; i < yNames.length; i++) {

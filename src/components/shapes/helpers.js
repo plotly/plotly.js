@@ -41,7 +41,7 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
         var relevantParamIdx = paramsToUse[segment.charAt(0)].drawn;
         if(relevantParamIdx === undefined) return;
 
-        var params = segment.substr(1).match(constants.paramRE);
+        var params = segment.slice(1).match(constants.paramRE);
         if(!params || params.length < relevantParamIdx) return;
 
         var str = params[relevantParamIdx];
@@ -51,6 +51,24 @@ exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     });
 
     return extractedCoordinates;
+};
+
+exports.countDefiningCoords = function(shapeType, path, axLetter) {
+    // non-path shapes always have 2 defining coordinates
+    if(shapeType !== 'path') return 2;
+    if(!path) return 0;
+
+    const segments = path.match(constants.segmentRE);
+    if(!segments) return 0;
+
+    const paramIsAxis = axLetter === 'x' ? constants.paramIsX : constants.paramIsY;
+
+    return segments.reduce((coordCount, segment) => {
+        // for each path command, check if there is a drawn coordinate for this axis
+        const segmentType = segment.charAt(0);
+        const hasDrawn = paramIsAxis[segmentType].drawn !== undefined;
+        return coordCount + (hasDrawn ? 1 : 0);
+    }, 0);
 };
 
 exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
@@ -173,66 +191,104 @@ exports.makeSelectionsOptionsAndPlotinfo = function(gd, index) {
 
 
 exports.getPathString = function(gd, options) {
-    var type = options.type;
-    var xRefType = Axes.getRefType(options.xref);
-    var yRefType = Axes.getRefType(options.yref);
-    var xa = Axes.getFromId(gd, options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
-    var gs = gd._fullLayout._size;
-    var x2r, x2p, y2r, y2p;
-    var xShiftStart = getPixelShift(xa, options.x0shift);
-    var xShiftEnd = getPixelShift(xa, options.x1shift);
-    var yShiftStart = getPixelShift(ya, options.y0shift);
-    var yShiftEnd = getPixelShift(ya, options.y1shift);
+    const shapeType = options.type;
+    const xRefType = Axes.getRefType(options.xref);
+    const yRefType = Axes.getRefType(options.yref);
+    const gs = gd._fullLayout._size;
+    var xa, ya;
+    var xShiftStart, xShiftEnd, yShiftStart, yShiftEnd;
+    var x2p, y2p;
     var x0, x1, y0, y1;
 
-    if(xa) {
-        if(xRefType === 'domain') {
-            x2p = function(v) { return xa._offset + xa._length * v; };
+    function getConverter(axis, refType, shapeType, isVertical) {
+        var converter;
+        if(axis) {
+            if(refType === 'domain') {
+                if(isVertical) {
+                    converter = function(v) { return axis._offset + axis._length * (1 - v); };
+                } else {
+                    converter = function(v) { return axis._offset + axis._length * v; };
+                }
+            } else {
+                const d2r = exports.shapePositionToRange(axis);
+                converter = function(v) { return axis._offset + axis.r2p(d2r(v, true)); };
+
+                if(shapeType === 'path' && axis.type === 'date') converter = exports.decodeDate(converter);
+            }
         } else {
-            x2r = exports.shapePositionToRange(xa);
-            x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
+            if(isVertical) {
+                converter = function(v) { return gs.t + gs.h * (1 - v); };
+            } else {
+                converter = function(v) { return gs.l + gs.w * v; };
+            }
         }
-    } else {
-        x2p = function(v) { return gs.l + gs.w * v; };
+
+        return converter;
     }
 
-    if(ya) {
-        if(yRefType === 'domain') {
-            y2p = function(v) { return ya._offset + ya._length * (1 - v); };
+    // Build function(s) to convert data to pixel
+    if(xRefType === 'array') {
+        x2p = [];
+        xa = options.xref.map(function(ref) { return Axes.getFromId(gd, ref); });
+        x2p = options.xref.map(function(ref, i) {
+            return getConverter(xa[i], Axes.getRefType(ref), shapeType, false);
+        });
+    } else {
+        xa = Axes.getFromId(gd, options.xref);
+        x2p = getConverter(xa, xRefType, shapeType, false);
+    }
+    if(yRefType === 'array') {
+        y2p = [];
+        ya = options.yref.map(function(ref) { return Axes.getFromId(gd, ref); });
+        y2p = options.yref.map(function(ref, i) {
+            return getConverter(ya[i], Axes.getRefType(ref), shapeType, true);
+        });
+    } else {
+        ya = Axes.getFromId(gd, options.yref);
+        y2p = getConverter(ya, yRefType, shapeType, true);
+    }
+
+    if(shapeType === 'path') { return convertPath(options, x2p, y2p); }
+
+    // Calculate pixel coordinates for non-path shapes
+    // Pixel sizemode for array refs is not supported for now
+    if(xRefType === 'array') {
+        xShiftStart = getPixelShift(xa[0], options.x0shift);
+        xShiftEnd = getPixelShift(xa[1], options.x1shift);
+        x0 = x2p[0](options.x0) + xShiftStart;
+        x1 = x2p[1](options.x1) + xShiftEnd;
+    } else {
+        xShiftStart = getPixelShift(xa, options.x0shift);
+        xShiftEnd = getPixelShift(xa, options.x1shift);
+        if(options.xsizemode === 'pixel') {
+            const xAnchorPos = x2p(options.xanchor);
+            x0 = xAnchorPos + options.x0 + xShiftStart;
+            x1 = xAnchorPos + options.x1 + xShiftEnd;
         } else {
-            y2r = exports.shapePositionToRange(ya);
-            y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
+            x0 = x2p(options.x0) + xShiftStart;
+            x1 = x2p(options.x1) + xShiftEnd;
         }
+    }
+    if(yRefType === 'array') {
+        yShiftStart = getPixelShift(ya[0], options.y0shift);
+        yShiftEnd = getPixelShift(ya[1], options.y1shift);
+        y0 = y2p[0](options.y0) + yShiftStart;
+        y1 = y2p[1](options.y1) + yShiftEnd;
     } else {
-        y2p = function(v) { return gs.t + gs.h * (1 - v); };
+        yShiftStart = getPixelShift(ya, options.y0shift);
+        yShiftEnd = getPixelShift(ya, options.y1shift);
+        if(options.ysizemode === 'pixel') {
+            const yAnchorPos = y2p(options.yanchor);
+            y0 = yAnchorPos - options.y0 + yShiftStart;
+            y1 = yAnchorPos - options.y1 + yShiftEnd;
+        } else {
+            y0 = y2p(options.y0) + yShiftStart;
+            y1 = y2p(options.y1) + yShiftEnd;
+        }
     }
 
-    if(type === 'path') {
-        if(xa && xa.type === 'date') x2p = exports.decodeDate(x2p);
-        if(ya && ya.type === 'date') y2p = exports.decodeDate(y2p);
-        return convertPath(options, x2p, y2p);
-    }
-    if(options.xsizemode === 'pixel') {
-        var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0 + xShiftStart;
-        x1 = xAnchorPos + options.x1 + xShiftEnd;
-    } else {
-        x0 = x2p(options.x0) + xShiftStart;
-        x1 = x2p(options.x1) + xShiftEnd;
-    }
-
-    if(options.ysizemode === 'pixel') {
-        var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0 + yShiftStart;
-        y1 = yAnchorPos - options.y1 + yShiftEnd;
-    } else {
-        y0 = y2p(options.y0) + yShiftStart;
-        y1 = y2p(options.y1) + yShiftEnd;
-    }
-
-    if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
-    if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
+    if(shapeType === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
+    if(shapeType === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
 
     // circle
     var cx = (x0 + x1) / 2;
@@ -246,13 +302,16 @@ exports.getPathString = function(gd, options) {
         rArc + ' 0 0,1 ' + rightPt + 'Z';
 };
 
-
 function convertPath(options, x2p, y2p) {
-    var pathIn = options.path;
-    var xSizemode = options.xsizemode;
-    var ySizemode = options.ysizemode;
-    var xAnchor = options.xanchor;
-    var yAnchor = options.yanchor;
+    const pathIn = options.path;
+    const xSizemode = options.xsizemode;
+    const ySizemode = options.ysizemode;
+    const xAnchor = options.xanchor;
+    const yAnchor = options.yanchor;
+    const isArrayXref = Array.isArray(options.xref);
+    const isArrayYref = Array.isArray(options.yref);
+    var xVertexIndex = 0;
+    var yVertexIndex = 0;
 
     return pathIn.replace(constants.segmentRE, function(segment) {
         var paramNumber = 0;
@@ -260,14 +319,20 @@ function convertPath(options, x2p, y2p) {
         var xParams = constants.paramIsX[segmentType];
         var yParams = constants.paramIsY[segmentType];
         var nParams = constants.numParams[segmentType];
+        const hasDrawnX = xParams.drawn !== undefined;
+        const hasDrawnY = yParams.drawn !== undefined;
 
-        var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
+        // Use vertex indices for array refs (same converter for all params in segment)
+        const segmentX2p = isArrayXref ? x2p[xVertexIndex] : x2p;
+        const segmentY2p = isArrayYref ? y2p[yVertexIndex] : y2p;
+
+        var paramString = segment.slice(1).replace(constants.paramRE, function(param) {
             if(xParams[paramNumber]) {
-                if(xSizemode === 'pixel') param = x2p(xAnchor) + Number(param);
-                else param = x2p(param);
+                if(xSizemode === 'pixel') param = segmentX2p(xAnchor) + Number(param);
+                else param = segmentX2p(param);
             } else if(yParams[paramNumber]) {
-                if(ySizemode === 'pixel') param = y2p(yAnchor) - Number(param);
-                else param = y2p(param);
+                if(ySizemode === 'pixel') param = segmentY2p(yAnchor) - Number(param);
+                else param = segmentY2p(param);
             }
             paramNumber++;
 
@@ -279,6 +344,9 @@ function convertPath(options, x2p, y2p) {
             paramString = paramString.replace(/[\s,]*X.*/, '');
             Lib.log('Ignoring extra params in segment ' + segment);
         }
+
+        if(hasDrawnX) xVertexIndex++;
+        if(hasDrawnY) yVertexIndex++;
 
         return segmentType + paramString;
     });

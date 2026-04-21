@@ -545,6 +545,95 @@ describe('end-to-end scattergl tests', function() {
             expect(getSnap()).toEqual(TOO_MANY_POINTS + 1);
         }).then(done, done.fail);
     });
+
+    it('@gl should not throw when plot is called with a subset of scattergl calcdata', function (done) {
+        var layout = {
+            width: 300,
+            height: 300,
+            margin: { l: 0, r: 0, t: 0, b: 0 }
+        };
+        var config = { plotGlPixelRatio: 1 };
+
+        Plotly.newPlot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            x: [0, 1],
+            y: [0, 1],
+            line: { width: 10 }
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            x: [0, 1],
+            y: [1, 0],
+            line: { width: 10 }
+        }], layout, config)
+            .then(function () {
+                var subplot = gd._fullLayout._plots.xy;
+                expect(subplot._scene.count).toBeGreaterThan(1);
+
+                expect(function () {
+                    ScatterGl.plot(gd, subplot, [gd.calcdata[1]]);
+                }).not.toThrow();
+            })
+            .then(done, done.fail);
+    });
+
+
+    it('@gl should not throw when animating frames redraw=true', function (done) {
+        var layout = {
+            width: 400,
+            height: 300,
+            margin: { l: 0, r: 0, t: 0, b: 0 },
+            xaxis: { range: [0, 30] },
+            yaxis: { range: [0, 900] }
+        };
+        var config = { plotGlPixelRatio: 1 };
+
+        function makeXY(n) {
+            var x = [];
+            var y = [];
+            for (var i = 0; i < n; i++) {
+                x.push(i);
+                y.push(i * i);
+            }
+            return { x: x, y: y };
+        }
+
+        var xy0 = makeXY(0);
+        var xy10 = makeXY(10);
+
+        var data = [{
+            type: 'scattergl',
+            mode: 'markers',
+            marker: { size: 5 },
+            x: xy10.x,
+            y: xy10.y
+        }];
+
+        var frames = [{
+            name: '0',
+            data: [{ x: xy0.x, y: xy0.y }]
+        }, {
+            name: '10',
+            data: [{ x: xy10.x, y: xy10.y }]
+        }];
+
+        Plotly.newPlot(gd, data, layout, config)
+            .then(function () {
+                return Plotly.addFrames(gd, frames);
+            })
+            .then(function () {
+                return Plotly.animate(gd, ['10'], {
+                    mode: 'immediate',
+                    frame: { duration: 0, redraw: true },
+                    transition: { duration: 0 }
+                });
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+
 });
 
 describe('Test scattergl autorange:', function() {

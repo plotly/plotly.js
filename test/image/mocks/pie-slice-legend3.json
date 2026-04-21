@@ -1,0 +1,45 @@
+{
+  "data": [
+    {
+      "label0": 1,
+      "type": "pie",
+      "values": [1, 2, 3, 4],
+      "showlegend": [true, false, true],
+      "legend": ["legend", "legend2", "legend3"]
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "Slice 2 is hidden, slice 4 is assigned<br>default legend and default visibility"
+    },
+    "width": 400,
+    "height": 400,
+    "legend": {
+      "title": {
+        "text": "legend"
+      },
+      "xanchor": "left",
+      "yanchor": "top",
+      "x": -0.2,
+      "y": -0.1
+    },
+    "legend2": {
+      "title": {
+        "text": "legend2: I should be hidden!"
+      },
+      "xanchor": "left",
+      "yanchor": "top",
+      "x": 0.1,
+      "y": -0.1
+    },
+    "legend3": {
+      "title": {
+        "text": "legend3"
+      },
+      "xanchor": "left",
+      "yanchor": "top",
+      "x": 0.4,
+      "y": -0.1
+    }
+  }
+}

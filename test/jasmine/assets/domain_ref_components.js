@@ -586,8 +586,8 @@ function testShapeCombo(combo, assert, gd) {
     var xaroPos = combo[3];
     var yaroPos = combo[4];
     var shapeType = combo[5];
-    var xAxNum = axispair[0].substr(1);
-    var yAxNum = axispair[1].substr(1);
+    var xAxNum = axispair[0].slice(1);
+    var yAxNum = axispair[1].slice(1);
     return Plotly.newPlot(gd, Lib.extendDeep({}, testMock))
         .then(function(gd) {
             return shapeTest(gd,

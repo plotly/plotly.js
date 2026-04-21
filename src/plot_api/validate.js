@@ -377,7 +377,7 @@ function convertPathToAttributeString(path) {
         var p = path[i];
 
         if(typeof p === 'number') {
-            astr = astr.substr(0, astr.length - 1) + '[' + p + ']';
+            astr = astr.slice(0, -1) + '[' + p + ']';
         } else {
             astr += p;
         }
