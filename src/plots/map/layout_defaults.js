@@ -32,7 +32,7 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
         var { minLat, maxLat } = getMinBoundLat(lat);
         // this param is called bounds in mapLibre ctor
         // not to be confused with maxBounds aliased below
-        containerOut.fitBounds = {
+        containerOut._fitBounds = {
             west:  minLon,
             east:  maxLon,
             south: minLat,

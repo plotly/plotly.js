@@ -80,9 +80,9 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     var bounds = opts.bounds;
     var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
-    var fitBounds = opts.fitBounds ? [
-        [opts.fitBounds.west, opts.fitBounds.south],
-        [opts.fitBounds.east, opts.fitBounds.north],
+    var _fitBounds = opts._fitBounds ? [
+        [opts._fitBounds.west, opts._fitBounds.south],
+        [opts._fitBounds.east, opts._fitBounds.north],
     ] : null;
 
     // create the map!
@@ -94,7 +94,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         zoom: opts.zoom,
         bearing: opts.bearing,
         pitch: opts.pitch,
-        bounds: fitBounds,
+        bounds: _fitBounds,
         fitBoundsOptions: {
             padding: 20,
         },
@@ -342,8 +342,8 @@ proto.updateLayout = function(fullLayout) {
     if(!this.dragging && !this.wheeling) {
         map.setCenter(convertCenter(opts.center));
         map.setZoom(opts.zoom);
-        if (opts.fitBounds) {
-            var { west, south, east, north } = opts.fitBounds
+        if (opts._fitBounds) {
+            var { west, south, east, north } = opts._fitBounds
             map.fitBounds([[west, south], [east, north]], { padding: 20 })
         }
         map.setBearing(opts.bearing);
