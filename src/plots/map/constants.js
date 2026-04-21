@@ -85,6 +85,5 @@ module.exports = {
 
 
     mapOnErrorMsg: 'Map error.',
-
-
+    fitBoundsPadding: 20,
 };

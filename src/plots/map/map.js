@@ -96,7 +96,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         pitch: opts.pitch,
         bounds: _fitBounds,
         fitBoundsOptions: {
-            padding: 20,
+            padding: constants.fitBoundsPadding,
         },
         maxBounds: maxBounds,
 
@@ -344,7 +344,7 @@ proto.updateLayout = function(fullLayout) {
         map.setZoom(opts.zoom);
         if (opts._fitBounds) {
             var { west, south, east, north } = opts._fitBounds
-            map.fitBounds([[west, south], [east, north]], { padding: 20 })
+            map.fitBounds([[west, south], [east, north]], { padding: constants.fitBoundsPadding })
         }
         map.setBearing(opts.bearing);
         map.setPitch(opts.pitch);
