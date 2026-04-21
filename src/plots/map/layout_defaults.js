@@ -28,8 +28,8 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     // dynamically set center/zoom if neither param provided
     if (!containerIn?.center && !containerIn?.zoom) {
         var [{ lon, lat }] = opts.fullData;
-        var { minLon, maxLon } = getMinBoundLon(lon);
-        var { minLat, maxLat } = getMinBoundLat(lat);
+        var { minLon, maxLon } = getLonBounds(lon);
+        var { minLat, maxLat } = getLatBounds(lat);
         // this param is called bounds in mapLibre ctor
         // not to be confused with maxBounds aliased below
         containerOut._fitBounds = {
@@ -63,7 +63,7 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     containerOut._input = containerIn;
 }
 
-function getMinBoundLon(lon) {
+function getLonBounds(lon) {
     if (!lon.length) return { minLon: 0, maxLon: 0 };
 
     // normalize to [0, 360)
@@ -101,7 +101,7 @@ function getMinBoundLon(lon) {
     }
 }
 
-function getMinBoundLat(lat) {
+function getLatBounds(lat) {
     return {
         minLat: Math.min(...lat),
         maxLat: Math.max(...lat)
