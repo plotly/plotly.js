@@ -102,9 +102,15 @@ function getLonBounds(lon) {
 }
 
 function getLatBounds(lat) {
+    let minLat=lat[0]
+    let maxLat=lat[0]
+    for(let i = 1; i < lat.length; i++){
+        minLat=Math.min(minLat,lat[i])
+        maxLat=Math.max(maxLat,lat[i])
+    }
     return {
-        minLat: Math.min(...lat),
-        maxLat: Math.max(...lat)
+        minLat,
+        maxLat
     };
 }
 
