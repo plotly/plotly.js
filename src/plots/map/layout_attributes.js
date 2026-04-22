@@ -77,6 +77,17 @@ var attrs = module.exports = overrideAll({
             '(in degrees, where *0* means perpendicular to the surface of the map) (map.pitch).'
         ].join(' ')
     },
+    disableDynamicCentering: {
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'By default the map camera will be dynamically centered on lon/lat points.',
+            'This can be slow when the number of points are above 1e7.',
+            'It is recommended to disable this feature for large datasets.',
+            'Note: This feature is also disabled if center or zoom attributes are set',
+            'regardless of disableDynamicCentering\'s setting.'
+        ].join(' ')
+    },
 
     bounds: {
         west: {

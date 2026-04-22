@@ -24,9 +24,10 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('zoom');
     coerce('bearing');
     coerce('pitch');
+    coerce('disableDynamicCentering');
 
     // dynamically set center/zoom if neither param provided
-    if (!containerIn?.center && !containerIn?.zoom) {
+    if (!containerIn?.disableDynamicCentering && !containerIn?.center && !containerIn?.zoom) {
         var [{ lon, lat }] = opts.fullData;
         var { minLon, maxLon } = getLonBounds(lon);
         var { minLat, maxLat } = getLatBounds(lat);
