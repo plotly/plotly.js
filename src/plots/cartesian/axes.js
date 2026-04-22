@@ -2210,9 +2210,27 @@ function numFormat(v, ax, fmtoverride, hover) {
             v = v.slice(0, Math.max(0, v.length + tickRound));
             for(var i = tickRound; i < 0; i++) v += '0';
         } else {
-            v = String(v);
-            var dp = v.indexOf('.') + 1;
-            if(dp) v = v.slice(0, dp + tickRound).replace(/\.?0+$/, '');
+            var vStr = String(v);
+            var ep = vStr.indexOf('e');
+            if(ep >= 0) {
+                var mantissa = vStr.slice(0, ep);
+                var exponentStr = vStr.slice(ep);
+                var dp = mantissa.indexOf('.') + 1;
+                var exponentVal = parseInt(exponentStr.slice(1), 10);
+                var adjustedTickRound = tickRound + exponentVal;
+                if(dp) {
+                    if(adjustedTickRound < 0) {
+                        mantissa = mantissa.slice(0, dp - 1);
+                    } else {
+                        mantissa = mantissa.slice(0, dp + adjustedTickRound).replace(/\.?0+$/, '');
+                    }
+                }
+                v = mantissa + exponentStr;
+            } else {
+                v = vStr;
+                var dp = v.indexOf('.') + 1;
+                if(dp) v = v.slice(0, dp + tickRound).replace(/\.?0+$/, '');
+            }
         }
         // insert appropriate decimal point and thousands separator
         v = Lib.numSeparate(v, ax._separators, separatethousands);
