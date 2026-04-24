@@ -1,10 +1,17 @@
-'use strict';
-
+const _color = require('color').default;
 const isNumeric = require('fast-isnumeric');
-const isTypedArray = require('../../lib/array').isTypedArray;
-const color = require('color').default;
-
+const { isTypedArray } = require('../../lib/array');
 const { background, defaultLine, defaults, lightLine } = require('./attributes');
+
+// Safe wrapper: falls back to black instead of throwing on invalid input.
+// This matches the tinycolor2 behavior.
+const color = (cstr) => {
+    try {
+        return _color(cstr);
+    } catch (e) {
+        return _color('#000');
+    }
+};
 
 const rgb = (cstr) => {
     const { r, g, b } = color(cstr).rgb().object();
@@ -79,15 +86,12 @@ const contrast = (cstr, lightAmount, darkAmount) => {
     if (c.alpha() !== 1) c = color(combine(cstr, background));
 
     // TODO: Should the API change such that lightAmount/darkAmount are passed in as decimal instead of percent number?
-    const newColor = color(
-        c.isDark()
-            ? lightAmount
-                ? c.lighten(lightAmount / 100)
-                : background
-            : darkAmount
-              ? c.darken(darkAmount / 100)
-              : defaultLine
-    );
+    let newColor;
+    if (c.isDark()) {
+        newColor = color(lightAmount ? c.lighten(lightAmount / 100) : background);
+    } else {
+        newColor = color(darkAmount ? c.darken(darkAmount / 100) : defaultLine);
+    }
 
     return newColor.rgb().string();
 };
@@ -175,10 +179,25 @@ const equals = (cstr1, cstr2) => cstr1 && cstr2 && color(cstr1).rgb().string() =
 
 const isValid = (cstr) => {
     try {
-        return cstr && !!color(cstr);
+        return cstr && !!_color(cstr);
     } catch {
         return false;
     }
+};
+
+// RGB-space brightening equivalent to tinycolor's brighten().
+// Adds a fixed amount to each RGB channel (unlike lighten which works in HSL space).
+const brighten = (cstr, amount) => {
+    amount = amount === 0 ? 0 : amount || 10;
+    const c = color(cstr).rgb().object();
+    const adj = Math.round(255 * (amount / 100));
+    return color({
+        r: Math.max(0, Math.min(255, c.r + adj)),
+        g: Math.max(0, Math.min(255, c.g + adj)),
+        b: Math.max(0, Math.min(255, c.b + adj))
+    })
+        .rgb()
+        .string();
 };
 
 const mix = (cstr1, cstr2, weight) =>
@@ -187,27 +206,25 @@ const mix = (cstr1, cstr2, weight) =>
         .rgb()
         .string();
 
-const mostReadable = (baseColor, colorList = []) => {
+const mostReadable = (baseColor, colorList = ['#000', '#fff']) => {
     let bestColor;
     let bestContrast = -Infinity;
 
     for (const cstr of colorList) {
-        const contrast = color(baseColor).contrast(color(cstr));
-        if (contrast > bestContrast) {
-            bestContrast = contrast;
+        const contrastRatio = color(baseColor).contrast(color(cstr));
+        if (contrastRatio > bestContrast) {
+            bestContrast = contrastRatio;
             bestColor = color(cstr).rgb().string();
         }
     }
 
-    // Fall back to black/white if provided colors don't have proper contrast level
-    return bestColor && color(baseColor).level(color(bestColor))
-        ? bestColor
-        : mostReadable(baseColor, ['#000', '#fff']);
+    return bestColor;
 };
 
 module.exports = {
     addOpacity,
     background,
+    brighten,
     clean,
     color,
     combine,

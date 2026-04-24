@@ -37,11 +37,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var colors = layout.colorway;
 
-    var defaultNodePalette = function(i) {return colors[i % colors.length];};
+    const defaultNodePalette = (i) => colors[i % colors.length];
 
-    coerceNode('color', nodeOut.label.map(function(d, i) {
-        return Color.addOpacity(defaultNodePalette(i), 0.8);
-    }));
+    coerceNode(
+        'color',
+        nodeOut.label.map((d, i) => Color.addOpacity(defaultNodePalette(i), 0.8))
+    );
     coerceNode('customdata');
 
     // link attributes
@@ -68,19 +69,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     function makeDefaultHoverColor(_linkColor) {
         // hopefully the user-specified color is valid, but if not that can be caught elsewhere
-        if(!Color.isValid(_linkColor)) return _linkColor;
+        if (!Color.isValid(_linkColor)) return _linkColor;
 
         const c = Color.color(_linkColor);
         const alpha = c.alpha();
 
         return alpha <= 0.8
-            ? c.alpha(alpha + 0.2).rgb().string()
-            : (darkBG ? c.lighten(0.1) : c.darken(0.1)).rgb().string()
+            ? c
+                  .alpha(alpha + 0.2)
+                  .rgb()
+                  .string()
+            : (darkBG ? c.lighten(0.1) : c.darken(0.1)).rgb().string();
     }
 
-    coerceLink('hovercolor', Array.isArray(linkColor) ?
-        linkColor.map(makeDefaultHoverColor) :
-        makeDefaultHoverColor(linkColor)
+    coerceLink(
+        'hovercolor',
+        Array.isArray(linkColor) ? linkColor.map(makeDefaultHoverColor) : makeDefaultHoverColor(linkColor)
     );
 
     coerceLink('customdata');
@@ -96,10 +100,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('valueformat');
     coerce('valuesuffix');
 
-    var dfltArrangement;
-    if(nodeOut.x.length && nodeOut.y.length) {
-        dfltArrangement = 'freeform';
-    }
+    const dfltArrangement = nodeOut.x.length && nodeOut.y.length ? 'freeform' : undefined;
     coerce('arrangement', dfltArrangement);
 
     Lib.coerceFont(coerce, 'textfont', layout.font, { autoShadowDflt: true });

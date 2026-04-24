@@ -56,9 +56,8 @@ describe('Test color:', function() {
         });
 
         it('should count 0 as a fraction but not 1, except in alpha', function() {
-            // this is weird... but old tinycolor actually breaks
-            // if you pass in a 1, while in some cases a 1 here
-            // could be ambiguous - so we treat it as a real 1.
+            // a value of 1 here could be ambiguous (fraction vs integer)
+            // so we treat it as a real 1.
             var container = {
                 fractioncolor: 'rgb(0, 0.4, 0.8)',
                 regularcolor: 'rgb(1, 0.5, 0.5)',
