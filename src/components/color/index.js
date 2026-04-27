@@ -96,9 +96,15 @@ const contrast = (cstr, lightAmount, darkAmount) => {
     return newColor.rgb().string();
 };
 
-const stroke = (s, cstr) => s.style({ stroke: rgb(cstr), 'stroke-opacity': opacity(cstr) });
+const stroke = (s, cstr) => {
+    const c = color(cstr);
+    s.style({ stroke: rgb(cstr), 'stroke-opacity': c.alpha() });
+};
 
-const fill = (s, cstr) => s.style({ fill: rgb(cstr), 'fill-opacity': opacity(cstr) });
+const fill = (s, cstr) => {
+    const c = color(cstr);
+    s.style({ fill: rgb(cstr), 'fill-opacity': c.alpha() });
+};
 
 // search container for colors with the deprecated rgb(fractions) format
 // and convert them to rgb(0-255 values)
