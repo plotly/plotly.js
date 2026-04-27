@@ -1,0 +1,54 @@
+{
+  "disallow": [
+    "map_angles",
+    "map_density0-legend",
+    "map_fonts-supported-open-sans-weight",
+    "map_fonts-supported-open-sans",
+    "map_layers",
+    "map_osm-style",
+    "map_predefined-styles2",
+    "map_scattercluster",
+    "map_stamen-style"
+  ],
+  "flaky": ["gl3d_bunny-hull"],
+  "flaky_maps": [
+    "map_density0-legend",
+    "map_fonts-supported-metropolis-italic",
+    "map_predefined-styles1"
+  ],
+  "flaky_virtual_webgl": [
+    "gl2d_parcoords_256_colors",
+    "gl2d_parcoords_coloraxis",
+    "gl2d_parcoords_constraints",
+    "gl2d_parcoords_rgba_colorscale",
+    "gl3d_cone-lighting",
+    "gl3d_cone-wind",
+    "gl3d_directions-streamtube1",
+    "gl3d_directions-streamtube2",
+    "gl3d_ibm-plot",
+    "gl3d_isosurface_2surfaces-checker_spaceframe",
+    "gl3d_isosurface_log-axis_slices_surface-fill",
+    "gl3d_isosurface_math",
+    "gl3d_isosurface_uneven-scales_ranges_iso-null",
+    "gl3d_isosurface_xycaps_volume_slices",
+    "gl3d_line-colorscale-with-markers",
+    "gl3d_mesh3d_surface3d_scatter3d_line3d_error3d_log_reversed_ranges",
+    "gl3d_mesh3d_surface3d_scatter3d_orthographic",
+    "gl3d_mirror-ticks",
+    "gl3d_opacity-scaling-spikes",
+    "gl3d_scatter-color-line-gradient",
+    "gl3d_scatter-color-mono-and-palette",
+    "gl3d_scatter3d-blank-text",
+    "map_predefined-styles1"
+  ],
+  "mathjax3": [
+    "legend_mathjax_title_and_items",
+    "mathjax",
+    "parcats_grid_subplots",
+    "table_latex_multitrace_scatter",
+    "table_plain_birds",
+    "table_wrapped_birds",
+    "ternary-mathjax",
+    "ternary-mathjax-title-place-subtitle"
+  ]
+}

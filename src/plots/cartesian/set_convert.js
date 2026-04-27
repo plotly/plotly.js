@@ -445,23 +445,25 @@ module.exports = function setConvert(ax, fullLayout) {
 
         var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
 
-        if(minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
-        if(maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
+        if(minallowed !== undefined && rng[0] < bounds[0]) {
+            range[axrev ? 1 : 0] = minallowed;
+            rng[0] = bounds[0];
+        }
+        if(maxallowed !== undefined && rng[1] > bounds[1]) {
+            range[axrev ? 0 : 1] = maxallowed;
+            rng[1] = bounds[1];
+        }
 
-        if(range[0] === range[1]) {
-            var minL = ax.l2r(minallowed);
-            var maxL = ax.l2r(maxallowed);
-
+        // If clamping collapsed or inverted the range, extend the opposite end
+        // so we preserve the original orientation. Otherwise a default range
+        // entirely below minallowed (or above maxallowed) would flip the axis.
+        if(rng[0] >= rng[1]) {
             if(minallowed !== undefined) {
-                var _max = minL + 1;
-                if(maxallowed !== undefined) _max = Math.min(_max, maxL);
-                range[axrev ? 1 : 0] = _max;
-            }
-
-            if(maxallowed !== undefined) {
-                var _min = maxL + 1;
-                if(minallowed !== undefined) _min = Math.max(_min, minL);
-                range[axrev ? 0 : 1] = _min;
+                var _max = bounds[0] + 1;
+                if(maxallowed !== undefined) _max = Math.min(_max, bounds[1]);
+                range[axrev ? 0 : 1] = ax.l2r(_max);
+            } else if(maxallowed !== undefined) {
+                range[axrev ? 1 : 0] = ax.l2r(bounds[1] - 1);
             }
         }
     };

@@ -31,7 +31,7 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
     if(mode === 'toggle' && legendObj.itemdoubleclick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
     ) {
-        Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long');
+        Lib.notifier(Lib._(gd, 'Double-click on legend to isolate one trace'), 'long', gd);
         SHOWISOLATETIP = false;
     }
 
@@ -323,7 +323,7 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
         const item = allLegendItems[i];
         const inThisLegend = isInLegend(item);
 
-        // If item is not in this legend, skip if in toggle mode 
+        // If item is not in this legend, skip if in toggle mode
         // or if item is not displayed in the legend
         if(!inThisLegend) {
             const notDisplayed = (item.showlegend !== true && !item.legendgroup);

@@ -2105,6 +2105,34 @@ describe('Test lib.js:', function () {
                 _run([]);
             });
         });
+
+        describe('should respect notifier config option', function () {
+            var query = '.notifier-note';
+
+            beforeEach(function (done) {
+                d3SelectAll(query).each(function () {
+                    d3Select(this).select('button').node().click();
+                });
+                setTimeout(done, 1000);
+            });
+
+            it('with true', function () {
+                var gd = { _context: { displayNotifier: true } };
+                Lib.notifier('test message', 'long', gd);
+                expect(d3SelectAll(query).size()).toBe(1);
+            });
+
+            it('with false', function () {
+                var gd = { _context: { displayNotifier: false } };
+                Lib.notifier('test message', 'long', gd);
+                expect(d3SelectAll(query).size()).toBe(0);
+            });
+
+            it('when gd has no _context', function () {
+                Lib.notifier('test message', 'long');
+                expect(d3SelectAll(query).size()).toBe(1);
+            });
+        });
     });
 
     describe('keyedContainer', function () {

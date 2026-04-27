@@ -6,7 +6,7 @@ The sections below provide additional info in respect to alternative building fr
 ---
 ## Angular CLI
 
-Since Angular uses webpack under the hood and doesn't allow easily to change it's webpack configuration, there is some work needed using a `custom-webpack` builder to get things going.
+Since Angular uses webpack under the hood and doesn't easily allow changing its webpack configuration, there is some work needed using a `custom-webpack` builder to get things going.
 
 1. Install [`@angular-builders/custom-webpack`](https://www.npmjs.com/package/@angular-builders/custom-webpack) and [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader)
 2. Create a new `extra-webpack.config.js` beside `angular.json`.
@@ -28,7 +28,7 @@ module.exports = {
 };
 ```
 
-3. Change the builder in `angular.json` to `"@angular-builders/custom-webpack:browser` and configure it correctly to use our new webpack config.
+3. Change the builder in `angular.json` to `"@angular-builders/custom-webpack:browser"` and configure it correctly to use our new webpack config.
 
 > angular.json
 ```json

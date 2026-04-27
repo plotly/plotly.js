@@ -1,0 +1,13 @@
+name: 'Run with Xvfb'
+description: 'Run a command under Xvfb with a preconfigured screen size'
+
+inputs:
+  run:
+    description: 'Command to execute'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" ${{ inputs.run }}
+      shell: bash

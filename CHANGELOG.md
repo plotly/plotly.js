@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.5.0] -- 2026-04-03
+
+### Added
+ - Add `hoveranywhere` and `clickanywhere` layout attributes to emit hover and click events anywhere in the plot area, not just over traces [[#7707](https://github.com/plotly/plotly.js/pull/7707)]
+ - Add `displayNotifier` configuration property to set the display of notifier in the top right area of the viewport [[#7730](https://github.com/plotly/plotly.js/pull/7730)], with thanks to @silversonicaxel for the contribution!
+- Update USA location lookup for `scattergeo` and `choropleth` traces to use both location names and abbreviations [[7731](https://github.com/plotly/plotly.js/pull/7731)]
+
+
 ## [3.4.0] -- 2026-02-20
 
 ### Added

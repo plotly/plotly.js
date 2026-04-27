@@ -221,6 +221,12 @@ var configAttributes = {
         ].join(' ')
     },
 
+    displayNotifier: {
+        valType: 'boolean',
+        dflt: true,
+        description: 'Determines whether or not notifier is displayed.'
+    },
+
     showLink: {
         valType: 'boolean',
         dflt: false,
