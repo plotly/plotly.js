@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -43,7 +43,7 @@
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "test-mock": "node tasks/test_mock.mjs",
-    "test-image": "node test/image/compare_pixels_test.js",
+    "test-image": "node test/image/compare_pixels_test.mjs",
     "test-export": "node test/image/export_test.js",
     "test-syntax": "node tasks/test_syntax.js && npm run find-strings -- --no-output",
     "test-bundle": "node tasks/test_bundle.js",
@@ -54,7 +54,7 @@
     "mathjax3chtml": "node devtools/test_dashboard/server.mjs --mathjax3chtml",
     "strict": "node devtools/test_dashboard/server.mjs --strict",
     "start": "node devtools/test_dashboard/server.mjs",
-    "baseline": "node test/image/make_baseline.js",
+    "baseline": "node test/image/make_baseline.mjs",
     "noci-baseline": "npm run cibuild && ./tasks/noci_test.sh image && git checkout dist && echo 'Please do not commit unless the change was expected!'",
     "preversion": "check-node-version --node 18 --npm 10 && npm-link-check && npm ls --prod --all",
     "version": "npm run build && git add -A lib dist build src/version.js",
@@ -162,7 +162,7 @@
     "minify-stream": "^2.1.0",
     "npm-link-check": "^5.0.1",
     "open": "^8.4.2",
-    "pixelmatch": "^5.3.0",
+    "pixelmatch": "^7.1.0",
     "prepend-file": "^2.0.1",
     "prettysize": "^2.0.0",
     "raw-loader": "^4.0.2",
@@ -174,7 +174,7 @@
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
-    "virtual-webgl": "^1.0.6"
+    "virtual-webgl": "^1.0.7"
   },
   "overrides": {
     "falafel": {

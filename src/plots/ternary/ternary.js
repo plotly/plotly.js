@@ -678,7 +678,7 @@ proto.initInteractions = function() {
         Registry.call('_guiRelayout', gd, makeUpdate(mins));
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
+            Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long', gd);
             SHOWZOOMOUTTIP = false;
         }
     }

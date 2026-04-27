@@ -11,6 +11,7 @@
       "**/tasks/**",
       "**/devtools/**",
       "**/topojson/**",
+      "**/.github/**",
       "!**/test/plot-schema.json",
       "!**/dist",
       "!**/stackgl_modules",

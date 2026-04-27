@@ -1,18 +1,16 @@
+# Exclude all hidden files and folders
+.*
+
+# Exclude all files in build/, except for plotcss.js and README.md
 build/*
 !build/plotcss.js
 !build/README.md
 
-stackgl_modules/node_modules
-
+# Exclude these directories
 devtools
-test
-draftlogs
 dist/extras
-
-circle.yml
-bower.json
-
-.ackrc
-.agignore
-
-npm-debug.log
+draftlogs
+stackgl_modules/node_modules
+tasks
+test
+topojson

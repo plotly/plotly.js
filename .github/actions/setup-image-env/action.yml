@@ -1,0 +1,35 @@
+name: 'Setup Image Environment'
+description: 'Setup Python, uv, and install Kaleido/plotly with required fonts'
+
+inputs:
+  python-version:
+    description: 'Python version to use'
+    default: '3.12'
+  uv-version:
+    description: 'uv version to use'
+    default: '0.11.2'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+      with:
+        version: ${{ inputs.uv-version }}
+
+    - name: Cache apt font packages
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      id: apt-cache
+      with:
+        path: ~/.cache/apt-fonts
+        key: apt-fonts-${{ runner.os }}-${{ hashFiles('.github/scripts/env_image.sh') }}
+
+    - name: Install Kaleido, plotly.io and required fonts
+      run: .github/scripts/env_image.sh
+      shell: bash
+      env:
+        APT_CACHE_HIT: ${{ steps.apt-cache.outputs.cache-hit }}

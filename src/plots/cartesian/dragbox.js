@@ -792,9 +792,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     r1 !== undefined;
 
                 if((hasRangeInitial && (
-                        (r0 !== undefined && r0 !== ax.range[0]) ||
-                        (r1 !== undefined && r1 !== ax.range[1])
-                    )) ||
+                    (r0 !== undefined && r0 !== ax.range[0]) ||
+                    (r1 !== undefined && r1 !== ax.range[1])
+                )) ||
                     (!hasRangeInitial && ax.autorange !== true)
                 ) {
                     doubleClickConfig = 'reset';
@@ -1209,7 +1209,7 @@ function removeZoombox(gd) {
 
 function showDoubleClickNotifier(gd) {
     if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-        Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
+        Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long', gd);
         SHOWZOOMOUTTIP = false;
     }
 }

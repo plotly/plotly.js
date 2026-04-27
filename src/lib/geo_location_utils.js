@@ -11,22 +11,23 @@ var loggers = require('./loggers');
 var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
+const { usaLocationAbbreviations, usaLocationList } = require('./usa_location_names');
 
 // make list of all country iso3 ids from at runtime
 var countryIds = Object.keys(countryRegex);
 
 var locationmodeToIdFinder = {
     'ISO-3': identity,
-    'USA-states': identity,
+    'USA-states': usaLocationToAbbreviation,
     'country names': countryNameToISO3
 };
 
 function countryNameToISO3(countryName) {
-    for(var i = 0; i < countryIds.length; i++) {
+    for (var i = 0; i < countryIds.length; i++) {
         var iso3 = countryIds[i];
         var regex = new RegExp(countryRegex[iso3]);
 
-        if(regex.test(countryName.trim().toLowerCase())) return iso3;
+        if (regex.test(countryName.trim().toLowerCase())) return iso3;
     }
 
     loggers.log('Unrecognized country name: ' + countryName + '.');
@@ -34,15 +35,26 @@ function countryNameToISO3(countryName) {
     return false;
 }
 
+function usaLocationToAbbreviation(loc) {
+    loc = loc.trim();
+    const abbreviation = usaLocationAbbreviations.has(loc.toUpperCase())
+        ? loc.toUpperCase()
+        : usaLocationList[loc.toLowerCase()];
+
+    if (abbreviation) return abbreviation;
+
+    loggers.log('Unrecognized US location: ' + loc + '.');
+
+    return false;
+}
+
 function locationToFeature(locationmode, location, features) {
-    if(!location || typeof location !== 'string') return false;
+    if (!location || typeof location !== 'string') return false;
 
-    var locationId = locationmodeToIdFinder[locationmode](location);
-    var filteredFeatures;
-    var f, i;
-
-    if(locationId) {
-        if(locationmode === 'USA-states') {
+    const locationId = locationmodeToIdFinder[locationmode](location);
+    if (locationId) {
+        let filteredFeatures;
+        if (locationmode === 'USA-states') {
             // Filter out features out in USA
             //
             // This is important as the Natural Earth files
@@ -50,25 +62,18 @@ function locationToFeature(locationmode, location, features) {
             // which have some overlay in their two-letter ids. For example,
             // 'WA' is used for both Washington state and Western Australia.
             filteredFeatures = [];
-            for(i = 0; i < features.length; i++) {
-                f = features[i];
-                if(f.properties && f.properties.gu && f.properties.gu === 'USA') {
-                    filteredFeatures.push(f);
-                }
+            for (const f of features) {
+                if (f?.properties?.gu === 'USA') filteredFeatures.push(f);
             }
         } else {
             filteredFeatures = features;
         }
 
-        for(i = 0; i < filteredFeatures.length; i++) {
-            f = filteredFeatures[i];
-            if(f.id === locationId) return f;
+        for (const f of filteredFeatures) {
+            if (f.id === locationId) return f;
         }
 
-        loggers.log([
-            'Location with id', locationId,
-            'does not have a matching topojson feature at this resolution.'
-        ].join(' '));
+        loggers.log(`Location with id ${locationId} does not have a matching topojson feature at this resolution.`);
     }
 
     return false;
@@ -83,13 +88,13 @@ function feature2polygons(feature) {
     var appendPolygon, j, k, m;
 
     function doesCrossAntiMerdian(pts) {
-        for(var l = 0; l < pts.length - 1; l++) {
-            if(pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
+        for (var l = 0; l < pts.length - 1; l++) {
+            if (pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
         }
         return null;
     }
 
-    if(loc === 'RUS' || loc === 'FJI') {
+    if (loc === 'RUS' || loc === 'FJI') {
         // Russia and Fiji have landmasses that cross the antimeridian,
         // we need to add +360 to their longitude coordinates, so that
         // polygon 'contains' doesn't get confused when crossing the antimeridian.
@@ -97,32 +102,29 @@ function feature2polygons(feature) {
         // Note that other countries have polygons on either side of the antimeridian
         // (e.g. some Aleutian island for the USA), but those don't confuse
         // the 'contains' method; these are skipped here.
-        appendPolygon = function(_pts) {
+        appendPolygon = function (_pts) {
             var pts;
 
-            if(doesCrossAntiMerdian(_pts) === null) {
+            if (doesCrossAntiMerdian(_pts) === null) {
                 pts = _pts;
             } else {
                 pts = new Array(_pts.length);
-                for(m = 0; m < _pts.length; m++) {
+                for (m = 0; m < _pts.length; m++) {
                     // do not mutate calcdata[i][j].geojson !!
-                    pts[m] = [
-                        _pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0],
-                        _pts[m][1]
-                    ];
+                    pts[m] = [_pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0], _pts[m][1]];
                 }
             }
 
             polygons.push(polygon.tester(pts));
         };
-    } else if(loc === 'ATA') {
+    } else if (loc === 'ATA') {
         // Antarctica has a landmass that wraps around every longitudes which
         // confuses the 'contains' methods.
-        appendPolygon = function(pts) {
+        appendPolygon = function (pts) {
             var crossAntiMeridianIndex = doesCrossAntiMerdian(pts);
 
             // polygon that do not cross anti-meridian need no special handling
-            if(crossAntiMeridianIndex === null) {
+            if (crossAntiMeridianIndex === null) {
                 return polygons.push(polygon.tester(pts));
             }
 
@@ -135,10 +137,10 @@ function feature2polygons(feature) {
             var stitch = new Array(pts.length + 1);
             var si = 0;
 
-            for(m = 0; m < pts.length; m++) {
-                if(m > crossAntiMeridianIndex) {
+            for (m = 0; m < pts.length; m++) {
+                if (m > crossAntiMeridianIndex) {
                     stitch[si++] = [pts[m][0] + 360, pts[m][1]];
-                } else if(m === crossAntiMeridianIndex) {
+                } else if (m === crossAntiMeridianIndex) {
                     stitch[si++] = pts[m];
                     stitch[si++] = [pts[m][0], -90];
                 } else {
@@ -155,21 +157,21 @@ function feature2polygons(feature) {
         };
     } else {
         // otherwise using same array ref is fine
-        appendPolygon = function(pts) {
+        appendPolygon = function (pts) {
             polygons.push(polygon.tester(pts));
         };
     }
 
-    switch(geometry.type) {
+    switch (geometry.type) {
         case 'MultiPolygon':
-            for(j = 0; j < coords.length; j++) {
-                for(k = 0; k < coords[j].length; k++) {
+            for (j = 0; j < coords.length; j++) {
+                for (k = 0; k < coords[j].length; k++) {
                     appendPolygon(coords[j][k]);
                 }
             }
             break;
         case 'Polygon':
-            for(j = 0; j < coords.length; j++) {
+            for (j = 0; j < coords.length; j++) {
                 appendPolygon(coords[j]);
             }
             break;
@@ -185,7 +187,7 @@ function getTraceGeojson(trace) {
 
     // This should not happen, but just in case something goes
     // really wrong when fetching the GeoJSON
-    if(!isPlainObject(geojsonIn)) {
+    if (!isPlainObject(geojsonIn)) {
         loggers.error('Oops ... something went wrong when fetching ' + g);
         return false;
     }
@@ -197,15 +199,15 @@ function extractTraceFeature(calcTrace) {
     var trace = calcTrace[0].trace;
 
     var geojsonIn = getTraceGeojson(trace);
-    if(!geojsonIn) return false;
+    if (!geojsonIn) return false;
 
     var lookup = {};
     var featuresOut = [];
     var i;
 
-    for(i = 0; i < trace._length; i++) {
+    for (i = 0; i < trace._length; i++) {
         var cdi = calcTrace[i];
-        if(cdi.loc || cdi.loc === 0) {
+        if (cdi.loc || cdi.loc === 0) {
             lookup[cdi.loc] = cdi;
         }
     }
@@ -214,10 +216,10 @@ function extractTraceFeature(calcTrace) {
         var id = nestedProperty(fIn, trace.featureidkey || 'id').get();
         var cdi = lookup[id];
 
-        if(cdi) {
+        if (cdi) {
             var geometry = fIn.geometry;
 
-            if(geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
+            if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
                 var fOut = {
                     type: 'Feature',
                     id: id,
@@ -238,11 +240,15 @@ function extractTraceFeature(calcTrace) {
 
                 featuresOut.push(fOut);
             } else {
-                loggers.log([
-                    'Location', cdi.loc, 'does not have a valid GeoJSON geometry.',
-                    'Traces with locationmode *geojson-id* only support',
-                    '*Polygon* and *MultiPolygon* geometries.'
-                ].join(' '));
+                loggers.log(
+                    [
+                        'Location',
+                        cdi.loc,
+                        'does not have a valid GeoJSON geometry.',
+                        'Traces with locationmode *geojson-id* only support',
+                        '*Polygon* and *MultiPolygon* geometries.'
+                    ].join(' ')
+                );
             }
         }
 
@@ -251,10 +257,10 @@ function extractTraceFeature(calcTrace) {
         delete lookup[id];
     }
 
-    switch(geojsonIn.type) {
+    switch (geojsonIn.type) {
         case 'FeatureCollection':
             var featuresIn = geojsonIn.features;
-            for(i = 0; i < featuresIn.length; i++) {
+            for (i = 0; i < featuresIn.length; i++) {
                 appendFeature(featuresIn[i]);
             }
             break;
@@ -262,20 +268,25 @@ function extractTraceFeature(calcTrace) {
             appendFeature(geojsonIn);
             break;
         default:
-            loggers.warn([
-                'Invalid GeoJSON type', (geojsonIn.type || 'none') + '.',
-                'Traces with locationmode *geojson-id* only support',
-                '*FeatureCollection* and *Feature* types.'
-            ].join(' '));
+            loggers.warn(
+                [
+                    'Invalid GeoJSON type',
+                    (geojsonIn.type || 'none') + '.',
+                    'Traces with locationmode *geojson-id* only support',
+                    '*FeatureCollection* and *Feature* types.'
+                ].join(' ')
+            );
             return false;
     }
 
-    for(var loc in lookup) {
-        loggers.log([
-            'Location *' + loc + '*',
-            'does not have a matching feature with id-key',
-            '*' + trace.featureidkey + '*.'
-        ].join(' '));
+    for (var loc in lookup) {
+        loggers.log(
+            [
+                'Location *' + loc + '*',
+                'does not have a matching feature with id-key',
+                '*' + trace.featureidkey + '*.'
+            ].join(' ')
+        );
     }
 
     return featuresOut;
@@ -289,14 +300,14 @@ function findCentroid(feature) {
     var geometry = feature.geometry;
     var poly;
 
-    if(geometry.type === 'MultiPolygon') {
+    if (geometry.type === 'MultiPolygon') {
         var coords = geometry.coordinates;
         var maxArea = 0;
 
-        for(var i = 0; i < coords.length; i++) {
-            var polyi = {type: 'Polygon', coordinates: coords[i]};
+        for (var i = 0; i < coords.length; i++) {
+            var polyi = { type: 'Polygon', coordinates: coords[i] };
             var area = turfArea(polyi);
-            if(area > maxArea) {
+            if (area > maxArea) {
                 maxArea = area;
                 poly = polyi;
             }
@@ -313,13 +324,14 @@ function fetchTraceGeoData(calcData) {
     var promises = [];
 
     function fetch(url) {
-        return new Promise(function(resolve, reject) {
-            d3.json(url, function(err, d) {
-                if(err) {
+        return new Promise(function (resolve, reject) {
+            d3.json(url, function (err, d) {
+                if (err) {
                     delete PlotlyGeoAssets[url];
-                    var msg = err.status === 404 ?
-                        ('GeoJSON at URL "' + url + '" does not exist.') :
-                        ('Unexpected error while fetching from ' + url);
+                    var msg =
+                        err.status === 404
+                            ? 'GeoJSON at URL "' + url + '" does not exist.'
+                            : 'Unexpected error while fetching from ' + url;
                     return reject(new Error(msg));
                 }
 
@@ -330,14 +342,14 @@ function fetchTraceGeoData(calcData) {
     }
 
     function wait(url) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             var cnt = 0;
-            var interval = setInterval(function() {
-                if(PlotlyGeoAssets[url] && PlotlyGeoAssets[url] !== 'pending') {
+            var interval = setInterval(function () {
+                if (PlotlyGeoAssets[url] && PlotlyGeoAssets[url] !== 'pending') {
                     clearInterval(interval);
                     return resolve(PlotlyGeoAssets[url]);
                 }
-                if(cnt > 100) {
+                if (cnt > 100) {
                     clearInterval(interval);
                     return reject('Unexpected error while fetching from ' + url);
                 }
@@ -346,15 +358,15 @@ function fetchTraceGeoData(calcData) {
         });
     }
 
-    for(var i = 0; i < calcData.length; i++) {
+    for (var i = 0; i < calcData.length; i++) {
         var trace = calcData[i][0].trace;
         var url = trace.geojson;
 
-        if(typeof url === 'string') {
-            if(!PlotlyGeoAssets[url]) {
+        if (typeof url === 'string') {
+            if (!PlotlyGeoAssets[url]) {
                 PlotlyGeoAssets[url] = 'pending';
                 promises.push(fetch(url));
-            } else if(PlotlyGeoAssets[url] === 'pending') {
+            } else if (PlotlyGeoAssets[url] === 'pending') {
                 promises.push(wait(url));
             }
         }
