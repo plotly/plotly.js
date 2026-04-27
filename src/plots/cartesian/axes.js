@@ -1076,10 +1076,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        if((major || calcMinor) && isPeriod) {
-            // add one item to label period before tick0
+        if((major || ticklabelIndex) && isPeriod) {
+            // if major: add one item to label period before tick0
+            // if minor: add one item for ticklabelindex positioning
             x = axes.tickIncrement(x, dtick, !axrev, calendar);
-            majorId--;
+            if (major) majorId--;
         }
 
         for(;
@@ -1128,12 +1129,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     // check if ticklabelIndex makes sense, otherwise ignore it
-    if(!minorTickVals || minorTickVals.length < 2) {
+    if(!minorTickVals || minorTickVals.length < 3) {
         ticklabelIndex = false;
     } else {
-        var diff = (minorTickVals[1].value - minorTickVals[0].value) * (isReversed ? -1 : 1);
+        var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
             ticklabelIndex = false;
+            // remove previously added tick before tick0 for handling ticklabelindex positioning
+            minorTickVals = minorTickVals.slice(1);
         }
     }
     // Determine for which ticks to draw labels
@@ -1312,6 +1315,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             ticksOut.push(t);
         }
+    }
+
+    if(isPeriod && ticklabelIndex && minorTicks.length) {
+        // drop very first minor tick that we added to handle ticklabelindex
+        minorTicks[0].noTick = true;
     }
     ticksOut = ticksOut.concat(minorTicks);
 
