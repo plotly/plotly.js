@@ -200,8 +200,8 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
 
         var xb, xi, v, row, c;
 
-        function setColor(v, pixsize) {
-            if (v === undefined || pixsize === undefined) return [0, 0, 0, 0];
+        function setColor(v, pixsize = 0) {
+            if (v === undefined) return [0, 0, 0, 0];
 
             var c = sclFunc(v);
             c[0] = Math.round(c[0]);
