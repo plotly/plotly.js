@@ -64,6 +64,31 @@ exports.collectableSubplotTypes = null;
  *  - fn {function} : the api method called with Register.call();
  *
  */
+
+/**
+ * Register modules (traces, transforms, components, locales, or API methods) with Plotly.js
+ * 
+ * This is the main registration function exposed as Plotly.register().
+ * It allows adding new trace types, components, locales, transforms, or API methods
+ * to an existing Plotly instance.
+ * 
+ * @param {Object|Array<Object>} _modules - A single module object or an array of module objects
+ * 
+ * @example
+ * // Register a single trace module
+ * Plotly.register({
+ *   moduleType: 'trace',
+ *   name: 'custom',
+ *   categories: ['2dMap', 'geo'],
+ *   meta: { description: 'Custom trace type' }
+ * });
+ * 
+ * @example
+ * // Register multiple modules at once
+ * Plotly.register([traceModule, localeModule, transformModule]);
+ * 
+ * @throws {Error} If no argument is passed or if an invalid module type is provided
+ */
 exports.register = function register(_modules) {
     exports.collectableSubplotTypes = null;
 
