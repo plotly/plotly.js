@@ -30,11 +30,11 @@ const addOpacity = (cstr, op) => {
 // background is assumed behind it
 const combine = (front, back = background) => {
     const fc = color(front).rgb().object();
-    fc.alpha ||= 1;
+    fc.alpha ??= 1;
     if (fc.alpha === 1) return color(front).rgb().string();
 
     const bc = color(back).rgb().object();
-    bc.alpha ||= 1;
+    bc.alpha ??= 1;
     const bcflat =
         bc.alpha === 1
             ? bc
