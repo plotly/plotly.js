@@ -1,1 +1,0 @@
- - Change ticklabelindex to also be effective when no minor ticks are visible. [[#7735](https://github.com/plotly/plotly.js/pull/7735)]
