@@ -1303,9 +1303,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             lastVisibleHead = ax._prevDateHead;
             t = setTickLabel(ax, tickVals[i]);
-            if (tickVals[i].skipLabel
-                || (ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) === -1)) {
-                hideLabel(t);
+            if (ticklabelIndex) {
+                if (allTicklabelVals.indexOf(tickVals[i]) === -1) {
+                    hideLabel(t);
+                }
+            } else {
+                if (tickVals[i].skipLabel) {
+                    hideLabel(t);
+                }
             }
 
             ticksOut.push(t);
