@@ -53,6 +53,10 @@
       "tickformat": "%Y",
       "ticklabelmode": "period",
       "dtick": "M24",
+      "minor": {
+        "dtick": "M12",
+        "tick0": "2023-01-01"
+      },
       "title": {
         "text": "Should display 2 ticks and labels 2023 and 2025 to the left of them."
       }
@@ -63,6 +67,10 @@
       "tickformat": "%Y",
       "ticklabelmode": "period",
       "dtick": "M24",
+      "minor": {
+        "dtick": "M12",
+        "tick0": "2023-01-01"
+      },
       "title": {
         "text": "Should display a label at 2024"
       }
@@ -74,6 +82,10 @@
       "ticklabelmode": "period",
       "ticklabelstep": 2,
       "dtick": "M12",
+      "minor": {
+        "dtick": "M12",
+        "tick0": "2023-01-01"
+      },
       "title": {
         "text": "Should display yearly ticks with labels at 2023 and 2025"
       }
