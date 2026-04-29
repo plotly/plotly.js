@@ -1149,7 +1149,7 @@ describe('Test lib.js:', function () {
                 fontWithDefault: {
                     family: '',
                     size: 'a million',
-                    color: 42,
+                    color: 'invalid',
                     weight: 'BIG',
                     style: 'Nice',
                     variant: false,
@@ -1558,7 +1558,7 @@ describe('Test lib.js:', function () {
 
         it("should work for valType 'color' where", function () {
             var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'];
-            var shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
+            var shouldFail = ['invalid', {}, [], 'rgq(233,122,332,1)', null, undefined];
 
             assert(shouldPass, shouldFail, {
                 valType: 'color'

@@ -56,9 +56,8 @@ describe('Test color:', function() {
         });
 
         it('should count 0 as a fraction but not 1, except in alpha', function() {
-            // this is weird... but old tinycolor actually breaks
-            // if you pass in a 1, while in some cases a 1 here
-            // could be ambiguous - so we treat it as a real 1.
+            // a value of 1 here could be ambiguous (fraction vs integer)
+            // so we treat it as a real 1.
             var container = {
                 fractioncolor: 'rgb(0, 0.4, 0.8)',
                 regularcolor: 'rgb(1, 0.5, 0.5)',
@@ -155,7 +154,7 @@ describe('Test color:', function() {
                 }
             };
 
-            Color.fill(mockElement, 'rgba(255,255,0,0.5');
+            Color.fill(mockElement, 'rgba(255,255,0,0.5)');
         });
     });
 
@@ -168,7 +167,7 @@ describe('Test color:', function() {
                 }
             };
 
-            Color.stroke(mockElement, 'rgba(255,255,0,0.5');
+            Color.stroke(mockElement, 'rgba(255,255,0,0.5)');
         });
     });
 
@@ -176,19 +175,19 @@ describe('Test color:', function() {
         it('should darken light colors', function() {
             var out = Color.contrast('#eee', 10, 20);
 
-            expect(out).toEqual('#bbbbbb');
+            expect(out).toEqual('rgb(190, 190, 190)');
         });
 
         it('should darken light colors (2)', function() {
             var out = Color.contrast('#fdae61', 10, 20);
 
-            expect(out).toEqual('#f57a03');
+            expect(out).toEqual('rgb(252, 139, 28)');
         });
 
         it('should lighten dark colors', function() {
             var out = Color.contrast('#2b83ba', 10, 20);
 
-            expect(out).toEqual('#449dd4');
+            expect(out).toEqual('rgb(47, 144, 205)');
         });
     });
 });

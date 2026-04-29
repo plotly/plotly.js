@@ -4,7 +4,6 @@ var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Color = require('../color');
@@ -515,11 +514,11 @@ function gradientWithBounds(sel, gd, gradientID, type, colorscale, prop, start, 
             stops.enter().append('stop');
 
             stops.each(function (d) {
-                var tc = tinycolor(d[1]);
+                var c = Color.color(d[1]);
                 d3.select(this).attr({
                     offset: d[0] + '%',
-                    'stop-color': Color.tinyRGB(tc),
-                    'stop-opacity': tc.getAlpha()
+                    'stop-color': Color.rgb(d[1]),
+                    'stop-opacity': c.alpha()
                 });
             });
         });
@@ -585,9 +584,9 @@ drawing.pattern = function (
     var patternTag;
     var patternAttrs = {};
 
-    var fgC = tinycolor(fgcolor);
-    var fgRGB = Color.tinyRGB(fgC);
-    var fgAlpha = fgC.getAlpha();
+    var fgC = Color.color(fgcolor);
+    var fgRGB = Color.rgb(fgcolor);
+    var fgAlpha = fgC.alpha();
     var opacity = fgopacity * fgAlpha;
 
     switch (shape) {
@@ -820,9 +819,9 @@ drawing.pattern = function (
             });
 
             if (bgcolor) {
-                var bgC = tinycolor(bgcolor);
-                var bgRGB = Color.tinyRGB(bgC);
-                var bgAlpha = bgC.getAlpha();
+                var bgC = Color.color(bgcolor);
+                var bgRGB = Color.rgb(bgcolor);
+                var bgAlpha = bgC.alpha();
 
                 var rects = el.selectAll('rect').data([0]);
                 rects.exit().remove();

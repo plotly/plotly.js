@@ -1,7 +1,6 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var extendFlat = require('./extend').extendFlat;
 
@@ -161,11 +160,10 @@ exports.valObjectMeta = {
         description: [
             'A string describing color.',
             'Supported formats:',
-            '- hex (e.g. \'#d3d3d3\')',
-            '- rgb (e.g. \'rgb(255, 0, 0)\')',
-            '- rgba (e.g. \'rgb(255, 0, 0, 0.5)\')',
+            "- hex (e.g. '#d3d3d3', '#d3d3d3aa)",
+            "- rgb (e.g. 'rgb(255, 0, 0)', 'rgb(255 0 0)')",
+            "- rgba (e.g. 'rgba(255, 0, 0, 0.5)', 'rgba(255 0 0 / 0.5)')",
             '- hsl (e.g. \'hsl(0, 100%, 50%)\')',
-            '- hsv (e.g. \'hsv(0, 100%, 100%)\')',
             '- named colors (full list: http://www.w3.org/TR/css3-color/#svg-color)'
         ].join(' '),
         requiredOpts: [],
@@ -173,7 +171,7 @@ exports.valObjectMeta = {
         coerceFunction: function(v, propOut, dflt) {
             if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
 
-            if(tinycolor(v).isValid()) propOut.set(v);
+            if(Color.isValid(v)) propOut.set(v);
             else propOut.set(dflt);
         }
     },
@@ -185,11 +183,8 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            function isColor(color) {
-                return tinycolor(color).isValid();
-            }
             if(!Array.isArray(v) || !v.length) propOut.set(dflt);
-            else if(v.every(isColor)) propOut.set(v);
+            else if(v.every(color => Color.isValid(color))) propOut.set(v);
             else propOut.set(dflt);
         }
     },
@@ -459,7 +454,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
  * Variation on coerce
  *
  * Uses coerce to get attribute value if user input is valid,
- * returns attribute default if user input it not valid or
+ * returns attribute default if user input is not valid or
  * returns false if there is no user input.
  */
 exports.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {

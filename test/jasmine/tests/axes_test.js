@@ -7,7 +7,6 @@ var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var Loggers = require('../../../src/lib/loggers');
 var Color = require('../../../src/components/color');
-var tinycolor = require('tinycolor2');
 
 var handleTickValueDefaults = require('../../../src/plots/cartesian/tick_value_defaults');
 var Cartesian = require('../../../src/plots/cartesian');
@@ -467,11 +466,11 @@ describe('Test axes', function() {
                 yaxis: {}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            var lightLine = tinycolor(Color.lightLine).toRgbString();
+            var lightLine = Color.color(Color.lightLine).rgb().string();
             expect(layoutOut.xaxis.gridwidth).toBe(1);
-            expect(tinycolor(layoutOut.xaxis.gridcolor).toRgbString()).toBe(lightLine);
+            expect(Color.color(layoutOut.xaxis.gridcolor).rgb().string()).toBe(lightLine);
             expect(layoutOut.yaxis.gridwidth).toBe(1);
-            expect(tinycolor(layoutOut.yaxis.gridcolor).toRgbString()).toBe(lightLine);
+            expect(Color.color(layoutOut.yaxis.gridcolor).rgb().string()).toBe(lightLine);
         });
 
         it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
@@ -566,11 +565,9 @@ describe('Test axes', function() {
             var frac = 100 * (0xe - 0x4) / (0xf - 0x4);
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.gridcolor)
-                .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
+            expect(layoutOut.xaxis.gridcolor).toEqual(Color.mix('red', bgColor, frac));
             expect(layoutOut.yaxis.gridcolor).toEqual('blue');
-            expect(layoutOut.yaxis2.gridcolor)
-                .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
+            expect(layoutOut.yaxis2.gridcolor).toEqual(Color.mix('#444', bgColor, frac));
         });
 
         it('should default to a dark color for tickfont when plotting background is light', function() {
@@ -583,7 +580,7 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.tickfont.color).toEqual('#444');
+            expect(layoutOut.xaxis.tickfont.color).toEqual('rgb(68, 68, 68)');
         });
 
         it('should default to a light color for tickfont when plotting background is dark', function() {
@@ -596,7 +593,7 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.tickfont.color).toEqual('#fff');
+            expect(layoutOut.xaxis.tickfont.color).toEqual('rgb(255, 255, 255)');
         });
 
         it('should not coerce ticklabelposition on *multicategory* axes for now', function() {
