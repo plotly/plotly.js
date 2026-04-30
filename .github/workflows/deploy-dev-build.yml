@@ -2,7 +2,7 @@ name: Deploy dev build from PR
 
 on:
   workflow_run:
-    workflows: ["CI"]  # ci.yml
+    workflows: ["Publish Dist"]  # publish-dist.yml
     types:
       - completed
 
@@ -17,7 +17,7 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         continue-on-error: true
         with:
-          name: plotly.node22.js  # uploaded by ci.yml > publish-dist-node-v22
+          name: plotly.node22.js  # uploaded by publish-dist.yml > publish-dist-node-v22
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: temp-dist
