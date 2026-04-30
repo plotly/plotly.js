@@ -163,18 +163,31 @@ npm run schema
 #### Step 9: REGL - Review & commit potential changes to precompiled regl shaders
 
 If you are implementing a new feature that involves regl shaders, or if you are
-making changes that affect the usage of regl shaders, you would need to run
+making changes that affect the usage of regl shaders, you would need to regenerate the precompiled regl shader code.
+
+This is needed because regl performs codegen in runtime which breaks CSP
+compliance, and so for strict builds we pre-generate regl shader code here.
+
+The CI pipeline will automatically detect when regl-related files have changed and
+run the codegen process. If the precompiled shaders are out of date, the
+`check-regl-codegen` job will fail and upload a `regl-codegen` artifact containing
+the updated files. To fix this:
+
+1. Download the `regl-codegen` artifact from the failed workflow run
+2. Copy the updated files into your working tree
+3. Commit and push the changes to your pull request
+
+Alternatively, you can regenerate the code locally by running:
 
 ```bash
 npm run regl-codegen
 ```
 
-to regenerate the regl code. This will prompt you to open a browser window. This will then run through all
-traces with 'regl' in the tags, and store the captured code into 
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it will be a no-op, but if there are changes, you will need to commit them.
-
-This is needed because regl performs codegen in runtime which breaks CSP
-compliance, and so for strict builds we pre-generate regl shader code here.
+This will prompt you to open a browser window, run through all traces with 'regl'
+in the tags, and store the captured code into
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen).
+If no updates are necessary, it will be a no-op, but if there are changes, you
+will need to commit them.
 
 #### Other npm scripts that may be of interest in development
 
