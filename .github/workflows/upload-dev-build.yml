@@ -2,16 +2,116 @@ name: Upload dev build from PR (placeholder, not yet implemented)
 
 on:
   workflow_run:
-    workflows: ["CI"]  # ci.yml
+    workflows: ["Publish Dist"]  # publish-dist.yml
     types:
       - completed
   workflow_dispatch:
-
+    inputs:
+      pr_number:
+        description: 'PR Number to deploy'
+        required: true
+      run_id:
+        description: 'The Run ID of the CI workflow that has the artifact'
+        required: true
 
 jobs:
-  hello:
+  upload:
     runs-on: ubuntu-latest
+    if: |
+          github.event_name == 'workflow_dispatch' || 
+          (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request')    
     steps:
-      - name: Hello World
+      - name: Download build artifact
+        id: download-artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        continue-on-error: true
+        with:
+          name: dist-node22  # uploaded by publish-dist.yml > publish-dist-node-v22
+          run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: temp-dist
+
+      - name: Check if artifact exists
+        if: steps.download-artifact.outcome != 'success'
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
         run: |
-          echo "Hello World"
+          echo "No build artifact found for $RUN_ID. Skipping upload."
+          exit 0 
+
+      - name: Setup metadata and prepare folders
+        id: setup-metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
+        run: |
+          # Get SHA from triggering workflow, or from manual input
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            SHA="${{ github.event.workflow_run.head_sha }}"
+          else
+            echo "Fetching latest SHA for PR #$PR_NUM..."
+            SHA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefOid --template '{{.headRefOid}}')
+          fi
+
+          echo "Using SHA: $SHA"
+          mkdir -p "upload/pr-$PR_NUM/$SHA"
+          cp temp-dist/plotly.js "upload/pr-$PR_NUM/$SHA/plotly.js"
+          cp temp-dist/plotly.min.js "upload/pr-$PR_NUM/$SHA/plotly.min.js"
+          cp temp-dist/plot-schema.json "upload/pr-$PR_NUM/$SHA/plot-schema.json"
+          cp -r "upload/pr-$PR_NUM/$SHA/" "upload/pr-$PR_NUM/latest/"
+
+          UPLOAD_DIR_PATH=$(pwd)/upload/
+
+          echo "Created directory ${UPLOAD_DIR_PATH} with the following contents:"
+          echo "$(ls -lR ${UPLOAD_DIR_PATH})"
+
+          echo "PR_NUM=$PR_NUM" >> $GITHUB_OUTPUT
+          echo "SHA=$SHA" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  #v3.1.1
+        with:
+          client-id: ${{ vars.DEV_DEPLOY_APP_ID }}
+          private-key: ${{ secrets.DEV_DEPLOY_APP_PRIVATE_KEY }}
+          owner: plotly
+          repositories: plotly.js-dev-builds
+
+      - name: Check out plotly.js-dev-builds repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: plotly/plotly.js-dev-builds
+          token: ${{ steps.generate-token.outputs.token }}  # token from previous step
+          path: plotly.js-dev-builds
+
+      - name: Commit and push files
+        id: commit-and-push
+        run: |
+          # 1. Move 'upload' directory into repo folder and cd into repo root
+          mkdir -p plotly.js-dev-builds/upload/
+          cp -r upload/ plotly.js-dev-builds/
+          cd plotly.js-dev-builds
+
+          # 2. Configure git
+          git config user.name "plotly.js-pr-upload"
+          git config user.email "<>"
+
+          # 3. add, commit, and push
+          git add upload/
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Deploy build for PR #${{ steps.setup-metadata.outputs.PR_NUM }} (commit ${{ steps.setup-metadata.outputs.SHORT_SHA }})"
+            git push origin main
+          fi
+
+      - name: Generate summary
+        run: |
+          BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
+          echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
+          echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
+          echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Build for this commit (permalink): [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
