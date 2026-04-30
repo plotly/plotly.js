@@ -23,6 +23,7 @@ jobs:
     outputs:
       stackgl_modules: ${{ steps.check.outputs.stackgl_modules }}
       topojson: ${{ steps.check.outputs.topojson }}
+      regl_codegen: ${{ steps.check.outputs.regl_codegen }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -41,6 +42,9 @@ jobs:
           fi
           if git diff --name-only "$BASE"...HEAD -- stackgl_modules/ | grep -q .; then
             echo "stackgl_modules=true" >> "$GITHUB_OUTPUT"
+          fi
+          if git diff --name-only "$BASE"...HEAD -- src/traces/scattergl/ src/traces/scatterpolargl/ src/traces/splom/ src/traces/parcoords/ src/lib/prepare_regl.js stackgl_modules/ devtools/regl_codegen/ | grep -q .; then
+            echo "regl_codegen=true" >> "$GITHUB_OUTPUT"
           fi
 
   # ============================================================
@@ -753,3 +757,43 @@ jobs:
           name: topojson-dist
           retention-days: 7
           path: topojson/dist/
+
+  check-regl-codegen:
+    needs: [detect-changes, install-and-cibuild]
+    if: needs.detect-changes.outputs.regl_codegen == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - uses: ./.github/actions/setup-chrome
+
+      - name: Run regl codegen
+        run: |
+          node devtools/regl_codegen/server.mjs &
+          SERVER_PID=$!
+          until curl -sf -o /dev/null http://localhost:3000/build/regl_codegen-bundle.js 2>/dev/null; do
+            sleep 1
+          done
+          $CHROME_BIN --headless=new --no-sandbox --enable-unsafe-swiftshader --ignore-gpu-blocklist http://localhost:3000/devtools/regl_codegen/index.html &
+          wait $SERVER_PID
+
+      - name: Check regl precompiled shaders are up to date
+        run: |
+          if ! git diff --exit-code src/generated/regl-codegen/ src/traces/scattergl/regl_precompiled.js src/traces/scatterpolargl/regl_precompiled.js src/traces/splom/regl_precompiled.js src/traces/parcoords/regl_precompiled.js; then
+            echo "::error::Regl precompiled shaders are out of date. Download the 'regl-codegen' artifact from this workflow run and commit the updated files to this pull request."
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload updated regl codegen files
+        if: failure()
+        with:
+          name: regl-codegen
+          retention-days: 7
+          path: |
+            src/generated/regl-codegen/
+            src/traces/scattergl/regl_precompiled.js
+            src/traces/scatterpolargl/regl_precompiled.js
+            src/traces/splom/regl_precompiled.js
+            src/traces/parcoords/regl_precompiled.js
