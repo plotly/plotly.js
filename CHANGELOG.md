@@ -9,6 +9,17 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.5.1] -- 2026-05-01
+
+### Changed
+
+- Reduce NPM bundle size by removing unneeded files [[#7746](https://github.com/plotly/plotly.js/pull/7746)]
+
+### Fixed
+
+- Fix bug where certain `axis.minallowed` values could cause axis to be reversed [[#7761](https://github.com/plotly/plotly.js/pull/7761)]
+
+
 ## [3.5.0] -- 2026-04-03
 
 ### Added
