@@ -1,0 +1,52 @@
+{
+  "data": [{ "type": "scatter", "x": [1, 2], "y": [1, 2] }],
+  "layout": {
+    "margin": { "t": 92 },
+    "shapes": [
+      {
+        "label": {
+          "text": "Circle",
+          "textangle": 0,
+          "textposition": "middle center",
+          "xanchor": "center",
+          "yanchor": "middle"
+        },
+        "showlegend": false,
+        "type": "circle",
+        "x0": -25,
+        "x1": 25,
+        "xanchor": 1,
+        "xref": "x",
+        "xsizemode": "pixel",
+        "y0": 25,
+        "y1": 75,
+        "yanchor": 1,
+        "yref": "paper",
+        "ysizemode": "pixel"
+      },
+      {
+        "label": {
+          "text": "Rect",
+          "textangle": 0,
+          "textposition": "middle center",
+          "xanchor": "center",
+          "yanchor": "middle"
+        },
+        "showlegend": false,
+        "type": "rectangle",
+        "x0": -25,
+        "x1": 25,
+        "xanchor": 2,
+        "xref": "x",
+        "xsizemode": "pixel",
+        "y0": 25,
+        "y1": 75,
+        "yanchor": 1,
+        "yref": "paper",
+        "ysizemode": "pixel"
+      }
+    ],
+    "width": 500,
+    "height": 500
+  }
+}
