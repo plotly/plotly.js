@@ -17,6 +17,7 @@ var Drawing = require('../drawing');
 var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var dragElement = require('../dragelement');
+var Fx = require('../fx');
 var setCursor = require('../../lib/setcursor');
 
 var constants = require('./constants');
@@ -188,7 +189,33 @@ function drawOne(gd, index) {
             }
         }
         path.node().addEventListener('click', function() { return activateShape(gd, path); });
+
+        // Editable / shape-position-edit shapes get inline pointer-events
+        // that prevent mouse events from reaching the maindrag, where
+        // hoveranywhere / clickanywhere are wired up. Forward those events
+        // from the shape so the layout-level events still fire.
+        forwardHoverClickAnywhere(gd, path, plotinfo);
     }
+}
+
+function forwardHoverClickAnywhere(gd, path, plotinfo) {
+    if(!plotinfo || !plotinfo.id) return;
+
+    var node = path.node();
+
+    node.addEventListener('mousemove', function(evt) {
+        if(gd._dragging) return;
+        if(gd._fullLayout.hoveranywhere) {
+            Fx.hover(gd, evt, plotinfo.id);
+        }
+    });
+
+    node.addEventListener('click', function(evt) {
+        if(gd._dragged) return;
+        if(gd._fullLayout.clickanywhere) {
+            Fx.click(gd, evt, plotinfo.id);
+        }
+    });
 }
 
 function setClipPath(shapePath, gd, shapeOptions) {
