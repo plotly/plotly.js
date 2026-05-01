@@ -2037,3 +2037,136 @@ describe('Test multi-axis shapes', function () {
             .then(done, done.fail);
     });
 });
+
+describe('Shape labels with pixel sizemode', () => {
+    let gd;
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
+
+    const getLabelNodes = () => d3SelectAll('.shape-label-text');
+    const data = [
+        {
+            type: 'scatter',
+            x: [1, 2],
+            y: [1, 2]
+        }
+    ];
+
+    it('positions labels inside shapes with xsizemode/ysizemode pixel', (done) => {
+        Plotly.newPlot(gd, data, {
+            width: 600,
+            height: 400,
+            shapes: [
+                {
+                    type: 'circle',
+                    label: { text: 'Circle Label' },
+                    xref: 'x',
+                    yref: 'y',
+                    xsizemode: 'pixel',
+                    ysizemode: 'pixel',
+                    xanchor: 1.5,
+                    yanchor: 1.5,
+                    x0: -30,
+                    x1: 30,
+                    y0: -30,
+                    y1: 30
+                },
+                {
+                    type: 'rect',
+                    label: { text: 'Rect Label' },
+                    xref: 'x',
+                    yref: 'y',
+                    xsizemode: 'pixel',
+                    ysizemode: 'pixel',
+                    xanchor: 1.5,
+                    yanchor: 1.5,
+                    x0: -40,
+                    x1: 40,
+                    y0: -25,
+                    y1: 25
+                }
+            ]
+        })
+            .then(() => {
+                const labels = getLabelNodes();
+                expect(labels.size()).toBe(2);
+
+                const shapeNodes = d3SelectAll('.shapelayer .shape-group path');
+                expect(shapeNodes.size()).toBe(2);
+
+                // Each label should be positioned within or near its shape
+                labels.each(function (_, i) {
+                    const labelBB = this.getBoundingClientRect();
+                    const shapeBB = shapeNodes[0][i].getBoundingClientRect();
+                    // Label center should be inside the shape bounding box
+                    const labelCenterX = labelBB.left + labelBB.width / 2;
+                    const labelCenterY = labelBB.top + labelBB.height / 2;
+
+                    expect(labelCenterX).toBeGreaterThan(shapeBB.left);
+                    expect(labelCenterX).toBeLessThan(shapeBB.right);
+                    expect(labelCenterY).toBeGreaterThan(shapeBB.top);
+                    expect(labelCenterY).toBeLessThan(shapeBB.bottom);
+                });
+            })
+            .then(done, done.fail);
+    });
+
+    it('positions labels inside shapes with paper ref and pixel sizemode', (done) => {
+        Plotly.newPlot(gd, data, {
+            width: 600,
+            height: 400,
+            shapes: [
+                {
+                    type: 'circle',
+                    label: { text: 'Circle Label' },
+                    xref: 'x',
+                    xsizemode: 'pixel',
+                    xanchor: 1.5,
+                    x0: -25,
+                    x1: 25,
+                    yref: 'paper',
+                    ysizemode: 'pixel',
+                    yanchor: 0.5,
+                    y0: -25,
+                    y1: 25
+                },
+                {
+                    type: 'rect',
+                    label: { text: 'Rect Label' },
+                    xref: 'x',
+                    xsizemode: 'pixel',
+                    xanchor: 1.5,
+                    x0: -30,
+                    x1: 30,
+                    yref: 'paper',
+                    ysizemode: 'pixel',
+                    yanchor: 0.5,
+                    y0: -20,
+                    y1: 20
+                }
+            ]
+        })
+            .then(() => {
+                const labels = getLabelNodes();
+                expect(labels.size()).toBe(2);
+
+                const shapeNodes = d3SelectAll('.shapelayer .shape-group path');
+
+                labels.each(function (_, i) {
+                    const labelBB = this.getBoundingClientRect();
+                    const shapeBB = shapeNodes[0][i].getBoundingClientRect();
+                    // Label center should be inside the shape bounding box
+                    const labelCenterX = labelBB.left + labelBB.width / 2;
+                    const labelCenterY = labelBB.top + labelBB.height / 2;
+
+                    expect(labelCenterX).toBeGreaterThan(shapeBB.left);
+                    expect(labelCenterX).toBeLessThan(shapeBB.right);
+                    expect(labelCenterY).toBeGreaterThan(shapeBB.top);
+                    expect(labelCenterY).toBeLessThan(shapeBB.bottom);
+                });
+            })
+            .then(done, done.fail);
+    });
+});
