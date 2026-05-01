@@ -33,7 +33,7 @@
           "yanchor": "middle"
         },
         "showlegend": false,
-        "type": "rectangle",
+        "type": "rect",
         "x0": -25,
         "x1": 25,
         "xanchor": 2,
