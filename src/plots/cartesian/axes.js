@@ -1174,6 +1174,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 }
             });
         });
+        tickVals.forEach(function(tick) {
+            tick.skipLabel = allTicklabelVals.indexOf(tick) === -1;
+        });
     }
 
     if(hasMinor) {
@@ -1303,14 +1306,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             lastVisibleHead = ax._prevDateHead;
             t = setTickLabel(ax, tickVals[i]);
-            if (ticklabelIndex) {
-                if (allTicklabelVals.indexOf(tickVals[i]) === -1) {
-                    hideLabel(t);
-                }
-            } else {
-                if (tickVals[i].skipLabel) {
-                    hideLabel(t);
-                }
+            if (tickVals[i].skipLabel) {
+                hideLabel(t);
             }
 
             ticksOut.push(t);
