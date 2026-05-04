@@ -1078,7 +1078,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
         if((major || ticklabelIndex) && isPeriod) {
             // if major: add one item to label period before tick0
-            // if minor: add one item for ticklabelindex positioning
+            // if minor: add one item for ticklabelindex positioning. positionPeriodTicks requires
+            // at least 2 ticks to calculate the period length, so we add a dummy tick, ensuring
+            // that if a tick is labeled, there are always at least 2 ticks.
             x = axes.tickIncrement(x, dtick, !axrev, calendar);
             if (major) majorId--;
         }
@@ -1128,7 +1130,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    // check if ticklabelIndex makes sense, otherwise ignore it
+    // check if ticklabelIndex makes sense, otherwise ignore it.
+    // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
+    // with the required distance to each other.
     if(!minorTickVals || minorTickVals.length < 3) {
         ticklabelIndex = false;
     } else {
