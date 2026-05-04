@@ -199,7 +199,7 @@ function drawOne(gd, index) {
 }
 
 function forwardHoverClickAnywhere(gd, path, plotinfo) {
-    if(!plotinfo || !plotinfo.id) return;
+    if(!plotinfo?.id) return;
 
     var node = path.node();
 
