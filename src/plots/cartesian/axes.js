@@ -984,12 +984,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(major) {
             ax._dtickInit = ax.dtick;
             ax._tick0Init = ax.tick0;
-        } else if (hasMinor) {
+        } else if (calcMinor) {
             ax.minor._dtickInit = ax.minor.dtick;
             ax.minor._tick0Init = ax.minor.tick0;
         }
 
-        var mockAx = major ? ax : Lib.extendFlat({}, ax, hasMinor ? ax.minor : {"minor": {}});
+        var mockAx = major ? ax : Lib.extendFlat({}, ax, calcMinor ? ax.minor : {"minor": {}});
         if(isMinor) {
             axes.prepMinorTicks(mockAx, ax, opts);
         } else {
