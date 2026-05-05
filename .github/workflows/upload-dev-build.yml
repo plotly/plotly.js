@@ -1,16 +1,25 @@
-name: Upload dev build from PR (IN DEVELOPMENT)
+name: Upload dev build from PR (placeholder, not yet implemented)
 
 on:
   workflow_run:
-    workflows: ["*"]  # publish-dist.yml
+    workflows: ["Publish Dist"]  # publish-dist.yml
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR Number to deploy'
+        required: true
+      run_id:
+        description: 'The Run ID of the CI workflow that has the artifact'
+        required: true
 
 jobs:
   upload:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.event == 'pull_request'
-    
+    if: |
+          github.event_name == 'workflow_dispatch' || 
+          (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request')    
     steps:
       - name: Download Build Artifact
         id: download-artifact
@@ -18,7 +27,7 @@ jobs:
         continue-on-error: true
         with:
           name: plotly.node22.js  # uploaded by publish-dist.yml > publish-dist-node-v22
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: temp-dist
 
@@ -31,13 +40,17 @@ jobs:
       - name: Prepare Folder Structure
         id: prepare-folder-structure
         run: |
-          PR_NUM="${{ github.event.workflow_run.pull_requests[0].number }}"
-          SHA="${{ github.event.workflow_run.head_sha }}"
+          # Get PR number from triggering workflow, or from manual input
+          PR_NUM="${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}"
+          # Get SHA from triggering workflow, or from manual input
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            SHA="${{ github.event.workflow_run.head_sha }}"
+          else
+            echo "Fetching latest SHA for PR #$PR_NUM..."
+            SHA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefOid --template '{{.headRefOid}}')
+          fi
           
-          mkdir -p "upload/pr-$PR_NUM/$SHA"
-          mkdir -p "upload/pr-$PR_NUM/latest"
-          
-          # Name of file must match name of file uploaded by ci.yml > publish-dist-node-v22
+          echo "Using SHA: $SHA"          
           cp temp-dist/plotly.node22.js "upload/pr-$PR_NUM/$SHA/plotly.js"
           cp temp-dist/plotly.node22.js "upload/pr-$PR_NUM/latest/plotly.js"
           
