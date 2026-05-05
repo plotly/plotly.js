@@ -57,15 +57,16 @@ jobs:
           cp temp-dist/plotly.js "upload/pr-$PR_NUM/$SHA/plotly.js"
           cp temp-dist/plotly.min.js "upload/pr-$PR_NUM/$SHA/plotly.min.js"
           cp temp-dist/plot-schema.json "upload/pr-$PR_NUM/$SHA/plot-schema.json"
-          cp -r "upload/pr-$PR_NUM/$SHA/plotly.js" "upload/pr-$PR_NUM/latest"
+          cp -r "upload/pr-$PR_NUM/$SHA/" "upload/pr-$PR_NUM/latest/"
 
           UPLOAD_DIR_PATH=$(pwd)/upload/
 
-          echo "Created directory ${UPLOAD_DIR_PATH} with the following full contents:"
+          echo "Created directory ${UPLOAD_DIR_PATH} with the following contents:"
           echo "$(ls -lR ${UPLOAD_DIR_PATH})"
 
           echo "PR_NUM=$PR_NUM" >> $GITHUB_OUTPUT
           echo "SHA=$SHA" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHA::7}" >> $GITHUB_OUTPUT
 
       - name: Generate GitHub App token
         id: generate-token
@@ -88,7 +89,7 @@ jobs:
         run: |
           # 1. Move 'upload' directory into repo folder and cd into repo root
           mkdir -p plotly.js-dev-builds/upload/
-          cp -r upload/* plotly.js-dev-builds/upload/
+          cp -r upload/ plotly.js-dev-builds/upload/
           cd plotly.js-dev-builds
 
           # 2. Configure git
@@ -102,7 +103,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Deploy build for PR #${{ steps.setup-metadata.outputs.PR_NUM }} - SHA ${{ steps.setup-metadata.outputs.SHA }}"
+            git commit -m "Deploy build for PR #${{ steps.setup-metadata.outputs.PR_NUM }} (commit ${{ steps.setup-metadata.outputs.SHORT_SHA }})"
             git push origin main
           fi
 
