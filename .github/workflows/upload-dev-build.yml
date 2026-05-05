@@ -21,7 +21,7 @@ jobs:
           github.event_name == 'workflow_dispatch' || 
           (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request')    
     steps:
-      - name: Download Build Artifact
+      - name: Download build artifact
         id: download-artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         continue-on-error: true
@@ -31,14 +31,14 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: temp-dist
 
-      - name: Check if Artifact Exists
+      - name: Check if artifact exists
         if: steps.download-artifact.outcome != 'success'
         run: |
           echo "No build artifact found for this run. Skipping upload."
           exit 0 
 
-      - name: Prepare Folder Structure
-        id: prepare-folder-structure
+      - name: Setup metadata and prepare folders
+        id: setup-metadata
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -67,7 +67,7 @@ jobs:
           echo "PR_NUM=$PR_NUM" >> $GITHUB_OUTPUT
           echo "SHA=$SHA" >> $GITHUB_OUTPUT
 
-      - name: Generate GitHub App Token
+      - name: Generate GitHub App token
         id: generate-token
         uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  #v3.1.1
         with:
@@ -83,28 +83,33 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}  # token from previous step
           path: plotly.js-dev-builds
 
-      - name: Move files around
+      - name: Commit and push files
+        id: commit-and-push
         run: |
-          mv upload/ plotly.js-dev-builds/upload/
+          # 1. Move 'upload' directory into repo folder and cd into repo root
+          mkdir -p plotly.js-dev-builds/upload/
+          cp -r upload/* plotly.js-dev-builds/upload/
           cd plotly.js-dev-builds
-          pwd
 
-      - name: Upload to plotly.js-dev-builds repo
-        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f  # v4.8.0
-        with:
-          repository-name: plotly/plotly.js-dev-builds
-          token: ${{ steps.generate-token.outputs.token }}  # token from previous step
-          branch: main
-          folder: upload
-          target-folder: upload
-          clean: false
-          git-config-name: "plotly.js-pr-upload"
-          git-config-email: "<>"
+          # 2. Configure git
+          git config user.name "plotly.js-pr-upload"
+          git config user.email "<>"
 
-      - name: Generate Summary
+          # 3. add, commit, and push
+          git add upload/
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Deploy build for PR #${{ steps.setup-metadata.outputs.PR_NUM }} - SHA ${{ steps.setup-metadata.outputs.SHA }}"
+            git push origin main
+          fi
+
+      - name: Generate summary
         run: |
-          BASE="https://plotly.github.io/plotly.js-dev-builds/pr-${{ steps.prepare-folder-structure.outputs.PR_NUM }}"
+          BASE="https://plotly.github.io/plotly.js-dev-builds/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
-          echo "Builds for PR #${{ steps.prepare-folder-structure.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
+          echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
           echo "- [Latest for PR]($BASE/latest/plotly.js)" >> $GITHUB_STEP_SUMMARY
-          echo "- [Immutable (this commit)]($BASE/${{ steps.prepare-folder-structure.outputs.SHA }}/plotly.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Immutable (this commit)]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.js)" >> $GITHUB_STEP_SUMMARY
