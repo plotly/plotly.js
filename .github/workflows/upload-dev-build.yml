@@ -89,7 +89,7 @@ jobs:
         run: |
           # 1. Move 'upload' directory into repo folder and cd into repo root
           mkdir -p plotly.js-dev-builds/upload/
-          cp -r upload/ plotly.js-dev-builds/upload/
+          cp -r upload/ plotly.js-dev-builds/
           cd plotly.js-dev-builds
 
           # 2. Configure git
@@ -109,7 +109,7 @@ jobs:
 
       - name: Generate summary
         run: |
-          BASE="https://plotly.github.io/plotly.js-dev-builds/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
+          BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
           echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
           echo "- [Latest for PR]($BASE/latest/plotly.js)" >> $GITHUB_STEP_SUMMARY
