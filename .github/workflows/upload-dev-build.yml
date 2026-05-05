@@ -76,11 +76,12 @@ jobs:
         with:
           repository: plotly/plotly.js-dev-builds
           token: ${{ steps.generate-token.outputs.token }}  # token from previous step
-          branch: main
+          path: plotly.js-dev-builds
 
       - name: Change directory
         run: |
           cd plotly.js-dev-builds
+          pwd
 
       - name: Upload to plotly.js-dev-builds repo
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f  # v4.8.0
@@ -88,7 +89,7 @@ jobs:
           repository-name: plotly/plotly.js-dev-builds
           token: ${{ steps.generate-token.outputs.token }}  # token from previous step
           branch: main
-          folder: upload
+          folder: ../upload
           target-folder: .
           clean: false
           git-config-name: "plotly.js-pr-upload"
