@@ -83,8 +83,9 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}  # token from previous step
           path: plotly.js-dev-builds
 
-      - name: Change directory
+      - name: Move files around
         run: |
+          mv upload/ plotly.js-dev-builds/upload/
           cd plotly.js-dev-builds
           pwd
 
@@ -95,7 +96,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}  # token from previous step
           branch: main
           folder: upload
-          target-folder: .
+          target-folder: upload
           clean: false
           git-config-name: "plotly.js-pr-upload"
           git-config-email: "<>"
