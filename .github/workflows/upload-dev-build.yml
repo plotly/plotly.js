@@ -39,6 +39,8 @@ jobs:
 
       - name: Prepare Folder Structure
         id: prepare-folder-structure
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Get PR number from triggering workflow, or from manual input
           PR_NUM="${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}"
