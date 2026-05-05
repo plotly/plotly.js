@@ -59,6 +59,11 @@ jobs:
           cp temp-dist/plot-schema.json "upload/pr-$PR_NUM/$SHA/plot-schema.json"
           cp -r "upload/pr-$PR_NUM/$SHA/plotly.js" "upload/pr-$PR_NUM/latest"
 
+          UPLOAD_DIR_PATH=$(pwd)/upload/
+
+          echo "Created directory $UPLOAD_DIR_PATH" with the following full contents:"
+          echo "$(ls -la $UPLOAD_DIR_PATH)"
+
           echo "PR_NUM=$PR_NUM" >> $GITHUB_OUTPUT
           echo "SHA=$SHA" >> $GITHUB_OUTPUT
 
