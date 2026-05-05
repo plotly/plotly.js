@@ -1,0 +1,17 @@
+name: Upload dev build from PR (placeholder, not yet implemented)
+
+on:
+  workflow_run:
+    workflows: ["CI"]  # ci.yml
+    types:
+      - completed
+  workflow_dispatch:
+
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello World
+        run: |
+          echo "Hello World"
