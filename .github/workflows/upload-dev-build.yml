@@ -66,20 +66,33 @@ jobs:
         id: generate-token
         uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  #v3.1.1
         with:
-          app-id: ${{ vars.DEV_DEPLOY_APP_ID }}
+          client-id: ${{ vars.DEV_DEPLOY_APP_ID }}
           private-key: ${{ secrets.DEV_DEPLOY_APP_PRIVATE_KEY }}
           owner: plotly
           repositories: plotly.js-dev-builds
+
+      - name: Check out plotly.js-dev-builds repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: plotly/plotly.js-dev-builds
+          token: ${{ steps.generate-token.outputs.token }}  # token from previous step
+          branch: main
+
+      - name: Change directory
+        run: |
+          cd plotly.js-dev-builds
 
       - name: Upload to plotly.js-dev-builds repo
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f  # v4.8.0
         with:
           repository-name: plotly/plotly.js-dev-builds
-          token: ${{ steps.generate-token.outputs.token }}  # create-github-app-token action automatically outputs the token
-          branch: gh-pages
+          token: ${{ steps.generate-token.outputs.token }}  # token from previous step
+          branch: main
           folder: upload
           target-folder: .
           clean: false
+          git-config-name: "plotly.js-pr-upload"
+          git-config-email: "<>"
 
       - name: Generate Summary
         run: |
