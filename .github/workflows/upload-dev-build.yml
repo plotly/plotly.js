@@ -62,7 +62,7 @@ jobs:
           UPLOAD_DIR_PATH=$(pwd)/upload/
 
           echo "Created directory ${UPLOAD_DIR_PATH} with the following full contents:"
-          echo "$(ls -la ${UPLOAD_DIR_PATH})"
+          echo "$(ls -lR ${UPLOAD_DIR_PATH})"
 
           echo "PR_NUM=$PR_NUM" >> $GITHUB_OUTPUT
           echo "SHA=$SHA" >> $GITHUB_OUTPUT
@@ -94,7 +94,7 @@ jobs:
           repository-name: plotly/plotly.js-dev-builds
           token: ${{ steps.generate-token.outputs.token }}  # token from previous step
           branch: main
-          folder: ../upload
+          folder: upload
           target-folder: .
           clean: false
           git-config-name: "plotly.js-pr-upload"
