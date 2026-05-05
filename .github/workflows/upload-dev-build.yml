@@ -33,17 +33,18 @@ jobs:
 
       - name: Check if artifact exists
         if: steps.download-artifact.outcome != 'success'
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
         run: |
-          echo "No build artifact found for this run. Skipping upload."
+          echo "No build artifact found for $RUN_ID. Skipping upload."
           exit 0 
 
       - name: Setup metadata and prepare folders
         id: setup-metadata
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
         run: |
-          # Get PR number from triggering workflow, or from manual input
-          PR_NUM="${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}"
           # Get SHA from triggering workflow, or from manual input
           if [ "${{ github.event_name }}" == "workflow_run" ]; then
             SHA="${{ github.event.workflow_run.head_sha }}"
@@ -112,5 +113,5 @@ jobs:
           BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
           echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
-          echo "- Latest build for this PR:[$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "- Build for this commit (permalink): [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
