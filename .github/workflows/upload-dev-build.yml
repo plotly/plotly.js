@@ -2,7 +2,7 @@ name: Upload dev build from PR (IN DEVELOPMENT)
 
 on:
   workflow_run:
-    workflows: ["Publish Dist"]  # publish-dist.yml
+    workflows: ["*"]  # publish-dist.yml
     types:
       - completed
 
