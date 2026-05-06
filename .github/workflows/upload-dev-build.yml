@@ -18,26 +18,21 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     if: |
-          github.event_name == 'workflow_dispatch' || 
-          (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request')    
+          github.event_name == 'workflow_dispatch' ||
+          (
+            github.event_name == 'workflow_run' && 
+            github.event.workflow_run.event == 'pull_request' &&
+            github.event.workflow_run.conclusion == 'success'
+          )
     steps:
       - name: Download build artifact
         id: download-artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        continue-on-error: true
         with:
           name: dist-node22  # uploaded by publish-dist.yml > publish-dist-node-v22
           run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: temp-dist
-
-      - name: Check if artifact exists
-        if: steps.download-artifact.outcome != 'success'
-        env:
-          RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
-        run: |
-          echo "No build artifact found for $RUN_ID. Skipping upload."
-          exit 0 
 
       - name: Setup metadata and prepare folders
         id: setup-metadata
@@ -114,4 +109,4 @@ jobs:
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
           echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
           echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
-          echo "- Build for this commit (permalink): [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Build for this commit: [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
