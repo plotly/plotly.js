@@ -42,6 +42,8 @@
     "lint-fix": "npx @biomejs/biome format ./test/image/mocks --write; npx @biomejs/biome lint --write || true",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
+    "gen:types": "node tasks/generate_types.mjs && npx @biomejs/biome format --write src/types/generated",
+    "gen:types:check": "npm run gen:types && git diff --exit-code src/types/generated/",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "test-mock": "node tasks/test_mock.mjs",
