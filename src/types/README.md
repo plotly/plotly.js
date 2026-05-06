@@ -1,63 +1,38 @@
-# Types Directory
+# TypeScript in plotly.js
 
-Centralized TypeScript type definitions for plotly.js.
+This directory documents the TypeScript conversion in progress.
 
-## Quick Import
+| Doc | Audience |
+|---|---|
+| [SETUP.md](SETUP.md) | First-time contributor — toolchain overview, npm scripts |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Anyone working with types — directory layout, public/private split |
+| [CONVERTING_ATTRIBUTES.md](CONVERTING_ATTRIBUTES.md) | **Contributor doing conversion work** — step-by-step recipe |
+| [GENERATOR.md](GENERATOR.md) | Maintainer extending or debugging the type generator |
 
-```typescript
-// Import from main index (recommended)
-import type { GraphDiv, Layout, PlotData } from '../types';
+## Status
 
-// Or use path alias
-import type { GraphDiv } from '@types';
-```
+- TypeScript build infrastructure: ✅ done
+- Public type surface in `src/types/`: ✅ done
+- `AttributeMap` / `AttrsToType<T>` machinery: ✅ done
+- `.d.ts` generator (TS Compiler API + biome format): ✅ done
+- Consumer entry point (`lib/index.d.ts`, wired via `package.json#types`): ✅ done
+- CI gates (`typecheck` + `generated-types-drift`): ✅ done
+- First attribute file converted (modebar): ✅ done
+- Conversion of remaining attribute files: 🚧 in progress
 
-## Directory Structure
+The published consumer surface lives at [`lib/index.d.ts`](../../lib/index.d.ts).
+This `src/types/` directory is the authoring location — internal types live
+here, public types are re-exported through `lib/index.d.ts` to consumers.
 
-```
-types/
-├── index.d.ts         # Main export - import from here
-├── core/              # Core Plotly types (GraphDiv, Layout, Data, Config, Events)
-├── traces/            # Trace-specific types
-├── components/        # Component-specific types
-├── plots/             # Plot-specific types
-└── lib/               # Utility types
-```
+## How to help
 
-## Most Common Types
+If you want to convert an attribute file:
 
-### GraphDiv
-```typescript
-import type { GraphDiv } from '../types';
+1. Read [CONVERTING_ATTRIBUTES.md](CONVERTING_ATTRIBUTES.md)
+2. Pick a file from the priority list at the bottom of that doc
+3. Claim it in a PR description
+4. Follow the recipe
+5. Submit a PR
 
-function draw(gd: GraphDiv): void {
-    const layout = gd._fullLayout;
-    const data = gd._fullData;
-}
-```
-
-### Layout
-```typescript
-import type { Layout } from '../types';
-
-function updateLayout(layout: Partial<Layout>): void {
-    layout.title = 'New Title';
-}
-```
-
-### PlotData (Traces)
-```typescript
-import type { PlotData, ScatterTrace } from '../types';
-
-function processTrace(trace: PlotData): void {
-    if (trace.type === 'scatter') {
-        const scatter = trace as ScatterTrace;
-    }
-}
-```
-
-## Adding New Types
-
-1. Create file in appropriate subdirectory
-2. Export from `index.d.ts`
-3. Use in your TypeScript files
+Each conversion is a single self-contained commit and takes 10-60 minutes
+depending on file size.
