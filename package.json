@@ -4,6 +4,7 @@
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
