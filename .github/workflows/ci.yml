@@ -572,6 +572,26 @@ jobs:
       - name: Run syntax tests on source files
         run: .github/scripts/test.sh source-syntax
 
+  typecheck:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Type-check TypeScript sources
+        run: npm run typecheck
+
+  generated-types-drift:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Verify generated types are in sync with attribute sources
+        run: npm run gen:types:check
+
   # ============================================================
   # Standalone jobs (no dependencies on install-and-cibuild)
   # ============================================================
