@@ -41,12 +41,7 @@ export interface TraceModule {
 /**
  * Trace defaults function signature
  */
-export type TraceDefaultsFn = (
-    traceIn: any,
-    traceOut: any,
-    defaultColor: string,
-    layout: any
-) => void;
+export type TraceDefaultsFn = (traceIn: any, traceOut: any, defaultColor: string, layout: any) => void;
 
 /**
  * Trace attributes structure

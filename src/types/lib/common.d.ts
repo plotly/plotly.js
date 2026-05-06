@@ -1,78 +1,122 @@
 /**
  * Common library utility types
  *
- * Types for Lib utilities and helpers
+ * Utility types, scalars, and helpers used throughout plotly.js
  */
 
-/**
- * Coercion function signature
- */
-export type CoerceFn = (attr: string, dflt?: any) => any;
+// ---------------------------------------------------------------------------
+// Scalar / union types
+// ---------------------------------------------------------------------------
 
-/**
- * Nested property path
- */
-export type PropertyPath = string | string[];
-
-/**
- * Color scale
- */
-export type ColorScale = string | string[] | Array<[number, string]>;
-
-/**
- * Date format string
- */
-export type DateFormat = string;
-
-/**
- * Single data value
- */
 export type Datum = string | number | Date | null;
 
-/**
- * Line dash styles
- */
+export type TypedArray =
+    | Int8Array
+    | Uint8Array
+    | Int16Array
+    | Uint16Array
+    | Int32Array
+    | Uint32Array
+    | Uint8ClampedArray
+    | Float32Array
+    | Float64Array;
+
+export type Color =
+    | string
+    | number
+    | Array<string | number | undefined | null>
+    | Array<Array<string | number | undefined | null>>;
+
+export type ColorScale = string | string[] | Array<[number, string]>;
+
 export type Dash = 'solid' | 'dot' | 'dash' | 'longdash' | 'dashdot' | 'longdashdot';
 
-/**
- * Supported calendar systems
- */
 export type Calendar =
+    | 'gregorian'
     | 'chinese'
     | 'coptic'
     | 'discworld'
     | 'ethiopian'
-    | 'gregorian'
     | 'hebrew'
     | 'islamic'
-    | 'jalali'
     | 'julian'
     | 'mayan'
     | 'nanakshahi'
     | 'nepali'
     | 'persian'
+    | 'jalali'
     | 'taiwan'
     | 'thai'
     | 'ummalqura';
 
-/**
- * Axis type
- */
-export type AxisType = '-' | 'category' | 'date' | 'linear' | 'log' | 'multicategory';
+export type AxisType = '-' | 'linear' | 'log' | 'date' | 'category' | 'multicategory';
 
-/**
- * Numeric array
- */
+export type DTickValue = number | string;
+
+export type MarkerSymbol = string | number | Array<string | number>;
+
+export type XAnchor = 'auto' | 'left' | 'center' | 'right';
+export type YAnchor = 'auto' | 'top' | 'middle' | 'bottom';
+export type XRef = 'container' | 'paper';
+export type YRef = 'container' | 'paper';
+
+// ---------------------------------------------------------------------------
+// Error bars
+// ---------------------------------------------------------------------------
+
+export interface ErrorOptions {
+    visible: boolean;
+    symmetric: boolean;
+    color: Color;
+    thickness: number;
+    width: number;
+}
+
+export type ErrorBar = Partial<ErrorOptions> &
+    (
+        | {
+              type: 'constant' | 'percent';
+              value: number;
+              valueminus?: number | undefined;
+          }
+        | {
+              type: 'data';
+              array: Datum[];
+              arrayminus?: Datum[] | undefined;
+          }
+    );
+
+// ---------------------------------------------------------------------------
+// Pattern
+// ---------------------------------------------------------------------------
+
+export type PatternShape = '' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.';
+
+export interface Pattern {
+    shape?: PatternShape | PatternShape[] | undefined;
+    path?: string | undefined;
+    fillmode?: 'replace' | 'overlay' | undefined;
+    bgcolor?: string | string[] | undefined;
+    fgcolor?: string | string[] | undefined;
+    fgopacity?: number | undefined;
+    size?: number | number[] | undefined;
+    solidity?: number | number[] | undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Internal / lib utility types
+// ---------------------------------------------------------------------------
+
+export type CoerceFn = (attr: string, dflt?: any) => any;
+
+export type PropertyPath = string | string[];
+
+export type DateFormat = string;
+
 export type NumericArray = number[] | Float32Array | Float64Array;
 
-/**
- * Type that can be a single value or an array
- */
 export type Arrayable<T> = T | T[];
 
-/**
- * Rectangle bounds
- */
 export interface Rect {
     left: number;
     right: number;
@@ -82,24 +126,15 @@ export interface Rect {
     height?: number;
 }
 
-/**
- * Point in 2D space
- */
 export interface Point2D {
     x: number;
     y: number;
 }
 
-/**
- * Point in 3D space
- */
 export interface Point3D extends Point2D {
     z: number;
 }
 
-/**
- * RGBA color
- */
 export interface RGBAColor {
     r: number;
     g: number;

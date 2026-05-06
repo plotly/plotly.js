@@ -1,68 +1,386 @@
 /**
  * Data/Trace types
  *
- * Defines the structure of Plotly data traces.
- * This is a union of all possible trace types.
+ * Comprehensive trace data types covering all plot types, markers, lines,
+ * and the Data union.
  */
 
-import type { Dash, ColorScale } from '../lib/common';
+import type { Color, ColorScale, Dash, Datum, ErrorBar, MarkerSymbol, Pattern, TypedArray } from '../lib/common';
+import type { ColorBar, DataTitle, Delta, Font, Gauge, HoverLabel, Padding, PlotNumber } from './layout';
 
-/**
- * All supported plot/trace types in plotly.js
- */
+// ---------------------------------------------------------------------------
+// PlotType
+// ---------------------------------------------------------------------------
+
 export type PlotType =
-    | "bar"
-    | "barpolar"
-    | "box"
-    | "candlestick"
-    | "carpet"
-    | "choropleth"
-    | "choroplethmap"
-    | "choroplethmapbox"
-    | "cone"
-    | "contour"
-    | "contourcarpet"
-    | "densitymap"
-    | "densitymapbox"
-    | "funnel"
-    | "funnelarea"
-    | "heatmap"
-    | "histogram"
-    | "histogram2d"
-    | "histogram2dcontour"
-    | "icicle"
-    | "image"
-    | "indicator"
-    | "isosurface"
-    | "mesh3d"
-    | "ohlc"
-    | "parcats"
-    | "parcoords"
-    | "pie"
-    | "sankey"
-    | "scatter"
-    | "scatter3d"
-    | "scattercarpet"
-    | "scattergeo"
-    | "scattergl"
-    | "scattermap"
-    | "scattermapbox"
-    | "scatterpolar"
-    | "scatterpolargl"
-    | "scattersmith"
-    | "scatterternary"
-    | "splom"
-    | "streamtube"
-    | "sunburst"
-    | "surface"
-    | "table"
-    | "treemap"
-    | "violin"
-    | "volume"
-    | "waterfall";
+    | 'bar'
+    | 'barpolar'
+    | 'box'
+    | 'candlestick'
+    | 'carpet'
+    | 'choropleth'
+    | 'choroplethmap'
+    | 'choroplethmapbox'
+    | 'cone'
+    | 'contour'
+    | 'contourcarpet'
+    | 'densitymap'
+    | 'densitymapbox'
+    | 'funnel'
+    | 'funnelarea'
+    | 'heatmap'
+    | 'histogram'
+    | 'histogram2d'
+    | 'histogram2dcontour'
+    | 'icicle'
+    | 'image'
+    | 'indicator'
+    | 'isosurface'
+    | 'mesh3d'
+    | 'ohlc'
+    | 'parcats'
+    | 'parcoords'
+    | 'pie'
+    | 'sankey'
+    | 'scatter'
+    | 'scatter3d'
+    | 'scattercarpet'
+    | 'scattergeo'
+    | 'scattergl'
+    | 'scattermap'
+    | 'scattermapbox'
+    | 'scatterpolar'
+    | 'scatterpolargl'
+    | 'scattersmith'
+    | 'scatterternary'
+    | 'splom'
+    | 'streamtube'
+    | 'sunburst'
+    | 'surface'
+    | 'table'
+    | 'treemap'
+    | 'violin'
+    | 'volume'
+    | 'waterfall';
+
+// ---------------------------------------------------------------------------
+// Marker / Line types
+// ---------------------------------------------------------------------------
+
+export interface ScatterMarkerLine {
+    width: number | number[];
+    color: Color;
+    cauto?: boolean | undefined;
+    cmax?: number | undefined;
+    cmin?: number | undefined;
+    cmid?: number | undefined;
+    colorscale?: ColorScale | undefined;
+    autocolorscale?: boolean | undefined;
+    reversescale?: boolean | undefined;
+    coloraxis?: string | undefined;
+}
+
+export interface PlotMarker {
+    symbol: MarkerSymbol;
+    color?: Color | Color[] | undefined;
+    colors?: Color[] | undefined;
+    colorscale?: ColorScale | undefined;
+    cauto?: boolean | undefined;
+    cmax?: number | undefined;
+    cmin?: number | undefined;
+    autocolorscale?: boolean | undefined;
+    reversescale?: boolean | undefined;
+    opacity: number | number[];
+    size: number | number[];
+    maxdisplayed?: number | undefined;
+    sizeref?: number | undefined;
+    sizemax?: number | undefined;
+    sizemin?: number | undefined;
+    sizemode?: 'diameter' | 'area' | undefined;
+    showscale?: boolean | undefined;
+    line: Partial<ScatterMarkerLine>;
+    pad?: Partial<Padding> | undefined;
+    width?: number | undefined;
+    colorbar?: Partial<ColorBar> | undefined;
+    gradient?:
+        | {
+              type: 'radial' | 'horizontal' | 'vertical' | 'none';
+              color: Color;
+              typesrc: any;
+              colorsrc: any;
+          }
+        | undefined;
+    pattern?: Partial<Pattern>;
+}
+
+export type ScatterMarker = PlotMarker;
+
+export interface ScatterLine {
+    color: Color;
+    width: number;
+    dash: Dash;
+    shape: 'linear' | 'spline' | 'hv' | 'vh' | 'hvh' | 'vhv';
+    smoothing: number;
+    simplify: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// PlotData
+// ---------------------------------------------------------------------------
+
+export interface PlotData {
+    type: PlotType;
+    x: Datum[] | Datum[][] | TypedArray;
+    y: Datum[] | Datum[][] | TypedArray;
+    z: Datum[] | Datum[][] | Datum[][][] | TypedArray;
+    i: TypedArray;
+    j: TypedArray;
+    k: TypedArray;
+    xy: Float32Array;
+    error_x: ErrorBar;
+    error_y: ErrorBar;
+    xaxis: string;
+    yaxis: string;
+    text: string | string[];
+    lat: Datum[];
+    lon: Datum[];
+    line: Partial<ScatterLine>;
+    'line.color': Color;
+    'line.width': number;
+    'line.dash': Dash;
+    'line.shape': 'linear' | 'spline' | 'hv' | 'vh' | 'hvh' | 'vhv';
+    'line.smoothing': number;
+    'line.simplify': boolean;
+    marker: Partial<PlotMarker>;
+    'marker.symbol': MarkerSymbol | MarkerSymbol[];
+    'marker.color': Color;
+    'marker.colorscale': ColorScale | ColorScale[];
+    'marker.opacity': number | number[];
+    'marker.size': number | number[] | number[][];
+    'marker.maxdisplayed': number;
+    'marker.sizeref': number;
+    'marker.sizemax': number;
+    'marker.sizemin': number;
+    'marker.sizemode': 'diameter' | 'area';
+    'marker.showscale': boolean;
+    'marker.line': Partial<ScatterMarkerLine>;
+    'marker.line.color': Color;
+    'marker.line.colorscale': ColorScale | ColorScale[];
+    'marker.colorbar': {};
+    'marker.pad.t': number;
+    'marker.pad.b': number;
+    'marker.pad.l': number;
+    'marker.pad.r': number;
+    mode:
+        | 'lines'
+        | 'markers'
+        | 'text'
+        | 'lines+markers'
+        | 'text+markers'
+        | 'text+lines'
+        | 'text+lines+markers'
+        | 'none'
+        | 'gauge'
+        | 'number'
+        | 'delta'
+        | 'number+delta'
+        | 'gauge+number'
+        | 'gauge+number+delta'
+        | 'gauge+delta';
+    histfunc: 'count' | 'sum' | 'avg' | 'min' | 'max';
+    histnorm: '' | 'percent' | 'probability' | 'density' | 'probability density';
+    hoveron: 'points' | 'fills';
+    hoverinfo:
+        | 'all'
+        | 'name'
+        | 'none'
+        | 'skip'
+        | 'text'
+        | 'x'
+        | 'x+text'
+        | 'x+name'
+        | 'x+y'
+        | 'x+y+text'
+        | 'x+y+name'
+        | 'x+y+z'
+        | 'x+y+z+text'
+        | 'x+y+z+name'
+        | 'y'
+        | 'y+name'
+        | 'y+x'
+        | 'y+text'
+        | 'y+x+text'
+        | 'y+x+name'
+        | 'y+z'
+        | 'y+z+text'
+        | 'y+z+name'
+        | 'y+x+z'
+        | 'y+x+z+text'
+        | 'y+x+z+name'
+        | 'z'
+        | 'z+x'
+        | 'z+x+text'
+        | 'z+x+name'
+        | 'z+y+x'
+        | 'z+y+x+text'
+        | 'z+y+x+name'
+        | 'z+x+y'
+        | 'z+x+y+text'
+        | 'z+x+y+name';
+    hoverlabel: Partial<HoverLabel>;
+    hovertemplate: string | string[];
+    hovertext: string | string[];
+    hoverongaps: boolean;
+    xhoverformat: string;
+    yhoverformat: string;
+    zhoverformat: string;
+    texttemplate: string | string[];
+    textinfo:
+        | 'label'
+        | 'label+text'
+        | 'label+value'
+        | 'label+percent'
+        | 'label+text+value'
+        | 'label+text+percent'
+        | 'label+value+percent'
+        | 'text'
+        | 'text+value'
+        | 'text+percent'
+        | 'text+value+percent'
+        | 'value'
+        | 'value+percent'
+        | 'percent'
+        | 'none';
+    textposition:
+        | 'top left'
+        | 'top center'
+        | 'top right'
+        | 'middle left'
+        | 'middle center'
+        | 'middle right'
+        | 'bottom left'
+        | 'bottom center'
+        | 'bottom right'
+        | 'inside'
+        | 'outside'
+        | 'auto'
+        | 'none';
+    textfont: Partial<Font>;
+    textangle: 'auto' | number;
+    insidetextanchor: 'end' | 'middle' | 'start';
+    constraintext: 'inside' | 'outside' | 'both' | 'none';
+    fill: 'none' | 'tozeroy' | 'tozerox' | 'tonexty' | 'tonextx' | 'toself' | 'tonext';
+    fillcolor: string;
+    fillpattern: Partial<Pattern>;
+    showlegend: boolean;
+    legendgroup: string;
+    legendgrouptitle: {
+        text: string;
+        font?: Partial<Font>;
+    };
+    legendrank: number;
+    parents: string[];
+    name: string;
+    stackgroup: string;
+    groupnorm: '' | 'fraction' | 'percent';
+    stackgaps: 'infer zero' | 'interpolate';
+    connectgaps: boolean;
+    visible: boolean | 'legendonly';
+    delta: Partial<Delta>;
+    gauge: Partial<Gauge>;
+    number: Partial<PlotNumber>;
+    orientation: 'v' | 'h';
+    width: number | number[];
+    boxmean: boolean | 'sd';
+    boxpoints: 'all' | 'outliers' | 'suspectedoutliers' | false;
+    jitter: number;
+    pointpos: number;
+    opacity: number;
+    showscale: boolean;
+    colorscale: ColorScale;
+    zsmooth: 'fast' | 'best' | false;
+    zmin: number;
+    zmax: number;
+    zorder: number;
+    ygap: number;
+    xgap: number;
+    transpose: boolean;
+    autobinx: boolean;
+    xbins: {
+        start: number | string;
+        end: number | string;
+        size: number | string;
+    };
+    value: number;
+    values: Datum[];
+    labels: Datum[];
+    direction: 'clockwise' | 'counterclockwise';
+    hole: number;
+    rotation: number;
+    theta: Datum[];
+    r: Datum[];
+    customdata: Datum[] | Datum[][];
+    selectedpoints: Datum[];
+    domain: Partial<{
+        row: number;
+        column: number;
+        x: number[];
+        y: number[];
+    }>;
+    title: Partial<DataTitle>;
+    branchvalues: 'total' | 'remainder';
+    ids: string[];
+    level: string;
+    cliponaxis: boolean;
+    automargin: boolean;
+    locationmode: 'ISO-3' | 'USA-states' | 'country names' | 'geojson-id';
+    locations: Datum[];
+    reversescale: boolean;
+    colorbar: Partial<ColorBar>;
+    offset: number | number[];
+    contours: Partial<{
+        coloring: 'fill' | 'heatmap' | 'lines' | 'none';
+        end: number;
+        labelfont: Partial<Font>;
+        labelformat: string;
+        operation: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
+        showlabels: boolean;
+        showlines: boolean;
+        size: number;
+        start: number;
+        type: 'levels' | 'constraint';
+        value: number | [lowerBound: number, upperBound: number];
+    }>;
+    autocontour: boolean;
+    ncontours: number;
+    maxdepth: number;
+    uirevision: string | number;
+    uid: string;
+}
+
+export type ScatterData = PlotData;
+
+// ---------------------------------------------------------------------------
+// Data union — re-exports specialized trace types from traces/
+// Forward declarations so the union compiles without circular imports.
+// ---------------------------------------------------------------------------
+
+export type Data =
+    | Partial<PlotData>
+    | Partial<import('../traces/box').BoxPlotData>
+    | Partial<import('../traces/violin').ViolinData>
+    | Partial<import('../traces/ohlc').OhlcData>
+    | Partial<import('../traces/candlestick').CandlestickData>
+    | Partial<import('../traces/pie').PieData>
+    | Partial<import('../traces/sankey').SankeyData>;
+
+// ---------------------------------------------------------------------------
+// Internal types (not in public API)
+// ---------------------------------------------------------------------------
 
 /**
- * Common properties shared by all trace types
+ * Common properties shared by all trace types — convenience interface for
+ * gradual migration of internal code that doesn't need the full PlotData shape.
  */
 export interface TraceBase {
     customdata?: any[];
@@ -86,33 +404,7 @@ export interface TraceBase {
 }
 
 /**
- * User-provided plot data (trace)
- * This will be a union of all specific trace types
- */
-export type PlotData = TraceBase & (
-    | BarTrace
-    | LineTrace
-    | ScatterTrace
-    // Add more trace types as you convert them
-    | GenericTrace
-);
-
-/**
- * Fully processed plot data with defaults applied (internal use)
- */
-export interface FullData extends PlotData {
-    _expandedIndex?: number;
-    _fullInput?: any;
-    _indexToPoints?: { [key: number]: number[] };
-    _input?: any;
-    _length?: number;
-    _module?: any;
-    index?: number;
-}
-
-/**
- * Generic trace for gradual migration
- * Use specific trace types when available
+ * Generic trace for gradual migration. Use specific trace types when available.
  */
 export interface GenericTrace extends TraceBase {
     x?: any[];
@@ -122,106 +414,15 @@ export interface GenericTrace extends TraceBase {
 }
 
 /**
- * Scatter trace
+ * Fully processed plot data with defaults applied (internal use)
  */
-export interface ScatterTrace extends TraceBase {
-    connectgaps?: boolean;
-    fill?: 'none' | 'tozeroy' | 'tozerox' | 'tonexty' | 'tonextx' | 'toself' | 'tonext';
-    fillcolor?: string;
-    line?: Partial<Line>;
-    marker?: Partial<Marker>;
-    mode?: 'lines' | 'markers' | 'lines+markers' | 'none' | 'text' | 'lines+text' | 'markers+text' | 'lines+markers+text';
-    text?: string | string[];
-    textfont?: any;
-    textposition?: string | string[];
-    type: 'scatter';
-    x?: number[] | string[];
-    y?: number[] | string[];
-}
-
-/**
- * Bar trace
- */
-export interface BarTrace extends TraceBase {
-    base?: number | number[];
-    marker?: Partial<Marker>;
-    offset?: number | number[];
-    orientation?: 'v' | 'h';
-    text?: string | string[];
-    textangle?: number;
-    textposition?: string;
-    type: 'bar';
-    width?: number | number[];
-    x?: number[] | string[];
-    y?: number[] | string[];
-}
-
-/**
- * Line-only trace (simplified scatter)
- */
-export interface LineTrace extends TraceBase {
-    line?: Partial<Line>;
-    mode: 'lines';
-    type: 'scatter';
-    x?: number[] | string[];
-    y?: number[] | string[];
-}
-
-/**
- * Marker configuration (used by many traces)
- */
-export interface Marker {
-    autocolorscale?: boolean;
-    cauto?: boolean;
-    cmax?: number;
-    cmid?: number;
-    cmin?: number;
-    color?: string | string[] | number[];
-    coloraxis?: string;
-    colorbar?: any;
-    colorscale?: string | any[][];
-    line?: Partial<MarkerLine>;
-    opacity?: number | number[];
-    reversescale?: boolean;
-    showscale?: boolean;
-    size?: number | number[];
-    symbol?: string | string[];
-}
-
-/**
- * Marker line (outline)
- */
-export interface MarkerLine {
-    autocolorscale?: boolean;
-    cauto?: boolean;
-    cmax?: number;
-    cmid?: number;
-    cmin?: number;
-    color?: string | string[];
-    colorscale?: string | any[][];
-    reversescale?: boolean;
-    width?: number | number[];
-}
-
-/**
- * Line configuration (used by many traces)
- */
-export interface Line {
-    color?: string;
-    dash?: Dash;
-    shape?: 'linear' | 'spline' | 'hv' | 'vh' | 'hvh' | 'vhv';
-    simplify?: boolean;
-    smoothing?: number;
-    width?: number;
-}
-
-/**
- * Hover label configuration
- */
-export interface HoverLabel {
-    align?: 'left' | 'right' | 'auto';
-    bgcolor?: string | string[];
-    bordercolor?: string | string[];
-    font?: any;
-    namelength?: number | number[];
+export interface FullData extends Partial<PlotData> {
+    _expandedIndex?: number;
+    _fullInput?: any;
+    _indexToPoints?: { [key: number]: number[] };
+    _input?: any;
+    _length?: number;
+    _module?: any;
+    index?: number;
+    [key: string]: any;
 }

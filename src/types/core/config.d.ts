@@ -1,177 +1,294 @@
 /**
  * Config types
  *
- * Defines the structure of Plotly config options.
+ * Plotly configuration options and edit settings.
  */
 
-/**
- * User-provided configuration for Plotly
- */
-export interface Config {
-    /**
-     * Whether the plot should resize on window resize
-     */
-    autosizable?: boolean;
+import type { ModeBarButtonAny, ModeBarDefaultButtons } from './layout';
 
-    /**
-     * Display Plotly logo on mode bar
-     */
-    displaylogo?: boolean;
+// ---------------------------------------------------------------------------
+// Edits
+// ---------------------------------------------------------------------------
 
+export interface Edits {
     /**
-     * Display the mode bar
+     * Determines if the main anchor of the annotation is editable.
+     * @default false
      */
-    displayModeBar?: boolean | 'hover';
-
+    annotationPosition: boolean;
     /**
-     * What happens on double click
+     * Has only an effect for annotations with arrows.
+     * @default false
      */
-    doubleClick?: 'reset' | 'autosize' | 'reset+autosize' | false;
-
+    annotationTail: boolean;
     /**
-     * Allow plot to be edited
+     * Enables editing annotation text.
+     * @default false
      */
-    editable?: boolean;
-
+    annotationText: boolean;
     /**
-     * What can be edited
+     * Enables editing axis title text.
+     * @default false
      */
-    edits?: Partial<ConfigEdits>;
-
+    axisTitleText: boolean;
     /**
-     * Whether to fill the parent container
+     * Enables moving colorbars.
+     * @default false
      */
-    fillFrame?: boolean;
-
+    colorbarPosition: boolean;
     /**
-     * Margin around the plot when fillFrame is true
+     * Enables editing colorbar title text.
+     * @default false
      */
-    frameMargins?: number;
-
+    colorbarTitleText: boolean;
     /**
-     * Text for the "Edit in Chart Studio" link
+     * Enables moving the legend.
+     * @default false
      */
-    linkText?: string;
-
+    legendPosition: boolean;
     /**
-     * Locale for formatting
+     * Enables editing trace name fields from the legend.
+     * @default false
      */
-    locale?: string;
-
+    legendText: boolean;
     /**
-     * Custom locale definitions
+     * Enables moving shapes.
+     * @default false
      */
-    locales?: { [locale: string]: any };
-
+    shapePosition: boolean;
     /**
-     * Mapbox access token
+     * Enables editing the global layout title.
+     * @default false
      */
-    mapboxAccessToken?: string;
-
-    /**
-     * Custom mode bar buttons configuration
-     */
-    modeBarButtons?: any;
-
-    /**
-     * Mode bar buttons to add
-     */
-    modeBarButtonsToAdd?: any[];
-
-    /**
-     * Mode bar buttons to remove
-     */
-    modeBarButtonsToRemove?: string[];
-
-    /**
-     * Pixel ratio for WebGL plots
-     */
-    plotGlPixelRatio?: number;
-
-    /**
-     * Base URL for plotly server
-     */
-    plotlyServerURL?: string;
-
-    /**
-     * Number of operations that can be queued
-     */
-    queueLength?: number;
-
-    /**
-     * Whether to resize on window resize (alternative)
-     */
-    responsive?: boolean;
-
-    /**
-     * Enable scroll zoom
-     */
-    scrollZoom?: boolean;
-
-    /**
-     * Send data to Chart Studio
-     */
-    sendData?: boolean;
-
-    /**
-     * Background color setting function
-     */
-    setBackground?: string | ((gd: any) => void);
-
-    /**
-     * Show "Edit in Chart Studio" link
-     */
-    showLink?: boolean;
-
-    /**
-     * Show tips on first hover
-     */
-    showTips?: boolean;
-
-    /**
-     * Make the chart static - no interactivity
-     */
-    staticPlot?: boolean;
-
-    /**
-     * Options for the "Download plot as PNG" button
-     */
-    toImageButtonOptions?: Partial<ToImageButtonOptions>;
-
-    /**
-     * URL for topojson files
-     */
-    topojsonURL?: string;
-
-    /**
-     * Add watermark to images
-     */
-    watermark?: boolean;
+    titleText: boolean;
 }
 
-/**
- * Configuration for what can be edited
- */
-export interface ConfigEdits {
-    annotationPosition?: boolean;
-    annotationTail?: boolean;
-    annotationText?: boolean;
-    axisTitleText?: boolean;
-    colorbarPosition?: boolean;
-    colorbarTitleText?: boolean;
-    legendPosition?: boolean;
-    legendText?: boolean;
-    shapePosition?: boolean;
-    titleText?: boolean;
+// Backwards-compatible alias
+export type ConfigEdits = Edits;
+
+// ---------------------------------------------------------------------------
+// Image export options
+// ---------------------------------------------------------------------------
+
+export interface ToImgopts {
+    format: 'jpeg' | 'png' | 'webp' | 'svg';
+    /** If null, uses current graph width */
+    width: number | null;
+    /** If null, uses current graph height */
+    height: number | null;
+    scale?: number | undefined;
 }
 
-/**
- * Options for the "Download plot" button
- */
+export interface DownloadImgopts {
+    format: 'jpeg' | 'png' | 'webp' | 'svg';
+    width: number | null;
+    height: number | null;
+    filename: string;
+}
+
 export interface ToImageButtonOptions {
     format?: 'png' | 'svg' | 'jpeg' | 'webp';
     filename?: string;
     height?: number;
     width?: number;
     scale?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+export interface Config {
+    /**
+     * No interactivity, for export or image generation.
+     * @default false
+     */
+    staticPlot: boolean;
+    /**
+     * Determines whether math should be typeset when MathJax is present.
+     * @default true
+     */
+    typesetMath: boolean;
+    /**
+     * Base URL for the 'Edit in Chart Studio' button.
+     * @default ''
+     */
+    plotlyServerURL: string;
+    /**
+     * Sets all pieces of `edits` unless overridden.
+     * @default false
+     */
+    editable: boolean;
+    edits: Partial<Edits>;
+    /**
+     * Enables moving selections.
+     * @default true
+     */
+    editSelection: boolean;
+    /**
+     * Plot with respect to layout.autosize:true and infer container size.
+     * @default false
+     */
+    autosizable: boolean;
+    /**
+     * Change the layout size when window is resized.
+     * @default false
+     */
+    responsive: boolean;
+    /**
+     * Whether the graph fills the container or the screen.
+     * @default false
+     */
+    fillFrame: boolean;
+    /**
+     * Frame margins in fraction of the graph size.
+     * @default 0
+     */
+    frameMargins: number;
+    /**
+     * Mouse wheel / two-finger scroll zoom.
+     * @default 'gl3d+geo+map'
+     */
+    scrollZoom: string | boolean;
+    /**
+     * Double click interaction mode.
+     * @default 'reset+autosize'
+     */
+    doubleClick: 'reset+autosize' | 'reset' | 'autosize' | false;
+    /**
+     * Delay for registering a double-click in ms.
+     * @default 300
+     */
+    doubleClickDelay: number;
+    /**
+     * Show cartesian axis pan/zoom drag handles.
+     * @default true
+     */
+    showAxisDragHandles: boolean;
+    /**
+     * Show direct range entry at the pan/zoom drag points.
+     * @default true
+     */
+    showAxisRangeEntryBoxes: boolean;
+    /**
+     * Show tips while interacting with the resulting graphs.
+     * @default true
+     */
+    showTips: boolean;
+    /**
+     * Display a link to Chart Studio Cloud at the bottom right.
+     * @default false
+     */
+    showLink: boolean;
+    /**
+     * Sets the text appearing in the `showLink` link.
+     * @default 'Edit chart'
+     */
+    linkText: string;
+    /**
+     * If `showLink` is true, send data when linking to Chart Studio Cloud.
+     * @default true
+     */
+    sendData: boolean;
+    /**
+     * Adds a source-displaying function to show sources on the resulting graphs.
+     * @default false
+     */
+    showSources: false | ((gd: HTMLElement) => void | Promise<void>);
+    /**
+     * Mode bar display mode.
+     * @default 'hover'
+     */
+    displayModeBar: 'hover' | boolean;
+    /**
+     * Show "Edit in Chart Studio" mode bar button.
+     * @default false
+     */
+    showSendToCloud: boolean;
+    /**
+     * Same as `showSendToCloud`, but use a pencil icon instead of a floppy-disk.
+     * @default false
+     */
+    showEditInChartStudio: boolean;
+    /**
+     * Remove mode bar buttons by name.
+     * @default []
+     */
+    modeBarButtonsToRemove: ModeBarDefaultButtons[];
+    /**
+     * Add mode bar button using config objects or default button strings.
+     * @default []
+     */
+    modeBarButtonsToAdd: ModeBarButtonAny[];
+    /**
+     * Define fully custom mode bar buttons as nested array of button groups.
+     * @default false
+     */
+    modeBarButtons: ModeBarButtonAny[][] | false;
+    /**
+     * Statically override options for toImage modebar button.
+     * @default {}
+     */
+    toImageButtonOptions: Partial<{
+        filename: string;
+        scale: number;
+        format: 'png' | 'svg' | 'jpeg' | 'webp';
+        height: number;
+        width: number;
+    }>;
+    /**
+     * Display the plotly logo on the mode bar.
+     * @default true
+     */
+    displaylogo: boolean;
+    /**
+     * Watermark images with the company's logo.
+     * @default false
+     */
+    watermark: boolean;
+    /**
+     * Pixel ratio during WebGL image export.
+     * @default 2
+     */
+    plotGlPixelRatio: number;
+    /**
+     * Set background color function or behavior.
+     * @default 'transparent'
+     */
+    setBackground: ((gd: HTMLElement, bgColor: string) => void) | 'opaque' | 'transparent';
+    /**
+     * URL to topojson used in geo charts.
+     * @default 'https://cdn.plot.ly/'
+     */
+    topojsonURL: string;
+    /**
+     * Mapbox access token (required for mapbox trace types).
+     * @default null
+     */
+    mapboxAccessToken: string | null;
+    /**
+     * Console logging level (0-2). Set via Plotly.setPlotConfig.
+     * @default 1
+     */
+    logging: 0 | 1 | 2;
+    /**
+     * On-graph logging (notifier) level (0-2). Set via Plotly.setPlotConfig.
+     * @default 0
+     */
+    notifyOnLogging: 0 | 1 | 2;
+    /**
+     * Length of the undo/redo queue.
+     * @default 0
+     */
+    queueLength: number;
+    /**
+     * Localization to use (e.g. 'en' or 'en-US').
+     * @default 'en-US'
+     */
+    locale: string;
+    /**
+     * Localization definitions.
+     * @default {}
+     */
+    locales: Record<string, { dictionary?: Record<string, string>; format?: Record<string, any> }>;
 }
