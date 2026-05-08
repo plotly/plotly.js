@@ -110,6 +110,8 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         // correct final value
         if (options.xsizemode === 'pixel') {
             const xAnchorPos = x2p(options.xanchor, undefined, xa0, xRefType0);
+            // Use xa0 for both shifts because in pixel mode x0/x1 are offsets from the
+            // anchor, which is always on xa0 (pixel mode with array xref is unsupported)
             const xShift0 = helpers.getPixelShift(xa0, options.x0shift);
             const xShift1 = helpers.getPixelShift(xa0, options.x1shift);
             shapex0 = xAnchorPos + options.x0 + xShift0;
@@ -120,6 +122,7 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         }
         if (options.ysizemode === 'pixel') {
             const yAnchorPos = y2p(options.yanchor, undefined, ya0, yRefType0);
+            // Both shifts use ya0 for the same reason as above
             const yShift0 = helpers.getPixelShift(ya0, options.y0shift);
             const yShift1 = helpers.getPixelShift(ya0, options.y1shift);
             shapey0 = yAnchorPos - options.y0 + yShift0;
