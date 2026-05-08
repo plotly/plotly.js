@@ -382,12 +382,17 @@ export type Data =
  * Fully processed plot data with defaults applied (internal use)
  */
 export interface FullData extends Partial<PlotData> {
+    _arrayAttrs?: string[];
     _expandedIndex?: number;
+    _extremes?: Record<string, any>;
     _fullInput?: any;
+    _hasCalcTransform?: boolean;
     _indexToPoints?: { [key: number]: number[] };
     _input?: any;
     _length?: number;
+    _meta?: { meta?: any; layout?: { meta?: any } };
     _module?: any;
+    _template?: any;
     index?: number;
     [key: string]: any;
 }
