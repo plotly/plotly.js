@@ -154,6 +154,22 @@
         "y0": 0.2,
         "y1": 0.0,
         "line": { "color": "#339", "width": 3 }
+      },
+      {
+        "label": { "text": "Circle" },
+        "showlegend": true,
+        "legendgroup": "g1",
+        "type": "circle",
+        "x0": -25,
+        "x1": 25,
+        "xanchor": 1,
+        "xref": "x",
+        "xsizemode": "pixel",
+        "y0": 25,
+        "y1": 75,
+        "yanchor": 1,
+        "yref": "paper",
+        "ysizemode": "pixel"
       }
     ],
     "newshape": {
