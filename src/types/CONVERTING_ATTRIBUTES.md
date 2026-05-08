@@ -49,8 +49,19 @@ export default attributes;
 
 Three things to notice:
 
-- **`@generates ModeBar`** — declares the canonical public type name. The
-  `.d.ts` generator uses this to name the output.
+- **`@generates ModeBar`** — declares the public type name. The `.d.ts`
+  generator uses this to name the output. Naming conventions:
+
+  | Category | Convention | Examples |
+  |---|---|---|
+  | Components | PascalCase of the concept | `ModeBar`, `ColorBar`, `Slider`, `RangeSelector` |
+  | Traces | `<TraceName>Data` | `PieData`, `SankeyData`, `CandlestickData` |
+  | Layout | `Layout` | |
+
+  If the generated type needs hand-written refinements, use a `*Generated`
+  suffix instead (e.g. `@generates ModeBarGenerated`) so the hand-written
+  file can extend it under the original public name. See
+  [Layering hand-written refinements](#layering-hand-written-refinements).
 - **`as const satisfies AttributeMap`** — `as const` preserves literal types
   like `values: ['v', 'h']`; `satisfies AttributeMap` validates structure
   without widening.
@@ -118,10 +129,10 @@ export interface ModeBar {
 export type { ModeBar } from '../generated/components/modebar';
 ```
 
-If the hand-written type was richer than the schema (e.g. used a narrowed
-union where the schema says `string`), document the gap in a comment or
-file an issue. Do not silently lose ergonomics — either improve the schema
-(add `values: [...]`) or layer a hand-written refinement on top.
+If the hand-written type was richer than the schema (e.g. a narrowed union
+where the schema says `string`, or extra non-schema fields), don't silently
+lose those — see
+[Layering hand-written refinements](#layering-hand-written-refinements).
 
 ### 7. Verify
 
@@ -158,8 +169,7 @@ for the canonical example. The full conversion changed:
   (with `as const satisfies AttributeMap` and `@generates ModeBar`)
 - `.default` added to `require('./attributes')` in `index.js` and `defaults.js`
 - The hand-written `ModeBar` interface in `src/types/core/layout.d.ts` was
-  removed and replaced with
-  `export type { ModeBar } from '../generated/components/modebar';`
+  replaced with a re-export from the generated file
 
 Schema output verified byte-identical (2547 bytes) before and after the
 conversion.
@@ -191,6 +201,51 @@ based on an older schema. Order of operations:
    (move them to a separate `*Internal.d.ts` file or a parallel interface).
 4. **If the schema has fields the hand-written type lacked**, that's a free
    coverage win — accept the generated type.
+
+## Layering hand-written refinements
+
+When the generated type is complete, a simple re-export is all you need
+(see step 6). But when the hand-written type was richer than the schema —
+narrower unions, extra non-schema fields, etc. — use the `*Generated`
+suffix pattern so the hand-written file can extend the generated type.
+
+First, change the `@generates` tag to use a `*Generated` suffix:
+
+```ts
+// src/components/modebar/attributes.ts
+/**
+ * @generates ModeBarGenerated
+ */
+```
+
+Then in the hand-written file, extend it under the original public name.
+The `extends` brings all schema-derived fields along; the body only
+contains what the schema can't express:
+
+```ts
+// src/types/core/layout.d.ts
+import type { ModeBarGenerated } from '../generated/components/modebar';
+
+export interface ModeBar extends ModeBarGenerated {
+    // Schema says `string`; narrow to the known button set.
+    remove: ModeBarDefaultButtons | ModeBarDefaultButtons[];
+
+    // Not in the schema — runtime-only convenience field.
+    _buttons?: HTMLElement[];
+}
+```
+
+Consumers still write `import type { ModeBar } from 'plotly.js'` — the
+`*Generated` intermediate is an internal detail.
+
+**When to refine vs. when to fix the schema:**
+
+- If a field's type is too wide (e.g. `string` instead of a union), prefer
+  adding `values: [...]` to the schema so the generated type is correct by
+  construction and the simple re-export path works.
+- If the refinement is about non-schema concerns (runtime-only fields,
+  narrowing for DX, overloaded method signatures), use the `*Generated`
+  extend pattern.
 
 ## Order of conversion (for parallel work)
 
