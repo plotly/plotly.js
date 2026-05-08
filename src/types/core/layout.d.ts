@@ -815,23 +815,9 @@ export interface Layout {
     separators: string;
     hidesources: boolean;
     xaxis: Partial<LayoutAxis>;
-    xaxis2: Partial<LayoutAxis>;
-    xaxis3: Partial<LayoutAxis>;
-    xaxis4: Partial<LayoutAxis>;
-    xaxis5: Partial<LayoutAxis>;
-    xaxis6: Partial<LayoutAxis>;
-    xaxis7: Partial<LayoutAxis>;
-    xaxis8: Partial<LayoutAxis>;
-    xaxis9: Partial<LayoutAxis>;
+    [key: `xaxis${number}`]: Partial<LayoutAxis>;
     yaxis: Partial<LayoutAxis>;
-    yaxis2: Partial<LayoutAxis>;
-    yaxis3: Partial<LayoutAxis>;
-    yaxis4: Partial<LayoutAxis>;
-    yaxis5: Partial<LayoutAxis>;
-    yaxis6: Partial<LayoutAxis>;
-    yaxis7: Partial<LayoutAxis>;
-    yaxis8: Partial<LayoutAxis>;
-    yaxis9: Partial<LayoutAxis>;
+    [key: `yaxis${number}`]: Partial<LayoutAxis>;
     margin: Partial<Margin>;
     height: number;
     width: number;
@@ -888,14 +874,7 @@ export interface Layout {
     legend: Partial<Legend>;
     font: Partial<Font>;
     scene: Partial<Scene>;
-    scene2: Partial<Scene>;
-    scene3: Partial<Scene>;
-    scene4: Partial<Scene>;
-    scene5: Partial<Scene>;
-    scene6: Partial<Scene>;
-    scene7: Partial<Scene>;
-    scene8: Partial<Scene>;
-    scene9: Partial<Scene>;
+    [key: `scene${number}`]: Partial<Scene>;
     barmode: 'stack' | 'group' | 'overlay' | 'relative';
     barnorm: '' | 'fraction' | 'percent';
     bargap: number;
@@ -921,14 +900,7 @@ export interface Layout {
         yside: 'left' | 'left plot' | 'right plot' | 'right';
     }>;
     polar: Partial<PolarLayout>;
-    polar2: Partial<PolarLayout>;
-    polar3: Partial<PolarLayout>;
-    polar4: Partial<PolarLayout>;
-    polar5: Partial<PolarLayout>;
-    polar6: Partial<PolarLayout>;
-    polar7: Partial<PolarLayout>;
-    polar8: Partial<PolarLayout>;
-    polar9: Partial<PolarLayout>;
+    [key: `polar${number}`]: Partial<PolarLayout>;
     transition: Transition;
     template: Template;
     clickmode: 'event' | 'select' | 'event+select' | 'none';
@@ -948,25 +920,136 @@ export interface Layout {
  * Fully processed layout with all defaults applied (internal use)
  */
 export interface FullLayout extends Layout {
+    // Core internal state
     _modules?: any[];
     _basePlotModules?: any[];
+    _meta?: { meta?: any; layout?: { meta?: any } };
     _plots?: { [key: string]: any };
     _subplot?: any[];
     _subplots?: SubplotInfo;
     _size?: LayoutSize;
     _legends?: string[];
+    _template?: any;
+    _uid?: string;
+    _initialAutoSizeIsDone?: boolean;
+    _calcInverseTransform?: (gd: any) => void;
+    _invTransform?: any;
+    _pushmargin?: { [key: string]: any };
+
+    // SVG layers
+    paper?: Selection;
+    toppaper?: Selection;
+    container?: Selection;
+    cartesianlayer?: Selection;
+    polarlayer?: Selection;
+    ternarylayer?: Selection;
+    geolayer?: Selection;
+    smithlayer?: Selection;
+    pielayer?: Selection;
+    iciclelayer?: Selection;
+    sunburstlayer?: Selection;
+    treemaplayer?: Selection;
+    funnelarealayer?: Selection;
+    indicatorlayer?: Selection;
+    menulayer?: Selection;
+    selectionLayer?: Selection;
+    shapeLowerLayer?: Selection;
+    shapeUpperLayer?: Selection;
+    imageLowerLayer?: Selection;
+    imageUpperLayer?: Selection;
+    bgLayer?: Selection;
+    draggers?: Selection;
+    defs?: Selection;
+    topdefs?: Selection;
+    clips?: Selection;
+    topclips?: Selection;
+    glcanvas?: Selection;
+    glimages?: Selection;
+    modebardiv?: Selection;
+    dragCover?: Selection;
     _infolayer?: Selection;
     _zoomlayer?: Selection;
     _paperdiv?: Selection;
     _glcontainer?: Selection;
-    _calcInverseTransform?: (gd: any) => void;
-    _invTransform?: any;
-    _uid?: string;
-    _initialAutoSizeIsDone?: boolean;
-    _hoverlayer?: any;
+    _hoverlayer?: Selection;
+
+    // Hover state
     _hoverdata?: any[];
+    lasthover?: Selection | null;
+    rehover?: (() => void) | null;
+
+    // Modebar
     _modeBar?: any;
-    _pushmargin?: { [key: string]: any };
+    modeBar?: any;
+
+    // Cross-trace computation state
+    alignmentOpts?: Record<string, any>;
+    axisConstraintGroups?: any[];
+    axisMatchGroups?: any[];
+    colorAxes?: Record<string, any>;
+    dataTemplate?: Record<string, any>;
+    extraFormat?: Record<string, any>;
+    firstScatter?: Record<string, any>;
+    funnelareacolormap?: Record<string, Color>;
+    histogramBinOpts?: Record<string, any>;
+    iciclecolormap?: Record<string, Color>;
+    numBoxes?: number;
+    numViolins?: number;
+    piecolormap?: Record<string, Color>;
+    rangeSliderData?: any[];
+    requestRangeslider?: Record<string, boolean>;
+    roundFnOpts?: Record<string, any>;
+    scatterStackOpts?: Record<string, any>;
+    splomAxes?: { x: Record<string, any>; y: Record<string, any> };
+    splomGrid?: any;
+    splomGridDflt?: Record<string, any>;
+    splomScenes?: Record<string, any>;
+    splomSubplots?: Record<string, any>;
+    sunburstcolormap?: Record<string, Color>;
+    transformModules?: any[];
+    treemapcolormap?: Record<string, Color>;
+    violinScaleGroupStats?: Record<string, any>;
+    visibleModules?: any[];
+
+    // Scalar flags and values
+    currentFrame?: string;
+    dataLength?: number;
+    dfltTitle?: Record<string, string>;
+    guiEditing?: boolean;
+    has?: (category: string) => boolean;
+    hasOnlyLargeSploms?: boolean;
+    insideTickLabelsUpdaterange?: Record<string, any>;
+    invScaleX?: number;
+    invScaleY?: number;
+    lastBBox?: DOMRect;
+    mapboxAccessToken?: string;
+    pushmarginIds?: Record<string, number>;
+    redrawFromAutoMarginCount?: number;
+    replotting?: boolean;
+    reservedMargin?: Record<string, number>;
+    shouldCreateBgLayer?: boolean;
+    skipDefaults?: boolean;
+    traceUids?: string[];
+    traceWord?: string;
+    uid?: string;
+    zindices?: number[];
+
+    // Interaction state
+    activeSelectionIndex?: number;
+    activeShapeIndex?: number;
+    deactivateSelection?: (gd: any) => void;
+    deactivateShape?: (gd: any) => void;
+    deselect?: (() => void) | null;
+    hColorbarMoveCBTitle?: number;
+    hColorbarMoveTitle?: number;
+    lastSelectedSubplot?: string;
+    noEmitSelectedAtStart?: boolean;
+    outlining?: boolean;
+    preGUI?: Record<string, any>;
+    previousSelections?: any[];
+    redrag?: (() => void) | null;
+    reselect?: (() => void) | null;
+    tracePreGUI?: Record<string, Record<string, any>>;
 
     [key: string]: any;
 }
