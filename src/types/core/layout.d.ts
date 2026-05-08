@@ -679,15 +679,15 @@ export interface Delta {
 }
 
 // ---------------------------------------------------------------------------
-// Mapbox types
+// Map types
 // ---------------------------------------------------------------------------
 
-export interface MapboxCenter {
+export interface MapCenter {
     lon: number;
     lat: number;
 }
 
-export interface MapboxSymbol {
+export interface MapSymbol {
     icon: string;
     iconsize: number;
     text: string;
@@ -703,9 +703,9 @@ export interface MapboxSymbol {
         | 'bottom right';
 }
 
-export interface MapboxLayers {
+export interface MapLayers {
     visible: boolean;
-    sourcetype: 'geojson' | 'vecotr' | 'raster' | 'image';
+    sourcetype: 'geojson' | 'vector' | 'raster' | 'image';
     source: any;
     sourcelayer: string;
     sourceattribution: string;
@@ -723,31 +723,42 @@ export interface MapboxLayers {
     fill: {
         outlinecolor: Color;
     };
-    symbol: Partial<MapboxSymbol>;
+    symbol: Partial<MapSymbol>;
     name: string;
     templateitemname: string;
 }
 
-export interface MapboxBounds {
+export interface MapBounds {
     east: number;
     north: number;
     south: number;
     west: number;
 }
 
-export interface Mapbox {
+export interface MapLayout {
     domain: Partial<Domain>;
     accesstoken: string;
     style: number | string;
-    center: Partial<MapboxCenter>;
+    center: Partial<MapCenter>;
     zoom: number;
     bearing: number;
-    bounds: MapboxBounds;
+    bounds: MapBounds;
     pitch: number;
-    layers: Array<Partial<MapboxLayers>>;
+    layers: Array<Partial<MapLayers>>;
     uirevision: number | string;
     uid: string;
 }
+
+/** @deprecated Use {@link MapCenter} instead */
+export type MapboxCenter = MapCenter;
+/** @deprecated Use {@link MapSymbol} instead */
+export type MapboxSymbol = MapSymbol;
+/** @deprecated Use {@link MapLayers} instead */
+export type MapboxLayers = MapLayers;
+/** @deprecated Use {@link MapBounds} instead */
+export type MapboxBounds = MapBounds;
+/** @deprecated Use {@link MapLayout} instead */
+export type Mapbox = MapLayout;
 
 // ---------------------------------------------------------------------------
 // PolarLayout
@@ -850,8 +861,8 @@ export interface Layout {
 
     ternary: {};
     geo: {};
-    map: Partial<Mapbox>;
-    mapbox: Partial<Mapbox>;
+    map: Partial<MapLayout>;
+    mapbox: Partial<MapLayout>;
     subplot: string;
     radialaxis: Partial<Axis>;
     angularaxis: {};
