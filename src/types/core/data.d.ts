@@ -6,6 +6,12 @@
  */
 
 import type { Color, ColorScale, Dash, Datum, ErrorBar, MarkerSymbol, Pattern, TypedArray } from '../lib/common';
+import type { BoxPlotData } from '../traces/box';
+import type { CandlestickData } from '../traces/candlestick';
+import type { OhlcData } from '../traces/ohlc';
+import type { PieData } from '../traces/pie';
+import type { SankeyData } from '../traces/sankey';
+import type { ViolinData } from '../traces/violin';
 import type { ColorBar, DataTitle, Delta, Font, Gauge, HoverLabel, Padding, PlotNumber } from './layout';
 
 // ---------------------------------------------------------------------------
@@ -362,17 +368,16 @@ export type ScatterData = PlotData;
 
 // ---------------------------------------------------------------------------
 // Data union — re-exports specialized trace types from traces/
-// Forward declarations so the union compiles without circular imports.
 // ---------------------------------------------------------------------------
 
 export type Data =
     | Partial<PlotData>
-    | Partial<import('../traces/box').BoxPlotData>
-    | Partial<import('../traces/violin').ViolinData>
-    | Partial<import('../traces/ohlc').OhlcData>
-    | Partial<import('../traces/candlestick').CandlestickData>
-    | Partial<import('../traces/pie').PieData>
-    | Partial<import('../traces/sankey').SankeyData>;
+    | Partial<BoxPlotData>
+    | Partial<ViolinData>
+    | Partial<OhlcData>
+    | Partial<CandlestickData>
+    | Partial<PieData>
+    | Partial<SankeyData>;
 
 // ---------------------------------------------------------------------------
 // Internal types (not in public API)
