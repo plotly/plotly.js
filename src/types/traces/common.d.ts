@@ -4,15 +4,18 @@
  * Types shared across different trace modules
  */
 
+import type { FullData } from '../core/data';
+
 /**
  * Calculated trace data (internal)
  */
 export interface CalcData {
+    i?: number;
+    t?: any;
+    trace?: FullData;
     x?: any;
     y?: any;
     z?: any;
-    trace?: any;
-    t?: any;
     [key: string]: any;
 }
 
