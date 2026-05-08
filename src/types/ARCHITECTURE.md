@@ -69,7 +69,7 @@ This split is reflected in the types:
 
 | User-facing | Internal | Where defined |
 |---|---|---|
-| `Layout` | `FullLayout` | `Layout` is generated; `FullLayout extends Layout` is hand-written |
+| `Layout` | `FullLayout` | Both hand-written today; `Layout` will be generated once its attributes files are converted |
 | `PlotData` | `FullData` | Same pattern |
 | (n/a) | `GraphDiv` (the `gd` param) | Hand-written — DOM element with `_fullLayout`, `_fullData`, `calcdata`, etc. |
 
