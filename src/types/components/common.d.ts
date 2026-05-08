@@ -35,7 +35,3 @@ export interface TextBBox {
     width: number;
 }
 
-/**
- * Color with alpha
- */
-export type ColorString = string;

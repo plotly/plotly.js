@@ -63,9 +63,6 @@ export interface Edits {
     titleText: boolean;
 }
 
-// Backwards-compatible alias
-export type ConfigEdits = Edits;
-
 // ---------------------------------------------------------------------------
 // Image export options
 // ---------------------------------------------------------------------------

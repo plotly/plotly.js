@@ -379,41 +379,6 @@ export type Data =
 // ---------------------------------------------------------------------------
 
 /**
- * Common properties shared by all trace types — convenience interface for
- * gradual migration of internal code that doesn't need the full PlotData shape.
- */
-export interface TraceBase {
-    customdata?: any[];
-    hoverinfo?: string;
-    hoverlabel?: Partial<HoverLabel>;
-    hovertemplate?: string | string[];
-    ids?: string[];
-    legendgroup?: string;
-    legendgrouptitle?: any;
-    meta?: any;
-    name?: string;
-    opacity?: number;
-    selectedpoints?: any;
-    showlegend?: boolean;
-    type?: PlotType;
-    uid?: string;
-    visible?: boolean | 'legendonly';
-    xaxis?: string;
-    yaxis?: string;
-    [key: string]: any;
-}
-
-/**
- * Generic trace for gradual migration. Use specific trace types when available.
- */
-export interface GenericTrace extends TraceBase {
-    x?: any[];
-    y?: any[];
-    z?: any[];
-    [key: string]: any;
-}
-
-/**
  * Fully processed plot data with defaults applied (internal use)
  */
 export interface FullData extends Partial<PlotData> {
