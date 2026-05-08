@@ -352,6 +352,7 @@ function convertPath(options, x2p, y2p) {
     });
 }
 
+exports.getPixelShift = getPixelShift;
 function getPixelShift(axis, shift) {
     shift = shift || 0;
     var shiftPixels = 0;
