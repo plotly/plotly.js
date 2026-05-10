@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "labels": [
+        "slice in legend1: rank 3",
+        "slice in legend1: rank 2",
+        "slice in legend1: rank 1",
+        "slice in legend2: rank 4",
+        "slice in legend2: rank 3",
+        "slice in legend2: rank 2",
+        "slice in legend2: rank 1"
+      ],
+      "values": [3, 4, 2, 7, 1, 5, 8],
+      "type": "pie",
+      "legendrank": [3, 2, 1, 4, 3, 2, 1],
+      "legend": ["legend", "legend", "legend", "legend2", "legend2", "legend2", "legend2"],
+      "domain": {
+        "y": [0.5, 1]
+      }
+    },
+    {
+      "type": "bar",
+      "x": [0, 1],
+      "y": [1, 1.5],
+      "legendrank": 1,
+      "name": "bar in legend1: rank 1",
+      "marker": {
+        "color": "brown"
+      }
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "legendrank test"
+    },
+    "yaxis": {
+        "range": [0, 4]
+    },
+    "width": 500,
+    "height": 400,
+    "legend": {
+      "title": {
+        "text": "legend1"
+      },
+      "y": 1
+    },
+    "legend2": {
+      "title": {
+        "text": "legend2"
+      },
+      "y": 0
+    }
+  }
+}

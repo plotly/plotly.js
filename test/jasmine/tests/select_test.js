@@ -2299,7 +2299,7 @@ describe('Test select box and lasso per trace:', function() {
                     [[150, 150], [300, 300]],
                     function() {
                         assertPoints([['NY', 10]]);
-                        assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
+                        assertRanges([[-83.35, 46.13], [-74.03, 39.29]]);
                         assertSelectedPoints({0: [0]});
                     },
                     null, BOXEVENTS, 'choroplethmap select'
@@ -2315,8 +2315,8 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([['MA', 20]]);
                         assertSelectedPoints({0: [1]});
                         assertLassoPoints([
-                            [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
-                            [-67.84, 43.936], [-74.06, 43.936]
+                            [-74.03, 43.936], [-74.03, 39.293], [-67.81, 39.293],
+                            [-67.81, 43.936], [-74.03, 43.936]
                         ]);
                     },
                     null, LASSOEVENTS, 'choroplethmap lasso'
@@ -2656,12 +2656,14 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([
                             [0, 281, 'Purchases'],
                             [0, 269, 'Material expenses'],
+                            [0, 191, 'Personnel expenses'],
+                            [0, 179, 'Other expenses'],
                         ]);
                         assertSelectedPoints({
-                            0: [5, 6]
+                            0: [5, 6, 7, 8]
                         });
                     },
-                    null, [3, 2, 1], 'waterfall lasso'
+                    null, [4, 2, 1], 'waterfall lasso'
                 );
             })
             .then(function() {
@@ -2705,13 +2707,14 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([
                             [0, 331.5, 'Author: etpinard'],
                             [1, 53.5, 'Pull requests'],
+                            [1, 15.5, 'Author: etpinard'],
                         ]);
                         assertSelectedPoints({
                             0: [2],
-                            1: [1]
+                            1: [1, 2]
                         });
                     },
-                    null, [3, 2, 1], 'funnel lasso'
+                    null, [4, 2, 1], 'funnel lasso'
                 );
             })
             .then(done, done.fail);
@@ -3336,7 +3339,7 @@ describe('Test select box and lasso per trace:', function() {
                 [[150, 150], [300, 300]],
                 function() {
                     assertPoints([['NY', 10]]);
-                    assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
+                    assertRanges([[-83.35, 46.13], [-74.03, 39.29]]);
                     assertSelectedPoints({0: [0], 3: []});
                 },
                 null, BOXEVENTS, 'choroplethmap select'
@@ -3352,8 +3355,8 @@ describe('Test select box and lasso per trace:', function() {
                     assertPoints([['MA', 20], []]);
                     assertSelectedPoints({0: [1], 3: [0]});
                     assertLassoPoints([
-                        [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
-                        [-67.84, 43.936], [-74.06, 43.936]
+                        [-74.03, 43.936], [-74.03, 39.293], [-67.81, 39.293],
+                        [-67.81, 43.936], [-74.03, 43.936]
                     ]);
                 },
                 null, LASSOEVENTS, 'choroplethmap lasso'

@@ -47,11 +47,9 @@ const localDevConfig = {
 
 // Config used when building bundle to serve regl
 const localDevReglCodegenConfig = {
-    ...esbuildConfig,
+    ...devtoolsConfig,
     entryPoints: [path.join(constants.pathToRoot, 'devtools/regl_codegen', 'devtools.js')],
-    outfile: './build/regl_codegen-bundle.js',
-    sourcemap: false,
-    minify: false
+    outfile: './build/regl_codegen-bundle.js'
 };
 
 module.exports = {

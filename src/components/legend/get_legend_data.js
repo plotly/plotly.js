@@ -1,5 +1,6 @@
 'use strict';
 
+const { isArrayOrTypedArray } = require('../../lib/array');
 var Registry = require('../../registry');
 var helpers = require('./helpers');
 
@@ -100,7 +101,8 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
         // find minimum rank within group
         var groupMinRank = Infinity;
         for(j = 0; j < legendData[i].length; j++) {
-            var rank = legendData[i][j].trace.legendrank;
+            var legendrank = legendData[i][j].trace.legendrank;
+            var rank = isArrayOrTypedArray(legendrank) ? Math.min(legendrank) : legendrank;
             if(groupMinRank > rank) groupMinRank = rank;
         }
 
@@ -117,8 +119,10 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
     };
 
     var orderFn2 = function(a, b) {
+        var a_rank = isArrayOrTypedArray(a.trace.legendrank) ? a.trace.legendrank[a.i] : a.trace.legendrank;
+        var b_rank = isArrayOrTypedArray(b.trace.legendrank) ? b.trace.legendrank[b.i] : b.trace.legendrank;
         return (
-            (a.trace.legendrank - b.trace.legendrank) ||
+            (a_rank - b_rank) ||
             (a._preSort - b._preSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
         );
     };

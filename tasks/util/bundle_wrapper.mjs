@@ -1,6 +1,5 @@
 import fs from 'fs';
 import fsExtra from 'fs-extra';
-import prependFile from 'prepend-file';
 
 import { build } from 'esbuild';
 
@@ -51,7 +50,7 @@ export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
 // Until https://github.com/evanw/esbuild/pull/513 is merged
 // Thanks to https://github.com/prantlf and https://github.com/birkskyum
 function addWrapper(path) {
-    prependFile.sync(
+    common.prependFile(
         path,
         [
             '(',
@@ -63,8 +62,7 @@ function addWrapper(path) {
             '  }',
             '} (typeof self !== "undefined" ? self : this, () => {',
             ''
-        ].join('\n'),
-        common.throwOnError
+        ].join('\n')
     );
 
     fsExtra.appendFile(path, ['', 'window.Plotly = Plotly;', 'return Plotly;', '}));'].join('\n'), common.throwOnError);

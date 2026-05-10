@@ -204,7 +204,6 @@ describe('Test scatter3d interactions:', function() {
         }
 
         Plotly.newPlot(gd, _mock)
-        .then(delay(20))
         .then(function() {
             assertObjects(order0);
 

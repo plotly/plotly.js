@@ -295,7 +295,7 @@ exports.assertPlotSize = function(opts, msg) {
     var widthLessThan = opts.widthLessThan;
     var heightLessThan = opts.heightLessThan;
 
-    var plotBB = d3Select('.plotclip > rect').node().getBoundingClientRect();
+    var plotBB = d3Select('.plotclip > rect').node().getBBox();
     var actualWidth = plotBB.width;
     var actualHeight = plotBB.height;
 

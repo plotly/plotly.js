@@ -1,0 +1,25 @@
+name: Check UN Geodata Updates
+
+on:
+  schedule:
+    # First day of every month at 09:00 UTC
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check-geodata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          sparse-checkout: .github/scripts
+
+      - name: Check for UN Geodata updates
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
+        with:
+          script: |
+            const { default: checkUnGeodata } = await import('${{ github.workspace }}/.github/scripts/check-un-geodata.mjs');
+            await checkUnGeodata({ github, context, core });

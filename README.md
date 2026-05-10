@@ -1,10 +1,10 @@
 <a href="https://plotly.com/javascript/"><img src="https://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
-[![circle ci](https://circleci.com/gh/plotly/plotly.js.svg?style=shield)](https://circleci.com/gh/plotly/plotly.js)
+[![CI](https://github.com/plotly/plotly.js/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/plotly/plotly.js/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
-[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
+[Plotly.js](https://plotly.com/javascript) is a standalone JavaScript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
 
 Plotly.js can be used to produce dozens of chart types and visualizations, including statistical charts, 3D graphs, scientific charts, SVG and tile maps, financial charts and more.
 
@@ -58,11 +58,11 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 ## Load via script tag
 
 ### The script HTML element
-> In the examples below `Plotly` object is added to the window scope by `script`. The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`. As demonstrated in the example above basic knowledge of `html` and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started i.e. with/without JavaScript! To learn and build more with plotly.js please visit [plotly.js documentation](https://plotly.com/javascript).
+> In the examples below, the `Plotly` object is added to the window scope by the `script` tag. The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`. As demonstrated in the example above, basic knowledge of HTML and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started, i.e., with or without JavaScript! To learn and build more with plotly.js, please visit the [plotly.js documentation](https://plotly.com/javascript).
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-3.4.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-3.5.1.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -76,10 +76,10 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 </body>
 ```
 
-Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
+Alternatively, you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script type="module">
-    import "https://cdn.plot.ly/plotly-3.4.0.min.js"
+    import "https://cdn.plot.ly/plotly-3.5.1.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
 ```
@@ -89,13 +89,13 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-3.4.0.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-3.5.1.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
 
 ### MathJax
-You could load either version two or version three of MathJax files, for example:
+You can load either version two or version three of MathJax files. For example:
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js"></script>
 ```
@@ -108,7 +108,7 @@ You could load either version two or version three of MathJax files, for example
 Please refer to `devtools/test_dashboard/index-mathjax3chtml.html` to see an example.
 
 ### Need to have several WebGL graphs on a page?
-You may simply load [virtual-webgl](https://github.com/greggman/virtual-webgl) script for WebGL 1 (not WebGL 2) before loading other scripts.
+You may simply load the [virtual-webgl](https://github.com/greggman/virtual-webgl) script for WebGL 1 (not WebGL 2) before loading other scripts.
 ```html
 <script src="https://unpkg.com/virtual-webgl@1.0.6/src/virtual-webgl.js"></script>
 ```
@@ -116,7 +116,7 @@ You may simply load [virtual-webgl](https://github.com/greggman/virtual-webgl) s
 ## Bundles
 There are two kinds of plotly.js bundles:
 1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-2. Custom bundles you can create yourself to optimize the size of bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/master/CUSTOM_BUNDLE.md) for more information.
+2. Custom bundles you can create yourself to optimize the size of the bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/master/CUSTOM_BUNDLE.md) for more information.
 
 ---
 ## Alternative ways to load and build plotly.js
@@ -133,7 +133,7 @@ For more info about contributing to Plotly documentation, please read through [c
 ---
 ## Bugs and feature requests
 
-Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md)
+Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md).
 
 ---
 ## Contributing
