@@ -4,6 +4,7 @@
  * Plotly configuration options and edit settings.
  */
 
+import type { PlotlyHTMLElement } from './events';
 import type { ModeBarButtonAny, ModeBarDefaultButtons } from './layout';
 
 // ---------------------------------------------------------------------------
@@ -191,7 +192,7 @@ export interface Config {
      * Adds a source-displaying function to show sources on the resulting graphs.
      * @default false
      */
-    showSources: false | ((gd: HTMLElement) => void | Promise<void>);
+    showSources: false | ((gd: PlotlyHTMLElement) => void | Promise<void>);
     /**
      * Mode bar display mode.
      * @default 'hover'
@@ -252,7 +253,7 @@ export interface Config {
      * Set background color function or behavior.
      * @default 'transparent'
      */
-    setBackground: ((gd: HTMLElement, bgColor: string) => void) | 'opaque' | 'transparent';
+    setBackground: ((gd: PlotlyHTMLElement, bgColor: string) => void) | 'opaque' | 'transparent';
     /**
      * URL to topojson used in geo charts.
      * @default 'https://cdn.plot.ly/'

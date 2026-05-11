@@ -4,7 +4,7 @@
  * Defines animation and transition types for Plotly.
  */
 
-import type { PlotData } from './data';
+import type { Data } from './data';
 import type { Layout } from './layout';
 
 /**
@@ -105,12 +105,12 @@ export interface AnimationOpts {
     /**
      * Transition configuration
      */
-    transition?: Partial<Transition>;
+    transition?: Partial<Transition> | Array<Partial<Transition>>;
 
     /**
      * Frame configuration
      */
-    frame?: Partial<AnimationFrameOpts>;
+    frame?: Partial<AnimationFrameOpts> | Array<Partial<AnimationFrameOpts>>;
 }
 
 /**
@@ -140,7 +140,7 @@ export interface Frame {
     /**
      * Data updates for this frame
      */
-    data?: Partial<PlotData>[];
+    data?: Data[];
 
     /**
      * Layout updates for this frame

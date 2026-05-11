@@ -5,14 +5,15 @@
  * and the Data union.
  */
 
+import type { ColorBar } from '../components/colorbar';
 import type { Color, ColorScale, Dash, Datum, ErrorBar, MarkerSymbol, Pattern, TypedArray } from '../lib/common';
-import type { BoxPlotData } from '../traces/box';
+import type { BoxPlotData, BoxPlotMarker } from '../traces/box';
 import type { CandlestickData } from '../traces/candlestick';
 import type { OhlcData } from '../traces/ohlc';
 import type { PieData } from '../traces/pie';
 import type { SankeyData } from '../traces/sankey';
 import type { ViolinData } from '../traces/violin';
-import type { ColorBar, DataTitle, Delta, Font, Gauge, HoverLabel, Padding, PlotNumber } from './layout';
+import type { DataTitle, Delta, Font, Gauge, HoverLabel, Padding, PlotNumber } from './layout';
 
 // ---------------------------------------------------------------------------
 // PlotType
@@ -157,7 +158,7 @@ export interface PlotData {
     'line.shape': 'linear' | 'spline' | 'hv' | 'vh' | 'hvh' | 'vhv';
     'line.smoothing': number;
     'line.simplify': boolean;
-    marker: Partial<PlotMarker>;
+    marker: Partial<PlotMarker> | Partial<BoxPlotMarker>;
     'marker.symbol': MarkerSymbol | MarkerSymbol[];
     'marker.color': Color;
     'marker.colorscale': ColorScale | ColorScale[];

@@ -4,7 +4,7 @@
  * Defines the structure of RangeSelector configuration.
  */
 
-import type { Font } from '../core/layout';
+import type { Font, Label } from '../core/layout';
 import type { Color, XAnchor, YAnchor } from '../lib/common';
 
 /**
@@ -28,7 +28,7 @@ export interface RangeSelectorButton {
 /**
  * RangeSelector configuration
  */
-export interface RangeSelector {
+export interface RangeSelector extends Label {
     buttons?: Array<Partial<RangeSelectorButton>>;
     visible?: boolean;
     x?: number;
@@ -36,8 +36,5 @@ export interface RangeSelector {
     y?: number;
     yanchor?: YAnchor;
     activecolor?: Color;
-    bgcolor?: Color;
-    bordercolor?: Color;
     borderwidth?: number;
-    font?: Partial<Font>;
 }

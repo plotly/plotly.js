@@ -194,18 +194,12 @@ export type {
     TransitionEasing,
 } from '../src/types/core/animation';
 
-export type {
-    TemplateFigure,
-    ValidateTemplateResult,
-} from '../src/types/core/template';
-
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
 export type {
     Config,
-    ConfigEdits,
     DownloadImgopts,
     Edits,
     ToImageButtonOptions,
@@ -254,9 +248,11 @@ export {
     deleteTraces,
     downloadImage,
     extendTraces,
+    Icons,
     makeTemplate,
     moveTraces,
     newPlot,
+    Plots,
     prependTraces,
     purge,
     react,
@@ -268,16 +264,20 @@ export {
     toImage,
     update,
     validate,
+    validateTemplate,
 } from '../src/types/core/api';
 
 export type {
     DefaultIcons,
+    IconsMap,
     PlotlyDataLayoutConfig,
     PlotlyModule,
     Root,
     RootOrData,
     StaticPlots,
+    TemplateFigure,
     ValidateResult,
+    ValidateTemplateResult,
 } from '../src/types/core/api';
 
 // ---------------------------------------------------------------------------

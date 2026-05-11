@@ -16,7 +16,6 @@ export * from './core/data';
 export * from './core/events';
 export * from './core/graph-div';
 export * from './core/layout';
-export * from './core/template';
 
 // Components
 export * from './components/colorbar';

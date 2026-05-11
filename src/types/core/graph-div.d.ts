@@ -27,6 +27,7 @@ export interface GraphDiv extends HTMLDivElement {
     _editing?: boolean;
     _fullData?: FullData[];
     _fullLayout?: FullLayout;
+    _hoverdata?: any[];
     _initialized?: boolean;
     _promises?: Promise<any>[];
     _transitionData?: any;
