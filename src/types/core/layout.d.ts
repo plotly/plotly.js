@@ -4,14 +4,15 @@
  * Comprehensive layout, axis, annotation, shape, scene, and supporting types.
  */
 
-import type { Selection } from '@types/d3';
+import type { Locale, Selection } from 'd3';
 import type { TickFormatStop } from '../components/colorbar';
 import type { RangeSelector } from '../components/rangeselector';
 import type { Slider } from '../components/slider';
 import type { UpdateMenu } from '../components/updatemenu';
 import type { AxisType, Calendar, Color, Dash, Datum, DTickValue } from '../lib/common';
 import type { Transition } from './animation';
-import type { PlotType } from './data';
+import type { PlotData, PlotType } from './data';
+import type { PlotlyHTMLElement } from './events';
 
 // ---------------------------------------------------------------------------
 // Font
@@ -190,7 +191,7 @@ export interface PlotNumber {
 type xYAxisNames = `${
     | ''
     | `${2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`
-    | `${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`}${''}`;
+    | `${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`}${'' | ' domain'}`;
 
 export type XAxisName = `x${xYAxisNames}`;
 export type YAxisName = `y${xYAxisNames}`;
@@ -338,7 +339,7 @@ export interface Axis {
 }
 
 // ---------------------------------------------------------------------------
-// LayoutAxis (extends Axis for cartesian subplots)
+// LayoutAxis
 // ---------------------------------------------------------------------------
 
 export interface LayoutAxis extends Axis {
@@ -601,7 +602,7 @@ export type ModeBarDefaultButtons =
     | 'hoverclosest'
     | 'v1hovermode';
 
-export type ButtonClickEvent = (gd: HTMLElement, ev: MouseEvent) => void;
+export type ButtonClickEvent = (gd: PlotlyHTMLElement, ev: MouseEvent) => void;
 
 export interface Icon {
     height?: number | undefined;
@@ -629,7 +630,8 @@ export type ModeBarButtonAny = ModeBarDefaultButtons | ModeBarButton;
 
 // `ModeBar` is generated from src/components/modebar/attributes.ts.
 // See src/types/generated/components/modebar.d.ts.
-export type { ModeBar } from '../generated/components/modebar';
+import type { ModeBar } from '../generated/components/modebar';
+export type { ModeBar };
 
 // ---------------------------------------------------------------------------
 // Gauge / Delta / Indicator types
@@ -781,7 +783,7 @@ export interface PolarLayout {
 // ---------------------------------------------------------------------------
 
 export interface Template {
-    data?: { [type in PlotType]?: Array<Partial<any>> } | undefined;
+    data?: { [type in PlotType]?: Array<Partial<PlotData>> } | undefined;
     layout?: Partial<Layout> | undefined;
 }
 
@@ -921,135 +923,136 @@ export interface Layout {
  */
 export interface FullLayout extends Layout {
     // Core internal state
-    _modules?: any[];
     _basePlotModules?: any[];
-    _meta?: { meta?: any; layout?: { meta?: any } };
-    _plots?: { [key: string]: any };
-    _subplot?: any[];
-    _subplots?: SubplotInfo;
-    _size?: LayoutSize;
+    _calcInverseTransform?: (gd: any) => void;
+    _initialAutoSizeIsDone?: boolean;
+    _invTransform?: any;
     _legends?: string[];
+    _meta?: { meta?: any; layout?: { meta?: any } };
+    _modules?: any[];
+    _plots?: { [key: string]: any };
+    _pushmargin?: { [key: string]: any };
+    _size?: LayoutSize;
+    _subplots?: SubplotInfo;
     _template?: any;
     _uid?: string;
-    _initialAutoSizeIsDone?: boolean;
-    _calcInverseTransform?: (gd: any) => void;
-    _invTransform?: any;
-    _pushmargin?: { [key: string]: any };
 
     // SVG layers
-    paper?: Selection;
-    toppaper?: Selection;
-    container?: Selection;
-    cartesianlayer?: Selection;
-    polarlayer?: Selection;
-    ternarylayer?: Selection;
-    geolayer?: Selection;
-    smithlayer?: Selection;
-    pielayer?: Selection;
-    iciclelayer?: Selection;
-    sunburstlayer?: Selection;
-    treemaplayer?: Selection;
-    funnelarealayer?: Selection;
-    indicatorlayer?: Selection;
-    menulayer?: Selection;
-    selectionLayer?: Selection;
-    shapeLowerLayer?: Selection;
-    shapeUpperLayer?: Selection;
-    imageLowerLayer?: Selection;
-    imageUpperLayer?: Selection;
-    bgLayer?: Selection;
-    draggers?: Selection;
-    defs?: Selection;
-    topdefs?: Selection;
-    clips?: Selection;
-    topclips?: Selection;
-    glcanvas?: Selection;
-    glimages?: Selection;
-    modebardiv?: Selection;
-    dragCover?: Selection;
-    _infolayer?: Selection;
-    _zoomlayer?: Selection;
-    _paperdiv?: Selection;
-    _glcontainer?: Selection;
-    _hoverlayer?: Selection;
+    _bgLayer?: Selection<any>;
+    _cartesianlayer?: Selection<any>;
+    _clips?: Selection<any>;
+    _container?: Selection<any>;
+    _defs?: Selection<any>;
+    _dragCover?: Selection<any>;
+    _draggers?: Selection<any>;
+    _funnelarealayer?: Selection<any>;
+    _geolayer?: Selection<any>;
+    _glcanvas?: Selection<any>;
+    _glcontainer?: Selection<any>;
+    _glimages?: Selection<any>;
+    _iciclelayer?: Selection<any>;
+    _imageLowerLayer?: Selection<any>;
+    _imageUpperLayer?: Selection<any>;
+    _indicatorlayer?: Selection<any>;
+    _infolayer?: Selection<any>;
+    _menulayer?: Selection<any>;
+    _modebardiv?: Selection<any>;
+    _paper?: Selection<any>;
+    _paperdiv?: Selection<any>;
+    _pielayer?: Selection<any>;
+    _polarlayer?: Selection<any>;
+    _selectionLayer?: Selection<any>;
+    _shapeLowerLayer?: Selection<any>;
+    _shapeUpperLayer?: Selection<any>;
+    _smithlayer?: Selection<any>;
+    _sunburstlayer?: Selection<any>;
+    _ternarylayer?: Selection<any>;
+    _topdefs?: Selection<any>;
+    _topclips?: Selection<any>;
+    _toppaper?: Selection<any>;
+    _treemaplayer?: Selection<any>;
+    _zoomlayer?: Selection<any>;
 
     // Hover state
-    _hoverdata?: any[];
-    lasthover?: Selection | null;
-    rehover?: (() => void) | null;
+    _hoverlayer?: Selection<any>;
+    _hoverpaper?: Selection<any>;
+    _hoversubplot?: string | null;
+    _lasthover?: Selection<any> | null;
+    _rehover?: (() => void) | null;
 
     // Modebar
     _modeBar?: any;
-    modeBar?: any;
 
     // Cross-trace computation state
-    alignmentOpts?: Record<string, any>;
-    axisConstraintGroups?: any[];
-    axisMatchGroups?: any[];
-    colorAxes?: Record<string, any>;
-    dataTemplate?: Record<string, any>;
-    extraFormat?: Record<string, any>;
-    firstScatter?: Record<string, any>;
-    funnelareacolormap?: Record<string, Color>;
-    histogramBinOpts?: Record<string, any>;
-    iciclecolormap?: Record<string, Color>;
-    numBoxes?: number;
-    numViolins?: number;
-    piecolormap?: Record<string, Color>;
-    rangeSliderData?: any[];
-    requestRangeslider?: Record<string, boolean>;
-    roundFnOpts?: Record<string, any>;
-    scatterStackOpts?: Record<string, any>;
-    splomAxes?: { x: Record<string, any>; y: Record<string, any> };
-    splomGrid?: any;
-    splomGridDflt?: Record<string, any>;
-    splomScenes?: Record<string, any>;
-    splomSubplots?: Record<string, any>;
-    sunburstcolormap?: Record<string, Color>;
-    transformModules?: any[];
-    treemapcolormap?: Record<string, Color>;
-    violinScaleGroupStats?: Record<string, any>;
-    visibleModules?: any[];
+    _alignmentOpts?: Record<string, any>;
+    _axisConstraintGroups?: any[];
+    _axisMatchGroups?: any[];
+    _colorAxes?: Record<string, any>;
+    _dataTemplate?: Record<string, any>;
+    _extraFormat?: Record<string, any>;
+    _firstScatter?: Record<string, any>;
+    _funnelareacolormap?: Record<string, Color>;
+    _histogramBinOpts?: Record<string, any>;
+    _iciclecolormap?: Record<string, Color>;
+    _numBoxes?: number;
+    _numViolins?: number;
+    _piecolormap?: Record<string, Color>;
+    _rangeSliderData?: any[];
+    _requestRangeslider?: Record<string, boolean>;
+    _roundFnOpts?: Record<string, any>;
+    _scatterStackOpts?: Record<string, any>;
+    _splomAxes?: { x: Record<string, any>; y: Record<string, any> };
+    _splomGrid?: any;
+    _splomGridDflt?: Record<string, any>;
+    _splomScenes?: Record<string, any>;
+    _splomSubplots?: Record<string, any>;
+    _sunburstcolormap?: Record<string, Color>;
+    _transformModules?: any[];
+    _treemapcolormap?: Record<string, Color>;
+    _violinScaleGroupStats?: Record<string, any>;
+    _visibleModules?: any[];
 
     // Scalar flags and values
-    currentFrame?: string;
-    dataLength?: number;
-    dfltTitle?: Record<string, string>;
-    guiEditing?: boolean;
-    has?: (category: string) => boolean;
-    hasOnlyLargeSploms?: boolean;
-    insideTickLabelsUpdaterange?: Record<string, any>;
-    invScaleX?: number;
-    invScaleY?: number;
-    lastBBox?: DOMRect;
-    mapboxAccessToken?: string;
-    pushmarginIds?: Record<string, number>;
-    redrawFromAutoMarginCount?: number;
-    replotting?: boolean;
-    reservedMargin?: Record<string, number>;
-    shouldCreateBgLayer?: boolean;
-    skipDefaults?: boolean;
-    traceUids?: string[];
-    traceWord?: string;
-    uid?: string;
-    zindices?: number[];
+    _cartesianSpikesEnabled?: 'on' | 'off';
+    _currentFrame?: string;
+    _d3locale?: Locale;
+    _dataLength?: number;
+    _enablescrollzoom?: boolean;
+    _dfltTitle?: Record<string, string>;
+    _guiEditing?: boolean;
+    _has?: (category: string) => boolean;
+    _hasOnlyLargeSploms?: boolean;
+    _insideTickLabelsUpdaterange?: Record<string, any>;
+    _invScaleX?: number;
+    _invScaleY?: number;
+    _lastBBox?: DOMRect;
+    _mapboxAccessToken?: string;
+    _pushmarginIds?: Record<string, number>;
+    _redrawFromAutoMarginCount?: number;
+    _replotting?: boolean;
+    _reservedMargin?: Record<string, number>;
+    _shouldCreateBgLayer?: boolean;
+    _skipDefaults?: boolean;
+    _traceUids?: string[];
+    _traceWord?: string;
+    _zindices?: number[];
 
     // Interaction state
-    activeSelectionIndex?: number;
-    activeShapeIndex?: number;
-    deactivateSelection?: (gd: any) => void;
-    deactivateShape?: (gd: any) => void;
-    deselect?: (() => void) | null;
-    hColorbarMoveCBTitle?: number;
-    hColorbarMoveTitle?: number;
-    lastSelectedSubplot?: string;
-    noEmitSelectedAtStart?: boolean;
-    outlining?: boolean;
-    preGUI?: Record<string, any>;
-    previousSelections?: any[];
-    redrag?: (() => void) | null;
-    reselect?: (() => void) | null;
-    tracePreGUI?: Record<string, Record<string, any>>;
+    _activeSelectionIndex?: number;
+    _activeShapeIndex?: number;
+    _deactivateSelection?: (gd: any) => void;
+    _deactivateShape?: (gd: any) => void;
+    _deselect?: any;
+    _hColorbarMoveCBTitle?: number;
+    _hColorbarMoveTitle?: number;
+    _lastSelectedSubplot?: string;
+    _noEmitSelectedAtStart?: boolean;
+    _outlining?: boolean;
+    _preGUI?: Record<string, any>;
+    _previousSelections?: any[];
+    _redrag?: (() => void) | null;
+    _reselect?: (() => void) | null;
+    _tracePreGUI?: Record<string, Record<string, any>>;
 
     [key: string]: any;
 }
