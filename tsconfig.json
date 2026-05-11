@@ -26,15 +26,8 @@
     "outDir": "./dist",
     "noEmit": true,
 
-    // Type checking - start loose, tighten gradually
-    "strict": false,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "strictFunctionTypes": false,
-    "strictBindCallApply": false,
-    "strictPropertyInitialization": false,
-    "noImplicitThis": false,
-    "alwaysStrict": false,
+    // Type checking - start strict, loosen if necessary
+    "strict": true,
 
     // Linting
     "noUnusedLocals": false,
