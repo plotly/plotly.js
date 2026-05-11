@@ -1,7 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
-var attributes = require('./attributes');
+var attributes = require('./attributes').default;
 var constants = require('./constants');
 var dataUri = require('../../snapshot/helpers').IMAGE_URL_PREFIX;
 

@@ -1,21 +1,26 @@
 'use strict';
 
-var baseAttrs = require('../../plots/attributes');
-var zorder = require('../scatter/attributes').zorder;
-const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var colormodel = require('./constants').colormodel;
+import type { AttributeMap, AttrsToType } from '../../types/lib/attributes';
 
-var cm = ['rgb', 'rgba', 'rgba256', 'hsl', 'hsla'];
-var zminDesc = [];
-var zmaxDesc = [];
-for (var i = 0; i < cm.length; i++) {
-    var cr = colormodel[cm[i]];
+const baseAttrs = require('../../plots/attributes');
+const { zorder } = require('../scatter/attributes');
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
+const extendFlat = require('../../lib/extend').extendFlat;
+const { colormodel } = require('./constants');
+
+const cm = ['rgb', 'rgba', 'rgba256', 'hsl', 'hsla'] as const;
+const zminDesc: string[] = [];
+const zmaxDesc: string[] = [];
+for (let i = 0; i < cm.length; i++) {
+    const cr = colormodel[cm[i]];
     zminDesc.push('For the `' + cm[i] + '` colormodel, it is [' + (cr.zminDflt || cr.min).join(', ') + '].');
     zmaxDesc.push('For the `' + cm[i] + '` colormodel, it is [' + (cr.zmaxDflt || cr.max).join(', ') + '].');
 }
 
-module.exports = extendFlat({
+/**
+ * @generates ImageTrace
+ */
+const attributes = {
     source: {
         valType: 'string',
         editType: 'calc',
@@ -43,7 +48,7 @@ module.exports = extendFlat({
     },
     zsmooth: {
         valType: 'enumerated',
-        values: ['fast', false],
+        values: ['fast', false] as const,
         dflt: false,
         editType: 'plot',
         description: [
@@ -133,5 +138,9 @@ module.exports = extendFlat({
     hovertemplate: hovertemplateAttrs({}, { keys: ['z', 'color', 'colormodel'] }),
     hovertemplatefallback: templatefallbackAttrs(),
 
-    zorder: zorder
-});
+    zorder
+} as const satisfies AttributeMap;
+
+export type ImageTraceAttributes = AttrsToType<typeof attributes>;
+
+export default attributes;

@@ -3,4 +3,5 @@
  * Run `npm run gen:types` to regenerate.
  */
 
+export type { ImageTrace } from './traces/image';
 export type { ModeBar } from './components/modebar';
