@@ -67,6 +67,10 @@ const parsed = ts.parseJsonConfigFileContent(tsconfigJson.config, ts.sys, repoRo
 
 const program = ts.createProgram(attributeFiles, {
     ...parsed.options,
+    // Prevent the checker from adding redundant `| undefined` to optional
+    // properties when printing type nodes.  The `?` modifier already implies
+    // `undefined`, so the extra union member is just noise in the output.
+    strictNullChecks: false,
     noEmit: true
 });
 
