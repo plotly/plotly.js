@@ -62,6 +62,9 @@ export type DefaultIcons =
 
 export type IconsMap = { [K in DefaultIcons]: Icon };
 
+export declare const Icons: IconsMap;
+export declare const Plots: StaticPlots;
+
 // ---------------------------------------------------------------------------
 // Module registration
 // ---------------------------------------------------------------------------
@@ -105,6 +108,17 @@ export interface ValidateResult {
     trace: number | null;
     path: string | (string | number)[];
     astr: string;
+    msg: string;
+}
+
+export interface ValidateTemplateResult {
+    code: string;
+    index?: number;
+    traceType?: string;
+    templateCount?: number;
+    dataCount?: number;
+    path?: string;
+    templateitemname?: string;
     msg: string;
 }
 
@@ -181,5 +195,6 @@ export function animate(
 export function validate(data: Data[], layout: Partial<Layout>): ValidateResult[];
 export function setPlotConfig(config: Partial<Config>): void;
 
-export type FigureOrRoot = Root | { data: Data[]; layout: Partial<Layout> };
-export function makeTemplate(figure: FigureOrRoot): Template;
+export type TemplateFigure = Root | { data: Data[]; layout: Partial<Layout> };
+export function makeTemplate(figure: TemplateFigure): Template;
+export function validateTemplate(figure: TemplateFigure, template: Template): ValidateTemplateResult[];
