@@ -109,6 +109,7 @@ jobs:
         run: |
           BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
-          echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} are available:" >> $GITHUB_STEP_SUMMARY
+          echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} can be accessed at:" >> $GITHUB_STEP_SUMMARY
           echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "- Build for this commit: [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "The above links should start working a minute or two after this job completes." >> $GITHUB_STEP_SUMMARY
