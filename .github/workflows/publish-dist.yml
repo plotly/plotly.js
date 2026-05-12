@@ -14,9 +14,6 @@ concurrency:
   group: publish-dist-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-env:
-  NODE_VERSION: '18'
-
 jobs:
   publish-dist:
     runs-on: ubuntu-latest
@@ -28,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '18'
           cache: 'npm'
 
       - name: Set up build environment
