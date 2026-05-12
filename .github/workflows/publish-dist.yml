@@ -34,16 +34,11 @@ jobs:
       - name: Set up build environment
         run: .github/scripts/env_build.sh
 
-      - name: Preview CHANGELOG for next release (only on master)
-        if: github.ref == 'refs/heads/master'
-        run: npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
-
       - name: Set draft version in package.json
         run: |
           node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" $(git describe)
-
-      - name: View package.json diff between previous and next releases
-        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+          # View package.json diff from last release (should show that the version has been changed to the draft version)
+          git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
 
       - name: Build dist/
         run: npm run build
@@ -54,13 +49,6 @@ jobs:
           name: dist-node18
           retention-days: 7
           path: dist/
-
-      - name: View dist/README.md diff between previous and next releases
-        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
-
-      - name: Preview plot-schema diff (only on master)
-        if: github.ref == 'refs/heads/master'
-        run: git --no-pager diff tags/$(git describe --tags --abbrev=0) dist/plot-schema.json || true
 
       - name: Test plot-schema.json diff
         run: diff --unified --color dist/plot-schema.json test/plot-schema.json
@@ -81,16 +69,11 @@ jobs:
       - name: Set up build environment
         run: .github/scripts/env_build.sh
 
-      - name: Preview CHANGELOG for next release (only on master)
-        if: github.ref == 'refs/heads/master'
-        run: npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
-
       - name: Set draft version in package.json
         run: |
           node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" $(git describe)
-
-      - name: View package.json diff between previous and next releases
-        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+          # View package.json diff from last release (should show that the version has been changed to the draft version)
+          git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
 
       - name: Build dist/
         run: npm run build
@@ -101,13 +84,6 @@ jobs:
           name: dist-node22
           retention-days: 7
           path: dist/
-
-      - name: View dist/README.md diff between previous and next releases
-        run: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
-
-      - name: Preview plot-schema diff (only on master)
-        if: github.ref == 'refs/heads/master'
-        run: git --no-pager diff tags/$(git describe --tags --abbrev=0) dist/plot-schema.json || true
 
       - name: Test plot-schema.json diff
         run: diff --unified --color dist/plot-schema.json test/plot-schema.json
