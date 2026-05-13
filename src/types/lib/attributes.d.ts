@@ -1,17 +1,15 @@
 /**
- * Attribute schema → TypeScript type extraction
+ * Attribute schema validation types
  *
- * Plotly's attribute files describe both the runtime metadata (valType, dflt,
- * editType, description, ...) AND the public-facing type. This file provides:
+ * Plotly's attribute files describe runtime metadata (valType, dflt,
+ * editType, description, ...). This file provides:
  *
  *   - AttrInfo / AttributeMap: structural shape that attribute objects must
  *     satisfy (compile-time validation of attribute authoring)
- *   - AttrsToType<T>: a mapped type that walks an attribute object and
- *     produces the corresponding TypeScript interface
  *
  * Author attribute files like:
  *
- *     export const attributes = {
+ *     const attributes = {
  *         orientation: {
  *             valType: 'enumerated',
  *             values: ['v', 'h'] as const,
@@ -21,10 +19,10 @@
  *         bgcolor: { valType: 'color', editType: 'modebar' },
  *     } as const satisfies AttributeMap;
  *
- *     export type ModeBarAttributes = AttrsToType<typeof attributes>;
+ *     export default attributes;
  */
 
-import type { Color, ColorScale, Datum, TypedArray } from './common';
+import type { ColorScale, Datum, TypedArray } from './common';
 
 // ---------------------------------------------------------------------------
 // Attribute info — discriminated union by valType
@@ -156,69 +154,3 @@ export interface AttributeMap {
     [key: string]: AttrInfo | AttributeMap | string | boolean | undefined;
 }
 
-// ---------------------------------------------------------------------------
-// Type-level conversion
-// ---------------------------------------------------------------------------
-
-/**
- * Wrap a type with `T | T[]` if `arrayOk: true` is set on the attribute.
- */
-type ApplyArrayOk<A, V> = A extends { arrayOk: true } ? V | V[] : V;
-
-/**
- * Map a single leaf attribute (object with `valType`) to its TS value type.
- */
-export type ValTypeToTS<A extends AttrInfo> = A extends DataArrayAttr
-    ? Datum[] | TypedArray
-    : A extends NumberAttr
-      ? ApplyArrayOk<A, number>
-      : A extends IntegerAttr
-        ? ApplyArrayOk<A, number>
-        : A extends StringAttr
-          ? ApplyArrayOk<A, A extends { values: readonly (infer U extends string)[] } ? U : string>
-          : A extends BooleanAttr
-            ? ApplyArrayOk<A, boolean>
-            : A extends ColorAttr
-              ? ApplyArrayOk<A, Color>
-              : A extends ColorScaleAttr
-                ? ColorScale
-                : A extends ColorListAttr
-                  ? Color[]
-                  : A extends AngleAttr
-                    ? ApplyArrayOk<A, number | 'auto'>
-                    : A extends SubplotIdAttr
-                      ? string
-                      : A extends EnumeratedAttr<infer V>
-                        ? ApplyArrayOk<A, V[number]>
-                        : A extends FlagListAttr
-                          ? ApplyArrayOk<A, string>
-                          : A extends InfoArrayAttr
-                            ? unknown[]
-                            : A extends AnyAttr
-                              ? any
-                              : never;
-
-/**
- * Keys that are metadata about the container itself (not nested attributes).
- * They are stripped during type extraction.
- */
-type ReservedKey = 'editType' | 'role' | '_isLinkedToArray' | '_isSubplotObj' | '_arrayAttrRegexps' | '_deprecated';
-
-/**
- * Walk an AttributeMap and produce the corresponding TS interface shape.
- * - Leaf entries (with `valType`) → their TS value type
- * - Nested entries → recurse
- * - Reserved meta-keys → omitted
- *
- * The `-readonly` modifier strips the readonly that `as const` introduces
- * on the source attributes object. The attributes definition is genuinely
- * static, but the derived user-facing type represents user-supplied input
- * which should be mutable.
- */
-export type AttrsToType<T> = {
-    -readonly [K in keyof T as K extends ReservedKey ? never : K]?: T[K] extends AttrInfo
-        ? ValTypeToTS<T[K]>
-        : T[K] extends Record<string, any>
-          ? AttrsToType<T[K]>
-          : never;
-};
