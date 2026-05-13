@@ -48,23 +48,26 @@ jobs:
             SHA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefOid --template '{{.headRefOid}}')
           fi
           SHORT_SHA=${SHA::7}
+          UPLOAD_DIR_NAME="upload"
 
-          echo "Using SHA: $SHA"
-          echo "Short SHA: $SHORT_SHA"
-          mkdir -p "upload/pr-$PR_NUM/$SHORT_SHA"
-          cp temp-dist/plotly.js "upload/pr-$PR_NUM/$SHORT_SHA/plotly.js"
-          cp temp-dist/plotly.min.js "upload/pr-$PR_NUM/$SHORT_SHA/plotly.min.js"
-          cp temp-dist/plot-schema.json "upload/pr-$PR_NUM/$SHORT_SHA/plot-schema.json"
-          cp -r "upload/pr-$PR_NUM/$SHORT_SHA/" "upload/pr-$PR_NUM/latest/"
+          echo "Using SHA: ${SHA}"
+          echo "Short SHA: ${SHORT_SHA}"
+          mkdir -p "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest"
+          mkdir -p "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/${SHORT_SHA}"
+          # Copy all 3 artifacts (plotly.js, plotly.min.js, plot-schema.json) to /latest/
+          cp temp-dist/plotly.js "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest/plotly.js"
+          cp temp-dist/plotly.min.js "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest/plotly.min.js"
+          cp temp-dist/plot-schema.json "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest/plot-schema.json"
+          # Copy only plotly.min.js to /$SHORT_SHA/
+          cp temp-dist/plotly.min.js "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/${SHORT_SHA}/plotly.min.js"
 
-          UPLOAD_DIR_PATH=$(pwd)/upload/
+          UPLOAD_DIR_FULL_PATH=$(pwd)/${UPLOAD_DIR_NAME}/
+          echo "Created directory ${UPLOAD_DIR_FULL_PATH} with the following contents:"
+          echo "$(ls -lR ${UPLOAD_DIR_FULL_PATH})"
 
-          echo "Created directory ${UPLOAD_DIR_PATH} with the following contents:"
-          echo "$(ls -lR ${UPLOAD_DIR_PATH})"
-
-          echo "PR_NUM=$PR_NUM" >> $GITHUB_OUTPUT
-          echo "SHA=$SHA" >> $GITHUB_OUTPUT
-          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "PR_NUM=${PR_NUM}" >> $GITHUB_OUTPUT
+          echo "SHA=${SHA}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Generate GitHub App token
         id: generate-token
