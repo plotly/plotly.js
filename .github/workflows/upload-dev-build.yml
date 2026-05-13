@@ -1,4 +1,4 @@
-name: Upload dev build from PR (placeholder, not yet implemented)
+name: Upload dev build from PR
 
 on:
   workflow_run:
