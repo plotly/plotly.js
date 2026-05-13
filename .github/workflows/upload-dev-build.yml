@@ -2,16 +2,117 @@ name: Upload dev build from PR (placeholder, not yet implemented)
 
 on:
   workflow_run:
-    workflows: ["CI"]  # ci.yml
+    workflows: ["Publish Dist"]  # publish-dist.yml
     types:
       - completed
   workflow_dispatch:
-
+    inputs:
+      pr_number:
+        description: 'PR Number to deploy'
+        required: true
+      run_id:
+        description: 'The Run ID of the CI workflow that has the artifact'
+        required: true
 
 jobs:
-  hello:
+  upload:
     runs-on: ubuntu-latest
+    if: |
+          github.event_name == 'workflow_dispatch' ||
+          (
+            github.event_name == 'workflow_run' && 
+            github.event.workflow_run.event == 'pull_request' &&
+            github.event.workflow_run.conclusion == 'success'
+          )
     steps:
-      - name: Hello World
+      - name: Download build artifact
+        id: download-artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: dist-node22  # uploaded by publish-dist.yml > publish-dist-node-v22
+          run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: temp-dist
+
+      - name: Setup metadata and prepare folders
+        id: setup-metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
         run: |
-          echo "Hello World"
+          # Get SHA from triggering workflow, or from manual input
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            SHA="${{ github.event.workflow_run.head_sha }}"
+          else
+            echo "Fetching latest SHA for PR #$PR_NUM..."
+            SHA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefOid --template '{{.headRefOid}}')
+          fi
+          SHORT_SHA=${SHA::7}
+          UPLOAD_DIR_NAME="upload"
+
+          echo "Using SHA: ${SHA}"
+          echo "Short SHA: ${SHORT_SHA}"
+          mkdir -p "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest"
+          mkdir -p "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/${SHORT_SHA}"
+          # Copy all 3 artifacts (plotly.js, plotly.min.js, plot-schema.json) to /latest/
+          cp temp-dist/plotly.js "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest/plotly.js"
+          cp temp-dist/plotly.min.js "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest/plotly.min.js"
+          cp temp-dist/plot-schema.json "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest/plot-schema.json"
+          # Copy only plotly.min.js to /$SHORT_SHA/
+          cp temp-dist/plotly.min.js "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/${SHORT_SHA}/plotly.min.js"
+
+          UPLOAD_DIR_FULL_PATH=$(pwd)/${UPLOAD_DIR_NAME}/
+          echo "Created directory ${UPLOAD_DIR_FULL_PATH} with the following contents:"
+          echo "$(ls -lR ${UPLOAD_DIR_FULL_PATH})"
+
+          echo "PR_NUM=${PR_NUM}" >> $GITHUB_OUTPUT
+          echo "SHA=${SHA}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  #v3.1.1
+        with:
+          client-id: ${{ vars.DEV_DEPLOY_APP_ID }}
+          private-key: ${{ secrets.DEV_DEPLOY_APP_PRIVATE_KEY }}
+          owner: plotly
+          repositories: plotly.js-dev-builds
+
+      - name: Check out plotly.js-dev-builds repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: plotly/plotly.js-dev-builds
+          token: ${{ steps.generate-token.outputs.token }}  # token from previous step
+          path: plotly.js-dev-builds
+
+      - name: Commit and push files
+        id: commit-and-push
+        run: |
+          # 1. Move 'upload' directory into repo folder and cd into repo root
+          mkdir -p plotly.js-dev-builds/upload/
+          cp -r upload/ plotly.js-dev-builds/
+          cd plotly.js-dev-builds
+
+          # 2. Configure git
+          git config user.name "plotly.js-pr-upload"
+          git config user.email "<>"
+
+          # 3. add, commit, and push
+          git add upload/
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Deploy build for PR #${{ steps.setup-metadata.outputs.PR_NUM }} (commit ${{ steps.setup-metadata.outputs.SHORT_SHA }})"
+            git push origin main
+          fi
+
+      - name: Generate summary
+        run: |
+          BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
+          echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
+          echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} can be accessed at:" >> $GITHUB_STEP_SUMMARY
+          echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Build for this commit: [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "The above links should start working a minute or two after this job completes." >> $GITHUB_STEP_SUMMARY
