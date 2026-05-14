@@ -104,16 +104,33 @@ module.exports = function drawLabel(gd, index, options, shapeGroup) {
         const xRefType1 = Axes.getRefType(isArrayXref ? options.xref[1] : options.xref);
         const yRefType0 = Axes.getRefType(isArrayYref ? options.yref[0] : options.yref);
         const yRefType1 = Axes.getRefType(isArrayYref ? options.yref[1] : options.yref);
-        const x2p = function(v, shift, xa, xRefType) {
-            return helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
-        };
-        const y2p = function(v, shift, ya, yRefType) {
-            return helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
-        };
-        shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);
-        shapex1 = x2p(options.x1, options.x1shift, xa1, xRefType1);
-        shapey0 = y2p(options.y0, options.y0shift, ya0, yRefType0);
-        shapey1 = y2p(options.y1, options.y1shift, ya1, yRefType1);
+        const x2p = (v, shift, xa, xRefType) => helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
+        const y2p = (v, shift, ya, yRefType) => helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
+        // When using pixel offset mode it's necessary to add the anchor position for the
+        // correct final value
+        if (options.xsizemode === 'pixel') {
+            const xAnchorPos = x2p(options.xanchor, undefined, xa0, xRefType0);
+            // Use xa0 for both shifts because in pixel mode x0/x1 are offsets from the
+            // anchor, which is always on xa0 (pixel mode with array xref is unsupported)
+            const xShift0 = helpers.getPixelShift(xa0, options.x0shift);
+            const xShift1 = helpers.getPixelShift(xa0, options.x1shift);
+            shapex0 = xAnchorPos + options.x0 + xShift0;
+            shapex1 = xAnchorPos + options.x1 + xShift1;
+        } else {
+            shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);
+            shapex1 = x2p(options.x1, options.x1shift, xa1, xRefType1);
+        }
+        if (options.ysizemode === 'pixel') {
+            const yAnchorPos = y2p(options.yanchor, undefined, ya0, yRefType0);
+            // Both shifts use ya0 for the same reason as above
+            const yShift0 = helpers.getPixelShift(ya0, options.y0shift);
+            const yShift1 = helpers.getPixelShift(ya0, options.y1shift);
+            shapey0 = yAnchorPos - options.y0 + yShift0;
+            shapey1 = yAnchorPos - options.y1 + yShift1;
+        } else {
+            shapey0 = y2p(options.y0, options.y0shift, ya0, yRefType0);
+            shapey1 = y2p(options.y1, options.y1shift, ya1, yRefType1);
+        }
     }
 
     // Handle `auto` angle

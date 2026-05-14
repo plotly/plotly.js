@@ -603,7 +603,7 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 
 // ensure we have minor tick0 and dtick calculated
 axes.prepMinorTicks = function(mockAx, ax, opts) {
-    if(!ax.minor.dtick) {
+    if(!ax.minor?.dtick) {
         delete mockAx.dtick;
         var hasMajor = ax.dtick && isNumeric(ax._tmin);
         var mockMinorRange;
@@ -690,7 +690,7 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // put back the original range, to use to find the full set of minor ticks
         mockAx.range = ax.range;
     }
-    if(ax.minor._tick0Init === undefined) {
+    if(ax.minor?._tick0Init === undefined) {
         // ensure identical tick0
         mockAx.tick0 = ax.tick0;
     }
@@ -973,21 +973,23 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var allTicklabelVals = [];
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
+    // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
+    // the labels are placed at minor ticks (even if invisible) instead of major ticks.
+    var calcMinor = hasMinor || ticklabelIndex;
 
     // calc major first
-    for(var major = 1; major >= (hasMinor ? 0 : 1); major--) {
+    for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
         var isMinor = !major;
 
         if(major) {
             ax._dtickInit = ax.dtick;
             ax._tick0Init = ax.tick0;
-        } else {
+        } else if (calcMinor) {
             ax.minor._dtickInit = ax.minor.dtick;
             ax.minor._tick0Init = ax.minor.tick0;
         }
 
-        var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
-
+        var mockAx = major ? ax : Lib.extendFlat({}, ax, calcMinor ? ax.minor : {"minor": {}});
         if(isMinor) {
             axes.prepMinorTicks(mockAx, ax, opts);
         } else {
@@ -1074,10 +1076,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        if(major && isPeriod) {
-            // add one item to label period before tick0
+        if((major || ticklabelIndex) && isPeriod) {
+            // if major: add one item to label period before tick0
+            // if minor: add one item for ticklabelindex positioning. positionPeriodTicks requires
+            // at least 2 ticks to calculate the period length, so we add a dummy tick, ensuring
+            // that if a tick is labeled, there are always at least 2 ticks.
             x = axes.tickIncrement(x, dtick, !axrev, calendar);
-            majorId--;
+            if (major) majorId--;
         }
 
         for(;
@@ -1125,13 +1130,17 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    // check if ticklabelIndex makes sense, otherwise ignore it
-    if(!minorTickVals || minorTickVals.length < 2) {
+    // check if ticklabelIndex makes sense, otherwise ignore it.
+    // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
+    // with the required distance to each other.
+    if(!minorTickVals || minorTickVals.length < 3) {
         ticklabelIndex = false;
     } else {
-        var diff = (minorTickVals[1].value - minorTickVals[0].value) * (isReversed ? -1 : 1);
+        var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
             ticklabelIndex = false;
+            // remove previously added tick before tick0 for handling ticklabelindex positioning
+            minorTickVals = minorTickVals.slice(1);
         }
     }
     // Determine for which ticks to draw labels
@@ -1168,6 +1177,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
                 }
             });
+        });
+        tickVals.forEach(function(tick) {
+            tick.skipLabel = allTicklabelVals.indexOf(tick) === -1;
         });
     }
 
@@ -1298,13 +1310,17 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             lastVisibleHead = ax._prevDateHead;
             t = setTickLabel(ax, tickVals[i]);
-            if(tickVals[i].skipLabel ||
-                ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) === -1) {
+            if (tickVals[i].skipLabel) {
                 hideLabel(t);
             }
 
             ticksOut.push(t);
         }
+    }
+
+    if(isPeriod && ticklabelIndex && minorTicks.length) {
+        // drop very first minor tick that we added to handle ticklabelindex
+        minorTicks[0].noTick = true;
     }
     ticksOut = ticksOut.concat(minorTicks);
 
