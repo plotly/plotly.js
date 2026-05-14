@@ -17,19 +17,5 @@ export * from './core/events';
 export * from './core/graph-div';
 export * from './core/layout';
 
-// Components
-export * from './components/colorbar';
-export * from './components/common';
-export * from './components/rangeselector';
-export * from './components/slider';
-export * from './components/updatemenu';
-
-// Plot/trace types
-export * from './plots/common';
-export * from './traces/box';
-export * from './traces/candlestick';
-export * from './traces/common';
-export * from './traces/ohlc';
-export * from './traces/pie';
-export * from './traces/sankey';
-export * from './traces/violin';
+// Schema-generated types (traces + layout + shared interfaces)
+export * from './generated/schema';

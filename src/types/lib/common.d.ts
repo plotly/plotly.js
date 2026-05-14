@@ -32,19 +32,19 @@ export type ColorScale = string | string[] | Array<[number, string]>;
 export type Dash = 'solid' | 'dot' | 'dash' | 'longdash' | 'dashdot' | 'longdashdot';
 
 export type Calendar =
-    | 'gregorian'
     | 'chinese'
     | 'coptic'
     | 'discworld'
     | 'ethiopian'
+    | 'gregorian'
     | 'hebrew'
     | 'islamic'
+    | 'jalali'
     | 'julian'
     | 'mayan'
     | 'nanakshahi'
     | 'nepali'
     | 'persian'
-    | 'jalali'
     | 'taiwan'
     | 'thai'
     | 'ummalqura';
@@ -91,53 +91,3 @@ export type ErrorBar = Partial<ErrorOptions> &
 // ---------------------------------------------------------------------------
 
 export type PatternShape = '' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.';
-
-export interface Pattern {
-    shape?: PatternShape | PatternShape[] | undefined;
-    path?: string | undefined;
-    fillmode?: 'replace' | 'overlay' | undefined;
-    bgcolor?: string | string[] | undefined;
-    fgcolor?: string | string[] | undefined;
-    fgopacity?: number | undefined;
-    size?: number | number[] | undefined;
-    solidity?: number | number[] | undefined;
-}
-
-// ---------------------------------------------------------------------------
-// Internal / lib utility types
-// ---------------------------------------------------------------------------
-
-export type CoerceFn = (attr: string, dflt?: any) => any;
-
-export type PropertyPath = string | string[];
-
-export type DateFormat = string;
-
-export type NumericArray = number[] | Float32Array | Float64Array;
-
-export type Arrayable<T> = T | T[];
-
-export interface Rect {
-    left: number;
-    right: number;
-    top: number;
-    bottom: number;
-    width?: number;
-    height?: number;
-}
-
-export interface Point2D {
-    x: number;
-    y: number;
-}
-
-export interface Point3D extends Point2D {
-    z: number;
-}
-
-export interface RGBAColor {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-}

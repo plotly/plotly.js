@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { localDevConfig } from '../esbuild-config.js';
 
+import { generateSchemaTypes } from './generate_schema_types.mjs';
 import constants from './util/constants.js';
 import plotlyNode from './util/plotly_node.mjs';
 
@@ -70,3 +71,35 @@ await build(localDevConfig);
 
 // output plot-schema JSON
 makeSchema(pathToPlotly, pathToSchema);
+
+// generate TypeScript types from the schema (traces + layout)
+const schema = JSON.parse(fs.readFileSync(pathToSchema, 'utf-8'));
+const pathToGeneratedTypes = path.join(constants.pathToSrc, 'types/generated/schema.d.ts');
+const exportedNames = generateSchemaTypes(schema, pathToGeneratedTypes);
+
+// Warn about generated interfaces not re-exported from the public API.
+// Types listed here are intentionally internal-only and won't trigger warnings.
+const PUBLIC_API_EXEMPTIONS = new Set([
+    'AutoRangeOptions',
+    'ErrorY',
+    'LegendGroupTitle',
+    'Lighting',
+]);
+
+const pathToPublicTypes = path.join(constants.pathToLib, 'index.d.ts');
+const publicTypes = fs.readFileSync(pathToPublicTypes, 'utf-8');
+const missing = [...exportedNames].filter((name) => !publicTypes.includes(name)).sort();
+if (missing.length > 0) {
+    const unexempted = missing.filter((name) => !PUBLIC_API_EXEMPTIONS.has(name));
+    const exempted = missing.filter((name) => PUBLIC_API_EXEMPTIONS.has(name));
+
+    if (unexempted.length > 0) {
+        console.warn(`\n⚠  ${unexempted.length} generated type(s) not re-exported in lib/index.d.ts:`);
+        for (const name of unexempted) console.warn(`   - ${name}`);
+    }
+    if (exempted.length > 0) {
+        console.log(`\n   ${exempted.length} exempted (intentionally internal-only):`);
+        for (const name of exempted) console.log(`   - ${name}`);
+    }
+    console.log('');
+}

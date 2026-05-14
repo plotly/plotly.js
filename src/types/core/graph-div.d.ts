@@ -6,9 +6,8 @@
  * Commonly referred to as `gd` in the codebase.
  */
 
-import type { CalcData } from '../traces/common';
 import type { Config } from './config';
-import type { FullData, PlotData } from './data';
+import type { CalcData, FullData, PlotData } from './data';
 import type { FullLayout, Layout } from './layout';
 
 /**

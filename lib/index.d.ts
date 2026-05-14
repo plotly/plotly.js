@@ -37,7 +37,6 @@ export type {
     ErrorBar,
     ErrorOptions,
     MarkerSymbol,
-    Pattern,
     PatternShape,
     TypedArray,
     XAnchor,
@@ -47,60 +46,102 @@ export type {
 } from '../src/types/lib/common';
 
 // ---------------------------------------------------------------------------
-// Layout, axes, components, and supporting shapes
+// Schema-generated types (traces, layout, shared interfaces)
 // ---------------------------------------------------------------------------
 
 export type {
-    Annotations,
-    AutoRangeOptions,
-    Axis,
-    AxisName,
-    ButtonClickEvent,
-    Camera,
-    DataTitle,
-    Delta,
+    // Shared interfaces
+    ColorBar,
     Domain,
     Font,
-    Gauge,
-    GaugeBar,
-    GaugeLine,
+    FontArray,
     HoverLabel,
-    Icon,
-    Image,
-    Label,
+    Pattern,
+    TickFormatStops,
+
+    // Trace interfaces
+    BarData,
+    BarpolarData,
+    BoxData,
+    CandlestickData,
+    CarpetData,
+    ChoroplethData,
+    ChoroplethmapData,
+    ChoroplethmapboxData,
+    ConeData,
+    ContourData,
+    ContourcarpetData,
+    DensitymapData,
+    DensitymapboxData,
+    FunnelData,
+    FunnelareaData,
+    HeatmapData,
+    Histogram2dData,
+    Histogram2dcontourData,
+    HistogramData,
+    IcicleData,
+    ImageData,
+    IndicatorData,
+    IsosurfaceData,
+    Mesh3dData,
+    OhlcData,
+    ParcatsData,
+    ParcoordsData,
+    PieData,
+    SankeyData,
+    Scatter3dData,
+    ScatterData,
+    ScattercarpetData,
+    ScattergeoData,
+    ScatterglData,
+    ScattermapData,
+    ScattermapboxData,
+    ScatterpolarData,
+    ScatterpolarglData,
+    ScattersmithData,
+    ScatterternaryData,
+    SplomData,
+    StreamtubeData,
+    SunburstData,
+    SurfaceData,
+    TableData,
+    TreemapData,
+    ViolinData,
+    VolumeData,
+    WaterfallData,
+
+    // Layout component interfaces
+    Annotation,
+    ColorAxis,
+    GeoLayout,
     Layout,
     LayoutAxis,
+    LayoutImage,
+    LayoutSelection,
     Legend,
-    LegendTitle,
     MapLayout,
+    PolarLayout,
+    Scene,
+    Shape,
+    Slider,
+    SmithLayout,
+    TernaryLayout,
+    UpdateMenu,
+} from '../src/types/generated/schema';
+
+// ---------------------------------------------------------------------------
+// Hand-written layout types (not in schema)
+// ---------------------------------------------------------------------------
+
+export type {
+    AxisName,
+    ButtonClickEvent,
+    Icon,
     Mapbox,
-    MapBounds,
-    MapboxBounds,
-    MapCenter,
-    MapboxCenter,
-    MapLayers,
-    MapboxLayers,
-    MapSymbol,
-    MapboxSymbol,
-    Margin,
-    MinorAxisLayout,
-    ModeBar,
     ModeBarButton,
     ModeBarButtonAny,
     ModeBarDefaultButtons,
-    Padding,
-    PlotNumber,
-    Point,
-    PolarLayout,
-    RangeBreak,
-    RangeSlider,
-    Scene,
-    SceneAxis,
-    Shape,
-    ShapeLabel,
-    ShapeLine,
     Template,
-    Threshold,
     XAxisName,
     YAxisName,
 } from '../src/types/core/layout';
@@ -111,76 +152,20 @@ export type {
 
 export type {
     Data,
+    DataTitle,
+    Delta,
+    Gauge,
+    GaugeBar,
+    GaugeLine,
+    Padding,
     PlotData,
     PlotMarker,
+    PlotNumber,
     PlotType,
-    ScatterData,
     ScatterLine,
-    ScatterMarker,
     ScatterMarkerLine,
+    Threshold,
 } from '../src/types/core/data';
-
-// ---------------------------------------------------------------------------
-// Specialized trace types
-// ---------------------------------------------------------------------------
-
-export type { BoxPlotData, BoxPlotMarker } from '../src/types/traces/box';
-export type { CandlestickData } from '../src/types/traces/candlestick';
-export type { OhlcData } from '../src/types/traces/ohlc';
-export type {
-    PieData,
-    PieDataTitle,
-    PieDomain,
-    PieFont,
-    PieHoverInfo,
-    PieHoverLabel,
-    PieInsideTextOrientation,
-    PieLine,
-    PieMarker,
-    PieTextPosition,
-} from '../src/types/traces/pie';
-export type {
-    SankeyData,
-    SankeyColorscale,
-    SankeyDataTitle,
-    SankeyDomain,
-    SankeyFont,
-    SankeyHoverLabel,
-    SankeyLink,
-    SankeyNode,
-    SankeyOrientation,
-} from '../src/types/traces/sankey';
-export type { ViolinData } from '../src/types/traces/violin';
-
-// ---------------------------------------------------------------------------
-// Components
-// ---------------------------------------------------------------------------
-
-export type {
-    ColorBar,
-    ColorBarTitle,
-    ExponentFormat,
-    LengthMode,
-    ShowTickLabel,
-    TickFormatStop,
-    TickLabelOverflow,
-    TickLabelPosition,
-} from '../src/types/components/colorbar';
-
-export type { CurrentValue, Slider, SliderStep } from '../src/types/components/slider';
-
-export type {
-    UpdateMenu,
-    UpdateMenuButton,
-    UpdateMenuDirection,
-    UpdateMenuType,
-} from '../src/types/components/updatemenu';
-
-export type {
-    RangeSelector,
-    RangeSelectorButton,
-    RangeSelectorStep,
-} from '../src/types/components/rangeselector';
 
 // ---------------------------------------------------------------------------
 // Animation & template

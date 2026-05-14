@@ -5,15 +5,93 @@
  * and the Data union.
  */
 
-import type { ColorBar } from '../components/colorbar';
-import type { Color, ColorScale, Dash, Datum, ErrorBar, MarkerSymbol, Pattern, TypedArray } from '../lib/common';
-import type { BoxPlotData, BoxPlotMarker } from '../traces/box';
-import type { CandlestickData } from '../traces/candlestick';
-import type { OhlcData } from '../traces/ohlc';
-import type { PieData } from '../traces/pie';
-import type { SankeyData } from '../traces/sankey';
-import type { ViolinData } from '../traces/violin';
-import type { DataTitle, Delta, Font, Gauge, HoverLabel, Padding, PlotNumber } from './layout';
+import type {
+    BoxData,
+    CandlestickData,
+    ColorBar,
+    Font,
+    HoverLabel,
+    OhlcData,
+    Pattern,
+    PieData,
+    SankeyData,
+    ViolinData,
+} from '../generated/schema';
+import type { Color, ColorScale, Dash, Datum, ErrorBar, MarkerSymbol, TypedArray } from '../lib/common';
+
+// ---------------------------------------------------------------------------
+// Trace support types (used by PlotData)
+// ---------------------------------------------------------------------------
+
+export interface DataTitle {
+    text: string;
+    font: Partial<Font>;
+    standoff: number;
+    position:
+        | 'top left'
+        | 'top center'
+        | 'top right'
+        | 'middle center'
+        | 'bottom left'
+        | 'bottom center'
+        | 'bottom right';
+}
+
+export interface PlotNumber {
+    valueformat: string;
+    font: Partial<Font>;
+    prefix: string;
+    suffix: string;
+}
+
+export interface Padding {
+    t: number;
+    r: number;
+    b: number;
+    l: number;
+}
+
+export interface GaugeLine {
+    color: Color;
+    width: number;
+}
+
+export interface Threshold {
+    line: Partial<GaugeLine>;
+    value: number;
+    thickness: number;
+}
+
+export interface GaugeBar {
+    color: Color;
+    line: Partial<GaugeLine>;
+    thickness: number;
+}
+
+export interface Gauge {
+    shape: 'angular' | 'bullet';
+    bar: Partial<GaugeBar>;
+    bgcolor: Color;
+    bordercolor: Color;
+    borderwidth: number;
+    steps: Array<{ range: number[]; color: Color }>;
+    threshold: Partial<Threshold>;
+}
+
+export interface Delta {
+    reference: number;
+    position: 'top' | 'bottom' | 'left' | 'right';
+    relative: boolean;
+    valueformat: string;
+    increasing: {
+        symbol: string;
+        color: Color;
+    };
+    decreasing: {
+        symbol: string;
+        color: Color;
+    };
+}
 
 // ---------------------------------------------------------------------------
 // PlotType
@@ -120,8 +198,6 @@ export interface PlotMarker {
     pattern?: Partial<Pattern>;
 }
 
-export type ScatterMarker = PlotMarker;
-
 export interface ScatterLine {
     color: Color;
     width: number;
@@ -158,7 +234,7 @@ export interface PlotData {
     'line.shape': 'linear' | 'spline' | 'hv' | 'vh' | 'hvh' | 'vhv';
     'line.smoothing': number;
     'line.simplify': boolean;
-    marker: Partial<PlotMarker> | Partial<BoxPlotMarker>;
+    marker: Partial<PlotMarker>;
     'marker.symbol': MarkerSymbol | MarkerSymbol[];
     'marker.color': Color;
     'marker.colorscale': ColorScale | ColorScale[];
@@ -365,15 +441,13 @@ export interface PlotData {
     uid: string;
 }
 
-export type ScatterData = PlotData;
-
 // ---------------------------------------------------------------------------
 // Data union — re-exports specialized trace types from traces/
 // ---------------------------------------------------------------------------
 
 export type Data =
     | Partial<PlotData>
-    | Partial<BoxPlotData>
+    | Partial<BoxData>
     | Partial<ViolinData>
     | Partial<OhlcData>
     | Partial<CandlestickData>
@@ -383,6 +457,19 @@ export type Data =
 // ---------------------------------------------------------------------------
 // Internal types (not in public API)
 // ---------------------------------------------------------------------------
+
+/**
+ * Calculated trace data (internal)
+ */
+export interface CalcData {
+    i?: number;
+    t?: any;
+    trace?: FullData;
+    x?: any;
+    y?: any;
+    z?: any;
+    [key: string]: any;
+}
 
 /**
  * Fully processed plot data with defaults applied (internal use)

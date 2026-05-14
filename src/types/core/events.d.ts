@@ -5,12 +5,11 @@
  * and event-related supporting types.
  */
 
-import type { Slider, SliderStep } from '../components/slider';
+import type { Annotation, Layout, LayoutAxis, Slider } from '../generated/schema';
 import type { Datum } from '../lib/common';
 import type { AnimationFrameOpts, Frame, Transition } from './animation';
 import type { Config } from './config';
 import type { Data, PlotData } from './data';
-import type { Annotations, Layout, LayoutAxis, Point } from './layout';
 
 // ---------------------------------------------------------------------------
 // Point / datum types in events
@@ -96,6 +95,12 @@ export interface PlotRelayoutEvent extends Partial<Layout> {
 // 3D scene / annotation / animation / legend events
 // ---------------------------------------------------------------------------
 
+interface Point {
+    x: number;
+    y: number;
+    z: number;
+}
+
 export interface PlotScene {
     center: Point;
     eye: Point;
@@ -104,8 +109,8 @@ export interface PlotScene {
 
 export interface ClickAnnotationEvent {
     index: number;
-    annotation: Annotations;
-    fullAnnotation: Annotations;
+    annotation: Annotation;
+    fullAnnotation: Annotation;
     event: MouseEvent;
 }
 
@@ -134,6 +139,8 @@ export interface LegendClickEvent {
 // ---------------------------------------------------------------------------
 // Slider events
 // ---------------------------------------------------------------------------
+
+type SliderStep = NonNullable<Slider['steps']>[number];
 
 export interface SliderChangeEvent {
     slider: Slider;
