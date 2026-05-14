@@ -8925,6 +8925,7 @@ export interface Layout {
         showarrow?: boolean;
     };
     hovermode?: 'x' | 'y' | 'closest' | false | 'x unified' | 'y unified';
+    hoversort?: 'trace' | 'value descending' | 'value ascending';
     hoversubplots?: 'single' | 'overlaying' | 'axis';
     images?: LayoutImage[];
     legend?: Legend;
