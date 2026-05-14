@@ -1,14 +1,16 @@
 /**
- * Core GraphDiv types
+ * Internal GraphDiv types (not in public API)
  *
  * The `gd` parameter appears throughout the codebase and represents
  * the graph div element with plotly-specific properties attached.
  * Commonly referred to as `gd` in the codebase.
  */
 
+import type { Layout } from '../generated/schema';
 import type { Config } from './config';
-import type { CalcData, FullData, PlotData } from './data';
-import type { FullLayout, Layout } from './layout';
+import type { PlotData } from './data';
+import type { CalcData, FullData } from './data.internal';
+import type { FullLayout } from './layout.internal';
 
 /**
  * Graph context containing environment info (mirrors Config for internal storage)
