@@ -1,10 +1,9 @@
-'use strict';
-
-import type { AttributeMap, AttrsToType } from '../../types/lib/attributes';
+import type { AttributeMap } from '../../types/lib/attributes';
 import constants from './constants';
 
 /**
- * @generates ModeBar
+ * Modebar layout attributes.
+ * Consumer-facing types are generated from the schema by generate_schema_types.mjs.
  */
 const attributes = {
     editType: 'modebar',
@@ -50,7 +49,7 @@ const attributes = {
             'Please note that these buttons will only be shown if they are',
             'compatible with all trace types used in a graph.',
             'Similar to `config.modeBarButtonsToAdd` option.',
-            'This may include *' + constants.backButtons.join('*, *') + '*.'
+            `This may include *${constants.backButtons.join('*, *')}*.`
         ].join(' ')
     },
     remove: {
@@ -61,11 +60,9 @@ const attributes = {
         description: [
             'Determines which predefined modebar buttons to remove.',
             'Similar to `config.modeBarButtonsToRemove` option.',
-            'This may include *' + constants.foreButtons.join('*, *') + '*.'
+            `This may include *${constants.foreButtons.join('*, *')}*.`
         ].join(' ')
     }
 } as const satisfies AttributeMap;
-
-export type ModeBarAttributes = AttrsToType<typeof attributes>;
 
 export default attributes;

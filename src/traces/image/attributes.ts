@@ -1,24 +1,23 @@
-'use strict';
+import type { AttributeMap } from '../../types/lib/attributes';
 
-import type { AttributeMap, AttrsToType } from '../../types/lib/attributes';
-
-const baseAttrs = require('../../plots/attributes');
-const { zorder } = require('../scatter/attributes');
-const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
-const extendFlat = require('../../lib/extend').extendFlat;
-const { colormodel } = require('./constants');
+import baseAttrs from '../../plots/attributes';
+import { zorder } from '../scatter/attributes';
+import { hovertemplateAttrs, templatefallbackAttrs } from '../../plots/template_attributes';
+import { extendFlat } from '../../lib/extend';
+import { colormodel } from './constants';
 
 const cm = ['rgb', 'rgba', 'rgba256', 'hsl', 'hsla'] as const;
 const zminDesc: string[] = [];
 const zmaxDesc: string[] = [];
-for (let i = 0; i < cm.length; i++) {
-    const cr = colormodel[cm[i]];
-    zminDesc.push('For the `' + cm[i] + '` colormodel, it is [' + (cr.zminDflt || cr.min).join(', ') + '].');
-    zmaxDesc.push('For the `' + cm[i] + '` colormodel, it is [' + (cr.zmaxDflt || cr.max).join(', ') + '].');
+for (const name of cm) {
+    const cr: any = colormodel[name];
+    zminDesc.push(`For the \`${name}\` colormodel, it is [${(cr.zminDflt || cr.min).join(', ')}].`);
+    zmaxDesc.push(`For the \`${name}\` colormodel, it is [${(cr.zmaxDflt || cr.max).join(', ')}].`);
 }
 
 /**
- * @generates ImageTrace
+ * Image trace attributes.
+ * Consumer-facing types are generated from the schema by generate_schema_types.mjs.
  */
 const attributes = {
     source: {
@@ -138,9 +137,7 @@ const attributes = {
     hovertemplate: hovertemplateAttrs({}, { keys: ['z', 'color', 'colormodel'] }),
     hovertemplatefallback: templatefallbackAttrs(),
 
-    zorder
+    zorder: zorder as any
 } as const satisfies AttributeMap;
-
-export type ImageTraceAttributes = AttrsToType<typeof attributes>;
 
 export default attributes;
