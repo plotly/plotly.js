@@ -589,8 +589,8 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: ./.github/actions/setup-workspace
 
-      - name: Verify generated types are in sync with attribute sources
-        run: npm run gen:types:check
+      - name: Verify generated types are in sync with schema
+        run: npm run schema-typegen-diff-check
 
   # ============================================================
   # Standalone jobs (no dependencies on install-and-cibuild)
