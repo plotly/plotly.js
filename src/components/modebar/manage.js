@@ -144,9 +144,8 @@ function getButtonGroups(gd) {
     }
 
     // buttons common to all plot types
-    var commonGroup = ['toImage', 'uploadToCloud'];
-    if(context.showEditInChartStudio) commonGroup.push('editInChartStudio');
-    else if(context.showSendToCloud) commonGroup.push('sendDataToCloud');
+    var commonGroup = ['toImage'];
+    if(context.showSendToCloud) commonGroup.push('sendChartToCloud');
     addGroup(commonGroup);
 
     var zoomGroup = [];

@@ -201,8 +201,11 @@ function positionPlayWithData(gd, container) {
 }
 
 plots.sendDataToCloud = function(gd) {
-    var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
-    if(!baseUrl) return;
+    var destUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
+    if(!destUrl) {
+        console.error('No destination URL provided (plotlyServerURL is not set)');
+        return;
+    }
 
     gd.emit('plotly_beforeexport');
 
@@ -214,7 +217,7 @@ plots.sendDataToCloud = function(gd) {
     var hiddenform = hiddenformDiv
         .append('form')
         .attr({
-            action: baseUrl + '/external',
+            action: destUrl,
             method: 'post',
             target: '_blank'
         });
@@ -227,6 +230,7 @@ plots.sendDataToCloud = function(gd) {
         });
 
     hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
+    console.log(`sending chart object to ${destUrl}`);
     hiddenform.node().submit();
     hiddenformDiv.remove();
 
