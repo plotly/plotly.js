@@ -13,26 +13,34 @@ This directory documents the TypeScript conversion in progress.
 
 - TypeScript build infrastructure: ✅ done
 - Public type surface in `src/types/`: ✅ done
-- `AttributeMap` / `AttrsToType<T>` machinery: ✅ done
-- `.d.ts` generator (TS Compiler API + biome format): ✅ done
+- `AttributeMap` validation machinery: ✅ done
+- **Schema-based type generator**: ✅ done — all 49 trace types + layout + shared interfaces
 - Consumer entry point (`lib/index.d.ts`, wired via `package.json#types`): ✅ done
-- CI gates (`typecheck` + `generated-types-drift`): ✅ done
+- CI gates (`typecheck` + `schema-typegen-diff-check`): ✅ done
 - First attribute file converted (modebar): ✅ done
-- Conversion of remaining attribute files: 🚧 in progress
+- Conversion of remaining component attribute files: 🚧 in progress
 
 The published consumer surface lives at [`lib/index.d.ts`](../../lib/index.d.ts).
 This `src/types/` directory is the authoring location — internal types live
 here, public types are re-exported through `lib/index.d.ts` to consumers.
 
+## Generated types
+
+All 49 trace data interfaces, layout component interfaces (LayoutAxis,
+Legend, Scene, Annotation, Shape, Slider, UpdateMenu, etc.), the Layout
+interface itself, and shared sub-interfaces (Font, ColorBar, HoverLabel,
+etc.) are **auto-generated from `plot-schema.json`** by
+`tasks/generate_schema_types.mjs`. Run `npm run schema` to regenerate.
+The output lives at `src/types/generated/schema.d.ts`.
+
 ## How to help
 
-If you want to convert an attribute file:
+If you want to convert a component attribute file:
 
 1. Read [CONVERTING_ATTRIBUTES.md](CONVERTING_ATTRIBUTES.md)
-2. Pick a file from the priority list at the bottom of that doc
+2. Pick a component file from the priority list at the bottom of that doc
 3. Claim it in a PR description
 4. Follow the recipe
 5. Submit a PR
 
-Each conversion is a single self-contained commit and takes 10-60 minutes
-depending on file size.
+Each conversion is a single self-contained commit.

@@ -9,8 +9,9 @@ source of truth for both the runtime schema and the public TypeScript type.
 Today, attribute metadata lives in `src/.../attributes.js` files and the
 matching TypeScript types live separately in `src/types/`. They drift.
 
-After conversion, the `attributes.ts` file IS the schema, and the TypeScript
-type is *derived from it* via a mapped type. Both agree by construction.
+After conversion, the `attributes.ts` file is validated against `AttributeMap`
+at compile time, catching structural errors and typos before they reach the
+runtime schema.
 
 ## Recipe
 
@@ -24,9 +25,7 @@ Rename `src/<path>/attributes.js` → `src/<path>/attributes.ts`.
 At the top of the file, add:
 
 ```ts
-'use strict';
-
-import type { AttributeMap, AttrsToType } from '../../types/lib/attributes';
+import type { AttributeMap } from '../../types/lib/attributes';
 // (adjust the relative path so it points at src/types/lib/attributes)
 ```
 
@@ -35,38 +34,20 @@ import type { AttributeMap, AttrsToType } from '../../types/lib/attributes';
 Replace `module.exports = { ... };` with:
 
 ```ts
-/**
- * @generates ModeBar
- */
 const attributes = {
     // ... existing attribute definitions go here
 } as const satisfies AttributeMap;
 
-export type ModeBarAttributes = AttrsToType<typeof attributes>;
-
 export default attributes;
 ```
 
-Three things to notice:
+Two things to notice:
 
-- **`@generates ModeBar`** — declares the public type name. The `.d.ts`
-  generator uses this to name the output. Naming conventions:
-
-  | Category | Convention | Examples |
-  |---|---|---|
-  | Components | PascalCase of the concept | `ModeBar`, `ColorBar`, `Slider`, `RangeSelector` |
-  | Traces | `<TraceName>Data` | `PieData`, `SankeyData`, `CandlestickData` |
-  | Layout | `Layout` | |
-
-  If the generated type needs hand-written refinements, use a `*Generated`
-  suffix instead (e.g. `@generates ModeBarGenerated`) so the hand-written
-  file can extend it under the original public name. See
-  [Layering hand-written refinements](#layering-hand-written-refinements).
 - **`as const satisfies AttributeMap`** — `as const` preserves literal types
   like `values: ['v', 'h']`; `satisfies AttributeMap` validates structure
   without widening.
 - **`export default`** — runtime consumers (`require('./attributes').default`)
-  get the object. Co-existing `export type` exposes the derived TS type.
+  get the object.
 
 ### 3. Fix array literals and string literals
 
@@ -98,43 +79,19 @@ var attributes = require('./attributes').default;
 ESBuild handles the runtime; this update is just for the JS-level CommonJS
 interop pattern the project already uses for converted files.
 
-### 5. Run the type generator
+### 5. Verify the schema generator covers the type
 
-```bash
-npm run gen:types
-```
+Consumer-facing types for traces and layout components are generated from
+`plot-schema.json` by `tasks/generate_schema_types.mjs`. After converting
+an `attributes.ts` file, verify the corresponding type already exists in
+`src/types/generated/schema.d.ts`. If it does, no further action is needed
+for the type — the conversion's main value is type-checking the source.
 
-This walks all `attributes.ts` files, resolves their derived types via the
-TypeScript Compiler API, writes flattened declaration files into
-`src/types/generated/`, and formats the output with biome (so single
-quotes, line widths, and other style choices match the rest of the
-codebase).
+If the schema-generated type is missing properties that the hand-written
+type had, those properties are likely runtime-only internal state and
+should be added to the corresponding `Full*` interface instead.
 
-### 6. Replace the hand-written type in `src/types/`
-
-Find the corresponding hand-written type (likely in
-`src/types/core/layout.d.ts`, `src/types/core/data.d.ts`, or a component
-file). Replace its `interface` or `type` definition with a re-export:
-
-```ts
-// Before
-export interface ModeBar {
-    activecolor: Color;
-    add: ModeBarDefaultButtons | ModeBarDefaultButtons[];
-    // ...
-}
-
-// After
-// `ModeBar` is generated from src/components/modebar/attributes.ts.
-export type { ModeBar } from '../generated/components/modebar';
-```
-
-If the hand-written type was richer than the schema (e.g. a narrowed union
-where the schema says `string`, or extra non-schema fields), don't silently
-lose those — see
-[Layering hand-written refinements](#layering-hand-written-refinements).
-
-### 7. Verify
+### 6. Verify
 
 ```bash
 npm run typecheck         # zero errors
@@ -148,7 +105,7 @@ If the schema diff is non-empty, the attribute object's runtime shape
 changed somewhere — most often a missed `as const` or a typo. Compare
 character-by-character with the original `.js` file.
 
-### 8. Commit
+### 7. Commit
 
 ```bash
 git add src/<path>/attributes.ts \
@@ -166,10 +123,14 @@ See [`src/components/modebar/attributes.ts`](../components/modebar/attributes.ts
 for the canonical example. The full conversion changed:
 
 - `src/components/modebar/attributes.js` → `src/components/modebar/attributes.ts`
-  (with `as const satisfies AttributeMap` and `@generates ModeBar`)
+  (with `as const satisfies AttributeMap`)
 - `.default` added to `require('./attributes')` in `index.js` and `defaults.js`
-- The hand-written `ModeBar` interface in `src/types/core/layout.d.ts` was
-  replaced with a re-export from the generated file
+
+Note: Consumer-facing types for modebar (and all other layout components)
+are now generated from `plot-schema.json` by `tasks/generate_schema_types.mjs`,
+not from the individual `attributes.ts` files. The `attributes.ts` conversion
+still adds value by type-checking the source attribute definitions against
+`AttributeMap`.
 
 Schema output verified byte-identical (2547 bytes) before and after the
 conversion.
@@ -191,61 +152,30 @@ If you find yourself converting one of these, stop and ask.
 Almost certainly the hand-written one was wrong, narrowed for ergonomics, or
 based on an older schema. Order of operations:
 
-1. **Compare**. Print both: `npm run gen:types`, then look at the generated
-   `.d.ts` next to the hand-written one.
+1. **Compare**. Look at the schema-generated type in `schema.d.ts` next to
+   the hand-written one.
 2. **If schema is too loose** (e.g. `string` where the hand-written type had
    a typed union of valid values), check whether the schema's `values` array
    could be expanded. The schema is the authoritative truth — fix it there.
 3. **If the hand-written type had additional fields** not in the schema,
    they're probably internal/runtime-only and should stay hand-written
-   (move them to a separate `*Internal.d.ts` file or a parallel interface).
+   (add them to the corresponding `.internal.d.ts` file, e.g. `FullLayout`
+   in `layout.internal.d.ts`).
 4. **If the schema has fields the hand-written type lacked**, that's a free
    coverage win — accept the generated type.
 
-## Layering hand-written refinements
+## Schema-generated types
 
-When the generated type is complete, a simple re-export is all you need
-(see step 6). But when the hand-written type was richer than the schema —
-narrower unions, extra non-schema fields, etc. — use the `*Generated`
-suffix pattern so the hand-written file can extend the generated type.
+All 49 trace data interfaces, layout component interfaces, and the Layout
+interface itself are generated from `plot-schema.json` by
+`tasks/generate_schema_types.mjs` (run via `npm run schema`). Individual
+trace and layout `attributes.js` files do **not** need to be converted
+for their types to appear in the public API — the schema generator
+covers them automatically.
 
-First, change the `@generates` tag to use a `*Generated` suffix:
-
-```ts
-// src/components/modebar/attributes.ts
-/**
- * @generates ModeBarGenerated
- */
-```
-
-Then in the hand-written file, extend it under the original public name.
-The `extends` brings all schema-derived fields along; the body only
-contains what the schema can't express:
-
-```ts
-// src/types/core/layout.d.ts
-import type { ModeBarGenerated } from '../generated/components/modebar';
-
-export interface ModeBar extends ModeBarGenerated {
-    // Schema says `string`; narrow to the known button set.
-    remove: ModeBarDefaultButtons | ModeBarDefaultButtons[];
-
-    // Not in the schema — runtime-only convenience field.
-    _buttons?: HTMLElement[];
-}
-```
-
-Consumers still write `import type { ModeBar } from 'plotly.js'` — the
-`*Generated` intermediate is an internal detail.
-
-**When to refine vs. when to fix the schema:**
-
-- If a field's type is too wide (e.g. `string` instead of a union), prefer
-  adding `values: [...]` to the schema so the generated type is correct by
-  construction and the simple re-export path works.
-- If the refinement is about non-schema concerns (runtime-only fields,
-  narrowing for DX, overloaded method signatures), use the `*Generated`
-  extend pattern.
+Converting an `attributes.js` file to TypeScript is still valuable because
+it type-checks the source definitions against `AttributeMap`, catching
+typos and structural errors at compile time.
 
 ## Order of conversion (for parallel work)
 
@@ -262,38 +192,14 @@ Pick from this priority list. Lower-numbered items are smaller / simpler.
 > but actually just exports color constants. It doesn't follow the schema
 > pattern and shouldn't be converted with this recipe.
 
-### Tier 2: small traces
-- `src/traces/scatterpolargl/attributes.js`
-- `src/traces/histogram2dcontour/attributes.js`
-- `src/traces/candlestick/attributes.js`
-- `src/traces/funnelarea/attributes.js`
-- `src/traces/barpolar/attributes.js`
-
-### Tier 3: medium components and traces
+### Tier 2: medium components
 - Sliders, updatemenus, rangeselector, colorbar attribute files
-- `scatter3d`, `scattergl`, `surface`, `mesh3d`
 
-### Tier 4: large traces
-- `scatter` (the big one — many modes and shared subobjects)
-- `bar`, `histogram`, `box`, `violin`
+### Tier 3: layout
 - Layout itself
-
-### Tier 5: shared subobject attributes
-- `font_attributes`, `hover_label_attributes`, etc.
-- These are imported by many trace files; conversion needs care so the
-  imported types remain compatible.
 
 ## Working in parallel
 
-Multiple converters can work on different attribute files in parallel. The
-generator is idempotent — every run produces the same output for the same
-inputs — so merge conflicts are rare and limited to:
-
-- `src/types/generated/index.d.ts` (the aggregator) — auto-resolved by
-  rerunning `npm run gen:types` after merge
-- The hand-written type files when removing types — manual conflict if two
-  converters touch the same file
-
-Coordinate: claim a file in PR description before starting. Use Tier 1
-files for first-time converters to learn the recipe; reserve Tier 4 for
-experienced contributors.
+Multiple converters can work on different attribute files in parallel.
+Merge conflicts are rare and limited to the hand-written type files when
+removing types — manual conflict if two converters touch the same file.

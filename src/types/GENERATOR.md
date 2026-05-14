@@ -1,188 +1,91 @@
 # Type Generator Internals
 
-`tasks/generate_types.mjs` walks `src/**/attributes.ts` files and emits
-flat `.d.ts` declarations into `src/types/generated/`. This document
-describes how it works for maintainers who want to extend or debug it.
+The **schema-based generator** (`tasks/generate_schema_types.mjs`)
+reads `plot-schema.json` and emits all 49 trace data interfaces,
+layout component interfaces, the Layout interface, and shared
+sub-interfaces into `src/types/generated/schema.d.ts`.
+Run via `npm run schema`.
 
-## Pipeline
+## How it works
 
-```
-1. Discover    find all src/**/attributes.ts files
-2. Parse       create a TS Program with the project's tsconfig
-3. Extract     for each file, find `export type *Attributes = ...`
-4. Resolve     use TypeChecker to compute the concrete type
-5. Print       use ts.createPrinter to render members
-6. Rewrite     turn absolute import("...") paths into relative
-7. Hoist       inline import("...").Name → top-of-file `import type`
-8. Decide      object-literal type → `interface`, otherwise `type` alias
-9. Emit        write per-file .d.ts files + an aggregator index
-10. Format     `biome format --write` (chained from npm script, not the script itself)
-```
+`tasks/generate_schema_types.mjs` is called by `tasks/schema.mjs` after
+writing `plot-schema.json`. It walks both `schema.traces` and
+`schema.layout.layoutAttributes`, mapping each attribute's `valType`
+metadata to TypeScript types.
 
-## Key TypeScript Compiler API calls
+### Phase 1: Fingerprinting
 
-The trick to flattening a mapped type like `AttrsToType<typeof attributes>`
-is to convert the resolved `Type` back to a `TypeNode` (an AST node), then
-print that node:
+The generator fingerprints every container subtree across **all traces
+and layout** simultaneously. Two containers are considered identical when
+their sorted keys and leaf `valType`s produce the same fingerprint string.
+Containers that appear in 2+ locations become shared interfaces (Font,
+ColorBar, HoverLabel, etc.).
 
-```js
-const sym = checker.getSymbolAtLocation(typeAliasDecl.name);
-const type = checker.getDeclaredTypeOfSymbol(sym);
+### Phase 2: Shared interface extraction
 
-const typeNode = checker.typeToTypeNode(type, typeAliasDecl, nodeBuilderFlags);
-const text = printer.printNode(ts.EmitHint.Unspecified, typeNode, dummySourceFile);
-```
-
-Without `typeToTypeNode`, you'd get `checker.typeToString` output which is
-single-line and harder to format.
-
-## Node builder flags
+Shared containers are extracted as named interfaces. The generator uses
+override maps to ensure correct PascalCase naming:
 
 ```js
-ts.NodeBuilderFlags.NoTruncation
-| ts.NodeBuilderFlags.MultilineObjectLiterals
-| ts.NodeBuilderFlags.WriteClassExpressionAsTypeLiteral
-| ts.NodeBuilderFlags.UseFullyQualifiedType
-| ts.NodeBuilderFlags.InTypeAlias
+const SHARED_NAME_OVERRIDES = new Map([
+    ['colorbar', 'ColorBar'],
+    ['hoverlabel', 'HoverLabel'],
+    ['tickformatstops', 'TickFormatStops'],
+    ['stream', 'Stream'],
+    // ...
+]);
 ```
 
-- **NoTruncation** — print full union/intersection without `...` ellipsis
-- **MultilineObjectLiterals** — one property per line
-- **UseFullyQualifiedType** — emit `import("/abs/path").TypeName` for
-  external references, which we then rewrite to relative paths
-- **InTypeAlias** — render as if writing a type alias body
+Containers listed in `SHARED_NAME_OVERRIDES` bypass the `MIN_PROPERTIES`
+threshold, so small containers like `Stream` (2 properties, 49 occurrences)
+can be explicitly opted in as shared interfaces.
 
-## The `@generates` marker
+### Phase 3: Trace interfaces
 
-Each `attributes.ts` declares its canonical public type name via JSDoc:
+Each trace gets an interface (`ScatterData`, `BarData`, etc.) whose
+properties reference shared types where fingerprints match.
 
+### Phase 4: Layout types
+
+Layout generation handles three categories:
+
+- **Subplot containers** (`_isSubplotObj` flag) — grouped by target name
+  and merged into supersets. E.g., `xaxis` and `yaxis` both map to
+  `LayoutAxis` with the union of all their keys.
+- **Linked-to-array containers** (detected via `{items: {name: {...}}}`)
+  — extracted as named interfaces (Annotation, Shape, Slider, etc.).
+  In the Layout interface they appear as arrays: `annotations?: Annotation[]`.
+- **Regular containers** — inlined or referenced as shared types.
+
+The Layout interface includes subplot index signatures:
 ```ts
-/**
- * @generates ModeBar
- */
-const attributes = { ... } as const satisfies AttributeMap;
-export type ModeBarAttributes = AttrsToType<typeof attributes>;
+[key: `xaxis${number}`]: LayoutAxis;
+[key: `yaxis${number}`]: LayoutAxis;
+// etc.
 ```
 
-The generator regex-greps each source file for `@generates X` and uses `X`
-as the canonical name. This lets the generated type take a different name
-from the local `*Attributes` alias, which matters because the public API
-type names (`ModeBar`, `Slider`, `Layout`) follow a different convention
-than the per-attribute-file naming.
+### JSDoc descriptions
 
-## Import path rewriting
+Every property with a `description` field in the schema gets a single-line
+JSDoc comment in the output. Plotly's `*emphasis*` markers are preserved
+as-is (they render as italics in IDE hover tooltips). Any `*/` sequences
+in descriptions are escaped to prevent prematurely closing the comment.
 
-`UseFullyQualifiedType` produces output like
-`import("/abs/path/src/types/lib/common").Color`. The generator rewrites
-these to relative paths from the output file's directory:
-
-```js
-text = text.replace(/import\("([^"]+)"\)/g, (_, absPath) => {
-    let rel = path.relative(outputDir, absPath);
-    if (!rel.startsWith('.')) rel = './' + rel;
-    rel = rel.replace(/\.d\.ts$|\.ts$/, '');
-    return `import("${rel}")`;
-});
-```
-
-Result: `import("../../lib/common").Color` — portable across machines.
-
-## Import hoisting
-
-Inline `import("path").Name` references are valid TypeScript but read
-poorly. After path rewriting, the generator collects every reference and
-emits a single `import type` block at the top of the file:
-
-```ts
-// Before hoisting (TS Compiler default):
-export interface ModeBar {
-    bgcolor?: import("../../lib/common").Color;
-    color?: import("../../lib/common").Color;
-}
-
-// After hoisting:
-import type { Color } from '../../lib/common';
-
-export interface ModeBar {
-    bgcolor?: Color;
-    color?: Color;
-}
-```
-
-The hoister deduplicates names, groups by path, and sorts alphabetically
-within each import statement. A self-reference (where the imported name
-matches the type being declared) is left as inline `import("...")` to
-avoid colliding with the local declaration.
-
-## interface vs type alias
-
-When the resolved type is an object shape (`TypeLiteralNode`), the
-generator emits an `interface`:
-
-```ts
-export interface ModeBar { ... }
-```
-
-For unions, intersections, tuples, or primitives — anything that isn't
-an object literal — it falls back to a `type` alias:
-
-```ts
-export type ScatterMode = 'lines' | 'markers' | 'lines+markers';
-```
-
-Interfaces give better error messages, support declaration merging, and
-match the project's hand-written types. The discrimination happens via
-`ts.isTypeLiteralNode(typeNode)` before printing.
-
-## Why generated types are mutable
-
-The source attribute objects use `as const` for literal-type preservation,
-which makes `typeof attributes` deeply `Readonly<...>`. To prevent that
-`readonly` from leaking into the user-facing type, `AttrsToType<T>` uses
-the `-readonly` modifier in its mapped type:
-
-```ts
-export type AttrsToType<T> = {
-    -readonly [K in keyof T as K extends ReservedKey ? never : K]?: ...
-};
-```
-
-So consumers get plain mutable properties even though the source is
-locked-in literal types. This happens at the type level — the generator
-itself doesn't manipulate readonly modifiers.
-
-## Output structure
+### Output structure
 
 ```
-src/types/generated/
-├── index.d.ts                      # aggregator (re-exports each canonical name)
-└── components/
-    └── modebar.d.ts                # one file per converted attribute file
+src/types/generated/schema.d.ts
+├── Shared interfaces (Font, FontArray, ColorBar, HoverLabel, etc.)
+├── Trace interfaces (ScatterData, BarData, ... — 49 traces)
+├── Layout component interfaces (LayoutAxis, Legend, Scene, Annotation, etc.)
+└── Layout interface (references all of the above)
 ```
 
-The output directory mirrors the source: `src/components/modebar/attributes.ts`
-becomes `src/types/generated/components/modebar.d.ts`.
+Regenerate with `npm run schema`.
 
-## Aggregator
+## valType → TypeScript mapping
 
-The aggregator (`src/types/generated/index.d.ts`) is a one-line-per-type
-re-export:
-
-```ts
-export type { ModeBar } from './components/modebar';
-export type { Slider } from './components/sliders';
-// ... one line per canonical name, sorted alphabetically
-```
-
-It exists so consumers can `import type { ModeBar, Slider } from '../types/generated'`
-without knowing the file structure. In practice, the hand-written
-`src/types/core/*.d.ts` files re-export from the per-file generated
-declarations directly, so the aggregator is mostly for ad-hoc consumers.
-
-## valType → TypeScript
-
-The leaf-type mapping lives in `src/types/lib/attributes.d.ts` as the
-`ValTypeToTS<A>` mapped type. Summary:
+Summary:
 
 | valType | TS produced |
 |---|---|
@@ -205,15 +108,17 @@ The leaf-type mapping lives in `src/types/lib/attributes.d.ts` as the
 Reserved keys stripped from the output: `editType`, `role`,
 `_isLinkedToArray`, `_isSubplotObj`, `_arrayAttrRegexps`, `_deprecated`.
 
-## Extending the generator
+## Extending the schema generator
 
-### Adding a new valType
+### Adding a new layout container
 
-1. Add an interface to `src/types/lib/attributes.d.ts` (e.g. `interface FooAttr extends BaseAttrInfo { valType: 'foo'; ... }`)
-2. Add it to the `AttrInfo` union
-3. Add a branch to `ValTypeToTS<A>` mapping it to the desired TS type
-4. Run `npm run gen:types` to verify output
-5. Run `npm run typecheck` to ensure no regressions
+If a new subplot type or array container is added to the schema:
+
+1. Add an entry to `LAYOUT_CONTAINER_NAMES` (for subplots) or
+   `LAYOUT_ARRAY_NAMES` (for linked-to-array containers) in
+   `generate_schema_types.mjs`
+2. Run `npm run schema` to regenerate
+3. Run `npm run typecheck` to ensure no regressions
 
 ### Improving flaglist support
 
@@ -227,61 +132,34 @@ type Combinations<T extends readonly string[]> = ... // template literal magic
 This is doable but produces large unions (15+ members for `hoverinfo`).
 Consider whether the type-check cost is worth the autocomplete win.
 
-### Supporting nested attribute objects with metadata
-
-Some attribute files have shapes like:
-
-```ts
-{
-    role: 'object',
-    editType: 'calc',
-    foo: { valType: 'number', ... },
-    bar: { valType: 'string', ... },
-}
-```
-
-The mapped type's reserved-key stripping handles `role`/`editType` at the
-top level via `ReservedKey`. If a new metadata key gets introduced,
-add it to the `ReservedKey` union in `src/types/lib/attributes.d.ts`.
-
 ## Debugging
 
-If the generator emits `unknown` for a type that should be concrete:
+If the schema generator emits unexpected types:
 
 ```bash
-node tasks/generate_types.mjs   # see the generated output
-npm run typecheck               # see what tsc thinks the type is
+npm run schema    # regenerate and inspect schema.d.ts
+npm run typecheck # see what tsc thinks
 ```
 
-Inspect with the TS Compiler API directly:
+Inspect the schema directly:
 
 ```js
-node -e '
-const ts = require("typescript");
-const program = ts.createProgram(["path/to/attributes.ts"], { /* tsconfig opts */ });
-const checker = program.getTypeChecker();
-// ... probe symbols and types
-'
+const s = require("test/plot-schema.json");
+console.log(s.layout.layoutAttributes.xaxis);  // inspect layout attrs
+console.log(s.traces.scatter.attributes);       // inspect trace attrs
 ```
 
-The `formatDeclaration` function in `tasks/generate_types.mjs` can be
-invoked on any `TypeAliasDeclaration` to see what would be emitted.
+## Public API re-export check
+
+After generation, `tasks/schema.mjs` compares the exported interface
+names against `lib/index.d.ts`. Any generated type not re-exported
+triggers a warning in the console output. Types that are intentionally
+internal-only are listed in `PUBLIC_API_EXEMPTIONS` and shown separately
+as exempted rather than warned about.
 
 ## CI integration
 
-`npm run gen:types:check` runs the generator and then
-`git diff --exit-code src/types/generated/`. If the working tree differs,
-exit code 1 — meaning a developer changed an attributes.ts file but
-didn't commit the regenerated declarations.
-
-This is wired into `.github/workflows/ci.yml` as the `generated-types-drift`
-job, alongside a sibling `typecheck` job. Both gate on the root
-`install-and-cibuild` job and run in parallel on every PR.
-
-A drift failure typically means one of:
-
-- An `attributes.ts` file was edited without re-running `npm run gen:types`
-- Biome's formatter config changed and existing generated files would re-format
-- The generator itself changed in a way that affects existing output
-
-All three are legitimate signals worth investigating.
+`npm run schema-typegen-diff-check` runs the generator and then verifies the output
+hasn't drifted via `git diff --exit-code`. If the working tree differs,
+exit code 1 — meaning a developer changed the schema but didn't commit
+the regenerated declarations.

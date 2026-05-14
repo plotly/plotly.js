@@ -23,39 +23,30 @@ How TypeScript types are organized in plotly.js.
 │  Hand-written types      │  │  Generated types               │
 │  src/types/core/*.d.ts   │  │  src/types/generated/...       │
 │  src/types/lib/*.d.ts    │  │                                │
-│  src/types/components/   │  │  Derived from attributes.ts    │
-│  src/types/traces/       │  │  via AttrsToType<T>            │
-│  src/types/plots/        │  │                                │
+│                          │  │  schema.d.ts — from schema     │
+│                          │  │  (traces + layout + shared)    │
 └──────────────────────────┘  └────────────────────────────────┘
 ```
 
 `lib/index.d.ts` deliberately omits internal types (`FullLayout`,
-`GraphDiv`, the `AttributeMap`/`AttrsToType` machinery, `*Internal` shapes,
-the `TraceModule` lifecycle interface, etc.) so consumers see a clean
-public API. The internal types remain accessible to plotly.js's own code
-through the `src/types/` re-exports.
+`FullData`, `GraphDiv`, the `AttributeMap` machinery, etc.) so consumers
+see a clean public API. Internal types live in `.internal.d.ts` files and
+remain accessible to plotly.js's own code through the `src/types/`
+re-exports.
 
 The split:
 
 - **Generated types** are the single source of truth for everything in
-  Plotly's attribute schema. Layout, traces, components — anything you
-  configure when calling `Plotly.newPlot`.
+  Plotly's attribute schema.
+  - **`src/types/generated/schema.d.ts`** — all 49 trace data interfaces,
+    layout component interfaces (LayoutAxis, Legend, Scene, Annotation,
+    Shape, Slider, UpdateMenu, etc.), the Layout interface itself, plus
+    shared sub-interfaces (Font, ColorBar, HoverLabel, etc.).
+    Generated from `plot-schema.json` by `tasks/generate_schema_types.mjs`.
+    Run `npm run schema` to regenerate.
 - **Hand-written types** cover everything the schema doesn't describe:
   events, internal runtime state, public API function signatures,
-  utility types.
-
-When an `attributes.ts` file is converted, its generated type **replaces**
-the corresponding hand-written one. The hand-written file gets a re-export:
-
-```ts
-// src/types/core/layout.d.ts
-// `ModeBar` is generated from src/components/modebar/attributes.ts.
-export type { ModeBar } from '../generated/components/modebar';
-```
-
-Consumers don't notice — externally they still write
-`import { type ModeBar } from 'plotly.js'`. Internal callers still
-import from the same path inside `src/types/`.
+  utility types, behavioral types (ModeBarButton, Icon, etc.).
 
 ## Public vs. private (the underscore convention)
 
@@ -69,9 +60,9 @@ This split is reflected in the types:
 
 | User-facing | Internal | Where defined |
 |---|---|---|
-| `Layout` | `FullLayout` | Both hand-written today; `Layout` will be generated once its attributes files are converted |
-| `PlotData` | `FullData` | Same pattern |
-| (n/a) | `GraphDiv` (the `gd` param) | Hand-written — DOM element with `_fullLayout`, `_fullData`, `calcdata`, etc. |
+| `Layout` | `FullLayout` | `Layout` in `generated/schema.d.ts`; `FullLayout` in `core/layout.internal.d.ts` |
+| `PlotData` | `FullData` | `PlotData` in `core/data.d.ts`; `FullData` in `core/data.internal.d.ts` |
+| (n/a) | `GraphDiv` (the `gd` param) | `core/graph-div.internal.d.ts` — DOM element with `_fullLayout`, `_fullData`, `calcdata`, etc. |
 
 Internal types use index signatures (`[key: string]: any`) liberally to
 allow incremental migration without blocking. As `_` properties get
@@ -81,77 +72,66 @@ discovered during JS→TS conversion, add them to `FullLayout`/`FullData`/etc.
 
 ```
 src/types/
-├── index.d.ts              # main re-export hub
-├── core/                   # public + internal types for the core API
-│   ├── layout.d.ts         # Layout, FullLayout, axis/annotation/shape types
-│   ├── data.d.ts           # PlotData, FullData, marker/line types
-│   ├── config.d.ts         # Config, Edits, ToImgopts
-│   ├── events.d.ts         # PlotMouseEvent, PlotlyHTMLElement, etc.
-│   ├── api.d.ts            # public API function signatures (newPlot, etc.)
-│   ├── animation.d.ts      # Frame, Transition, AnimationOpts
-│   ├── template.d.ts       # Template, ValidateTemplateResult
-│   └── graph-div.d.ts      # GraphDiv (gd parameter), GraphContext
+├── index.d.ts                    # main re-export hub (public + internal)
+├── core/                         # hand-written types for the core API
+│   ├── api.d.ts                  # public API function signatures (newPlot, etc.)
+│   ├── animation.d.ts            # Frame, Transition, AnimationOpts
+│   ├── config.d.ts               # Config, Edits, ToImgopts
+│   ├── data.d.ts                 # PlotData, PlotMarker, ScatterLine, Data union
+│   ├── data.internal.d.ts        # CalcData, FullData
+│   ├── events.d.ts               # PlotMouseEvent, PlotlyHTMLElement, etc.
+│   ├── graph-div.internal.d.ts   # GraphDiv, GraphContext
+│   ├── layout.d.ts               # AxisName, ModeBar behavioral types, Template
+│   └── layout.internal.d.ts      # FullLayout, LayoutSize, SubplotInfo
 │
-├── components/             # public types for layout components
-│   ├── colorbar.d.ts
-│   ├── slider.d.ts
-│   ├── updatemenu.d.ts
-│   ├── rangeselector.d.ts
-│   └── common.d.ts
+├── lib/                          # primitives + the schema-extraction machinery
+│   ├── common.d.ts               # Color, Datum, TypedArray, MarkerSymbol, ...
+│   └── attributes.d.ts           # AttributeMap, AttrInfo (compile-time validation)
 │
-├── traces/                 # per-trace public types
-│   ├── box.d.ts            # BoxPlotData, BoxPlotMarker
-│   ├── pie.d.ts            # PieData, PieMarker, ...
-│   ├── sankey.d.ts
-│   ├── violin.d.ts
-│   ├── ohlc.d.ts
-│   ├── candlestick.d.ts
-│   └── common.d.ts         # internal TraceModule lifecycle
-│
-├── plots/                  # internal subplot types (PlotInfo, etc.)
-│   └── common.d.ts
-│
-├── lib/                    # primitives + the schema-extraction machinery
-│   ├── common.d.ts         # Color, Datum, TypedArray, MarkerSymbol, ...
-│   └── attributes.d.ts     # AttributeMap, AttrsToType<T>, ValTypeToTS
-│
-└── generated/              # output of `npm run gen:types`
-    ├── index.d.ts          # auto-generated re-export aggregator
-    ├── components/
-    │   └── modebar.d.ts    # one .d.ts per converted attributes.ts
-    └── (more as conversion proceeds)
+└── generated/                    # machine-generated types
+    └── schema.d.ts               # all traces + layout + shared types (from plot-schema.json)
 ```
 
-## How the generation works
+### The `.internal.d.ts` convention
+
+Files with the `.internal.d.ts` suffix contain types that are **not** part of the
+public API (not re-exported in `lib/index.d.ts`). These are internal runtime types
+used only within plotly.js itself — `FullLayout`, `FullData`, `GraphDiv`, etc.
+
+If a file has no `.internal` suffix, all its exports are public.
+
+## How schema type generation works
 
 ```
-src/components/modebar/attributes.ts
-    │
-    │ const attributes = { ... } as const satisfies AttributeMap;
-    │ export type ModeBarAttributes = AttrsToType<typeof attributes>;
-    │ export default attributes;
+test/plot-schema.json (runtime schema with all 49 traces + full layout)
     │
     ▼
-[ tasks/generate_types.mjs walks attributes.ts files ]
+[ tasks/generate_schema_types.mjs ]
     │
-    │ Uses TS Compiler API: checker.typeToTypeNode(checker.getDeclaredTypeOfSymbol(...))
-    │ Then ts.createPrinter().printNode() flattens the mapped type
-    │
-    ▼
-src/types/generated/components/modebar.d.ts
-    │ import type { Color } from '../../lib/common';
-    │
-    │ export interface ModeBar {
-    │     orientation?: 'v' | 'h';
-    │     bgcolor?: Color;
-    │     ...
-    │ }
+    │ 1. Fingerprint every container subtree across ALL traces AND layout
+    │ 2. Extract shared interfaces (Font, ColorBar, HoverLabel, etc.)
+    │ 3. Emit per-trace interfaces referencing shared types
+    │ 4. Emit layout component interfaces (LayoutAxis, Legend, Scene, etc.)
+    │ 5. Emit the Layout interface with subplot index signatures
     │
     ▼
-src/types/core/layout.d.ts re-exports `ModeBar` from generated/.
-src/types/index.d.ts re-exports from layout.d.ts (internal).
-lib/index.d.ts re-exports `ModeBar` to consumers (public).
+src/types/generated/schema.d.ts
+    │ export interface Font { ... }
+    │ export interface ColorBar { ... }
+    │ export interface ScatterData { ... }
+    │ export interface BarData { ... }
+    │ export interface LayoutAxis { ... }
+    │ export interface Legend { ... }
+    │ export interface Layout { ... }
+    │ // ... 49 traces + layout types + shared interfaces
+    │
+    ▼
+src/types/index.d.ts re-exports all types (internal).
+lib/index.d.ts re-exports public types to consumers.
 ```
+
+Regenerate with `npm run schema` (which rebuilds plot-schema.json
+and then runs the schema type generator).
 
 ## What's hand-written and stays that way
 
@@ -162,12 +142,12 @@ The schema doesn't describe:
 - **Public API function signatures** — `Plotly.newPlot`, `relayout`,
   `restyle`, etc. Live in `src/types/core/api.d.ts`.
 - **Internal runtime state** — `FullLayout._modules`, `GraphDiv._fullData`,
-  `_calcInverseTransform`, etc. Live alongside the public types but in
-  separate `Full*`/`*Internal` interfaces.
-- **Utility types the mapped type bottoms out on** — `Color`, `Datum`,
-  `TypedArray`, `MarkerSymbol`, `Pattern`, `ErrorBar`, etc. Live in
-  `src/types/lib/common.d.ts`. The generator emits `import("../../lib/common").Color`
-  references that resolve to these hand-written primitives.
+  `_calcInverseTransform`, etc. Live in `.internal.d.ts` files in `src/types/core/`.
+- **Behavioral types** — `ModeBarButton`, `ModeBarDefaultButtons`, `Icon`,
+  `ButtonClickEvent`, `Template`. These describe runtime behavior patterns
+  not captured in the attribute schema.
+- **Utility types** — `Color`, `Datum`, `TypedArray`, `MarkerSymbol`, etc.
+  Live in `src/types/lib/common.d.ts`. The generator references these types.
 
 ## Adding internal properties
 
@@ -175,7 +155,7 @@ When converting a JS file to TS and discovering an internal property like
 `fullLayout._someFlag`, add it to the corresponding `Full*` interface:
 
 ```ts
-// src/types/core/layout.d.ts
+// src/types/core/layout.internal.d.ts
 export interface FullLayout extends Layout {
     _modules?: any[];
     _someFlag?: boolean;   // add new ones here
@@ -191,4 +171,4 @@ type errors.
 
 - [SETUP.md](SETUP.md) — toolchain and npm scripts
 - [CONVERTING_ATTRIBUTES.md](CONVERTING_ATTRIBUTES.md) — the conversion recipe
-- [GENERATOR.md](GENERATOR.md) — internals of `tasks/generate_types.mjs`
+- [GENERATOR.md](GENERATOR.md) — internals of the type generators

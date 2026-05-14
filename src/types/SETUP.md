@@ -5,7 +5,7 @@ Quick reference for the TypeScript toolchain in plotly.js.
 ## What's installed
 
 - **TypeScript** (`typescript ^5.9.3`) — type checker only, never emits JS
-- **ts-node** (`^10.9.2`) — runs TS scripts directly (build helpers, generator)
+- **ts-node** (`^10.9.2`) — runs TS scripts directly (build helpers)
 - **@types/node**, **@types/d3** — third-party type definitions
 - esbuild handles `.ts` natively for bundling — no plugins needed
 
@@ -29,12 +29,10 @@ Both target ES2016. Strict mode is currently **off** (`strict: false`) for incre
 
 ```bash
 npm run typecheck         # tsc --noEmit, errors reported, no output
-npm run typecheck:watch   # incremental rechecking on change
+npm run typecheck-watch   # incremental rechecking on change
 
-npm run gen:types         # walk attributes.ts files → src/types/generated/, then biome format
-npm run gen:types:check   # generate then `git diff --exit-code` (CI drift check)
-
-npm run schema            # rebuild test/plot-schema.json from source attributes
+npm run schema            # rebuild test/plot-schema.json + regenerate types
+npm run schema-typegen-diff-check      # regenerate + verify no uncommitted drift in schema.d.ts
 npm run bundle            # esbuild → dist/plotly.js
 npm run build             # full production build
 ```
@@ -45,7 +43,7 @@ npm run build             # full production build
 
 ```bash
 # Terminal 1
-npm run typecheck:watch
+npm run typecheck-watch
 
 # Terminal 2 — bundle/dev server
 npm start
@@ -55,15 +53,14 @@ npm start
 
 ```bash
 npm run typecheck
-npm run gen:types       # if you converted an attribute file
 npm run schema          # if attribute files changed
 ```
 
 **CI** runs both checks as separate jobs (see `.github/workflows/ci.yml`):
 
 ```bash
-npm run typecheck         # validates the type system is internally consistent
-npm run gen:types:check   # fails if generated types are stale or unformatted
+npm run typecheck                     # validates the type system is internally consistent
+npm run schema-typegen-diff-check     # verifies generated types match the schema
 ```
 
 ## How esbuild handles `.ts`
@@ -89,4 +86,3 @@ For a codebase of ~750 source files:
 | `tsc --noEmit` cold | ~2-5s |
 | `tsc --noEmit --watch` incremental | ~100ms |
 | esbuild full bundle | ~450ms |
-| `npm run gen:types` | <1s for current converted set |
