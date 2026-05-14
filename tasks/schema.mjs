@@ -84,11 +84,15 @@ const PUBLIC_API_EXEMPTIONS = new Set([
     'ErrorY',
     'LegendGroupTitle',
     'Lighting',
+    'Line',
+    'Marker',
+    'Stream',
 ]);
 
 const pathToPublicTypes = path.join(constants.pathToLib, 'index.d.ts');
 const publicTypes = fs.readFileSync(pathToPublicTypes, 'utf-8');
-const missing = [...exportedNames].filter((name) => !publicTypes.includes(name)).sort();
+// Use word-boundary regex to avoid substring false positives (e.g. "Stream" matching "StreamtubeData")
+const missing = [...exportedNames].filter((name) => !new RegExp(`\\b${name}\\b`).test(publicTypes)).sort();
 if (missing.length > 0) {
     const unexempted = missing.filter((name) => !PUBLIC_API_EXEMPTIONS.has(name));
     const exempted = missing.filter((name) => PUBLIC_API_EXEMPTIONS.has(name));
