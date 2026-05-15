@@ -29,7 +29,7 @@ jobs:
         id: download-artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: dist-node22  # uploaded by publish-dist.yml > publish-dist-node-v22
+          name: dist  # uploaded by publish-dist.yml > publish-dist
           run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: temp-dist
