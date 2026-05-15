@@ -720,7 +720,13 @@ modeBarButtons.tooltip = {
 
                 var defaultTemplate = defaultTemplateParts.join('<br>');
 
-                var userTemplate = trace.tooltiptemplate || gd._fullData[traceIndex].tooltiptemplate || defaultTemplate; // Use user defined tooltiptemplate, or trace default if availabe
+                var userTemplate = trace.tooltiptemplate;
+                if(userTemplate === undefined || userTemplate === null || userTemplate === '') {
+                    userTemplate = gd._fullData[traceIndex].tooltiptemplate;
+                }
+                if(userTemplate === undefined || userTemplate === null || userTemplate === '') {
+                    userTemplate = defaultTemplate;
+                }
                 var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
                 addTooltip(gd, data, userTemplate, customStyle);
             };
@@ -790,8 +796,15 @@ function addTooltip(gd, data, userTemplate, customStyle) {
     var fullLayout = gd._fullLayout;
 
     if(pts && pts.xaxis && pts.yaxis && fullLayout) {
+        userTemplate = userTemplate || '';
+
         // Convert template to text using Plotly hovertemplate formatting method
-        var text = Lib.hovertemplateString(userTemplate, {}, fullLayout._d3locale, pts, {});
+        var text = Lib.hovertemplateString({
+            template: userTemplate,
+            labels: {},
+            locale: fullLayout._d3locale,
+            data: [pts]
+        });
 
         var x = pts.x;
         var y = (pts.y !== undefined && pts.y !== null) ? pts.y : pts.high; // fallback value for candlestick etc
