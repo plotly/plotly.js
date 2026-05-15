@@ -1,1 +1,0 @@
- - Switch from webpack to esbuild for fast builds & testing as well as allowing modern JavaScript beyond es5 [[#6909](https://github.com/plotly/plotly.js/pull/6909)]

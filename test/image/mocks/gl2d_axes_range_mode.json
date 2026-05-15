@@ -1,20 +1,20 @@
 {
- "data": [
-  {
-   "x": [2, 4, 6],
-   "y": [-3, 0, 3],
-   "type": "scattergl"
+  "data": [
+    {
+      "x": [2, 4, 6],
+      "y": [-3, 0, 3],
+      "type": "scattergl"
+    }
+  ],
+  "layout": {
+    "showlegend": false,
+    "xaxis": {
+      "autorange": true,
+      "rangemode": "tozero"
+    },
+    "yaxis": {
+      "autorange": true,
+      "rangemode": "nonnegative"
+    }
   }
- ],
- "layout": {
-  "showlegend": false,
-  "xaxis": {
-   "autorange": true,
-   "rangemode": "tozero"
-  },
-  "yaxis": {
-   "autorange": true,
-   "rangemode": "nonnegative"
-  }
- }
 }

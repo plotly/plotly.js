@@ -29,7 +29,7 @@ glob(path.join(pathToJasmineTests, '*.js')).then((files) => {
         var code = fs.readFileSync(file, 'utf-8');
         var bn = path.basename(file);
 
-        falafel(code, function(node) {
+        falafel(code, { ecmaVersion: 'latest' }, function(node) {
             if(isJasmineTestIt(node, tag)) {
                 if(file2cnt[bn]) {
                     file2cnt[bn]++;

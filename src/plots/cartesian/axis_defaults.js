@@ -100,7 +100,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
-    if(axType !== 'category' && !options.noHover) coerce('hoverformat');
+    if(!options.noHover) {
+        if(axType !== 'category') coerce('hoverformat');
+        if(!options.noUnifiedhovertitle) {
+            coerce('unifiedhovertitle.text');
+        }
+    }
 
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
@@ -149,9 +154,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         attributes: layoutAttributes
     });
 
-    // delete minor when no minor ticks or gridlines
+    // delete minor when no minor ticks or gridlines and no hidden minor ticks are needed
     if(
         hasMinor &&
+        containerOut.ticklabelindex == null &&
         !containerOut.minor.ticks &&
         !containerOut.minor.showgrid
     ) {
@@ -167,11 +173,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         (axType === 'category' || isMultiCategory) &&
         (containerOut.ticks || containerOut.showgrid)
     ) {
-        var ticksonDflt;
-        if(isMultiCategory) ticksonDflt = 'boundaries';
-        var tickson = coerce('tickson', ticksonDflt);
-        if(tickson === 'boundaries') {
+        if (isMultiCategory) {
+            coerce('tickson', 'boundaries');
             delete containerOut.ticklabelposition;
+        } else { // category axis
+            coerce('tickson');
         }
     }
 
@@ -332,6 +338,6 @@ var dayStrToNum = {
 function indexOfDay(v) {
     if(typeof v !== 'string') return;
     return dayStrToNum[
-        v.substr(0, 3).toLowerCase()
+        v.slice(0, 3).toLowerCase()
     ];
 }

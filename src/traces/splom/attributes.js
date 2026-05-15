@@ -3,8 +3,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
 var annotationAttrs = require('../../components/annotations/attributes');
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
@@ -14,15 +13,15 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-var markerLineAttrs = extendFlat(colorScaleAttrs('marker.line', {editTypeOverride: 'calc'}), {
-    width: extendFlat({}, scatterMarkerLineAttrs.width, {editType: 'calc'}),
+var markerLineAttrs = extendFlat(colorScaleAttrs('marker.line', { editTypeOverride: 'calc' }), {
+    width: extendFlat({}, scatterMarkerLineAttrs.width, { editType: 'calc' }),
     editType: 'calc'
 });
 
 var markerAttrs = extendFlat(colorScaleAttrs('marker'), {
     symbol: scatterMarkerAttrs.symbol,
     angle: scatterMarkerAttrs.angle,
-    size: extendFlat({}, scatterMarkerAttrs.size, {editType: 'markerSize'}),
+    size: extendFlat({}, scatterMarkerAttrs.size, { editType: 'markerSize' }),
     sizeref: scatterMarkerAttrs.sizeref,
     sizemin: scatterMarkerAttrs.sizemin,
     sizemode: scatterMarkerAttrs.sizemode,
@@ -51,7 +50,7 @@ function makeAxesValObject(axLetter) {
             'where N is the number of input dimensions.',
             'Note that, in case where `diagonal.visible` is false and `showupperhalf`',
             'or `showlowerhalf` is false, this splom trace will generate',
-            'one less x-axis and one less y-axis.',
+            'one less x-axis and one less y-axis.'
         ].join(' ')
     };
 }
@@ -85,7 +84,7 @@ module.exports = {
                 values: ['linear', 'log', 'date', 'category'],
                 editType: 'calc+clearAxisTypes',
                 description: [
-                    'Sets the axis type for this dimension\'s generated',
+                    "Sets the axis type for this dimension's generated",
                     'x and y axes.',
                     'Note that the axis `type` values set in layout take',
                     'precedence over this attribute.'
@@ -125,7 +124,7 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
+            "this trace's (x,y) coordinates."
         ].join(' ')
     }),
     hovertext: extendFlat({}, scatterGlAttrs.hovertext, {
@@ -139,6 +138,7 @@ module.exports = {
         editType: 'calc'
     },
     tooltiptemplate: tooltiptemplateAttrs(),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
@@ -153,9 +153,7 @@ module.exports = {
             valType: 'boolean',
             dflt: true,
             editType: 'calc',
-            description: [
-                'Determines whether or not subplots on the diagonal are displayed.'
-            ].join(' ')
+            description: ['Determines whether or not subplots on the diagonal are displayed.'].join(' ')
         },
 
         // type: 'scattergl' | 'histogram' | 'box' | 'violin'
@@ -169,19 +167,17 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         editType: 'calc',
-        description: [
-            'Determines whether or not subplots on the upper half',
-            'from the diagonal are displayed.'
-        ].join(' ')
+        description: ['Determines whether or not subplots on the upper half', 'from the diagonal are displayed.'].join(
+            ' '
+        )
     },
     showlowerhalf: {
         valType: 'boolean',
         dflt: true,
         editType: 'calc',
-        description: [
-            'Determines whether or not subplots on the lower half',
-            'from the diagonal are displayed.'
-        ].join(' ')
+        description: ['Determines whether or not subplots on the lower half', 'from the diagonal are displayed.'].join(
+            ' '
+        )
     },
 
     selected: {

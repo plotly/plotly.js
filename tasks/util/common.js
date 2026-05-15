@@ -6,53 +6,53 @@ function _throw(err) {
     throw err;
 }
 
-exports.execCmd = function(cmd, cb, errorCb) {
-    cb = cb ? cb : function() {};
-    errorCb = errorCb ? errorCb : function(err) { if(err) _throw(err); };
+exports.execCmd = function (cmd, cb, errorCb) {
+    cb = cb ? cb : function () {};
+    errorCb = errorCb
+        ? errorCb
+        : function (err) {
+              if (err) _throw(err);
+          };
 
-    exec(cmd, function(err) {
+    exec(cmd, function (err) {
         errorCb(err);
         cb();
-    })
-    .stdout.pipe(process.stdout);
+    }).stdout.pipe(process.stdout);
 };
 
-exports.writeFile = function(filePath, content, cb) {
-    fs.writeFile(filePath, content, function(err) {
-        if(err) _throw(err);
-        if(cb) cb();
+exports.writeFile = function (filePath, content, cb) {
+    fs.writeFile(filePath, content, function (err) {
+        if (err) _throw(err);
+        if (cb) cb();
     });
 };
 
-exports.doesDirExist = function(dirPath) {
+exports.doesDirExist = function (dirPath) {
     try {
-        if(fs.statSync(dirPath).isDirectory()) return true;
-    } catch(e) {
+        if (fs.statSync(dirPath).isDirectory()) return true;
+    } catch (e) {
         return false;
     }
 
     return false;
 };
 
-exports.doesFileExist = function(filePath) {
+exports.doesFileExist = function (filePath) {
     try {
-        if(fs.statSync(filePath).isFile()) return true;
-    } catch(e) {
+        if (fs.statSync(filePath).isFile()) return true;
+    } catch (e) {
         return false;
     }
 
     return false;
 };
 
-exports.formatTime = function(date) {
-    return [
-        date.toLocaleDateString(),
-        date.toLocaleTimeString()
-    ].join(' ');
+exports.formatTime = function (date) {
+    return [date.toLocaleDateString(), date.toLocaleTimeString()].join(' ');
 };
 
-exports.getTimeLastModified = function(filePath) {
-    if(!exports.doesFileExist(filePath)) {
+exports.getTimeLastModified = function (filePath) {
+    if (!exports.doesFileExist(filePath)) {
         throw new Error(filePath + ' does not exist');
     }
 
@@ -62,32 +62,37 @@ exports.getTimeLastModified = function(filePath) {
     return formattedTime;
 };
 
-exports.touch = function(filePath) {
+exports.touch = function (filePath) {
     fs.closeSync(fs.openSync(filePath, 'w'));
 };
 
-exports.throwOnError = function(err) {
-    if(err) _throw(err);
+exports.throwOnError = function (err) {
+    if (err) _throw(err);
 };
 
-exports.formatEnumeration = function(list) {
+exports.prependFile = (filePath, content) => {
+    const existing = fs.readFileSync(filePath, 'utf8');
+    fs.writeFileSync(filePath, content + existing);
+};
+
+exports.formatEnumeration = function (list) {
     var len = list.length;
 
-    return list.map(function(l, i) {
-        var ending;
+    return list
+        .map(function (l, i) {
+            var ending;
 
-        if(i === len - 2) ending = ' and';
-        else if(i < len - 1) ending = ',';
-        else ending = '';
+            if (i === len - 2) ending = ' and';
+            else if (i < len - 1) ending = ',';
+            else ending = '';
 
-        return '`' + l + '`' + ending;
-    }).join(' ');
+            return '`' + l + '`' + ending;
+        })
+        .join(' ');
 };
 
-exports.hasJasmineTestTag = function(node, tag) {
-    var re = tag ?
-        new RegExp('@' + tag + '\\s') :
-        new RegExp('@' + '\\w');
+exports.hasJasmineTestTag = function (node, tag) {
+    var re = tag ? new RegExp('@' + tag + '\\s') : new RegExp('@' + '\\w');
     return re.test(node.source());
 };
 
@@ -103,10 +108,10 @@ function isJasmineBase(block, node, tag) {
     );
 }
 
-exports.isJasmineTestIt = function(node, tag) {
+exports.isJasmineTestIt = function (node, tag) {
     return isJasmineBase('it', node, tag);
 };
 
-exports.isJasmineTestDescribe = function(node, tag) {
+exports.isJasmineTestDescribe = function (node, tag) {
     return isJasmineBase('describe', node, tag);
 };

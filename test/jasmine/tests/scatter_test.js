@@ -1361,6 +1361,50 @@ describe('stacked area', function() {
         })
         .then(done, done.fail);
     });
+
+    it('maintains correct fill elements when toggling trace visibility in stacked area charts', function(done) {
+        // Regression test for issue #7660
+        // When isolating, then hiding all, then showing all traces in a stacked area chart,
+        // fill elements should be correctly drawn for all traces.
+
+        function countNonEmptyFills() {
+            return d3SelectAll('.scatterlayer .js-fill').filter(function() {
+                var d = d3Select(this).attr('d');
+                return d && d !== 'M0,0Z';
+            }).size();
+        }
+
+        Plotly.newPlot(gd, [
+            {x: [1, 2, 3], y: [2, 1, 4], stackgroup: 'one', name: 'trace 0'},
+            {x: [1, 2, 3], y: [1, 1, 2], stackgroup: 'one', name: 'trace 1'},
+            {x: [1, 2, 3], y: [3, 0, 2], stackgroup: 'one', name: 'trace 2'}
+        ])
+        .then(function() {
+            // Initially all 3 traces should be visible with fills
+            expect(countNonEmptyFills()).toBe(3, 'should have 3 fill paths initially');
+
+            // Show trace 1 only
+            return Plotly.restyle(gd, 'visible', ['legendonly', true, 'legendonly']);
+        })
+        .then(function() {
+            // Verify only one fill is drawn (trace 1)
+            expect(countNonEmptyFills()).toBe(1, 'should have 1 fill path when isolating trace 1');
+            // Hide all traces
+            return Plotly.restyle(gd, 'visible', ['legendonly', 'legendonly', 'legendonly']);
+        })
+        .then(function() {
+            // Verify no fills are drawn
+            expect(countNonEmptyFills()).toBe(0, 'should have 0 fill paths when hiding all traces');
+            // Show all traces again
+            return Plotly.restyle(gd, 'visible', [true, true, true]);
+        })
+        .then(function() {
+            // Verify all 3 fills are drawn again
+            // This is the step that was failing in #7660
+            expect(countNonEmptyFills()).toBe(3, 'should have 3 fill paths after showing all traces again');
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('scatter hoverPoints', function() {

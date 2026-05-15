@@ -13,5 +13,7 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
 
     coerce('clickmode');
     coerce('hoversubplots');
+    coerce('hoveranywhere');
+    coerce('clickanywhere');
     return coerce('hovermode');
 };

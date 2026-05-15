@@ -1,17 +1,17 @@
 {
- "data": [
-  {
-   "type": "splom",
-   "dimensions": [
+  "data": [
     {
-     "values": [1, 2, 3],
-     "label": "A"
-    },
-    {
-     "values": [2, 5, 6],
-     "label": "B"
+      "type": "splom",
+      "dimensions": [
+        {
+          "values": [1, 2, 3],
+          "label": "A"
+        },
+        {
+          "values": [2, 5, 6],
+          "label": "B"
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

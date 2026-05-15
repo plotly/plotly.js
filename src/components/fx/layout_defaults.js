@@ -14,6 +14,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     if(hoverMode) {
         coerce('hoverdistance');
         coerce('spikedistance');
+        if(hoverMode.indexOf('unified') !== -1) {
+            coerce('hoversort');
+        }
     }
 
     var dragMode = coerce('dragmode');

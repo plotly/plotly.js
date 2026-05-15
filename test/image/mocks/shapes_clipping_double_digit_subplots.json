@@ -1,0 +1,153 @@
+{
+  "data": [
+    { "x": [1, 2, 3, 4], "y": [1, 2, 3, 2], "xaxis": "x", "yaxis": "y" },
+    { "x": [1, 2, 3, 4], "y": [2, 3, 2, 1], "xaxis": "x2", "yaxis": "y2" },
+    { "x": [1, 2, 3, 4], "y": [3, 1, 2, 3], "xaxis": "x3", "yaxis": "y3" },
+    { "x": [1, 2, 3, 4], "y": [1, 3, 2, 2], "xaxis": "x4", "yaxis": "y4" },
+    { "x": [1, 2, 3, 4], "y": [2, 1, 3, 1], "xaxis": "x5", "yaxis": "y5" },
+    { "x": [1, 2, 3, 4], "y": [3, 2, 1, 3], "xaxis": "x6", "yaxis": "y6" },
+    { "x": [1, 2, 3, 4], "y": [1, 2, 2, 3], "xaxis": "x7", "yaxis": "y7" },
+    { "x": [1, 2, 3, 4], "y": [2, 3, 1, 2], "xaxis": "x8", "yaxis": "y8" },
+    { "x": [1, 2, 3, 4], "y": [3, 1, 3, 1], "xaxis": "x9", "yaxis": "y9" },
+    { "x": [1, 2, 3, 4], "y": [1, 2, 3, 2], "xaxis": "x10", "yaxis": "y10" },
+    { "x": [1, 2, 3, 4], "y": [2, 3, 2, 1], "xaxis": "x11", "yaxis": "y11" },
+    { "x": [1, 2, 3, 4], "y": [3, 1, 2, 3], "xaxis": "x12", "yaxis": "y12" }
+  ],
+  "layout": {
+    "title": {
+      "text": "Domain-referenced shape clipping with >=10 subplots",
+      "subtitle": {
+        "text": "No shapes should extend beyond their subplot boundaries"
+      }
+    },
+    "showlegend": false,
+    "width": 800,
+    "height": 900,
+    "grid": { "rows": 4, "columns": 3, "pattern": "independent" },
+    "xaxis": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis": { "domain": [0.8, 0.95], "range": [1, 3] },
+    "xaxis2": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis2": { "domain": [0.8, 0.95], "range": [1, 3] },
+    "xaxis3": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis3": { "domain": [0.8, 0.95], "range": [1, 3] },
+    "xaxis4": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis4": { "domain": [0.55, 0.7], "range": [1, 3] },
+    "xaxis5": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis5": { "domain": [0.55, 0.7], "range": [1, 3] },
+    "xaxis6": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis6": { "domain": [0.55, 0.7], "range": [1, 3] },
+    "xaxis7": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis7": { "domain": [0.3, 0.45], "range": [1, 3] },
+    "xaxis8": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis8": { "domain": [0.3, 0.45], "range": [1, 3] },
+    "xaxis9": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis9": { "domain": [0.3, 0.45], "range": [1, 3] },
+    "xaxis10": { "domain": [0.05, 0.28], "range": [1, 4] },
+    "yaxis10": { "domain": [0.05, 0.2], "range": [1, 3] },
+    "xaxis11": { "domain": [0.38, 0.61], "range": [1, 4] },
+    "yaxis11": { "domain": [0.05, 0.2], "range": [1, 3] },
+    "xaxis12": { "domain": [0.71, 0.95], "range": [1, 4] },
+    "yaxis12": { "domain": [0.05, 0.2], "range": [1, 3] },
+    "shapes": [
+      {
+        "type": "rect",
+        "xref": "x",
+        "yref": "y domain",
+        "x0": 3.5,
+        "x1": 6,
+        "y0": 0,
+        "y1": 1,
+        "fillcolor": "rgba(255, 0, 0, 0.3)",
+        "line": { "color": "red", "width": 1 }
+      },
+      {
+        "type": "rect",
+        "xref": "x9",
+        "yref": "y9 domain",
+        "x0": 0,
+        "x1": 1.5,
+        "y0": 0,
+        "y1": 1,
+        "fillcolor": "rgba(0, 255, 0, 0.3)",
+        "line": { "color": "green", "width": 1 }
+      },
+      {
+        "type": "rect",
+        "xref": "x10",
+        "yref": "y10 domain",
+        "x0": 3.5,
+        "x1": 6,
+        "y0": 0,
+        "y1": 1,
+        "fillcolor": "rgba(0, 0, 255, 0.3)",
+        "line": { "color": "blue", "width": 2 }
+      },
+      {
+        "type": "rect",
+        "xref": "x11",
+        "yref": "y11 domain",
+        "x0": 3.5,
+        "x1": 6,
+        "y0": 0,
+        "y1": 1,
+        "fillcolor": "rgba(255, 165, 0, 0.3)",
+        "line": { "color": "orange", "width": 1 }
+      },
+      {
+        "type": "rect",
+        "xref": "x3 domain",
+        "yref": "y3",
+        "x0": 0,
+        "x1": 1,
+        "y0": 0,
+        "y1": 1.5,
+        "fillcolor": "rgba(215, 192, 203, 0.3)",
+        "line": { "color": "brown", "width": 2 }
+      },
+      {
+        "type": "rect",
+        "xref": "x5 domain",
+        "yref": "y5",
+        "x0": 0,
+        "x1": 1,
+        "y0": 2.5,
+        "y1": 5,
+        "fillcolor": "rgba(250, 220, 120, 0.3)",
+        "line": { "color": "yellow", "width": 2 }
+      },
+      {
+        "type": "rect",
+        "xref": "x10 domain",
+        "yref": "y10",
+        "x0": 0,
+        "x1": 1,
+        "y0": 2.5,
+        "y1": 5,
+        "fillcolor": "rgba(128, 0, 128, 0.3)",
+        "line": { "color": "purple", "width": 2 }
+      },
+      {
+        "type": "rect",
+        "xref": "x10 domain",
+        "yref": "y10",
+        "x0": 0.2,
+        "x1": 0.8,
+        "y0": 0,
+        "y1": 1.5,
+        "fillcolor": "rgba(0, 128, 0, 0.3)",
+        "line": { "color": "darkgreen", "width": 2 }
+      },
+      {
+        "type": "rect",
+        "xref": "x12 domain",
+        "yref": "y12",
+        "x0": 0.2,
+        "x1": 0.8,
+        "y0": 0,
+        "y1": 1.5,
+        "fillcolor": "rgba(0, 255, 255, 0.3)",
+        "line": { "color": "cyan", "width": 2 }
+      }
+    ]
+  }
+}

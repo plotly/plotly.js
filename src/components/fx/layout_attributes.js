@@ -78,6 +78,19 @@ module.exports = {
             'If false, hover interactions are disabled.'
         ].join(' ')
     },
+    hoversort: {
+        valType: 'enumerated',
+        values: ['trace', 'value descending', 'value ascending'],
+        dflt: 'trace',
+        editType: 'none',
+        description: [
+            'Determines the order of items shown in unified hover labels.',
+            'If *trace*, items are sorted by trace index.',
+            'If *value descending*, items are sorted by value from largest to smallest.',
+            'If *value ascending*, items are sorted by value from smallest to largest.',
+            'Only applies when `hovermode` is *x unified* or *y unified*.'
+        ].join(' ')
+    },
     hoversubplots: {
         valType: 'enumerated',
         values: ['single', 'overlaying', 'axis'],
@@ -89,6 +102,28 @@ module.exports = {
             'If *overlaying* all subplots using the main axis and occupying the same space are included.',
             'If *axis*, also include stacked subplots using the same axis',
             'when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.',
+        ].join(' ')
+    },
+    hoveranywhere: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'none',
+        description: [
+            'If true, `plotly_hover` events will fire for any cursor position',
+            'within the plot area, not just over traces.',
+            'When the cursor is not over a trace, the event will have an empty `points` array',
+            'but will include `xvals` and `yvals` with cursor coordinates in data space.'
+        ].join(' ')
+    },
+    clickanywhere: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'none',
+        description: [
+            'If true, `plotly_click` events will fire for any click position',
+            'within the plot area, not just over traces.',
+            'When clicking where there is no trace data, the event will have an empty `points` array',
+            'but will include `xvals` and `yvals` with click coordinates in data space.'
         ].join(' ')
     },
     hoverdistance: {
@@ -163,6 +198,15 @@ module.exports = {
                 'an integer >3 will show the whole name if it is less than that',
                 'many characters, but if it is longer, will truncate to',
                 '`namelength - 3` characters and add an ellipsis.'
+            ].join(' ')
+        },
+        showarrow: {
+            valType: 'boolean',
+            dflt: true,
+            editType: 'none',
+            description: [
+                'Sets whether or not to show the hover label arrow/triangle',
+                'pointing to the data point.'
             ].join(' ')
         },
 

@@ -1,32 +1,32 @@
 {
- "data": [
-  {
-   "type": "parcats",
-   "dimensions": [
+  "data": [
     {
-     "label": "A",
-     "values": [1, 2, 3],
-     "categoryorder": "category ascending"
-    },
-    {
-     "label": "B",
-     "values": [9, 10, 11],
-     "categoryorder": "category ascending"
+      "type": "parcats",
+      "dimensions": [
+        {
+          "label": "A",
+          "values": [1, 2, 3],
+          "categoryorder": "category ascending"
+        },
+        {
+          "label": "B",
+          "values": [9, 10, 11],
+          "categoryorder": "category ascending"
+        }
+      ]
     }
-   ]
+  ],
+  "layout": {
+    "width": 320,
+    "height": 200,
+    "margin": {
+      "t": 20,
+      "b": 20,
+      "l": 20,
+      "r": 20
+    },
+    "font": {
+      "size": 16
+    }
   }
- ],
- "layout": {
-  "width": 320,
-  "height": 200,
-  "margin": {
-   "t": 20,
-   "b": 20,
-   "l": 20,
-   "r": 20
-  },
-  "font": {
-   "size": 16
-  }
- }
 }

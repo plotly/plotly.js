@@ -179,7 +179,8 @@ describe('Fx defaults', function() {
                 shadow: 'auto',
             },
             align: 'auto',
-            namelength: 15
+            namelength: 15,
+            showarrow: true,
         });
 
         expect(out.data[1].hoverlabel).toEqual({
@@ -197,7 +198,8 @@ describe('Fx defaults', function() {
                 shadow: 'auto',
             },
             align: 'auto',
-            namelength: 15
+            namelength: 15,
+            showarrow: true,
         });
 
         expect(out.layout.annotations[0].hoverlabel).toEqual({
@@ -232,6 +234,38 @@ describe('Fx defaults', function() {
             }
         });
     });
+
+    it('should coerce hoversort for x unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'x unified',
+            hoversort: 'value descending'
+        });
+        expect(out.layout.hoversort).toBe('value descending');
+    });
+
+    it('should coerce hoversort for y unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'y unified',
+            hoversort: 'value ascending'
+        });
+        expect(out.layout.hoversort).toBe('value ascending');
+    });
+
+    it('should default hoversort to trace in unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'x unified'
+        });
+        expect(out.layout.hoversort).toBe('trace');
+    });    
+
+    it('should not coerce hoversort for non-unified hovermode', function() {
+        var out = _supply([{type: 'bar', y: [1, 2, 3]}], {
+            hovermode: 'closest',
+            hoversort: 'value descending'
+        });
+        expect(out.layout.hoversort).toBeUndefined();
+    });
+
 });
 
 describe('relayout', function() {

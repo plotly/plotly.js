@@ -338,6 +338,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         });
 
         coerce('fixedrange');
+        coerce('modebardisable');
 
         addMissingMatchedAxis();
 
@@ -366,6 +367,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
 
         coerce('fixedrange');
+        coerce('modebardisable');
     }
 
     for(i = 0; i < yNames.length; i++) {
@@ -378,6 +380,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var fixedRangeDflt = getComponentMethod('rangeslider', 'isVisible')(anchoredAxis);
 
         coerce('fixedrange', fixedRangeDflt);
+        coerce('modebardisable');
     }
 
     // Finally, handle scale constraints and matching axes.

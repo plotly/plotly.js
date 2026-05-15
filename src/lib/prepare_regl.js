@@ -6,7 +6,7 @@ var showNoWebGlMsg = require('./show_no_webgl_msg');
 // files corresponding to regl trace modules
 // so that bundles with non-regl only don't include
 // regl and all its bytes.
-var createRegl = require('regl');
+var createRegl = require('@plotly/regl');
 
 /**
  * Idempotent version of createRegl. Create regl instances

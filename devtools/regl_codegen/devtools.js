@@ -158,5 +158,3 @@ function handleOnLoad() {
         window.close();
     });
 }
-
-module.exports = Tabs;

@@ -11,12 +11,12 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     }
     coerce('source');
     // sanitize source to only allow for data URI representing images
-    if(traceOut.source && !traceOut.source.match(dataUri)) delete traceOut.source;
+    if (traceOut.source && !traceOut.source.match(dataUri)) delete traceOut.source;
     traceOut._hasSource = !!traceOut.source;
 
     var z = coerce('z');
     traceOut._hasZ = !(z === undefined || !z.length || !z[0] || !z[0].length);
-    if(!traceOut._hasZ && !traceOut._hasSource) {
+    if (!traceOut._hasZ && !traceOut._hasSource) {
         traceOut.visible = false;
         return;
     }
@@ -27,12 +27,12 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('dy');
 
     var cm;
-    if(traceOut._hasZ) {
+    if (traceOut._hasZ) {
         coerce('colormodel', 'rgb');
         cm = constants.colormodel[traceOut.colormodel];
-        coerce('zmin', (cm.zminDflt || cm.min));
-        coerce('zmax', (cm.zmaxDflt || cm.max));
-    } else if(traceOut._hasSource) {
+        coerce('zmin', cm.zminDflt || cm.min);
+        coerce('zmax', cm.zmaxDflt || cm.max);
+    } else if (traceOut._hasSource) {
         traceOut.colormodel = 'rgba256';
         cm = constants.colormodel[traceOut.colormodel];
         traceOut.zmin = cm.zminDflt;
@@ -43,6 +43,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
 
     traceOut._length = null;
 

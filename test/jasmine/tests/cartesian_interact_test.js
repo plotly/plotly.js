@@ -827,7 +827,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 
     describe('updates matching axes', function() {
-        var TOL = 1.5;
+        var TOL = 1;
         var eventData;
 
         function assertRanges(msg, exp) {

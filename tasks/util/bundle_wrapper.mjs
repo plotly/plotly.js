@@ -1,13 +1,11 @@
 import fs from 'fs';
 import fsExtra from 'fs-extra';
-import prependFile from 'prepend-file';
 
 import { build } from 'esbuild';
 
-import esbuildConfig from '../../esbuild-config.js';
-import browserifyAdapter from 'esbuild-plugin-browserify-adapter';
+import { esbuildConfig } from '../../esbuild-config.js';
+import esbuildPluginStripMeta from '../../tasks/compress_attributes.js';
 
-import transform from '../../tasks/compress_attributes.js';
 import common from './common.js';
 
 var basePlugins = esbuildConfig.plugins;
@@ -30,39 +28,29 @@ var basePlugins = esbuildConfig.plugins;
 export default async function _bundle(pathToIndex, pathToBundle, opts, cb) {
     opts = opts || {};
 
-    var config = {...esbuildConfig};
+    var config = { ...esbuildConfig };
 
     config.entryPoints = [pathToIndex];
     config.outfile = pathToBundle;
     config.minify = !!opts.minify;
 
-    if(!opts.noCompressAttributes) {
-        config.plugins = basePlugins.concat([browserifyAdapter(transform)]);
+    if (!opts.noCompressAttributes) {
+        config.plugins = basePlugins.concat([esbuildPluginStripMeta]);
     }
 
-    if(opts.noPlugins) config.plugins = [];
+    if (opts.noPlugins) config.plugins = [];
 
     await build(config);
 
     addWrapper(pathToBundle);
 
-    if(pathToBundle.endsWith('.js')) {
-        var len = pathToBundle.length;
-        var cssOutput = pathToBundle.slice(0, len - 3) + '.css';
-
-        // remove unwanted css file
-        if (fs.existsSync(cssOutput)) {
-            fs.unlinkSync(cssOutput);
-        }
-    }
-
-    if(cb) cb();
+    if (cb) cb();
 }
 
 // Until https://github.com/evanw/esbuild/pull/513 is merged
 // Thanks to https://github.com/prantlf and https://github.com/birkskyum
-function addWrapper(path){
-    prependFile.sync(
+function addWrapper(path) {
+    common.prependFile(
         path,
         [
             '(',
@@ -74,18 +62,8 @@ function addWrapper(path){
             '  }',
             '} (typeof self !== "undefined" ? self : this, () => {',
             ''
-        ].join('\n'),
-        common.throwOnError
+        ].join('\n')
     );
 
-    fsExtra.appendFile(
-        path,
-        [
-            '',
-            'window.Plotly = Plotly;',
-            'return Plotly;',
-            '}));',
-        ].join('\n'),
-        common.throwOnError
-    );
+    fsExtra.appendFile(path, ['', 'window.Plotly = Plotly;', 'return Plotly;', '}));'].join('\n'), common.throwOnError);
 }

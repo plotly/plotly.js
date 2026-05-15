@@ -43,9 +43,10 @@ proto.update = function(graphInfo, buttons) {
     var modeBarId = 'modebar-' + fullLayout._uid;
 
     this.element.setAttribute('id', modeBarId);
-    this._uid = modeBarId;
+    this.element.setAttribute('role', 'toolbar');
 
-    this.element.className = 'modebar';
+    this._uid = modeBarId;
+    this.element.className = 'modebar modebar--custom';
     if(context.displayModeBar === 'hover') this.element.className += ' modebar--hover ease-bg';
 
     if(fullLayout.modebar.orientation === 'v') {
@@ -60,9 +61,6 @@ proto.update = function(graphInfo, buttons) {
     document.querySelectorAll(groupSelector).forEach(function(group) {
         group.style.backgroundColor = style.bgcolor;
     });
-    // set styles on hover using event listeners instead of inline CSS that's not allowed by strict CSP's
-    Lib.setStyleOnHover('#' + modeBarId + ' .modebar-btn', '.active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color);
-
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
     var needsNewLogo = (this.hasLogo !== context.displaylogo);
@@ -92,6 +90,10 @@ proto.update = function(graphInfo, buttons) {
     }
 
     this.updateActiveButton();
+
+    // set styles on hover using event listeners instead of inline CSS that's not allowed by strict CSP's
+    Lib.setStyleOnHover('#' + modeBarId + ' .modebar-btn', '.active', '.icon path', 'fill: ' + style.activecolor, 'fill: ' + style.color, this.element);
+
 };
 
 proto.updateButtons = function(buttons) {
@@ -144,8 +146,9 @@ proto.createGroup = function() {
  */
 proto.createButton = function(config) {
     var _this = this;
-    var button = document.createElement('a');
+    var button = document.createElement('button');
 
+    button.setAttribute('type', 'button');
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
@@ -154,7 +157,10 @@ proto.createButton = function(config) {
     // for localization: allow title to be a callable that takes gd as arg
     else if(typeof title === 'function') title = title(this.graphInfo);
 
-    if(title || title === 0) button.setAttribute('data-title', title);
+    if(title || title === 0) {
+        button.setAttribute('data-title', title)
+        button.setAttribute("aria-label", title)
+    };
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
 

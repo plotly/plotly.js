@@ -1,24 +1,24 @@
 {
- "data": [
-  {
-   "x": [0],
-   "y": [0],
-   "z": [1e-8],
-   "type": "scatter3d",
-   "error_z": {
-    "array": [0.9e-8],
-    "type": "data",
-    "visible": true
-   }
+  "data": [
+    {
+      "x": [0],
+      "y": [0],
+      "z": [1e-8],
+      "type": "scatter3d",
+      "error_z": {
+        "array": [0.9e-8],
+        "type": "data",
+        "visible": true
+      }
+    }
+  ],
+  "layout": {
+    "scene": {
+      "zaxis": {
+        "type": "log"
+      }
+    },
+    "width": 800,
+    "height": 800
   }
- ],
- "layout": {
-  "scene": {
-   "zaxis": {
-    "type": "log"
-   }
-  },
-  "width": 800,
-  "height": 800
- }
 }

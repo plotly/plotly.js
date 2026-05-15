@@ -168,7 +168,7 @@ var attrs = module.exports = overrideAll({
                 'GeoJSON geometries.',
                 'With `sourcetype` set to *vector*, the following values are allowed:',
                 ' *circle*, *line*, *fill* and *symbol*.',
-                'With `sourcetype` set to *raster* or `*image*`, only the *raster* value is allowed.'
+                'With `sourcetype` set to *raster* or *image*, only the *raster* value is allowed.'
             ].join(' ')
         },
 
@@ -284,7 +284,7 @@ var attrs = module.exports = overrideAll({
                 dflt: 'marker',
                 description: [
                     'Sets the symbol icon image (map.layer.layout.icon-image).',
-                    'Full list: https://www.map.com/maki-icons/'
+                    'Full list: https://www.mapbox.com/maki-icons/'
                 ].join(' ')
             },
             iconsize: {

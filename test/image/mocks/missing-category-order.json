@@ -1,30 +1,30 @@
 {
- "data": [
-  {
-   "type": "histogram",
-   "x": ["A", "A", "B"]
-  },
-  {
-   "type": "histogram",
-   "x": ["A", "A", "C"]
-  },
-  {
-   "type": "histogram",
-   "x": ["B", "B"]
+  "data": [
+    {
+      "type": "histogram",
+      "x": ["A", "A", "B"]
+    },
+    {
+      "type": "histogram",
+      "x": ["A", "A", "C"]
+    },
+    {
+      "type": "histogram",
+      "x": ["B", "B"]
+    }
+  ],
+  "layout": {
+    "barmode": "stack",
+    "xaxis": {
+      "categoryorder": "total descending"
+    },
+    "width": 300,
+    "height": 200,
+    "margin": {
+      "t": 40,
+      "b": 20,
+      "l": 20,
+      "r": 20
+    }
   }
- ],
- "layout": {
-  "barmode": "stack",
-  "xaxis": {
-   "categoryorder": "total descending"
-  },
-  "width": 300,
-  "height": 200,
-  "margin": {
-   "t": 40,
-   "b": 20,
-   "l": 20,
-   "r": 20
-  }
- }
 }

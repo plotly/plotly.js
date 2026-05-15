@@ -49,9 +49,9 @@ module.exports = templatedArray('annotation', {
         description: [
             'Sets the text associated with this annotation.',
             'Plotly uses a subset of HTML tags to do things like',
-            'newline (<br>), bold (<b></b>), italics (<i></i>),',
-            'hyperlinks (<a href=\'...\'></a>). Tags <em>, <sup>, <sub>, <s>, <u>',
-            '<span> are also supported.'
+            'newline (`<br>`), bold (`<b></b>`), italics (`<i></i>`),',
+            'hyperlinks (`<a href=\'...\'></a>`). Tags `<em>`, `<sup>`,',
+            '`<sub>`, `<s>`, `<u>`, and `<span>` are also supported.'
         ].join(' ')
     },
     textangle: {

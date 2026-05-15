@@ -1,29 +1,29 @@
 {
- "data": [
-  {
-   "xbins": {
-    "start": -1.5,
-    "end": 4.5,
-    "size": 1
-   },
-   "marker": {
-    "cmin": 0,
-    "colorscale": "Earth",
-    "color": [0, 1, 2, 3, 4, 5],
-    "cmax": 5
-   },
-   "x": [0, 1, 1, 2, 2, 2, 3, 3, 4],
-   "texttemplate": "%{y}",
-   "textposition": "inside",
-   "textfont": {
-    "size": 64
-   },
-   "type": "histogram"
+  "data": [
+    {
+      "xbins": {
+        "start": -1.5,
+        "end": 4.5,
+        "size": 1
+      },
+      "marker": {
+        "cmin": 0,
+        "colorscale": "Earth",
+        "color": [0, 1, 2, 3, 4, 5],
+        "cmax": 5
+      },
+      "x": [0, 1, 1, 2, 2, 2, 3, 3, 4],
+      "texttemplate": "%{y}",
+      "textposition": "inside",
+      "textfont": {
+        "size": 64
+      },
+      "type": "histogram"
+    }
+  ],
+  "layout": {
+    "barcornerradius": "50%",
+    "height": 500,
+    "width": 700
   }
- ],
- "layout": {
-  "barcornerradius": "50%",
-  "height": 500,
-  "width": 700
- }
 }

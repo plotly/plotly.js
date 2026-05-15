@@ -221,6 +221,12 @@ var configAttributes = {
         ].join(' ')
     },
 
+    displayNotifier: {
+        valType: 'boolean',
+        dflt: true,
+        description: 'Determines whether or not notifier is displayed.'
+    },
+
     showLink: {
         valType: 'boolean',
         dflt: false,
@@ -369,7 +375,8 @@ var configAttributes = {
     topojsonURL: {
         valType: 'string',
         noBlank: true,
-        dflt: 'https://cdn.plot.ly/',
+        // TODO: Switch the default back to 'https://cdn.plot.ly/' once we remove the legacy maps
+        dflt: 'https://cdn.plot.ly/un/',
         description: [
             'Set the URL to topojson used in geo charts.',
             'By default, the topojson files are fetched from cdn.plot.ly.',

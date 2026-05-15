@@ -252,7 +252,7 @@ describe('Plotly.Snapshot', function() {
         describe('should handle quoted style properties', function() {
             function checkURL(actual, msg) {
                 // which is enough tot check that toSVG did its job right
-                expect((actual || '').substr(0, 6)).toBe('url(\"#', msg);
+                expect((actual || '').slice(0, 6)).toBe('url(\"#', msg);
             }
 
             it('- marker-gradient case', function(done) {

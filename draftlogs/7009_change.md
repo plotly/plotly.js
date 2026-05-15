@@ -1,1 +1,0 @@
-- Make offsetgroup work with barmode 'stacked' and 'relative' for bar traces [[#7009](https://github.com/plotly/plotly.js/pull/7009)]

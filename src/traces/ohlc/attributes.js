@@ -3,7 +3,7 @@
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
 var annotationAttrs = require('../../components/annotations/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
@@ -17,7 +17,7 @@ var lineAttrs = scatterAttrs.line;
 function directionAttrs(lineColorDefault) {
     return {
         line: {
-            color: extendFlat({}, lineAttrs.color, {dflt: lineColorDefault}),
+            color: extendFlat({}, lineAttrs.color, { dflt: lineColorDefault }),
             width: lineAttrs.width,
             dash: dash,
             editType: 'style'
@@ -27,7 +27,6 @@ function directionAttrs(lineColorDefault) {
 }
 
 module.exports = {
-
     xperiod: scatterAttrs.xperiod,
     xperiod0: scatterAttrs.xperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
@@ -37,10 +36,7 @@ module.exports = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: [
-            'Sets the x coordinates.',
-            'If absent, linear coordinate will be generated.'
-        ].join(' ')
+        description: 'Sets the x coordinates. If absent, linear coordinate will be generated.'
     },
 
     open: {
@@ -101,7 +97,7 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to',
-            'this trace\'s sample points.'
+            "this trace's sample points."
         ].join(' ')
     },
     hovertext: {
@@ -111,17 +107,20 @@ module.exports = {
         editType: 'calc',
         description: 'Same as `text`.'
     },
-
+    hovertemplate: hovertemplateAttrs(
+        {},
+        {
+            keys: ['open', 'high', 'low', 'close']
+        }
+    ),
+    hovertemplatefallback: templatefallbackAttrs(),
     tickwidth: {
         valType: 'number',
         min: 0,
         max: 0.5,
         dflt: 0.3,
         editType: 'calc',
-        description: [
-            'Sets the width of the open/close tick marks',
-            'relative to the *x* minimal interval.'
-        ].join(' ')
+        description: 'Sets the width of the open/close tick marks relative to the *x* minimal interval.'
     },
 
     hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
@@ -130,8 +129,8 @@ module.exports = {
             dflt: false,
             editType: 'style',
             description: [
-                'Show hover information (open, close, high, low) in',
-                'separate labels.'
+                'Show hover information (open, close, high, low) in separate labels, rather than a single unified label.',
+                'Default: *false*. When set to *true*, `hovertemplate` is ignored.'
             ].join(' ')
         }
     }),

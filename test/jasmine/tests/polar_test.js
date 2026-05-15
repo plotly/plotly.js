@@ -478,11 +478,11 @@ describe('Test relayout on polar subplots:', function() {
         })
         .then(function() {
             assertTitle('yo', true);
-            return Plotly.relayout(gd, 'polar.radialaxis.title', '');
+            return Plotly.relayout(gd, 'polar.radialaxis.title.text', '');
         })
         .then(function() {
             assertTitle('', true);
-            return Plotly.relayout(gd, 'polar.radialaxis.title', 'yo2');
+            return Plotly.relayout(gd, 'polar.radialaxis.title.text', 'yo2');
         })
         .then(function() {
             assertTitle('yo2', true);
@@ -494,7 +494,7 @@ describe('Test relayout on polar subplots:', function() {
         })
         .then(function() {
             assertTitle('yo2', false);
-            return Plotly.relayout(gd, 'title', 'dummy');
+            return Plotly.relayout(gd, 'title.text', 'dummy');
         })
         .then(function() {
             assertTitle('yo2', false);

@@ -214,7 +214,11 @@ function crawl(objIn, objOut, schema, list, base, path) {
         } else if(!Lib.validate(valIn, nestedSchema)) {
             list.push(format('value', base, p, valIn));
         } else if(nestedSchema.valType === 'enumerated' &&
-            ((nestedSchema.coerceNumber && valIn !== +valOut) || valIn !== valOut)
+            (
+                (nestedSchema.coerceNumber && valIn !== +valOut) ||
+                (!isArrayOrTypedArray(valIn) && valIn !== valOut) ||
+                (String(valIn) !== String(valOut))
+            )
         ) {
             list.push(format('dynamic', base, p, valIn, valOut));
         }
@@ -373,7 +377,7 @@ function convertPathToAttributeString(path) {
         var p = path[i];
 
         if(typeof p === 'number') {
-            astr = astr.substr(0, astr.length - 1) + '[' + p + ']';
+            astr = astr.slice(0, -1) + '[' + p + ']';
         } else {
             astr += p;
         }

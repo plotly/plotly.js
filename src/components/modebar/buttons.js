@@ -42,7 +42,7 @@ modeBarButtons.toImage = {
         var opts = gd._context.toImageButtonOptions || {};
         var format = opts.format || 'png';
         return format === 'png' ?
-            _(gd, 'Download plot as a png') : // legacy text
+            _(gd, 'Download plot as a PNG') : // legacy text
             _(gd, 'Download plot'); // generic non-PNG text
     },
     icon: Icons.camera,
@@ -50,7 +50,7 @@ modeBarButtons.toImage = {
         var toImageButtonOptions = gd._context.toImageButtonOptions;
         var opts = {format: toImageButtonOptions.format || 'png'};
 
-        Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long');
+        Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long', gd);
 
         ['filename', 'width', 'height', 'scale'].forEach(function(key) {
             if(key in toImageButtonOptions) {
@@ -59,12 +59,12 @@ modeBarButtons.toImage = {
         });
 
         Registry.call('downloadImage', gd, opts)
-          .then(function(filename) {
-              Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
-          })
-          .catch(function() {
-              Lib.notifier(_(gd, 'Sorry, there was a problem downloading your snapshot!'), 'long');
-          });
+            .then(function(filename) {
+                Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long', gd);
+            })
+            .catch(function() {
+                Lib.notifier(_(gd, 'Sorry, there was a problem downloading your snapshot!'), 'long', gd);
+            });
     }
 };
 
@@ -257,12 +257,15 @@ function handleCartesian(gd, ev) {
         var mag = (val === 'in') ? 0.5 : 2;
         var r0 = (1 + mag) / 2;
         var r1 = (1 - mag) / 2;
-        var axName;
+        var axName, allowed;
 
         for(i = 0; i < axList.length; i++) {
             ax = axList[i];
+            allowed = ax.modebardisable === 'none' || ax.modebardisable.indexOf(
+                (val === 'auto' || val === 'reset') ? 'autoscale' : 'zoominout'
+            ) === -1;
 
-            if(!ax.fixedrange) {
+            if(allowed && !ax.fixedrange) {
                 axName = ax._name;
                 if(val === 'auto') {
                     aobj[axName + '.autorange'] = true;

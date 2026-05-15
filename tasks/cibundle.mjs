@@ -19,7 +19,6 @@ var tasks = [];
 // Bundle plotly.js
 tasks.push(function(done) {
     _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
-        noCompressAttributes: true,
     }, done)
 });
 
@@ -27,7 +26,6 @@ tasks.push(function(done) {
 tasks.push(function(done) {
     _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuildMin, {
         minify: true,
-        noCompressAttributes: true,
     }, done)
 });
 

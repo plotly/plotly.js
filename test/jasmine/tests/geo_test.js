@@ -23,9 +23,7 @@ var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doub
 var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
-Plotly.setPlotConfig({
-    topojsonURL: '/base/node_modules/sane-topojson/dist/'
-});
+Plotly.setPlotConfig({ topojsonURL: '/base/topojson/dist' });
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
@@ -884,7 +882,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'lon', 'lat', 'location', 'marker.size'
+                    'lon', 'lat', 'location', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
                 expect(cnt).toEqual(1);
             });
@@ -949,7 +947,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'lon', 'lat', 'location', 'marker.size'
+                    'lon', 'lat', 'location', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -981,7 +979,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'lon', 'lat', 'location', 'marker.size'
+                    'lon', 'lat', 'location', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1010,7 +1008,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'location', 'z', 'ct'
+                    'location', 'z', 'ct', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1038,7 +1036,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'location', 'z', 'ct'
+                    'location', 'z', 'ct', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1070,7 +1068,7 @@ describe('Test geo interactions', function() {
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
-                    'location', 'z', 'ct'
+                    'location', 'z', 'ct', 'xPixel', 'yPixel'
                 ].sort());
             });
 
@@ -1406,7 +1404,7 @@ describe('Test geo interactions', function() {
                     py -= 2;
                     mouseEvent('mousemove', px, py);
 
-                    if(py > 175) {
+                    if(py > 176) {
                         _assert('- py ' + py, 1);
                         expect(cnt).toBe(0, 'no plotly_unhover event so far');
                     } else {
@@ -1484,7 +1482,9 @@ describe('Test geo interactions', function() {
         })
         .then(function() {
             check([179, -16.6], 1, 'spot on Fiji island that cross antimeridian west of antimeridian');
-            check([-179.9, -16.2], 1, 'spot on Fiji island that cross antimeridian east of antimeridian');
+            // This island no longer crosses the antimeridian due to differences in the simplification process.
+            // Commenting out for now in the event that we update the simplification and the test is needed again.
+            // check([-179.9, -16.7], 1, 'spot on Fiji island that cross antimeridian east of antimeridian');
 
             return Plotly.relayout(gd, {
                 'geo.center.lat': null,
@@ -1792,14 +1792,14 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
-                'location', 'text', 'marker.size'
+                'location', 'text', 'marker.size', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(57.75, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+            expect(pt.lat).toEqual(57.72, 'points[0].lat');
+            expect(pt.lon).toEqual(-101.67, 'points[0].lon');
             expect(pt.location).toEqual('CAN', 'points[0].location');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(pt.text).toEqual(20, 'points[0].text');
@@ -1896,14 +1896,14 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
-                'location', 'text', 'marker.size'
+                'location', 'text', 'marker.size', 'xPixel', 'yPixel'
             ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
             expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(57.75, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+            expect(pt.lat).toEqual(57.72, 'points[0].lat');
+            expect(pt.lon).toEqual(-101.67, 'points[0].lon');
             expect(pt.location).toEqual('CAN', 'points[0].location');
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(pt.text).toEqual(20, 'points[0].text');
@@ -1937,14 +1937,14 @@ describe('Test event property of interactions on a geo plot:', function() {
                 expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat',
-                    'location', 'text', 'marker.size'
+                    'location', 'text', 'marker.size', 'xPixel', 'yPixel'
                 ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
                 expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-                expect(pt.lat).toEqual(57.75, 'points[0].lat');
-                expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+                expect(pt.lat).toEqual(57.72, 'points[0].lat');
+                expect(pt.lon).toEqual(-101.67, 'points[0].lon');
                 expect(pt.location).toEqual('CAN', 'points[0].location');
                 expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
                 expect(pt.text).toEqual(20, 'points[0].text');
@@ -2588,8 +2588,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             var center = geoLayout.center;
             var scale = geoLayout.projection.scale;
 
-            expect(center.lon).toBeCloseTo(attr[0][0], 0.5, msg + 'center.lon');
-            expect(center.lat).toBeCloseTo(attr[0][1], 0.5, msg + 'center.lat');
+            expect(center.lon).toBeCloseTo(attr[0][0], 0, msg + 'center.lon');
+            expect(center.lat).toBeCloseTo(attr[0][1], 0, msg + 'center.lat');
             expect(scale).toBeCloseTo(attr[1], 1, msg + 'zoom');
 
             // albersUsa projection does not have a center() method
@@ -2608,7 +2608,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('base', [
                 [-96.6, 38.7], 1,
             ], [
-                [416, 309], 738.5
+                [410, 309], 738.5
             ], undefined);
             return drag({path: [[250, 250], [200, 200]], noCover: true});
         })
@@ -2626,7 +2626,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             _assert('after scroll', [
                 [-94.5, 35.0], 1.3
             ], [
-                [387.1, 245.9], 974.4
+                [380, 245.9], 974.4
             ], [
                 'geo.center.lon', 'geo.center.lon', 'geo.projection.scale'
             ]);
@@ -2637,7 +2637,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 [-94.5, 35.0], 1.3
             ], [
                 // new center values are reflected in translate()
-                [387.1, 245.9], 974.4
+                [380, 245.9], 974.4
             ], [
                 'geo.showlakes'
             ]);
@@ -2759,11 +2759,11 @@ describe('Test geo interactions update marker angles:', function() {
         })
         .then(function() {
             newPath = getPath();
-            expect(newPath).toEqual('M0,0L18.238949470790537,8.206139299448276L19.579067739888885,-4.081679364776507Z');
+            expect(newPath).toEqual('M0,0L18.27769005891461,8.119485581627321L19.559475756661865,-4.174554841483899Z');
 
             expect(newPath).not.toEqual(initialPath);
-            expect(newPath).toEqual('M0,0L18.238949470790537,8.206139299448276L19.579067739888885,-4.081679364776507Z');
-            expect(initialPath).toEqual('M0,0L-1.5033314641545745,19.94341982983066L10.506227353572104,17.01820163222463Z');
+            expect(newPath).toEqual('M0,0L18.27769005891461,8.119485581627321L19.559475756661865,-4.174554841483899Z');
+            expect(initialPath).toEqual('M0,0L-1.5094067529528923,19.942960945008643L10.501042615957648,17.021401351764233Z');
         })
         .then(done, done.fail);
     });

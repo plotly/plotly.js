@@ -33,6 +33,11 @@ header span{
   font-size: 10px;
   line-height: 40px;
 }
+#strict-div{
+  color: #F00;
+  font-weight: 600;
+  display: inline-block;
+}
 #mocks-list{
   position: fixed;
   right: 0px;

@@ -226,7 +226,7 @@ exports.assertClip = function(sel, isClipped, size, msg) {
         var clipPath = d3Select(this).attr('clip-path');
 
         if(isClipped) {
-            expect(String(clipPath).substr(0, 4))
+            expect(String(clipPath).slice(0, 4))
                 .toBe('url(', msg + ' clip path ' + '(item ' + i + ')');
         } else {
             expect(clipPath)
@@ -295,7 +295,7 @@ exports.assertPlotSize = function(opts, msg) {
     var widthLessThan = opts.widthLessThan;
     var heightLessThan = opts.heightLessThan;
 
-    var plotBB = d3Select('.plotclip > rect').node().getBoundingClientRect();
+    var plotBB = d3Select('.plotclip > rect').node().getBBox();
     var actualWidth = plotBB.width;
     var actualHeight = plotBB.height;
 

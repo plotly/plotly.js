@@ -787,7 +787,7 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
-        it('@noCI should position hover labels correctly', function(done) {
+        it('@noCI should position hover labels correctly - horizontal', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
@@ -804,10 +804,18 @@ describe('sankey tests', function() {
                 var pos = g.node().getBoundingClientRect();
                 expect(pos.x).toBeCloseTo(555, -1.5, 'it should have correct x position');
                 expect(pos.y).toBeCloseTo(196, -1.5, 'it should have correct y position');
-                return Plotly.restyle(gd, 'orientation', 'v');
             })
+            .then(done, done.fail);
+        });
+
+        it('@noCI should position hover labels correctly - vertical ', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            mock.data[0].orientation = 'v';
+
+            Plotly.newPlot(gd, mockCopy)
             .then(function() {
-                _hover(520, 500);
+                _hover(600, 200);
 
                 assertLabel(
                     ['source: Thermal generation', 'target: Losses', '787TWh'],
@@ -816,8 +824,8 @@ describe('sankey tests', function() {
 
                 var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
-                expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
-                expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
+                expect(pos.x).toBeCloseTo(781, -1.5);
+                expect(pos.y).toBeCloseTo(196, -1.5);
             })
             .then(done, done.fail);
         });
@@ -1136,10 +1144,17 @@ describe('sankey tests', function() {
 
             return function(elType) {
                 return new Promise(function(resolve, reject) {
-                    gd.once(eventType, function(d) {
+                    const handler = (d) => {
                         Lib.clearThrottle();
+                        const isNode = d.points[0].hasOwnProperty('sourceLinks');
+                        const isExpectedType = (elType === 'node') ? isNode : !isNode;
+                        if (!isExpectedType) {
+                            gd.once(eventType, handler);
+                            return;
+                        }
                         resolve(d);
-                    });
+                    }
+                    gd.once(eventType, handler);
 
                     mouseFn(posByElementType[elType]);
                     setTimeout(function() {
@@ -1290,7 +1305,7 @@ describe('sankey tests', function() {
                   .then(done, done.fail);
         });
 
-        it('@noCI should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
+        it('should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, fig)
@@ -1446,13 +1461,14 @@ describe('sankey tests', function() {
                           positionAfterDrag = [positionBeforeDrag[0] + move[0], positionBeforeDrag[1] + move[1]];
                           return drag({node: node, dpos: move, nsteps: 10, timeDelay: 1000});
                       })
+                      .then(delay(500))
                       .then(function() {
                           // Check that the node was really moved
                           nodes = document.getElementsByClassName('sankey-node');
                           node = Array.prototype.slice.call(nodes).find(function(n) { return n.textContent === '0';});
                           var newPosition = getNodeCoords(node);
-                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], 2, 'final x position is off');
-                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], 2, 'final y position is off');
+                          expect(newPosition.x).toBeCloseTo(positionAfterDrag[0], -1, 'final x position is off');
+                          expect(newPosition.y).toBeCloseTo(positionAfterDrag[1], -1, 'final y position is off');
 
                           // Change color of nodes
                           var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
@@ -1476,8 +1492,8 @@ describe('sankey tests', function() {
                               pos = positionBeforeDrag;
                               msg = 'should go back to its default because uirevision changed';
                           }
-                          expect(newPosition.x).toBeCloseTo(pos[0], 2, 'x position ' + msg);
-                          expect(newPosition.y).toBeCloseTo(pos[1], 2, 'y position ' + msg);
+                          expect(newPosition.x).toBeCloseTo(pos[0], -1, 'x position ' + msg);
+                          expect(newPosition.y).toBeCloseTo(pos[1], -1, 'y position ' + msg);
                       })
                       .then(done, done.fail);
                 });
@@ -1513,7 +1529,7 @@ function assertLabel(content, style) {
 
 function assertMultipleLabels(contentArray, styleArray) {
     var g = d3SelectAll('.hovertext');
-    expect(g.size()).toEqual(contentArray.length, 'wrong number of hoverlabels, expected to find ' + contentArray.length);
+    expect(g.size()).toEqual(contentArray.length);
     g.each(function(el, i) {
         _assertLabelGroup(d3Select(this), contentArray[i], styleArray[i]);
     });

@@ -48,9 +48,11 @@ module.exports = function calc(gd, trace) {
             }
 
             var kde = helpers.makeKDE(cdi, trace, vals);
-            cdi.density = new Array(n);
+            // n intervals means n + 1 sample points to include both endpoints
+            cdi.density = new Array(n + 1);
 
-            for(var k = 0, t = span[0]; t < (span[1] + step / 2); k++, t += step) {
+            for(var k = 0; k < cdi.density.length; k++) {
+                var t = span[0] + k * step;
                 var v = kde(t);
                 cdi.density[k] = {v: v, t: t};
                 maxKDE = Math.max(maxKDE, v);

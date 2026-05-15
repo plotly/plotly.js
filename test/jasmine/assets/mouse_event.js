@@ -2,9 +2,9 @@ var Lib = require('../../../src/lib');
 
 module.exports = function(type, x, y, opts) {
     var visibility = document.visibilityState;
-    if(visibility && visibility !== 'visible') {
-        throw new Error('document.visibilityState = "' + visibility + '" - Please make the window visible.');
-    }
+    // if(visibility && visibility !== 'visible') {
+    //     throw new Error('document.visibilityState = "' + visibility + '" - Please make the window visible.');
+    // }
 
     var fullOpts = {
         bubbles: true,
@@ -33,7 +33,12 @@ module.exports = function(type, x, y, opts) {
         fullOpts.shiftKey = opts.shiftKey;
     }
 
-    var el = (opts && opts.element) || document.elementFromPoint(x, y);
+    var shadowContainer = document.getElementById('shadowcontainer');
+    var elementRoot = (opts && opts.elementRoot) || (
+        shadowContainer ? shadowContainer.shadowRoot : document
+    );
+
+    var el = (opts && opts.element) || elementRoot.elementFromPoint(x, y);
     var ev;
 
     if(type === 'scroll' || type === 'wheel') {

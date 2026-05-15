@@ -37,18 +37,6 @@ var __webpack_unused_export__;
 
 
 
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
-function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
-function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
-function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
-function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
-function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var base64 = __webpack_require__(7507);
 var ieee754 = __webpack_require__(3778);
@@ -382,8 +370,7 @@ Buffer.concat = function concat(list, length) {
     var buf = list[i];
     if (isInstance(buf, Uint8Array)) {
       if (pos + buf.length > buffer.length) {
-        if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf);
-        buf.copy(buffer, pos);
+        Buffer.from(buf).copy(buffer, pos);
       } else {
         Uint8Array.prototype.set.call(buffer, buf, pos);
       }
@@ -755,8 +742,7 @@ function hexWrite(buf, string, offset, length) {
   if (length > strLen / 2) {
     length = strLen / 2;
   }
-  var i;
-  for (i = 0; i < length; ++i) {
+  for (var i = 0; i < length; ++i) {
     var parsed = parseInt(string.substr(i * 2, 2), 16);
     if (numberIsNaN(parsed)) return i;
     buf[offset + i] = parsed;
@@ -854,10 +840,7 @@ function utf8Slice(buf, start, end) {
     var codePoint = null;
     var bytesPerSequence = firstByte > 0xEF ? 4 : firstByte > 0xDF ? 3 : firstByte > 0xBF ? 2 : 1;
     if (i + bytesPerSequence <= end) {
-      var secondByte = void 0,
-        thirdByte = void 0,
-        fourthByte = void 0,
-        tempCodePoint = void 0;
+      var secondByte, thirdByte, fourthByte, tempCodePoint;
       switch (bytesPerSequence) {
         case 1:
           if (firstByte < 0x80) {
@@ -1045,30 +1028,6 @@ Buffer.prototype.readUint32BE = Buffer.prototype.readUInt32BE = function readUIn
   if (!noAssert) checkOffset(offset, 4, this.length);
   return this[offset] * 0x1000000 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
 };
-Buffer.prototype.readBigUInt64LE = defineBigIntMethod(function readBigUInt64LE(offset) {
-  offset = offset >>> 0;
-  validateNumber(offset, 'offset');
-  var first = this[offset];
-  var last = this[offset + 7];
-  if (first === undefined || last === undefined) {
-    boundsError(offset, this.length - 8);
-  }
-  var lo = first + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 24);
-  var hi = this[++offset] + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + last * Math.pow(2, 24);
-  return BigInt(lo) + (BigInt(hi) << BigInt(32));
-});
-Buffer.prototype.readBigUInt64BE = defineBigIntMethod(function readBigUInt64BE(offset) {
-  offset = offset >>> 0;
-  validateNumber(offset, 'offset');
-  var first = this[offset];
-  var last = this[offset + 7];
-  if (first === undefined || last === undefined) {
-    boundsError(offset, this.length - 8);
-  }
-  var hi = first * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + this[++offset];
-  var lo = this[++offset] * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + last;
-  return (BigInt(hi) << BigInt(32)) + BigInt(lo);
-});
 Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
   offset = offset >>> 0;
   byteLength = byteLength >>> 0;
@@ -1125,31 +1084,6 @@ Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
   if (!noAssert) checkOffset(offset, 4, this.length);
   return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
 };
-Buffer.prototype.readBigInt64LE = defineBigIntMethod(function readBigInt64LE(offset) {
-  offset = offset >>> 0;
-  validateNumber(offset, 'offset');
-  var first = this[offset];
-  var last = this[offset + 7];
-  if (first === undefined || last === undefined) {
-    boundsError(offset, this.length - 8);
-  }
-  var val = this[offset + 4] + this[offset + 5] * Math.pow(2, 8) + this[offset + 6] * Math.pow(2, 16) + (last << 24); // Overflow
-
-  return (BigInt(val) << BigInt(32)) + BigInt(first + this[++offset] * Math.pow(2, 8) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 24));
-});
-Buffer.prototype.readBigInt64BE = defineBigIntMethod(function readBigInt64BE(offset) {
-  offset = offset >>> 0;
-  validateNumber(offset, 'offset');
-  var first = this[offset];
-  var last = this[offset + 7];
-  if (first === undefined || last === undefined) {
-    boundsError(offset, this.length - 8);
-  }
-  var val = (first << 24) +
-  // Overflow
-  this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + this[++offset];
-  return (BigInt(val) << BigInt(32)) + BigInt(this[++offset] * Math.pow(2, 24) + this[++offset] * Math.pow(2, 16) + this[++offset] * Math.pow(2, 8) + last);
-});
 Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
   offset = offset >>> 0;
   if (!noAssert) checkOffset(offset, 4, this.length);
@@ -1250,54 +1184,6 @@ Buffer.prototype.writeUint32BE = Buffer.prototype.writeUInt32BE = function write
   this[offset + 3] = value & 0xff;
   return offset + 4;
 };
-function wrtBigUInt64LE(buf, value, offset, min, max) {
-  checkIntBI(value, min, max, buf, offset, 7);
-  var lo = Number(value & BigInt(0xffffffff));
-  buf[offset++] = lo;
-  lo = lo >> 8;
-  buf[offset++] = lo;
-  lo = lo >> 8;
-  buf[offset++] = lo;
-  lo = lo >> 8;
-  buf[offset++] = lo;
-  var hi = Number(value >> BigInt(32) & BigInt(0xffffffff));
-  buf[offset++] = hi;
-  hi = hi >> 8;
-  buf[offset++] = hi;
-  hi = hi >> 8;
-  buf[offset++] = hi;
-  hi = hi >> 8;
-  buf[offset++] = hi;
-  return offset;
-}
-function wrtBigUInt64BE(buf, value, offset, min, max) {
-  checkIntBI(value, min, max, buf, offset, 7);
-  var lo = Number(value & BigInt(0xffffffff));
-  buf[offset + 7] = lo;
-  lo = lo >> 8;
-  buf[offset + 6] = lo;
-  lo = lo >> 8;
-  buf[offset + 5] = lo;
-  lo = lo >> 8;
-  buf[offset + 4] = lo;
-  var hi = Number(value >> BigInt(32) & BigInt(0xffffffff));
-  buf[offset + 3] = hi;
-  hi = hi >> 8;
-  buf[offset + 2] = hi;
-  hi = hi >> 8;
-  buf[offset + 1] = hi;
-  hi = hi >> 8;
-  buf[offset] = hi;
-  return offset + 8;
-}
-Buffer.prototype.writeBigUInt64LE = defineBigIntMethod(function writeBigUInt64LE(value) {
-  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  return wrtBigUInt64LE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'));
-});
-Buffer.prototype.writeBigUInt64BE = defineBigIntMethod(function writeBigUInt64BE(value) {
-  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  return wrtBigUInt64BE(this, value, offset, BigInt(0), BigInt('0xffffffffffffffff'));
-});
 Buffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
   value = +value;
   offset = offset >>> 0;
@@ -1381,14 +1267,6 @@ Buffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
   this[offset + 3] = value & 0xff;
   return offset + 4;
 };
-Buffer.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE(value) {
-  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  return wrtBigUInt64LE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'));
-});
-Buffer.prototype.writeBigInt64BE = defineBigIntMethod(function writeBigInt64BE(value) {
-  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  return wrtBigUInt64BE(this, value, offset, -BigInt('0x8000000000000000'), BigInt('0x7fffffffffffffff'));
-});
 function checkIEEE754(buf, value, offset, ext, max, min) {
   if (offset + ext > buf.length) throw new RangeError('Index out of range');
   if (offset < 0) throw new RangeError('Index out of range');
@@ -1521,130 +1399,6 @@ Buffer.prototype.fill = function fill(val, start, end, encoding) {
   return this;
 };
 
-// CUSTOM ERRORS
-// =============
-
-// Simplified versions from Node, changed for Buffer-only usage
-var errors = {};
-function E(sym, getMessage, Base) {
-  errors[sym] = /*#__PURE__*/function (_Base) {
-    function NodeError() {
-      var _this;
-      _classCallCheck(this, NodeError);
-      _this = _callSuper(this, NodeError);
-      Object.defineProperty(_this, 'message', {
-        value: getMessage.apply(_this, arguments),
-        writable: true,
-        configurable: true
-      });
-
-      // Add the error code to the name to include it in the stack trace.
-      _this.name = "".concat(_this.name, " [").concat(sym, "]");
-      // Access the stack to generate the error message including the error code
-      // from the name.
-      _this.stack; // eslint-disable-line no-unused-expressions
-      // Reset the name to the actual name.
-      delete _this.name;
-      return _this;
-    }
-    _inherits(NodeError, _Base);
-    return _createClass(NodeError, [{
-      key: "code",
-      get: function get() {
-        return sym;
-      },
-      set: function set(value) {
-        Object.defineProperty(this, 'code', {
-          configurable: true,
-          enumerable: true,
-          value: value,
-          writable: true
-        });
-      }
-    }, {
-      key: "toString",
-      value: function toString() {
-        return "".concat(this.name, " [").concat(sym, "]: ").concat(this.message);
-      }
-    }]);
-  }(Base);
-}
-E('ERR_BUFFER_OUT_OF_BOUNDS', function (name) {
-  if (name) {
-    return "".concat(name, " is outside of buffer bounds");
-  }
-  return 'Attempt to access memory outside buffer bounds';
-}, RangeError);
-E('ERR_INVALID_ARG_TYPE', function (name, actual) {
-  return "The \"".concat(name, "\" argument must be of type number. Received type ").concat(_typeof(actual));
-}, TypeError);
-E('ERR_OUT_OF_RANGE', function (str, range, input) {
-  var msg = "The value of \"".concat(str, "\" is out of range.");
-  var received = input;
-  if (Number.isInteger(input) && Math.abs(input) > Math.pow(2, 32)) {
-    received = addNumericalSeparator(String(input));
-  } else if (typeof input === 'bigint') {
-    received = String(input);
-    if (input > Math.pow(BigInt(2), BigInt(32)) || input < -Math.pow(BigInt(2), BigInt(32))) {
-      received = addNumericalSeparator(received);
-    }
-    received += 'n';
-  }
-  msg += " It must be ".concat(range, ". Received ").concat(received);
-  return msg;
-}, RangeError);
-function addNumericalSeparator(val) {
-  var res = '';
-  var i = val.length;
-  var start = val[0] === '-' ? 1 : 0;
-  for (; i >= start + 4; i -= 3) {
-    res = "_".concat(val.slice(i - 3, i)).concat(res);
-  }
-  return "".concat(val.slice(0, i)).concat(res);
-}
-
-// CHECK FUNCTIONS
-// ===============
-
-function checkBounds(buf, offset, byteLength) {
-  validateNumber(offset, 'offset');
-  if (buf[offset] === undefined || buf[offset + byteLength] === undefined) {
-    boundsError(offset, buf.length - (byteLength + 1));
-  }
-}
-function checkIntBI(value, min, max, buf, offset, byteLength) {
-  if (value > max || value < min) {
-    var n = typeof min === 'bigint' ? 'n' : '';
-    var range;
-    if (byteLength > 3) {
-      if (min === 0 || min === BigInt(0)) {
-        range = ">= 0".concat(n, " and < 2").concat(n, " ** ").concat((byteLength + 1) * 8).concat(n);
-      } else {
-        range = ">= -(2".concat(n, " ** ").concat((byteLength + 1) * 8 - 1).concat(n, ") and < 2 ** ") + "".concat((byteLength + 1) * 8 - 1).concat(n);
-      }
-    } else {
-      range = ">= ".concat(min).concat(n, " and <= ").concat(max).concat(n);
-    }
-    throw new errors.ERR_OUT_OF_RANGE('value', range, value);
-  }
-  checkBounds(buf, offset, byteLength);
-}
-function validateNumber(value, name) {
-  if (typeof value !== 'number') {
-    throw new errors.ERR_INVALID_ARG_TYPE(name, 'number', value);
-  }
-}
-function boundsError(value, length, type) {
-  if (Math.floor(value) !== value) {
-    validateNumber(value, type);
-    throw new errors.ERR_OUT_OF_RANGE(type || 'offset', 'an integer', value);
-  }
-  if (length < 0) {
-    throw new errors.ERR_BUFFER_OUT_OF_BOUNDS();
-  }
-  throw new errors.ERR_OUT_OF_RANGE(type || 'offset', ">= ".concat(type ? 1 : 0, " and <= ").concat(length), value);
-}
-
 // HELPER FUNCTIONS
 // ================
 
@@ -1750,8 +1504,7 @@ function base64ToBytes(str) {
   return base64.toByteArray(base64clean(str));
 }
 function blitBuffer(src, dst, offset, length) {
-  var i;
-  for (i = 0; i < length; ++i) {
+  for (var i = 0; i < length; ++i) {
     if (i + offset >= dst.length || i >= src.length) break;
     dst[i + offset] = src[i];
   }
@@ -1782,14 +1535,6 @@ var hexSliceLookupTable = function () {
   }
   return table;
 }();
-
-// Return not function with Error if BigInt not supported
-function defineBigIntMethod(fn) {
-  return typeof BigInt === 'undefined' ? BufferBigIntNotDefined : fn;
-}
-function BufferBigIntNotDefined() {
-  throw new Error('BigInt not supported');
-}
 
 /***/ }),
 
@@ -3506,15 +3251,15 @@ exports.nextCombination = function(v) {
         var w = this.words[i];
         var word = (((w << off) | carry) & 0xffffff).toString(16);
         carry = (w >>> (24 - off)) & 0xffffff;
-        if (carry !== 0 || i !== this.length - 1) {
-          out = zeros[6 - word.length] + word + out;
-        } else {
-          out = word + out;
-        }
         off += 2;
         if (off >= 26) {
           off -= 26;
           i--;
+        }
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
         }
       }
       if (carry !== 0) {
@@ -4975,6 +4720,7 @@ exports.nextCombination = function(v) {
       this.words[i] = carry;
       this.length++;
     }
+    this.length = num === 0 ? 1 : this.length;
 
     return this;
   };
@@ -5180,6 +4926,11 @@ exports.nextCombination = function(v) {
     if (r !== 0) {
       var mask = 0x3ffffff ^ ((0x3ffffff >>> r) << r);
       this.words[this.length - 1] &= mask;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
     }
 
     return this.strip();
@@ -11169,18 +10920,21 @@ proto.forEach = function rbTreeForEach(visit, lo, hi) {
   switch(arguments.length) {
     case 1:
       return doVisitFull(visit, this.root)
-    break
+    // removed by dead control flow
+
 
     case 2:
       return doVisitHalf(lo, this._compare, visit, this.root)
-    break
+    // removed by dead control flow
+
 
     case 3:
       if(this._compare(lo, hi) >= 0) {
         return
       }
       return doVisit(lo, hi, this._compare, visit, this.root)
-    break
+    // removed by dead control flow
+
   }
 }
 

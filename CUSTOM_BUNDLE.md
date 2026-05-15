@@ -1,5 +1,5 @@
 # Custom bundle
-You can simply make custom bundles yourself, if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) meet your needs, or you want to make a more optimized bundle file with/without specific traces.
+You can easily make custom bundles yourself if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) meet your needs, or if you want to make a more optimized bundle file with/without specific traces.
 
 Make sure you have the versions of node/npm that's recommended:
 - plotly.js before 2.5: Node 12/npm 6
@@ -15,19 +15,19 @@ Clone plotly.js, where the <version> is one of [these](https://github.com/plotly
 git clone --branch <version> https://github.com/plotly/plotly.js.git
 ```
 
-Note: If you've already cloned plotly.js, then could switch to another version with:
+Note: If you've already cloned plotly.js, then you can switch to another version with:
 ```sh
 git fetch
 git checkout <version>
 ```
 
-Move to plotly.js folder then install plotly.js dependencies:
+Move to the `plotly.js` directory, then install its dependencies:
 ```sh
 cd plotly.js
 npm i
 ```
 
-By default all traces are included in the bundle if you simply run:
+By default, all traces are included in the bundle if you simply run:
 ```sh
 npm run custom-bundle
 ```
@@ -56,7 +56,7 @@ npm run custom-bundle -- --unminified
 ```
 
 # Example illustrating use of different options together
-To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces:
+To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl`, and `scatter3d` traces:
 ```sh
 npm run custom-bundle -- \
     --unminified \

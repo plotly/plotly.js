@@ -55,7 +55,7 @@ describe('page rendering', function() {
         mock.layout.updatemenus = require('../../image/mocks/updatemenus.json').layout.updatemenus;
         mock.layout.sliders = require('../../image/mocks/sliders.json').layout.sliders;
 
-        mock.layout.xaxis.title = 'XXX';
+        mock.layout.xaxis.title = {text: 'XXX'};
         mock.layout.showlegend = true;
 
         return Plotly.newPlot(gd, mock.data, mock.layout).then(function() {

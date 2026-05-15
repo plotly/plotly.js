@@ -42,6 +42,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 data: options.data,
                 showGrid: true,
                 noAutotickangles: true,
+                noMinorloglabels: true,
                 noTicklabelindex: true,
                 noTickson: true,
                 noTicklabelmode: true,
@@ -51,6 +52,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 noTicklabelposition: true,
                 noTicklabeloverflow: true,
                 noInsiderange: true,
+                noUnifiedhovertitle: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },

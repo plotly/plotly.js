@@ -1,37 +1,37 @@
 {
- "data": [
-  {
-   "x": ["1.5", "2.5", "3.5", "Not Known"],
-   "y": ["1.0", "1.0", "2.0", "1.0"],
-   "type": "bar"
+  "data": [
+    {
+      "x": ["1.5", "2.5", "3.5", "Not Known"],
+      "y": ["1.0", "1.0", "2.0", "1.0"],
+      "type": "bar"
+    }
+  ],
+  "layout": {
+    "font": {
+      "weight": "bold",
+      "style": "italic",
+      "variant": "small-caps",
+      "textcase": "word caps",
+      "lineposition": "under",
+      "shadow": "auto"
+    },
+    "xaxis": {
+      "type": "category",
+      "autorange": true
+    },
+    "annotations": [
+      {
+        "x": "Not Known",
+        "y": 1,
+        "text": "Should point to category",
+        "showarrow": true
+      },
+      {
+        "x": 1.5,
+        "y": 1.0,
+        "text": "Should point to serial number",
+        "showarrow": true
+      }
+    ]
   }
- ],
- "layout": {
-  "font": {
-   "weight": "bold",
-   "style": "italic",
-   "variant": "small-caps",
-   "textcase": "word caps",
-   "lineposition": "under",
-   "shadow": "auto"
-  },
-  "xaxis": {
-   "type": "category",
-   "autorange": true
-  },
-  "annotations": [
-   {
-    "x": "Not Known",
-    "y": 1,
-    "text": "Should point to category",
-    "showarrow": true
-   },
-   {
-    "x": 1.5,
-    "y": 1.0,
-    "text": "Should point to serial number",
-    "showarrow": true
-   }
-  ]
- }
 }

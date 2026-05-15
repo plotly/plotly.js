@@ -1,5 +1,3 @@
-import prependFile from 'prepend-file';
-
 import constants from './util/constants.js';
 import common from './util/common.js';
 import _bundle from './util/bundle_wrapper.mjs';
@@ -59,7 +57,7 @@ export default function partialBundle(tasks, opts) {
         _bundle(index, dist, bundleOpts, function() {
             var headerDist = header.replace('plotly.js', 'plotly.js (' + name + ')');
 
-            if(dist) prependFile.sync(dist, headerDist, common.throwOnError);
+            if(dist) common.prependFile(dist, headerDist);
 
             done();
         });
@@ -74,7 +72,7 @@ export default function partialBundle(tasks, opts) {
         _bundle(index, distMin, bundleOpts, function() {
             var headerDistMin = header.replace('plotly.js', 'plotly.js (' + name + ' - minified)');
 
-            if(distMin) prependFile.sync(distMin, headerDistMin, common.throwOnError);
+            if(distMin) common.prependFile(distMin, headerDistMin);
 
             done();
         });

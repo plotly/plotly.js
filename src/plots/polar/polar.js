@@ -589,7 +589,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
 
     _this.layers['radial-axis-title'] = Titles.draw(gd, titleClass, {
         propContainer: radialLayout,
-        propName: _this.id + '.radialaxis.title',
+        propName: _this.id + '.radialaxis.title.text',
         placeholder: _(gd, 'Click to enter radial axis title'),
         attributes: {
             x: x,

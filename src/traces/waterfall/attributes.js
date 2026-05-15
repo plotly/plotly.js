@@ -4,9 +4,7 @@ var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
-var tooltiptemplateAttrs = require('../../plots/template_attributes').tooltiptemplateAttrs;
-var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Color = require('../../components/color');
@@ -30,7 +28,7 @@ function directionAttrs(dirTxt) {
                     editType: 'style',
                     description: 'Sets the line width of all ' + dirTxt + ' values.'
                 }),
-                editType: 'style',
+                editType: 'style'
             },
             editType: 'style'
         },
@@ -45,9 +43,9 @@ module.exports = {
         editType: 'calc',
         description: [
             'An array containing types of values.',
-            'By default the values are considered as \'relative\'.',
-            'However; it is possible to use \'total\' to compute the sums.',
-            'Also \'absolute\' could be applied to reset the computed total',
+            "By default the values are considered as 'relative'.",
+            "However; it is possible to use 'total' to compute the sums.",
+            "Also 'absolute' could be applied to reset the computed total",
             'or to declare an initial value where needed.'
         ].join(' ')
     },
@@ -57,9 +55,7 @@ module.exports = {
         dflt: null,
         arrayOk: false,
         editType: 'calc',
-        description: [
-            'Sets where the bar base is drawn (in position axis units).'
-        ].join(' ')
+        description: ['Sets where the bar base is drawn (in position axis units).'].join(' ')
     },
 
     x: barAttrs.x,
@@ -79,9 +75,8 @@ module.exports = {
     yhoverformat: axisHoverFormat('y'),
 
     hovertext: barAttrs.hovertext,
-    hovertemplate: hovertemplateAttrs({}, {
-        keys: constants.eventDataKeys
-    }),
+    hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
+    hovertemplatefallback: templatefallbackAttrs(),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['name', 'x', 'y', 'text', 'initial', 'delta', 'final']
@@ -105,9 +100,8 @@ module.exports = {
         ].join(' ')
     },
     // TODO: incorporate `label` and `value` in the eventData
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: constants.eventDataKeys.concat(['label'])
-    }),
+    texttemplate: texttemplateAttrs({ editType: 'plot' }, { keys: constants.eventDataKeys.concat(['label']) }),
+    texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
     text: barAttrs.text,
     textposition: barAttrs.textposition,
     insidetextanchor: barAttrs.insidetextanchor,
@@ -129,9 +123,9 @@ module.exports = {
 
     connector: {
         line: {
-            color: extendFlat({}, lineAttrs.color, {dflt: Color.defaultLine}),
+            color: extendFlat({}, lineAttrs.color, { dflt: Color.defaultLine }),
             width: extendFlat({}, lineAttrs.width, {
-                editType: 'plot', // i.e. to adjust bars is mode: 'between'. See https://github.com/plotly/plotly.js/issues/3787
+                editType: 'plot' // i.e. to adjust bars is mode: 'between'. See https://github.com/plotly/plotly.js/issues/3787
             }),
             dash: lineAttrs.dash,
             editType: 'plot'
@@ -141,17 +135,13 @@ module.exports = {
             values: ['spanning', 'between'],
             dflt: 'between',
             editType: 'plot',
-            description: [
-                'Sets the shape of connector lines.'
-            ].join(' ')
+            description: ['Sets the shape of connector lines.'].join(' ')
         },
         visible: {
             valType: 'boolean',
             dflt: true,
             editType: 'plot',
-            description: [
-                'Determines if connector lines are drawn. '
-            ].join(' ')
+            description: ['Determines if connector lines are drawn. '].join(' ')
         },
         editType: 'plot'
     },

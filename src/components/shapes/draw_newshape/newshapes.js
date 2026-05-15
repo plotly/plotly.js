@@ -1,5 +1,7 @@
 'use strict';
 
+var axis_ids = require('../../../plots/cartesian/axis_ids');
+
 var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
@@ -84,10 +86,23 @@ function newShapes(outlines, dragOptions) {
                 case 'line':
                 case 'rect':
                 case 'circle':
-                    modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
-                    modifyItem('x1', afterEdit.x1 - (beforeEdit.x1shift || 0));
-                    modifyItem('y0', afterEdit.y0 - (beforeEdit.y0shift || 0));
-                    modifyItem('y1', afterEdit.y1 - (beforeEdit.y1shift || 0));
+
+                    var xaxis = axis_ids.getFromId(gd, beforeEdit.xref);
+                    if (beforeEdit.xref.charAt(0) === 'x' && xaxis.type.includes('category')) {
+                        modifyItem('x0', afterEdit.x0 - (beforeEdit.x0shift || 0));
+                        modifyItem('x1', afterEdit.x1 - (beforeEdit.x1shift || 0));
+                    } else {
+                        modifyItem('x0', afterEdit.x0);
+                        modifyItem('x1', afterEdit.x1);
+                    }
+                    var yaxis = axis_ids.getFromId(gd, beforeEdit.yref);
+                    if (beforeEdit.yref.charAt(0) === 'y' && yaxis.type.includes('category')) {
+                        modifyItem('y0', afterEdit.y0 - (beforeEdit.y0shift || 0));
+                        modifyItem('y1', afterEdit.y1 - (beforeEdit.y1shift || 0));
+                    } else {
+                        modifyItem('y0', afterEdit.y0);
+                        modifyItem('y1', afterEdit.y1);
+                    }
                     break;
 
                 case 'path':

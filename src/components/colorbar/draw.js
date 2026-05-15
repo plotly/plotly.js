@@ -326,7 +326,7 @@ function drawColorBar(g, opts, gd) {
     function drawTitle(titleClass, titleOpts) {
         var dfltTitleOpts = {
             propContainer: ax,
-            propName: opts._propPrefix + 'title',
+            propName: opts._propPrefix + 'title.text',
             traceIndex: opts._traceIndex,
             _meta: opts._meta,
             placeholder: fullLayout._dfltTitle.colorbar,
@@ -338,7 +338,7 @@ function drawColorBar(g, opts, gd) {
         // wrong class (in case earlier the colorbar was drawn on
         // a different side, I think?)
         var otherClass = titleClass.charAt(0) === 'h' ?
-            titleClass.substr(1) :
+            titleClass.slice(1) :
             'h' + titleClass;
         g.selectAll('.' + otherClass + ',.' + otherClass + '-math-group').remove();
 
@@ -401,7 +401,7 @@ function drawColorBar(g, opts, gd) {
                             ax.tickfont.size :
                             0
                     ) + (
-                        ax.ticks !== 'intside' ?
+                        ax.ticks !== 'inside' ?
                             opts.ticklen || 0 :
                             0
                     );

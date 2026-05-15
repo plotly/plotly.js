@@ -5,6 +5,9 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
+const { hasColorscale } = require('../../components/colorscale/helpers');
+const colorscaleCalc = require('../../components/colorscale/calc');
+
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
 var binFunctions = require('./bin_functions');
@@ -200,6 +203,22 @@ function calc(gd, trace) {
         // when we collapse to a single bin, calcdata no longer describes bin size
         // so we need to explicitly specify it
         cd[0].width1 = Axes.tickIncrement(cd[0].p, binSpec.size, false, calendar) - cd[0].p;
+    }
+
+    // auto-z and autocolorscale if applicable
+    if(hasColorscale(trace, 'marker')) {
+        colorscaleCalc(gd, trace, {
+            vals: trace.marker.color,
+            containerStr: 'marker',
+            cLetter: 'c'
+        });
+    }
+    if(hasColorscale(trace, 'marker.line')) {
+        colorscaleCalc(gd, trace, {
+            vals: trace.marker.line.color,
+            containerStr: 'marker.line',
+            cLetter: 'c'
+        });
     }
 
     arraysToCalcdata(cd, trace);

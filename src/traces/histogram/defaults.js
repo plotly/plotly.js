@@ -17,7 +17,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var y = coerce('y');
 
     var cumulative = coerce('cumulative.enabled');
-    if(cumulative) {
+    if (cumulative) {
         coerce('cumulative.direction');
         coerce('cumulative.currentbin');
     }
@@ -35,21 +35,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('hovertemplatefallback');
     coerce('xhoverformat');
     coerce('yhoverformat');
-
     coerce('tooltip');
     coerce('tooltiptemplate');
-
-    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v');
+    var orientation = coerce('orientation', y && !x ? 'h' : 'v');
     var sampleLetter = orientation === 'v' ? 'x' : 'y';
     var aggLetter = orientation === 'v' ? 'y' : 'x';
 
-    var len = (x && y) ?
-        Math.min(Lib.minRowLength(x) && Lib.minRowLength(y)) :
-        Lib.minRowLength(traceOut[sampleLetter] || []);
+    var len =
+        x && y ? Math.min(Lib.minRowLength(x) && Lib.minRowLength(y)) : Lib.minRowLength(traceOut[sampleLetter] || []);
 
-    if(!len) {
+    if (!len) {
         traceOut.visible = false;
         return;
     }
@@ -60,7 +58,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     var hasAggregationData = traceOut[aggLetter];
-    if(hasAggregationData) coerce('histfunc');
+    if (hasAggregationData) coerce('histfunc');
     coerce('histnorm');
 
     // Note: bin defaults are now handled in Histogram.crossTraceDefaults
@@ -75,8 +73,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // override defaultColor for error bars with defaultLine
     var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, { axis: 'y' });
+    errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, { axis: 'x', inherit: 'y' });
 
     coerce('zorder');
 };

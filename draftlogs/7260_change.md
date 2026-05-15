@@ -1,1 +1,0 @@
- - Deprecate mapbox traces and provide link to migration docs [[#7260](https://github.com/plotly/plotly.js/pull/7260)]

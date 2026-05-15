@@ -60,12 +60,12 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     linkTraces(gd, subplot, cdata);
 
     if(scene.dirty) {
-        if(
+        if (
             (scene.line2d || scene.error2d) &&
             !(scene.scatter2d || scene.fill2d || scene.glText)
         ) {
             // Fixes shared WebGL context drawing lines only case
-            regl.clear({});
+            regl.clear({ color: true, depth: true });
         }
 
         // make sure scenes are created
@@ -263,8 +263,8 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < count; i++) {
-        var cd0 = cdata[i][0];
+    for (const [cd0] of cdata) {
+        if (!cd0) continue;
         var trace = cd0.trace;
         var stash = cd0.t;
         var index = stash.index;

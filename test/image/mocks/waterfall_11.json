@@ -1,139 +1,139 @@
 {
- "data": [
-  {
-   "x": ["Half Dose", "Full Dose", "Double Dose"],
-   "y": ["13.23", "-22.7", "26.06"],
-   "name": "Orange Juice",
-   "type": "waterfall"
-  },
-  {
-   "x": ["Half Dose", "Full Dose", "Double Dose"],
-   "y": ["7.98", "-16.77", "26.14"],
-   "name": "Vitamin C",
-   "type": "waterfall"
-  }
- ],
- "layout": {
-  "title": {
-   "text": "Grouped Waterfall Chart",
-   "font": {
-    "size": 16
-   }
-  },
-  "font": {
-   "family": "Arial, sans-serif",
-   "size": 12,
-   "color": "#000"
-  },
-  "showlegend": true,
-  "autosize": false,
-  "width": 600,
-  "height": 440,
-  "xaxis": {
-   "title": {
-    "text": "Dose (mg)",
-    "font": {
-     "size": 16
-    }
-   },
-   "range": [-0.5, 2.5],
-   "domain": [0, 1],
-   "type": "category",
-   "showgrid": true,
-   "zeroline": false,
-   "showline": false,
-   "ticks": "",
-   "showticklabels": true,
-   "tick0": 0,
-   "dtick": 1,
-   "tickangle": 0,
-   "tickfont": {
-    "size": 16
-   },
-   "gridcolor": "rgb(255, 255, 255)",
-   "gridwidth": 1.9,
-   "anchor": "y",
-   "autorange": true
-  },
-  "yaxis": {
-   "title": {
-    "text": "Length",
-    "font": {
-     "size": 16
-    }
-   },
-   "range": [0, 29.11281652631579],
-   "domain": [0, 1],
-   "type": "linear",
-   "rangemode": "normal",
-   "showgrid": true,
-   "zeroline": false,
-   "showline": false,
-   "ticks": "",
-   "showticklabels": true,
-   "tick0": 0,
-   "dtick": 5,
-   "tickangle": 0,
-   "tickfont": {
-    "size": 16
-   },
-   "exponentformat": "e",
-   "showexponent": "all",
-   "gridcolor": "rgb(255, 255, 255)",
-   "gridwidth": 1.9,
-   "anchor": "x",
-   "autorange": true
-  },
-  "legend": {
-   "x": 1.02,
-   "y": 0.9319072504424065,
-   "traceorder": "normal",
-   "font": {
-    "size": 16,
-    "color": "rgb(0, 0, 0)"
-   },
-   "bgcolor": "rgba(255, 255, 255, 0)",
-   "bordercolor": "rgba(0, 0, 0, 0)",
-   "borderwidth": 1,
-   "xanchor": "left",
-   "yanchor": "auto"
-  },
-  "annotations": [
-   {
-    "x": 1.3479735318444994,
-    "y": 0.9982142857142856,
-    "xref": "paper",
-    "yref": "paper",
-    "text": "<b>Supplement</b>",
-    "font": {
-     "size": 18
+  "data": [
+    {
+      "x": ["Half Dose", "Full Dose", "Double Dose"],
+      "y": ["13.23", "-22.7", "26.06"],
+      "name": "Orange Juice",
+      "type": "waterfall"
     },
-    "align": "center",
-    "showarrow": false,
-    "borderwidth": 1,
-    "borderpad": 1,
-    "bgcolor": "rgba(0,0,0,0)",
-    "opacity": 1,
-    "xanchor": "auto",
-    "yanchor": "auto"
-   }
+    {
+      "x": ["Half Dose", "Full Dose", "Double Dose"],
+      "y": ["7.98", "-16.77", "26.14"],
+      "name": "Vitamin C",
+      "type": "waterfall"
+    }
   ],
-  "margin": {
-   "l": 80,
-   "r": 0,
-   "b": 80,
-   "t": 80,
-   "pad": 2,
-   "autoexpand": true
-  },
-  "paper_bgcolor": "#fff",
-  "plot_bgcolor": "rgb(217, 217, 217)",
-  "hovermode": "x",
-  "dragmode": "zoom",
-  "waterfallmode": "group",
-  "waterfallgap": 0.2,
-  "waterfallgroupgap": 0.1,
-  "separators": ".,",
-  "hidesources": false
- }
+  "layout": {
+    "title": {
+      "text": "Grouped Waterfall Chart",
+      "font": {
+        "size": 16
+      }
+    },
+    "font": {
+      "family": "Arial, sans-serif",
+      "size": 12,
+      "color": "#000"
+    },
+    "showlegend": true,
+    "autosize": false,
+    "width": 600,
+    "height": 440,
+    "xaxis": {
+      "title": {
+        "text": "Dose (mg)",
+        "font": {
+          "size": 16
+        }
+      },
+      "range": [-0.5, 2.5],
+      "domain": [0, 1],
+      "type": "category",
+      "showgrid": true,
+      "zeroline": false,
+      "showline": false,
+      "ticks": "",
+      "showticklabels": true,
+      "tick0": 0,
+      "dtick": 1,
+      "tickangle": 0,
+      "tickfont": {
+        "size": 16
+      },
+      "gridcolor": "rgb(255, 255, 255)",
+      "gridwidth": 1.9,
+      "anchor": "y",
+      "autorange": true
+    },
+    "yaxis": {
+      "title": {
+        "text": "Length",
+        "font": {
+          "size": 16
+        }
+      },
+      "range": [0, 29.11281652631579],
+      "domain": [0, 1],
+      "type": "linear",
+      "rangemode": "normal",
+      "showgrid": true,
+      "zeroline": false,
+      "showline": false,
+      "ticks": "",
+      "showticklabels": true,
+      "tick0": 0,
+      "dtick": 5,
+      "tickangle": 0,
+      "tickfont": {
+        "size": 16
+      },
+      "exponentformat": "e",
+      "showexponent": "all",
+      "gridcolor": "rgb(255, 255, 255)",
+      "gridwidth": 1.9,
+      "anchor": "x",
+      "autorange": true
+    },
+    "legend": {
+      "x": 1.02,
+      "y": 0.9319072504424065,
+      "traceorder": "normal",
+      "font": {
+        "size": 16,
+        "color": "rgb(0, 0, 0)"
+      },
+      "bgcolor": "rgba(255, 255, 255, 0)",
+      "bordercolor": "rgba(0, 0, 0, 0)",
+      "borderwidth": 1,
+      "xanchor": "left",
+      "yanchor": "auto"
+    },
+    "annotations": [
+      {
+        "x": 1.3479735318444994,
+        "y": 0.9982142857142856,
+        "xref": "paper",
+        "yref": "paper",
+        "text": "<b>Supplement</b>",
+        "font": {
+          "size": 18
+        },
+        "align": "center",
+        "showarrow": false,
+        "borderwidth": 1,
+        "borderpad": 1,
+        "bgcolor": "rgba(0,0,0,0)",
+        "opacity": 1,
+        "xanchor": "auto",
+        "yanchor": "auto"
+      }
+    ],
+    "margin": {
+      "l": 80,
+      "r": 0,
+      "b": 80,
+      "t": 80,
+      "pad": 2,
+      "autoexpand": true
+    },
+    "paper_bgcolor": "#fff",
+    "plot_bgcolor": "rgb(217, 217, 217)",
+    "hovermode": "x",
+    "dragmode": "zoom",
+    "waterfallmode": "group",
+    "waterfallgap": 0.2,
+    "waterfallgroupgap": 0.1,
+    "separators": ".,",
+    "hidesources": false
+  }
 }

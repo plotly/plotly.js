@@ -4,39 +4,37 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var baseAttrs = require('../../plots/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
+const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
-var line = extendFlat(
-    {editType: 'calc'},
-    colorScaleAttrs('line', {editTypeOverride: 'calc'}),
-    {
-        shape: {
-            valType: 'enumerated',
-            values: ['linear', 'hspline'],
-            dflt: 'linear',
-            editType: 'plot',
-            description: [
-                'Sets the shape of the paths.',
-                'If `linear`, paths are composed of straight lines.',
-                'If `hspline`, paths are composed of horizontal curved splines'
-            ].join(' ')
-        },
+var line = extendFlat({ editType: 'calc' }, colorScaleAttrs('line', { editTypeOverride: 'calc' }), {
+    shape: {
+        valType: 'enumerated',
+        values: ['linear', 'hspline'],
+        dflt: 'linear',
+        editType: 'plot',
+        description: [
+            'Sets the shape of the paths.',
+            'If `linear`, paths are composed of straight lines.',
+            'If `hspline`, paths are composed of horizontal curved splines'
+        ].join(' ')
+    },
 
-        hovertemplate: hovertemplateAttrs({
+    hovertemplate: hovertemplateAttrs(
+        {
             editType: 'plot',
             arrayOk: false
-        }, {
+        },
+        {
             keys: ['count', 'probability'],
-            description: [
-                'This value here applies when hovering over lines.'
-            ].join(' ')
-        })
-    }
-);
+            description: ['This value here applies when hovering over lines.'].join(' ')
+        }
+    ),
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'plot' })
+});
 
 module.exports = {
-    domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
+    domain: domainAttrs({ name: 'parcats', trace: true, editType: 'calc' }),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['count', 'probability'],
@@ -55,20 +53,21 @@ module.exports = {
             'If `dimension`, hover interactions take place across all categories per dimension.'
         ].join(' ')
     },
-    hovertemplate: hovertemplateAttrs({
-        editType: 'plot',
-        arrayOk: false
-    }, {
-        keys: [
-            'count', 'probability', 'category',
-            'categorycount', 'colorcount', 'bandcolorcount'
-        ],
-        description: [
-            'This value here applies when hovering over dimensions.',
-            'Note that `*categorycount`, *colorcount* and *bandcolorcount*',
-            'are only available when `hoveron` contains the *color* flag'
-        ].join(' ')
-    }),
+    hovertemplate: hovertemplateAttrs(
+        {
+            editType: 'plot',
+            arrayOk: false
+        },
+        {
+            keys: ['count', 'probability', 'category', 'categorycount', 'colorcount', 'bandcolorcount'],
+            description: [
+                'This value here applies when hovering over dimensions.',
+                'Note that *categorycount*, *colorcount* and *bandcolorcount*',
+                'are only available when `hoveron` contains the *color* flag. '
+            ].join(' ')
+        }
+    ),
+    hovertemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     arrangement: {
         valType: 'enumerated',
@@ -119,9 +118,7 @@ module.exports = {
         },
         categoryorder: {
             valType: 'enumerated',
-            values: [
-                'trace', 'category ascending', 'category descending', 'array'
-            ],
+            values: ['trace', 'category ascending', 'category descending', 'array'],
             dflt: 'trace',
             editType: 'calc',
             description: [

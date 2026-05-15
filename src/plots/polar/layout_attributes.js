@@ -36,6 +36,7 @@ var axisTickAttrs = overrideAll({
     ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     labelalias: axesAttrs.labelalias,
+    minorloglabels: axesAttrs.minorloglabels,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,
@@ -73,7 +74,7 @@ var radialAxisAttrs = {
         dflt: 'tozero',
         editType: 'calc',
         description: [
-            'If *tozero*`, the range extends to 0,',
+            'If *tozero*, the range extends to 0,',
             'regardless of the input data',
             'If *nonnegative*, the range is non-negative,',
             'regardless of the input data.',
