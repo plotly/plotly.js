@@ -156,9 +156,11 @@ module.exports = function setConvert(ax, fullLayout) {
         var arrayOut = new Array(len);
 
         for(var i = 0; i < len; i++) {
-            var v0 = (arrayIn[0] || [])[i];
-            var v1 = (arrayIn[1] || [])[i];
-            arrayOut[i] = getCategoryIndex([v0, v1]);
+            var vs = [];
+            for(var j = 0; j < ax.levelNr; j++) {
+                vs.push((arrayIn[j] || [])[i]);
+            }
+            arrayOut[i] = getCategoryIndex(vs);
         }
 
         return arrayOut;
@@ -333,6 +335,7 @@ module.exports = function setConvert(ax, fullLayout) {
         // N.B. multicategory axes don't define d2c and d2l,
         // as 'data-to-calcdata' conversion needs to take into
         // account all data array items as in ax.makeCalcdata.
+        var sortLib = require('../../lib/sort_traces');
 
         ax.r2d = ax.c2d = ax.l2d = getCategoryName;
         ax.d2r = ax.d2l_noadd = getCategoryPosition;
@@ -357,7 +360,13 @@ module.exports = function setConvert(ax, fullLayout) {
             return ensureNumber(v);
         };
 
-        ax.setupMultiCategory = function(fullData) {
+        ax.setupMultiCategory = function(gd) {
+            var fullData = gd._fullData;
+            // axes_test should set up category maps correctly for multicategory axes
+            if(!fullData) {
+                fullData = gd;
+            }
+
             var traceIndices = ax._traceIndices;
             var i, j;
 
@@ -371,49 +380,98 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            // [ [cnt, {$cat: index}], for 1,2 ]
-            var seen = [[0, {}], [0, {}]];
-            // [ [arrayIn[0][i], arrayIn[1][i]], for i .. N ]
-            var list = [];
+            var axLabels = [];
+            var fullObjectList = [];
+            var cols = [];
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
+                cols = [];
+
+                for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
+                    cols.push('col' + k.toString());
+                }
+                if(cols.length < 2) {
+                    return;
+                }
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];
-                    var len = trace._length || Lib.minRowLength(arrayIn);
-
-                    if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
-                        for(j = 0; j < len; j++) {
-                            var v0 = arrayIn[0][j];
-                            var v1 = arrayIn[1][j];
-
-                            if(isValidCategory(v0) && isValidCategory(v1)) {
-                                list.push([v0, v1]);
-
-                                if(!(v0 in seen[0][1])) {
-                                    seen[0][1][v0] = seen[0][0]++;
-                                }
-                                if(!(v1 in seen[1][1])) {
-                                    seen[1][1][v1] = seen[1][0]++;
-                                }
+                    if(isArrayOrTypedArray(arrayIn[0])) {
+                        var arrays = arrayIn.map(function(x) {
+                            return x;
+                        });
+                        var valLetter;
+                        if(trace.type === 'ohlc' | trace.type === 'candlestick') {
+                            var t = trace;
+                            var valsTransform = sortLib.transpose([t.open, t.high, t.low, t.close]);
+                            arrays.push(valsTransform);
+                        } else if(trace.z) {
+                            if(axLetter === 'x') {
+                                arrays.push(sortLib.transpose(trace.z));
+                            } else {
+                                arrays.push(trace.z);
                             }
+                            valLetter = 'z';
+                        } else if(axLetter === 'y' && trace.x) {
+                            arrays.push(trace.x);
+                            valLetter = 'x';
+                        } else if(trace.y) {
+                            arrays.push(trace.y);
+                            valLetter = 'y';
+                        } else {
+                            var nullArray = arrayIn[0].map(function() {return null;});
+                            arrays.push(nullArray);
+                        }
+                        var objList = sortLib.matrixToObjectList(arrays, cols);
+
+                        Array.prototype.push.apply(fullObjectList, objList);
+
+                        // convert the trace data from list to object and sort (backwards, stable sort)
+                        var sortedObjectList = sortLib.sortObjectList(cols, objList);
+                        var matrix = sortLib.objectListToList(sortedObjectList);
+                        var sortedMatrix = sortLib.sortedMatrix(matrix);
+
+                        axLabels = sortedMatrix[0].slice();
+                        var axVals = sortedMatrix[1];
+
+                        if(valLetter === 'z' & axLetter === 'x') {
+                            axVals = sortLib.transpose(axVals);
+                        }
+
+                        if(trace.type === 'ohlc' | trace.type === 'candlestick') {
+                            var sortedValsTransform = sortLib.transpose(axVals);
+                            gd._fullData[i].open = sortedValsTransform[0];
+                            gd._fullData[i].high = sortedValsTransform[1];
+                            gd._fullData[i].low = sortedValsTransform[2];
+                            gd._fullData[i].close = sortedValsTransform[3];
+                        }
+                        // Could/should set sorted y axis values for each trace as the sorted values are already available.
+                        // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
+
+                        var transposedAxLabels = sortLib.transpose(axLabels);
+                        if(gd._fullData) {
+                            gd._fullData[i][axLetter] = transposedAxLabels;
+                        }
+                        if(valLetter) {
+                            gd._fullData[i][valLetter] = axVals;
                         }
                     }
                 }
             }
 
-            list.sort(function(a, b) {
-                var ind0 = seen[0][1];
-                var d = ind0[a[0]] - ind0[b[0]];
-                if(d) return d;
+            if(axLabels.length) {
+                ax.levelNr = axLabels[0].length;
+                ax.levels = axLabels[0].map(function(_, idx) {return idx;});
+                var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
+                var fullList = sortLib.objectListToList(fullSortedObjectList);
+                var fullSortedMatrix = sortLib.sortedMatrix(fullList, true);
 
-                var ind1 = seen[1][1];
-                return ind1[a[1]] - ind1[b[1]];
-            });
+                var fullXs = fullSortedMatrix[0].slice();
 
-            for(i = 0; i < list.length; i++) {
-                setCategoryIndex(list[i]);
+                for(i = 0; i < fullXs.length; i++) {
+                    setCategoryIndex(fullXs[i]);
+                }
             }
         };
     }
