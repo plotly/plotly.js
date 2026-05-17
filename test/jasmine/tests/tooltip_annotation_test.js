@@ -225,3 +225,148 @@ describe('Log Tooltip interactions', function() {
         }, 20);
     });
 });
+
+describe('Tooltip callback interactions', function() {
+    var gd;
+
+    function pushN(xs, ys, x, y, n) {
+        for(var i = 0; i < n; i++) {
+            xs.push(x);
+            ys.push(y);
+        }
+    }
+
+    function clickDataPoint(gd, x, y) {
+        var bb = gd.getBoundingClientRect();
+        var size = gd._fullLayout._size;
+        var xa = gd._fullLayout.xaxis;
+        var ya = gd._fullLayout.yaxis;
+
+        click(
+            bb.left + size.l + xa.c2p(x),
+            bb.top + size.t + ya.c2p(y)
+        );
+    }
+
+    beforeAll(function(done) {
+        var xs = [];
+        var ys = [];
+
+        pushN(xs, ys, 0.5, 0.5, 1);
+        pushN(xs, ys, 1.5, 1.5, 2);
+        pushN(xs, ys, 2.5, 1.5, 5);
+        pushN(xs, ys, 2.5, 2.5, 3);
+
+        gd = createGraphDiv();
+        Plotly.newPlot(gd, [{
+            type: 'histogram2d',
+            x: xs,
+            y: ys,
+            autobinx: false,
+            autobiny: false,
+            xbins: {start: 0, end: 3, size: 1},
+            ybins: {start: 0, end: 3, size: 1},
+            colorscale: 'Blues'
+        }], {
+            width: 400,
+            height: 400,
+            margin: {l: 60, r: 20, t: 20, b: 60},
+            hovermode: 'closest',
+            annotations: []
+        }, {
+            editable: true
+        })
+        .then(function() {
+            gd.data[0].tooltiptemplate = 'Local max: %{z}<br>x: %{x}<br>y: %{y}<br>kernel: %{kernelSizeX} x %{kernelSizeY}';
+            gd.data[0].tooltipfunction = function(ctx) {
+                var kernelSizeX = 2;
+                var kernelSizeY = 2;
+                var cd0 = ctx.calcdata[0];
+                var xs = ctx.fullTrace._x;
+                var ys = ctx.fullTrace._y;
+                var z = ctx.fullTrace._z || cd0.z;
+                var halfX = kernelSizeX / 2;
+                var halfY = kernelSizeY / 2;
+                var minX = ctx.point.x - halfX;
+                var maxX = ctx.point.x + halfX;
+                var minY = ctx.point.y - halfY;
+                var maxY = ctx.point.y + halfY;
+                var best = -Infinity;
+                var bestX = ctx.point.x;
+                var bestY = ctx.point.y;
+
+                if(!xs || !xs.length) {
+                    xs = cd0.xRanges.map(function(range) { return (range[0] + range[1]) / 2; });
+                }
+                if(!ys || !ys.length) {
+                    ys = cd0.yRanges.map(function(range) { return (range[0] + range[1]) / 2; });
+                }
+
+                for(var iy = 0; iy < ys.length; iy++) {
+                    var y = ys[iy];
+                    if(y < minY || y > maxY) continue;
+
+                    for(var ix = 0; ix < xs.length; ix++) {
+                        var x = xs[ix];
+                        if(x < minX || x > maxX) continue;
+
+                        var value = z[iy][ix];
+                        if(value > best) {
+                            best = value;
+                            bestX = x;
+                            bestY = y;
+                        }
+                    }
+                }
+
+                return {
+                    point: {
+                        x: bestX,
+                        y: bestY,
+                        z: best,
+                        kernelSizeX: kernelSizeX,
+                        kernelSizeY: kernelSizeY
+                    },
+                    annotation: {
+                        x: bestX,
+                        y: bestY
+                    }
+                };
+            };
+        })
+        .then(done, done.fail);
+    });
+
+    afterAll(function() {
+        destroyGraphDiv();
+    });
+
+    it('should create a tooltip annotation at the local maximum inside the callback kernel', function(done) {
+        modeBarButtons.tooltip.click(gd);
+        setTimeout(function() {
+            clickDataPoint(gd, 1.5, 1.5);
+
+            setTimeout(function() {
+                expect(gd._fullLayout.annotations.length).toBe(1);
+                expect(gd._fullLayout.annotations[0].text).toBe('Local max: 5<br>x: 2.5<br>y: 1.5<br>kernel: 2 x 2');
+                expect(gd._fullLayout.annotations[0].x).toBe(2.5);
+                expect(gd._fullLayout.annotations[0].y).toBe(1.5);
+                done();
+            }, 30);
+        }, 30);
+    });
+
+    it('should cancel tooltip creation when tooltipfunction returns false', function(done) {
+        Plotly.relayout(gd, {annotations: []}).then(function() {
+            gd.data[0].tooltipfunction = function() { return false; };
+
+            clickDataPoint(gd, 1.5, 1.5);
+
+            setTimeout(function() {
+                expect(gd._fullLayout.annotations.length).toBe(0);
+                done();
+            }, 30);
+        })
+        .catch(done.fail);
+    });
+});

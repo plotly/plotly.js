@@ -702,6 +702,7 @@ modeBarButtons.tooltip = {
             gd._tooltipClickHandler = function(data) {
                 var traceIndex = data.points[0].curveNumber;
                 var trace = gd.data[traceIndex];
+                var fullTrace = gd._fullData[traceIndex];
                 var pts = data.points[0];
 
                 // handle missing axis in data.points[0] (in scattercarpet)
@@ -722,13 +723,32 @@ modeBarButtons.tooltip = {
 
                 var userTemplate = trace.tooltiptemplate;
                 if(userTemplate === undefined || userTemplate === null || userTemplate === '') {
-                    userTemplate = gd._fullData[traceIndex].tooltiptemplate;
+                    userTemplate = fullTrace.tooltiptemplate;
                 }
                 if(userTemplate === undefined || userTemplate === null || userTemplate === '') {
                     userTemplate = defaultTemplate;
                 }
-                var customStyle = lodash.defaults({}, trace.tooltip, DEFAULT_STYLE);  // Merge custom style with default
-                addTooltip(gd, data, userTemplate, customStyle);
+
+                var callbackResult;
+                if(typeof trace.tooltipfunction === 'function') {
+                    callbackResult = trace.tooltipfunction({
+                        gd: gd,
+                        eventData: data,
+                        event: data.event,
+                        point: pts,
+                        trace: trace,
+                        fullTrace: fullTrace,
+                        calcdata: gd.calcdata && gd.calcdata[traceIndex],
+                        fullLayout: fullLayout,
+                        xaxis: pts.xaxis,
+                        yaxis: pts.yaxis
+                    });
+
+                    if(callbackResult === false || callbackResult === null) return;
+                }
+
+                var customStyle = trace.tooltip;
+                addTooltip(gd, data, userTemplate, customStyle, callbackResult);
             };
             gd.on('plotly_click', gd._tooltipClickHandler);
         } else {
@@ -791,11 +811,27 @@ function stackedCoord(gd, pts) {
     }
 }
 
-function addTooltip(gd, data, userTemplate, customStyle) {
+function addTooltip(gd, data, userTemplate, customStyle, callbackResult) {
     var pts = data.points[0];
     var fullLayout = gd._fullLayout;
 
     if(pts && pts.xaxis && pts.yaxis && fullLayout) {
+        var annotationOverrides;
+        var styleOverrides;
+
+        if(typeof callbackResult === 'string') {
+            userTemplate = callbackResult;
+        } else if(callbackResult && typeof callbackResult === 'object') {
+            if(callbackResult.point) {
+                pts = lodash.defaults({}, callbackResult.point, pts);
+            }
+            if(callbackResult.text !== undefined) {
+                userTemplate = callbackResult.text;
+            }
+            annotationOverrides = callbackResult.annotation;
+            styleOverrides = callbackResult.style;
+        }
+
         userTemplate = userTemplate || '';
 
         // Convert template to text using Plotly hovertemplate formatting method
@@ -845,7 +881,13 @@ function addTooltip(gd, data, userTemplate, customStyle) {
             ay: -20
         };
 
-        lodash.defaults(newAnnotation, customStyle);
+        if(annotationOverrides) {
+            newAnnotation = Lib.extendFlat({}, newAnnotation, annotationOverrides);
+        }
+
+        var mergedStyle = lodash.defaults({}, styleOverrides, customStyle, DEFAULT_STYLE);
+
+        lodash.defaults(newAnnotation, mergedStyle);
 
         // Prevent having multiple tooltip annotations on the same point (useful when user wants to annotate nearby points)
         // Does not prevent multiple tooltips on histogram (would not be useful on bars)
