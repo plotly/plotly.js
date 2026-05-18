@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v3.5.0
+* plotly.js (basic) v3.5.1
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -42,7 +42,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.5.0";
+      exports.version = "3.5.1";
     }
   });
 
@@ -25552,20 +25552,21 @@ var Plotly = (() => {
           var axrev = rng[1] < rng[0];
           if (axrev) rng.reverse();
           var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
-          if (minallowed !== void 0 && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
-          if (maxallowed !== void 0 && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
-          if (range[0] === range[1]) {
-            var minL = ax.l2r(minallowed);
-            var maxL = ax.l2r(maxallowed);
+          if (minallowed !== void 0 && rng[0] < bounds[0]) {
+            range[axrev ? 1 : 0] = minallowed;
+            rng[0] = bounds[0];
+          }
+          if (maxallowed !== void 0 && rng[1] > bounds[1]) {
+            range[axrev ? 0 : 1] = maxallowed;
+            rng[1] = bounds[1];
+          }
+          if (rng[0] >= rng[1]) {
             if (minallowed !== void 0) {
-              var _max = minL + 1;
-              if (maxallowed !== void 0) _max = Math.min(_max, maxL);
-              range[axrev ? 1 : 0] = _max;
-            }
-            if (maxallowed !== void 0) {
-              var _min = maxL + 1;
-              if (minallowed !== void 0) _min = Math.max(_min, minL);
-              range[axrev ? 0 : 1] = _min;
+              var _max = bounds[0] + 1;
+              if (maxallowed !== void 0) _max = Math.min(_max, bounds[1]);
+              range[axrev ? 0 : 1] = ax.l2r(_max);
+            } else if (maxallowed !== void 0) {
+              range[axrev ? 1 : 0] = ax.l2r(bounds[1] - 1);
             }
           }
         };

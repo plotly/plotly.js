@@ -3,7 +3,6 @@ import { build } from 'esbuild';
 import fs from 'fs';
 import http from 'http';
 import minimist from 'minimist';
-import open from 'open';
 import path from 'path';
 import { localDevReglCodegenConfig as config } from '../../esbuild-config.js';
 import constants from '../../tasks/util/constants.js';
@@ -17,7 +16,6 @@ import {
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
-var strict = args.strict;
 
 var reglTraceList = ['parcoords', 'scattergl', 'scatterpolargl', 'splom'];
 
@@ -68,7 +66,10 @@ await getMockFiles()
 server.listen(PORT);
 
 // open up browser window
-open('http://localhost:' + PORT + '/devtools/regl_codegen/index' + (strict ? '-strict' : '') + '.html');
+const serverUrl = `http://localhost:${PORT}/devtools/regl_codegen/index.html`;
+console.log('\x1b[31mOpen the following link to launch a browser window and precompile the regl shaders.');
+console.log('This can be processor and memory intensive.\x1b[0m\n');
+console.log(`  \x1b[1m\x1b[32m➜\x1b[0m  \x1b[1mLocal:\x1b[0m   \x1b[1m\x1b[36m${serverUrl}\x1b[0m\n`);
 
 await build(config);
 

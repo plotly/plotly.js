@@ -2,7 +2,6 @@ import ecstatic from 'ecstatic';
 import { build, context } from 'esbuild';
 import http from 'http';
 import minimist from 'minimist';
-import open from 'open';
 import { devtoolsConfig, localDevConfig } from '../../esbuild-config.js';
 import constants from '../../tasks/util/constants.js';
 import { createMocksList, getMockFiles, readFiles, saveMockListToFile } from '../dashboard_utilities.mjs';
@@ -64,5 +63,6 @@ function devServer() {
     indexName += '.html';
 
     // open up browser window
-    open(`http://localhost:${PORT}/devtools/test_dashboard/${indexName}${strict ? '?strict=true' : ''}`);
+    const serverUrl = `http://localhost:${PORT}/devtools/test_dashboard/${indexName}${strict ? '?strict=true' : ''}`;
+    console.log(`  \x1b[1m\x1b[32m➜\x1b[0m  \x1b[1mLocal:\x1b[0m   \x1b[1m\x1b[36m${serverUrl}\x1b[0m\n`);
 }

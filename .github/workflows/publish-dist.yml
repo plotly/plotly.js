@@ -1,0 +1,86 @@
+name: Publish Dist
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+concurrency:
+  group: publish-dist-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Set up build environment
+        run: .github/scripts/env_build.sh
+
+      - name: Set draft version in package.json
+        run: |
+          node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" $(git describe)
+          # View package.json diff from last release (should show that the version has been changed to the draft version)
+          git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+
+      - name: Build dist/
+        run: npm run build
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload Node 18 archive of plotly.js build folder
+        with:
+          name: dist-node18
+          retention-days: 7
+          path: dist/
+
+      - name: Test plot-schema.json diff
+        run: diff --unified --color dist/plot-schema.json test/plot-schema.json
+
+  publish-dist-node-v22:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: '22.14.0'
+          cache: 'npm'
+
+      - name: Set up build environment
+        run: .github/scripts/env_build.sh
+
+      - name: Set draft version in package.json
+        run: |
+          node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" $(git describe)
+          # View package.json diff from last release (should show that the version has been changed to the draft version)
+          git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+
+      - name: Build dist/
+        run: npm run build
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        name: Upload Node 22 archive of plotly.js build folder
+        with:
+          name: dist-node22
+          retention-days: 7
+          path: dist/
+
+      - name: Test plot-schema.json diff
+        run: diff --unified --color dist/plot-schema.json test/plot-schema.json

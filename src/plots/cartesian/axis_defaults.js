@@ -154,9 +154,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         attributes: layoutAttributes
     });
 
-    // delete minor when no minor ticks or gridlines
+    // delete minor when no minor ticks or gridlines and no hidden minor ticks are needed
     if(
         hasMinor &&
+        containerOut.ticklabelindex == null &&
         !containerOut.minor.ticks &&
         !containerOut.minor.showgrid
     ) {

@@ -78,6 +78,19 @@ module.exports = {
             'If false, hover interactions are disabled.'
         ].join(' ')
     },
+    hoversort: {
+        valType: 'enumerated',
+        values: ['trace', 'value descending', 'value ascending'],
+        dflt: 'trace',
+        editType: 'none',
+        description: [
+            'Determines the order of items shown in unified hover labels.',
+            'If *trace*, items are sorted by trace index.',
+            'If *value descending*, items are sorted by value from largest to smallest.',
+            'If *value ascending*, items are sorted by value from smallest to largest.',
+            'Only applies when `hovermode` is *x unified* or *y unified*.'
+        ].join(' ')
+    },
     hoversubplots: {
         valType: 'enumerated',
         values: ['single', 'overlaying', 'axis'],

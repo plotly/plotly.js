@@ -169,10 +169,9 @@ making changes that affect the usage of regl shaders, you would need to run
 npm run regl-codegen
 ```
 
-to regenerate the regl code. This opens a browser window, runs through all
-traces with 'regl' in the tags, and stores the captured code into 
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it would be a no-op, but
-if there are changes, you would need to commit them.
+to regenerate the regl code. This will prompt you to open a browser window. This will then run through all
+traces with 'regl' in the tags, and store the captured code into 
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it will be a no-op, but if there are changes, you will need to commit them.
 
 This is needed because regl performs codegen in runtime which breaks CSP
 compliance, and so for strict builds we pre-generate regl shader code here.
