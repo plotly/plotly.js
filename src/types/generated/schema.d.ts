@@ -3588,7 +3588,7 @@ export interface OhlcData {
     line?: {
         /** Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*). Note that this style setting can also be set per direction via `increasing.line.dash` and `decreasing.line.dash`. */
         dash?: Dash;
-        /** [object Object] Note that this style setting can also be set per direction via `increasing.line.width` and `decreasing.line.width`. */
+        /** Sets the line width (in px). Note that this style setting can also be set per direction via `increasing.line.width` and `decreasing.line.width`. */
         width?: number;
     };
     /** Sets the low values. */
