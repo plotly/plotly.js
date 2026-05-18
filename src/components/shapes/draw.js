@@ -195,19 +195,33 @@ function drawOne(gd, index) {
 function forwardHoverClickAnywhere(gd, path, plotinfo) {
     if (!plotinfo?.id) return;
 
-    var node = path.node();
+    const node = path.node();
 
-    node.addEventListener('mousemove', function (evt) {
+    // Fx.hover/Fx.click compute plot-area pixel coordinates from
+    // evt.clientX/Y relative to evt.target's bounding box.
+    // The shape path's bbox differs from the plot area, so we
+    // re-target events to the subplot's nsewdrag element.
+    function patchedEvt(evt) {
+        const mainPlot = plotinfo.mainplotinfo || plotinfo;
+        const nsew = mainPlot?.draglayer?.select('.nsewdrag').node();
+        if (!nsew) return null;
+
+        return { clientX: evt.clientX, clientY: evt.clientY, target: nsew };
+    }
+
+    node.addEventListener('mousemove', (evt) => {
         if (gd._dragging) return;
         if (gd._fullLayout.hoveranywhere) {
-            Fx.hover(gd, evt, plotinfo.id);
+            const e = patchedEvt(evt);
+            if (e) Fx.hover(gd, e, plotinfo.id);
         }
     });
 
-    node.addEventListener('click', function (evt) {
+    node.addEventListener('click', (evt) => {
         if (gd._dragged) return;
         if (gd._fullLayout.clickanywhere) {
-            Fx.click(gd, evt, plotinfo.id);
+            const e = patchedEvt(evt);
+            if (e) Fx.click(gd, e, plotinfo.id);
         }
     });
 }
