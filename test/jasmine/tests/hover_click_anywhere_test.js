@@ -6,7 +6,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 
-function makePlot(gd, layoutExtras) {
+function makePlot(gd, layoutExtras = {}, configExtras) {
     return Plotly.newPlot(
         gd,
         [
@@ -26,8 +26,9 @@ function makePlot(gd, layoutExtras) {
                 yaxis: { range: [0, 10] },
                 hovermode: 'closest'
             },
-            layoutExtras || {}
-        )
+            layoutExtras
+        ),
+        configExtras
     );
 }
 
@@ -149,6 +150,101 @@ describe('hoveranywhere', function () {
             })
             .then(done, done.fail);
     });
+
+    it('emits plotly_hover over an editable shape', (done) => {
+        let hoverData;
+
+        makePlot(gd, {
+            hoveranywhere: true,
+            shapes: [
+                {
+                    type: 'rect',
+                    x0: 6,
+                    x1: 9,
+                    y0: 6,
+                    y1: 9,
+                    fillcolor: 'rgba(0, 128, 255, 0.8)',
+                    editable: true
+                }
+            ]
+        })
+            .then(() => {
+                gd.on('plotly_hover', (d) => {
+                    hoverData = d;
+                });
+
+                // Dispatch mousemove directly on the shape path element,
+                // which has pointer-events that intercept events from the
+                // underlying maindrag.
+                const shapePath = gd.querySelector('.shape-group path');
+                expect(shapePath).toBeDefined();
+
+                const bb = gd.getBoundingClientRect();
+                const s = gd._fullLayout._size;
+                // center of shape at data (7.5, 7.5) = plot-area px (225, 75)
+                shapePath.dispatchEvent(
+                    new MouseEvent('mousemove', {
+                        bubbles: true,
+                        clientX: bb.left + s.l + 225,
+                        clientY: bb.top + s.t + 75
+                    })
+                );
+                Lib.clearThrottle();
+
+                expect(hoverData).toBeDefined();
+                expect(hoverData.points).toEqual([]);
+                expect(hoverData.xvals[0]).toBeCloseTo(7.5, 1);
+                expect(hoverData.yvals[0]).toBeCloseTo(7.5, 1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('emits plotly_hover over a shape with edits.shapePosition', (done) => {
+        let hoverData;
+
+        makePlot(
+            gd,
+            {
+                hoveranywhere: true,
+                shapes: [
+                    {
+                        type: 'rect',
+                        x0: 6,
+                        x1: 9,
+                        y0: 6,
+                        y1: 9,
+                        fillcolor: 'rgba(0, 128, 255, 0.8)'
+                    }
+                ]
+            },
+            { edits: { shapePosition: true } }
+        )
+            .then(() => {
+                gd.on('plotly_hover', (d) => {
+                    hoverData = d;
+                });
+
+                const shapePath = gd.querySelector('.shape-group path');
+                expect(shapePath).toBeDefined();
+
+                const bb = gd.getBoundingClientRect();
+                const s = gd._fullLayout._size;
+                shapePath.dispatchEvent(
+                    new MouseEvent('mousemove', {
+                        bubbles: true,
+                        clientX: bb.left + s.l + 225,
+                        clientY: bb.top + s.t + 75
+                    })
+                );
+                Lib.clearThrottle();
+
+                expect(hoverData).toBeDefined();
+                expect(hoverData.points).toEqual([]);
+                expect(hoverData.xvals[0]).toBeCloseTo(7.5, 1);
+                expect(hoverData.yvals[0]).toBeCloseTo(7.5, 1);
+            })
+            .then(done, done.fail);
+    });
 });
 
 describe('clickanywhere', function () {
@@ -202,6 +298,96 @@ describe('clickanywhere', function () {
                 click(bb.left + s.l + 250, bb.top + s.t + 50);
 
                 expect(clickData).toBeUndefined();
+            })
+            .then(done, done.fail);
+    });
+
+    it('emits plotly_click over an editable shape', (done) => {
+        let clickData;
+
+        makePlot(gd, {
+            clickanywhere: true,
+            shapes: [
+                {
+                    type: 'rect',
+                    x0: 6,
+                    x1: 9,
+                    y0: 6,
+                    y1: 9,
+                    fillcolor: 'rgba(0, 128, 255, 0.8)',
+                    editable: true
+                }
+            ]
+        })
+            .then(() => {
+                gd.on('plotly_click', (d) => {
+                    clickData = d;
+                });
+
+                const shapePath = gd.querySelector('.shape-group path');
+                expect(shapePath).toBeDefined();
+
+                const bb = gd.getBoundingClientRect();
+                const s = gd._fullLayout._size;
+                // center of shape at data (7.5, 7.5) = plot-area px (225, 75)
+                shapePath.dispatchEvent(
+                    new MouseEvent('click', {
+                        bubbles: true,
+                        clientX: bb.left + s.l + 225,
+                        clientY: bb.top + s.t + 75
+                    })
+                );
+
+                expect(clickData).toBeDefined();
+                expect(clickData.points).toEqual([]);
+                expect(clickData.xvals[0]).toBeCloseTo(7.5, 1);
+                expect(clickData.yvals[0]).toBeCloseTo(7.5, 1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('emits plotly_click over a shape with edits.shapePosition', (done) => {
+        let clickData;
+
+        makePlot(
+            gd,
+            {
+                clickanywhere: true,
+                shapes: [
+                    {
+                        type: 'rect',
+                        x0: 6,
+                        x1: 9,
+                        y0: 6,
+                        y1: 9,
+                        fillcolor: 'rgba(0, 128, 255, 0.8)'
+                    }
+                ]
+            },
+            { edits: { shapePosition: true } }
+        )
+            .then(() => {
+                gd.on('plotly_click', (d) => {
+                    clickData = d;
+                });
+
+                const shapePath = gd.querySelector('.shape-group path');
+                expect(shapePath).toBeDefined();
+
+                const bb = gd.getBoundingClientRect();
+                const s = gd._fullLayout._size;
+                shapePath.dispatchEvent(
+                    new MouseEvent('click', {
+                        bubbles: true,
+                        clientX: bb.left + s.l + 225,
+                        clientY: bb.top + s.t + 75
+                    })
+                );
+
+                expect(clickData).toBeDefined();
+                expect(clickData.points).toEqual([]);
+                expect(clickData.xvals[0]).toBeCloseTo(7.5, 1);
+                expect(clickData.yvals[0]).toBeCloseTo(7.5, 1);
             })
             .then(done, done.fail);
     });
