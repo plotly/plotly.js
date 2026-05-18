@@ -155,7 +155,7 @@ module.exports = {
             values: ['top', 'bottom'],
             dflt: 'top',
             editType: 'plot',
-            description: ['Determines on which side of the the treemap the', '`pathbar` should be presented.'].join(' ')
+            description: ['Determines on which side of the treemap the', '`pathbar` should be presented.'].join(' ')
         },
 
         edgeshape: {
