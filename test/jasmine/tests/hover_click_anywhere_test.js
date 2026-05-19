@@ -32,14 +32,12 @@ function makePlot(gd, layoutExtras = {}, configExtras) {
     );
 }
 
-describe('hoveranywhere', function () {
+describe('hoveranywhere', () => {
     'use strict';
 
     var gd;
 
-    beforeEach(function () {
-        gd = createGraphDiv();
-    });
+    beforeEach(() => (gd = createGraphDiv()));
     afterEach(destroyGraphDiv);
 
     function _hover(xPixel, yPixel) {
@@ -57,14 +55,12 @@ describe('hoveranywhere', function () {
         Lib.clearThrottle();
     }
 
-    it('emits plotly_hover with coordinate data on empty space', function (done) {
+    it('emits plotly_hover with coordinate data on empty space', (done) => {
         var hoverData;
 
         makePlot(gd, { hoveranywhere: true })
-            .then(function () {
-                gd.on('plotly_hover', function (d) {
-                    hoverData = d;
-                });
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
 
                 // hover over empty area (no data points nearby)
                 _hover(250, 50);
@@ -83,28 +79,24 @@ describe('hoveranywhere', function () {
             .then(done, done.fail);
     });
 
-    it('does not emit plotly_hover event on empty space when hoveranywhere is false', function (done) {
+    it('does not emit plotly_hover event on empty space when hoveranywhere is false', (done) => {
         var hoverData;
 
         makePlot(gd)
-            .then(function () {
-                gd.on('plotly_hover', function (d) {
-                    hoverData = d;
-                });
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
                 _hover(250, 50);
                 expect(hoverData).toBeUndefined();
             })
             .then(done, done.fail);
     });
 
-    it('still returns normal point data on traces', function (done) {
+    it('still returns normal point data on traces', (done) => {
         var hoverData;
 
         makePlot(gd, { hoveranywhere: true })
-            .then(function () {
-                gd.on('plotly_hover', function (d) {
-                    hoverData = d;
-                });
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
 
                 // hover near (2, 3)
                 _hover(60, 210);
@@ -137,14 +129,12 @@ describe('hoveranywhere', function () {
             .then(done, done.fail);
     });
 
-    it('respects hovermode:false', function (done) {
+    it('respects hovermode:false', (done) => {
         var hoverData;
 
         makePlot(gd, { hoveranywhere: true, hovermode: false })
-            .then(function () {
-                gd.on('plotly_hover', function (d) {
-                    hoverData = d;
-                });
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
                 _hover(250, 50);
                 expect(hoverData).toBeUndefined();
             })
@@ -169,9 +159,7 @@ describe('hoveranywhere', function () {
             ]
         })
             .then(() => {
-                gd.on('plotly_hover', (d) => {
-                    hoverData = d;
-                });
+                gd.on('plotly_hover', (d) => (hoverData = d));
 
                 // Dispatch mousemove directly on the shape path element,
                 // which has pointer-events that intercept events from the
@@ -220,9 +208,7 @@ describe('hoveranywhere', function () {
             { edits: { shapePosition: true } }
         )
             .then(() => {
-                gd.on('plotly_hover', (d) => {
-                    hoverData = d;
-                });
+                gd.on('plotly_hover', (d) => (hoverData = d));
 
                 const shapePath = gd.querySelector('.shape-group path');
                 expect(shapePath).toBeDefined();
@@ -247,24 +233,20 @@ describe('hoveranywhere', function () {
     });
 });
 
-describe('clickanywhere', function () {
+describe('clickanywhere', () => {
     'use strict';
 
     var gd;
 
-    beforeEach(function () {
-        gd = createGraphDiv();
-    });
+    beforeEach(() => (gd = createGraphDiv()));
     afterEach(destroyGraphDiv);
 
-    it('emits plotly_click with empty points on empty space', function (done) {
+    it('emits plotly_click with empty points on empty space', (done) => {
         var clickData;
 
         makePlot(gd, { clickanywhere: true })
-            .then(function () {
-                gd.on('plotly_click', function (d) {
-                    clickData = d;
-                });
+            .then(() => {
+                gd.on('plotly_click', (d) => (clickData = d));
 
                 var bb = gd.getBoundingClientRect();
                 var s = gd._fullLayout._size;
@@ -284,14 +266,12 @@ describe('clickanywhere', function () {
             .then(done, done.fail);
     });
 
-    it('does not emit plotly_click event on empty space when clickanywhere is false', function (done) {
+    it('does not emit plotly_click event on empty space when clickanywhere is false', (done) => {
         var clickData;
 
         makePlot(gd)
-            .then(function () {
-                gd.on('plotly_click', function (d) {
-                    clickData = d;
-                });
+            .then(() => {
+                gd.on('plotly_click', (d) => (clickData = d));
 
                 var bb = gd.getBoundingClientRect();
                 var s = gd._fullLayout._size;
@@ -320,9 +300,7 @@ describe('clickanywhere', function () {
             ]
         })
             .then(() => {
-                gd.on('plotly_click', (d) => {
-                    clickData = d;
-                });
+                gd.on('plotly_click', (d) => (clickData = d));
 
                 const shapePath = gd.querySelector('.shape-group path');
                 expect(shapePath).toBeDefined();
@@ -367,9 +345,7 @@ describe('clickanywhere', function () {
             { edits: { shapePosition: true } }
         )
             .then(() => {
-                gd.on('plotly_click', (d) => {
-                    clickData = d;
-                });
+                gd.on('plotly_click', (d) => (clickData = d));
 
                 const shapePath = gd.querySelector('.shape-group path');
                 expect(shapePath).toBeDefined();
