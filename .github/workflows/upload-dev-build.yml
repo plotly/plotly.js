@@ -39,14 +39,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
+          GH_EVENT_NAME: ${{ github.event_name }}
+          GH_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          GH_REPO: ${{ github.repository }}
         run: |
           # Get SHA from triggering workflow, or from manual input
-          if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            SHA="${{ github.event.workflow_run.head_sha }}"
+          if [ "${GH_EVENT_NAME}" == "workflow_run" ]; then
+            SHA="${GH_HEAD_SHA}"
           else
             echo "Fetching latest SHA for PR #${PR_NUM}..."
             if [ -n "${PR_NUM}" ]; then
-              SHA=$(gh pr view "${PR_NUM}" --repo "${{ github.repository }}" --json headRefOid --template '{{.headRefOid}}')
+              SHA=$(gh pr view "${PR_NUM}" --repo "${GH_REPO}" --json headRefOid --template '{{.headRefOid}}')
             fi
           fi
 
@@ -61,8 +64,8 @@ jobs:
             PR_NUM=$(gh pr list --search "sha:${SHA}" --state open --json number --jq '.[0].number')
           fi
 
-          # Validate that we have a PR number and that it is less than 5 characters
-          if [ -z "${PR_NUM}" ] || [ ${#PR_NUM} -gt 5 ]; then
+          # Validate that we have a valid PR number
+          if [ -z "${PR_NUM}" ] || [[ "${PR_NUM}" =~ ^[1-9][0-9]{0,4}$ ]]; then
             echo "Failed to get PR number, exiting (PR_NUM=${PR_NUM})"
             exit 1
           fi
@@ -108,32 +111,42 @@ jobs:
 
       - name: Commit and push files
         id: commit-and-push
+        env:
+          PR_NUM: ${{ steps.setup-metadata.outputs.PR_NUM }}
+          SHORT_SHA: ${{ steps.setup-metadata.outputs.SHORT_SHA }}
         run: |
-          # 1. Move 'upload' directory into repo folder and cd into repo root
-          mkdir -p plotly.js-dev-builds/upload/
-          cp -r upload/ plotly.js-dev-builds/
+          # Move 'upload/pr-NNNN/' directory into repo folder and cd into repo root
+          TARGET_DIR="upload/pr-${PR_NUM}"
+          mkdir -p plotly.js-dev-builds/${TARGET_DIR}
+          cp -r ${TARGET_DIR} plotly.js-dev-builds/
           cd plotly.js-dev-builds
 
-          # 2. Configure git
+          # Configure git
           git config user.name "plotly.js-pr-upload"
           git config user.email "<>"
 
-          # 3. add, commit, and push
-          git add upload/
+          # Add files
+          git add ${TARGET_DIR}/
+
+          # Ensure that only files in upload/pr-NNNN/ are staged
+          if git diff --name-only --cached | grep -qv "^${TARGET_DIR}/"; then
+            echo "Error: Changes detected outside ${TARGET_DIR}/"
+            exit 1
+          fi
 
           # Only commit if there are changes
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Deploy build for PR #${{ steps.setup-metadata.outputs.PR_NUM }} (commit ${{ steps.setup-metadata.outputs.SHORT_SHA }})"
+            git commit -m "Deploy build for PR #${PR_NUM} (commit ${SHORT_SHA})"
             git push origin main
           fi
 
       - name: Generate summary
         run: |
-          BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${{ steps.setup-metadata.outputs.PR_NUM }}"
+          BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${PR_NUM}"
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
-          echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} can be accessed at:" >> $GITHUB_STEP_SUMMARY
-          echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
-          echo "- Build for this commit: [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHORT_SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "Builds for PR #${PR_NUM} can be accessed at:" >> $GITHUB_STEP_SUMMARY
+          echo "- Latest build for this PR: [${BASE}/latest/plotly.min.js](${BASE}/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Build for this commit: [${BASE}/${SHORT_SHA}/plotly.min.js](${BASE}/${SHORT_SHA}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "The above links should start working a minute or two after this job completes." >> $GITHUB_STEP_SUMMARY
