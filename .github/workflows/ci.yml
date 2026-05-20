@@ -43,6 +43,8 @@ jobs:
           if git diff --name-only "$BASE"...HEAD -- stackgl_modules/ | grep -q .; then
             echo "stackgl_modules=true" >> "$GITHUB_OUTPUT"
           fi
+          # stackgl_modules/ is listed here too because the regl-* shader libs live there;
+          # changes can alter shader output and require regenerating the precompiled shaders.
           if git diff --name-only "$BASE"...HEAD -- src/traces/scattergl/ src/traces/scatterpolargl/ src/traces/splom/ src/traces/parcoords/ src/lib/prepare_regl.js stackgl_modules/ devtools/regl_codegen/ | grep -q .; then
             echo "regl_codegen=true" >> "$GITHUB_OUTPUT"
           fi
@@ -760,7 +762,9 @@ jobs:
 
   check-regl-codegen:
     needs: [detect-changes, install-and-cibuild]
-    if: needs.detect-changes.outputs.regl_codegen == 'true'
+    if: >-
+      (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch) ||
+      needs.detect-changes.outputs.regl_codegen == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -770,6 +774,8 @@ jobs:
 
       - name: Run regl codegen
         run: |
+          # Wipe the codegen output dir so orphaned shader files surface as deletions in the diff below.
+          rm -rf src/generated/regl-codegen/*
           node devtools/regl_codegen/server.mjs &
           SERVER_PID=$!
           until curl -sf -o /dev/null http://localhost:3000/build/regl_codegen-bundle.js 2>/dev/null; do
@@ -780,7 +786,14 @@ jobs:
 
       - name: Check regl precompiled shaders are up to date
         run: |
-          if ! git diff --exit-code src/generated/regl-codegen/ src/traces/scattergl/regl_precompiled.js src/traces/scatterpolargl/regl_precompiled.js src/traces/splom/regl_precompiled.js src/traces/parcoords/regl_precompiled.js; then
+          # git add -N so newly-generated (untracked) shader files show up in git diff
+          git add -N src/generated/regl-codegen/
+          if ! git diff --exit-code \
+              src/generated/regl-codegen/ \
+              src/traces/scattergl/regl_precompiled.js \
+              src/traces/scatterpolargl/regl_precompiled.js \
+              src/traces/splom/regl_precompiled.js \
+              src/traces/parcoords/regl_precompiled.js; then
             echo "::error::Regl precompiled shaders are out of date. Download the 'regl-codegen' artifact from this workflow run and commit the updated files to this pull request."
             exit 1
           fi
