@@ -85,16 +85,20 @@ function handleCodegen(data) {
     var exports = ['', '/* eslint-disable quote-props */', 'module.exports = {', ''].join('\n');
     var varId = 0;
 
-    Object.entries(generated).forEach(function (kv) {
-        var key = kv[0];
-        var value = kv[1];
-        var filePath = path.join(pathToReglCodegenSrc, key);
-        fs.writeFileSync(filePath, 'module.exports = ' + value);
+    // Sort by shader-hash key so the emitted import/export order is deterministic
+    // across machines (fs.readdir mock order varies by OS/filesystem, which would
+    // otherwise leak into regl_precompiled.js).
+    Object.keys(generated)
+        .sort()
+        .forEach((key) => {
+            var value = generated[key];
+            var filePath = path.join(pathToReglCodegenSrc, key);
+            fs.writeFileSync(filePath, 'module.exports = ' + value);
 
-        imports += 'var v' + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
-        exports += "    '" + key + "': v" + varId + ',\n';
-        varId++;
-    });
+            imports += 'var v' + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
+            exports += "    '" + key + "': v" + varId + ',\n';
+            varId++;
+        });
 
     if (varId > 0) {
         exports = exports.slice(0, -2) + '\n};\n';
