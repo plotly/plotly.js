@@ -9,7 +9,7 @@ on:
     inputs:
       pr_number:
         description: 'PR Number to deploy'
-        required: true
+        required: false
       run_id:
         description: 'The Run ID of the CI workflow that has the artifact'
         required: true
@@ -44,14 +44,35 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_run" ]; then
             SHA="${{ github.event.workflow_run.head_sha }}"
           else
-            echo "Fetching latest SHA for PR #$PR_NUM..."
-            SHA=$(gh pr view "$PR_NUM" --repo ${{ github.repository }} --json headRefOid --template '{{.headRefOid}}')
+            echo "Fetching latest SHA for PR #${PR_NUM}..."
+            if [ -n "${PR_NUM}" ]; then
+              SHA=$(gh pr view "${PR_NUM}" --repo "${{ github.repository }}" --json headRefOid --template '{{.headRefOid}}')
+            fi
           fi
+
+          # Validate that we have a SHA
+          if [ -z "${SHA}" ]; then
+            echo "Failed to get commit SHA, exiting"
+            exit 1
+          fi
+
+          # If PR_NUM is empty (this is the case for forks) get PR number using SHA
+          if [ -z "${PR_NUM}" ]; then
+            PR_NUM=$(gh pr list --search "sha:${SHA}" --state open --json number --jq '.[0].number')
+          fi
+
+          # Validate that we have a PR number and that it is less than 5 characters
+          if [ -z "${PR_NUM}" ] || [ ${#PR_NUM} -gt 5 ]; then
+            echo "Failed to get PR number, exiting (PR_NUM=${PR_NUM})"
+            exit 1
+          fi
+
           SHORT_SHA=${SHA::7}
           UPLOAD_DIR_NAME="upload"
 
-          echo "Using SHA: ${SHA}"
+          echo "SHA: ${SHA}"
           echo "Short SHA: ${SHORT_SHA}"
+          echo "PR number: ${PR_NUM}"
           mkdir -p "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest"
           mkdir -p "${UPLOAD_DIR_NAME}/pr-${PR_NUM}/${SHORT_SHA}"
           # Copy all 3 artifacts (plotly.js, plotly.min.js, plot-schema.json) to /latest/
@@ -114,5 +135,5 @@ jobs:
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
           echo "Builds for PR #${{ steps.setup-metadata.outputs.PR_NUM }} can be accessed at:" >> $GITHUB_STEP_SUMMARY
           echo "- Latest build for this PR: [$BASE/latest/plotly.min.js]($BASE/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
-          echo "- Build for this commit: [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Build for this commit: [$BASE/${{ steps.setup-metadata.outputs.SHA }}/plotly.min.js]($BASE/${{ steps.setup-metadata.outputs.SHORT_SHA }}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "The above links should start working a minute or two after this job completes." >> $GITHUB_STEP_SUMMARY
