@@ -18,12 +18,16 @@ env:
 jobs:
   upload:
     runs-on: ubuntu-latest
+    # Only run on manual dispatch, 
+    # OR if the parent run succeeded and was triggered by a PR from
+    # a branch in the main repo (not a fork)
     if: |
           github.event_name == 'workflow_dispatch' ||
           (
             github.event_name == 'workflow_run' && 
             github.event.workflow_run.event == 'pull_request' &&
-            github.event.workflow_run.conclusion == 'success'
+            github.event.workflow_run.conclusion == 'success' &&
+            github.event.workflow_run.head_repository.full_name == github.repository
           )
     steps:
       - name: Get required metadata (PR number, commit SHA, workflow run ID containing artifacts)
@@ -49,7 +53,7 @@ jobs:
             exit 1
           fi
 
-          # If PR_NUM is empty (this is the case for forks) get PR number using SHA
+          # If PR_NUM is empty, get PR number using SHA
           if [ -z "${PR_NUM}" ]; then
             PR_NUM=$(gh pr list --search "sha:${SHA}" --state open --json number --jq '.[0].number')
           fi
@@ -139,7 +143,8 @@ jobs:
         run: |
           # Move 'pr-NNNN/' directory into upload directory inside repo and cd into repo root
           TARGET_DIR="${UPLOAD_DIR_NAME}/pr-${PR_NUM}"
-          cp -r ${TARGET_DIR} plotly.js-dev-builds/
+          mkdir -p "plotly.js-dev-builds/${UPLOAD_DIR_NAME}"
+          cp -r "${TARGET_DIR}" "plotly.js-dev-builds/${UPLOAD_DIR_NAME}"
           cd plotly.js-dev-builds
 
           # Configure git
@@ -147,7 +152,7 @@ jobs:
           git config user.email "<>"
 
           # Add files
-          git add ${TARGET_DIR}/
+          git add "${TARGET_DIR}/"
 
           # Ensure that only files in upload/pr-NNNN/ are staged
           if git diff --name-only --cached | grep -qv "^${TARGET_DIR}/"; then
