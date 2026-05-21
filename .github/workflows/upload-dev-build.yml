@@ -10,9 +10,10 @@ on:
       pr_number:
         description: 'PR Number to deploy'
         required: false
-      run_id:
-        description: 'The Run ID of the CI workflow that has the artifact'
-        required: true
+
+env:
+  ARTIFACT_UPLOAD_WORKFLOW_NAME: "Publish Dist"
+  UPLOAD_DIR_NAME: "upload"
 
 jobs:
   upload:
@@ -25,35 +26,24 @@ jobs:
             github.event.workflow_run.conclusion == 'success'
           )
     steps:
-      - name: Download build artifact
-        id: download-artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: dist  # uploaded by publish-dist.yml > publish-dist
-          run-id: ${{ github.event.workflow_run.id || inputs.run_id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: temp-dist
-
-      - name: Setup metadata and prepare folders
-        id: setup-metadata
+      - name: Get required metadata (PR number, commit SHA, workflow run ID containing artifacts)
+        id: get-metadata
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
           GH_EVENT_NAME: ${{ github.event_name }}
-          GH_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.sha }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
         run: |
-          # Get SHA from triggering workflow, or from manual input
-          if [ "${GH_EVENT_NAME}" == "workflow_run" ]; then
-            SHA="${GH_HEAD_SHA}"
-          else
-            echo "Fetching latest SHA for PR #${PR_NUM}..."
+          # Get SHA from manually-provided PR number if triggered by workflow_dispatch
+          if [ "${GH_EVENT_NAME}" == "workflow_dispatch" ]; then
             if [ -n "${PR_NUM}" ]; then
               SHA=$(gh pr view "${PR_NUM}" --repo "${GH_REPO}" --json headRefOid --template '{{.headRefOid}}')
             fi
           fi
 
-          # Validate that we have a SHA
+          # At this point, SHA should be defined. If not, fail the workflow
           if [ -z "${SHA}" ]; then
             echo "Failed to get commit SHA, exiting"
             exit 1
@@ -65,14 +55,50 @@ jobs:
           fi
 
           # Validate that we have a valid PR number
-          if [ -z "${PR_NUM}" ] || [[ "${PR_NUM}" =~ ^[1-9][0-9]{0,4}$ ]]; then
+          if [ -z "${PR_NUM}" ] || [[ ! "${PR_NUM}" =~ ^[1-9][0-9]{0,4}$ ]]; then
             echo "Failed to get PR number, exiting (PR_NUM=${PR_NUM})"
             exit 1
           fi
 
-          SHORT_SHA=${SHA::7}
-          UPLOAD_DIR_NAME="upload"
+          # If RUN_ID is empty, use the gh CLI to get the most recent run ID for SHA
+          if [ -z "${RUN_ID}" ]; then
+            RUN_ID=$(gh run list \
+              --workflow "${ARTIFACT_UPLOAD_WORKFLOW_NAME}" \
+              --commit "${SHA}" \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId')
+          fi
 
+          # At this point, RUN_ID should be defined. If not, fail the workflow
+          if [ -z "${RUN_ID}" ]; then
+            echo "Failed to get workflow run ID, exiting"
+            exit 1
+          fi
+
+          # Save PR number, commit SHA, short SHA, and run ID to output
+          echo "PR_NUM=${PR_NUM}" >> $GITHUB_OUTPUT
+          echo "SHA=${SHA}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHA:0:7}" >> $GITHUB_OUTPUT
+          echo "RUN_ID=${RUN_ID}" >> $GITHUB_OUTPUT
+
+      - name: Download build artifact
+        id: download-artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: dist  # uploaded by publish-dist.yml > publish-dist
+          run-id: ${{ steps.get-metadata.outputs.RUN_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: temp-dist
+
+      - name: Prepare folders
+        id: setup-metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
+          SHA: ${{ steps.get-metadata.outputs.SHA }}
+          SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
+        run: |
           echo "SHA: ${SHA}"
           echo "Short SHA: ${SHORT_SHA}"
           echo "PR number: ${PR_NUM}"
@@ -88,10 +114,6 @@ jobs:
           UPLOAD_DIR_FULL_PATH=$(pwd)/${UPLOAD_DIR_NAME}/
           echo "Created directory ${UPLOAD_DIR_FULL_PATH} with the following contents:"
           echo "$(ls -lR ${UPLOAD_DIR_FULL_PATH})"
-
-          echo "PR_NUM=${PR_NUM}" >> $GITHUB_OUTPUT
-          echo "SHA=${SHA}" >> $GITHUB_OUTPUT
-          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Generate GitHub App token
         id: generate-token
@@ -112,12 +134,11 @@ jobs:
       - name: Commit and push files
         id: commit-and-push
         env:
-          PR_NUM: ${{ steps.setup-metadata.outputs.PR_NUM }}
-          SHORT_SHA: ${{ steps.setup-metadata.outputs.SHORT_SHA }}
+          PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
+          SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
         run: |
-          # Move 'upload/pr-NNNN/' directory into repo folder and cd into repo root
-          TARGET_DIR="upload/pr-${PR_NUM}"
-          mkdir -p plotly.js-dev-builds/${TARGET_DIR}
+          # Move 'pr-NNNN/' directory into upload directory inside repo and cd into repo root
+          TARGET_DIR="${UPLOAD_DIR_NAME}/pr-${PR_NUM}"
           cp -r ${TARGET_DIR} plotly.js-dev-builds/
           cd plotly.js-dev-builds
 
@@ -143,10 +164,13 @@ jobs:
           fi
 
       - name: Generate summary
+        env:
+          PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
+          SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
         run: |
-          BASE="https://plotly.github.io/plotly.js-dev-builds/upload/pr-${PR_NUM}"
+          BASE_URL="https://plotly.github.io/plotly.js-dev-builds/${UPLOAD_DIR_NAME}/pr-${PR_NUM}"
           echo "### PR Build Uploaded" >> $GITHUB_STEP_SUMMARY
           echo "Builds for PR #${PR_NUM} can be accessed at:" >> $GITHUB_STEP_SUMMARY
-          echo "- Latest build for this PR: [${BASE}/latest/plotly.min.js](${BASE}/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
-          echo "- Build for this commit: [${BASE}/${SHORT_SHA}/plotly.min.js](${BASE}/${SHORT_SHA}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Latest build for this PR: [${BASE_URL}/latest/plotly.min.js](${BASE_URL}/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- Build for this commit: [${BASE_URL}/${SHORT_SHA}/plotly.min.js](${BASE_URL}/${SHORT_SHA}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "The above links should start working a minute or two after this job completes." >> $GITHUB_STEP_SUMMARY
