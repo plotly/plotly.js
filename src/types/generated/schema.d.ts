@@ -3,11 +3,38 @@
  * Do not edit by hand — run `npm run schema` to regenerate.
  */
 
-import type { Calendar, Color, ColorScale, Dash, Datum, MarkerSymbol, TypedArray } from '../lib/common';
+import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';
+
+// ---------------------------------------------------------------------------
+// Common enum types — value sets discovered from the schema
+// ---------------------------------------------------------------------------
+
+export type Calendar = 'chinese' | 'coptic' | 'discworld' | 'ethiopian' | 'gregorian' | 'hebrew' | 'islamic' | 'jalali' | 'julian' | 'mayan' | 'nanakshahi' | 'nepali' | 'persian' | 'taiwan' | 'thai' | 'ummalqura';
+
+export type Dash = 'dash' | 'dashdot' | 'dot' | 'longdash' | 'longdashdot' | 'solid';
+
+export type AxisType = '-' | 'linear' | 'log' | 'date' | 'category' | 'multicategory';
+
+export type XRef = 'container' | 'paper';
+
+export type YRef = 'container' | 'paper';
+
+export type PatternShape = '' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.';
+
+export type TransitionEasing = 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'circle' | 'elastic' | 'back' | 'bounce' | 'linear-in' | 'quad-in' | 'cubic-in' | 'sin-in' | 'exp-in' | 'circle-in' | 'elastic-in' | 'back-in' | 'bounce-in' | 'linear-out' | 'quad-out' | 'cubic-out' | 'sin-out' | 'exp-out' | 'circle-out' | 'elastic-out' | 'back-out' | 'bounce-out' | 'linear-in-out' | 'quad-in-out' | 'cubic-in-out' | 'sin-in-out' | 'exp-in-out' | 'circle-in-out' | 'elastic-in-out' | 'back-in-out' | 'bounce-in-out';
+
+export type PlotType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'choroplethmapbox' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'densitymapbox' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scattermapbox' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'violin' | 'volume' | 'waterfall';
 
 // ---------------------------------------------------------------------------
 // Shared interfaces — extracted from repeated attribute subtrees
 // ---------------------------------------------------------------------------
+
+export interface AnimationFrameOpts {
+    /** The duration in milliseconds of each frame. If greater than the frame duration, it will be limited to the frame duration. */
+    duration?: number;
+    /** Redraw the plot at completion of the transition. This is desirable for transitions that include properties that cannot be transitioned, but may significantly slow down updates that do not require a full redraw of the plot */
+    redraw?: boolean;
+}
 
 export interface AutoRangeOptions {
     /** Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided. */
@@ -150,7 +177,7 @@ export interface Pattern {
     /** Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color. */
     path?: string | string[];
     /** Sets the shape of the pattern fill. By default, no pattern is used for filling the area. */
-    shape?: '' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.' | ('' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.')[];
+    shape?: PatternShape | PatternShape[];
     /** Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern. */
     size?: number | number[];
     /** Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern. */
@@ -175,6 +202,15 @@ export interface TickFormatStops {
     templateitemname?: string;
     /** string - dtickformat for described zoom level, the same as *tickformat* */
     value?: string;
+}
+
+export interface Transition {
+    /** The duration of the transition, in milliseconds. If equal to zero, updates are synchronous. */
+    duration?: number;
+    /** The easing function used for the transition */
+    easing?: TransitionEasing;
+    /** Determines whether the figure's layout or traces smoothly transitions during updates that make both traces and layout change. */
+    ordering?: 'layout first' | 'traces first';
 }
 
 export interface ColorBar {
@@ -266,7 +302,7 @@ export interface ColorBar {
     /** Sets the amount of padding (in px) along the x direction. */
     xpad?: number;
     /** Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only. */
-    xref?: 'container' | 'paper';
+    xref?: YRef;
     /** Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*. */
     y?: number;
     /** Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*. */
@@ -274,7 +310,7 @@ export interface ColorBar {
     /** Sets the amount of padding (in px) along the y direction. */
     ypad?: number;
     /** Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only. */
-    yref?: 'container' | 'paper';
+    yref?: YRef;
 }
 
 export interface HoverLabel {
@@ -7244,7 +7280,7 @@ export interface LayoutAxis {
         text?: string;
     };
     /** Sets the axis type. By default, plotly attempts to determined the axis type by looking into the data of the traces that referenced the axis in question. */
-    type?: '-' | 'linear' | 'log' | 'date' | 'category' | 'multicategory';
+    type?: AxisType;
     /** Controls persistence of user-driven changes in axis `range`, `autorange`, and `title` if in `editable: true` configuration. Defaults to `layout.uirevision`. */
     uirevision?: any;
     unifiedhovertitle?: LegendGroupTitle;
@@ -7318,13 +7354,13 @@ export interface Legend {
     /** Sets the legend's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the legend. Value *auto* anchors legends to the right for `x` values greater than or equal to 2/3, anchors legends to the left for `x` values less than or equal to 1/3 and anchors legends with respect to their center otherwise. */
     xanchor?: 'auto' | 'left' | 'center' | 'right';
     /** Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only. */
-    xref?: 'container' | 'paper';
+    xref?: YRef;
     /** Sets the y position with respect to `yref` (in normalized coordinates) of the legend. When `yref` is *paper*, defaults to *1* for vertical legends, defaults to *-0.1* for horizontal legends on graphs w/o range sliders and defaults to *1.1* for horizontal legends on graph with one or multiple range sliders. When `yref` is *container*, defaults to *1*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*. */
     y?: number;
     /** Sets the legend's vertical position anchor. This anchor binds the `y` position to the *top*, *middle* or *bottom* of the legend. Value *auto* anchors legends at their bottom for `y` values less than or equal to 1/3, anchors legends to at their top for `y` values greater than or equal to 2/3 and anchors legends with respect to their middle otherwise. */
     yanchor?: 'auto' | 'top' | 'middle' | 'bottom';
     /** Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only. */
-    yref?: 'container' | 'paper';
+    yref?: YRef;
 }
 
 export interface MapLayout {
@@ -8759,7 +8795,7 @@ export interface Slider {
         /** Sets the duration of the slider transition */
         duration?: number;
         /** Sets the easing function of the slider transition */
-        easing?: 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'circle' | 'elastic' | 'back' | 'bounce' | 'linear-in' | 'quad-in' | 'cubic-in' | 'sin-in' | 'exp-in' | 'circle-in' | 'elastic-in' | 'back-in' | 'bounce-in' | 'linear-out' | 'quad-out' | 'cubic-out' | 'sin-out' | 'exp-out' | 'circle-out' | 'elastic-out' | 'back-out' | 'bounce-out' | 'linear-in-out' | 'quad-in-out' | 'cubic-in-out' | 'sin-in-out' | 'exp-in-out' | 'circle-in-out' | 'elastic-in-out' | 'back-in-out' | 'bounce-in-out';
+        easing?: TransitionEasing;
     };
     /** Determines whether or not the slider is visible. */
     visible?: boolean;
@@ -9070,22 +9106,15 @@ export interface Layout {
         /** Sets the title's horizontal alignment with respect to its x position. *left* means that the title starts at x, *right* means that the title ends at x and *center* means that the title's center is at x. *auto* divides `xref` by three and calculates the `xanchor` value automatically based on the value of `x`. */
         xanchor?: 'auto' | 'left' | 'center' | 'right';
         /** Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only. */
-        xref?: 'container' | 'paper';
+        xref?: YRef;
         /** Sets the y position with respect to `yref` in normalized coordinates from *0* (bottom) to *1* (top). *auto* places the baseline of the title onto the vertical center of the top margin. */
         y?: number;
         /** Sets the title's vertical alignment with respect to its y position. *top* means that the title's cap line is at y, *bottom* means that the title's baseline is at y and *middle* means that the title's midline is at y. *auto* divides `yref` by three and calculates the `yanchor` value automatically based on the value of `y`. */
         yanchor?: 'auto' | 'top' | 'middle' | 'bottom';
         /** Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only. */
-        yref?: 'container' | 'paper';
+        yref?: YRef;
     };
-    transition?: {
-        /** The duration of the transition, in milliseconds. If equal to zero, updates are synchronous. */
-        duration?: number;
-        /** The easing function used for the transition */
-        easing?: 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'circle' | 'elastic' | 'back' | 'bounce' | 'linear-in' | 'quad-in' | 'cubic-in' | 'sin-in' | 'exp-in' | 'circle-in' | 'elastic-in' | 'back-in' | 'bounce-in' | 'linear-out' | 'quad-out' | 'cubic-out' | 'sin-out' | 'exp-out' | 'circle-out' | 'elastic-out' | 'back-out' | 'bounce-out' | 'linear-in-out' | 'quad-in-out' | 'cubic-in-out' | 'sin-in-out' | 'exp-in-out' | 'circle-in-out' | 'elastic-in-out' | 'back-in-out' | 'bounce-in-out';
-        /** Determines whether the figure's layout or traces smoothly transitions during updates that make both traces and layout change. */
-        ordering?: 'layout first' | 'traces first';
-    };
+    transition?: Transition;
     uirevision?: any;
     uniformtext?: {
         /** Sets the minimum text size between traces of the same type. */
@@ -9110,4 +9139,57 @@ export interface Layout {
     [key: `ternary${number}`]: TernaryLayout;
     [key: `xaxis${number}`]: LayoutAxis;
     [key: `yaxis${number}`]: LayoutAxis;
+}
+
+// ---------------------------------------------------------------------------
+// Animation, frames, and config interfaces
+// ---------------------------------------------------------------------------
+
+export interface AnimationOpts {
+    /** The direction in which to play the frames triggered by the animation call */
+    direction?: 'forward' | 'reverse';
+    frame?: AnimationFrameOpts;
+    /** Play frames starting at the current frame instead of the beginning. */
+    fromcurrent?: boolean;
+    /** Describes how a new animate call interacts with currently-running animations. If `immediate`, current animations are interrupted and the new animation is started. If `next`, the current frame is allowed to complete, after which the new animation is started. If `afterall` all existing frames are animated to completion before the new animation is started. */
+    mode?: 'immediate' | 'next' | 'afterall';
+    transition?: Transition;
+}
+
+export interface Frame {
+    /** The name of the frame into which this frame's properties are merged before applying. This is used to unify properties and avoid needing to specify the same values for the same properties in multiple frames. */
+    baseframe?: string;
+    /** A list of traces this frame modifies. The format is identical to the normal trace definition. */
+    data?: any[];
+    /** An identifier that specifies the group to which the frame belongs, used by animate to select a subset of frames. */
+    group?: string;
+    /** Layout properties which this frame modifies. The format is identical to the normal layout definition. */
+    layout?: Partial<Layout>;
+    /** A label by which to identify the frame */
+    name?: string;
+    /** A list of trace indices that identify the respective traces in the data attribute */
+    traces?: any;
+}
+
+export interface Edits {
+    /** Determines if the main anchor of the annotation is editable. The main anchor corresponds to the text (if no arrow) or the arrow (which drags the whole thing leaving the arrow length & direction unchanged). */
+    annotationPosition?: boolean;
+    /** Has only an effect for annotations with arrows. Enables changing the length and direction of the arrow. */
+    annotationTail?: boolean;
+    /** Enables editing annotation text. */
+    annotationText?: boolean;
+    /** Enables editing axis title text. */
+    axisTitleText?: boolean;
+    /** Enables moving colorbars. */
+    colorbarPosition?: boolean;
+    /** Enables editing colorbar title text. */
+    colorbarTitleText?: boolean;
+    /** Enables moving the legend. */
+    legendPosition?: boolean;
+    /** Enables editing the trace name fields from the legend */
+    legendText?: boolean;
+    /** Enables moving shapes. */
+    shapePosition?: boolean;
+    /** Enables editing the global layout title. */
+    titleText?: boolean;
 }

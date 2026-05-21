@@ -9,15 +9,19 @@ import type {
     BoxData,
     CandlestickData,
     ColorBar,
+    Dash,
     Font,
     HoverLabel,
     OhlcData,
     Pattern,
     PieData,
+    PlotType,
     SankeyData,
     ViolinData,
 } from '../generated/schema';
-import type { Color, ColorScale, Dash, Datum, ErrorBar, MarkerSymbol, TypedArray } from '../lib/common';
+import type { Color, ColorScale, Datum, ErrorBar, MarkerSymbol, TypedArray } from '../lib/common';
+
+export type { PlotType };
 
 // ---------------------------------------------------------------------------
 // Trace support types (used by PlotData)
@@ -92,61 +96,6 @@ export interface Delta {
         color: Color;
     };
 }
-
-// ---------------------------------------------------------------------------
-// PlotType
-// ---------------------------------------------------------------------------
-
-export type PlotType =
-    | 'bar'
-    | 'barpolar'
-    | 'box'
-    | 'candlestick'
-    | 'carpet'
-    | 'choropleth'
-    | 'choroplethmap'
-    | 'choroplethmapbox'
-    | 'cone'
-    | 'contour'
-    | 'contourcarpet'
-    | 'densitymap'
-    | 'densitymapbox'
-    | 'funnel'
-    | 'funnelarea'
-    | 'heatmap'
-    | 'histogram'
-    | 'histogram2d'
-    | 'histogram2dcontour'
-    | 'icicle'
-    | 'image'
-    | 'indicator'
-    | 'isosurface'
-    | 'mesh3d'
-    | 'ohlc'
-    | 'parcats'
-    | 'parcoords'
-    | 'pie'
-    | 'sankey'
-    | 'scatter'
-    | 'scatter3d'
-    | 'scattercarpet'
-    | 'scattergeo'
-    | 'scattergl'
-    | 'scattermap'
-    | 'scattermapbox'
-    | 'scatterpolar'
-    | 'scatterpolargl'
-    | 'scattersmith'
-    | 'scatterternary'
-    | 'splom'
-    | 'streamtube'
-    | 'sunburst'
-    | 'surface'
-    | 'table'
-    | 'treemap'
-    | 'violin'
-    | 'volume'
-    | 'waterfall';
 
 // ---------------------------------------------------------------------------
 // Marker / Line types

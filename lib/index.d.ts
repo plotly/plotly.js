@@ -27,22 +27,16 @@ export as namespace Plotly;
 // ---------------------------------------------------------------------------
 
 export type {
-    AxisType,
-    Calendar,
     Color,
     ColorScale,
-    Dash,
     Datum,
     DTickValue,
     ErrorBar,
     ErrorOptions,
     MarkerSymbol,
-    PatternShape,
     TypedArray,
     XAnchor,
-    XRef,
     YAnchor,
-    YRef,
 } from '../src/types/lib/common';
 
 // ---------------------------------------------------------------------------
@@ -50,6 +44,23 @@ export type {
 // ---------------------------------------------------------------------------
 
 export type {
+    // Common enum types
+    AxisType,
+    Calendar,
+    Dash,
+    PatternShape,
+    PlotType,
+    TransitionEasing,
+    XRef,
+    YRef,
+
+    // Animation, frames, and config interfaces
+    AnimationFrameOpts,
+    AnimationOpts,
+    Edits,
+    Frame,
+    Transition,
+
     // Shared interfaces
     ColorBar,
     Domain,
@@ -161,23 +172,10 @@ export type {
     PlotData,
     PlotMarker,
     PlotNumber,
-    PlotType,
     ScatterLine,
     ScatterMarkerLine,
     Threshold,
 } from '../src/types/core/data';
-
-// ---------------------------------------------------------------------------
-// Animation & template
-// ---------------------------------------------------------------------------
-
-export type {
-    AnimationFrameOpts,
-    AnimationOpts,
-    Frame,
-    Transition,
-    TransitionEasing,
-} from '../src/types/core/animation';
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -186,7 +184,6 @@ export type {
 export type {
     Config,
     DownloadImgopts,
-    Edits,
     ToImageButtonOptions,
     ToImgopts,
 } from '../src/types/core/config';

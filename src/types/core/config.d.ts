@@ -4,65 +4,11 @@
  * Plotly configuration options and edit settings.
  */
 
+import type { Edits } from '../generated/schema';
 import type { PlotlyHTMLElement } from './events';
 import type { ModeBarButtonAny, ModeBarDefaultButtons } from './layout';
 
-// ---------------------------------------------------------------------------
-// Edits
-// ---------------------------------------------------------------------------
-
-export interface Edits {
-    /**
-     * Determines if the main anchor of the annotation is editable.
-     * @default false
-     */
-    annotationPosition: boolean;
-    /**
-     * Has only an effect for annotations with arrows.
-     * @default false
-     */
-    annotationTail: boolean;
-    /**
-     * Enables editing annotation text.
-     * @default false
-     */
-    annotationText: boolean;
-    /**
-     * Enables editing axis title text.
-     * @default false
-     */
-    axisTitleText: boolean;
-    /**
-     * Enables moving colorbars.
-     * @default false
-     */
-    colorbarPosition: boolean;
-    /**
-     * Enables editing colorbar title text.
-     * @default false
-     */
-    colorbarTitleText: boolean;
-    /**
-     * Enables moving the legend.
-     * @default false
-     */
-    legendPosition: boolean;
-    /**
-     * Enables editing trace name fields from the legend.
-     * @default false
-     */
-    legendText: boolean;
-    /**
-     * Enables moving shapes.
-     * @default false
-     */
-    shapePosition: boolean;
-    /**
-     * Enables editing the global layout title.
-     * @default false
-     */
-    titleText: boolean;
-}
+export type { Edits };
 
 // ---------------------------------------------------------------------------
 // Image export options

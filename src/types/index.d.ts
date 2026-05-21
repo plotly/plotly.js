@@ -9,7 +9,6 @@
 export * from './lib/common';
 
 // Core types (public)
-export * from './core/animation';
 export * from './core/api';
 export * from './core/config';
 export * from './core/data';

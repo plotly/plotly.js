@@ -75,8 +75,7 @@ src/types/
 ├── index.d.ts                    # main re-export hub (public + internal)
 ├── core/                         # hand-written types for the core API
 │   ├── api.d.ts                  # public API function signatures (newPlot, etc.)
-│   ├── animation.d.ts            # Frame, Transition, AnimationOpts
-│   ├── config.d.ts               # Config, Edits, ToImgopts
+│   ├── config.d.ts               # Config, ToImgopts (Edits re-exported from generated)
 │   ├── data.d.ts                 # PlotData, PlotMarker, ScatterLine, Data union
 │   ├── data.internal.d.ts        # CalcData, FullData
 │   ├── events.d.ts               # PlotMouseEvent, PlotlyHTMLElement, etc.

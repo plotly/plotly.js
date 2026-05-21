@@ -31,38 +31,95 @@ const META_KEYS = new Set([
 ]);
 
 // ---------------------------------------------------------------------------
-// Common type reuse — map known value sets to types from lib/common.d.ts
+// Common enum types — discovered from the schema at generation time and
+// emitted as named type aliases in the output. Each anchor specifies a
+// PascalCase type name and a `match(key, path, values)` predicate. The first
+// enumerated attribute whose match returns true defines the alias's values.
 // ---------------------------------------------------------------------------
 
-const CALENDAR_VALUES = [
-    'chinese',
-    'coptic',
-    'discworld',
-    'ethiopian',
-    'gregorian',
-    'hebrew',
-    'islamic',
-    'jalali',
-    'julian',
-    'mayan',
-    'nanakshahi',
-    'nepali',
-    'persian',
-    'taiwan',
-    'thai',
-    'ummalqura'
+const COMMON_TYPE_ANCHORS = [
+    { name: 'Calendar', match: (key) => /^[xyz]?calendar$/.test(key) },
+    { name: 'Dash', match: (key) => key === 'dash' },
+    { name: 'AxisType', match: (key, path) => key === 'type' && /[xyz]axis\.type$/.test(path) },
+    {
+        name: 'XRef',
+        match: (key, _path, values) => key === 'xref' && values.length === 2 && values.includes('container')
+    },
+    {
+        name: 'YRef',
+        match: (key, _path, values) => key === 'yref' && values.length === 2 && values.includes('container')
+    },
+    { name: 'PatternShape', match: (key, path) => key === 'shape' && /\.pattern\.shape$/.test(path) },
+    { name: 'TransitionEasing', match: (key) => key === 'easing' }
 ];
 
-const DASH_VALUES = ['dash', 'dashdot', 'dot', 'longdash', 'longdashdot', 'solid'];
-
-/** Map of sorted-JSON-stringified values → common type name. */
-const VALUES_TO_COMMON_TYPE = new Map([
-    [JSON.stringify(CALENDAR_VALUES), 'Calendar'],
-    [JSON.stringify(DASH_VALUES), 'Dash']
-]);
+/**
+ * Module-level map populated by `discoverCommonTypes` before generation.
+ * Sorted-JSON-stringified values → common type name.
+ */
+const VALUES_TO_COMMON_TYPE = new Map();
 
 /** Attribute name patterns that should use a specific common type. */
 const ATTR_NAME_OVERRIDES = new Map([['marker.symbol', 'MarkerSymbol']]);
+
+/**
+ * Walk the schema to find the canonical `values` array for each anchor in
+ * `COMMON_TYPE_ANCHORS`. The first matching enumerated attribute wins.
+ * Also emits a `PlotType` alias derived from the trace-names list.
+ *
+ * Populates `VALUES_TO_COMMON_TYPE` and returns `Map<name, {values}>` for
+ * emitting type aliases.
+ */
+function discoverCommonTypes(schema) {
+    // Collect every match for each anchor — we'll pick the superset at the end.
+    const candidates = new Map(COMMON_TYPE_ANCHORS.map((a) => [a.name, []]));
+
+    function visit(node, path) {
+        if (!node || typeof node !== 'object') return;
+        for (const [key, val] of Object.entries(node)) {
+            if (val && typeof val === 'object') {
+                const childPath = path ? `${path}.${key}` : key;
+                if (
+                    val.valType === 'enumerated' &&
+                    Array.isArray(val.values) &&
+                    val.values.every((v) => typeof v === 'string')
+                ) {
+                    for (const anchor of COMMON_TYPE_ANCHORS) {
+                        if (anchor.match(key, childPath, val.values)) {
+                            candidates.get(anchor.name).push(val.values.slice());
+                        }
+                    }
+                }
+                visit(val, childPath);
+            }
+        }
+    }
+    visit(schema.traces, 'traces');
+    visit(schema.layout, 'layout');
+    if (schema.animation) visit(schema.animation, 'animation');
+
+    // For each anchor, pick the largest value set. When sizes tie, the first
+    // match wins. The superset rule handles axis-type-style cases where
+    // different axis kinds (cartesian vs 3D scene) have different value sets.
+    const found = new Map();
+    for (const anchor of COMMON_TYPE_ANCHORS) {
+        const matches = candidates.get(anchor.name);
+        if (matches.length === 0) {
+            throw new Error(
+                `Could not find an enumerated schema attribute for common type '${anchor.name}'. ` +
+                    `Either the schema no longer exposes a matching attribute, or the anchor's match predicate needs updating.`
+            );
+        }
+        const best = matches.reduce((a, b) => (b.length > a.length ? b : a));
+        found.set(anchor.name, { values: best });
+        VALUES_TO_COMMON_TYPE.set(JSON.stringify(best.slice().sort()), anchor.name);
+    }
+
+    // PlotType — derived from the list of trace names, not from an attribute.
+    found.set('PlotType', { values: Object.keys(schema.traces).sort() });
+
+    return found;
+}
 
 // ---------------------------------------------------------------------------
 // Layout naming maps
@@ -612,9 +669,13 @@ function mergeSubsets(collector, shared) {
  * @param {string} indent - Current indentation string
  * @param {string} pathPrefix - Dot-separated path for name-based overrides
  * @param {Map<string,string>} sharedTypes - fingerprint → interface name
+ * @param {Object<string,string>} [fieldOverrides] - field-name → TS type to
+ *     force, bypassing schema-derived types. Used for fields whose schema
+ *     valType is intentionally `any` because the schema is recursive (e.g.
+ *     Frame.layout points to the entire Layout shape).
  * @returns {string[]} Array of TS property declaration lines
  */
-function attrsToProperties(attrs, indent, pathPrefix, sharedTypes) {
+function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverrides) {
     const lines = [];
 
     for (const key of Object.keys(attrs).sort()) {
@@ -630,6 +691,15 @@ function attrsToProperties(attrs, indent, pathPrefix, sharedTypes) {
         if (val == null) continue;
 
         const attrPath = pathPrefix ? `${pathPrefix}.${key}` : key;
+
+        // Field-level override — bypass schema typing entirely
+        if (fieldOverrides && Object.prototype.hasOwnProperty.call(fieldOverrides, key)) {
+            if (val && typeof val === 'object' && val.description) {
+                lines.push(...formatJSDoc(val.description, indent));
+            }
+            lines.push(`${indent}${key}?: ${fieldOverrides[key]};`);
+            continue;
+        }
 
         // String literal (e.g. type: "ohlc")
         if (typeof val === 'string') {
@@ -852,6 +922,9 @@ export function generateSchemaTypes(schema, outputPath) {
     const traceNames = Object.keys(schema.traces).sort();
     const layoutAttrs = schema.layout.layoutAttributes;
 
+    // ----- Phase 0: Discover common enum types (Calendar, Dash, ...) -----
+    const commonTypes = discoverCommonTypes(schema);
+
     // ----- Phase 1: Fingerprint all container subtrees across traces + layout -----
     const collector = new Map();
     for (const traceName of traceNames) {
@@ -876,6 +949,24 @@ export function generateSchemaTypes(schema, outputPath) {
             nameToData.set(name, { fp, attrs: entry.attrs, propCount });
         }
     }
+
+    // Inject animation subtree types as shared interfaces so AnimationOpts
+    // and any other site referencing the same shape gets a named reference
+    // instead of an inlined object. These occur fewer than MIN_OCCURRENCES
+    // times so the automatic fingerprint extraction skips them.
+    if (schema.animation) {
+        const injectShared = (attrs, name) => {
+            if (!attrs || typeof attrs !== 'object') return;
+            const fp = containerFingerprint(attrs);
+            if (!sharedTypes.has(fp)) {
+                sharedTypes.set(fp, name);
+                nameToData.set(name, { fp, attrs, propCount: countProperties(attrs) });
+            }
+        };
+        injectShared(schema.animation.transition, 'Transition');
+        injectShared(schema.animation.frame, 'AnimationFrameOpts');
+    }
+
     const sharedList = [...nameToData.entries()]
         .map(([name, { fp, attrs }]) => [name, { fp, attrs }])
         .sort((a, b) => {
@@ -911,9 +1002,20 @@ export function generateSchemaTypes(schema, outputPath) {
         ' * Do not edit by hand — run `npm run schema` to regenerate.',
         ' */',
         '',
-        "import type { Calendar, Color, ColorScale, Dash, Datum, MarkerSymbol, TypedArray } from '../lib/common';",
+        "import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';",
         ''
     ];
+
+    // Emit common enum type aliases discovered from the schema
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('// Common enum types — value sets discovered from the schema');
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('');
+    for (const [name, { values }] of commonTypes) {
+        const union = values.map(serializeValue).join(' | ');
+        chunks.push(`export type ${name} = ${union};`);
+        chunks.push('');
+    }
 
     // Emit shared interfaces
     if (sharedList.length > 0) {
@@ -983,20 +1085,60 @@ export function generateSchemaTypes(schema, outputPath) {
     chunks.push('}');
     chunks.push('');
 
+    // ----- Phase 5: Animation, Frame, and Edits interfaces -----
+    const extraInterfaces = [];
+    if (schema.animation) {
+        const animProps = attrsToProperties(schema.animation, '    ', 'animation', sharedTypes);
+        extraInterfaces.push({ name: 'AnimationOpts', properties: animProps });
+    }
+    if (schema.frames && schema.frames.items) {
+        const frameEntry = Object.values(schema.frames.items)[0];
+        if (frameEntry) {
+            // `data` and `layout` are `valType: 'any'` in the schema because they
+            // recursively reference the schema's own top-level shapes — schema
+            // can't self-reference, so override here at the type-generation layer.
+            const frameProps = attrsToProperties(frameEntry, '    ', 'frame', sharedTypes, {
+                data: 'any[]',
+                layout: 'Partial<Layout>'
+            });
+            extraInterfaces.push({ name: 'Frame', properties: frameProps });
+        }
+    }
+    if (schema.config && schema.config.edits) {
+        const editsProps = attrsToProperties(schema.config.edits, '    ', 'edits', sharedTypes);
+        extraInterfaces.push({ name: 'Edits', properties: editsProps });
+    }
+
+    if (extraInterfaces.length > 0) {
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('// Animation, frames, and config interfaces');
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('');
+        for (const { name, properties } of extraInterfaces) {
+            chunks.push(`export interface ${name} {`);
+            chunks.push(...properties);
+            chunks.push('}');
+            chunks.push('');
+        }
+    }
+
     fs.writeFileSync(outputPath, chunks.join('\n'));
 
     const sharedCount = sharedList.length;
     const layoutCount = subplotGroups.size + arrayItems.size + 1; // +1 for Layout itself
+    const extraCount = extraInterfaces.length;
     console.log(
-        `Generated ${traceNames.length} trace(s) + ${layoutCount} layout type(s) + ${sharedCount} shared interface(s) → ${outputPath}`
+        `Generated ${traceNames.length} trace(s) + ${layoutCount} layout type(s) + ${sharedCount} shared interface(s) + ${extraCount} animation/config interface(s) → ${outputPath}`
     );
 
     // Return all exported interface names so callers can verify re-exports
     const exportedNames = new Set();
+    for (const name of commonTypes.keys()) exportedNames.add(name);
     for (const [name] of sharedList) exportedNames.add(name);
     for (const traceName of traceNames) exportedNames.add(traceNameToInterfaceName(traceName));
     for (const name of subplotGroups.keys()) exportedNames.add(name);
     for (const name of arrayItems.keys()) exportedNames.add(name);
     exportedNames.add('Layout');
+    for (const { name } of extraInterfaces) exportedNames.add(name);
     return exportedNames;
 }

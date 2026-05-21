@@ -5,9 +5,16 @@
  * and event-related supporting types.
  */
 
-import type { Annotation, Layout, LayoutAxis, Slider } from '../generated/schema';
+import type {
+    AnimationFrameOpts,
+    Annotation,
+    Frame,
+    Layout,
+    LayoutAxis,
+    Slider,
+    Transition,
+} from '../generated/schema';
 import type { Datum } from '../lib/common';
-import type { AnimationFrameOpts, Frame, Transition } from './animation';
 import type { Config } from './config';
 import type { Data, PlotData } from './data';
 
