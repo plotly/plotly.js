@@ -1335,6 +1335,43 @@ describe('Test histogram', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should correctly recalculate autobin size for single-value overlays on Plotly.react', function(done) {
+            var initialData = [
+                {x: ['1457'], type: 'histogram'},
+                {x: ['820'], type: 'histogram'},
+                {x: ['720'], type: 'histogram'}
+            ];
+
+            var layout = {
+                barmode: 'overlay'
+            };
+
+            Plotly.newPlot(gd, initialData, layout)
+            .then(function() {
+                // minDiff = 820 - 720 = 100
+                console.log("gd._fullData=", gd._fullData);
+                expect(gd._fullData[0].xbins.size).toBe(100);
+                expect(gd._fullData[1].xbins.size).toBe(100);
+                expect(gd._fullData[2].xbins.size).toBe(100);
+
+                // Use a new trace data object
+                var newData = [
+                    {x: ['1400'], type: 'histogram'},
+                    {x: ['800'], type: 'histogram'},
+                    {x: ['600'], type: 'histogram'}
+                ];
+
+                return Plotly.react(gd, newData, layout);
+            })
+            .then(function() {
+                // minDiff = 800 - 600 = 200.
+                expect(gd._fullData[0].xbins.size).toBe(200);
+                expect(gd._fullData[1].xbins.size).toBe(200);
+                expect(gd._fullData[2].xbins.size).toBe(200);
+            })
+            .then(done, done.fail);
+        });
     });
 });
 
