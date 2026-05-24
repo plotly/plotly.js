@@ -1,0 +1,1 @@
+ - Add `Plotly.profile()` API method for performance profiling [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
