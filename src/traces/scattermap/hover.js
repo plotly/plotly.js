@@ -26,6 +26,8 @@ function hoverPoints(pointData, xval, yval) {
     var winding = (xval >= 0) ?
         Math.floor((xval + 180) / 360) :
         Math.ceil((xval - 180) / 360);
+    // if xval is undefined, so will be winding
+    if(isNaN(winding)) winding = 0;
 
     // shift longitude to [-180, 180] to determine closest point
     var lonShift = winding * 360;
