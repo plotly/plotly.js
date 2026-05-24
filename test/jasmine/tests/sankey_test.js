@@ -578,6 +578,33 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
+        it('prevents nodes from being clipped at the bottom edge', function(done) {
+            var mockBottom = require('../../image/mocks/sankey_x_y_bottom_clipping.json');
+            var mockCopy = Lib.extendDeep({}, mockBottom);
+
+            Plotly.newPlot(gd, mockCopy)
+            .then(function() {
+                var nodeRects = document.querySelectorAll('.sankey-node .node-rect');
+                var sankeyLayer = document.querySelector('.sankey');
+                var sankeyRect = sankeyLayer.getBoundingClientRect();
+
+                for(var i = 0; i < nodeRects.length; i++) {
+                    var rect = nodeRects[i].getBoundingClientRect();
+                    // Every node's bottom edge must be within the sankey area
+                    expect(rect.bottom).not.toBeGreaterThan(
+                        sankeyRect.bottom + 1, // 1px tolerance
+                        'node ' + i + ' extends past the bottom edge'
+                    );
+                    // Every node's top edge must be within the sankey area
+                    expect(rect.top).not.toBeLessThan(
+                        sankeyRect.top - 1, // 1px tolerance
+                        'node ' + i + ' extends past the top edge'
+                    );
+                }
+            })
+            .then(done, done.fail);
+        });
+
         it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function(done) {
             var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 

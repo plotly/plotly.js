@@ -200,6 +200,17 @@ function sankeyModel(layout, d, traceIndex) {
                 }
                 y = node.y1 + nodePad;
             }
+            // If the last node extends past the bottom, shift the whole column up
+            if(n > 0) {
+                var lastNode = nodes[n - 1];
+                if(lastNode.y1 > height) {
+                    dy = lastNode.y1 - height;
+                    for(i = 0; i < n; ++i) {
+                        nodes[i].y0 -= dy;
+                        nodes[i].y1 -= dy;
+                    }
+                }
+            }
         });
     }
 
@@ -251,8 +262,12 @@ function sankeyModel(layout, d, traceIndex) {
                 graph.nodes[i].x1 = pos[0] + nodeThickness / 2;
 
                 var nodeHeight = graph.nodes[i].y1 - graph.nodes[i].y0;
-                graph.nodes[i].y0 = pos[1] - nodeHeight / 2;
-                graph.nodes[i].y1 = pos[1] + nodeHeight / 2;
+                var yCenter = pos[1];
+                // Clamp so node doesn't extend past bottom or top
+                yCenter = Math.max(yCenter, nodeHeight / 2);
+                yCenter = Math.min(yCenter, height - nodeHeight / 2);
+                graph.nodes[i].y0 = yCenter - nodeHeight / 2;
+                graph.nodes[i].y1 = yCenter + nodeHeight / 2;
             }
         }
         if(trace.arrangement === 'snap') {
