@@ -1,5 +1,8 @@
 name: Upload dev build from PR
 
+# See https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#live-links-to-dev-builds
+# for documentation on the usage of this workflow.
+
 on:
   workflow_run:
     workflows: ["Publish Dist"]  # publish-dist.yml
