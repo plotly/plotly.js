@@ -32,7 +32,7 @@ npm run typecheck         # tsc --noEmit, errors reported, no output
 npm run typecheck-watch   # incremental rechecking on change
 
 npm run schema            # rebuild test/plot-schema.json + regenerate types
-npm run schema-typegen-diff-check      # regenerate + verify no uncommitted drift in schema.d.ts
+npm run schema-typegen-diff-check      # regenerate + verify no uncommitted drift in test/plot-schema.json or schema.d.ts
 npm run bundle            # esbuild → dist/plotly.js
 npm run build             # full production build
 ```

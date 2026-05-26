@@ -1,17 +1,22 @@
 # Converting Attribute Files to TypeScript
 
 This is the **active workflow** for migrating Plotly's `attributes.js` files
-to TypeScript. Each conversion turns one attribute file into the single
-source of truth for both the runtime schema and the public TypeScript type.
+to TypeScript. Attribute files are the source of truth for the runtime
+schema; the schema in turn drives the generated public TypeScript types.
+Conversion doesn't change that chain — it adds compile-time validation on
+top of it.
 
 ## Why
 
-Today, attribute metadata lives in `src/.../attributes.js` files and the
-matching TypeScript types live separately in `src/types/`. They drift.
+Without `as const satisfies AttributeMap`, malformed attribute objects
+(missing `valType`, typo'd `values` arrays, wrong `dflt` shape, etc.) only
+fail when the runtime tries to use them. Converted attribute files catch
+those structural mistakes at TypeScript-compile time, before they ever
+reach the schema.
 
-After conversion, the `attributes.ts` file is validated against `AttributeMap`
-at compile time, catching structural errors and typos before they reach the
-runtime schema.
+Conversion is also a small step toward typing the rest of the file (and
+eventually the rest of the source tree) in TypeScript, but the immediate
+value is the compile-time structural check.
 
 ## Recipe
 

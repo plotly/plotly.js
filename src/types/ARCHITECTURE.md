@@ -36,8 +36,11 @@ re-exports.
 
 The split:
 
-- **Generated types** are the single source of truth for everything in
-  Plotly's attribute schema.
+- **Generated types** are the authoritative TypeScript representation of
+  the runtime schema. The schema itself is produced from Plotly's JS
+  attribute files (`src/.../attributes.js`), which remain the source of
+  truth: chain is **attribute files → `plot-schema.json` → generated
+  types**.
   - **`src/types/generated/schema.d.ts`** contains:
     - **Common enum aliases** discovered from the schema (Calendar, Dash,
       AxisType, PatternShape, XRef, YRef, TransitionEasing, PlotType).
