@@ -30,7 +30,7 @@
     "extra-bundles": "node tasks/extra_bundles.mjs",
     "locales": "node tasks/locales.js",
     "schema": "node tasks/schema.mjs",
-    "schema-typegen-diff-check": "npm run schema && git diff --exit-code src/types/generated/",
+    "schema-typegen-diff-check": "npm run schema && git diff --exit-code src/types/generated/ test/plot-schema.json",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
     "preprocess": "ts-node tasks/preprocess.js",

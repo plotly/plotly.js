@@ -94,16 +94,18 @@ should be added to the corresponding `Full*` interface instead.
 ### 6. Verify
 
 ```bash
-npm run typecheck         # zero errors
-npm run schema            # schema regenerates clean
-git diff test/plot-schema.json
-                          # the relevant section should be byte-identical
-                          # to before the conversion
+npm run typecheck                      # zero errors
+npm run schema-typegen-diff-check      # regen + check test/plot-schema.json
+                                       # and src/types/generated/ are unchanged
 ```
 
-If the schema diff is non-empty, the attribute object's runtime shape
-changed somewhere — most often a missed `as const` or a typo. Compare
-character-by-character with the original `.js` file.
+The `schema-typegen-diff-check` script regenerates both the runtime schema
+and the generated `.d.ts`, then `git diff --exit-code`s them. A correct
+conversion produces a byte-identical schema; CI fails otherwise. This is
+the conversion's safety net — if either file diffs after the conversion,
+the attribute object's runtime shape changed (most often a missed
+`as const` or a typo). Compare character-by-character with the original
+`.js` file.
 
 ### 7. Commit
 

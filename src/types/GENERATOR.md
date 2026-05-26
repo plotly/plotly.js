@@ -317,7 +317,15 @@ exported-but-not-re-exported types.
 
 ## CI integration
 
-`npm run schema-typegen-diff-check` runs the generator and then verifies the output
-hasn't drifted via `git diff --exit-code`. If the working tree differs,
-exit code 1 — meaning a developer changed the schema but didn't commit
-the regenerated declarations.
+`npm run schema-typegen-diff-check` runs the generator and then verifies that
+both `test/plot-schema.json` and `src/types/generated/` are unchanged via
+`git diff --exit-code`. If either differs, exit code 1 — meaning either a
+developer changed the source schema but didn't commit the regenerated
+artifacts, or an attribute-file conversion silently altered the runtime
+schema and the change wasn't intentionally committed.
+
+This is what makes the JS-to-TS conversion workflow safe: a correct
+conversion produces a byte-identical schema, so the check passes; an
+incorrect conversion (typo in a `values` array, missed default, wrong
+`valType`) changes the schema and CI fails until the developer fixes the
+source or commits a deliberate change.
