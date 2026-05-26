@@ -66,6 +66,11 @@ import type {
 
 export type { PlotType };
 
+/**
+ * Union of every trace shape. All fields are optional via `Partial<…>` —
+ * narrow with the `type` discriminator before accessing trace-specific
+ * attributes.
+ */
 export type Data =
     | Partial<BarData>
     | Partial<BarpolarData>

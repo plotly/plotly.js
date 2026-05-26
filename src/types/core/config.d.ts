@@ -18,27 +18,50 @@ export type { Edits };
 // Image export options
 // ---------------------------------------------------------------------------
 
+/**
+ * Options for `Plotly.toImage`. The graph is rendered to a string suitable
+ * for use as a data URI or as raw SVG markup.
+ */
 export interface ToImgopts {
+    /** Output image format. */
     format: 'jpeg' | 'png' | 'webp' | 'svg';
     /** If null, uses current graph width */
     width: number | null;
     /** If null, uses current graph height */
     height: number | null;
+    /** Resolution multiplier for raster formats. */
     scale?: number | undefined;
 }
 
+/**
+ * Options for `Plotly.downloadImage`. Like `ToImgopts`, but also requires
+ * a `filename` because the result is saved to disk by the browser.
+ */
 export interface DownloadImgopts {
+    /** Output image format. */
     format: 'jpeg' | 'png' | 'webp' | 'svg';
+    /** Output width in pixels. */
     width: number | null;
+    /** Output height in pixels. */
     height: number | null;
+    /** Filename used for the downloaded file (no extension required). */
     filename: string;
 }
 
+/**
+ * Static defaults applied to the mode-bar "download image" button. Set
+ * via `config.toImageButtonOptions`.
+ */
 export interface ToImageButtonOptions {
+    /** Output image format. */
     format?: 'png' | 'svg' | 'jpeg' | 'webp';
+    /** Downloaded filename. */
     filename?: string;
+    /** Output height in pixels. */
     height?: number;
+    /** Output width in pixels. */
     width?: number;
+    /** Resolution multiplier for raster formats. */
     scale?: number;
 }
 
@@ -68,4 +91,9 @@ interface ConfigOverrides {
     locales?: Record<string, { dictionary?: Record<string, string>; format?: Record<string, any> }>;
 }
 
+/**
+ * Full plot config. Combines `ConfigBase` (schema-derived) with the
+ * hand-written `ConfigOverrides` so the hand-written entries replace the
+ * loosely-typed `any` versions from the schema.
+ */
 export type Config = Omit<ConfigBase, keyof ConfigOverrides> & ConfigOverrides;
