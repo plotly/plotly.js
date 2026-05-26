@@ -412,6 +412,9 @@ module.exports = {
     hovertemplate: hovertemplateAttrs({ description: 'N.B. This only has an effect when hovering on points.' }),
     hovertemplatefallback: templatefallbackAttrs(),
 
+    tooltip: scatterAttrs.tooltip,
+    tooltiptemplate: scatterAttrs.tooltiptemplate,
+
     hoveron: {
         valType: 'flaglist',
         flags: ['boxes', 'points'],

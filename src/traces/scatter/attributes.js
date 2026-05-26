@@ -1,7 +1,8 @@
 'use strict';
 
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
+var annotationAttrs = require('../../components/annotations/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
@@ -675,6 +676,14 @@ module.exports = {
         colorEditType: 'style',
         arrayOk: true,
         description: 'Sets the text font.'
+    }),
+    tooltip: {values: extendFlat({}, annotationAttrs),
+        valType: 'any',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'calc'
+    },
+    tooltiptemplate: tooltiptemplateAttrs({}, {
+        keys: constants.eventDataKeys
     }),
     zorder: {
         valType: 'integer',

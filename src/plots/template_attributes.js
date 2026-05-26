@@ -104,3 +104,19 @@ exports.templatefallbackAttrs = ({ editType = 'none' } = {}) => ({
         "If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed."
     ].join(' ')
 });
+
+exports.tooltiptemplateAttrs = ({ editType = 'none', arrayOk } = {}, extra = {}) => ({
+    valType: 'string',
+    dflt: '',
+    editType,
+    description: [
+        'Template string used for rendering the information that appear on tooltip box.',
+        'The parameters and syntax are the same than for hovertemplate.',
+        'Note that this will override `tooltipinfo`.',
+        templateFormatStringDescription({ supportOther: true }),
+        'The variables available in `tooltiptemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data.',
+        'Additionally, all attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.',
+        describeVariables(extra)
+    ].join(' '),
+    ...(arrayOk !== false ? { arrayOk: true } : {})
+});

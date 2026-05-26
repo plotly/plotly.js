@@ -254,5 +254,7 @@ module.exports = {
             'or sample points or the kernel density estimate or any combination of them?'
         ].join(' ')
     },
+    tooltip: boxAttrs.tooltip,
+    tooltiptemplate: boxAttrs.tooltiptemplate,
     zorder: boxAttrs.zorder
 };

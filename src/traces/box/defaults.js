@@ -270,6 +270,9 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
 
         coerce('text');
         coerce('hovertext');
+
+        coerce('tooltip');
+        coerce('tooltiptemplate');
     } else {
         delete traceOut.marker;
     }
