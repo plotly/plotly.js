@@ -23,7 +23,7 @@ Quick reference for the TypeScript toolchain in plotly.js.
 - [tsconfig.json](../../tsconfig.json) — type checker config
 - [esbuild-config.js](../../esbuild-config.js) — bundler config
 
-Both target ES2016. Strict mode is currently **off** (`strict: false`) for incremental adoption — types tighten over time as files convert.
+Both target ES2016. `strict: true` is on in `tsconfig.json` — the type system is fully strict for the `.d.ts` declarations and converted TypeScript sources. The remaining JS files coexist via `allowJs: true` and are type-checked loosely (no strict null checks etc. on the JS side).
 
 ## npm scripts
 

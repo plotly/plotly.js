@@ -21,8 +21,10 @@ Run via `npm run schema`.
 `tasks/generate_schema_types.mjs` is called by `tasks/schema.mjs` after
 writing `plot-schema.json`. The generator walks `schema.traces`,
 `schema.layout.layoutAttributes`, `schema.animation`, `schema.frames`, and
-`schema.config.edits`, mapping each attribute's `valType` metadata to a
-TypeScript type.
+`schema.config` (including `schema.config.edits`), mapping each attribute's
+`valType` metadata to a TypeScript type. The set of meta keys to strip
+during emission is read from `schema.defs.metaKeys` so any addition to the
+schema's metadata format is picked up automatically.
 
 ### Phase 0: Common enum discovery
 
@@ -109,7 +111,7 @@ The Layout interface includes subplot index signatures:
 // etc.
 ```
 
-### Phase 5: Animation, frame, and edits interfaces
+### Phase 5: Animation, frame, edits, and config interfaces
 
 `AnimationOpts` is emitted from `schema.animation` (references the
 injected `Transition` and `AnimationFrameOpts` shared types). `Frame` is
@@ -127,6 +129,15 @@ The override mechanism is the `fieldOverrides` param on `attrsToProperties`
 — useful for any field whose schema description is too loose because the
 schema can't self-reference. `Edits` is emitted from `schema.config.edits`
 without overrides (all fields are concrete booleans).
+
+`ConfigBase` is emitted from `schema.config` after registering Edits'
+fingerprint in `sharedTypes`, so `edits?: Edits` references the named
+interface rather than re-inlining the subtree. Seven config fields whose
+schema `valType` is `any` (`locales`, `modeBarButtons`,
+`modeBarButtonsToAdd`, `modeBarButtonsToRemove`, `setBackground`,
+`showSources`, `toImageButtonOptions`) come through as `any`; the
+hand-written `Config` in `core/config.d.ts` overrides them via
+`Omit<ConfigBase, keyof ConfigOverrides> & ConfigOverrides`.
 
 ### Phase 6: Internal namespace
 
@@ -182,7 +193,7 @@ src/types/generated/schema.d.ts
 ├── Trace interfaces (ScatterData, BarData, ... — 49 traces)
 ├── Layout component interfaces (LayoutAxis, Legend, Scene, Annotation, etc.)
 ├── Layout interface
-└── Animation / frames / config (AnimationOpts, Frame, Edits)
+└── Animation / frames / config (AnimationOpts, Frame, Edits, ConfigBase)
 ```
 
 Regenerate with `npm run schema`.
@@ -213,9 +224,10 @@ Attribute name overrides via `ATTR_NAME_OVERRIDES` map specific attribute
 paths to a type alias regardless of valType (e.g. `marker.symbol` →
 `MarkerSymbol`).
 
-Reserved keys stripped from the output: `editType`, `role`, `description`,
-`impliedEdits`, `_isSubplotObj`, `_isLinkedToArray`, `_arrayAttrRegexps`,
-`_deprecated`.
+Reserved keys stripped from the output come from `schema.defs.metaKeys` —
+currently `editType`, `role`, `description`, `impliedEdits`,
+`_isSubplotObj`, `_isLinkedToArray`, `_arrayAttrRegexps`, `_deprecated`.
+New additions to that list are picked up automatically on regen.
 
 ## Extending the schema generator
 
@@ -302,7 +314,7 @@ console.log(s.layout.layoutAttributes.xaxis);  // inspect layout attrs
 console.log(s.traces.scatter.attributes);       // inspect trace attrs
 ```
 
-## Public API re-export check
+## Public API re-export
 
 `lib/index.d.ts` uses `export type * from '../src/types/generated/schema'`,
 so every top-level exported type from `schema.d.ts` is automatically
@@ -310,10 +322,11 @@ re-exported to consumers. Types inside the `_internal` namespace are still
 reachable via `_internal.X` (the namespace itself is exported by the
 wildcard) but their bare names are not.
 
-`tasks/schema.mjs` short-circuits its per-name re-export verification
-when the wildcard is detected. If you ever replace the wildcard with an
-explicit allowlist, the per-name check runs and warns about any
-exported-but-not-re-exported types.
+The wildcard is load-bearing: it removes the maintenance burden of keeping
+`lib/index.d.ts` in sync with new schema additions. If anyone ever swaps
+it for an explicit allowlist, restore the per-name re-export verifier
+that previously lived in `tasks/schema.mjs` (see git history) — otherwise
+new generated types will silently fail to surface in the public API.
 
 ## CI integration
 

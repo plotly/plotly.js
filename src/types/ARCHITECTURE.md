@@ -8,8 +8,9 @@ How TypeScript types are organized in plotly.js.
 ┌──────────────────────────────────────────────────────────────┐
 │  Consumer surface (what `npm install plotly.js` exposes)     │
 │  lib/index.d.ts — wired via package.json#types               │
-│  Curated re-exports of public types + 'export as namespace   │
-│  Plotly' for namespace and global usage.                     │
+│  `export type *` for generated schema types + explicit       │
+│  re-exports of hand-written types + `export as namespace     │
+│  Plotly` for global/namespace usage.                         │
 └──────────────────────────────────────────────────────────────┘
                           │
                           ▼
@@ -23,8 +24,9 @@ How TypeScript types are organized in plotly.js.
 │  Hand-written types      │  │  Generated types               │
 │  src/types/core/*.d.ts   │  │  src/types/generated/...       │
 │  src/types/lib/*.d.ts    │  │                                │
-│                          │  │  schema.d.ts — from schema     │
-│                          │  │  (traces + layout + shared)    │
+│                          │  │  schema.d.ts — common enums,   │
+│                          │  │  traces, layout, animation,    │
+│                          │  │  config, _internal namespace   │
 └──────────────────────────┘  └────────────────────────────────┘
 ```
 

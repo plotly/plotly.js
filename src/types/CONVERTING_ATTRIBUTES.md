@@ -116,13 +116,14 @@ the attribute object's runtime shape changed (most often a missed
 
 ```bash
 git add src/<path>/attributes.ts \
-        src/<path>/index.js src/<path>/defaults.js  # (whichever consumers you updated) \
-        src/types/core/<file>.d.ts \
-        src/types/generated/
+        src/<path>/index.js src/<path>/defaults.js  # (whichever consumers you updated)
 git commit -m "Convert <component> attributes to TypeScript"
 ```
 
-The conversion is a single self-contained commit per file.
+The conversion is a single self-contained commit per file. There's
+nothing to commit under `src/types/` for a correct conversion — the
+generated types are byte-identical (which is exactly what
+`schema-typegen-diff-check` confirmed in step 6).
 
 ## Worked example: modebar
 
@@ -149,8 +150,8 @@ The schema does not describe these — they remain in `src/types/`:
 - **Events** (`PlotMouseEvent`, `LegendClickEvent`, etc.)
 - **Public API function signatures** (`Plotly.newPlot`, `relayout`, ...)
 - **Internal types** (`FullLayout._modules`, `GraphDiv._fullData`, ...)
-- **Utility types** the mapped type bottoms out on (`Color`, `Datum`,
-  `TypedArray`, `MarkerSymbol`, ...)
+- **Utility types** (`Color`, `Datum`, `TypedArray`, `MarkerSymbol`, etc.) —
+  these are the primitives the generator's emitted types reference.
 
 If you find yourself converting one of these, stop and ask.
 
@@ -211,5 +212,5 @@ Pick from this priority list. Lower-numbered items are smaller / simpler.
 ## Working in parallel
 
 Multiple converters can work on different attribute files in parallel.
-Merge conflicts are rare and limited to the hand-written type files when
-removing types — manual conflict if two converters touch the same file.
+Each conversion is self-contained within one component's directory plus
+its direct `require()`-callers, so merge conflicts are rare.
