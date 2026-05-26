@@ -326,6 +326,17 @@ This will produce the following plot, and say you want to simulate a selection p
 
 <img src="https://user-images.githubusercontent.com/31989842/38890553-0bc6190c-4282-11e8-8efc-077bf05ca565.png">
 
+### Live links to dev builds
+
+The [Upload dev build from PR](.github/workflows/upload-dev-build.yml) workflow can be used to upload a dev build for a PR to the plotly.js-dev-builds repo, creating a live link to the plotly.js dev build which can be used in online coding environments to test and demo the PR.
+
+It is triggered in one of two ways:
+- Automatically on completion of the Publish Dist workflow, if triggered by a PR from a branch in the main repo (not a fork).
+- Manually via the Actions tab in the GitHub UI, by entering a PR number in the workflow inputs
+  - Only users with write access to the plotly.js repo can trigger workflows manually
+
+If you would like a link to the dev build for your PR but don't have permission to trigger the workflow, tag a maintainer to request a run for your PR.
+
 ## Repo organization
 
 - Distributed files are in `dist/`
