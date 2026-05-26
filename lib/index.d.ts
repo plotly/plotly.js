@@ -36,109 +36,14 @@ export type {
     MarkerSymbol,
     TypedArray,
     XAnchor,
-    YAnchor,
+    YAnchor
 } from '../src/types/lib/common';
 
 // ---------------------------------------------------------------------------
 // Schema-generated types (traces, layout, shared interfaces)
 // ---------------------------------------------------------------------------
 
-export type {
-    // Common enum types
-    AxisType,
-    Calendar,
-    Dash,
-    PatternShape,
-    PlotType,
-    TransitionEasing,
-    XRef,
-    YRef,
-
-    // Animation, frames, and config interfaces
-    AnimationFrameOpts,
-    AnimationOpts,
-    Edits,
-    Frame,
-    Transition,
-
-    // Shared interfaces
-    ColorBar,
-    Domain,
-    Font,
-    FontArray,
-    HoverLabel,
-    Pattern,
-    TickFormatStops,
-
-    // Trace interfaces
-    BarData,
-    BarpolarData,
-    BoxData,
-    CandlestickData,
-    CarpetData,
-    ChoroplethData,
-    ChoroplethmapData,
-    ChoroplethmapboxData,
-    ConeData,
-    ContourData,
-    ContourcarpetData,
-    DensitymapData,
-    DensitymapboxData,
-    FunnelData,
-    FunnelareaData,
-    HeatmapData,
-    Histogram2dData,
-    Histogram2dcontourData,
-    HistogramData,
-    IcicleData,
-    ImageData,
-    IndicatorData,
-    IsosurfaceData,
-    Mesh3dData,
-    OhlcData,
-    ParcatsData,
-    ParcoordsData,
-    PieData,
-    SankeyData,
-    Scatter3dData,
-    ScatterData,
-    ScattercarpetData,
-    ScattergeoData,
-    ScatterglData,
-    ScattermapData,
-    ScattermapboxData,
-    ScatterpolarData,
-    ScatterpolarglData,
-    ScattersmithData,
-    ScatterternaryData,
-    SplomData,
-    StreamtubeData,
-    SunburstData,
-    SurfaceData,
-    TableData,
-    TreemapData,
-    ViolinData,
-    VolumeData,
-    WaterfallData,
-
-    // Layout component interfaces
-    Annotation,
-    ColorAxis,
-    GeoLayout,
-    Layout,
-    LayoutAxis,
-    LayoutImage,
-    LayoutSelection,
-    Legend,
-    MapLayout,
-    PolarLayout,
-    Scene,
-    Shape,
-    Slider,
-    SmithLayout,
-    TernaryLayout,
-    UpdateMenu,
-} from '../src/types/generated/schema';
+export type * from '../src/types/generated/schema';
 
 // ---------------------------------------------------------------------------
 // Hand-written layout types (not in schema)
@@ -154,28 +59,14 @@ export type {
     ModeBarDefaultButtons,
     Template,
     XAxisName,
-    YAxisName,
+    YAxisName
 } from '../src/types/core/layout';
 
 // ---------------------------------------------------------------------------
 // Trace data
 // ---------------------------------------------------------------------------
 
-export type {
-    Data,
-    DataTitle,
-    Delta,
-    Gauge,
-    GaugeBar,
-    GaugeLine,
-    Padding,
-    PlotData,
-    PlotMarker,
-    PlotNumber,
-    ScatterLine,
-    ScatterMarkerLine,
-    Threshold,
-} from '../src/types/core/data';
+export type { Data } from '../src/types/core/data';
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -185,7 +76,7 @@ export type {
     Config,
     DownloadImgopts,
     ToImageButtonOptions,
-    ToImgopts,
+    ToImgopts
 } from '../src/types/core/config';
 
 // ---------------------------------------------------------------------------
@@ -215,7 +106,7 @@ export type {
     SliderEndEvent,
     SliderStartEvent,
     SunburstClickEvent,
-    SunburstPlotDatum,
+    SunburstPlotDatum
 } from '../src/types/core/events';
 
 // ---------------------------------------------------------------------------
@@ -246,7 +137,7 @@ export {
     toImage,
     update,
     validate,
-    validateTemplate,
+    validateTemplate
 } from '../src/types/core/api';
 
 export type {
@@ -259,7 +150,7 @@ export type {
     StaticPlots,
     TemplateFigure,
     ValidateResult,
-    ValidateTemplateResult,
+    ValidateTemplateResult
 } from '../src/types/core/api';
 
 // ---------------------------------------------------------------------------

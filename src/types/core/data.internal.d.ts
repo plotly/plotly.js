@@ -5,7 +5,7 @@
  * properties. For public trace types, see data.d.ts.
  */
 
-import type { PlotData } from './data';
+import type { Data } from './data';
 
 /**
  * Calculated trace data (internal)
@@ -21,9 +21,11 @@ export interface CalcData {
 }
 
 /**
- * Fully processed plot data with defaults applied (internal use)
+ * Internal `_`-prefixed fields added to traces during defaults supply.
+ * Combined with the user-facing trace shape via `FullData`. Not exported —
+ * internal helpers should use `FullData` rather than this directly.
  */
-export interface FullData extends Partial<PlotData> {
+interface FullDataInternals {
     _arrayAttrs?: string[];
     _expandedIndex?: number;
     _extremes?: Record<string, any>;
@@ -38,3 +40,13 @@ export interface FullData extends Partial<PlotData> {
     index?: number;
     [key: string]: any;
 }
+
+/**
+ * Fully processed plot data with defaults applied (internal use).
+ *
+ * `FullData` is the `Data` discriminated union intersected with internal state.
+ * That means narrowing on `trace.type` gives you the right trace-specific
+ * fields (`if (trace.type === 'bar') trace.marker?.cornerradius`) while
+ * `_`-prefixed internal fields are always accessible.
+ */
+export type FullData = Data & FullDataInternals;

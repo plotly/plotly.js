@@ -9,7 +9,7 @@
  */
 
 import type { Layout } from '../generated/schema';
-import type { PlotData, PlotType } from './data';
+import type { Data, PlotType } from './data';
 import type { PlotlyHTMLElement } from './events';
 
 // ---------------------------------------------------------------------------
@@ -102,7 +102,7 @@ export type ModeBarButtonAny = ModeBarDefaultButtons | ModeBarButton;
 // ---------------------------------------------------------------------------
 
 export interface Template {
-    data?: { [type in PlotType]?: Array<Partial<PlotData>> } | undefined;
+    data?: { [type in PlotType]?: Data[] } | undefined;
     layout?: Partial<Layout> | undefined;
 }
 

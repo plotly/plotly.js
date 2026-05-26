@@ -63,6 +63,33 @@ const VALUES_TO_COMMON_TYPE = new Map();
 const ATTR_NAME_OVERRIDES = new Map([['marker.symbol', 'MarkerSymbol']]);
 
 /**
+ * Shared interfaces wrapped inside `export namespace _internal { ... }`.
+ *
+ * These are publicly importable but the namespace path signals they are
+ * either schema-internal helpers (AutoRangeOptions, Lighting, Stream),
+ * superseded by a hand-written alternative (ErrorY → ErrorBar), or have
+ * names that would mislead if surfaced directly (Marker is scatter-only,
+ * Line is the marker outline rather than the trace line).
+ *
+ * Inside the namespace, sibling references are bare (`line?: Line`); outside,
+ * references are prefixed (`marker?: _internal.Marker`) via `refName()`.
+ */
+const INTERNAL_INTERFACES = new Set([
+    'AutoRangeOptions',
+    'ErrorY',
+    'Lighting',
+    'Line',
+    'Marker',
+    'Stream'
+]);
+
+function refName(name, inInternalNamespace) {
+    if (inInternalNamespace) return name;
+    if (INTERNAL_INTERFACES.has(name)) return `_internal.${name}`;
+    return name;
+}
+
+/**
  * Walk the schema to find the canonical `values` array for each anchor in
  * `COMMON_TYPE_ANCHORS`. The first matching enumerated attribute wins.
  * Also emits a `PlotType` alias derived from the trace-names list.
@@ -241,19 +268,75 @@ function simpleValType(valType) {
 }
 
 /**
- * Format a schema description as a JSDoc comment block.
- * Returns an array of lines (including the indent), or an empty array
- * if the attribute has no description.
+ * Format schema attribute metadata as a JSDoc comment block.
+ * Emits the description plus `@default`, min/max bounds, and `impliedEdits`
+ * lines when present. Containers (no valType) only carry a description, so
+ * the extra-metadata branches are no-ops for them.
  *
- * @param {string|undefined} description
- * @param {string} indent
+ * @param {object|undefined} attr - The schema attribute object
+ * @param {string} indent - Indentation string for each emitted line
  * @returns {string[]}
  */
-function formatJSDoc(description, indent) {
-    if (!description) return [];
-    // Escape stray */ sequences that would close the JSDoc comment
-    const text = description.replace(/\*\//g, '*\\/');
-    return [`${indent}/** ${text} */`];
+function formatJSDoc(attr, indent) {
+    if (!attr || typeof attr !== 'object') return [];
+
+    const description = attr.description;
+    const tags = [];
+
+    // @default — skip null and empty string (uninformative noise)
+    if ('dflt' in attr && attr.dflt !== null && attr.dflt !== '') {
+        let dfltStr;
+        if (typeof attr.dflt === 'string') {
+            dfltStr = `'${attr.dflt.replace(/'/g, "\\'")}'`;
+        } else if (Array.isArray(attr.dflt) || (typeof attr.dflt === 'object' && attr.dflt !== null)) {
+            dfltStr = JSON.stringify(attr.dflt);
+        } else {
+            dfltStr = String(attr.dflt);
+        }
+        tags.push(`@default ${dfltStr}`);
+    }
+
+    // Numeric bounds
+    const hasMin = typeof attr.min === 'number';
+    const hasMax = typeof attr.max === 'number';
+    if (hasMin && hasMax) {
+        tags.push(`Range: [${attr.min}, ${attr.max}]`);
+    } else if (hasMin) {
+        tags.push(`Minimum: ${attr.min}`);
+    } else if (hasMax) {
+        tags.push(`Maximum: ${attr.max}`);
+    }
+
+    // impliedEdits — attributes that get reset/changed alongside this one
+    if (attr.impliedEdits && typeof attr.impliedEdits === 'object') {
+        const entries = Object.entries(attr.impliedEdits);
+        if (entries.length > 0) {
+            const parts = entries.map(([k, v]) => `${k} = ${JSON.stringify(v)}`).join(', ');
+            tags.push(`Setting this also sets: ${parts}`);
+        }
+    }
+
+    if (!description && tags.length === 0) return [];
+
+    // Single-line — preserve original compact format when there's only a description
+    if (description && tags.length === 0) {
+        const text = description.replace(/\*\//g, '*\\/');
+        return [`${indent}/** ${text} */`];
+    }
+
+    // Multi-line block
+    const out = [`${indent}/**`];
+    if (description) {
+        const text = description.replace(/\*\//g, '*\\/');
+        for (const line of text.split('\n')) {
+            out.push(`${indent} * ${line}`);
+        }
+    }
+    for (const tag of tags) {
+        out.push(`${indent} * ${tag}`);
+    }
+    out.push(`${indent} */`);
+    return out;
 }
 
 /**
@@ -675,7 +758,7 @@ function mergeSubsets(collector, shared) {
  *     Frame.layout points to the entire Layout shape).
  * @returns {string[]} Array of TS property declaration lines
  */
-function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverrides) {
+function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverrides, inInternalNamespace = false) {
     const lines = [];
 
     for (const key of Object.keys(attrs).sort()) {
@@ -695,7 +778,7 @@ function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverride
         // Field-level override — bypass schema typing entirely
         if (fieldOverrides && Object.prototype.hasOwnProperty.call(fieldOverrides, key)) {
             if (val && typeof val === 'object' && val.description) {
-                lines.push(...formatJSDoc(val.description, indent));
+                lines.push(...formatJSDoc(val, indent));
             }
             lines.push(`${indent}${key}?: ${fieldOverrides[key]};`);
             continue;
@@ -713,7 +796,7 @@ function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverride
         // Leaf attribute (has valType)
         if (val.valType) {
             const tsType = valTypeToTS(val, attrPath);
-            lines.push(...formatJSDoc(val.description, indent));
+            lines.push(...formatJSDoc(val, indent));
             lines.push(`${indent}${key}?: ${tsType};`);
             continue;
         }
@@ -724,13 +807,13 @@ function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverride
             const fp = containerFingerprint(itemChild);
             const sharedName = sharedTypes.get(fp);
             if (sharedName) {
-                lines.push(...formatJSDoc(val.description, indent));
-                lines.push(`${indent}${key}?: ${sharedName}[];`);
+                lines.push(...formatJSDoc(val, indent));
+                lines.push(`${indent}${key}?: ${refName(sharedName, inInternalNamespace)}[];`);
                 continue;
             }
-            const nested = attrsToProperties(itemChild, indent + '    ', attrPath, sharedTypes);
+            const nested = attrsToProperties(itemChild, indent + '    ', attrPath, sharedTypes, undefined, inInternalNamespace);
             if (nested.length > 0) {
-                lines.push(...formatJSDoc(val.description, indent));
+                lines.push(...formatJSDoc(val, indent));
                 lines.push(`${indent}${key}?: Array<{`);
                 lines.push(...nested);
                 lines.push(`${indent}}>;`);
@@ -742,15 +825,15 @@ function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverride
         const fp = containerFingerprint(val);
         const sharedName = sharedTypes.get(fp);
         if (sharedName) {
-            lines.push(...formatJSDoc(val.description, indent));
-            lines.push(`${indent}${key}?: ${sharedName};`);
+            lines.push(...formatJSDoc(val, indent));
+            lines.push(`${indent}${key}?: ${refName(sharedName, inInternalNamespace)};`);
             continue;
         }
 
         // Container object — recurse
-        const nested = attrsToProperties(val, indent + '    ', attrPath, sharedTypes);
+        const nested = attrsToProperties(val, indent + '    ', attrPath, sharedTypes, undefined, inInternalNamespace);
         if (nested.length > 0) {
-            lines.push(...formatJSDoc(val.description, indent));
+            lines.push(...formatJSDoc(val, indent));
             lines.push(`${indent}${key}?: {`);
             lines.push(...nested);
             lines.push(`${indent}};`);
@@ -882,7 +965,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         const fp = containerFingerprint(val);
         const sharedName = sharedTypes.get(fp);
         if (sharedName) {
-            lines.push(`    ${key}?: ${sharedName};`);
+            lines.push(`    ${key}?: ${refName(sharedName, false)};`);
             continue;
         }
 
@@ -988,7 +1071,8 @@ export function generateSchemaTypes(schema, outputPath) {
                 innerShared.set(fp, name);
             }
         }
-        return attrsToProperties(attrs, '    ', '', innerShared);
+        const inNs = INTERNAL_INTERFACES.has(selfName);
+        return attrsToProperties(attrs, '    ', '', innerShared, undefined, inNs);
     };
 
     // ----- Phase 3: Layout-specific interfaces -----
@@ -1017,20 +1101,45 @@ export function generateSchemaTypes(schema, outputPath) {
         chunks.push('');
     }
 
-    // Emit shared interfaces
-    if (sharedList.length > 0) {
+    // Emit shared interfaces — public ones at the top level, "internal" ones
+    // wrapped in `export namespace _internal { ... }` so consumers reach them
+    // via the namespace prefix rather than directly.
+    const publicShared = sharedList.filter(([name]) => !INTERNAL_INTERFACES.has(name));
+    const internalShared = sharedList.filter(([name]) => INTERNAL_INTERFACES.has(name));
+
+    if (publicShared.length > 0) {
         chunks.push('// ---------------------------------------------------------------------------');
         chunks.push('// Shared interfaces — extracted from repeated attribute subtrees');
         chunks.push('// ---------------------------------------------------------------------------');
         chunks.push('');
 
-        for (const [name, { fp, attrs }] of sharedList) {
+        for (const [name, { fp, attrs }] of publicShared) {
             const properties = emitSharedBody(attrs, name);
             chunks.push(`export interface ${name} {`);
             chunks.push(...properties);
             chunks.push('}');
             chunks.push('');
         }
+    }
+
+    if (internalShared.length > 0) {
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('// Internal shared interfaces — schema helpers or types whose direct names');
+        chunks.push('// would mislead consumers. Reach them via `_internal.X` or, preferably,');
+        chunks.push('// through indexed access on the parent type (e.g. `ScatterData["marker"]`).');
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('');
+        chunks.push('export namespace _internal {');
+        for (const [name, { fp, attrs }] of internalShared) {
+            const properties = emitSharedBody(attrs, name);
+            chunks.push(`    export interface ${name} {`);
+            // Reindent the body — each line gets 4 more spaces (or stays blank).
+            for (const line of properties) chunks.push(line === '' ? line : '    ' + line);
+            chunks.push('    }');
+            chunks.push('');
+        }
+        chunks.push('}');
+        chunks.push('');
     }
 
     // Emit per-trace interfaces
@@ -1131,10 +1240,16 @@ export function generateSchemaTypes(schema, outputPath) {
         `Generated ${traceNames.length} trace(s) + ${layoutCount} layout type(s) + ${sharedCount} shared interface(s) + ${extraCount} animation/config interface(s) → ${outputPath}`
     );
 
-    // Return all exported interface names so callers can verify re-exports
+    // Return all top-level exported interface names so callers can verify
+    // re-exports. Excludes names wrapped inside `namespace _internal` — they
+    // are exported via the namespace but their bare names aren't importable
+    // from the module's top level, so a per-name re-export check would
+    // falsely flag them as missing.
     const exportedNames = new Set();
     for (const name of commonTypes.keys()) exportedNames.add(name);
-    for (const [name] of sharedList) exportedNames.add(name);
+    for (const [name] of sharedList) {
+        if (!INTERNAL_INTERFACES.has(name)) exportedNames.add(name);
+    }
     for (const traceName of traceNames) exportedNames.add(traceNameToInterfaceName(traceName));
     for (const name of subplotGroups.keys()) exportedNames.add(name);
     for (const name of arrayItems.keys()) exportedNames.add(name);

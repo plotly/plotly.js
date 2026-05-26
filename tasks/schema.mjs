@@ -72,38 +72,14 @@ await build(localDevConfig);
 // output plot-schema JSON
 makeSchema(pathToPlotly, pathToSchema);
 
-// generate TypeScript types from the schema (traces + layout)
+// generate TypeScript types from the schema — traces, layout, common enum
+// aliases, animation/frame/config interfaces, and an `_internal` namespace.
+//
+// New schema-derived types automatically reach `plotly.js` consumers because
+// `lib/index.d.ts` uses `export type * from '../src/types/generated/schema'`.
+// If you ever swap that wildcard for an explicit allowlist, restore the
+// per-name re-export verifier that lived here (see git history) — otherwise
+// new types will silently fail to surface in the public API.
 const schema = JSON.parse(fs.readFileSync(pathToSchema, 'utf-8'));
 const pathToGeneratedTypes = path.join(constants.pathToSrc, 'types/generated/schema.d.ts');
-const exportedNames = generateSchemaTypes(schema, pathToGeneratedTypes);
-
-// Warn about generated interfaces not re-exported from the public API.
-// Types listed here are intentionally internal-only and won't trigger warnings.
-const PUBLIC_API_EXEMPTIONS = new Set([
-    'AutoRangeOptions',
-    'ErrorY',
-    'LegendGroupTitle',
-    'Lighting',
-    'Line',
-    'Marker',
-    'Stream',
-]);
-
-const pathToPublicTypes = path.join(constants.pathToLib, 'index.d.ts');
-const publicTypes = fs.readFileSync(pathToPublicTypes, 'utf-8');
-// Use word-boundary regex to avoid substring false positives (e.g. "Stream" matching "StreamtubeData")
-const missing = [...exportedNames].filter((name) => !new RegExp(`\\b${name}\\b`).test(publicTypes)).sort();
-if (missing.length > 0) {
-    const unexempted = missing.filter((name) => !PUBLIC_API_EXEMPTIONS.has(name));
-    const exempted = missing.filter((name) => PUBLIC_API_EXEMPTIONS.has(name));
-
-    if (unexempted.length > 0) {
-        console.warn(`\n⚠  ${unexempted.length} generated type(s) not re-exported in lib/index.d.ts:`);
-        for (const name of unexempted) console.warn(`   - ${name}`);
-    }
-    if (exempted.length > 0) {
-        console.log(`\n   ${exempted.length} exempted (intentionally internal-only):`);
-        for (const name of exempted) console.log(`   - ${name}`);
-    }
-    console.log('');
-}
+generateSchemaTypes(schema, pathToGeneratedTypes);

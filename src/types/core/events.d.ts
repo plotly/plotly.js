@@ -16,7 +16,7 @@ import type {
 } from '../generated/schema';
 import type { Datum } from '../lib/common';
 import type { Config } from './config';
-import type { Data, PlotData } from './data';
+import type { Data } from './data';
 
 // ---------------------------------------------------------------------------
 // Point / datum types in events
@@ -24,7 +24,7 @@ import type { Data, PlotData } from './data';
 
 export interface PlotScatterDataPoint {
     curveNumber: number;
-    data: PlotData;
+    data: Data;
     pointIndex: number;
     pointNumber: number;
     x: number;
@@ -35,7 +35,7 @@ export interface PlotScatterDataPoint {
 
 export interface PlotDatum {
     curveNumber: number;
-    data: PlotData;
+    data: Data;
     customdata: Datum;
     pointIndex: number;
     pointNumber: number;

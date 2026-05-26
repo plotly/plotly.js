@@ -8,7 +8,7 @@
 
 import type { Layout } from '../generated/schema';
 import type { Config } from './config';
-import type { PlotData } from './data';
+import type { Data } from './data';
 import type { CalcData, FullData } from './data.internal';
 import type { FullLayout } from './layout.internal';
 
@@ -35,7 +35,7 @@ export interface GraphDiv extends HTMLDivElement {
     _transitioning?: boolean;
     calcdata?: CalcData[][];
     config?: Partial<Config>;
-    data?: Array<Partial<PlotData>>;
+    data?: Data[];
     emit?: (event: string, ...args: any[]) => void;
     layout?: Partial<Layout>;
     [key: string]: any;
