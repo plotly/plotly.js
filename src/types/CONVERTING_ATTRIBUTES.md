@@ -147,22 +147,25 @@ The schema does not describe these — they remain in `src/types/`:
 
 If you find yourself converting one of these, stop and ask.
 
-## What if my type doesn't match the hand-written one?
+## What if I need a type the schema doesn't describe well?
 
-Almost certainly the hand-written one was wrong, narrowed for ergonomics, or
-based on an older schema. Order of operations:
+The schema-generated types are authoritative for everything in
+`plot-schema.json`. If something is missing or too loose:
 
-1. **Compare**. Look at the schema-generated type in `schema.d.ts` next to
-   the hand-written one.
-2. **If schema is too loose** (e.g. `string` where the hand-written type had
-   a typed union of valid values), check whether the schema's `values` array
-   could be expanded. The schema is the authoritative truth — fix it there.
-3. **If the hand-written type had additional fields** not in the schema,
-   they're probably internal/runtime-only and should stay hand-written
-   (add them to the corresponding `.internal.d.ts` file, e.g. `FullLayout`
-   in `layout.internal.d.ts`).
-4. **If the schema has fields the hand-written type lacked**, that's a free
-   coverage win — accept the generated type.
+1. **Compare**. Look at the schema-generated type in `schema.d.ts`.
+2. **If schema is too loose** (e.g. `string` where the schema should have
+   a typed union of valid values, or `any` where a proper shape could be
+   described), fix it at the JS attribute source so every language port
+   benefits — not via a generator-side override.
+3. **If the field is an internal runtime artifact** (not in the user-facing
+   schema), add it to the appropriate `.internal.d.ts` file. For trace
+   internal fields, that's `FullDataInternals` inside
+   `core/data.internal.d.ts` (which `FullData` intersects with `Data`).
+   For layout internal fields, it's `FullLayout` in `layout.internal.d.ts`.
+4. **If the schema has fields and a generator-side override is the only
+   path** (e.g. recursive references like `Frame.data` pointing back to the
+   trace-data union), use the `fieldOverrides` parameter on
+   `attrsToProperties` in the generator. See GENERATOR.md.
 
 ## Schema-generated types
 

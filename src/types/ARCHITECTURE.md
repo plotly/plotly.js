@@ -38,15 +38,32 @@ The split:
 
 - **Generated types** are the single source of truth for everything in
   Plotly's attribute schema.
-  - **`src/types/generated/schema.d.ts`** — all 49 trace data interfaces,
-    layout component interfaces (LayoutAxis, Legend, Scene, Annotation,
-    Shape, Slider, UpdateMenu, etc.), the Layout interface itself, plus
-    shared sub-interfaces (Font, ColorBar, HoverLabel, etc.).
+  - **`src/types/generated/schema.d.ts`** contains:
+    - **Common enum aliases** discovered from the schema (Calendar, Dash,
+      AxisType, PatternShape, XRef, YRef, TransitionEasing, PlotType).
+    - **Shared sub-interfaces** extracted from repeated subtrees (Font,
+      FontArray, ColorBar, HoverLabel, Domain, Pattern, TickFormatStops,
+      LegendGroupTitle).
+    - **Per-trace data interfaces** — all 49 (BarData, ScatterData,
+      IndicatorData, etc.).
+    - **Layout component interfaces** (LayoutAxis, Legend, Scene,
+      Annotation, Shape, Slider, UpdateMenu, etc.) and the Layout
+      interface itself.
+    - **Animation, frames, and config interfaces** (Transition,
+      AnimationFrameOpts, AnimationOpts, Frame, Edits) generated from
+      `schema.animation`, `schema.frames`, and `schema.config.edits`.
+    - **`_internal` namespace** wrapping types whose direct names would
+      mislead consumers (Marker is scatter-only, Line is the marker
+      outline) or are schema-internal helpers (AutoRangeOptions,
+      Lighting, Stream, ErrorY). Reachable as `_internal.Marker` etc.
+      but not at the top level.
+
     Generated from `plot-schema.json` by `tasks/generate_schema_types.mjs`.
     Run `npm run schema` to regenerate.
 - **Hand-written types** cover everything the schema doesn't describe:
   events, internal runtime state, public API function signatures,
-  utility types, behavioral types (ModeBarButton, Icon, etc.).
+  utility types (Color, Datum, MarkerSymbol, ErrorBar), behavioral types
+  (ModeBarButton, Icon, etc.).
 
 ## Public vs. private (the underscore convention)
 
@@ -61,12 +78,18 @@ This split is reflected in the types:
 | User-facing | Internal | Where defined |
 |---|---|---|
 | `Layout` | `FullLayout` | `Layout` in `generated/schema.d.ts`; `FullLayout` in `core/layout.internal.d.ts` |
-| `PlotData` | `FullData` | `PlotData` in `core/data.d.ts`; `FullData` in `core/data.internal.d.ts` |
+| `Data` (union over `type`) | `FullData` | `Data` in `core/data.d.ts` (union of schema `*Data` interfaces); `FullData = Data & FullDataInternals` in `core/data.internal.d.ts` |
 | (n/a) | `GraphDiv` (the `gd` param) | `core/graph-div.internal.d.ts` — DOM element with `_fullLayout`, `_fullData`, `calcdata`, etc. |
+
+`FullData` is the discriminated union of schema trace types intersected with
+the internal `_`-prefixed fields. Internal code that narrows on `trace.type`
+gets trace-specific fields plus the internal state in the same expression.
 
 Internal types use index signatures (`[key: string]: any`) liberally to
 allow incremental migration without blocking. As `_` properties get
-discovered during JS→TS conversion, add them to `FullLayout`/`FullData`/etc.
+discovered during JS→TS conversion, add them to `FullLayout` or
+`FullDataInternals` (the file-local intersection target inside
+`data.internal.d.ts`).
 
 ## Directory layout
 
@@ -76,7 +99,7 @@ src/types/
 ├── core/                         # hand-written types for the core API
 │   ├── api.d.ts                  # public API function signatures (newPlot, etc.)
 │   ├── config.d.ts               # Config, ToImgopts (Edits re-exported from generated)
-│   ├── data.d.ts                 # PlotData, PlotMarker, ScatterLine, Data union
+│   ├── data.d.ts                 # Data union (over all schema `*Data` interfaces)
 │   ├── data.internal.d.ts        # CalcData, FullData
 │   ├── events.d.ts               # PlotMouseEvent, PlotlyHTMLElement, etc.
 │   ├── graph-div.internal.d.ts   # GraphDiv, GraphContext
@@ -102,31 +125,56 @@ If a file has no `.internal` suffix, all its exports are public.
 ## How schema type generation works
 
 ```
-test/plot-schema.json (runtime schema with all 49 traces + full layout)
+test/plot-schema.json (runtime schema: traces + layout + animation + config)
     │
     ▼
 [ tasks/generate_schema_types.mjs ]
     │
-    │ 1. Fingerprint every container subtree across ALL traces AND layout
-    │ 2. Extract shared interfaces (Font, ColorBar, HoverLabel, etc.)
+    │ 0. Discover common enum aliases via COMMON_TYPE_ANCHORS
+    │    (Calendar/Dash/AxisType/PatternShape/XRef/YRef/TransitionEasing,
+    │    plus PlotType derived from the trace-names list)
+    │ 1. Fingerprint every container subtree across traces and layout
+    │ 2. Extract shared interfaces (Font, ColorBar, HoverLabel, etc.).
+    │    Inject Transition and AnimationFrameOpts as shared types
+    │    (animation has < MIN_OCCURRENCES sites otherwise)
     │ 3. Emit per-trace interfaces referencing shared types
     │ 4. Emit layout component interfaces (LayoutAxis, Legend, Scene, etc.)
-    │ 5. Emit the Layout interface with subplot index signatures
+    │    and the Layout interface with subplot index signatures
+    │ 5. Emit AnimationOpts (from schema.animation), Frame (from
+    │    schema.frames with field overrides for the recursive data/layout
+    │    fields), and Edits (from schema.config.edits)
+    │ 6. Wrap names in INTERNAL_INTERFACES inside `export namespace _internal`
+    │    and rewrite outside-namespace references to `_internal.X`
     │
     ▼
 src/types/generated/schema.d.ts
+    │ // Common enum aliases
+    │ export type Calendar = 'chinese' | 'coptic' | ...;
+    │ export type PlotType = 'bar' | 'scatter' | ...;
+    │ // Shared interfaces (public)
     │ export interface Font { ... }
     │ export interface ColorBar { ... }
-    │ export interface ScatterData { ... }
+    │ // Internal namespace
+    │ export namespace _internal {
+    │     export interface Marker { ... }
+    │     export interface Line { ... }
+    │     // ...
+    │ }
+    │ // Trace interfaces
+    │ export interface ScatterData { marker?: _internal.Marker; ... }
     │ export interface BarData { ... }
-    │ export interface LayoutAxis { ... }
-    │ export interface Legend { ... }
+    │ // Layout
+    │ export interface LayoutAxis { autorangeoptions?: _internal.AutoRangeOptions; ... }
     │ export interface Layout { ... }
-    │ // ... 49 traces + layout types + shared interfaces
+    │ // Animation / config
+    │ export interface AnimationOpts { transition?: Transition; ... }
+    │ export interface Frame { data?: any[]; layout?: Partial<Layout>; ... }
+    │ export interface Edits { ... }
     │
     ▼
-src/types/index.d.ts re-exports all types (internal).
-lib/index.d.ts re-exports public types to consumers.
+src/types/index.d.ts re-exports all types (internal authoring index).
+lib/index.d.ts uses `export type * from '.../generated/schema'` so every
+public schema-derived type is automatically re-exported to consumers.
 ```
 
 Regenerate with `npm run schema` (which rebuilds plot-schema.json

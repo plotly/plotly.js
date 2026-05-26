@@ -26,12 +26,22 @@ here, public types are re-exported through `lib/index.d.ts` to consumers.
 
 ## Generated types
 
-All 49 trace data interfaces, layout component interfaces (LayoutAxis,
-Legend, Scene, Annotation, Shape, Slider, UpdateMenu, etc.), the Layout
-interface itself, and shared sub-interfaces (Font, ColorBar, HoverLabel,
-etc.) are **auto-generated from `plot-schema.json`** by
-`tasks/generate_schema_types.mjs`. Run `npm run schema` to regenerate.
-The output lives at `src/types/generated/schema.d.ts`.
+The following are **auto-generated from `plot-schema.json`** by
+`tasks/generate_schema_types.mjs`:
+
+- Common enum aliases (Calendar, Dash, AxisType, PatternShape, XRef, YRef,
+  TransitionEasing, PlotType)
+- All 49 per-trace data interfaces (BarData, ScatterData, IndicatorData, ...)
+- Layout component interfaces (LayoutAxis, Legend, Scene, Annotation,
+  Shape, Slider, UpdateMenu, etc.) and the Layout interface itself
+- Shared sub-interfaces (Font, ColorBar, HoverLabel, LegendGroupTitle, etc.)
+- Animation / frame / edits interfaces (AnimationOpts, Frame, Edits)
+- An `_internal` namespace with helpers like `_internal.Marker`,
+  `_internal.AutoRangeOptions` that aren't meant as direct public surface
+
+Run `npm run schema` to regenerate. The output lives at
+`src/types/generated/schema.d.ts`. See [GENERATOR.md](GENERATOR.md) for
+the generator's internals.
 
 ## How to help
 
