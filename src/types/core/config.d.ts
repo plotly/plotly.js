@@ -1,10 +1,14 @@
 /**
  * Config types
  *
- * Plotly configuration options and edit settings.
+ * `Config` is built by overlaying a small hand-written interface on top of
+ * the schema-derived `ConfigBase`. Most fields come straight from the
+ * schema; the overrides cover seven fields whose schema `valType` is `any`
+ * because the underlying JS attribute accepts a function value, an
+ * arbitrary-key map, or a structure too irregular for the schema to model.
  */
 
-import type { Edits } from '../generated/schema';
+import type { ConfigBase, Edits } from '../generated/schema';
 import type { PlotlyHTMLElement } from './events';
 import type { ModeBarButtonAny, ModeBarDefaultButtons } from './layout';
 
@@ -39,200 +43,29 @@ export interface ToImageButtonOptions {
 }
 
 // ---------------------------------------------------------------------------
-// Config
+// Config — hybrid (schema-derived + hand-written overrides)
 // ---------------------------------------------------------------------------
 
-export interface Config {
-    /**
-     * No interactivity, for export or image generation.
-     * @default false
-     */
-    staticPlot: boolean;
-    /**
-     * Determines whether math should be typeset when MathJax is present.
-     * @default true
-     */
-    typesetMath: boolean;
-    /**
-     * Base URL for the 'Edit in Chart Studio' button.
-     * @default ''
-     */
-    plotlyServerURL: string;
-    /**
-     * Sets all pieces of `edits` unless overridden.
-     * @default false
-     */
-    editable: boolean;
-    edits: Partial<Edits>;
-    /**
-     * Enables moving selections.
-     * @default true
-     */
-    editSelection: boolean;
-    /**
-     * Plot with respect to layout.autosize:true and infer container size.
-     * @default false
-     */
-    autosizable: boolean;
-    /**
-     * Change the layout size when window is resized.
-     * @default false
-     */
-    responsive: boolean;
-    /**
-     * Whether the graph fills the container or the screen.
-     * @default false
-     */
-    fillFrame: boolean;
-    /**
-     * Frame margins in fraction of the graph size.
-     * @default 0
-     */
-    frameMargins: number;
-    /**
-     * Mouse wheel / two-finger scroll zoom.
-     * @default 'gl3d+geo+map'
-     */
-    scrollZoom: string | boolean;
-    /**
-     * Double click interaction mode.
-     * @default 'reset+autosize'
-     */
-    doubleClick: 'reset+autosize' | 'reset' | 'autosize' | false;
-    /**
-     * Delay for registering a double-click in ms.
-     * @default 300
-     */
-    doubleClickDelay: number;
-    /**
-     * Show cartesian axis pan/zoom drag handles.
-     * @default true
-     */
-    showAxisDragHandles: boolean;
-    /**
-     * Show direct range entry at the pan/zoom drag points.
-     * @default true
-     */
-    showAxisRangeEntryBoxes: boolean;
-    /**
-     * Show tips while interacting with the resulting graphs.
-     * @default true
-     */
-    showTips: boolean;
-    /**
-     * Display a link to Chart Studio Cloud at the bottom right.
-     * @default false
-     */
-    showLink: boolean;
-    /**
-     * Sets the text appearing in the `showLink` link.
-     * @default 'Edit chart'
-     */
-    linkText: string;
-    /**
-     * If `showLink` is true, send data when linking to Chart Studio Cloud.
-     * @default true
-     */
-    sendData: boolean;
-    /**
-     * Adds a source-displaying function to show sources on the resulting graphs.
-     * @default false
-     */
-    showSources: false | ((gd: PlotlyHTMLElement) => void | Promise<void>);
-    /**
-     * Mode bar display mode.
-     * @default 'hover'
-     */
-    displayModeBar: 'hover' | boolean;
-    /**
-     * Show "Edit in Chart Studio" mode bar button.
-     * @default false
-     */
-    showSendToCloud: boolean;
-    /**
-     * Same as `showSendToCloud`, but use a pencil icon instead of a floppy-disk.
-     * @default false
-     */
-    showEditInChartStudio: boolean;
-    /**
-     * Remove mode bar buttons by name.
-     * @default []
-     */
-    modeBarButtonsToRemove: ModeBarDefaultButtons[];
-    /**
-     * Add mode bar button using config objects or default button strings.
-     * @default []
-     */
-    modeBarButtonsToAdd: ModeBarButtonAny[];
-    /**
-     * Define fully custom mode bar buttons as nested array of button groups.
-     * @default false
-     */
-    modeBarButtons: ModeBarButtonAny[][] | false;
-    /**
-     * Statically override options for toImage modebar button.
-     * @default {}
-     */
-    toImageButtonOptions: Partial<{
-        filename: string;
-        scale: number;
-        format: 'png' | 'svg' | 'jpeg' | 'webp';
-        height: number;
-        width: number;
-    }>;
-    /**
-     * Display the plotly logo on the mode bar.
-     * @default true
-     */
-    displaylogo: boolean;
-    /**
-     * Watermark images with the company's logo.
-     * @default false
-     */
-    watermark: boolean;
-    /**
-     * Pixel ratio during WebGL image export.
-     * @default 2
-     */
-    plotGlPixelRatio: number;
-    /**
-     * Set background color function or behavior.
-     * @default 'transparent'
-     */
-    setBackground: ((gd: PlotlyHTMLElement, bgColor: string) => void) | 'opaque' | 'transparent';
-    /**
-     * URL to topojson used in geo charts.
-     * @default 'https://cdn.plot.ly/'
-     */
-    topojsonURL: string;
-    /**
-     * Mapbox access token (required for mapbox trace types).
-     * @default null
-     */
-    mapboxAccessToken: string | null;
-    /**
-     * Console logging level (0-2). Set via Plotly.setPlotConfig.
-     * @default 1
-     */
-    logging: 0 | 1 | 2;
-    /**
-     * On-graph logging (notifier) level (0-2). Set via Plotly.setPlotConfig.
-     * @default 0
-     */
-    notifyOnLogging: 0 | 1 | 2;
-    /**
-     * Length of the undo/redo queue.
-     * @default 0
-     */
-    queueLength: number;
-    /**
-     * Localization to use (e.g. 'en' or 'en-US').
-     * @default 'en-US'
-     */
-    locale: string;
-    /**
-     * Localization definitions.
-     * @default {}
-     */
-    locales: Record<string, { dictionary?: Record<string, string>; format?: Record<string, any> }>;
+/**
+ * Hand-written overrides for the seven `schema.config` fields whose
+ * `valType` is `any`. These accept functions or arbitrary-key maps that the
+ * JSON schema fundamentally cannot describe, so they stay typed by hand.
+ */
+interface ConfigOverrides {
+    /** Override the background color: a static color name, or a function called per-render. */
+    setBackground?: 'opaque' | 'transparent' | ((gd: PlotlyHTMLElement, bgColor: string) => void);
+    /** Source attribution shown at the bottom of the graph. */
+    showSources?: false | ((gd: PlotlyHTMLElement) => void | Promise<void>);
+    /** Define fully custom mode bar buttons as nested array of button groups. */
+    modeBarButtons?: ModeBarButtonAny[][] | false;
+    /** Add mode bar buttons using config objects or default-button names. */
+    modeBarButtonsToAdd?: ModeBarButtonAny[];
+    /** Remove mode bar buttons by name. */
+    modeBarButtonsToRemove?: ModeBarDefaultButtons[];
+    /** Statically override options for the toImage mode bar button. */
+    toImageButtonOptions?: ToImageButtonOptions;
+    /** Localization definitions keyed by locale id (e.g. `'en-US'`, `'fr'`). */
+    locales?: Record<string, { dictionary?: Record<string, string>; format?: Record<string, any> }>;
 }
+
+export type Config = Omit<ConfigBase, keyof ConfigOverrides> & ConfigOverrides;

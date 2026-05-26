@@ -19,16 +19,11 @@ import * as fs from 'fs';
 // Meta keys to skip (not user-facing attributes)
 // ---------------------------------------------------------------------------
 
-const META_KEYS = new Set([
-    'editType',
-    'role',
-    'description',
-    'impliedEdits',
-    '_isSubplotObj',
-    '_isLinkedToArray',
-    '_arrayAttrRegexps',
-    '_deprecated'
-]);
+// Populated from `schema.defs.metaKeys` at the start of `generateSchemaTypes`.
+// Empty until then — every helper that consults `META_KEYS` is only called
+// from inside the generator's main pipeline, so the initial empty state is
+// never observed in practice.
+let META_KEYS = new Set();
 
 // ---------------------------------------------------------------------------
 // Common enum types — discovered from the schema at generation time and
@@ -1005,6 +1000,14 @@ export function generateSchemaTypes(schema, outputPath) {
     const traceNames = Object.keys(schema.traces).sort();
     const layoutAttrs = schema.layout.layoutAttributes;
 
+    // Populate META_KEYS from the schema's own list of metadata keys so we
+    // pick up any future additions without code changes.
+    if (Array.isArray(schema.defs?.metaKeys)) {
+        META_KEYS = new Set(schema.defs.metaKeys);
+    } else {
+        throw new Error('schema.defs.metaKeys is missing — cannot determine which keys to skip during emission');
+    }
+
     // ----- Phase 0: Discover common enum types (Calendar, Dash, ...) -----
     const commonTypes = discoverCommonTypes(schema);
 
@@ -1194,7 +1197,7 @@ export function generateSchemaTypes(schema, outputPath) {
     chunks.push('}');
     chunks.push('');
 
-    // ----- Phase 5: Animation, Frame, and Edits interfaces -----
+    // ----- Phase 5: Animation, Frame, Edits, and ConfigBase interfaces -----
     const extraInterfaces = [];
     if (schema.animation) {
         const animProps = attrsToProperties(schema.animation, '    ', 'animation', sharedTypes);
@@ -1216,6 +1219,21 @@ export function generateSchemaTypes(schema, outputPath) {
     if (schema.config && schema.config.edits) {
         const editsProps = attrsToProperties(schema.config.edits, '    ', 'edits', sharedTypes);
         extraInterfaces.push({ name: 'Edits', properties: editsProps });
+
+        // Register Edits's fingerprint so the ConfigBase emission below
+        // references `edits?: Edits` instead of re-inlining the subtree.
+        sharedTypes.set(containerFingerprint(schema.config.edits), 'Edits');
+    }
+    if (schema.config) {
+        // Generate the schema-derived Config building block. Fields whose
+        // schema valType is `any` (locales, modeBarButtons, setBackground,
+        // showSources, toImageButtonOptions, ...) come through as `any` and
+        // are overridden with precise types in `core/config.d.ts`'s `Config`
+        // via Omit/intersection. The schema is fundamentally unable to
+        // describe functions or arbitrary-key maps, so those overrides are
+        // permanent.
+        const configProps = attrsToProperties(schema.config, '    ', 'config', sharedTypes);
+        extraInterfaces.push({ name: 'ConfigBase', properties: configProps });
     }
 
     if (extraInterfaces.length > 0) {
