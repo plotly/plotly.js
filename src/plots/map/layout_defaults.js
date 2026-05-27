@@ -12,18 +12,36 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'map',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
-        partition: 'y'
+        partition: 'y',
+        fullData
     });
 };
 
-function handleDefaults(containerIn, containerOut, coerce) {
+function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');
     coerce('zoom');
     coerce('bearing');
     coerce('pitch');
+    coerce('disableDynamicCentering');
 
+    // dynamically set center/zoom if neither param provided
+    if (!containerIn?.disableDynamicCentering && !containerIn?.center && !containerIn?.zoom) {
+        var [{ lon, lat }] = opts.fullData;
+        var { minLon, maxLon } = getLonBounds(lon);
+        var { minLat, maxLat } = getLatBounds(lat);
+        // this param is called bounds in mapLibre ctor
+        // not to be confused with maxBounds aliased below
+        containerOut._fitBounds = {
+            west:  minLon,
+            east:  maxLon,
+            south: minLat,
+            north: maxLat,
+        };
+    }
+
+    // bounds is really for setting maxBounds in mapLibre ctor
     var west = coerce('bounds.west');
     var east = coerce('bounds.east');
     var south = coerce('bounds.south');
@@ -44,6 +62,57 @@ function handleDefaults(containerIn, containerOut, coerce) {
 
     // copy ref to input container to update 'center' and 'zoom' on map move
     containerOut._input = containerIn;
+}
+
+function getLonBounds(lon) {
+    if (!lon.length) return { minLon: 0, maxLon: 0 };
+
+    // normalize to [0, 360)
+    const norm = lon.map(to360).sort((a, b) => a - b);
+
+    let maxGap = -1;
+    let gapIndex = 0;
+
+    // find largest gap
+    for (let i = 0; i < norm.length; i++) {
+        const curr = norm[i];
+        const next = norm[(i + 1) % norm.length];
+        const gap = (next - curr + 360) % 360;
+
+        if (gap > maxGap) {
+            maxGap = gap;
+            gapIndex = i;
+        }
+    }
+
+    // take complement of largest gap
+    let minLon = norm[(gapIndex + 1) % norm.length];
+    let maxLon = norm[gapIndex];
+    minLon = to180(minLon)
+    maxLon = to180(maxLon)
+
+    return { minLon, maxLon };
+
+    // https://gis.stackexchange.com/questions/201789/verifying-formula-that-will-convert-longitude-0-360-to-180-to-180
+    function to180(deg) {
+        return ((deg + 180) % 360) - 180
+    }
+    function to360(deg) {
+        return ((deg % 360) + 360) % 360;
+    }
+}
+
+function getLatBounds(lat) {
+    let minLat=lat[0]
+    let maxLat=lat[0]
+    for(let i = 1; i < lat.length; i++){
+        minLat=Math.min(minLat,lat[i])
+        maxLat=Math.max(maxLat,lat[i])
+    }
+    return {
+        minLat,
+        maxLat
+    };
 }
 
 function handleLayerDefaults(layerIn, layerOut) {

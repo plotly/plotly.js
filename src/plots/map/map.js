@@ -80,6 +80,10 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     var bounds = opts.bounds;
     var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
+    var _fitBounds = opts._fitBounds ? [
+        [opts._fitBounds.west, opts._fitBounds.south],
+        [opts._fitBounds.east, opts._fitBounds.north],
+    ] : null;
 
     // create the map!
     var map = self.map = new maplibregl.Map({
@@ -90,6 +94,10 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         zoom: opts.zoom,
         bearing: opts.bearing,
         pitch: opts.pitch,
+        bounds: _fitBounds,
+        fitBoundsOptions: {
+            padding: constants.fitBoundsPadding,
+        },
         maxBounds: maxBounds,
 
         interactive: !self.isStatic,
@@ -334,6 +342,10 @@ proto.updateLayout = function(fullLayout) {
     if(!this.dragging && !this.wheeling) {
         map.setCenter(convertCenter(opts.center));
         map.setZoom(opts.zoom);
+        if (opts._fitBounds) {
+            var { west, south, east, north } = opts._fitBounds
+            map.fitBounds([[west, south], [east, north]], { padding: constants.fitBoundsPadding })
+        }
         map.setBearing(opts.bearing);
         map.setPitch(opts.pitch);
     }
