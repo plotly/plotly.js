@@ -2189,7 +2189,18 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(ax.hoverformat) tickformat = ax.hoverformat;
     }
 
-    if(tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
+    if(tickformat) {
+        // Snap v to the nearest ideal tick position before applying a custom tickformat.
+        // Floating-point arithmetic can leave tick values slightly off their true position
+        // (e.g. -8.88e-16 instead of 0). The default formatter is immune because it adds
+        // a rounding epsilon, but custom d3 formats like '~r' expose the raw number.
+        // Only snap for linear-style numeric ticks (dtick and tick0 are both numbers).
+        if(!hover && isNumeric(ax.dtick) && isNumeric(ax.tick0) && ax.dtick) {
+            var ideal = ax.tick0 + Math.round((v - ax.tick0) / ax.dtick) * ax.dtick;
+            if(Math.abs(v - ideal) < Math.abs(ax.dtick) * 1e-9) v = ideal;
+        }
+        return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
+    }
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;

@@ -18,6 +18,7 @@ var numerical = require('../../../src/constants/numerical');
 var BADNUM = numerical.BADNUM;
 var ONEDAY = numerical.ONEDAY;
 var ONEWEEK = numerical.ONEWEEK;
+var MINUS_SIGN = numerical.MINUS_SIGN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -3886,6 +3887,31 @@ describe('Test axes', function() {
                 ax.range = rng;
                 expect(mockCalc(ax).length).toBe(0, rng);
             });
+        });
+
+        it('should not show floating-point artefacts with custom tickformat', function() {
+            // Floating-point arithmetic can leave tick values slightly off their true
+            // position (e.g. -8.88e-16 instead of 0). The default formatter is immune
+            // because it adds an internal rounding epsilon, but custom d3 formats like
+            // '~r' expose the raw number. Ticks should be snapped to their ideal
+            // position (tick0 + n*dtick) before formatting. See gh#7765.
+            var ax = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 0.5,
+                tickformat: '~r',
+                range: [-0.75, 0.75]
+            };
+            var textOut = mockCalc(ax);
+            // Without the fix the middle tick renders as '−0.0000000000000000888178'
+            expect(textOut).toEqual([MINUS_SIGN + '0.5', '0', '0.5']);
+
+            // Also check with a dtick that itself introduces floating-point error.
+            ax.dtick = 0.1;
+            ax.range = [-0.25, 0.25];
+            textOut = mockCalc(ax);
+            expect(textOut).toEqual([MINUS_SIGN + '0.2', MINUS_SIGN + '0.1', '0', '0.1', '0.2']);
         });
 
         it('should always start at year for date axis hover', function() {
