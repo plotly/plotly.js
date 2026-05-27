@@ -97,6 +97,10 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
 
         traceOut._hasPreCompStats = q1 && q1.length && median && median.length && q3 && q3.length;
         sLen = Math.min(Lib.minRowLength(q1), Lib.minRowLength(median), Lib.minRowLength(q3));
+    } else {
+        // Non-box (violin) traces don't support pre-computed stats; set explicitly
+        // so Plotly.react's relinkPrivateKeys can't carry over a stale truthy value.
+        traceOut._hasPreCompStats = false;
     }
 
     var yDims = getDims(y);
