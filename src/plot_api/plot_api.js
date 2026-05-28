@@ -373,7 +373,6 @@ function _doPlot(gd, data, layout, config) {
         subroutines.drawData,
         subroutines.finalDraw,
         initInteractions,
-        Plots.addLinks,
         Plots.rehover,
         Plots.redrag,
         Plots.reselect,
@@ -485,7 +484,6 @@ function setPlotContext(gd, config) {
         context.scrollZoom = false;
         context.doubleClick = false;
         context.showTips = false;
-        context.showLink = false;
         context.displayModeBar = false;
     }
 

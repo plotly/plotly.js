@@ -113,93 +113,6 @@ plots.previousPromises = function(gd) {
     }
 };
 
-/**
- * Adds the 'Edit chart' link.
- * Note that now _doPlot calls this so it can regenerate whenever it replots
- *
- * Add source links to your graph inside the 'showSources' config argument.
- */
-plots.addLinks = function(gd) {
-    // Do not do anything if showLink and showSources are not set to true in config
-    if(!gd._context.showLink && !gd._context.showSources) return;
-
-    var fullLayout = gd._fullLayout;
-
-    var linkContainer = Lib.ensureSingle(fullLayout._paper, 'text', 'js-plot-link-container', function(s) {
-        s.style({
-            'font-family': '"Open Sans", Arial, sans-serif',
-            'font-size': '12px',
-            fill: Color.defaultLine,
-            'pointer-events': 'all'
-        })
-        .each(function() {
-            var links = d3.select(this);
-            links.append('tspan').classed('js-link-to-tool', true);
-            links.append('tspan').classed('js-link-spacer', true);
-            links.append('tspan').classed('js-sourcelinks', true);
-        });
-    });
-
-    // The text node inside svg
-    var text = linkContainer.node();
-    var attrs = {y: fullLayout._paper.attr('height') - 9};
-
-    // If text's width is bigger than the layout
-    // Check that text is a child node or document.body
-    // because otherwise Edge might throw an exception
-    // when calling getComputedTextLength().
-    // Apparently offsetParent is null for invisibles.
-    if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {
-        // Align the text at the left
-        attrs['text-anchor'] = 'start';
-        attrs.x = 5;
-    } else {
-        // Align the text at the right
-        attrs['text-anchor'] = 'end';
-        attrs.x = fullLayout._paper.attr('width') - 7;
-    }
-
-    linkContainer.attr(attrs);
-
-    var toolspan = linkContainer.select('.js-link-to-tool');
-    var spacespan = linkContainer.select('.js-link-spacer');
-    var sourcespan = linkContainer.select('.js-sourcelinks');
-
-    if(gd._context.showSources) gd._context.showSources(gd);
-
-    // 'view in plotly' link for embedded plots
-    if(gd._context.showLink) positionPlayWithData(gd, toolspan);
-
-    // separator if we have both sources and tool link
-    spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
-};
-
-// note that now this function is only adding the brand in
-// iframes and 3rd-party apps
-function positionPlayWithData(gd, container) {
-    container.text('');
-    var link = container.append('a')
-        .attr({
-            'xlink:xlink:href': '#',
-            class: 'link--impt link--embedview',
-            'font-weight': 'bold'
-        })
-        .text(gd._context.linkText + ' ' + String.fromCharCode(187));
-
-    if(gd._context.sendData) {
-        link.on('click', function() {
-            plots.sendDataToCloud(gd);
-        });
-    } else {
-        var path = window.location.pathname.split('/');
-        var query = window.location.search;
-        link.attr({
-            'xlink:xlink:show': 'new',
-            'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1] + query
-        });
-    }
-}
-
 plots.sendDataToCloud = function(gd) {
     var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
     if(!baseUrl) return;
@@ -2105,16 +2018,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
                     // keepdata: remove all ...src tags
                     if(v.slice(-3) === 'src') {
                         return;
-                    }
-                } else if(mode === 'keepstream') {
-                    // keep sourced data if it's being streamed.
-                    // similar to keepref, but if the 'stream' object exists
-                    // in a trace, we will keep the data array.
-                    src = d[v + 'src'];
-                    if(typeof src === 'string' && src.indexOf(':') > 0) {
-                        if(!Lib.isPlainObject(d.stream)) {
-                            return;
-                        }
                     }
                 } else if(mode !== 'keepall') {
                     // keepref: remove sourced data but only

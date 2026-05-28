@@ -188,32 +188,6 @@ module.exports = {
         ].join(' ')
     },
     hoverlabel: fxAttrs.hoverlabel,
-    stream: {
-        token: {
-            valType: 'string',
-            noBlank: true,
-            strict: true,
-            editType: 'calc',
-            description: [
-                'The stream id number links a data trace on a plot with a stream.',
-                'See https://chart-studio.plotly.com/settings for more details.'
-            ].join(' ')
-        },
-        maxpoints: {
-            valType: 'number',
-            min: 0,
-            max: 10000,
-            dflt: 500,
-            editType: 'calc',
-            description: [
-                'Sets the maximum number of points to keep on the plots from an',
-                'incoming stream.',
-                'If `maxpoints` is set to *50*, only the newest 50 points will',
-                'be displayed on the plot.'
-            ].join(' ')
-        },
-        editType: 'calc'
-    },
     uirevision: {
         valType: 'any',
         editType: 'none',

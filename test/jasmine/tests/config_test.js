@@ -219,41 +219,6 @@ describe('config argument', function() {
         });
     });
 
-    describe('showLink attribute', function() {
-        var gd;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-
-        afterEach(destroyGraphDiv);
-
-        it('should not display the edit link by default', function(done) {
-            Plotly.newPlot(gd, [], {})
-            .then(function() {
-                var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-                expect(link).toBeUndefined();
-            })
-            .then(done, done.fail);
-        });
-
-        it('should display a link when true', function(done) {
-            Plotly.newPlot(gd, [], {}, { showLink: true })
-            .then(function() {
-                var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-                expect(link.textContent).toBe('Edit chart »');
-
-                var bBox = link.getBoundingClientRect();
-                expect(bBox.width).toBeGreaterThan(0);
-                expect(bBox.height).toBeGreaterThan(0);
-            })
-            .then(done, done.fail);
-        });
-    });
-
-
     describe('editable attribute', function() {
         var gd;
 

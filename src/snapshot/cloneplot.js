@@ -141,7 +141,6 @@ module.exports = function clonePlot(graphObj, options) {
                 2 :
                 options.plotGlPixelRatio,
             displaylogo: options.displaylogo || false,
-            showLink: options.showLink || false,
             showTips: options.showTips || false,
             mapboxAccessToken: context.mapboxAccessToken
         }
