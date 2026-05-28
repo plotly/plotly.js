@@ -44,10 +44,9 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
     var hiddenSlices = fullLayout.hiddenlabels ? fullLayout.hiddenlabels.slice() : [];
 
     var fullData = gd._fullData;
-    var shapesWithLegend = (fullLayout.shapes || []).filter(function (d) {
-        return d.showlegend;
-    });
-    var allLegendItems = fullData.concat(shapesWithLegend);
+    // legendgroup membership matters even when showlegend is false, so togglegroup reaches hidden group peers.
+    const shapesInLegend = (fullLayout.shapes || []).filter((d) => d.showlegend || d.legendgroup);
+    var allLegendItems = fullData.concat(shapesInLegend);
 
     var fullTrace = legendItem.trace;
     if (fullTrace._isShape) {
@@ -295,10 +294,8 @@ exports.handleTitleClick = function handleTitleClick(gd, legendObj, mode) {
     const fullLayout = gd._fullLayout;
     const fullData = gd._fullData;
     const legendId = helpers.getId(legendObj);
-    const shapesWithLegend = (fullLayout.shapes || []).filter(function (d) {
-        return d.showlegend;
-    });
-    const allLegendItems = fullData.concat(shapesWithLegend);
+    const shapesInLegend = (fullLayout.shapes || []).filter((d) => d.showlegend || d.legendgroup);
+    const allLegendItems = fullData.concat(shapesInLegend);
 
     function isInLegend(item) {
         return (item.legend || 'legend') === legendId;
