@@ -36,8 +36,7 @@ var configAttributes = {
         dflt: '',
         description: [
             'When set it determines base URL for',
-            'the \'Edit in Chart Studio\' `showEditInChartStudio`/`showSendToCloud` mode bar button',
-            'and the showLink/sendData on-graph link.',
+            'the \'Edit in Chart Studio\' `showEditInChartStudio`/`showSendToCloud` mode bar button.',
             'To enable sending your data to Chart Studio Cloud, you need to',
             'set both `plotlyServerURL` to \'https://chart-studio.plotly.com\' and',
             'also set `showSendToCloud` to true.'
@@ -225,40 +224,6 @@ var configAttributes = {
         valType: 'boolean',
         dflt: true,
         description: 'Determines whether or not notifier is displayed.'
-    },
-
-    showLink: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Determines whether a link to Chart Studio Cloud is displayed',
-            'at the bottom right corner of resulting graphs.',
-            'Use with `sendData` and `linkText`.'
-        ].join(' ')
-    },
-    linkText: {
-        valType: 'string',
-        dflt: 'Edit chart',
-        noBlank: true,
-        description: [
-            'Sets the text appearing in the `showLink` link.'
-        ].join(' ')
-    },
-    sendData: {
-        valType: 'boolean',
-        dflt: true,
-        description: [
-            'If *showLink* is true, does it contain data',
-            'just link to a Chart Studio Cloud file?'
-        ].join(' ')
-    },
-    showSources: {
-        valType: 'any',
-        dflt: false,
-        description: [
-            'Adds a source-displaying function to show sources on',
-            'the resulting graphs.'
-        ].join(' ')
     },
 
     displayModeBar: {

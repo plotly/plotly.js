@@ -80,7 +80,6 @@ describe('Plotly.Snapshot', function() {
                 staticPlot: true,
                 plotGlPixelRatio: 2,
                 displaylogo: false,
-                showLink: false,
                 showTips: false,
                 setBackground: 'opaque',
                 mapboxAccessToken: undefined
