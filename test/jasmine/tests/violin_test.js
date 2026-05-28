@@ -1051,3 +1051,38 @@ describe('Test violin restyle:', function () {
             .then(done, done.fail);
     });
 });
+
+describe('Test violin react:', () => {
+    let gd;
+
+    beforeEach(() => (gd = createGraphDiv()));
+
+    afterEach(destroyGraphDiv);
+
+    // Regression test for https://github.com/plotly/plotly.js/issues/7791
+    it('should not inherit _hasPreCompStats when swapping a pre-comp-stats box to a violin', async () => {
+        const box = {
+            type: 'box',
+            q1: [0.2],
+            median: [0.5],
+            q3: [0.8],
+            lowerfence: [-2.5],
+            upperfence: [2.7],
+            boxpoints: false
+        };
+        const violin = {
+            type: 'violin',
+            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            box: { visible: true },
+            meanline: { visible: true }
+        };
+
+        await Plotly.newPlot(gd, [box]);
+        expect(gd._fullData[0].type).toBe('box');
+        expect(gd._fullData[0]._hasPreCompStats).toBeTruthy();
+
+        await Plotly.react(gd, [violin]);
+        expect(gd._fullData[0].type).toBe('violin');
+        expect(gd._fullData[0]._hasPreCompStats).toBe(false);
+    });
+});
