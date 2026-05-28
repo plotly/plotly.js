@@ -1341,6 +1341,15 @@ function createHoverText(hoverData, opts) {
             mockLegend.entries.push([pt]);
         }
         mockLegend.entries.sort(function (a, b) {
+            var hoversort = fullLayout.hoversort;
+            if (hoversort === 'value descending' || hoversort === 'value ascending') {
+                var valueLetter = hovermode.charAt(0) === 'x' ? 'y' : 'x';
+                var aVal = a[0][valueLetter + 'LabelVal'];
+                var bVal = b[0][valueLetter + 'LabelVal'];
+                if (aVal !== bVal) {
+                    return hoversort === 'value descending' ? bVal - aVal : aVal - bVal;
+                }
+            }
             return a[0].trace.index - b[0].trace.index;
         });
         mockLegend.layer = container;
