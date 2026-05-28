@@ -209,6 +209,8 @@ plots.sendDataToCloud = function(gd) {
     }
 
     // Plotly Cloud origin, used to validate incoming messages and to target outgoing ones.
+    // `baseUrl` (plotlyServerURL) is the upload page that handles login and signals
+    // back when authentication succeeds.
     var cloudOrigin;
     try {
         cloudOrigin = new URL(baseUrl).origin;
@@ -216,9 +218,6 @@ plots.sendDataToCloud = function(gd) {
         console.error('Invalid plotlyServerURL: ' + baseUrl);
         return;
     }
-
-    // The page that handles login and signals back when authentication succeeds.
-    var uploadUrl = baseUrl.replace(/\/+$/, '') + '/upload';
 
     gd.emit('plotly_beforeexport');
 
@@ -229,7 +228,7 @@ plots.sendDataToCloud = function(gd) {
 
     // Open the Cloud login page in a new tab. We keep a reference so we can post
     // the chart back to it once Cloud reports that authentication succeeded.
-    var cloudWindow = window.open(uploadUrl, '_blank');
+    var cloudWindow = window.open(baseUrl, '_blank');
     if(!cloudWindow) {
         console.error('Unable to open Plotly Cloud (the popup may have been blocked)');
         gd.emit('plotly_afterexport');

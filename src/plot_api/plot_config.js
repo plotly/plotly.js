@@ -33,7 +33,7 @@ var configAttributes = {
 
     plotlyServerURL: {
         valType: 'string',
-        dflt: '',
+        dflt: 'https://cloud.plotly.com/upload',
         description: [
             'Sets the URL for the `sendChartToCloud` modebar button.',
             'When clicked, the button will send the chart data to this URL.',
