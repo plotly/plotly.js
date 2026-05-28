@@ -6,6 +6,7 @@ var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');
 var b64encode = require('base64-arraybuffer');
 
+var version = require('../version').version;
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
 var Template = require('../plot_api/plot_template');
@@ -201,40 +202,57 @@ function positionPlayWithData(gd, container) {
 }
 
 plots.sendDataToCloud = function(gd) {
-    var destUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
-    if(!destUrl) {
+    var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
+    if(!baseUrl) {
         console.error('No destination URL provided (plotlyServerURL is not set)');
         return;
     }
 
+    // Plotly Cloud origin, used to validate incoming messages and to target outgoing ones.
+    var cloudOrigin;
+    try {
+        cloudOrigin = new URL(baseUrl).origin;
+    } catch(e) {
+        console.error('Invalid plotlyServerURL: ' + baseUrl);
+        return;
+    }
+
+    // The page that handles login and signals back when authentication succeeds.
+    var uploadUrl = baseUrl.replace(/\/+$/, '') + '/upload';
+
     gd.emit('plotly_beforeexport');
 
-    var hiddenformDiv = d3.select(gd)
-        .append('div')
-        .attr('id', 'hiddenform')
-        .style('display', 'none');
+    // Build the request body: the chart JSON plus the plotly.js version used to
+    // generate it, so Cloud can host the chart with a compatible plotly.js version.
+    var chart = JSON.parse(plots.graphJson(gd, false, 'keepdata'));
+    chart.version = version;
 
-    var hiddenform = hiddenformDiv
-        .append('form')
-        .attr({
-            action: destUrl,
-            method: 'post',
-            target: '_blank'
-        });
+    // Open the Cloud login page in a new tab. We keep a reference so we can post
+    // the chart back to it once Cloud reports that authentication succeeded.
+    var cloudWindow = window.open(uploadUrl, '_blank');
+    if(!cloudWindow) {
+        console.error('Unable to open Plotly Cloud (the popup may have been blocked)');
+        gd.emit('plotly_afterexport');
+        return;
+    }
 
-    var hiddenformInput = hiddenform
-        .append('input')
-        .attr({
-            type: 'text',
-            name: 'data'
-        });
+    var handleMessage = function(event) {
+        // Only trust messages coming from the Cloud origin.
+        if(event.origin !== cloudOrigin) return;
 
-    hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
-    console.log(`sending chart object to ${destUrl}`);
-    hiddenform.node().submit();
-    hiddenformDiv.remove();
+        if(event.data && event.data.type === 'authenticated') {
+            cloudWindow.postMessage({
+                type: 'chart',
+                chart: chart
+            }, cloudOrigin);
 
-    gd.emit('plotly_afterexport');
+            window.removeEventListener('message', handleMessage);
+            gd.emit('plotly_afterexport');
+        }
+    };
+
+    window.addEventListener('message', handleMessage);
+
     return false;
 };
 
