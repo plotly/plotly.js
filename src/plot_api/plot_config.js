@@ -36,7 +36,7 @@ var configAttributes = {
         dflt: '',
         description: [
             'When set it determines base URL for',
-            'the \'Edit in Chart Studio\' `showEditInChartStudio`/`showSendToCloud` mode bar button.',
+            'the \'Edit in Chart Studio\' `showSendToCloud` mode bar button.',
             'To enable sending your data to Chart Studio Cloud, you need to',
             'set both `plotlyServerURL` to \'https://chart-studio.plotly.com\' and',
             'also set `showSendToCloud` to true.'
@@ -249,15 +249,6 @@ var configAttributes = {
             'Note that this button can (depending on `plotlyServerURL` being set) send your data',
             'to an external server. However that server does not persist your data',
             'until you arrive at the Chart Studio and explicitly click "Save".'
-        ].join(' ')
-    },
-    showEditInChartStudio: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Same as `showSendToCloud`, but use a pencil icon instead of a floppy-disk.',
-            'Note that if both `showSendToCloud` and `showEditInChartStudio` are turned,',
-            'only `showEditInChartStudio` will be honored.'
         ].join(' ')
     },
     modeBarButtonsToRemove: {
