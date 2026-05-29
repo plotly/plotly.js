@@ -38,10 +38,11 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     if (!visible) return;
 
     var showlegend = coerce('showlegend');
+    // Coerce legend/legendgroup even when showlegend is false so hidden group members still toggle with the group.
+    coerce('legend');
+    coerce('legendgroup');
     if (showlegend) {
-        coerce('legend');
         coerce('legendwidth');
-        coerce('legendgroup');
         coerce('legendgrouptitle.text');
         Lib.coerceFont(coerce, 'legendgrouptitle.font');
         coerce('legendrank');

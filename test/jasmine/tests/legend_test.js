@@ -2346,6 +2346,46 @@ describe('legend interaction', function () {
             });
         });
 
+        describe('shape legendgroup with showlegend:false members', () => {
+            beforeEach(() => Plotly.newPlot(gd, [], {
+                shapes: [
+                    {
+                        showlegend: true,
+                        legendgroup: 'g',
+                        type: 'line',
+                        xref: 'paper', yref: 'paper',
+                        x0: 0.1, y0: 0.1, x1: 0.2, y1: 0.2
+                    },
+                    {
+                        showlegend: false,
+                        legendgroup: 'g',
+                        type: 'line',
+                        xref: 'paper', yref: 'paper',
+                        x0: 0.3, y0: 0.3, x1: 0.4, y1: 0.4
+                    },
+                    {
+                        showlegend: true,
+                        type: 'line',
+                        xref: 'paper', yref: 'paper',
+                        x0: 0.5, y0: 0.5, x1: 0.6, y1: 0.6
+                    }
+                ]
+            }));
+
+            it('toggles all group members when clicking the visible group entry', async () => {
+                assertVisibleShapes([true, true, true])();
+                await click(0)();
+                assertVisibleShapes(['legendonly', 'legendonly', true])();
+                await click(0)();
+                assertVisibleShapes([true, true, true])();
+            });
+
+            it('isolates the group and hides showlegend:false members of other groups', async () => {
+                await click(0, 2)();
+                assertVisibleShapes([true, true, 'legendonly'])();
+            });
+        });
+
         describe('legendgroup visibility', function () {
             beforeEach(function (done) {
                 Plotly.newPlot(gd, [
