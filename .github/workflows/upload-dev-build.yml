@@ -39,7 +39,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_EVENT_NAME: ${{ github.event_name }}
           GH_REPO: ${{ github.repository }}
-          SHA: ${{ github.event.workflow_run.sha }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
           RUN_ID: ${{ github.event.workflow_run.id }}
           PR_NUM: ${{ github.event.workflow_run.pull_requests[0].number || inputs.pr_number }}
         run: |
