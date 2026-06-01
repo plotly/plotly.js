@@ -3,7 +3,7 @@
 var Lib = require('../../lib');
 var Color = require('../color');
 var Template = require('../../plot_api/plot_template');
-var attributes = require('./attributes');
+var attributes = require('./attributes').default;
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     var containerIn = layoutIn.modebar || {};

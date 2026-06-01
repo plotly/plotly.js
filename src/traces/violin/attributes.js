@@ -47,7 +47,7 @@ module.exports = {
         dflt: '',
         editType: 'calc',
         description: [
-            'If there are multiple violins that should be sized according to',
+            'If there are multiple violins that should be sized according',
             'to some metric (see `scalemode`), link them by providing a non-empty group id here',
             'shared by every trace in the same group.',
             "If a violin's `width` is undefined, `scalegroup` will default to the trace's name.",

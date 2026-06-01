@@ -821,7 +821,7 @@ module.exports = {
         editType: 'none',
         description: [
             'Determines the drawing mode for the spike line',
-            'If *toaxis*, the line is drawn from the data point to the axis the ',
+            'If *toaxis*, the line is drawn from the data point to the axis the',
             'series is plotted on.',
 
             'If *across*, the line is drawn across the entire plot area, and',

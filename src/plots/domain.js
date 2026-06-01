@@ -38,7 +38,7 @@ exports.attributes = function(opts, extra) {
     };
 
     var namePart = opts.name ? opts.name + ' ' : '';
-    var contPart = opts.trace ? 'trace ' : 'subplot ';
+    var contPart = opts.trace ? 'trace' : 'subplot';
     var descPart = extra.description ? ' ' + extra.description : '';
 
     var out = {
@@ -47,7 +47,7 @@ exports.attributes = function(opts, extra) {
                 'Sets the horizontal domain of this ',
                 namePart,
                 contPart,
-                '(in plot fraction).',
+                ' (in plot fraction).',
                 descPart
             ].join('')
         }),
@@ -56,7 +56,7 @@ exports.attributes = function(opts, extra) {
                 'Sets the vertical domain of this ',
                 namePart,
                 contPart,
-                '(in plot fraction).',
+                ' (in plot fraction).',
                 descPart
             ].join('')
         }),

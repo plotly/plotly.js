@@ -23,7 +23,7 @@ function axisHoverFormat(x, noDates) {
 
 function descriptionOnlyNumbers(label, x) {
     return [
-        'Sets the ' + label + ' formatting rule' + (x ? 'for `' + x + '` ' : ''),
+        'Sets the ' + label + ' formatting rule' + (x ? ' for `' + x + '`' : ''),
         'using d3 formatting mini-languages',
         'which are very similar to those in Python. For numbers, see: ' + FORMAT_LINK + '.'
     ].join(' ');

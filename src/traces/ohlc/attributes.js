@@ -65,7 +65,7 @@ module.exports = {
     line: {
         width: extendFlat({}, lineAttrs.width, {
             description: [
-                lineAttrs.width,
+                lineAttrs.width.description,
                 'Note that this style setting can also be set per',
                 'direction via `increasing.line.width` and',
                 '`decreasing.line.width`.'
