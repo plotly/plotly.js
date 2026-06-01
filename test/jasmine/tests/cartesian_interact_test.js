@@ -4,6 +4,7 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 var Axes = require('../../../src/plots/cartesian/axes');
+var Plots = require('../../../src/plots/plots');
 var Drawing = require('../../../src/components/drawing');
 var constants = require('../../../src/plots/cartesian/constants');
 
@@ -687,6 +688,36 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(function() {
             expect(events.length).toEqual(nsteps);
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should defer automargin while zooming via mouse wheel', function(done) {
+        var doAutoMarginSpy;
+        var data = [{y: [0, 12]}];
+        var layout = {
+            width: 500,
+            height: 400,
+            yaxis: {automargin: true}
+        };
+
+        Plotly.newPlot(gd, data, layout, {scrollZoom: true})
+        .then(function() {
+            doAutoMarginSpy = spyOn(Plots, 'doAutoMargin').and.callThrough();
+
+            var dragger = getDragger('xy', 'nsew');
+            var coords = getNodeCoords(dragger, 'se');
+
+            mouseEvent('scroll', coords.x, coords.y, {deltaY: 100, element: dragger});
+
+            expect(gd._fullLayout._replotting).toBe(true);
+            expect(doAutoMarginSpy).not.toHaveBeenCalled();
+
+            return delay(constants.REDRAWDELAY + 10)();
+        })
+        .then(function() {
+            expect(gd._fullLayout._replotting).toBe(false);
+            expect(doAutoMarginSpy).toHaveBeenCalled();
         })
         .then(done, done.fail);
     });
