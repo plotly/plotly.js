@@ -9,6 +9,20 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.6.0] -- 2026-06-01
+
+### Added
+- Add support for arrays for the pie property `legendrank`, so that it can be configured per slice [[#7723](https://github.com/plotly/plotly.js/pull/7723)], with thanks to @my-tien for the contribution!
+- Add `hoversort` layout attribute to sort unified hover label items by value [[#7734](https://github.com/plotly/plotly.js/pull/7734)], with thanks to @kimsehwan96 for the contribution!
+
+### Fixed
+- Fix unexpected `ticklabelindex` behavior when minor ticks are not shown [[#7735](https://github.com/plotly/plotly.js/pull/7735)], with thanks to @my-tien for the contribution!
+- Fix issue where `hoveranywhere` / `clickanywhere` would not emit hover and click events over editable shapes [[#7788](https://github.com/plotly/plotly.js/pull/7788)]
+- Handle 'pixel' size mode for shape labels [[#7790](https://github.com/plotly/plotly.js/pull/7790)]
+- Update box plot defaults to fix issue with calling `Plotly.react` to switch from box to violin plot [[#7811](https://github.com/plotly/plotly.js/pull/7811)]
+- Include shapes with `legendgroup` specified when handling legend visibility toggling [[#7813](https://github.com/plotly/plotly.js/pull/7813)]
+
+
 ## [3.5.1] -- 2026-05-01
 
 ### Changed
