@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v3.5.1
+* plotly.js (gl2d) v3.6.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -69,7 +69,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.5.1";
+      exports.version = "3.6.0";
     }
   });
 
@@ -10319,6 +10319,12 @@ var Plotly = (() => {
           dflt: "closest",
           editType: "modebar"
         },
+        hoversort: {
+          valType: "enumerated",
+          values: ["trace", "value descending", "value ascending"],
+          dflt: "trace",
+          editType: "none"
+        },
         hoversubplots: {
           valType: "enumerated",
           values: ["single", "overlaying", "axis"],
@@ -18578,7 +18584,12 @@ var Plotly = (() => {
             coerce("legendwidth");
             coerce("legendgroup");
             coerce("legendgrouptitle.text");
-            coerce("legendrank");
+            Lib.coerce(
+              traceIn,
+              traceOut,
+              _module.attributes.legend ? _module.attributes : plots.attributes,
+              "legendrank"
+            );
             traceOut._dfltShowLegend = true;
           } else {
             traceOut._dfltShowLegend = false;
@@ -26940,7 +26951,8 @@ var Plotly = (() => {
         return binStart;
       }
       axes.prepMinorTicks = function(mockAx, ax, opts) {
-        if (!ax.minor.dtick) {
+        var _a, _b;
+        if (!((_a = ax.minor) == null ? void 0 : _a.dtick)) {
           delete mockAx.dtick;
           var hasMajor = ax.dtick && isNumeric(ax._tmin);
           var mockMinorRange;
@@ -26997,7 +27009,7 @@ var Plotly = (() => {
           }
           mockAx.range = ax.range;
         }
-        if (ax.minor._tick0Init === void 0) {
+        if (((_b = ax.minor) == null ? void 0 : _b._tick0Init) === void 0) {
           mockAx.tick0 = ax.tick0;
         }
       };
@@ -27174,16 +27186,17 @@ var Plotly = (() => {
         var minorTickVals = [];
         var allTicklabelVals = [];
         var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
-        for (var major = 1; major >= (hasMinor ? 0 : 1); major--) {
+        var calcMinor = hasMinor || ticklabelIndex;
+        for (var major = 1; major >= (calcMinor ? 0 : 1); major--) {
           var isMinor = !major;
           if (major) {
             ax._dtickInit = ax.dtick;
             ax._tick0Init = ax.tick0;
-          } else {
+          } else if (calcMinor) {
             ax.minor._dtickInit = ax.minor.dtick;
             ax.minor._tick0Init = ax.minor.tick0;
           }
-          var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
+          var mockAx = major ? ax : Lib.extendFlat({}, ax, calcMinor ? ax.minor : { "minor": {} });
           if (isMinor) {
             axes.prepMinorTicks(mockAx, ax, opts);
           } else {
@@ -27242,9 +27255,9 @@ var Plotly = (() => {
               x = axes.tickIncrement(x, dtick, !axrev, calendar);
             }
           }
-          if (major && isPeriod) {
+          if ((major || ticklabelIndex) && isPeriod) {
             x = axes.tickIncrement(x, dtick, !axrev, calendar);
-            majorId--;
+            if (major) majorId--;
           }
           for (; axrev ? x >= endTick : x <= endTick; x = axes.tickIncrement(
             x,
@@ -27276,12 +27289,13 @@ var Plotly = (() => {
             }
           }
         }
-        if (!minorTickVals || minorTickVals.length < 2) {
+        if (!minorTickVals || minorTickVals.length < 3) {
           ticklabelIndex = false;
         } else {
-          var diff = (minorTickVals[1].value - minorTickVals[0].value) * (isReversed ? -1 : 1);
+          var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
           if (!periodCompatibleWithTickformat(diff, ax.tickformat)) {
             ticklabelIndex = false;
+            minorTickVals = minorTickVals.slice(1);
           }
         }
         if (!ticklabelIndex) {
@@ -27308,6 +27322,9 @@ var Plotly = (() => {
                 Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
               }
             });
+          });
+          tickVals.forEach(function(tick) {
+            tick.skipLabel = allTicklabelVals.indexOf(tick) === -1;
           });
         }
         if (hasMinor) {
@@ -27407,11 +27424,14 @@ var Plotly = (() => {
           } else {
             lastVisibleHead = ax._prevDateHead;
             t = setTickLabel(ax, tickVals[i]);
-            if (tickVals[i].skipLabel || ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) === -1) {
+            if (tickVals[i].skipLabel) {
               hideLabel(t);
             }
             ticksOut.push(t);
           }
+        }
+        if (isPeriod && ticklabelIndex && minorTicks.length) {
+          minorTicks[0].noTick = true;
         }
         ticksOut = ticksOut.concat(minorTicks);
         ax._inCalcTicks = false;
@@ -30521,10 +30541,8 @@ var Plotly = (() => {
         var toggleGroup = groupClick === "togglegroup";
         var hiddenSlices = fullLayout.hiddenlabels ? fullLayout.hiddenlabels.slice() : [];
         var fullData = gd._fullData;
-        var shapesWithLegend = (fullLayout.shapes || []).filter(function(d2) {
-          return d2.showlegend;
-        });
-        var allLegendItems = fullData.concat(shapesWithLegend);
+        const shapesInLegend = (fullLayout.shapes || []).filter((d2) => d2.showlegend || d2.legendgroup);
+        var allLegendItems = fullData.concat(shapesInLegend);
         var fullTrace = legendItem.trace;
         if (fullTrace._isShape) {
           fullTrace = fullTrace._fullInput;
@@ -30710,10 +30728,8 @@ var Plotly = (() => {
         const fullLayout = gd._fullLayout;
         const fullData = gd._fullData;
         const legendId = helpers.getId(legendObj);
-        const shapesWithLegend = (fullLayout.shapes || []).filter(function(d) {
-          return d.showlegend;
-        });
-        const allLegendItems = fullData.concat(shapesWithLegend);
+        const shapesInLegend = (fullLayout.shapes || []).filter((d) => d.showlegend || d.legendgroup);
+        const allLegendItems = fullData.concat(shapesInLegend);
         function isInLegend(item) {
           return (item.legend || "legend") === legendId;
         }
@@ -30788,6 +30804,7 @@ var Plotly = (() => {
   var require_get_legend_data = __commonJS({
     "src/components/legend/get_legend_data.js"(exports, module) {
       "use strict";
+      var { isArrayOrTypedArray } = require_array();
       var Registry = require_registry();
       var helpers = require_helpers3();
       module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
@@ -30868,7 +30885,8 @@ var Plotly = (() => {
         for (i = 0; i < legendData.length; i++) {
           var groupMinRank = Infinity;
           for (j = 0; j < legendData[i].length; j++) {
-            var rank = legendData[i][j].trace.legendrank;
+            var legendrank = legendData[i][j].trace.legendrank;
+            var rank = isArrayOrTypedArray(legendrank) ? Math.min(legendrank) : legendrank;
             if (groupMinRank > rank) groupMinRank = rank;
           }
           legendData[i][0]._groupMinRank = groupMinRank;
@@ -30878,7 +30896,9 @@ var Plotly = (() => {
           return a[0]._groupMinRank - b[0]._groupMinRank || a[0]._preGroupSort - b[0]._preGroupSort;
         };
         var orderFn2 = function(a, b) {
-          return a.trace.legendrank - b.trace.legendrank || a._preSort - b._preSort;
+          var a_rank = isArrayOrTypedArray(a.trace.legendrank) ? a.trace.legendrank[a.i] : a.trace.legendrank;
+          var b_rank = isArrayOrTypedArray(b.trace.legendrank) ? b.trace.legendrank[b.i] : b.trace.legendrank;
+          return a_rank - b_rank || a._preSort - b._preSort;
         };
         legendData.forEach(function(a, k) {
           a[0]._preGroupSort = k;
@@ -33342,6 +33362,15 @@ var Plotly = (() => {
             mockLegend.entries.push([pt]);
           }
           mockLegend.entries.sort(function(a, b) {
+            var hoversort = fullLayout.hoversort;
+            if (hoversort === "value descending" || hoversort === "value ascending") {
+              var valueLetter = hovermode.charAt(0) === "x" ? "y" : "x";
+              var aVal = a[0][valueLetter + "LabelVal"];
+              var bVal = b[0][valueLetter + "LabelVal"];
+              if (aVal !== bVal) {
+                return hoversort === "value descending" ? bVal - aVal : aVal - bVal;
+              }
+            }
             return a[0].trace.index - b[0].trace.index;
           });
           mockLegend.layer = container;
@@ -34295,6 +34324,9 @@ var Plotly = (() => {
         if (hoverMode) {
           coerce("hoverdistance");
           coerce("spikedistance");
+          if (hoverMode.indexOf("unified") !== -1) {
+            coerce("hoversort");
+          }
         }
         var dragMode = coerce("dragmode");
         if (dragMode === "select") coerce("selectdirection");
@@ -35691,6 +35723,7 @@ var Plotly = (() => {
           return segmentType + paramString;
         });
       }
+      exports.getPixelShift = getPixelShift;
       function getPixelShift(axis, shift) {
         shift = shift || 0;
         var shiftPixels = 0;
@@ -35786,16 +35819,28 @@ var Plotly = (() => {
           const xRefType1 = Axes.getRefType(isArrayXref ? options.xref[1] : options.xref);
           const yRefType0 = Axes.getRefType(isArrayYref ? options.yref[0] : options.yref);
           const yRefType1 = Axes.getRefType(isArrayYref ? options.yref[1] : options.yref);
-          const x2p = function(v, shift, xa, xRefType) {
-            return helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
-          };
-          const y2p = function(v, shift, ya, yRefType) {
-            return helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
-          };
-          shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);
-          shapex1 = x2p(options.x1, options.x1shift, xa1, xRefType1);
-          shapey0 = y2p(options.y0, options.y0shift, ya0, yRefType0);
-          shapey1 = y2p(options.y1, options.y1shift, ya1, yRefType1);
+          const x2p = (v, shift, xa, xRefType) => helpers.getDataToPixel(gd, xa, shift, false, xRefType)(v);
+          const y2p = (v, shift, ya, yRefType) => helpers.getDataToPixel(gd, ya, shift, true, yRefType)(v);
+          if (options.xsizemode === "pixel") {
+            const xAnchorPos = x2p(options.xanchor, void 0, xa0, xRefType0);
+            const xShift0 = helpers.getPixelShift(xa0, options.x0shift);
+            const xShift1 = helpers.getPixelShift(xa0, options.x1shift);
+            shapex0 = xAnchorPos + options.x0 + xShift0;
+            shapex1 = xAnchorPos + options.x1 + xShift1;
+          } else {
+            shapex0 = x2p(options.x0, options.x0shift, xa0, xRefType0);
+            shapex1 = x2p(options.x1, options.x1shift, xa1, xRefType1);
+          }
+          if (options.ysizemode === "pixel") {
+            const yAnchorPos = y2p(options.yanchor, void 0, ya0, yRefType0);
+            const yShift0 = helpers.getPixelShift(ya0, options.y0shift);
+            const yShift1 = helpers.getPixelShift(ya0, options.y1shift);
+            shapey0 = yAnchorPos - options.y0 + yShift0;
+            shapey1 = yAnchorPos - options.y1 + yShift1;
+          } else {
+            shapey0 = y2p(options.y0, options.y0shift, ya0, yRefType0);
+            shapey1 = y2p(options.y1, options.y1shift, ya1, yRefType1);
+          }
         }
         var textangle = options.label.textangle;
         if (textangle === "auto") {
@@ -36247,6 +36292,7 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var arrayEditor = require_plot_template().arrayEditor;
       var dragElement = require_dragelement();
+      var Fx = require_fx();
       var setCursor = require_setcursor();
       var constants = require_constants5();
       var helpers = require_helpers8();
@@ -36350,16 +36396,39 @@ var Plotly = (() => {
             if (gd._context.edits.shapePosition) {
               setupDragElement(gd, path, options, index, shapeLayer, editHelpers);
             } else if (options.editable === true) {
-              path.style(
-                "pointer-events",
-                isOpen || Color.opacity(fillColor) * opacity <= 0.5 ? "stroke" : "all"
-              );
+              path.style("pointer-events", isOpen || Color.opacity(fillColor) * opacity <= 0.5 ? "stroke" : "all");
             }
           }
           path.node().addEventListener("click", function() {
             return activateShape(gd, path);
           });
+          forwardHoverClickAnywhere(gd, path, plotinfo);
         }
+      }
+      function forwardHoverClickAnywhere(gd, path, plotinfo) {
+        if (!(plotinfo == null ? void 0 : plotinfo.id)) return;
+        const node = path.node();
+        function patchedEvt(evt) {
+          var _a;
+          const mainPlot = plotinfo.mainplotinfo || plotinfo;
+          const nsew = (_a = mainPlot == null ? void 0 : mainPlot.draglayer) == null ? void 0 : _a.select(".nsewdrag").node();
+          if (!nsew) return null;
+          return { clientX: evt.clientX, clientY: evt.clientY, target: nsew };
+        }
+        node.addEventListener("mousemove", (evt) => {
+          if (gd._dragging) return;
+          if (gd._fullLayout.hoveranywhere) {
+            const e = patchedEvt(evt);
+            if (e) Fx.hover(gd, e, plotinfo.id);
+          }
+        });
+        node.addEventListener("click", (evt) => {
+          if (gd._dragged) return;
+          if (gd._fullLayout.clickanywhere) {
+            const e = patchedEvt(evt);
+            if (e) Fx.click(gd, e, plotinfo.id);
+          }
+        });
       }
       function setClipPath(shapePath, gd, shapeOptions) {
         const xref = shapeOptions.xref;
@@ -36701,11 +36770,7 @@ var Plotly = (() => {
           var clipAxes = "";
           if (xref !== "paper" && !xa2.autorange) clipAxes += xref;
           if (yref !== "paper" && !ya2.autorange) clipAxes += yref;
-          Drawing.setClipUrl(
-            shapePath2,
-            clipAxes ? "clip" + gd2._fullLayout._uid + clipAxes : null,
-            gd2
-          );
+          Drawing.setClipUrl(shapePath2, clipAxes ? "clip" + gd2._fullLayout._uid + clipAxes : null, gd2);
         }
       }
       function movePath(pathIn, moveX, moveY) {
@@ -51381,7 +51446,7 @@ var Plotly = (() => {
           hasMinor,
           attributes: layoutAttributes
         });
-        if (hasMinor && !containerOut.minor.ticks && !containerOut.minor.showgrid) {
+        if (hasMinor && containerOut.ticklabelindex == null && !containerOut.minor.ticks && !containerOut.minor.showgrid) {
           delete containerOut.minor;
         }
         if (containerOut.showline || containerOut.ticks) coerce("mirror");
@@ -54104,10 +54169,10 @@ var Plotly = (() => {
         var visible = coerce("visible");
         if (!visible) return;
         var showlegend = coerce("showlegend");
+        coerce("legend");
+        coerce("legendgroup");
         if (showlegend) {
-          coerce("legend");
           coerce("legendwidth");
-          coerce("legendgroup");
           coerce("legendgrouptitle.text");
           Lib.coerceFont(coerce, "legendgrouptitle.font");
           coerce("legendrank");
