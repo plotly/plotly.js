@@ -33,14 +33,10 @@ var configAttributes = {
 
     plotlyServerURL: {
         valType: 'string',
-        dflt: '',
+        dflt: 'https://cloud.plotly.com/upload',
         description: [
-            'When set it determines base URL for',
-            'the \'Edit in Chart Studio\' `showEditInChartStudio`/`showSendToCloud` mode bar button',
-            'and the showLink/sendData on-graph link.',
-            'To enable sending your data to Chart Studio Cloud, you need to',
-            'set both `plotlyServerURL` to \'https://chart-studio.plotly.com\' and',
-            'also set `showSendToCloud` to true.'
+            'Sets the URL for the `sendChartToCloud` modebar button.',
+            'When clicked, the button will send the chart data to this URL.',
         ].join(' ')
     },
 
@@ -275,24 +271,12 @@ var configAttributes = {
     },
     showSendToCloud: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         description: [
-            'Should we include a ModeBar button, labeled "Edit in Chart Studio",',
-            'that sends this chart to chart-studio.plotly.com (formerly plot.ly) or another plotly server',
-            'as specified by `plotlyServerURL` for editing, export, etc? Prior to version 1.43.0',
-            'this button was included by default, now it is opt-in using this flag.',
-            'Note that this button can (depending on `plotlyServerURL` being set) send your data',
-            'to an external server. However that server does not persist your data',
-            'until you arrive at the Chart Studio and explicitly click "Save".'
-        ].join(' ')
-    },
-    showEditInChartStudio: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Same as `showSendToCloud`, but use a pencil icon instead of a floppy-disk.',
-            'Note that if both `showSendToCloud` and `showEditInChartStudio` are turned,',
-            'only `showEditInChartStudio` will be honored.'
+            'Should we include a modebar button that sends this chart to a URL',
+            'specified by `plotlyServerURL`, for sharing the chart with others?',
+            'Note that this button can (depending on `plotlyServerURL` being set)',
+            'send your data to an external server.'
         ].join(' ')
     },
     modeBarButtonsToRemove: {

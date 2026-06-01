@@ -5,6 +5,7 @@ var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
+var confirmCloudDialog = require('./cloud_confirm');
 var Lib = require('../../lib');
 var _ = Lib._;
 
@@ -67,21 +68,15 @@ modeBarButtons.toImage = {
     }
 };
 
-modeBarButtons.sendDataToCloud = {
-    name: 'sendDataToCloud',
-    title: function(gd) { return _(gd, 'Edit in Chart Studio'); },
-    icon: Icons.disk,
+modeBarButtons.sendChartToCloud = {
+    name: 'sendChartToCloud',
+    title: function(gd) { return _(gd, 'Share with Plotly Cloud'); },
+    icon: Icons.cloudupload,
     click: function(gd) {
-        Plots.sendDataToCloud(gd);
-    }
-};
-
-modeBarButtons.editInChartStudio = {
-    name: 'editInChartStudio',
-    title: function(gd) { return _(gd, 'Edit in Chart Studio'); },
-    icon: Icons.pencil,
-    click: function(gd) {
-        Plots.sendDataToCloud(gd);
+        var serverUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
+        confirmCloudDialog(gd, serverUrl, function() {
+            Plots.sendDataToCloud(gd);
+        });
     }
 };
 
