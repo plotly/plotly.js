@@ -163,18 +163,38 @@ npm run schema
 #### Step 9: REGL - Review & commit potential changes to precompiled regl shaders
 
 If you are implementing a new feature that involves regl shaders, or if you are
-making changes that affect the usage of regl shaders, you would need to run
-
-```bash
-npm run regl-codegen
-```
-
-to regenerate the regl code. This will prompt you to open a browser window. This will then run through all
-traces with 'regl' in the tags, and store the captured code into 
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it will be a no-op, but if there are changes, you will need to commit them.
+making changes that affect the usage of regl shaders, you would need to regenerate the precompiled regl shader code.
 
 This is needed because regl performs codegen in runtime which breaks CSP
 compliance, and so for strict builds we pre-generate regl shader code here.
+
+The CI pipeline will automatically detect when regl-related files have changed and
+run the codegen process. If the precompiled shaders are out of date, the
+`check-regl-codegen` job will fail and upload a `regl-codegen` artifact containing
+the updated files. The artifact represents the full desired state of the codegen
+output (CI wipes the output directory before regenerating, so any orphaned shader
+files are pruned). To fix this:
+
+1. Download the `regl-codegen` artifact from the failed workflow run
+2. Delete `src/generated/regl-codegen/` in your working tree, then unzip the
+   artifact at the repo root so it replaces (rather than merges into) the
+   existing directory. Also overwrite the four `regl_precompiled.js` files
+   under `src/traces/{scattergl,scatterpolargl,splom,parcoords}/`.
+3. Commit and push the changes to your pull request
+
+Alternatively, you can regenerate the code locally:
+
+```bash
+rm -rf src/generated/regl-codegen/*
+npm run regl-codegen
+```
+
+The `rm -rf` mirrors what CI does, so any orphaned shader files left over from
+previous changes get cleaned up. `npm run regl-codegen` will prompt you to open a
+browser window, run through all traces with 'regl' in the tags, and store the
+captured code into
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen).
+Commit any changes that result.
 
 #### Other npm scripts that may be of interest in development
 
