@@ -3,6 +3,7 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
@@ -3595,6 +3596,35 @@ describe('Test that selection styles propagate to range-slider plot:', function(
         .then(function() { return doubleClick(200, 200); })
         .then(function() {
             _assert('after double-click reset', [1, 1]);
+        })
+        .then(done, done.fail);
+    });
+});
+
+describe('Test reselect with malformed calcdata:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    // reselect runs unconditionally at the end of every redraw sequence
+    // (newPlot / react / relayout / resize) and dereferences gd.calcdata[i][0].
+    // calcdata can transiently hold an empty or undefined entry, which used to
+    // throw "Cannot read properties of undefined (reading '0')" and kill the
+    // chart even when no selection exists.
+    it('should not throw on an empty or undefined calcdata entry', function(done) {
+        var reselect = Registry.getComponentMethod('selections', 'reselect');
+
+        Plotly.newPlot(gd, [{y: [1, 2, 3]}, {y: [2, 3, 4]}])
+        .then(function() {
+            gd.calcdata[1] = undefined;
+            expect(function() { reselect(gd); }).not.toThrow();
+
+            gd.calcdata[0] = [];
+            expect(function() { reselect(gd); }).not.toThrow();
         })
         .then(done, done.fail);
     });

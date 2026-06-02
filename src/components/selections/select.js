@@ -790,6 +790,8 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
+        // guard against a transient empty/undefined calcdata entry (see epmtySplomSelectionBatch)
+        if(!cd || !cd[0]) continue;
         trace = cd[0].trace;
 
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
@@ -1286,6 +1288,10 @@ function epmtySplomSelectionBatch(gd) {
     if(!cd) return;
 
     for(var i = 0; i < cd.length; i++) {
+        // calcdata can transiently hold an empty/undefined entry (e.g. during
+        // react/relayout diffing); reselect runs on every redraw, so skip
+        // instead of throwing. See supplyDefaultsUpdateCalc for the same guard.
+        if(!cd[i] || !cd[i][0]) continue;
         var cd0 = cd[i][0];
         var trace = cd0.trace;
         var splomScenes = gd._fullLayout._splomScenes;
