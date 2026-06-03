@@ -1866,7 +1866,10 @@ function getMarkerAngle(d, trace) {
 
     if (angle === undefined) {
         angle = trace.marker.angle;
-        if (!angle || Lib.isArrayOrTypedArray(angle)) {
+        // For scattermap traces, `trace.marker.angle` defaults to 'auto',
+        // which is meaningful for the MapLibre code but not for plotly.js itself. 
+        // Therefore we need to coerce any non-numeric values to 0 (no rotation).
+        if (!isNumeric(angle) || Lib.isArrayOrTypedArray(angle)) {
             angle = 0;
         }
     }
