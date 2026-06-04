@@ -111,10 +111,10 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
             requestedIcons[id] = true;
             var img = new Image(15, 15);
             img.onload = function() {
-                map.addImage(id, img);
+                map.addImage(id, img, {sdf: true});
             };
             img.crossOrigin = 'Anonymous';
-            img.src = 'https://unpkg.com/maki@2.1.0/icons/' + id + '.svg';
+            img.src = "https://cdn.jsdelivr.net/npm/@mapbox/maki@8.2.0/icons/" + id.slice(0, -3) + '.svg';
         }
     });
 
