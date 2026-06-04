@@ -90,6 +90,18 @@ function expandRange(range) {
     ];
 }
 
+function cleanLinearTickValue(ax, x, dtick) {
+    if(ax.type !== 'linear' || !isNumeric(dtick)) return x;
+
+    var tolerance = Math.abs(dtick) * 1e-10;
+    var r2l = ax.r2l || Number;
+    var tick0 = r2l(ax.tick0);
+
+    if(Math.abs(x - tick0) < tolerance) return tick0;
+    if(Math.abs(x) < tolerance) return 0;
+    return x;
+}
+
 /*
  * find the list of possible axes to reference with an xref or yref attribute
  * and coerce it to that list
@@ -1104,6 +1116,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     if(mockAx.maskBreaks(x) === BADNUM && moveOutsideBreak(x, mockAx) >= maxRange) break;
                 }
             }
+
+            x = cleanLinearTickValue(mockAx, x, dtick);
 
             // prevent infinite loops - no more than one tick per pixel,
             // and make sure each value is different from the previous

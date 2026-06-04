@@ -3440,6 +3440,21 @@ describe('Test axes', function() {
             });
         }
 
+        it('snaps ticks close to tick0 before formatting', function() {
+            var textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                tickformat: '~r',
+                tick0: 0,
+                dtick: 0.2,
+                range: [-0.6, 0.6]
+            });
+
+            expect(textOut).toEqual([
+                '−0.6', '−0.4', '−0.2', '0', '0.2', '0.4', '0.6'
+            ]);
+        });
+
         it('reverts to "power" for SI/B exponentformat beyond the prefix range (linear case)', function() {
             var textOut = mockCalc({
                 type: 'linear',
