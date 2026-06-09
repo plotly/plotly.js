@@ -3,7 +3,6 @@
 var Loggers = require('./lib/loggers');
 var noop = require('./lib/noop');
 var pushUnique = require('./lib/push_unique');
-var isPlainObject = require('./lib/is_plain_object');
 var addStyleRule = require('./lib/dom').addStyleRule;
 var ExtendModule = require('./lib/extend');
 
@@ -48,13 +47,6 @@ exports.collectableSubplotTypes = null;
  *  - format {object} : a `d3.locale` format specifier for this locale
  *                      any omitted keys we'll fall back on en-US.
  *
- *  A valid `moduleType: 'transform'` module has fields:
- *  - name {string} : transform name
- *  - transform {function} : default-level transform function
- *  - calcTransform {function} : calc-level transform function
- *  - attributes {object} : transform attributes declarations
- *  - supplyDefaults {function} : attributes default-supply function
- *
  *  A valid `moduleType: 'component'` module has fields:
  *  - name {string} : the component name, used it with Register.getComponentMethod()
  *                    to employ component method.
@@ -83,9 +75,6 @@ exports.register = function register(_modules) {
         switch(newModule.moduleType) {
             case 'trace':
                 registerTraceModule(newModule);
-                break;
-            case 'transform':
-                registerTransformModule(newModule);
                 break;
             case 'component':
                 registerComponentModule(newModule);
@@ -291,33 +280,6 @@ function registerComponentModule(_module) {
 
     if(_module.schema && _module.schema.layout) {
         extendDeepAll(baseLayoutAttributes, _module.schema.layout);
-    }
-}
-
-function registerTransformModule(_module) {
-    if(typeof _module.name !== 'string') {
-        throw new Error('Transform module *name* must be a string.');
-    }
-
-    var prefix = 'Transform module ' + _module.name;
-    var hasTransform = typeof _module.transform === 'function';
-    var hasCalcTransform = typeof _module.calcTransform === 'function';
-
-    if(!hasTransform && !hasCalcTransform) {
-        throw new Error(prefix + ' is missing a *transform* or *calcTransform* method.');
-    }
-    if(hasTransform && hasCalcTransform) {
-        Loggers.log([
-            prefix + ' has both a *transform* and *calcTransform* methods.',
-            'Please note that all *transform* methods are executed',
-            'before all *calcTransform* methods.'
-        ].join(' '));
-    }
-    if(!isPlainObject(_module.attributes)) {
-        Loggers.log(prefix + ' registered without an *attributes* object.');
-    }
-    if(typeof _module.supplyDefaults !== 'function') {
-        Loggers.log(prefix + ' registered without a *supplyDefaults* method.');
     }
 }
 
