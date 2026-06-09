@@ -183,9 +183,6 @@ var extraFormatKeys = [
  * gd._fullLayout._basePlotModules
  *   is a list of all the plot modules required to draw the plot.
  *
- * gd._fullLayout._transformModules
- *   is a list of all the transform modules invoked.
- *
  */
 plots.supplyDefaults = function(gd, opts) {
     var skipUpdateCalc = opts && opts.skipUpdateCalc;
@@ -437,17 +434,6 @@ plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
         var newTrace = newFullData[i];
         var cd0 = (oldCalcdata[i] || [])[0];
         if(cd0 && cd0.trace) {
-            var oldTrace = cd0.trace;
-            if(oldTrace._hasCalcTransform) {
-                var arrayAttrs = oldTrace._arrayAttrs;
-                var j, astr, oldArrayVal;
-
-                for(j = 0; j < arrayAttrs.length; j++) {
-                    astr = arrayAttrs[j];
-                    oldArrayVal = Lib.nestedProperty(oldTrace, astr).get().slice();
-                    Lib.nestedProperty(newTrace, astr).set(oldArrayVal);
-                }
-            }
             cd0.trace = newTrace;
         }
     }
@@ -908,51 +894,6 @@ function findMainSubplot(ax, fullLayout) {
     return mainSubplotID || nextBestMainSubplotID;
 }
 
-// This function clears any trace attributes with valType: color and
-// no set dflt filed in the plot schema. This is needed because groupby (which
-// is the only transform for which this currently applies) supplies parent
-// trace defaults, then expanded trace defaults. The result is that `null`
-// colors are default-supplied and inherited as a color instead of a null.
-// The result is that expanded trace default colors have no effect, with
-// the final result that groups are indistinguishable. This function clears
-// those colors so that individual groupby groups get unique colors.
-plots.clearExpandedTraceDefaultColors = function(trace) {
-    var colorAttrs, path, i;
-
-    // This uses weird closure state in order to satisfy the linter rule
-    // that we can't create functions in a loop.
-    function locateColorAttrs(attr, attrName, attrs, level) {
-        path[level] = attrName;
-        path.length = level + 1;
-        if(attr.valType === 'color' && attr.dflt === undefined) {
-            colorAttrs.push(path.join('.'));
-        }
-    }
-
-    path = [];
-
-    // Get the cached colorAttrs:
-    colorAttrs = trace._module._colorAttrs;
-
-    // Or else compute and cache the colorAttrs on the module:
-    if(!colorAttrs) {
-        trace._module._colorAttrs = colorAttrs = [];
-        PlotSchema.crawl(
-            trace._module.attributes,
-            locateColorAttrs
-        );
-    }
-
-    for(i = 0; i < colorAttrs.length; i++) {
-        var origprop = Lib.nestedProperty(trace, '_input.' + colorAttrs[i]);
-
-        if(!origprop.get()) {
-            Lib.nestedProperty(trace, colorAttrs[i]).set(null);
-        }
-    }
-};
-
-
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
     var visibleModules = fullLayout._visibleModules;
@@ -961,8 +902,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var colorCnt = 0;
 
     var i, fullTrace, trace;
-
-    fullLayout._transformModules = [];
 
     function pushModule(fullTrace) {
         dataOut.push(fullTrace);
@@ -1486,16 +1425,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        }
-    }
-
-    // transform module layout defaults
-    var transformModules = layoutOut._transformModules;
-    for(i = 0; i < transformModules.length; i++) {
-        _module = transformModules[i];
-
-        if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
         }
     }
 
@@ -2326,7 +2255,7 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
     return dest;
 };
 
-plots.dataArrayContainers = ['transforms', 'dimensions'];
+plots.dataArrayContainers = ['dimensions'];
 plots.layoutArrayContainers = Registry.layoutArrayContainers;
 
 /*
@@ -2769,7 +2698,7 @@ plots.doCalcdata = function(gd, traces) {
     var fullData = gd._fullData;
     var fullLayout = gd._fullLayout;
 
-    var trace, _module, i, j;
+    var trace, _module, i;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -2833,39 +2762,6 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    var hasCalcTransform = false;
-
-    function transformCalci(i) {
-        trace = fullData[i];
-        _module = trace._module;
-
-        if(trace.visible === true && trace.transforms) {
-            // we need one round of trace module calc before
-            // the calc transform to 'fill in' the categories list
-            // used for example in the data-to-coordinate method
-            if(_module && _module.calc) {
-                var cdi = _module.calc(gd, trace);
-
-                // must clear scene 'batches', so that 2nd
-                // _module.calc call starts from scratch
-                if(cdi[0] && cdi[0].t && cdi[0].t._scene) {
-                    delete cdi[0].t._scene.dirty;
-                }
-            }
-
-            for(j = 0; j < trace.transforms.length; j++) {
-                var transform = trace.transforms[j];
-
-                _module = transformsRegistry[transform.type];
-                if(_module && _module.calcTransform) {
-                    trace._hasCalcTransform = true;
-                    hasCalcTransform = true;
-                    _module.calcTransform(gd, trace, transform);
-                }
-            }
-        }
-    }
-
     function calci(i, isContainer) {
         trace = fullData[i];
         _module = trace._module;
@@ -2875,19 +2771,6 @@ plots.doCalcdata = function(gd, traces) {
         var cd = [];
 
         if(trace.visible === true && trace._length !== 0) {
-            // clear existing ref in case it got relinked
-            delete trace._indexToPoints;
-            // keep ref of index-to-points map object of the *last* enabled transform,
-            // this index-to-points map object is required to determine the calcdata indices
-            // that correspond to input indices (e.g. from 'selectedpoints')
-            var transforms = trace.transforms || [];
-            for(j = transforms.length - 1; j >= 0; j--) {
-                if(transforms[j].enabled) {
-                    trace._indexToPoints = transforms[j]._indexToPoints;
-                    break;
-                }
-            }
-
             if(_module && _module.calc) {
                 cd = _module.calc(gd, trace);
             }
@@ -2912,15 +2795,7 @@ plots.doCalcdata = function(gd, traces) {
 
     setupAxisCategories(axList, fullData, fullLayout);
 
-    // 'transform' loop - must calc container traces first
-    // so that if their dependent traces can get transform properly
-    for(i = 0; i < fullData.length; i++) calci(i, true);
-    for(i = 0; i < fullData.length; i++) transformCalci(i);
-
-    // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList, fullData, fullLayout);
-
-    // 'regular' loop - make sure container traces (eg carpet) calc before
+    // make sure container traces (eg carpet) calc before
     // contained traces (eg contourcarpet)
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
