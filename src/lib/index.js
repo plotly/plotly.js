@@ -355,32 +355,6 @@ lib.randstr = function randstr(existing, bits, base, _recursion) {
     } else return res;
 };
 
-lib.OptionControl = function (opt, optname) {
-    /*
-     * An environment to contain all option setters and
-     * getters that collectively modify opts.
-     *
-     * You can call up opts from any function in new object
-     * as this.optname || this.opt
-     *
-     * See FitOpts for example of usage
-     */
-    if (!opt) opt = {};
-    if (!optname) optname = 'opt';
-
-    var self = {};
-    self.optionList = [];
-
-    self._newoption = function (optObj) {
-        optObj[optname] = opt;
-        self[optObj.name] = optObj;
-        self.optionList.push(optObj);
-    };
-
-    self['_' + optname] = opt;
-    return self;
-};
-
 /**
  * lib.smooth: smooth arrayIn by convolving with
  * a hann window with given full width at half max
@@ -738,13 +712,6 @@ lib.minExtend = minExtend;
 
 lib.titleCase = function (s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
-lib.containsAny = function (s, fragments) {
-    for (var i = 0; i < fragments.length; i++) {
-        if (s.indexOf(fragments[i]) !== -1) return true;
-    }
-    return false;
 };
 
 var IS_SAFARI_REGEX = /Version\/[\d\.]+.*Safari/;

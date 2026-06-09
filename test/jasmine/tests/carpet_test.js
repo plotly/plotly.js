@@ -4,7 +4,6 @@ var Lib = require('../../../src/lib');
 
 var Carpet = require('../../../src/traces/carpet');
 var smoothFill2D = require('../../../src/traces/carpet/smooth_fill_2d_array');
-var smoothFill = require('../../../src/traces/carpet/smooth_fill_array');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -448,46 +447,6 @@ describe('carpet smooth_fill_2d_array', function() {
             [0, 0.5, 0.5, 0],
             [0.5, 1, 1, 0.5]
         ], 3);
-    });
-});
-
-describe('smooth_fill_array', function() {
-    var _;
-
-    it('fills in via linear interplation', function() {
-        expect(smoothFill([_, _, 2, 3, _, _, 6, 7, _, _, 10, 11, _]))
-        .toBeCloseToArray([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    });
-
-    it('fills with zero if no data', function() {
-        expect(smoothFill([_, _, _]))
-        .toBeCloseToArray([0, 0, 0]);
-    });
-
-    it('fills with constant if only one data point', function() {
-        expect(smoothFill([_, _, _, _, 8, _, _]))
-        .toBeCloseToArray([8, 8, 8, 8, 8, 8, 8]);
-    });
-
-    // Extra tests just to make sure the fence cases are handled properly:
-    it('fills in one leading point', function() {
-        expect(smoothFill([_, 1, 2, 3]))
-        .toBeCloseToArray([0, 1, 2, 3]);
-    });
-
-    it('fills in two leading points', function() {
-        expect(smoothFill([_, _, 2, 3]))
-        .toBeCloseToArray([0, 1, 2, 3]);
-    });
-
-    it('fills in one trailing point', function() {
-        expect(smoothFill([0, 1, 2, _]))
-        .toBeCloseToArray([0, 1, 2, 3]);
-    });
-
-    it('fills in two trailing points', function() {
-        expect(smoothFill([0, 1, _, _]))
-        .toBeCloseToArray([0, 1, 2, 3]);
     });
 });
 
