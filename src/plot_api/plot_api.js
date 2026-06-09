@@ -2630,9 +2630,9 @@ function react(gd, data, layout, config) {
 
             applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
-            // "true" skips updating calcdata and remapping arrays from calcTransforms,
-            // which supplyDefaults usually does at the end, but we may need to NOT do
-            // if the diff (which we haven't determined yet) says we'll recalc
+            // "true" skips updating calcdata, which supplyDefaults usually does at
+            // the end, but we may need to NOT do if the diff (which we haven't
+            // determined yet) says we'll recalc
             Plots.supplyDefaults(gd, { skipUpdateCalc: true });
 
             var newFullData = gd._fullData;
@@ -2667,7 +2667,7 @@ function react(gd, data, layout, config) {
                         if (emptyCategories) emptyCategories();
                     }
                 }
-                // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
+                // otherwise do the calcdata updates that we skipped earlier
             } else {
                 Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
             }
