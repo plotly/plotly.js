@@ -3,7 +3,6 @@
 module.exports = {
     plot: require('./convert'),
     attributes: require('./attributes'),
-    markerSymbols: require('../../constants/gl3d_markers'),
     supplyDefaults: require('./defaults'),
     colorbar: [
         {

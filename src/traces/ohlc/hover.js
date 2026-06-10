@@ -187,6 +187,5 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
 
 module.exports = {
     hoverPoints: hoverPoints,
-    hoverSplit: hoverSplit,
     hoverOnPoints: hoverOnPoints
 };
