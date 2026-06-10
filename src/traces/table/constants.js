@@ -2,8 +2,6 @@
 
 module.exports = {
     cellPad: 8,
-    columnExtentOffset: 10,
-    columnTitleOffset: 28,
     emptyHeaderHeight: 16,
     latexCheck: /^\$.*\$$/,
     goldenRatio: 1.618,

@@ -1,8 +1,6 @@
 'use strict';
 
 module.exports = {
-    nodeTextOffsetHorizontal: 4,
-    nodeTextOffsetVertical: 3,
     nodePadAcross: 10,
     sankeyIterations: 50,
     forceIterations: 5,
