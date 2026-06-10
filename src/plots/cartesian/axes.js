@@ -14,7 +14,6 @@ var Drawing = require('../../components/drawing');
 
 var axAttrs = require('./layout_attributes');
 var cleanTicks = require('./clean_ticks');
-var cartesianConstants = require('./constants');
 
 var constants = require('../../constants/numerical');
 var ONEMAXYEAR = constants.ONEMAXYEAR;

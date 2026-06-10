@@ -5,7 +5,6 @@ var Lib = require('../lib');
 var toImage = require('../plot_api/to_image');
 
 var fileSaver = require('./filesaver');
-var helpers = require('./helpers');
 
 /**
  * Plotly.downloadImage

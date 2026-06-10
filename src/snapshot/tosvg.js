@@ -2,11 +2,9 @@
 
 var d3 = require('@plotly/d3');
 
-var Lib = require('../lib');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 
-var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var DOUBLEQUOTE_REGEX = /"/g;
 var DUMMY_SUB = 'TOBESTRIPPED';
 var DUMMY_REGEX = new RegExp('("' + DUMMY_SUB + ')|(' + DUMMY_SUB + '")', 'g');

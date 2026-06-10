@@ -1,6 +1,5 @@
 'use strict';
 
-var cartesianConstants = require('../../plots/cartesian/constants');
 var fontAttrs = require('../../plots/font_attributes');
 var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
