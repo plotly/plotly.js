@@ -9,18 +9,13 @@ module.exports = {
     // class names
     containerClassName: 'slider-container',
     groupClassName: 'slider-group',
-    inputAreaClass: 'slider-input-area',
     railRectClass: 'slider-rail-rect',
     railTouchRectClass: 'slider-rail-touch-rect',
     gripRectClass: 'slider-grip-rect',
     tickRectClass: 'slider-tick-rect',
-    inputProxyClass: 'slider-input-proxy',
     labelsClass: 'slider-labels',
     labelGroupClass: 'slider-label-group',
     labelClass: 'slider-label',
-    currentValueClass: 'slider-current-value',
-
-    railHeight: 5,
 
     // DOM attribute name in button group keeping track
     // of active update menu
@@ -41,7 +36,6 @@ module.exports = {
 
     railRadius: 2,
     railWidth: 5,
-    railBorder: 4,
     railBorderWidth: 1,
     railBorderColor: '#bec8d9',
     railBgColor: '#f8fafc',
@@ -59,25 +53,17 @@ module.exports = {
     gripRadius: 10,
     gripWidth: 20,
     gripHeight: 20,
-    gripBorder: 20,
-    gripBorderWidth: 1,
-    gripBorderColor: '#bec8d9',
-    gripBgColor: '#f6f8fa',
     gripBgActiveColor: '#dbdde0',
 
     labelPadding: 8,
     labelOffset: 0,
 
-    tickWidth: 1,
     tickColor: '#333',
     tickOffset: 25,
     tickLength: 7,
 
     minorTickOffset: 25,
-    minorTickColor: '#333',
     minorTickLength: 4,
 
-    // Extra space below the current value label:
-    currentValuePadding: 8,
     currentValueInset: 0,
 };
