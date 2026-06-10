@@ -10,8 +10,6 @@ exports.name = TERNARY;
 
 var attr = exports.attr = 'subplot';
 
-exports.idRoot = TERNARY;
-
 exports.idRegex = exports.attrRegex = counterRegex(TERNARY);
 
 var attributes = exports.attributes = {};

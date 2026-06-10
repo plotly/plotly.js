@@ -16,8 +16,6 @@ exports.name = GL3D;
 
 exports.attr = SCENE;
 
-exports.idRoot = SCENE;
-
 exports.idRegex = exports.attrRegex = Lib.counterRegex('scene');
 
 exports.attributes = require('./layout/attributes');

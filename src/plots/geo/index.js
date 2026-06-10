@@ -78,7 +78,6 @@ function updateFx(gd) {
 module.exports = {
     attr: GEO,
     name: GEO,
-    idRoot: GEO,
     idRegex: counter,
     attrRegex: counter,
     attributes: attributes,

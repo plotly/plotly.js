@@ -61,7 +61,6 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
 module.exports = {
     attr: attr,
     name: name,
-    idRoot: name,
     idRegex: counter,
     attrRegex: counter,
     attributes: attributes,

@@ -26,8 +26,6 @@ exports.name = 'cartesian';
 
 exports.attr = ['xaxis', 'yaxis'];
 
-exports.idRoot = ['x', 'y'];
-
 exports.idRegex = constants.idRegex;
 
 exports.attrRegex = constants.attrRegex;

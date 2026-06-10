@@ -21,8 +21,6 @@ exports.name = MAPBOX;
 
 exports.attr = 'subplot';
 
-exports.idRoot = MAPBOX;
-
 exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPBOX);
 
 var deprecationWarning = [

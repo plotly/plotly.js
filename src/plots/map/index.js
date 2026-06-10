@@ -17,8 +17,6 @@ exports.name = MAP;
 
 exports.attr = 'subplot';
 
-exports.idRoot = MAP;
-
 exports.idRegex = exports.attrRegex = Lib.counterRegex(MAP);
 
 exports.attributes = {
