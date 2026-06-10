@@ -336,8 +336,7 @@ function createCircularClosedPathString(link, arrowLen) {
     var offset = link.width / 2;
     var coords = link.circularPathData;
     var isSourceBeforeTarget = coords.sourceX + coords.verticalBuffer < coords.targetX;
-    var isPathOverlapped = (coords.rightFullExtent - coords.rightLargeArcRadius - arrowLen) <= (coords.leftFullExtent - offset)
-     var diff = Math.abs(coords.rightFullExtent- coords.leftFullExtent - offset) < offset ;
+    var isPathOverlapped = (coords.rightFullExtent - coords.rightLargeArcRadius - arrowLen) <= (coords.leftFullExtent - offset);
     if (link.circularLinkType === 'top') {
         pathString =
             // start at the left of the target node

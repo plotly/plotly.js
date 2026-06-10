@@ -27,7 +27,7 @@ exports.clearPromiseQueue = function (gd) {
 // before it gets used for anything
 // backward compatibility and cleanup of nonstandard options
 exports.cleanLayout = function (layout) {
-    var i, j;
+    var i;
 
     if (!layout) layout = {};
 
@@ -46,9 +46,6 @@ exports.cleanLayout = function (layout) {
     }
 
     var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
-    var polarAttrRegex = (Plots.subplotsRegistry.polar || {}).attrRegex;
-    var ternaryAttrRegex = (Plots.subplotsRegistry.ternary || {}).attrRegex;
-    var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
     var keys = Object.keys(layout);
     for (i = 0; i < keys.length; i++) {

@@ -898,7 +898,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
     var visibleModules = fullLayout._visibleModules;
     var basePlotModules = fullLayout._basePlotModules;
-    var cnt = 0;
     var colorCnt = 0;
 
     var i, fullTrace, trace;

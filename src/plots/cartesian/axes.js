@@ -1962,9 +1962,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     } else if(isNumeric(dtick) || ((dtChar0 === 'D') &&
         (ax.minorloglabels === 'complete' || Lib.mod(x + 0.01, 1) < 0.1))) {
 
-        var isMinor;
         if(ax.minorloglabels === 'complete' && !(Lib.mod(x + 0.01, 1) < 0.1)) {
-            isMinor = true;
             out.fontSize *= 0.75;
         }
 

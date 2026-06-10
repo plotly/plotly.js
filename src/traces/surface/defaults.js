@@ -88,7 +88,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce(x);
     });
 
-    var surfaceColor = coerce('surfacecolor');
+    coerce('surfacecolor');
 
     var dims = ['x', 'y', 'z'];
     for (i = 0; i < 3; ++i) {

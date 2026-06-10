@@ -1,7 +1,6 @@
 'use strict';
 
 var Registry = require('../registry');
-var SUBPLOT_PATTERN = require('./cartesian/constants').SUBPLOT_PATTERN;
 
 /**
  * Get calcdata trace(s) associated with a given subplot
@@ -97,7 +96,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
 
     var attr = Registry.subplotsRegistry[type].attr;
     var subplotData = [];
-    var trace, subplotX, subplotY;
+    var trace;
 
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
