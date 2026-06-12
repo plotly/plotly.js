@@ -275,6 +275,9 @@ describe('Plotly.react transitions:', function() {
      *  - expectations items must be placed in the order in which they are invoked
      *  - to test that a certain spy didn't get called use `0` as value
      *  - to test that a certain spy did get called w/o checking its args use `1` as value
+     *  - to match one or more consecutive calls of the same spy w/o pinning down
+     *    their exact count (e.g. the non-deterministic number of per-frame
+     *    Axes.drawOne redraws emitted during an axis transition) use `'1+'` as value
      */
     function assertSpies(_msg, _exps) {
         var msg = function(i, exp, extra) {
@@ -292,6 +295,8 @@ describe('Plotly.react transitions:', function() {
             var expectingACall;
 
             if(Array.isArray(val)) {
+                expectingACall = true;
+            } else if(val === '1+') {
                 expectingACall = true;
             } else if(val === 0 || val === 1) {
                 expectingACall = Boolean(val);
@@ -334,26 +339,23 @@ describe('Plotly.react transitions:', function() {
         });
         actuals.sort(function(a, b) { return a[3] - b[3]; });
 
-        // sanity check
-        if(actuals.length !== exps.length) {
-            // Reset spy counters even if test fails (to avoid causing subsequent tests to fail)
-            resetSpyCounters();
-            return fail(_msg + '- Something went wrong when building "actual" callData list');
-        }
-
+        // match expected against actual calls in order; a `'1+'` expectation
+        // greedily consumes one or more consecutive calls of the same spy+method
+        var ai = 0;
         for(var i = 0; i < exps.length; i++) {
             var exp = exps[i];
-            var actual = actuals[i];
+            var actual = actuals[ai];
             var val = exp[2];
-            var args = actual[2];
 
-            if(actual[0] !== exp[0] || actual[1] !== exp[1]) {
-                fail(_msg + '- Item #' + i + ' with method "' + exp[1] + '" is out-of-order');
-                continue;
+            if(!actual || actual[0] !== exp[0] || actual[1] !== exp[1]) {
+                // Reset spy counters even if test fails (to avoid causing subsequent tests to fail)
+                resetSpyCounters();
+                return fail(_msg + '- ' + msg(i, exp, 'missing or out-of-order call'));
             }
 
             if(Array.isArray(val)) {
                 // assert function arguments
+                var args = actual[2];
                 expect(args.length).toBe(val.length, msg(i, exp, '# of args'));
 
                 for(var j = 0; j < args.length; j++) {
@@ -372,6 +374,15 @@ describe('Plotly.react transitions:', function() {
                     }
                 }
             }
+
+            do { ai++; } while(val === '1+' && actuals[ai] &&
+                actuals[ai][0] === exp[0] && actuals[ai][1] === exp[1]);
+        }
+
+        // all actual calls must be accounted for by an expectation
+        if(ai !== actuals.length) {
+            resetSpyCounters();
+            return fail(_msg + '- more calls than expected');
         }
 
         resetSpyCounters();
@@ -637,8 +648,8 @@ describe('Plotly.react transitions:', function() {
             assertSpies('just layout transition', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Axes, 'drawOne', 1],
-                [Axes, 'drawOne', 1],
+                // one or more per-frame redraws over the course of the axis transition
+                [Axes, 'drawOne', '1+'],
                 // one _module.plot call from the relayout at end of axis transition
                 [Registry, 'call', ['relayout', gd, {'xaxis.range': [-2, 2]}]],
                 [Axes, 'drawOne', 1],
@@ -655,12 +666,12 @@ describe('Plotly.react transitions:', function() {
             assertSpies('both trace and layout transitions', [
                 [Plots, 'transitionFromReact', 1],
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Axes, 'drawOne', 1],
-                [Axes, 'drawOne', 1],
+                // one or more per-frame redraws over the course of the axis transition
+                [Axes, 'drawOne', '1+'],
                 // one instantaneous transition options to halt other trace transitions (if any)
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd, null, {duration: 0, easing: 'cubic-in-out', ordering: 'layout first'}, 'function']],
-                [Axes, 'drawOne', 1],
-                [Axes, 'drawOne', 1],
+                // one or more per-frame redraws over the course of the axis transition
+                [Axes, 'drawOne', '1+'],
                 // one _module.plot call from the relayout at end of axis transition
                 [Registry, 'call', ['relayout', gd, {'xaxis.range': [-1, 1]}]],
                 [Axes, 'drawOne', 1],
@@ -681,8 +692,8 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd, [0], {duration: 10, easing: 'cubic-in-out', ordering: 'traces first'}, 'function']],
                 // one by relayout call  at the end of instantaneous axis transition
                 [gd._fullLayout._basePlotModules[0], 'transitionAxes', 1],
-                [Axes, 'drawOne', 1],
-                [Axes, 'drawOne', 1],
+                // one or more per-frame redraws over the course of the axis transition
+                [Axes, 'drawOne', '1+'],
                 [Registry, 'call', ['relayout', gd, {'xaxis.range': [-2, 2]}]],
                 [Axes, 'drawOne', 1],
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
