@@ -16,20 +16,18 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
     beforeAll(function(done) {
         gd = createGraphDiv();
 
-        if(mathjaxVersion === 3) {
-            window.MathJax = {
-                startup: {
-                    output: 'chtml',
-                    tex: {
-                        inlineMath: [['|', '|']]
-                    }
+        window.MathJax = {
+            startup: {
+                output: 'chtml',
+                tex: {
+                    inlineMath: [['|', '|']]
                 }
-            };
-        }
+            }
+        };
 
-        var src = mathjaxVersion === 3 ?
+        const src = mathjaxVersion === 3 ?
             '/base/node_modules/@plotly/mathjax-v3/es5/tex-svg.js' :
-            '/base/node_modules/@plotly/mathjax-v2/MathJax.js?config=TeX-AMS_SVG';
+            '/base/node_modules/@plotly/mathjax-v4/tex-svg.js';
 
         loadScript(src, done);
     });
@@ -37,25 +35,9 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
     afterAll(destroyGraphDiv);
 
     it('should maintain startup renderer & inlineMath after SVG rendering', function(done) {
-        if(mathjaxVersion === 2) {
-            window.MathJax.Hub.Config({
-                tex2jax: {
-                    inlineMath: [['|', '|']]
-                }
-            });
-
-            window.MathJax.Hub.setRenderer('CHTML');
-        }
-
         // before plot
-        if(mathjaxVersion === 3) {
-            expect(window.MathJax.config.startup.output).toEqual('chtml');
-            expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
-        }
-        if(mathjaxVersion === 2) {
-            expect(window.MathJax.Hub.config.menuSettings.renderer).toEqual('');
-            expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
-        }
+        expect(window.MathJax.config.startup.output).toEqual('chtml');
+        expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
 
         Plotly.newPlot(gd, {
             data: [{
@@ -69,19 +51,8 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
         })
         .then(function() {
             // after plot
-            if(mathjaxVersion === 3) {
-                expect(window.MathJax.config.startup.output).toEqual('chtml');
-                expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
-            }
-            if(mathjaxVersion === 2) {
-                expect(window.MathJax.Hub.config.menuSettings.renderer).toEqual('');
-            }
-        })
-        .then(delay(1000)) // TODO: why we need this delay for mathjax v2 here?
-        .then(function() {
-            if(mathjaxVersion === 2) {
-                expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
-            }
+            expect(window.MathJax.config.startup.output).toEqual('chtml');
+            expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
         })
         .then(done, done.fail);
     });

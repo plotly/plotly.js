@@ -115,8 +115,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
-    "@plotly/mathjax-v2": "npm:mathjax@2.7.5",
-    "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
+    "@plotly/mathjax-v3": "npm:mathjax@3.2.2",
+    "@plotly/mathjax-v4": "npm:mathjax@^4.1.2",
     "@types/d3": "3.5.34",
     "@types/node": "^24.10.0",
     "amdefine": "^1.0.1",

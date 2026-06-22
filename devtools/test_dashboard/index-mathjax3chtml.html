@@ -49,12 +49,7 @@
             options.format = svgDocument.inputJax[0].name;
             return svgDocument.convert(math, options);
           };
-          /*
-          MathJax.tex2svgPromise = (math, options = {}) => {
-            options.format = svgDocument.inputJax[0].name;
-            return mathjax.handleRetriesFor(() => svgDocument.convert(math, options));
-          };
-          */
+
           MathJax.svgStylesheet = () => svgOutput.styleSheet(svgDocument);
         }
       }

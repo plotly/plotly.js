@@ -36,8 +36,6 @@ if "mathjax3=" in sys.argv:
 
 print("output to", dirOut)
 
-mathjax_version = 2
-mathjax = None
 if "mathjax3" in sys.argv or "mathjax3=" in sys.argv:
     # until https://github.com/plotly/Kaleido/issues/124 is addressed
     # we are uanble to use local mathjax v3 installed in node_modules
@@ -46,6 +44,11 @@ if "mathjax3" in sys.argv or "mathjax3=" in sys.argv:
 
     mathjax_version = 3
     print("Kaleido using MathJax v3")
+else:
+    mathjax_version = 4
+    # Kaleido still defaults to MathJax v2, so we need to explicitly specify the path to MathJax v4
+    mathjax = "https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-svg.js"
+    print("Kaleido using MathJax v4")
 
 virtual_webgl_version = 0  # i.e. virtual-webgl is not used
 if "virtual-webgl" in sys.argv or "virtual-webgl=" in sys.argv:

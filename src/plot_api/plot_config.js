@@ -27,7 +27,7 @@ var configAttributes = {
         dflt: true,
         description: [
             'Determines whether math should be typeset or not,',
-            'when MathJax (either v2 or v3) is present on the page.'
+            'when MathJax (either v3 or v4) is present on the page.'
         ].join(' ')
     },
 
