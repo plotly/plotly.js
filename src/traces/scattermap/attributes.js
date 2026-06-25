@@ -15,7 +15,39 @@ var mapLayoutAtributes = require('../../plots/map/layout_attributes');
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
 
-module.exports = overrideAll(
+function restoreColorbarEditTypes(attrs) {
+    function restoreEditTypes(obj) {
+        for(var key in obj) {
+            var val = obj[key];
+            if(val && typeof val === 'object') {
+                if(val.editType === 'calc') {
+                    val.editType = 'colorbars';
+                }
+                if(!val.valType) {
+                    restoreEditTypes(val);
+                }
+                if(Array.isArray(val.items)) {
+                    for(var i = 0; i < val.items.length; i++) {
+                        if(val.items[i] && typeof val.items[i] === 'object') {
+                            if(val.items[i].editType === 'calc') {
+                                val.items[i].editType = 'colorbars';
+                            }
+                            if(!val.items[i].valType) {
+                                restoreEditTypes(val.items[i]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(attrs && attrs.marker && attrs.marker.colorbar) {
+        restoreEditTypes(attrs.marker.colorbar);
+    }
+    return attrs;
+}
+
+module.exports = restoreColorbarEditTypes(overrideAll(
     {
         lon: scatterGeoAttrs.lon,
         lat: scatterGeoAttrs.lat,
@@ -177,4 +209,4 @@ module.exports = overrideAll(
     },
     'calc',
     'nested'
-);
+));
