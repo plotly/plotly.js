@@ -1,0 +1,1 @@
+ - Update `textinfo` to respect user-specified token order in funnel, waterfall, pie, sunburst, treemap, and icicle traces [[#7871](https://github.com/plotly/plotly.js/pull/7871)]
