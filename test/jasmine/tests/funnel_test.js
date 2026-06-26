@@ -1757,4 +1757,25 @@ describe('funnel uniformtext', function() {
         }))
         .then(done, done.fail);
     });
+
+    it('should respect textinfo token order', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'funnel',
+            y: ['Awareness', 'Interest', 'Action'],
+            x: [1000, 700, 400],
+            textinfo: 'percent initial+value'
+        }], {})
+        .then(function() {
+            var textEls = gd.querySelectorAll('text.bartext');
+            var textContent = Array.from(textEls).map(function(el) {
+                return el.textContent;
+            });
+            expect(textContent.length).toBe(3);
+            expect(textContent[0]).toBe('100%1000');
+            expect(textContent[1]).toBe('70%700');
+            expect(textContent[2]).toBe('40%400');
+        })
+        .then(done, done.fail);
+    });
+
 });

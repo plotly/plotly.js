@@ -1105,52 +1105,43 @@ function calcTextinfo(cd, index, xa, ya) {
     var text = [];
     var tx;
 
-    var hasFlag = function (flag) {
+    function hasFlag(flag) {
         return parts.indexOf(flag) !== -1;
-    };
-
-    if (hasFlag('label')) {
-        text.push(formatLabel(cd[index].p));
     }
 
-    if (hasFlag('text')) {
-        tx = Lib.castOption(trace, cdi.i, 'text');
-        if (tx === 0 || tx) text.push(tx);
+    var nPercent = 0;
+    if(isFunnel) {
+        if(hasFlag('percent initial')) nPercent++;
+        if(hasFlag('percent previous')) nPercent++;
+        if(hasFlag('percent total')) nPercent++;
     }
-
-    if (isWaterfall) {
-        var delta = +cdi.rawS || cdi.s;
-        var final = cdi.v;
-        var initial = final - delta;
-
-        if (hasFlag('initial')) text.push(formatNumber(initial));
-        if (hasFlag('delta')) text.push(formatNumber(delta));
-        if (hasFlag('final')) text.push(formatNumber(final));
-    }
-
-    if (isFunnel) {
-        if (hasFlag('value')) text.push(formatNumber(cdi.s));
-
-        var nPercent = 0;
-        if (hasFlag('percent initial')) nPercent++;
-        if (hasFlag('percent previous')) nPercent++;
-        if (hasFlag('percent total')) nPercent++;
-
-        var hasMultiplePercents = nPercent > 1;
-
-        if (hasFlag('percent initial')) {
+    var hasMultiplePercents = nPercent > 1;
+    for(var i in parts) {
+        var part = parts[i];
+        if(part === 'label') {
+            text.push(formatLabel(cdi.p));
+        } else if(part === 'text') {
+            tx = Lib.castOption(trace, cdi.i, 'text');
+            if(tx === 0 || tx) text.push(tx);
+        } else if(isWaterfall && part === 'initial') {
+            text.push(formatNumber(cdi.v - (+cdi.rawS || cdi.s)));
+        } else if(isWaterfall && part === 'delta') {
+            text.push(formatNumber(+cdi.rawS || cdi.s));
+        } else if(isWaterfall && part === 'final') {
+            text.push(formatNumber(cdi.v));
+        } else if(isFunnel && part === 'value') {
+            text.push(formatNumber(cdi.s));
+        } else if(isFunnel && part === 'percent initial') {
             tx = Lib.formatPercent(cdi.begR);
-            if (hasMultiplePercents) tx += ' of initial';
+            if(hasMultiplePercents) tx += ' of initial';
             text.push(tx);
-        }
-        if (hasFlag('percent previous')) {
+        } else if(isFunnel && part === 'percent previous') {
             tx = Lib.formatPercent(cdi.difR);
-            if (hasMultiplePercents) tx += ' of previous';
+            if(hasMultiplePercents) tx += ' of previous';
             text.push(tx);
-        }
-        if (hasFlag('percent total')) {
+        } else if(isFunnel && part === 'percent total') {
             tx = Lib.formatPercent(cdi.sumR);
-            if (hasMultiplePercents) tx += ' of total';
+            if(hasMultiplePercents) tx += ' of total';
             text.push(tx);
         }
     }
