@@ -707,7 +707,9 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
         transform = toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
-            angle: angle
+            angle: angle,
+            xa: xa, // Pass the X-Axis configuration
+            ya: ya  // Pass the Y-Axis configuration
         });
     } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
@@ -957,12 +959,32 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var anchorX = 0;
     var anchorY = 0;
 
+    // Dynamic presentation safety buffer to clear tilted axis tick labels
+    var axisPad = 0;
+    if (!isHorizontal && opts.xa && opts.xa.side === 'top') {
+        if (opts.xa._g && opts.xa._g.node()) {
+            var axisBB = opts.xa._g.node().getBBox();
+            if (axisBB && axisBB.height > 0) {
+                // Shift exactly past the bounding height of the tilted labels plus a clean 6px visual gap
+                axisPad = axisBB.height + 6; 
+            }
+        }
+    } else if (isHorizontal && opts.ya && opts.ya.side === 'right') {
+        if (opts.ya._g && opts.ya._g.node()) {
+            var axisBB = opts.ya._g.node().getBBox();
+            if (axisBB && axisBB.width > 0) {
+                // Shift exactly past the bounding width of the side labels plus a clean 6px visual gap
+                axisPad = axisBB.width + 6; 
+            }
+        }
+    }
+
     var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
     if (isHorizontal) {
-        targetX = x1 - dir * textpad;
+        targetX = x1 - dir * (textpad + axisPad);
         anchorX = dir * extrapad;
     } else {
-        targetY = y1 + dir * textpad;
+        targetY = y1 + dir * (textpad + axisPad);
         anchorY = -dir * extrapad;
     }
 
