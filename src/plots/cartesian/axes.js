@@ -1275,7 +1275,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     tickVals = tickVals.concat(minorTickVals);
 
     function setTickLabel(ax, tickVal) {
-        var text = axes.tickText(
+        var labeledTick = axes.tickText(
             ax,
             tickVal.value,
             false, // hover
@@ -1283,15 +1283,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
         );
         var p = tickVal.periodX;
         if(p !== undefined) {
-            text.periodX = p;
+            labeledTick.periodX = p;
             if(p > maxRange || p < minRange) { // hide label if outside the range
-                if(p > maxRange) text.periodX = maxRange;
-                if(p < minRange) text.periodX = minRange;
+                if(p > maxRange) labeledTick.periodX = maxRange;
+                if(p < minRange) labeledTick.periodX = minRange;
 
-                hideLabel(text);
+                hideLabel(labeledTick);
             }
         }
-        return text;
+        return labeledTick;
     }
 
     var t;
