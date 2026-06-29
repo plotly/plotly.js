@@ -975,7 +975,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
     // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
-    var calcMinor = hasMinor || ticklabelIndex;
+    var calcMinor = hasMinor || (ticklabelIndex != null && ticklabelIndex !== 0);
 
     // calc major first
     for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
