@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "x": [
+        "2020", "2021", "2022"
+      ],
+      "y": [
+        3, 2, 1
+      ]
+    },
+    {
+      "mode": "markers+text",
+      "texttemplate": "%{x|Q%q %y}",
+      "textposition": "middle top",
+      "x": [
+        "2019-07-01", "2019-10-01", "2020-01-01", "2020-04-01", "2020-07-01"
+      ],
+      "y": [
+        2, 2, 2, 2, 2
+      ],
+      "yaxis": "y2",
+      "xaxis": "x2"
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 800,
+    "grid": {
+      "rows": 2,
+      "columns": 1,
+      "pattern": "independent"
+    },
+    "xaxis": {
+      "dtick": "M12",
+      "insiderange": [
+        "2020-03-27",
+        "2022-07-21"
+      ],
+      "tickformat": "%Y",
+      "ticklabelindex": -1,
+      "ticks": "outside",
+      "ticklabelmode": "period",
+      "type": "date",
+      "title": {
+        "text": "Should display 2 major ticks and labels 2020, 2021, 2022"
+      }
+    },
+    "xaxis2": {
+      "dtick": "M24",
+      "insiderange": [
+        "2019-03-01",
+        "2021-01-01"
+      ],
+      "tick0": "2021-01-01",
+      "tickformat": "%Y",
+      "ticklabelindex": -1,
+      "ticklabelmode": "period",
+      "type": "date",
+      "ticks": "outside",
+      "minor": { "dtick": "M12", "ticks": "outside" },
+      "title": {
+        "text": "Should display 1 major tick and a label 2020 to the left of it"
+      }
+    }
+  }
+}
