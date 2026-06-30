@@ -1182,22 +1182,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     if (labelIndex < 0) {
                         const smallerMinorTicks = minorTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
                         const absLabelIndex = Math.abs(labelIndex);
-                        if (absLabelIndex <= smallerMinorTicks.length - 1) {
-                            allTicklabelVals.push(smallerMinorTicks[smallerMinorTicks.length - absLabelIndex - 1]);
-                            if (isPeriod) periodEndTicks.push(smallerMinorTicks[smallerMinorTicks.length - absLabelIndex]);
+                        const minorTickIndex = smallerMinorTicks.length - absLabelIndex - 1;
+                        if (absLabelIndex <= smallerMinorTicks.length - 1 && !smallerMinorTicks[minorTickIndex].noTick) {
+                            allTicklabelVals.push(smallerMinorTicks[minorTickIndex]);
+                            if (isPeriod) periodEndTicks.push(smallerMinorTicks[minorTickIndex + 1]);
                         }
-                    } else {
+                    } else { // labelIndex >= 0
                         const largerMinorTicks = minorTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
-                        if (labelIndex > 0) {
-                            if (labelIndex < largerMinorTicks.length - 1) {
-                                allTicklabelVals.push(largerMinorTicks[labelIndex]);
-                                if (isPeriod) periodEndTicks.push(largerMinorTicks[labelIndex + 1]);
-                            }
-                        } else { // labelIndex === 0
-                            if (largerMinorTicks.length >= 2) {
-                                allTicklabelVals.push(largerMinorTicks[0]);
-                                if (isPeriod) periodEndTicks.push(largerMinorTicks[1]);
-                            }
+                        if (labelIndex < largerMinorTicks.length - 1 && !largerMinorTicks[labelIndex].noTick) {
+                            allTicklabelVals.push(largerMinorTicks[labelIndex]);
+                            if (isPeriod) periodEndTicks.push(largerMinorTicks[labelIndex + 1]);
                         }
                     }
                     majorTick.skipLabel = true;
