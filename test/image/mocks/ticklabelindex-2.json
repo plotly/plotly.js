@@ -11,7 +11,7 @@
     {
       "mode": "markers+text",
       "texttemplate": "%{x|Q%q %y}",
-      "textposition": "middle top",
+      "textposition": "top center",
       "x": [
         "2019-07-01", "2019-10-01", "2020-01-01", "2020-04-01", "2020-07-01"
       ],
