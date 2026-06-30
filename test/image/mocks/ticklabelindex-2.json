@@ -39,6 +39,7 @@
       "tickformat": "%Y",
       "ticklabelindex": -1,
       "ticks": "outside",
+      "ticklen": 20,
       "ticklabelmode": "period",
       "type": "date",
       "title": {
@@ -55,11 +56,12 @@
       "tickformat": "%Y",
       "ticklabelindex": -1,
       "ticklabelmode": "period",
+      "ticklen": 20,
       "type": "date",
       "ticks": "outside",
-      "minor": { "dtick": "M12", "ticks": "outside" },
+      "minor": { "dtick": "M12", "ticks": "outside", "ticklen": 5 },
       "title": {
-        "text": "Should display 1 major tick and a label 2020 to the left of it"
+        "text": "Should display 1 major tick, 1 minor tick and a label 2020 in between."
       }
     }
   }
