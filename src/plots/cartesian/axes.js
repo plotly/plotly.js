@@ -1155,6 +1155,21 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    function findOverlappingTick(minorTick, majorTicks) {
+        const majorTick = majorTicks.find((majorTick) => majorTick.value === minorTick.value);
+        if (majorTick != null) {
+            return majorTick;
+        }
+        // add 10e6 to eliminate problematic digits
+        const epsilon = 10e6;
+        for (var i = 0; i < majorTicks.length; i++) {
+            if (epsilon + majorTicks[i].value === epsilon + minorTick.value) {
+                return majorTicks[i];
+            }
+        }
+        return null;
+    };
+
     // check if ticklabelIndex makes sense, otherwise ignore it.
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
@@ -1175,65 +1190,60 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // For each major tick, find the minor tick `ticklabelIndex` steps away.
         // This minor tick will be labeled instead of the major tick.
         if (isPeriod) periodEndTicks = []; // for each minor tick at the start of a labeled period this will hold the neighboring period end tick.
-        const minorTickValsAscending = minorTickVals.toSorted((a, b) => a.value - b.value);
+        const labelTickValsAscending = minorTickVals
+            .map((minor) => {
+                // if there is a major tick at the same position, prefer it over the minor tick because overlapping minor ticks are stripped away
+                // if both minor and major ticks are drawn on the same side.
+                const major = findOverlappingTick(minor, tickVals);
+                if (major) {
+                    return major;
+                }
+                return minor;
+            })
+            .toSorted((a, b) => a.value - b.value);
         tickVals.forEach(function(majorTick) {
             if (!majorTick.skipLabel) {
                 ticklabelIndex.forEach((labelIndex) => {
                     if (labelIndex < 0) {
-                        const smallerMinorTicks = minorTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
+                        const smallerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
                         const absLabelIndex = Math.abs(labelIndex);
-                        const minorTickIndex = smallerMinorTicks.length - absLabelIndex - 1;
-                        if (absLabelIndex <= smallerMinorTicks.length - 1) {
-                            const labelVisible = !smallerMinorTicks[minorTickIndex].noTick || (isPeriod && !smallerMinorTicks[minorTickIndex + 1].noTick);
+                        const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
+                        if (absLabelIndex <= smallerTicks.length - 1) {
+                            const labelVisible = !smallerTicks[labeledTickIndex].noTick || (isPeriod && !smallerTicks[labeledTickIndex + 1].noTick);
                             if (labelVisible) {
-                                allTicklabelVals.push(smallerMinorTicks[minorTickIndex]);
-                                if (isPeriod) periodEndTicks.push(smallerMinorTicks[minorTickIndex + 1]);
+                                allTicklabelVals.push(smallerTicks[labeledTickIndex]);
+                                if (isPeriod) periodEndTicks.push(smallerTicks[labeledTickIndex + 1]);
                             }
                         }
                     } else { // labelIndex >= 0
-                        const largerMinorTicks = minorTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
-                        if (labelIndex < largerMinorTicks.length - 1) {
-                            const labelVisible = !largerMinorTicks[labelIndex].noTick || (isPeriod && !largerMinorTicks[labelIndex + 1].noTick);
+                        const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
+                        if (labelIndex < largerTicks.length - 1) {
+                            const labelVisible = !largerTicks[labelIndex].noTick || (isPeriod && !largerTicks[labelIndex + 1].noTick);
                             if (labelVisible) {
-                                allTicklabelVals.push(largerMinorTicks[labelIndex]);
-                                if (isPeriod) periodEndTicks.push(largerMinorTicks[labelIndex + 1]);
+                                allTicklabelVals.push(largerTicks[labelIndex]);
+                                if (isPeriod) periodEndTicks.push(largerTicks[labelIndex + 1]);
                             }
                         }
                     }
-                    majorTick.skipLabel = true;
+                    majorTick.skipLabel = majorTick.skipLabel !== false;
                 });
             }
         });
+        allTicklabelVals.forEach((t) => t.skipLabel = false);
     }
 
     if(hasMinor) {
-        var canOverlap =
+        var allowedToOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
             (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
 
-        if(!canOverlap) {
+        if(!allowedToOverlap) {
             // remove duplicate minors
-
-            var majorValues = tickVals.map(function(d) { return d.value; });
-
             var list = [];
             for(var k = 0; k < visibleMinorTicks.length; k++) {
-                var T = visibleMinorTicks[k];
-                var v = T.value;
-                if(majorValues.indexOf(v) !== -1) {
-                    continue;
+                if (findOverlappingTick(visibleMinorTicks[k], tickVals) == null) {
+                    list.push(visibleMinorTicks[k]);
                 }
-                var found = false;
-                for(var q = 0; !found && (q < tickVals.length); q++) {
-                    if(
-                        // add 10e6 to eliminate problematic digits
-                        10e6 + tickVals[q].value ===
-                        10e6 + v
-                    ) {
-                        found = true;
-                    }
-                }
-                if(!found) list.push(T);
             }
             minorTickVals = list;
         }
