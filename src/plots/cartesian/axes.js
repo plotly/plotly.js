@@ -1183,15 +1183,21 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         const smallerMinorTicks = minorTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
                         const absLabelIndex = Math.abs(labelIndex);
                         const minorTickIndex = smallerMinorTicks.length - absLabelIndex - 1;
-                        if (absLabelIndex <= smallerMinorTicks.length - 1 && !smallerMinorTicks[minorTickIndex].noTick) {
-                            allTicklabelVals.push(smallerMinorTicks[minorTickIndex]);
-                            if (isPeriod) periodEndTicks.push(smallerMinorTicks[minorTickIndex + 1]);
+                        if (absLabelIndex <= smallerMinorTicks.length - 1) {
+                            const labelVisible = !smallerMinorTicks[minorTickIndex].noTick || (isPeriod && !smallerMinorTicks[minorTickIndex + 1].noTick);
+                            if (labelVisible) {
+                                allTicklabelVals.push(smallerMinorTicks[minorTickIndex]);
+                                if (isPeriod) periodEndTicks.push(smallerMinorTicks[minorTickIndex + 1]);
+                            }
                         }
                     } else { // labelIndex >= 0
                         const largerMinorTicks = minorTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
-                        if (labelIndex < largerMinorTicks.length - 1 && !largerMinorTicks[labelIndex].noTick) {
-                            allTicklabelVals.push(largerMinorTicks[labelIndex]);
-                            if (isPeriod) periodEndTicks.push(largerMinorTicks[labelIndex + 1]);
+                        if (labelIndex < largerMinorTicks.length - 1) {
+                            const labelVisible = !largerMinorTicks[labelIndex].noTick || (isPeriod && !largerMinorTicks[labelIndex + 1].noTick);
+                            if (labelVisible) {
+                                allTicklabelVals.push(largerMinorTicks[labelIndex]);
+                                if (isPeriod) periodEndTicks.push(largerMinorTicks[labelIndex + 1]);
+                            }
                         }
                     }
                     majorTick.skipLabel = true;
