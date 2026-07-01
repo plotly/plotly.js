@@ -1380,7 +1380,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if(ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
-                t = { x: _value };
+                t = { x: _value, text: ''};
             }
             t.noTick = tickVals[i].noTick;
             t.minor = true;
