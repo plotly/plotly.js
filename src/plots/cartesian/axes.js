@@ -694,6 +694,11 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // ensure identical tick0
         mockAx.tick0 = ax.tick0;
     }
+    autoTickRound(mockAx);
+    if(ax.ticklabelmode === 'period') {
+        mockAx._definedDelta = definedDeltaForTickformat(axes.getTickFormat(mockAx));
+    }
+    Lib.extendFlat(ax.minor, mockAx);
 };
 
 function isMultiple(bigger, smaller) {
@@ -764,9 +769,66 @@ function nMonths(dtick) {
     return +(dtick.substring(1));
 }
 
-function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
-    var definedDelta;
+// Maps a tick format string to the period length its labels represent.
+// Returns undefined if the format has no (or a sub-second/minute) period unit,
+// in which case the period length is derived from the actual tick spacing.
+function definedDeltaForTickformat(tickformat) {
+    if(
+        !tickformat ||
+        /%[fLQsSMX]/.test(tickformat)
+        // %f: microseconds as a decimal number [000000, 999999]
+        // %L: milliseconds as a decimal number [000, 999]
+        // %Q: milliseconds since UNIX epoch
+        // %s: seconds since UNIX epoch
+        // %S: second as a decimal number [00,61]
+        // %M: minute as a decimal number [00,59]
+        // %X: the locale’s time, such as %-I:%M:%S %p
+    ) return undefined;
 
+    if(
+        /%[HI]/.test(tickformat)
+        // %H: hour (24-hour clock) as a decimal number [00,23]
+        // %I: hour (12-hour clock) as a decimal number [01,12]
+    ) return ONEHOUR;
+    if(
+        /%p/.test(tickformat) // %p: either AM or PM
+    ) return HALFDAY;
+    if(
+        /%[Aadejuwx]/.test(tickformat)
+        // %A: full weekday name
+        // %a: abbreviated weekday name
+        // %d: zero-padded day of the month as a decimal number [01,31]
+        // %e: space-padded day of the month as a decimal number [ 1,31]
+        // %j: day of the year as a decimal number [001,366]
+        // %u: Monday-based (ISO 8601) weekday as a decimal number [1,7]
+        // %w: Sunday-based weekday as a decimal number [0,6]
+        // %x: the locale’s date, such as %-m/%-d/%Y
+    ) return ONEDAY;
+    if(
+        /%[UVW]/.test(tickformat)
+        // %U: Sunday-based week of the year as a decimal number [00,53]
+        // %V: ISO 8601 week of the year as a decimal number [01, 53]
+        // %W: Monday-based week of the year as a decimal number [00,53]
+    ) return ONEWEEK;
+    if(
+        /%[Bbm]/.test(tickformat)
+        // %B: full month name
+        // %b: abbreviated month name
+        // %m: month as a decimal number [01,12]
+    ) return ONEAVGMONTH;
+    if(
+        /%[q]/.test(tickformat)
+        // %q: quarter of the year as a decimal number [1,4]
+    ) return ONEAVGQUARTER;
+    if(
+        /%[Yy]/.test(tickformat)
+        // %Y: year with century as a decimal number, such as 1999
+        // %y: year without century as a decimal number [00,99]
+    ) return ONEAVGYEAR;
+    return undefined;
+}
+
+function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
     function mDate() {
         return !(
             isNumeric(ax.dtick) ||
@@ -774,80 +836,29 @@ function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
         );
     }
     var isMDate = mDate();
-    var tickformat = axes.getTickFormat(ax);
-    if(tickformat) {
+    var definedDelta = definedDeltaForTickformat(axes.getTickFormat(ax));
+    if(definedDelta !== undefined) {
         var noDtick = ax._dtickInit !== ax.dtick;
-        if(
-            !(/%[fLQsSMX]/.test(tickformat))
-            // %f: microseconds as a decimal number [000000, 999999]
-            // %L: milliseconds as a decimal number [000, 999]
-            // %Q: milliseconds since UNIX epoch
-            // %s: seconds since UNIX epoch
-            // %S: second as a decimal number [00,61]
-            // %M: minute as a decimal number [00,59]
-            // %X: the locale’s time, such as %-I:%M:%S %p
-        ) {
-            if(
-                /%[HI]/.test(tickformat)
-                // %H: hour (24-hour clock) as a decimal number [00,23]
-                // %I: hour (12-hour clock) as a decimal number [01,12]
-            ) {
-                definedDelta = ONEHOUR;
-                if(noDtick && !isMDate && ax.dtick < ONEHOUR) ax.dtick = ONEHOUR;
-            } else if(
-                /%p/.test(tickformat) // %p: either AM or PM
-            ) {
-                definedDelta = HALFDAY;
-                if(noDtick && !isMDate && ax.dtick < HALFDAY) ax.dtick = HALFDAY;
-            } else if(
-                /%[Aadejuwx]/.test(tickformat)
-                // %A: full weekday name
-                // %a: abbreviated weekday name
-                // %d: zero-padded day of the month as a decimal number [01,31]
-                // %e: space-padded day of the month as a decimal number [ 1,31]
-                // %j: day of the year as a decimal number [001,366]
-                // %u: Monday-based (ISO 8601) weekday as a decimal number [1,7]
-                // %w: Sunday-based weekday as a decimal number [0,6]
-                // %x: the locale’s date, such as %-m/%-d/%Y
-            ) {
-                definedDelta = ONEDAY;
-                if(noDtick && !isMDate && ax.dtick < ONEDAY) ax.dtick = ONEDAY;
-            } else if(
-                /%[UVW]/.test(tickformat)
-                // %U: Sunday-based week of the year as a decimal number [00,53]
-                // %V: ISO 8601 week of the year as a decimal number [01, 53]
-                // %W: Monday-based week of the year as a decimal number [00,53]
-            ) {
-                definedDelta = ONEWEEK;
-                if(noDtick && !isMDate && ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
-            } else if(
-                /%[Bbm]/.test(tickformat)
-                // %B: full month name
-                // %b: abbreviated month name
-                // %m: month as a decimal number [01,12]
-            ) {
-                definedDelta = ONEAVGMONTH;
-                if(noDtick && (
-                    isMDate ? nMonths(ax.dtick) < 1 : ax.dtick < ONEMINMONTH)
-                ) ax.dtick = 'M1';
-            } else if(
-                /%[q]/.test(tickformat)
-                // %q: quarter of the year as a decimal number [1,4]
-            ) {
-                definedDelta = ONEAVGQUARTER;
-                if(noDtick && (
-                    isMDate ? nMonths(ax.dtick) < 3 : ax.dtick < ONEMINQUARTER)
-                ) ax.dtick = 'M3';
-            } else if(
-                /%[Yy]/.test(tickformat)
-                // %Y: year with century as a decimal number, such as 1999
-                // %y: year without century as a decimal number [00,99]
-            ) {
-                definedDelta = ONEAVGYEAR;
-                if(noDtick && (
-                    isMDate ? nMonths(ax.dtick) < 12 : ax.dtick < ONEMINYEAR)
-                ) ax.dtick = 'M12';
-            }
+        if(definedDelta === ONEHOUR) {
+            if(noDtick && !isMDate && ax.dtick < ONEHOUR) ax.dtick = ONEHOUR;
+        } else if(definedDelta === HALFDAY) {
+            if(noDtick && !isMDate && ax.dtick < HALFDAY) ax.dtick = HALFDAY;
+        } else if(definedDelta === ONEDAY) {
+            if(noDtick && !isMDate && ax.dtick < ONEDAY) ax.dtick = ONEDAY;
+        } else if(definedDelta === ONEWEEK) {
+            if(noDtick && !isMDate && ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
+        } else if(definedDelta === ONEAVGMONTH) {
+            if(noDtick && (
+                isMDate ? nMonths(ax.dtick) < 1 : ax.dtick < ONEMINMONTH)
+            ) ax.dtick = 'M1';
+        } else if(definedDelta === ONEAVGQUARTER) {
+            if(noDtick && (
+                isMDate ? nMonths(ax.dtick) < 3 : ax.dtick < ONEMINQUARTER)
+            ) ax.dtick = 'M3';
+        } else if(definedDelta === ONEAVGYEAR) {
+            if(noDtick && (
+                isMDate ? nMonths(ax.dtick) < 12 : ax.dtick < ONEMINYEAR)
+            ) ax.dtick = 'M12';
         }
     }
 
@@ -971,6 +982,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var isReversed = ax.range[0] > ax.range[1];
     var ticklabelIndex = (!ax.ticklabelindex || Lib.isArrayOrTypedArray(ax.ticklabelindex)) ?
         ax.ticklabelindex : [ax.ticklabelindex];
+    ax._useTicklabelIndex = ticklabelIndex != null && ticklabelIndex !== 0;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -993,7 +1005,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
     // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
-    var calcMinor = hasMinor || (ticklabelIndex != null && ticklabelIndex !== 0);
+    var calcMinor = hasMinor || ax._useTicklabelIndex;
     
     var majorDtick = ax.dtick;
     // calc major first
@@ -1098,10 +1110,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
         if (isPeriod) {
             // add an additional major tick and correspondingly many minor ticks
-            // before the first and after the last major tick
-            // to be able to label a period before the first and last visible ticks.
+            // before the first major tick to be able to label the period before the first visible ticks.
             x = axes.tickIncrement(x, majorDtick, !axrev, calendar);
-            endTick = axes.tickIncrement(endTick, majorDtick, axrev, calendar);
+            // same after the last major tick to be able to label the period after the last visible tick.
+            if (ax._useTicklabelIndex) endTick = axes.tickIncrement(endTick, majorDtick, axrev, calendar);
             if (major) majorId--;
         }
 
@@ -1174,17 +1186,19 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
     const visibleMinorTicks = minorTickVals.filter((minorTick) => minorTick.noTick !== true);
-    if(!visibleMinorTicks || visibleMinorTicks.length < 2) {
-        ticklabelIndex = false;
-    } else {
-        var diff = (visibleMinorTicks[1].value - visibleMinorTicks[0].value) * (isReversed ? -1 : 1);
-        if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
-            ticklabelIndex = false;
+    if (ax._useTicklabelIndex) {
+        if(!visibleMinorTicks || visibleMinorTicks.length < 2) {
+            ax._useTicklabelIndex = false;
+        } else {
+            var diff = (visibleMinorTicks[1].value - visibleMinorTicks[0].value) * (isReversed ? -1 : 1);
+            if(!periodCompatibleWithTickformat(diff, axes.getTickFormat(ax.minor))) {
+                ax._useTicklabelIndex = false;
+            }
         }
     }
 
     // Determine for which ticks to draw labels
-    if(!ticklabelIndex) {
+    if(!ax._useTicklabelIndex) {
         allTicklabelVals = tickVals;
     } else {
         // For each major tick, find the minor tick `ticklabelIndex` steps away.
@@ -1248,7 +1262,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
             minorTickVals = list;
         }
     }
-    if(isPeriod) positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta, periodEndTicks);
+    if(isPeriod) {
+        var periodDefinedDelta = ax._useTicklabelIndex ? ax.minor._definedDelta : ax._definedDelta;
+        positionPeriodTicks(allTicklabelVals, ax, periodDefinedDelta, periodEndTicks);
+    }
 
     var i;
     if(ax.rangebreaks) {
@@ -1332,7 +1349,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var _value = tickVals[i].value;
 
         if(_minor) {
-            if(ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
+            if(ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
                 t = { x: _value, text: ''};
@@ -1890,8 +1907,9 @@ function tickTextObj(ax, x, text) {
 }
 
 function formatDate(ax, out, hover, extraPrecision) {
-    var tr = ax._tickround;
-    var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
+    var periodAxis = ax._useTicklabelIndex ? ax.minor : ax;
+    var tr = periodAxis._tickround;
+    var fmt = (hover && ax.hoverformat) || axes.getTickFormat(periodAxis);
 
     // Only apply extra precision if no explicit format was provided.
     extraPrecision = !fmt && extraPrecision;
