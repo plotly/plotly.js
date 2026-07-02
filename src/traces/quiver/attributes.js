@@ -72,14 +72,6 @@ var attrs = {
             'or *center* to center the arrow on (x,y).'
         ].join(' ')
     },
-    hoverdistance: {
-        valType: 'number',
-        min: -1,
-        dflt: 20,
-        editType: 'calc',
-        description: 'Maximum distance (in pixels) to look for nearby arrows on hover.'
-    },
-
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
     uhoverformat: axisHoverFormat('u', 'noDate'),

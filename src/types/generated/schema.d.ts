@@ -6971,12 +6971,6 @@ export interface QuiverData {
      */
     dy?: number;
     /**
-     * Maximum distance (in pixels) to look for nearby arrows on hover.
-     * @default 20
-     * Minimum: -1
-     */
-    hoverdistance?: number;
-    /**
      * Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
      * @default 'all'
      */

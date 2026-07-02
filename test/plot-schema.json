@@ -52485,13 +52485,6 @@
           "editType": "calc",
           "valType": "number"
         },
-        "hoverdistance": {
-          "description": "Maximum distance (in pixels) to look for nearby arrows on hover.",
-          "dflt": 20,
-          "editType": "calc",
-          "min": -1,
-          "valType": "number"
-        },
         "hoverinfo": {
           "arrayOk": true,
           "description": "Determines which trace information appear on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
