@@ -690,15 +690,21 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // put back the original range, to use to find the full set of minor ticks
         mockAx.range = ax.range;
     }
+
     if(ax.minor?._tick0Init === undefined) {
         // ensure identical tick0
         mockAx.tick0 = ax.tick0;
     }
-    autoTickRound(mockAx);
-    if(ax.ticklabelmode === 'period') {
-        mockAx._definedDelta = definedDeltaForTickformat(axes.getTickFormat(mockAx));
+    if (ax._useTicklabelIndex) {
+        // these could also always be done but the additional information on the minor
+        // axis is just necessary for ticklabelindex.
+        autoTickRound(mockAx);
+        if(ax.ticklabelmode === 'period') {
+            mockAx._definedDelta = definedDeltaForTickformat(axes.getTickFormat(mockAx));
+        }
+        delete mockAx.minor; // prevent self-reference
+        Lib.extendFlat(ax.minor, mockAx);
     }
-    Lib.extendFlat(ax.minor, mockAx);
 };
 
 function isMultiple(bigger, smaller) {
