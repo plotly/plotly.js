@@ -1288,8 +1288,10 @@ describe('Editable titles', function() {
 
             var textNode = document.querySelector('.' + className);
             textNode.dispatchEvent(new window.MouseEvent('click'));
-
-            var editNode = document.querySelector('.plugin-editable.editable');
+            // make sure to select the editNode created by the click, not some leftover
+            // from the previous call (the blur event removes it asynchronously.)
+            var editNodes = document.querySelectorAll('.plugin-editable.editable');
+            var editNode = editNodes[editNodes.length - 1];
             editNode.dispatchEvent(new window.FocusEvent('focus'));
             editNode.textContent = text;
             editNode.dispatchEvent(new window.FocusEvent('focus'));
