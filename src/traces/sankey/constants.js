@@ -13,6 +13,7 @@ module.exports = {
         sankey: 'sankey',
         sankeyLinks: 'sankey-links',
         sankeyLink: 'sankey-link',
+        sankeyLinkLabel: 'sankey-link-label',
         sankeyNodeSet: 'sankey-node-set',
         sankeyNode: 'sankey-node',
         nodeRect: 'node-rect',

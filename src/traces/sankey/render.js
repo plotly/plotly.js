@@ -550,6 +550,59 @@ function linkPath() {
     return path;
 }
 
+// Builds the permanent-label string for a link from textinfo / texttemplate.
+function linkTextGetter(trace) {
+    var linkAttr = trace.link;
+    var textinfo = linkAttr.textinfo;
+    var texttemplate = linkAttr.texttemplate;
+    var vFmt = linkAttr.valueformat;
+    var vSuf = linkAttr.valuesuffix;
+    var flags = (textinfo && textinfo !== 'none') ? textinfo.split('+') : [];
+
+    return function(l, i) {
+        var valueLabel = Lib.numberFormat(vFmt)(l.value) + vSuf;
+
+        var tt = Array.isArray(texttemplate) ? texttemplate[i] : texttemplate;
+        if(tt) {
+            return Lib.texttemplateString({
+                template: tt,
+                labels: {valueLabel: valueLabel},
+                data: [{
+                    label: l.label,
+                    value: l.value,
+                    source: l.source.label,
+                    target: l.target.label,
+                    customdata: l.customdata
+                }]
+            });
+        }
+
+        if(!flags.length) return '';
+        var parts = [];
+        if(flags.indexOf('label') !== -1 && l.label) parts.push(l.label);
+        if(flags.indexOf('value') !== -1) parts.push(valueLabel);
+        return parts.join('<br>');
+    };
+}
+
+// Positions a permanent link label at the link midpoint (layout frame) and keeps
+// the glyphs upright.
+function linkLabelTransform(d) {
+    var l = d.link;
+    var midX, midY;
+    if(l.circular) {
+        // same anchor as the hover label (see hoverCenterPosition in plot.js)
+        midX = (l.circularPathData.leftInnerExtent + l.circularPathData.rightInnerExtent) / 2;
+        midY = l.circularPathData.verticalFullExtent;
+    } else {
+        midX = (l.source.x1 + l.target.x0) / 2;
+        midY = (l.y0 + l.y1) / 2;
+    }
+    var p = d.parent;
+    var flip = p.horizontal ? '' : ('scale(-1,1)' + strRotate(90));
+    return strTranslate(midX, midY) + flip;
+}
+
 function nodeModel(d, n) {
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
@@ -623,6 +676,11 @@ function updateNodeShapes(sankeyNode) {
 function updateShapes(sankeyNode, sankeyLink) {
     sankeyNode.call(updateNodeShapes);
     sankeyLink.attr('d', linkPath());
+    var linkNode = sankeyLink.node();
+    if(linkNode) {
+        d3.select(linkNode.parentNode).selectAll('.' + c.cn.sankeyLinkLabel)
+            .attr('transform', linkLabelTransform);
+    }
 }
 
 function sizeNode(rect) {
@@ -984,6 +1042,39 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
+
+    var sankeyLinkLabel = sankeyLinks.selectAll('.' + c.cn.sankeyLinkLabel)
+        .data(function(d) {
+            var getText = linkTextGetter(d.trace);
+            var out = [];
+            d.graph.links.forEach(function(l, i) {
+                if(!l.value) return;
+                var txt = getText(l, i);
+                if(!txt) return;
+                var m = linkModel(d, l, i);
+                m.linkLabelText = txt;
+                out.push(m);
+            });
+            return out;
+        }, keyFun);
+
+    sankeyLinkLabel.enter()
+        .append('text')
+        .classed(c.cn.sankeyLinkLabel, true)
+        .attr('text-anchor', 'middle')
+        .style('pointer-events', 'none');
+
+    sankeyLinkLabel
+        .attr('data-notex', 1)
+        .text(function(d) { return d.linkLabelText; })
+        .each(function(d) {
+            var e = d3.select(this);
+            Drawing.font(e, d.link.trace.link.textfont);
+            svgTextUtils.convertToTspans(e, gd);
+        })
+        .attr('transform', linkLabelTransform);
+
+    sankeyLinkLabel.exit().remove();
 
     var sankeyNodeSet = sankey.selectAll('.' + c.cn.sankeyNodeSet)
         .data(repeat, keyFun);

@@ -210,6 +210,50 @@ var attrs = (module.exports = overrideAll(
                 dflt: [],
                 description: 'The shown name of the link.'
             },
+            textinfo: {
+                valType: 'flaglist',
+                flags: ['label', 'value'],
+                extras: ['none'],
+                dflt: 'none',
+                description: [
+                    'Determines which trace information appears permanently on the links.',
+                    'Any combination of *label* and *value* joined with a *+* OR *none*.'
+                ].join(' ')
+            },
+            texttemplate: {
+                valType: 'string',
+                dflt: '',
+                arrayOk: true,
+                description: [
+                    'Template string used for rendering the information text that appears',
+                    'permanently on the links. Note that this will override `textinfo`.',
+                    'Variables are inserted using %{variable}, for example',
+                    '*%{label}: %{value}*. Available variables are `label`, `value`,',
+                    '`valueLabel` (the value formatted with `valueformat`/`valuesuffix`),',
+                    '`source`, `target` and `customdata`.'
+                ].join(' ')
+            },
+            textfont: fontAttrs({
+                autoShadowDflt: true,
+                description: 'Sets the font for the permanent link labels.'
+            }),
+            valueformat: {
+                valType: 'string',
+                dflt: '',
+                description: [
+                    'Sets the value formatting rule for the permanent link labels,',
+                    'using d3 formatting mini-languages. Falls back to the trace-level',
+                    '`valueformat` when empty.'
+                ].join(' ')
+            },
+            valuesuffix: {
+                valType: 'string',
+                dflt: '',
+                description: [
+                    'Adds a unit to follow the value in the permanent link labels.',
+                    'Falls back to the trace-level `valuesuffix` when empty.'
+                ].join(' ')
+            },
             color: {
                 valType: 'color',
                 arrayOk: true,
