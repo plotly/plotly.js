@@ -215,6 +215,18 @@ function texToSVG(_texString, _config, _callback) {
         if(MathJax.config.startup.output !== 'svg') {
             MathJax.config.startup.output = 'svg';
         }
+
+        // MathJax v4 enables automatic inline linebreaking by default,
+        // which breaks a lot of our layout assumptions. Disabling it
+        // gives behavior consistent with v3.
+        if(MathJaxVersion === 4) {
+            if(!MathJax.config.svg) {
+                MathJax.config.svg = {};
+            }
+            MathJax.config.svg.linebreaks = Lib.extendFlat(
+                {}, MathJax.config.svg.linebreaks, {inline: false}
+            );
+        }
     };
 
     const initiateMathJax = function() {
