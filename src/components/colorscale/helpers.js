@@ -117,6 +117,15 @@ function extractScale(cont) {
     var cmin = cOpts.min;
     var cmax = cOpts.max;
 
+    // Check if a log type is defined on the colorbar
+    var type = (cOpts.colorbar && cOpts.colorbar.type) || 'linear';
+
+    // Convert domain boundaries to base-10 log if required
+    if(type === 'log') {
+        if(cmin > 0) cmin = Math.log10(cmin);
+        if(cmax > 0) cmax = Math.log10(cmax);
+    }
+
     var scl = cOpts.reversescale ?
         flipScale(cOpts.colorscale) :
         cOpts.colorscale;
@@ -208,7 +217,30 @@ function makeColorScaleFunc(specs, opts) {
 }
 
 function makeColorScaleFuncFromTrace(trace, opts) {
-    return makeColorScaleFunc(extractScale(trace), opts);
+    var baseColorFn = makeColorScaleFunc(extractScale(trace), opts);
+    var cOpts = extractOpts(trace);
+    var type = (cOpts.colorbar && cOpts.colorbar.type) || 'linear';
+
+    // Wrap the base generator if we need to dynamically apply log transformations
+    if (type === 'log') {
+        var wrappedFunc = function(v) {
+            if (isNumeric(v)) {
+                if (v <= 0) return 'rgba(0,0,0,0)'; // Logarithm of zero/negative is undefined
+                return baseColorFn(Math.log10(v));
+            } else if (tinycolor(v).isValid()) {
+                return v;
+            } else {
+                return Color.defaultLine;
+            }
+        };
+
+        // Preserve native domain and range methods for the draw components
+        wrappedFunc.domain = baseColorFn.domain;
+        wrappedFunc.range = baseColorFn.range;
+        return wrappedFunc;
+    }
+
+    return baseColorFn;
 }
 
 function colorArray2rbga(colorArray) {
