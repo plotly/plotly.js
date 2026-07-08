@@ -22,6 +22,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     var w = layout.width - margin.l - margin.r;
     var h = layout.height - margin.t - margin.b;
 
+    coerce('type');
     var orientation = coerce('orientation');
     var isVertical = orientation === 'v';
 
