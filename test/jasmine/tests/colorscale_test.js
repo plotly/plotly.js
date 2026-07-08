@@ -1198,4 +1198,72 @@ describe('Test colorscale restyle calls:', function() {
         })
         .then(done, done.fail);
     });
+
+    describe('helpers log mapping', function() {
+        var makeColorScaleFuncFromTrace = Colorscale.makeColorScaleFuncFromTrace;
+
+        it('should map domain values logarithmically to the color gradient when type is log', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],       // 0%
+                    [1, 'rgb(100, 100, 100)']  // 100%
+                ],
+                colorbar: {
+                    type: 'log'
+                }
+            };
+            
+            var colorFn = makeColorScaleFuncFromTrace(trace);
+
+            // log10(1) = 0 -> maps to 0% of the scale
+            expect(colorFn(1)).toEqual('rgb(0, 0, 0)');
+            
+            // log10(10) = 1 -> maps to 50% of the scale (halfway between log10(1) and log10(100))
+            expect(colorFn(10)).toEqual('rgb(50, 50, 50)');
+            
+            // log10(100) = 2 -> maps to 100% of the scale
+            expect(colorFn(100)).toEqual('rgb(100, 100, 100)');
+        });
+
+        it('should return a transparent color for zero or negative values on a log scale', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],
+                    [1, 'rgb(255, 255, 255)']
+                ],
+                colorbar: {
+                    type: 'log'
+                }
+            };
+            
+            var colorFn = makeColorScaleFuncFromTrace(trace);
+
+            // The logarithm of zero or a negative number is undefined, 
+            // so our wrapper should catch it and return transparent black.
+            expect(colorFn(0)).toEqual('rgba(0,0,0,0)');
+            expect(colorFn(-10)).toEqual('rgba(0,0,0,0)');
+        });
+        
+        it('should safely fall back to linear if type is undefined or linear', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],
+                    [1, 'rgb(100, 100, 100)']
+                ],
+                // Omitting colorbar.type to simulate default behavior
+            };
+            
+            var colorFn = makeColorScaleFuncFromTrace(trace);
+
+            // Linear midpoint between 1 and 100 is 50.5
+            expect(colorFn(50.5)).toEqual('rgb(50, 50, 50)');
+        });
+    });
+
 });
