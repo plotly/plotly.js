@@ -550,4 +550,44 @@ describe('Test colorbar:', function() {
             .then(done, done.fail);
         });
     });
+
+    describe('log ticks', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should generate logarithmic ticks when type is log', function() {
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[1, 10, 100], [10,100,1000]],
+                cmin: 1,
+                cmax: 1000,
+                colorbar: {
+                    type: 'log',
+                    tickmode: 'auto'
+                }
+            }]);
+
+            // Extract the tick text elements
+            var tickTexts = [];
+            d3Select(gd).selectAll('.cbaxis text').each(function(t) {
+                tickTexts.push(t.text);
+            });
+
+            // The mock axis should have automatically generated exponents for 1, 10, 100, 1000
+            expect(tickTexts).toContain('1');
+            expect(tickTexts).toContain('2');
+            expect(tickTexts).toContain('5');
+            expect(tickTexts).toContain('10');
+            expect(tickTexts).toContain('100');
+            expect(tickTexts).toContain('1000');
+
+            // // Verify a linear tick like '500' was NOT generated
+            expect(tickTexts).not.toContain('500');
+        });
+    });
 });
