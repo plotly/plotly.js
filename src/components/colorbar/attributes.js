@@ -33,6 +33,16 @@ module.exports = overrideAll({
             'This measure excludes the size of the padding, ticks and labels.'
         ].join(' ')
     },
+    type: {
+        valType: 'enumerated',
+        values: ['linear', 'log'],
+        dflt: 'linear',
+        editType: 'calc',
+        description: [
+            'Sets the colorbar axis type.',
+            'If `"log"`, the colorscale and colorbar will be configured for logarithmic data.'
+        ].join(' ')
+    },
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
