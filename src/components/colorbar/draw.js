@@ -955,8 +955,9 @@ function mockColorBarAxis(gd, opts, zrange) {
     var isVertical = opts.orientation === 'v';
 
     var cbAxisIn = {
-        type: 'linear',
-        range: zrange,
+        type: opts.type || 'linear',
+        range: opts.type === 'log' ?
+            [Math.log10(zrange[0]), Math.log10(zrange[1])] : zrange,
         tickmode: opts.tickmode,
         nticks: opts.nticks,
         tick0: opts.tick0,
@@ -993,7 +994,7 @@ function mockColorBarAxis(gd, opts, zrange) {
     var letter = isVertical ? 'y' : 'x';
 
     var cbAxisOut = {
-        type: 'linear',
+        type: cbAxisIn.type,
         _id: letter + opts._id
     };
 
