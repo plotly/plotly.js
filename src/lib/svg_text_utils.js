@@ -77,6 +77,9 @@ exports.convertToTspans = function(_context, gd, _callback) {
         _context.style('display', 'none');
         var fontSize = parseInt(_context.node().style.fontSize, 10);
         var config = {fontSize: fontSize};
+        // capture the anchor now: the callback runs async, by which point a
+        // positioning pass may have changed text-anchor and would mis-place the svg
+        var textAnchor = _context.attr('text-anchor');
 
         ((gd && gd._promises) || []).push(
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
@@ -155,11 +158,9 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     x = 0;
                     y = dy;
                 } else {
-                    var anchor = _context.attr('text-anchor');
-
                     x = x - w * (
-                        anchor === 'middle' ? 0.5 :
-                        anchor === 'end' ? 1 : 0
+                        textAnchor === 'middle' ? 0.5 :
+                        textAnchor === 'end' ? 1 : 0
                     );
                     y = y + dy - h / 2;
                 }
