@@ -74,11 +74,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
     }
 
     if(tex) {
-        ((gd && gd._promises) || []).push(new Promise(function(resolve) {
-            _context.style('display', 'none');
-            var fontSize = parseInt(_context.node().style.fontSize, 10);
-            var config = {fontSize: fontSize};
+        _context.style('display', 'none');
+        var fontSize = parseInt(_context.node().style.fontSize, 10);
+        var config = {fontSize: fontSize};
 
+        ((gd && gd._promises) || []).push(
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
                 parent.selectAll('g.' + svgClass + '-group').remove();
@@ -86,9 +86,13 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var newSvg = _svgEl && _svgEl.select('svg');
                 if(!newSvg || !newSvg.node()) {
                     showText();
-                    resolve();
                     return;
                 }
+
+                // Re-hide the source text. It should already be hidden, but it's possible
+                // another code path has made it visible again before the async render finishes,
+                // so we hide it again here now that the MathJax has actually been rendered
+                _context.style('display', 'none');
 
                 var mathjaxGroup = parent.append('g')
                     .classed(svgClass + '-group', true)
@@ -166,9 +170,8 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 });
 
                 if(_callback) _callback.call(_context, mathjaxGroup);
-                resolve(mathjaxGroup);
-            });
-        }));
+            })
+        );
     } else showText();
 
     return _context;
@@ -187,6 +190,48 @@ function cleanEscapesForTex(s) {
 
 var inlineMath = [['$', '$'], ['\\(', '\\)']];
 
+// Configure MathJax, then build its startup document by calling MathJax.startup.defaultReady().
+// Once the startup document is built, we can reset the config immediately,
+// and reuse the same document for all render calls.
+var mathjaxReadyPromise = null;
+
+function ensureMathJax(MathJaxVersion) {
+    if(mathjaxReadyPromise) return mathjaxReadyPromise;
+
+    var config = MathJax.config;
+    var origTex = config.tex;
+    var origSvg = config.svg;
+    var origOutput = config.startup.output;
+
+    try {
+        // Configure MathJax the way we need it for plotly
+        config.tex = Lib.extendFlat({}, origTex, {inlineMath: inlineMath});
+        config.startup.output = 'svg';
+
+        // MathJax v4 enables automatic inline linebreaking by default,
+        // which breaks a lot of our layout assumptions. Disabling it
+        // gives behavior consistent with v3.
+        if(MathJaxVersion === 4) {
+            config.svg = Lib.extendFlat({}, origSvg, {
+                linebreaks: Lib.extendFlat({}, origSvg && origSvg.linebreaks, {inline: false})
+            });
+        }
+
+        MathJax.startup.defaultReady();
+    } finally {
+        // Reset the config to its original values
+        config.tex = origTex;
+        config.svg = origSvg;
+        config.startup.output = origOutput;
+    }
+
+    mathjaxReadyPromise = MathJax.startup.promise;
+    return mathjaxReadyPromise;
+}
+
+// Serialize MathJax renders in a queue so they don't interfere with each other
+var mathjaxQueue = Promise.resolve();
+
 function texToSVG(_texString, _config, _callback) {
     const MathJaxVersion = parseInt(
         (MathJax.version || '').split('.')[0]
@@ -197,37 +242,22 @@ function texToSVG(_texString, _config, _callback) {
         MathJaxVersion !== 4
     ) {
         Lib.warn('Unsupported MathJax version:', MathJax.version);
-        return;
+        _callback();
+        return Promise.resolve();
     }
 
-    var originalConfig,
-        tmpDiv;
+    var result = mathjaxQueue.then(function() {
+        return renderTex(_texString, _config, _callback, MathJaxVersion);
+    });
 
-    const setConfig = function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.config);
+    // swallow rejections so one failed render doesn't prevent subsequent renders
+    mathjaxQueue = result.catch(function() {});
 
-        if(!MathJax.config.tex) {
-            MathJax.config.tex = {};
-        }
+    return result;
+}
 
-        MathJax.config.tex.inlineMath = inlineMath;
-
-        if(MathJax.config.startup.output !== 'svg') {
-            MathJax.config.startup.output = 'svg';
-        }
-
-        // MathJax v4 enables automatic inline linebreaking by default,
-        // which breaks a lot of our layout assumptions. Disabling it
-        // gives behavior consistent with v3.
-        if(MathJaxVersion === 4) {
-            if(!MathJax.config.svg) {
-                MathJax.config.svg = {};
-            }
-            MathJax.config.svg.linebreaks = Lib.extendFlat(
-                {}, MathJax.config.svg.linebreaks, {inline: false}
-            );
-        }
-    };
+function renderTex(_texString, _config, _callback, MathJaxVersion) {
+    var tmpDiv;
 
     const initiateMathJax = function() {
         const randomID = 'math-output-' + Lib.randstr({}, 64);
@@ -261,24 +291,17 @@ function texToSVG(_texString, _config, _callback) {
         tmpDiv.remove();
     };
 
-    // Restore the original state of the global MathJax config we mutated above
-    // This also restores the renderer to its original value
-    const resetConfig = function() {
-        MathJax.config = originalConfig;
-    };
-
-    // Set up MathJax, render tex, then clean up and return
-    setConfig();
-    MathJax.startup.defaultReady();
-    MathJax.startup.promise
+    // start from a resolved promise so a synchronous throw in ensureMathJax
+    // routes to the catch below instead of rejecting the gd._promises entry
+    return Promise.resolve()
+        .then(function() { return ensureMathJax(MathJaxVersion); })
         .then(initiateMathJax)
         .then(finalizeMathJax)
         .catch((err) => {
             Lib.log('MathJax typesetting failed.', _texString, err);
             if(tmpDiv) tmpDiv.remove();
             _callback();
-        })
-        .then(resetConfig);
+        });
 }
 
 var TAG_STYLES = {
