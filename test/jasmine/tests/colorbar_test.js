@@ -589,5 +589,56 @@ describe('Test colorbar:', function() {
             // // Verify a linear tick like '500' was NOT generated
             expect(tickTexts).not.toContain('500');
         });
+
+        it('should fall back to a linear colorbar when zmin is explicitly non-positive, instead of a NaN-derived range', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[-5, 10, 100], [10, 100, 1000]],
+                zmin: -5,
+                zmax: 1000,
+                colorbar: {
+                    type: 'log',
+                    tickmode: 'auto'
+                }
+            }])
+            .then(function() {
+                var ax;
+                gd._fullLayout._infolayer.selectAll('g.colorbar').each(function(opts) {
+                    ax = opts._axis;
+                });
+
+                // a log colorbar can't represent a non-positive zmin, so the
+                // whole colorbar (and its mocked axis) falls back to linear
+                // instead of producing a NaN/folded log range
+                expect(gd._fullData[0].colorbar.type).toBe('linear');
+                expect(ax.type).toBe('linear');
+                expect(ax.range).toEqual([-5, 1000]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should mask out non-positive z values and stay log when autoscaling with mixed-sign data', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'heatmap',
+                z: [[-5, 2, 100], [10, 100, 1000]],
+                colorbar: {
+                    type: 'log',
+                    tickmode: 'auto'
+                }
+            }])
+            .then(function() {
+                var ax;
+                gd._fullLayout._infolayer.selectAll('g.colorbar').each(function(opts) {
+                    ax = opts._axis;
+                });
+
+                expect(gd._fullData[0].colorbar.type).toBe('log');
+                expect(ax.type).toBe('log');
+                // -5 is masked out of autorange; smallest positive value (2) is zmin
+                expect(ax.range[0]).toBeCloseTo(Math.log10(2), 5);
+                expect(ax.range[1]).toBeCloseTo(Math.log10(1000), 5);
+            })
+            .then(done, done.fail);
+        });
     });
 });
