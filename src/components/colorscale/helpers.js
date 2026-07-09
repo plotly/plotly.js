@@ -118,12 +118,14 @@ function extractScale(cont) {
     var cmax = cOpts.max;
 
     // Check if a log type is defined on the colorbar
+    // (Colorscale.calc guarantees cmin/cmax are strictly positive whenever
+    // type is still 'log' by the time we get here - see maskNonPositive)
     var type = (cOpts.colorbar && cOpts.colorbar.type) || 'linear';
 
     // Convert domain boundaries to base-10 log if required
     if(type === 'log') {
-        if(cmin > 0) cmin = Math.log10(cmin);
-        if(cmax > 0) cmax = Math.log10(cmax);
+        cmin = Math.log10(cmin);
+        cmax = Math.log10(cmax);
     }
 
     var scl = cOpts.reversescale ?
@@ -217,30 +219,33 @@ function makeColorScaleFunc(specs, opts) {
 }
 
 function makeColorScaleFuncFromTrace(trace, opts) {
-    var baseColorFn = makeColorScaleFunc(extractScale(trace), opts);
     var cOpts = extractOpts(trace);
     var type = (cOpts.colorbar && cOpts.colorbar.type) || 'linear';
+    var baseColorFn = makeColorScaleFunc(extractScale(trace), opts);
 
-    // Wrap the base generator if we need to dynamically apply log transformations
-    if (type === 'log') {
-        var wrappedFunc = function(v) {
-            if (isNumeric(v)) {
-                if (v <= 0) return 'rgba(0,0,0,0)'; // Logarithm of zero/negative is undefined
-                return baseColorFn(Math.log10(v));
-            } else if (tinycolor(v).isValid()) {
-                return v;
-            } else {
-                return Color.defaultLine;
-            }
-        };
+    if(type !== 'log') return baseColorFn;
 
-        // Preserve native domain and range methods for the draw components
-        wrappedFunc.domain = baseColorFn.domain;
-        wrappedFunc.range = baseColorFn.range;
-        return wrappedFunc;
-    }
+    opts = opts || {};
+    var noNumericCheck = opts.noNumericCheck;
+    var returnArray = opts.returnArray;
 
-    return baseColorFn;
+    // Wrap the base generator to dynamically apply log transformations,
+    // matching the array/string return shape makeColorScaleFunc would have used
+    var wrappedFunc = function(v) {
+        if(noNumericCheck || isNumeric(v)) {
+            // log of zero/negative is undefined - treat as out-of-range
+            if(v > 0) return baseColorFn(Math.log10(v));
+            return returnArray ? [0, 0, 0, 0] : 'rgba(0,0,0,0)';
+        } else if(tinycolor(v).isValid()) {
+            return v;
+        }
+        return Color.defaultLine;
+    };
+
+    // Preserve native domain and range methods for the draw components
+    wrappedFunc.domain = baseColorFn.domain;
+    wrappedFunc.range = baseColorFn.range;
+    return wrappedFunc;
 }
 
 function colorArray2rbga(colorArray) {

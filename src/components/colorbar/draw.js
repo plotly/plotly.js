@@ -957,6 +957,8 @@ function mockColorBarAxis(gd, opts, zrange) {
 
     var cbAxisIn = {
         type: opts.type || 'linear',
+        // Colorscale.calc guarantees zrange is strictly positive whenever
+        // opts.type is still 'log' by the time we get here
         range: opts.type === 'log' ?
             [Math.log10(zrange[0]), Math.log10(zrange[1])] : zrange,
         tickmode: opts.tickmode,
