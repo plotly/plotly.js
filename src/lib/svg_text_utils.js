@@ -196,8 +196,14 @@ var inlineMath = [['$', '$'], ['\\(', '\\)']];
 // and reuse the same document for all render calls.
 var mathjaxReadyPromise = null;
 
+// Verify that the MathJax output is set to SVG
+function mathjaxOutputIsSvg() {
+    var doc = MathJax.startup && MathJax.startup.document;
+    return !!(doc && doc.outputJax && doc.outputJax.name === 'SVG');
+}
+
 function ensureMathJax(MathJaxVersion) {
-    if(mathjaxReadyPromise) return mathjaxReadyPromise;
+    if(mathjaxReadyPromise && mathjaxOutputIsSvg()) return mathjaxReadyPromise;
 
     var config = MathJax.config;
     var origTex = config.tex;
@@ -230,9 +236,6 @@ function ensureMathJax(MathJaxVersion) {
     return mathjaxReadyPromise;
 }
 
-// Serialize MathJax renders in a queue so they don't interfere with each other
-var mathjaxQueue = Promise.resolve();
-
 function texToSVG(_texString, _config, _callback) {
     const MathJaxVersion = parseInt(
         (MathJax.version || '').split('.')[0]
@@ -247,14 +250,7 @@ function texToSVG(_texString, _config, _callback) {
         return Promise.resolve();
     }
 
-    var result = mathjaxQueue.then(function() {
-        return renderTex(_texString, _config, _callback, MathJaxVersion);
-    });
-
-    // swallow rejections so one failed render doesn't prevent subsequent renders
-    mathjaxQueue = result.catch(function() {});
-
-    return result;
+    return renderTex(_texString, _config, _callback, MathJaxVersion);
 }
 
 function renderTex(_texString, _config, _callback, MathJaxVersion) {
