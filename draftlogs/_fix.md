@@ -1,1 +1,0 @@
-- Fix `hovertemplate`/`texttemplate`/`tickformat`/`hoverformat` silently ignoring d3-format specs that start with a sign flag such as `+.2f` [[#](https://github.com/plotly/plotly.js/pull/)]
