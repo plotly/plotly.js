@@ -33,7 +33,7 @@ var configAttributes = {
 
     plotlyServerURL: {
         valType: 'string',
-        dflt: '',
+        dflt: 'https://cloud.plotly.com/newchart',
         description: [
             'Sets the URL for the `sendChartToCloud` modebar button.',
             'When clicked, the button will send the chart data to this URL.',
@@ -271,7 +271,7 @@ var configAttributes = {
     },
     showSendToCloud: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         description: [
             'Should we include a modebar button that sends this chart to a URL',
             'specified by `plotlyServerURL`, for sharing the chart with others?',

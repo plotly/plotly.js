@@ -89,8 +89,10 @@ modeBarButtons.sendChartToCloud = {
             return;
         }
 
-        confirmCloudDialog(gd, baseUrl, function() {
-            Plots.sendDataToCloud(gd, baseUrl);
+        // The dialog pre-fills baseUrl but lets the user override it with a
+        // custom server URL, which is passed back here as `chosenUrl`.
+        confirmCloudDialog(gd, baseUrl, function(chosenUrl) {
+            Plots.sendDataToCloud(gd, chosenUrl);
         });
     }
 };
