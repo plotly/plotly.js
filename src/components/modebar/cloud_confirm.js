@@ -18,7 +18,7 @@ var _ = require('../../lib')._;
  * plotlyServerURL config for that upload.
  *
  * @param {DOM node} gd - the graph div, used to scope the dialog to the plot
- * @param {string} serverUrl - default destination, pre-filled into the URL input
+ * @param {string} serverUrl - default destination
  * @param {function} onConfirm - called with the (possibly edited) server URL when confirmed
  */
 module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
