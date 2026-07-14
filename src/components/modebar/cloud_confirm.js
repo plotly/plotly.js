@@ -92,6 +92,10 @@ module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
             return;
         }
 
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+
         try {
             new URL(url);
         } catch(e) {
