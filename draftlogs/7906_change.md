@@ -1,0 +1,1 @@
+ - Remove Babel from the stackgl vendor build [[#7906](https://github.com/plotly/plotly.js/pull/7906)]
