@@ -246,5 +246,5 @@ jobs:
             --arg state "${STATE}" \
             --arg description "${DESCRIPTION}" \
             --arg target_url "${TARGET_URL}" \
-            '{state: $state, target_url: $target_url, description: $description, context: "dev build"}' \
+            '{state: $state, target_url: $target_url, description: $description, context: "Upload Dev Build"}' \
             | gh api --method POST --input - "repos/${REPO}/statuses/${SHA}"
