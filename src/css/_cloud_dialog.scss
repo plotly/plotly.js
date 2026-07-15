@@ -96,30 +96,6 @@
             }
         }
 
-        .plotly-cloud-dialog-btn--custom {
-            // Push this button to the left so Cancel/Share stay right-aligned,
-            // while all three share the same row (vertical) baseline.
-            margin-left: 0;
-            margin-right: auto;
-
-            // Zero the padding and any UA button chrome so the button text
-            // lines up on its left edge with the message/label text above it.
-            padding-left: 0;
-            padding-right: 0;
-            text-align: left;
-            appearance: none;
-            -webkit-appearance: none;
-
-            background: none;
-            border: none;
-            color: vars.$color-brand-primary;
-            text-decoration: underline;
-
-            &:hover {
-                color: vars.$color-brand-accent;
-            }
-        }
-
         .plotly-cloud-dialog-btn--cancel {
             background-color: vars.$color-bg-light;
             border-color: vars.$color-bg-darker;
