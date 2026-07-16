@@ -280,7 +280,7 @@
     },
     "plotlyServerURL": {
       "description": "Sets the URL for the `sendChartToCloud` modebar button. When clicked, the button will send the chart data to this URL.",
-      "dflt": "https://cloud.plotly.com/newchart",
+      "dflt": "",
       "valType": "string"
     },
     "queueLength": {
