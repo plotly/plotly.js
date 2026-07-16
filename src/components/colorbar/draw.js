@@ -302,10 +302,10 @@ function drawColorBar(g, opts, gd) {
     // allow it outside [0,1]
     ax.domain = isVertical ? [
         vFrac + ypad / gs.h,
-        vFrac + lenFrac - ypad / gs.h
+        Math.max(vFrac + lenFrac - ypad / gs.h, vFrac + ypad / gs.h)
     ] : [
         vFrac + xpad / gs.w,
-        vFrac + lenFrac - xpad / gs.w
+        Math.max(vFrac + lenFrac - xpad / gs.w, vFrac + xpad / gs.w)
     ];
 
     ax.setScale();
@@ -473,10 +473,10 @@ function drawColorBar(g, opts, gd) {
                     titleHeight += 5;
 
                     if(titleSide === 'top') {
-                        ax.domain[1] -= titleHeight / gs.h;
+                        ax.domain[1] = Math.max(ax.domain[1] - titleHeight / gs.h, ax.domain[0]);
                         titleTrans[1] *= -1;
                     } else {
-                        ax.domain[0] += titleHeight / gs.h;
+                        ax.domain[0] = Math.min(ax.domain[0] + titleHeight / gs.h, ax.domain[1]);
                         var nlines = svgTextUtils.lineCount(titleText);
                         titleTrans[1] += (1 - nlines) * lineSize;
                     }
