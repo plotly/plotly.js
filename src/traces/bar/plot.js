@@ -1219,5 +1219,6 @@ function calcTextinfo(cd, index, xa, ya) {
 
 module.exports = {
     plot: plot,
-    toMoveInsideBar: toMoveInsideBar
+    toMoveInsideBar: toMoveInsideBar,
+    toMoveOutsideBar: toMoveOutsideBar
 };
