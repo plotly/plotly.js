@@ -41,6 +41,10 @@
             line-height: 1.5;
             overflow-wrap: break-word;
             word-wrap: break-word;
+
+            &--hostname {
+                font-weight: bold;
+            }
         }
 
         .plotly-cloud-dialog-label {
@@ -94,25 +98,39 @@
                 outline: 2px solid vars.$color-brand-primary;
                 outline-offset: 1px;
             }
-        }
 
-        .plotly-cloud-dialog-btn--cancel {
-            background-color: vars.$color-bg-light;
-            border-color: vars.$color-bg-darker;
-            color: vars.$color-muted-text;
-
-            &:hover {
+            &.plotly-cloud-dialog-btn--cancel {
                 background-color: vars.$color-bg-base;
+                margin-left: auto;
+                color: vars.$color-muted-text;
+
+                &:hover {
+                    background-color: vars.$color-bg-darker;
+                }
             }
+
+            &.plotly-cloud-dialog-btn--confirm {
+                background-color: vars.$color-brand-primary;
+                color: vars.$color-bg-light;
+
+                &:hover {
+                    background-color: vars.$color-brand-accent;
+                }
+            }
+
+            &.plotly-cloud-dialog-btn--custom {
+                background-color: vars.$color-bg-light;
+                color: vars.$color-muted-text;
+                font-size: 11px;
+                padding-left: 0;
+                margin-left: 0;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+
         }
 
-        .plotly-cloud-dialog-btn--confirm {
-            background-color: vars.$color-brand-primary;
-            color: vars.$color-bg-light;
-
-            &:hover {
-                background-color: vars.$color-brand-accent;
-            }
-        }
     }
 }

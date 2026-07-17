@@ -38,9 +38,13 @@ module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
         .classed('plotly-cloud-dialog-title', true)
         .text(_(gd, 'Share Chart'));
 
-    var description = dialog.append('div')
-        .classed('plotly-cloud-dialog-message', true)
-        .text(_(gd, 'This chart and its data will be sent to') + ' ' + serverUrl + '. ');
+    var serverUrlText = new URL(serverUrl).hostname;
+
+    var description = dialog.append('div');
+    description.classed('plotly-cloud-dialog-message', true);
+    description.append('span').text(_(gd, 'This chart and its data will be sent to '));
+    description.append('span').text(serverUrlText).classed('plotly-cloud-dialog-message--hostname', true);
+    description.append('span').text('. ');
 
     // The custom-URL field stays hidden until the user opts in. By default the
     // chart is shared to the configured serverUrl; a button in the button row
@@ -59,7 +63,7 @@ module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
         .attr('id', 'plotly-cloud-dialog-url')
         .attr('type', 'text')
         .attr('spellcheck', false)
-        .attr('placeholder', 'https://<your-dash-enterprise-instance>/newchart');
+        .attr('placeholder', 'https://<your-dash-enterprise-instance>/');
 
     var error = dialog.append('div')
         .classed('plotly-cloud-dialog-error', true)
@@ -116,18 +120,16 @@ module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
         if(d3.event.key === 'Enter' || d3.event.keyCode === 13) confirm();
     });
 
-    // Sits at the left of the button row, in line with Cancel/Share. Reveals
-    // the Server URL field and hides itself once a custom URL is requested.
     var customBtn = buttons.append('button')
         .classed('plotly-cloud-dialog-btn', true)
         .classed('plotly-cloud-dialog-btn--custom', true)
         .attr('type', 'button')
-        .text(_(gd, 'Share with Dash Enterprise'));
+        .text(_(gd, 'Share to Dash Enterprise'));
 
     customBtn.on('click', function() {
         customBtn.style('display', 'none');
         urlField.style('display', '');
-        description.text(_(gd, 'This chart and its data will be sent to the server URL you provide.'));
+        description.text(_(gd, 'If your Dash Enterprise instance supports chart sharing, you can enter its URL below. This chart and its data will be sent to the URL you provide.'));
         input.node().focus();
     });
 
