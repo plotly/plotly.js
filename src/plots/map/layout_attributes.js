@@ -82,11 +82,14 @@ var attrs = (module.exports = overrideAll(
 
         fitbounds: {
             valType: 'enumerated',
-            values: [false, 'locations'],
+            values: [false, 'locations', 'geojson'],
             dflt: 'locations',
             description: [
                 "Determines if this subplot's view settings are auto-computed to fit trace data.",
-                'If *locations* (default), the view is auto-fit to the lon/lat coordinates of the visible trace data.',
+                'If *locations* (default), the view is auto-fit to the lon/lat coordinates of the visible trace data;',
+                'for `choroplethmap` traces this is the bounding box of the geometries matched by `locations`.',
+                'If *geojson*, `choroplethmap` traces are fit to the bounding box of their entire input `geojson`',
+                'instead of only the matched locations (point traces still fit to their lon/lat data).',
                 'If *false*, the view settings are used as-is; set this to opt out of auto-fitting.',
                 'If `fitbounds` is enabled but a user provides `center` or `zoom`, auto-fit will be skipped.'
             ].join(' ')
