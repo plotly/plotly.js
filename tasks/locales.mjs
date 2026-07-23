@@ -1,18 +1,14 @@
-var path = require('path');
-var { glob } = require('glob');
+import path from 'node:path';
+import { glob } from 'glob';
 
-var constants = require('./util/constants');
-var wrapLocale = require('./util/wrap_locale');
+import constants from './util/constants.js';
+import wrapLocale from './util/wrap_locale.mjs';
 
-var pathToLib = constants.pathToLib;
-var pathToDist = constants.pathToDist;
+const { pathToLib, pathToDist } = constants;
 
-// Bundle the locales
-var localeGlob = path.join(pathToLib, 'locales', '*.js');
-glob(localeGlob).then(function(files) {
-    files.forEach(function(file) {
-        var outName = 'plotly-locale-' + path.basename(file);
-        var outPath = path.join(pathToDist, outName);
-        wrapLocale(file, outPath);
-    });
-});
+const localeGlob = path.join(pathToLib, 'locales', '*.js');
+const files = await glob(localeGlob);
+for (const file of files) {
+    const outPath = path.join(pathToDist, `plotly-locale-${path.basename(file)}`);
+    wrapLocale(file, outPath);
+}
