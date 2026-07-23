@@ -2276,6 +2276,87 @@ describe('Test select box and lasso per trace:', function() {
         }, LONG_TIMEOUT_INTERVAL);
     });
 
+    it('@gl should select scattermap points across the antimeridian', function(done) {
+        var lons = [174.76, 178.44, 179.9, -176.2, -171.77, -175.2];
+        var lats = [-36.85, -18.14, -16.5, -13.3, -13.83, -21.14];
+        var expectedPoints = lons.map(function(lon, i) { return [lon, lats[i]]; });
+        var assertPoints = makeAssertPoints(['lon', 'lat']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+        var boxPath;
+        var lassoPath;
+
+        var fig = {
+            data: [{
+                type: 'scattermap',
+                mode: 'markers',
+                lon: lons,
+                lat: lats,
+                marker: {size: 10}
+            }],
+            layout: {
+                dragmode: 'select',
+                width: 900,
+                height: 600,
+                map: {
+                    center: {lon: 180, lat: -24},
+                    style: 'white-bg',
+                    zoom: 3
+                }
+            },
+            config: {}
+        };
+
+        _newPlot(gd, fig)
+        .then(function() {
+            var subplot = gd._fullLayout.map._subplot;
+            var points = lons.map(function(lon, i) {
+                var unwrappedLon = lon < 0 ? lon + 360 : lon;
+                var pt = subplot.map.project([unwrappedLon, lats[i]]);
+                return [pt.x + subplot.xaxis._offset, pt.y + subplot.yaxis._offset];
+            });
+            var xs = points.map(function(pt) { return pt[0]; });
+            var ys = points.map(function(pt) { return pt[1]; });
+            var x0 = Math.min.apply(null, xs) - 10;
+            var x1 = Math.max.apply(null, xs) + 10;
+            var y0 = Math.min.apply(null, ys) - 10;
+            var y1 = Math.max.apply(null, ys) + 10;
+
+            boxPath = [[x0, y0], [x1, y1]];
+            lassoPath = [[x0, y0], [x0, y1], [x1, y1], [x1, y0], [x0, y0]];
+
+            return _run(false, boxPath,
+                function() {
+                    assertPoints(expectedPoints);
+                    assertSelectedPoints({0: [0, 1, 2, 3, 4, 5]});
+
+                    var range = selectedData.range.map;
+                    expect(range[1][0]).toBeGreaterThan(range[0][0], 'continuous longitude range');
+                    expect(range[1][0]).toBeGreaterThan(180, 'east edge is unwrapped past 180');
+                },
+                null, BOXEVENTS, 'scattermap antimeridian select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(false, lassoPath,
+                function() {
+                    assertPoints(expectedPoints);
+                    assertSelectedPoints({0: [0, 1, 2, 3, 4, 5]});
+
+                    var lassoPoints = selectedData.lassoPoints.map;
+                    for(var i = 1; i < lassoPoints.length; i++) {
+                        expect(Math.abs(lassoPoints[i][0] - lassoPoints[i - 1][0]))
+                            .toBeLessThan(180, 'continuous lasso longitude');
+                    }
+                },
+                null, LASSOEVENTS, 'scattermap antimeridian lasso'
+            );
+        })
+        .then(done, done.fail);
+    }, LONG_TIMEOUT_INTERVAL);
+
     [false, true].forEach(function(hasCssTransform) {
         it('@gl should work on choroplethmap traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
