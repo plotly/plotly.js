@@ -1050,10 +1050,10 @@ describe('hover info', function () {
                         },
                         {
                             bgcolor: 'rgb(0, 200, 0)',
-                            bordercolor: 'rgb(255, 255, 255)',
+                            bordercolor: 'rgb(68, 68, 68)',
                             fontSize: 13,
                             fontFamily: 'Arial',
-                            fontColor: 'rgb(255, 255, 255)'
+                            fontColor: 'rgb(68, 68, 68)'
                         },
                         {
                             bgcolor: 'rgb(255, 127, 14)',

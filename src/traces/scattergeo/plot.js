@@ -18,7 +18,7 @@ function plot(gd, geo, calcData) {
     var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo');
 
     function removeBADNUM(d, node) {
-        if(d.lonlat[0] === BADNUM) {
+        if (d.lonlat[0] === BADNUM) {
             d3.select(node).remove();
         }
     }
@@ -26,38 +26,44 @@ function plot(gd, geo, calcData) {
     // TODO find a way to order the inner nodes on update
     gTraces.selectAll('*').remove();
 
-    gTraces.each(function(calcTrace) {
+    gTraces.each(function (calcTrace) {
         var s = d3.select(this);
         var trace = calcTrace[0].trace;
 
-        if(subTypes.hasLines(trace) || trace.fill !== 'none') {
+        if (subTypes.hasLines(trace) || trace.fill !== 'none') {
             var lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
 
-            var lineData = (trace.fill !== 'none') ?
-                geoJsonUtils.makePolygon(lineCoords) :
-                geoJsonUtils.makeLine(lineCoords);
+            var lineData =
+                trace.fill !== 'none' ? geoJsonUtils.makePolygon(lineCoords) : geoJsonUtils.makeLine(lineCoords);
 
             s.selectAll('path.js-line')
-                .data([{geojson: lineData, trace: trace}])
-              .enter().append('path')
+                .data([{ geojson: lineData, trace: trace }])
+                .enter()
+                .append('path')
                 .classed('js-line', true)
                 .style('stroke-miterlimit', 2);
         }
 
-        if(subTypes.hasMarkers(trace)) {
+        if (subTypes.hasMarkers(trace)) {
             s.selectAll('path.point')
                 .data(Lib.identity)
-             .enter().append('path')
+                .enter()
+                .append('path')
                 .classed('point', true)
-                .each(function(calcPt) { removeBADNUM(calcPt, this); });
+                .each(function (calcPt) {
+                    removeBADNUM(calcPt, this);
+                });
         }
 
-        if(subTypes.hasText(trace)) {
+        if (subTypes.hasText(trace)) {
             s.selectAll('g')
                 .data(Lib.identity)
-              .enter().append('g')
+                .enter()
+                .append('g')
                 .append('text')
-                .each(function(calcPt) { removeBADNUM(calcPt, this); });
+                .each(function (calcPt) {
+                    removeBADNUM(calcPt, this);
+                });
         }
 
         // call style here within topojson request callback
@@ -72,35 +78,42 @@ function calcGeoJSON(calcTrace, fullLayout) {
     var len = trace._length;
     var i, calcPt;
 
-    if(Lib.isArrayOrTypedArray(trace.locations)) {
+    if (Lib.isArrayOrTypedArray(trace.locations)) {
         var locationmode = trace.locationmode;
-        var features = locationmode === 'geojson-id' ?
-            geoUtils.extractTraceFeature(calcTrace) :
-            getTopojsonFeatures(trace, geo.topojson);
+        var features =
+            locationmode === 'geojson-id'
+                ? geoUtils.extractTraceFeature(calcTrace)
+                : getTopojsonFeatures(trace, geo.topojson);
 
-        for(i = 0; i < len; i++) {
+        for (i = 0; i < len; i++) {
             calcPt = calcTrace[i];
 
-            var feature = locationmode === 'geojson-id' ?
-                calcPt.fOut :
-                geoUtils.locationToFeature(locationmode, calcPt.loc, features);
+            var feature =
+                locationmode === 'geojson-id'
+                    ? calcPt.fOut
+                    : geoUtils.locationToFeature(locationmode, calcPt.loc, features);
 
             calcPt.lonlat = feature ? feature.properties.ct : [BADNUM, BADNUM];
         }
     }
 
-    var opts = {padded: true};
+    var opts = { padded: true };
     var lonArray;
     var latArray;
 
-    if(geoLayout.fitbounds === 'geojson' && trace.locationmode === 'geojson-id') {
-        var bboxGeojson = geoUtils.computeBbox(geoUtils.getTraceGeojson(trace));
-        lonArray = [bboxGeojson[0], bboxGeojson[2]];
-        latArray = [bboxGeojson[1], bboxGeojson[3]];
+    const bboxGeojson =
+        geoLayout.fitbounds === 'geojson' && trace.locationmode === 'geojson-id'
+            ? geoUtils.computeBbox(geoUtils.getTraceGeojson(trace))
+            : null;
+
+    if (bboxGeojson) {
+        const [west, south, east, north] = bboxGeojson;
+        lonArray = [west, east];
+        latArray = [south, north];
     } else {
         lonArray = new Array(len);
         latArray = new Array(len);
-        for(i = 0; i < len; i++) {
+        for (i = 0; i < len; i++) {
             calcPt = calcTrace[i];
             lonArray[i] = calcPt.lonlat[0];
             latArray[i] = calcPt.lonlat[1];

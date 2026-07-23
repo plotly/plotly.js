@@ -207,13 +207,16 @@ module.exports = function style(s, gd, legend) {
 
             if (showMarker) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
-                dEdit.mx = boundVal('marker.symbol', pickFirst);
+                // Scattermap traces use marker.symbol to specify the Maki icon used in
+                // the map itself, which usually doesn't correspond to a valid
+                // Plotly symbol. Always draw a circle so the swatch is consistent
+                // across symbols rather than silently mismatched.
+                var isScattermapTrace = trace.type === 'scattermap';
+                dEdit.mx = isScattermapTrace ? 'circle' : boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5], CST_MARKER_LINE_WIDTH);
-                // TODO: Remove this check in next major version
-                // Use 'solid' for shapes to match existing behavior
-                dEdit.mld = trace._isShape ? 'solid' : boundVal('marker.line.dash', pickFirst);
+                dEdit.mld = boundVal('marker.line.dash', pickFirst);
                 tEdit.marker = {
                     sizeref: 1,
                     sizemin: 1,
@@ -571,12 +574,10 @@ module.exports = function style(s, gd, legend) {
                     useGradient = true;
                     break;
                 case 'choropleth':
-                case 'choroplethmapbox':
                 case 'choroplethmap':
                     ptsData = [['M-6,-6V6H6V-6Z']];
                     useGradient = true;
                     break;
-                case 'densitymapbox':
                 case 'densitymap':
                     ptsData = [['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']];
                     useGradient = 'radial';
@@ -683,7 +684,7 @@ function getGradientDirection(reversescale, isRadial) {
 function getStyleGuide(d) {
     var trace = d[0].trace;
     var contours = trace.contours;
-    var showLine = subTypes.hasLines(trace);
+    var showLine = subTypes.hasLines(trace) || (trace.visible && trace.type === 'quiver');
     var showMarker = subTypes.hasMarkers(trace);
 
     var showFill = trace.visible && trace.fill && trace.fill !== 'none';

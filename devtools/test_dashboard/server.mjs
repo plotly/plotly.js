@@ -11,6 +11,7 @@ var PORT = args.port || 3000;
 var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
+var mathjax4chtml = args.mathjax4chtml;
 
 if (strict) localDevConfig.entryPoints = ['./lib/index-strict.js'];
 
@@ -60,6 +61,7 @@ function devServer() {
     let indexName = 'index';
     if (mathjax3) indexName += '-mathjax3';
     else if (mathjax3chtml) indexName += '-mathjax3chtml';
+    else if (mathjax4chtml) indexName += '-mathjax4chtml';
     indexName += '.html';
 
     // open up browser window

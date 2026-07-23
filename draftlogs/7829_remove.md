@@ -1,0 +1,1 @@
+- Remove all `*src` attributes, as well as `layout.hidesources` attribute, from the schema [[#7829](https://github.com/plotly/plotly.js/pull/7829)]

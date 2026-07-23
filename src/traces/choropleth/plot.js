@@ -12,14 +12,12 @@ var style = require('./style').style;
 function plot(gd, geo, calcData) {
     var choroplethLayer = geo.layers.backplot.select('.choroplethlayer');
 
-    Lib.makeTraceGroups(choroplethLayer, calcData, 'trace choropleth').each(function(calcTrace) {
+    Lib.makeTraceGroups(choroplethLayer, calcData, 'trace choropleth').each(function (calcTrace) {
         var sel = d3.select(this);
 
-        var paths = sel.selectAll('path.choroplethlocation')
-            .data(Lib.identity);
+        var paths = sel.selectAll('path.choroplethlocation').data(Lib.identity);
 
-        paths.enter().append('path')
-            .classed('choroplethlocation', true);
+        paths.enter().append('path').classed('choroplethlocation', true);
 
         paths.exit().remove();
 
@@ -35,44 +33,59 @@ function calcGeoJSON(calcTrace, fullLayout) {
     var locationmode = trace.locationmode;
     var len = trace._length;
 
-    var features = locationmode === 'geojson-id' ?
-        geoUtils.extractTraceFeature(calcTrace) :
-        getTopojsonFeatures(trace, geo.topojson);
+    var features =
+        locationmode === 'geojson-id'
+            ? geoUtils.extractTraceFeature(calcTrace)
+            : getTopojsonFeatures(trace, geo.topojson);
+
+    // A falsy result (Sphere feature or malformed/empty geojson) here
+    // falls back to per-feature bounds — effectively the same as
+    // fitbounds === 'locations' behavior.
+    const bboxGeojson =
+        geoLayout.fitbounds === 'geojson' && locationmode === 'geojson-id'
+            ? geoUtils.computeBbox(geoUtils.getTraceGeojson(trace))
+            : null;
 
     var lonArray = [];
     var latArray = [];
 
-    for(var i = 0; i < len; i++) {
+    for (var i = 0; i < len; i++) {
         var calcPt = calcTrace[i];
-        var feature = locationmode === 'geojson-id' ?
-            calcPt.fOut :
-            geoUtils.locationToFeature(locationmode, calcPt.loc, features);
+        var feature =
+            locationmode === 'geojson-id'
+                ? calcPt.fOut
+                : geoUtils.locationToFeature(locationmode, calcPt.loc, features);
 
-        if(feature) {
+        if (feature) {
             calcPt.geojson = feature;
             calcPt.ct = feature.properties.ct;
             calcPt._polygons = geoUtils.feature2polygons(feature);
 
-            var bboxFeature = geoUtils.computeBbox(feature);
-            lonArray.push(bboxFeature[0], bboxFeature[2]);
-            latArray.push(bboxFeature[1], bboxFeature[3]);
+            if (!bboxGeojson) {
+                const bboxFeature = geoUtils.computeBbox(feature);
+                if (bboxFeature) {
+                    const [west, south, east, north] = bboxFeature;
+                    lonArray.push(west, east);
+                    latArray.push(south, north);
+                }
+            }
         } else {
             calcPt.geojson = null;
         }
     }
 
-    if(geoLayout.fitbounds === 'geojson' && locationmode === 'geojson-id') {
-        var bboxGeojson = geoUtils.computeBbox(geoUtils.getTraceGeojson(trace));
-        lonArray = [bboxGeojson[0], bboxGeojson[2]];
-        latArray = [bboxGeojson[1], bboxGeojson[3]];
+    if (bboxGeojson) {
+        const [west, south, east, north] = bboxGeojson;
+        lonArray = [west, east];
+        latArray = [south, north];
     }
 
-    var opts = {padded: true};
+    var opts = { padded: true };
     trace._extremes.lon = findExtremes(geoLayout.lonaxis._ax, lonArray, opts);
     trace._extremes.lat = findExtremes(geoLayout.lataxis._ax, latArray, opts);
 }
 
 module.exports = {
-    calcGeoJSON: calcGeoJSON,
-    plot: plot
+    calcGeoJSON,
+    plot
 };

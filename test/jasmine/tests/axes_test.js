@@ -7,17 +7,13 @@ var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var Loggers = require('../../../src/lib/loggers');
 var Color = require('../../../src/components/color');
-var tinycolor = require('tinycolor2');
 
 var handleTickValueDefaults = require('../../../src/plots/cartesian/tick_value_defaults');
 var Cartesian = require('../../../src/plots/cartesian');
 var Axes = require('../../../src/plots/cartesian/axes');
 var Fx = require('../../../src/components/fx');
 var supplyLayoutDefaults = require('../../../src/plots/cartesian/layout_defaults');
-var numerical = require('../../../src/constants/numerical');
-var BADNUM = numerical.BADNUM;
-var ONEDAY = numerical.ONEDAY;
-var ONEWEEK = numerical.ONEWEEK;
+const {BADNUM, MINUS_SIGN, ONEDAY, ONEWEEK} = require('../../../src/constants/numerical');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -467,11 +463,11 @@ describe('Test axes', function() {
                 yaxis: {}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            var lightLine = tinycolor(Color.lightLine).toRgbString();
+            var lightLine = Color.color(Color.lightLine).rgb().string();
             expect(layoutOut.xaxis.gridwidth).toBe(1);
-            expect(tinycolor(layoutOut.xaxis.gridcolor).toRgbString()).toBe(lightLine);
+            expect(Color.color(layoutOut.xaxis.gridcolor).rgb().string()).toBe(lightLine);
             expect(layoutOut.yaxis.gridwidth).toBe(1);
-            expect(tinycolor(layoutOut.yaxis.gridcolor).toRgbString()).toBe(lightLine);
+            expect(Color.color(layoutOut.yaxis.gridcolor).rgb().string()).toBe(lightLine);
         });
 
         it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
@@ -566,11 +562,9 @@ describe('Test axes', function() {
             var frac = 100 * (0xe - 0x4) / (0xf - 0x4);
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.gridcolor)
-                .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
+            expect(layoutOut.xaxis.gridcolor).toEqual(Color.mix('red', bgColor, frac));
             expect(layoutOut.yaxis.gridcolor).toEqual('blue');
-            expect(layoutOut.yaxis2.gridcolor)
-                .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
+            expect(layoutOut.yaxis2.gridcolor).toEqual(Color.mix('#444', bgColor, frac));
         });
 
         it('should default to a dark color for tickfont when plotting background is light', function() {
@@ -583,7 +577,7 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.tickfont.color).toEqual('#444');
+            expect(layoutOut.xaxis.tickfont.color).toEqual('rgb(68, 68, 68)');
         });
 
         it('should default to a light color for tickfont when plotting background is dark', function() {
@@ -596,7 +590,7 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.xaxis.tickfont.color).toEqual('#fff');
+            expect(layoutOut.xaxis.tickfont.color).toEqual('rgb(255, 255, 255)');
         });
 
         it('should not coerce ticklabelposition on *multicategory* axes for now', function() {
@@ -3502,6 +3496,50 @@ describe('Test axes', function() {
             ]);
         });
 
+        it('snaps a near-zero tick to exactly tick0', () => {
+            const spec = {
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 0.2,
+                range: [-0.65, 0.65]
+            };
+
+            expect(mockCalc({ ...spec, tickformat: '~r' })).toEqual([
+                MINUS_SIGN + '0.6',
+                MINUS_SIGN + '0.4',
+                MINUS_SIGN + '0.2',
+                '0',
+                '0.2',
+                '0.4',
+                '0.6'
+            ]);
+
+            // the default numeric format was already fine; make sure it stays fine
+            expect(mockCalc(spec)).toEqual([
+                MINUS_SIGN + '0.6',
+                MINUS_SIGN + '0.4',
+                MINUS_SIGN + '0.2',
+                '0',
+                '0.2',
+                '0.4',
+                '0.6'
+            ]);
+        });
+
+        it('snaps ticks to non-tick0 grid positions', () => {
+            const textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                tick0: 1,
+                dtick: 0.1,
+                range: [-0.05, 0.05],
+                tickformat: '~r'
+            });
+
+            expect(textOut).toEqual(['0']);
+        });
+
         it('reverts to "power" for SI/B exponentformat beyond the prefix range (log case)', function() {
             var textOut = mockCalc({
                 type: 'log',
@@ -3625,6 +3663,50 @@ describe('Test axes', function() {
                     oep + '4'
                 ]);
             });
+        });
+
+        it('formats tick labels correctly for small numbers in exponential notation', function() {
+            var textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'none',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-9,
+                range: [8.5e-9, 11.5e-9]
+            });
+
+            expect(textOut).toEqual([
+                '0.000000009', '0.00000001', '0.000000011'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'none',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-15,
+                range: [8.5e-15, 11.5e-15]
+            });
+
+            expect(textOut).toEqual([
+                '0.000000000000009', '0.00000000000001', '0.000000000000011'
+            ]);
+
+            textOut = mockCalc({
+                type: 'linear',
+                tickmode: 'linear',
+                exponentformat: 'e',
+                showexponent: 'all',
+                tick0: 0,
+                dtick: 1e-15,
+                range: [8.5e-15, 11.5e-15]
+            });
+
+            expect(textOut).toEqual([
+                '0.9e\u221214', '1e\u221214', '1.1e\u221214'
+            ]);
         });
 
         it('provides a new date suffix whenever the suffix changes', function() {
@@ -8413,6 +8495,35 @@ describe('test tickmode calculator', function() {
                 }
             }).then(function() {
                 _assert(xMajorConfig.tickvals.length + xMinorConfig.tickvals.length);
+            }).then(done, done.fail);
+        });
+    });
+
+    describe('sync', function() {
+        it('shows the exponent on a synced overlaying axis with showexponent *first*/*last*', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {y: [0, 6]},
+                    {y: [0, 60000], yaxis: 'y2'}
+                ],
+                layout: {
+                    yaxis2: {
+                        overlaying: 'y',
+                        exponentformat: 'SI',
+                        showexponent: 'last'
+                    }
+                }
+            }).then(function() {
+                var ax = gd._fullLayout.yaxis2;
+                expect(ax.tickmode).toBe('sync');
+
+                var labels = ax._vals
+                    .filter(function(d) { return !d.minor; })
+                    .map(function(d) { return d.text; });
+
+                // the multiplier (e.g. 'k') must still appear on the labelled tick
+                expect(labels.some(function(t) { return /k$/.test(t); }))
+                    .toBe(true, 'expected an SI prefix in: ' + JSON.stringify(labels));
             }).then(done, done.fail);
         });
     });

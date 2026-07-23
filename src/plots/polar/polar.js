@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -935,7 +934,7 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
         dimmed = false;
 
         var polarLayoutNow = gd._fullLayout[_this.id];
-        lum = tinycolor(polarLayoutNow.bgcolor).getLuminance();
+        lum = Color.color(polarLayoutNow.bgcolor).luminosity();
 
         zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
         zb.attr('fill-rule', 'evenodd');

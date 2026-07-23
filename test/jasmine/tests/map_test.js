@@ -1430,6 +1430,103 @@ describe('map plots', function() {
     }
 });
 
+describe('map auto-fit', () => {
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+    afterEach(() => {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    const mock = (overrides = {}) => {
+        return Lib.extendDeep(
+            {
+                data: [{ type: 'scattermap', mode: 'markers', lon: [-75, -74, -73], lat: [40, 41, 42] }],
+                layout: { width: 400, height: 400 }
+            },
+            overrides
+        );
+    };
+
+    it(
+        '@gl frames the data when no center/zoom set',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const { lng, lat } = gd._fullLayout.map._subplot.map.getCenter();
+            expect(lng).toBeCloseTo(-74, 0);
+            expect(lat).toBeCloseTo(41, 0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl refits when lon/lat change via restyle',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const z0 = gd._fullLayout.map.zoom;
+            await Plotly.restyle(gd, { lon: [[-75]], lat: [[40]] }, [0]);
+            // Single-point trace → tighter zoom than the 3-point cluster
+            expect(gd._fullLayout.map.zoom).toBeGreaterThan(z0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl preserves center when only zoom is relayout-ed',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const { lon: origLon, lat: origLat } = gd._fullLayout.map.center;
+            await Plotly.relayout(gd, { 'map.zoom': 5 });
+            expect(gd._fullLayout.map.zoom).toBe(5);
+            expect(gd._fullLayout.map.center.lon).toBe(origLon);
+            expect(gd._fullLayout.map.center.lat).toBe(origLat);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl skips auto-fit when fitbounds is false',
+        async () => {
+            await Plotly.newPlot(gd, mock({ layout: { map: { fitbounds: false } } }));
+            expect(gd._fullLayout.map.center.lon).toBe(0);
+            expect(gd._fullLayout.map.center.lat).toBe(0);
+            expect(gd._fullLayout.map.zoom).toBe(1);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl skips refit after the user has changed center',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            await Plotly.relayout(gd, { 'map.center': { lon: 0, lat: 0 } });
+            await Plotly.restyle(gd, { lon: [[-75]], lat: [[40]] }, [0]);
+            expect(gd._fullLayout.map.center.lon).toBe(0);
+            expect(gd._fullLayout.map.center.lat).toBe(0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl refits after addTraces / deleteTraces',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const z0 = gd._fullLayout.map.zoom;
+            await Plotly.addTraces(gd, { type: 'scattermap', mode: 'markers', lon: [140], lat: [-30] });
+            // New trace pulls the fit far wider → lower zoom
+            expect(gd._fullLayout.map.zoom).toBeLessThan(z0);
+            await Plotly.deleteTraces(gd, 1);
+            // Back to the original 3-point fit
+            expect(gd._fullLayout.map.zoom).toBeCloseTo(z0, 5);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+});
+
 describe('map react', function() {
     var gd;
 

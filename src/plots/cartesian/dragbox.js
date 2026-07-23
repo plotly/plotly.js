@@ -3,7 +3,6 @@
 var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
-var tinycolor = require('tinycolor2');
 var supportsPassive = require('has-passive-events');
 
 var Registry = require('../../registry');
@@ -334,9 +333,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         y0 = transformedCoords[1];
 
         box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
-        lum = gd._hmpixcount ?
-            (gd._hmlumcount / gd._hmpixcount) :
-            tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
+        lum = gd._hmpixcount
+            ? (gd._hmlumcount / gd._hmpixcount)
+            : Color.color(gd._fullLayout.plot_bgcolor).luminosity();
         path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
         dimmed = false;
         zoomMode = 'xy';
@@ -732,7 +731,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             for(i = 0; i < axList.length; i++) {
                 var axListI = axList[i];
                 var axListIType = axListI[axisType];
-                if(!axListI.fixedrange && axListIType.tickmode === 'sync') activeAxIds.push(axListIType._id);
+                var axId = axListIType._id;
+                if(!axListI.fixedrange && axListIType.tickmode === 'sync' && !activeAxIds.includes(axId)) {
+                    activeAxIds.push(axId);
+                }
             }
         }
 

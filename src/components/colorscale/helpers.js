@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
@@ -167,8 +166,8 @@ function makeColorScaleFunc(specs, opts) {
     var _range = new Array(N);
 
     for(var i = 0; i < N; i++) {
-        var rgba = tinycolor(range[i]).toRgb();
-        _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
+        const { r, g, b, alpha = 1 } = Color.color(range[i]).rgb().object();
+        _range[i] = [r, g, b, alpha];
     }
 
     var _sclFunc = d3.scale.linear()
@@ -189,14 +188,14 @@ function makeColorScaleFunc(specs, opts) {
     } else if(returnArray) {
         sclFunc = function(v) {
             if(isNumeric(v)) return _sclFunc(v);
-            else if(tinycolor(v).isValid()) return v;
-            else return Color.defaultLine;
+            if(Color.isValid(v)) return v;
+            return Color.defaultLine;
         };
     } else {
         sclFunc = function(v) {
             if(isNumeric(v)) return colorArray2rbga(_sclFunc(v));
-            else if(tinycolor(v).isValid()) return v;
-            else return Color.defaultLine;
+            if(Color.isValid(v)) return v;
+            return Color.defaultLine;
         };
     }
 
@@ -216,10 +215,10 @@ function colorArray2rbga(colorArray) {
         r: colorArray[0],
         g: colorArray[1],
         b: colorArray[2],
-        a: colorArray[3]
+        alpha: colorArray[3]
     };
 
-    return tinycolor(colorObj).toRgbString();
+    return Color.color(colorObj).rgb().string();
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 /**
-* plotly.js v3.7.0
+* plotly.js v4.0.0-rc.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -153,7 +153,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.7.0";
+      exports.version = "4.0.0-rc.0";
     }
   });
 

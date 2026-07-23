@@ -49,6 +49,7 @@
     "table_plain_birds",
     "table_wrapped_birds",
     "ternary-mathjax",
-    "ternary-mathjax-title-place-subtitle"
+    "ternary-mathjax-title-place-subtitle",
+    "mathjax-font-size"
   ]
 }

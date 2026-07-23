@@ -17,7 +17,7 @@ var minorTickmode = {
     valType: 'enumerated',
     values: ['auto', 'linear', 'array'],
     editType: 'ticks',
-    impliedEdits: {tick0: undefined, dtick: undefined},
+    impliedEdits: { tick0: undefined, dtick: undefined },
     description: [
         'Sets the tick mode for this axis.',
         'If *auto*, the number of ticks is set via `nticks`.',
@@ -35,7 +35,8 @@ var tickmode = extendFlat({}, minorTickmode, {
     description: [
         minorTickmode.description,
         'If *sync*, the number of ticks will sync with the overlayed axis',
-        'set by `overlaying` property.'
+        'set by `overlaying` property. When no other tick info is provided,',
+        'overlaying (non-categorical) axes default to *sync*, while other axes default to *auto*.',
     ].join(' ')
 });
 
@@ -57,7 +58,7 @@ function makeNticks(minor) {
 var tick0 = {
     valType: 'any',
     editType: 'ticks',
-    impliedEdits: {tickmode: 'linear'},
+    impliedEdits: { tickmode: 'linear' },
     description: [
         'Sets the placement of the first tick on this axis.',
         'Use with `dtick`.',
@@ -73,7 +74,7 @@ var tick0 = {
 var dtick = {
     valType: 'any',
     editType: 'ticks',
-    impliedEdits: {tickmode: 'linear'},
+    impliedEdits: { tickmode: 'linear' },
     description: [
         'Sets the step in-between ticks on this axis. Use with `tick0`.',
         'Must be a positive number, or special strings available to *log* and *date* axes.',
@@ -113,8 +114,8 @@ var ticks = {
     editType: 'ticks',
     description: [
         'Determines whether ticks are drawn or not.',
-        'If **, this axis\' ticks are not drawn.',
-        'If *outside* (*inside*), this axis\' are drawn outside (inside)',
+        "If **, this axis' ticks are not drawn.",
+        "If *outside* (*inside*), this axis' are drawn outside (inside)",
         'the axis lines.'
     ].join(' ')
 };
@@ -127,7 +128,7 @@ function makeTicklen(minor) {
         description: 'Sets the tick length (in px).'
     };
 
-    if(!minor) obj.dflt = 5;
+    if (!minor) obj.dflt = 5;
 
     return obj;
 }
@@ -140,7 +141,7 @@ function makeTickwidth(minor) {
         description: 'Sets the tick width (in px).'
     };
 
-    if(!minor) obj.dflt = 1;
+    if (!minor) obj.dflt = 1;
 
     return obj;
 }
@@ -167,12 +168,12 @@ function makeGridwidth(minor) {
         description: 'Sets the width (in px) of the grid lines.'
     };
 
-    if(!minor) obj.dflt = 1;
+    if (!minor) obj.dflt = 1;
 
     return obj;
 }
 
-var griddash = extendFlat({}, dash, {editType: 'ticks'});
+var griddash = extendFlat({}, dash, { editType: 'ticks' });
 
 var showgrid = {
     valType: 'boolean',
@@ -212,7 +213,7 @@ module.exports = {
         },
         font: fontAttrs({
             editType: 'ticks',
-            description: 'Sets this axis\' title font.'
+            description: "Sets this axis' title font."
         }),
         standoff: {
             valType: 'number',
@@ -267,7 +268,7 @@ module.exports = {
         values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
         dflt: true,
         editType: 'axrange',
-        impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+        impliedEdits: { 'range[0]': undefined, 'range[1]': undefined },
         description: [
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
@@ -278,30 +279,26 @@ module.exports = {
             'Using *max* applies autorange only to set the maximum.',
             'Using *min reversed* applies autorange only to set the minimum on a reversed axis.',
             'Using *max reversed* applies autorange only to set the maximum on a reversed axis.',
-            'Using *reversed* applies autorange on both ends and reverses the axis direction.',
+            'Using *reversed* applies autorange on both ends and reverses the axis direction.'
         ].join(' ')
     },
     autorangeoptions: {
         minallowed: {
             valType: 'any',
             editType: 'plot',
-            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
-            description: [
-                'Use this value exactly as autorange minimum.'
-            ].join(' ')
+            impliedEdits: { 'range[0]': undefined, 'range[1]': undefined },
+            description: ['Use this value exactly as autorange minimum.'].join(' ')
         },
         maxallowed: {
             valType: 'any',
             editType: 'plot',
-            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
-            description: [
-                'Use this value exactly as autorange maximum.'
-            ].join(' ')
+            impliedEdits: { 'range[0]': undefined, 'range[1]': undefined },
+            description: ['Use this value exactly as autorange maximum.'].join(' ')
         },
         clipmin: {
             valType: 'any',
             editType: 'plot',
-            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            impliedEdits: { 'range[0]': undefined, 'range[1]': undefined },
             description: [
                 'Clip autorange minimum if it goes beyond this value.',
                 'Has no effect when `autorangeoptions.minallowed` is provided.'
@@ -310,7 +307,7 @@ module.exports = {
         clipmax: {
             valType: 'any',
             editType: 'plot',
-            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            impliedEdits: { 'range[0]': undefined, 'range[1]': undefined },
             description: [
                 'Clip autorange maximum if it goes beyond this value.',
                 'Has no effect when `autorangeoptions.maxallowed` is provided.'
@@ -320,9 +317,13 @@ module.exports = {
             valType: 'any',
             arrayOk: true,
             editType: 'plot',
-            impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+            impliedEdits: { 'range[0]': undefined, 'range[1]': undefined },
             description: [
-                'Ensure this value is included in autorange.'
+                'Extends the autorange to include this value or array of values,',
+                'even when they fall outside the data range.',
+                'Has no effect on endpoints set by `autorangeoptions.minallowed`',
+                'or `autorangeoptions.maxallowed`.',
+                'Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.'
             ].join(' ')
         },
         editType: 'plot'
@@ -345,11 +346,11 @@ module.exports = {
     range: {
         valType: 'info_array',
         items: [
-            {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true},
-            {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true}
+            { valType: 'any', editType: 'axrange', impliedEdits: { '^autorange': false }, anim: true },
+            { valType: 'any', editType: 'axrange', impliedEdits: { '^autorange': false }, anim: true }
         ],
         editType: 'axrange',
-        impliedEdits: {autorange: false},
+        impliedEdits: { autorange: false },
         anim: true,
         description: [
             'Sets the range of this axis.',
@@ -362,33 +363,26 @@ module.exports = {
             'If the axis `type` is *category*, it should be numbers,',
             'using the scale where each category is assigned a serial',
             'number from zero in the order it appears.',
-            'Leaving either or both elements `null` impacts the default `autorange`.',
+            'Leaving either or both elements `null` impacts the default `autorange`.'
         ].join(' ')
     },
     minallowed: {
         valType: 'any',
         editType: 'plot',
-        impliedEdits: {'^autorange': false},
-        description: [
-            'Determines the minimum range of this axis.'
-        ].join(' ')
+        impliedEdits: { '^autorange': false },
+        description: ['Determines the minimum range of this axis.'].join(' ')
     },
     maxallowed: {
         valType: 'any',
         editType: 'plot',
-        impliedEdits: {'^autorange': false},
-        description: [
-            'Determines the maximum range of this axis.'
-        ].join(' ')
+        impliedEdits: { '^autorange': false },
+        description: ['Determines the maximum range of this axis.'].join(' ')
     },
     fixedrange: {
         valType: 'boolean',
         dflt: false,
         editType: 'calc',
-        description: [
-            'Determines whether or not this axis is zoom-able.',
-            'If true, then zoom is disabled.'
-        ].join(' ')
+        description: ['Determines whether or not this axis is zoom-able.', 'If true, then zoom is disabled.'].join(' ')
     },
     modebardisable: {
         valType: 'flaglist',
@@ -405,8 +399,8 @@ module.exports = {
     insiderange: {
         valType: 'info_array',
         items: [
-            {valType: 'any', editType: 'plot'},
-            {valType: 'any', editType: 'plot'}
+            { valType: 'any', editType: 'plot' },
+            { valType: 'any', editType: 'plot' }
         ],
         editType: 'plot',
         description: [
@@ -421,11 +415,7 @@ module.exports = {
     // values are any opposite-letter axis id, or `false`.
     scaleanchor: {
         valType: 'enumerated',
-        values: [
-            constants.idRegex.x.toString(),
-            constants.idRegex.y.toString(),
-            false
-        ],
+        values: [constants.idRegex.x.toString(), constants.idRegex.y.toString(), false],
         editType: 'plot',
         description: [
             'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
@@ -488,10 +478,7 @@ module.exports = {
     },
     matches: {
         valType: 'enumerated',
-        values: [
-            constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
-        ],
+        values: [constants.idRegex.x.toString(), constants.idRegex.y.toString()],
         editType: 'calc',
         description: [
             'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
@@ -518,8 +505,8 @@ module.exports = {
         bounds: {
             valType: 'info_array',
             items: [
-                {valType: 'any', editType: 'calc'},
-                {valType: 'any', editType: 'calc'}
+                { valType: 'any', editType: 'calc' },
+                { valType: 'any', editType: 'calc' }
             ],
             editType: 'calc',
             description: [
@@ -534,16 +521,16 @@ module.exports = {
             editType: 'calc',
             description: [
                 'Determines a pattern on the time line that generates breaks.',
-                'If *' + DAY_OF_WEEK + '* - days of the week in English e.g. \'Sunday\' or `\sun\`',
+                'If *' + DAY_OF_WEEK + "* - days of the week in English e.g. 'Sunday' or `\sun\`",
                 '(matching is case-insensitive and considers only the first three characters),',
                 'as well as Sunday-based integers between 0 and 6.',
                 'If *' + HOUR + '* - hour (24-hour clock) as decimal numbers between 0 and 24.',
                 'for more info.',
                 'Examples:',
-                '- { pattern: \'' + DAY_OF_WEEK + '\', bounds: [6, 1] }',
-                ' or simply { bounds: [\'sat\', \'mon\'] }',
+                "- { pattern: '" + DAY_OF_WEEK + "', bounds: [6, 1] }",
+                " or simply { bounds: ['sat', 'mon'] }",
                 '  breaks from Saturday to Monday (i.e. skips the weekends).',
-                '- { pattern: \'' + HOUR + '\', bounds: [17, 8] }',
+                "- { pattern: '" + HOUR + "', bounds: [17, 8] }",
                 '  breaks from 5pm to 8am (i.e. skips non-work hours).'
             ].join(' ')
         },
@@ -568,10 +555,7 @@ module.exports = {
             editType: 'calc',
             min: 0,
             dflt: ONEDAY,
-            description: [
-                'Sets the size of each `values` item.',
-                'The default is one day in milliseconds.'
-            ].join(' ')
+            description: ['Sets the size of each `values` item.', 'The default is one day in milliseconds.'].join(' ')
         },
 
         /*
@@ -667,11 +651,16 @@ module.exports = {
     ticklabelposition: {
         valType: 'enumerated',
         values: [
-            'outside', 'inside',
-            'outside top', 'inside top',
-            'outside left', 'inside left',
-            'outside right', 'inside right',
-            'outside bottom', 'inside bottom'
+            'outside',
+            'inside',
+            'outside top',
+            'inside top',
+            'outside left',
+            'inside left',
+            'outside right',
+            'inside right',
+            'outside bottom',
+            'inside bottom'
         ],
         dflt: 'outside',
         editType: 'calc',
@@ -690,11 +679,7 @@ module.exports = {
     },
     ticklabeloverflow: {
         valType: 'enumerated',
-        values: [
-            'allow',
-            'hide past div',
-            'hide past domain'
-        ],
+        values: ['allow', 'hide past div', 'hide past domain'],
         editType: 'calc',
         description: [
             'Determines how we handle tick labels that would overflow either the graph div or the domain of the axis.',
@@ -772,7 +757,7 @@ module.exports = {
         editType: 'ticks',
         description: [
             'Replacement text for specific tick or hover labels.',
-            'For example using {US: \'USA\', CA: \'Canada\'} changes US to USA',
+            "For example using {US: 'USA', CA: 'Canada'} changes US to USA",
             'and CA to Canada. The labels we would have shown must match',
             'the keys exactly, after adding any tickprefix or ticksuffix.',
             'For negative numbers the minus sign symbol used (U+2212) is wider than the regular ascii dash.',
@@ -787,10 +772,7 @@ module.exports = {
         extras: [true, false],
         dflt: false,
         editType: 'ticks',
-        description: [
-            'Determines whether long tick labels automatically grow the figure',
-            'margins.'
-        ].join(' ')
+        description: ['Determines whether long tick labels automatically grow the figure', 'margins.'].join(' ')
     },
     showspikes: {
         valType: 'boolean',
@@ -813,7 +795,7 @@ module.exports = {
         editType: 'none',
         description: 'Sets the width (in px) of the zero line.'
     },
-    spikedash: extendFlat({}, dash, {dflt: 'dash', editType: 'none'}),
+    spikedash: extendFlat({}, dash, { dflt: 'dash', editType: 'none' }),
     spikemode: {
         valType: 'flaglist',
         flags: ['toaxis', 'across', 'marker'],
@@ -821,7 +803,7 @@ module.exports = {
         editType: 'none',
         description: [
             'Determines the drawing mode for the spike line',
-            'If *toaxis*, the line is drawn from the data point to the axis the ',
+            'If *toaxis*, the line is drawn from the data point to the axis the',
             'series is plotted on.',
 
             'If *across*, the line is drawn across the entire plot area, and',
@@ -923,7 +905,7 @@ module.exports = {
             'If *power*, 1x10^9 (with 9 in a super script).',
             'If *SI*, 1G.',
             'If *B*, 1B.',
-            
+
             '*SI* uses prefixes from "femto" f (10^-15) to "tera" T (10^12).',
             '*SI extended* covers instead the full SI range from "quecto" q (10^-30) to "quetta" Q (10^30).',
             'If *SI* or *SI extended* is used and the exponent is beyond the above ranges, the formatting rule',
@@ -944,9 +926,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         editType: 'ticks',
-        description: [
-            'If "true", even 4-digit integers are separated'
-        ].join(' ')
+        description: ['If "true", even 4-digit integers are separated'].join(' ')
     },
     tickformat: {
         valType: 'string',
@@ -967,8 +947,8 @@ module.exports = {
         dtickrange: {
             valType: 'info_array',
             items: [
-                {valType: 'any', editType: 'ticks'},
-                {valType: 'any', editType: 'ticks'}
+                { valType: 'any', editType: 'ticks' },
+                { valType: 'any', editType: 'ticks' }
             ],
             editType: 'ticks',
             description: [
@@ -981,9 +961,7 @@ module.exports = {
             valType: 'string',
             dflt: '',
             editType: 'ticks',
-            description: [
-                'string - dtickformat for described zoom level, the same as *tickformat*'
-            ].join(' ')
+            description: ['string - dtickformat for described zoom level, the same as *tickformat*'].join(' ')
         },
         editType: 'ticks'
     }),
@@ -994,7 +972,7 @@ module.exports = {
         description: descriptionWithDates('hover text')
     },
     unifiedhovertitle: {
-        text : {
+        text: {
             valType: 'string',
             dflt: '',
             editType: 'none',
@@ -1010,9 +988,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         editType: 'ticks+layoutstyle',
-        description: [
-            'Determines whether or not a line bounding this axis is drawn.'
-        ].join(' ')
+        description: ['Determines whether or not a line bounding this axis is drawn.'].join(' ')
     },
     linecolor: {
         valType: 'color',
@@ -1054,8 +1030,8 @@ module.exports = {
         editType: 'plot',
         description: [
             'Sets the layer on which this zeroline is displayed.',
-            'If *above traces*, this zeroline is displayed above all the subplot\'s traces',
-            'If *below traces*, this zeroline is displayed below all the subplot\'s traces,',
+            "If *above traces*, this zeroline is displayed above all the subplot's traces",
+            "If *below traces*, this zeroline is displayed below all the subplot's traces,",
             'but above the grid lines. Limitation: *zerolinelayer* currently has no effect',
             'if the *zorder* property is set on any trace.'
         ].join(' ')
@@ -1081,19 +1057,13 @@ module.exports = {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
         editType: 'ticks',
-        description: [
-            'Sets the color of the dividers',
-            'Only has an effect on *multicategory* axes.'
-        ].join(' ')
+        description: ['Sets the color of the dividers', 'Only has an effect on *multicategory* axes.'].join(' ')
     },
     dividerwidth: {
         valType: 'number',
         dflt: 1,
         editType: 'ticks',
-        description: [
-            'Sets the width (in px) of the dividers',
-            'Only has an effect on *multicategory* axes.'
-        ].join(' ')
+        description: ['Sets the width (in px) of the dividers', 'Only has an effect on *multicategory* axes.'].join(' ')
     },
     // TODO dividerlen: that would override "to label base" length?
 
@@ -1102,16 +1072,12 @@ module.exports = {
     // values are any opposite-letter axis id
     anchor: {
         valType: 'enumerated',
-        values: [
-            'free',
-            constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
-        ],
+        values: ['free', constants.idRegex.x.toString(), constants.idRegex.y.toString()],
         editType: 'plot',
         description: [
             'If set to an opposite-letter axis id (e.g. `x2`, `y`), this axis is bound to',
             'the corresponding opposite-letter axis.',
-            'If set to *free*, this axis\' position is determined by `position`.'
+            "If set to *free*, this axis' position is determined by `position`."
         ].join(' ')
     },
     // side: not used directly, as values depend on direction
@@ -1131,11 +1097,7 @@ module.exports = {
     // itself overlaying anything
     overlaying: {
         valType: 'enumerated',
-        values: [
-            'free',
-            constants.idRegex.x.toString(),
-            constants.idRegex.y.toString()
-        ],
+        values: ['free', constants.idRegex.x.toString(), constants.idRegex.y.toString()],
         editType: 'plot',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
@@ -1175,7 +1137,7 @@ module.exports = {
             'Determines how minor log labels are displayed.',
             'If *small digits*, small digits i.e. 2 or 5 are displayed.',
             'If *complete*, complete digits are displayed.',
-            'If *none*, no labels are displayed.',
+            'If *none*, no labels are displayed.'
         ].join(' ')
     },
 
@@ -1186,8 +1148,8 @@ module.exports = {
         editType: 'plot',
         description: [
             'Sets the layer on which this axis is displayed.',
-            'If *above traces*, this axis is displayed above all the subplot\'s traces',
-            'If *below traces*, this axis is displayed below all the subplot\'s traces,',
+            "If *above traces*, this axis is displayed above all the subplot's traces",
+            "If *below traces*, this axis is displayed below all the subplot's traces,",
             'but above the grid lines.',
             'Useful when used together with scatter-like traces with `cliponaxis`',
             'set to *false* to show markers and/or text nodes above this axis.'
@@ -1196,14 +1158,12 @@ module.exports = {
     domain: {
         valType: 'info_array',
         items: [
-            {valType: 'number', min: 0, max: 1, editType: 'plot'},
-            {valType: 'number', min: 0, max: 1, editType: 'plot'}
+            { valType: 'number', min: 0, max: 1, editType: 'plot' },
+            { valType: 'number', min: 0, max: 1, editType: 'plot' }
         ],
         dflt: [0, 1],
         editType: 'plot',
-        description: [
-            'Sets the domain of this axis (in plot fraction).'
-        ].join(' ')
+        description: ['Sets the domain of this axis (in plot fraction).'].join(' ')
     },
     position: {
         valType: 'number',
@@ -1226,7 +1186,7 @@ module.exports = {
             'overlap with other axes with the same `overlaying` value.',
             'This repositioning will account for any `shift` amount applied to other',
             'axes on the same side with `autoshift` is set to true.',
-            'Only has an effect if `anchor` is set to *free*.',
+            'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },
     shift: {
@@ -1244,14 +1204,24 @@ module.exports = {
     categoryorder: {
         valType: 'enumerated',
         values: [
-            'trace', 'category ascending', 'category descending', 'array',
-            'total ascending', 'total descending',
-            'min ascending', 'min descending',
-            'max ascending', 'max descending',
-            'sum ascending', 'sum descending',
-            'mean ascending', 'mean descending',
-            'geometric mean ascending', 'geometric mean descending',
-            'median ascending', 'median descending'
+            'trace',
+            'category ascending',
+            'category descending',
+            'array',
+            'total ascending',
+            'total descending',
+            'min ascending',
+            'min descending',
+            'max ascending',
+            'max descending',
+            'sum ascending',
+            'sum descending',
+            'mean ascending',
+            'mean descending',
+            'geometric mean ascending',
+            'geometric mean descending',
+            'median ascending',
+            'median descending'
         ],
         dflt: 'trace',
         editType: 'calc',
@@ -1286,5 +1256,5 @@ module.exports = {
             'Defaults to `layout.uirevision`.'
         ].join(' ')
     },
-    editType: 'calc',
+    editType: 'calc'
 };

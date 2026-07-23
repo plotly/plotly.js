@@ -13,6 +13,17 @@ var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
 
 var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
 
+/**
+* Checks whether the given string contains LaTeX markup
+* (delimited by a pair of $ signs) and returns the match array if so.
+*
+* @param {string} str: the string to check for tex
+* @return {?Array} the regex match array (truthy) if the string contains tex,
+*   otherwise null (for an empty/missing string or when no tex delimiters are found).
+*/
+const matchTex = (str) => str ? str.match(FIND_TEX) : null;
+exports.matchTex = matchTex;
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
@@ -21,7 +32,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     var tex = (!_context.attr('data-notex')) &&
         gd && gd._context.typesetMath &&
         (typeof MathJax !== 'undefined') &&
-        str.match(FIND_TEX);
+        matchTex(str);
 
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
@@ -67,6 +78,10 @@ exports.convertToTspans = function(_context, gd, _callback) {
             _context.style('display', 'none');
             var fontSize = parseInt(_context.node().style.fontSize, 10);
             var config = {fontSize: fontSize};
+            // Capture the text-anchor value now, since the the callback function below
+            // will run async, and in the meantime the text-anchor may change
+            // which would result in a wrongly-positioned SVG
+            var textAnchor = _context.attr('text-anchor');
 
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
@@ -78,6 +93,13 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     resolve();
                     return;
                 }
+
+                // Now that the MathJax render has finished, re-hide the source text.
+                // We hid it earlier, too, but since this callback runs async,
+                // another function may have made it visible again
+                // TODO: investigate this issue more deeply, there's probably a better
+                // solution than this band-aid fix
+                _context.style('display', 'none');
 
                 var mathjaxGroup = parent.append('g')
                     .classed(svgClass + '-group', true)
@@ -103,7 +125,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
-                .style({overflow: 'visible', 'pointer-events': 'none'});
+                .style({
+                    overflow: 'visible',
+                    'pointer-events': 'none',
+                    'font-size': config.fontSize + 'px',
+                });
 
                 var fill = _context.node().style.fill || 'black';
                 var g = newSvg.select('g');
@@ -140,11 +166,9 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     x = 0;
                     y = dy;
                 } else {
-                    var anchor = _context.attr('text-anchor');
-
                     x = x - w * (
-                        anchor === 'middle' ? 0.5 :
-                        anchor === 'end' ? 1 : 0
+                        textAnchor === 'middle' ? 0.5 :
+                        textAnchor === 'end' ? 1 : 0
                     );
                     y = y + dy - h / 2;
                 }
@@ -174,154 +198,91 @@ function cleanEscapesForTex(s) {
         .replace(GT_MATCH, '\\gt ');
 }
 
-var inlineMath = [['$', '$'], ['\\(', '\\)']];
+// Create a dedicated MathDocument just for Plotly.js,
+// to avoid interfering with any other MathJax on the page.
+// mathjaxSVGDocument is initialized on the first call to texToSVG(),
+// and reused for subsequent calls.
+var mathjaxSVGDocument = null;
 
 function texToSVG(_texString, _config, _callback) {
-    var MathJaxVersion = parseInt(
+    const MathJaxVersion = parseInt(
         (MathJax.version || '').split('.')[0]
     );
 
     if(
-        MathJaxVersion !== 2 &&
-        MathJaxVersion !== 3
+        MathJaxVersion !== 3 &&
+        MathJaxVersion !== 4
     ) {
-        Lib.warn('No MathJax version:', MathJax.version);
+        Lib.warn('Unsupported MathJax version:', MathJax.version);
         return;
     }
 
-    var originalRenderer,
-        originalConfig,
-        originalProcessSectionDelay,
-        tmpDiv;
+    var tmpDiv;
 
-    var setConfig2 = function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
-
-        originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
-        if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 2.5+ but not 3+
-            MathJax.Hub.processSectionDelay = 0;
+    const initiateMathJax = function() {
+        if(!mathjaxSVGDocument) {
+            const SVG = MathJax._.output.svg_ts.SVG;
+            // fontCache 'local' keeps each rendered svg self-contained
+            const svgConfig = Lib.extendFlat({}, MathJax.config.svg, {fontCache: 'local'});
+            // MathJax v4 enables automatic inline linebreaking by default, which
+            // messes up our layout assumptions. Disabling it gives behavior consistent with v3.
+            if(MathJaxVersion === 4) {
+                svgConfig.linebreaks = Lib.extendFlat({}, svgConfig.linebreaks, {inline: false});
+            }
+            mathjaxSVGDocument = MathJax._.mathjax.mathjax.document(document, Lib.extendFlat({}, MathJax.config.options, {
+                InputJax: MathJax.startup.input,
+                OutputJax: new SVG(svgConfig)
+            }));
         }
 
-        return MathJax.Hub.Config({
-            messageStyle: 'none',
-            tex2jax: {
-                inlineMath: inlineMath
-            },
-            displayAlign: 'left',
-        });
-    };
-
-    var setConfig3 = function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.config);
-
-        if(!MathJax.config.tex) {
-            MathJax.config.tex = {};
-        }
-
-        MathJax.config.tex.inlineMath = inlineMath;
-    };
-
-    var setRenderer2 = function() {
-        originalRenderer = MathJax.Hub.config.menuSettings.renderer;
-        if(originalRenderer !== 'SVG') {
-            return MathJax.Hub.setRenderer('SVG');
-        }
-    };
-
-    var setRenderer3 = function() {
-        originalRenderer = MathJax.config.startup.output;
-        if(originalRenderer !== 'svg') {
-            MathJax.config.startup.output = 'svg';
-        }
-    };
-
-    var initiateMathJax = function() {
-        var randomID = 'math-output-' + Lib.randstr({}, 64);
+        const randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({
                 visibility: 'hidden',
                 position: 'absolute',
                 'font-size': _config.fontSize + 'px'
-            })
-            .text(cleanEscapesForTex(_texString));
+            });
 
-        var tmpNode = tmpDiv.node();
-
-        return MathJaxVersion === 2 ?
-            MathJax.Hub.Typeset(tmpNode) :
-            MathJax.typeset([tmpNode]);
+        // Strip $…$ delimiters and clean up escape charaters,
+        // then pass the result to MathDocument.convert() to get an SVG element back
+        const texMath = cleanEscapesForTex(_texString).replace(/^\$+|\$+$/g, '');
+        // handleRetriesFor() automatically retries a MathJax function if it fails
+        // due to a transient error (docs: https://docs.mathjax.org/en/v4.0/web/retry.html)
+        // handleRetriesFor() returns a promise which resolves to the result of the provided function
+        return MathJax._.mathjax.mathjax.handleRetriesFor(function() {
+            return mathjaxSVGDocument.convert(texMath, {
+                display: false
+            });
+        }).then(function(node) {
+            tmpDiv.node().appendChild(node);
+        });
     };
 
-    var finalizeMathJax = function() {
-        var sel = tmpDiv.select(
-            MathJaxVersion === 2 ? '.MathJax_SVG' : '.MathJax'
-        );
+    const finalizeMathJax = function() {
+        const sel = tmpDiv.select('.MathJax');
 
-        var node = !sel.empty() && tmpDiv.select('svg').node();
+        const node = !sel.empty() && tmpDiv.select('svg').node();
         if(!node) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
-            var nodeBBox = node.getBoundingClientRect();
-            var glyphDefs;
-            if(MathJaxVersion === 2) {
-                glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
-            } else {
-                glyphDefs = sel.select('defs');
-            }
+            const nodeBBox = node.getBoundingClientRect();
+            const glyphDefs = sel.select('defs');
             _callback(sel, glyphDefs, nodeBBox);
         }
 
         tmpDiv.remove();
     };
 
-    var resetRenderer2 = function() {
-        if(originalRenderer !== 'SVG') {
-            return MathJax.Hub.setRenderer(originalRenderer);
-        }
-    };
-
-    var resetRenderer3 = function() {
-        if(originalRenderer !== 'svg') {
-            MathJax.config.startup.output = originalRenderer;
-        }
-    };
-
-    var resetConfig2 = function() {
-        if(originalProcessSectionDelay !== undefined) {
-            MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
-        }
-        return MathJax.Hub.Config(originalConfig);
-    };
-
-    var resetConfig3 = function() {
-        MathJax.config = originalConfig;
-    };
-
-    if(MathJaxVersion === 2) {
-        MathJax.Hub.Queue(
-            setConfig2,
-            setRenderer2,
-            initiateMathJax,
-            finalizeMathJax,
-            resetRenderer2,
-            resetConfig2
-        );
-    } else if(MathJaxVersion === 3) {
-        setConfig3();
-        setRenderer3();
-        MathJax.startup.defaultReady();
-
-        MathJax.startup.promise.then(function() {
-            initiateMathJax();
-            finalizeMathJax();
-
-            resetRenderer3();
-            resetConfig3();
+    Promise.resolve()
+        .then(initiateMathJax)
+        .then(finalizeMathJax)
+        .catch((err) => {
+            Lib.log('MathJax typesetting failed.', _texString, err);
+            if(tmpDiv) tmpDiv.remove();
+            _callback();
         });
-    }
 }
 
 var TAG_STYLES = {

@@ -1,0 +1,1 @@
+- Enable `scattermap` icons to render in color, upgrade Maki icons version to 8.2, and standardize scattermap legend icons to circles [[#7825](https://github.com/plotly/plotly.js/pull/7825)]

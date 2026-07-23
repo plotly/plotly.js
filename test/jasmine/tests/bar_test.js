@@ -312,7 +312,7 @@ describe('Bar.supplyDefaults', function() {
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
         expect(traceOut.marker.pattern.bgcolor).toBe('green');
-        expect(traceOut.marker.pattern.fgcolor).toBe('#fff');
+        expect(traceOut.marker.pattern.fgcolor).toBe('rgb(255, 255, 255)');
         expect(traceOut.marker.pattern.fgopacity).toBe(0.5);
     });
 

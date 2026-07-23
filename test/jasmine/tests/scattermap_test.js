@@ -721,7 +721,9 @@ describe('scattermap hover', function() {
             text: ['A', 'B', 'C', 'D']
         }];
 
-        Plotly.newPlot(gd, data, { autosize: true }).then(done);
+        // Set zoom to opt out of the v4 default auto-fit so the that
+        // hover-pixel assertions still match
+        Plotly.newPlot(gd, data, { autosize: true, map: { zoom: 1 } }).then(done);
     });
 
     afterAll(function() {
@@ -1245,6 +1247,45 @@ describe('Test plotly events on a scattermap plot when css transform is present:
             })
             .then(done, done.fail);
         });
+    });
+});
+
+describe('scattermap legend', function() {
+    var gd;
+
+    beforeEach(function() {
+        Plotly.setPlotConfig({});
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should always draw a circle swatch regardless of marker.symbol', function(done) {
+        // marker.symbol on map traces is a Maki/sprite icon name that the SVG
+        // legend can't reproduce, so the swatch should consistently be a circle.
+        // The circle symbol path is the only one using an arc ('A') command;
+        // square/triangle/etc. use only straight (H/V/L) segments.
+        Plotly.newPlot(gd, {
+            data: [
+                { type: 'scattermap', lat: [0], lon: [0], mode: 'markers', name: 'square', marker: { symbol: 'square' } },
+                { type: 'scattermap', lat: [1], lon: [1], mode: 'markers', name: 'tri', marker: { symbol: 'triangle-stroked' } }
+            ],
+            layout: {
+                map: { style: 'open-street-map', zoom: 6, center: { lat: 0.5, lon: 0.5 } },
+                showlegend: true
+            }
+        }).then(function() {
+            var swatches = gd.querySelectorAll('.legend .legendpoints path.scatterpts');
+            expect(swatches.length).toBe(2, 'one swatch per trace');
+            swatches.forEach(function(node) {
+                var d = node.getAttribute('d');
+                expect(d.indexOf('A')).toBeGreaterThan(-1, 'swatch is a circle (has arc): ' + d);
+                expect(d.indexOf('NaN')).toBe(-1, 'swatch path has no NaN: ' + d);
+            });
+        }).then(done, done.fail);
     });
 });
 

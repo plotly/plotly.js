@@ -43,12 +43,12 @@ The main plotly.js bundles weight in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 10.7 MB | 4.6 MB | 1.4 MB | 11 MB |
+| 8.9 MB | 3.9 MB | 1.2 MB | 9.3 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-3.7.0.js
+> https://cdn.plot.ly/plotly-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-3.7.0.min.js
+> https://cdn.plot.ly/plotly-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -71,7 +71,7 @@ plotly.js also ships with several _partial_ bundles:
 - [geo](#plotlyjs-geo)
 - [gl3d](#plotlyjs-gl3d)
 - [gl2d](#plotlyjs-gl2d)
-- [mapbox](#plotlyjs-mapbox)
+- [map](#plotlyjs-map)
 - [finance](#plotlyjs-finance)
 - [strict](#plotlyjs-strict)
 
@@ -91,12 +91,12 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.7 MB | 1.1 MB | 366.4 kB |
+| 2.7 MB | 1.1 MB | 369.7 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-basic-3.7.0.js
+> https://cdn.plot.ly/plotly-basic-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-basic-3.7.0.min.js
+> https://cdn.plot.ly/plotly-basic-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -114,12 +114,12 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.4 MB | 1.4 MB | 464.8 kB |
+| 3.4 MB | 1.4 MB | 468.6 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-cartesian-3.7.0.js
+> https://cdn.plot.ly/plotly-cartesian-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-cartesian-3.7.0.min.js
+> https://cdn.plot.ly/plotly-cartesian-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -137,12 +137,12 @@ The `geo` partial bundle contains trace modules `choropleth`, `scatter` and `sca
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3 MB | 1.2 MB | 417.4 kB |
+| 3.1 MB | 1.3 MB | 435.1 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-geo-3.7.0.js
+> https://cdn.plot.ly/plotly-geo-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-geo-3.7.0.min.js
+> https://cdn.plot.ly/plotly-geo-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -160,12 +160,12 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.2 MB | 1.6 MB | 529.2 kB |
+| 4.2 MB | 1.6 MB | 532.5 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl3d-3.7.0.js
+> https://cdn.plot.ly/plotly-gl3d-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-gl3d-3.7.0.min.js
+> https://cdn.plot.ly/plotly-gl3d-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -183,12 +183,12 @@ The `gl2d` partial bundle contains trace modules `parcoords`, `scatter`, `scatte
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.8 MB | 1.5 MB | 523.1 kB |
+| 3.9 MB | 1.5 MB | 526.5 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl2d-3.7.0.js
+> https://cdn.plot.ly/plotly-gl2d-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-gl2d-3.7.0.min.js
+> https://cdn.plot.ly/plotly-gl2d-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -198,26 +198,26 @@ The `gl2d` partial bundle contains trace modules `parcoords`, `scatter`, `scatte
 
 ---
 
-### plotly.js mapbox
+### plotly.js map
 
-The `mapbox` partial bundle contains trace modules `choroplethmapbox`, `densitymapbox`, `scatter` and `scattermapbox`.
+The `map` partial bundle contains trace modules `choroplethmap`, `densitymap`, `scatter` and `scattermap`.
 
 #### Stats
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.5 MB | 1.9 MB | 582.2 kB |
+| 4.2 MB | 2 MB | 632.3 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-mapbox-3.7.0.js
+> https://cdn.plot.ly/plotly-map-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-mapbox-3.7.0.min.js
+> https://cdn.plot.ly/plotly-map-4.0.0-rc.0.min.js
 
 
 #### npm packages
-> [plotly.js-mapbox-dist](https://www.npmjs.com/package/plotly.js-mapbox-dist)
+> [plotly.js-map-dist](https://www.npmjs.com/package/plotly.js-map-dist)
 
-> [plotly.js-mapbox-dist-min](https://www.npmjs.com/package/plotly.js-mapbox-dist-min)
+> [plotly.js-map-dist-min](https://www.npmjs.com/package/plotly.js-map-dist-min)
 
 ---
 
@@ -229,12 +229,12 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.9 MB | 1.2 MB | 400 kB |
+| 2.9 MB | 1.2 MB | 403.5 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-finance-3.7.0.js
+> https://cdn.plot.ly/plotly-finance-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-finance-3.7.0.min.js
+> https://cdn.plot.ly/plotly-finance-4.0.0-rc.0.min.js
 
 
 #### npm packages
@@ -246,18 +246,18 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 ### plotly.js strict
 
-The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `candlestick`, `carpet`, `choropleth`, `choroplethmapbox`, `cone`, `contour`, `contourcarpet`, `densitymapbox`, `funnel`, `funnelarea`, `heatmap`, `histogram`, `histogram2d`, `histogram2dcontour`, `icicle`, `image`, `indicator`, `isosurface`, `mesh3d`, `ohlc`, `parcats`, `parcoords`, `pie`, `sankey`, `scatter`, `scattergl`, `scatter3d`, `scattercarpet`, `scattergeo`, `scattermapbox`, `scatterpolar`, `scatterpolargl`, `scattersmith`, `scatterternary`, `splom`, `streamtube`, `sunburst`, `surface`, `table`, `treemap`, `violin`, `volume` and `waterfall`.
+The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `candlestick`, `carpet`, `choropleth`, `choroplethmap`, `cone`, `contour`, `contourcarpet`, `densitymap`, `funnel`, `funnelarea`, `heatmap`, `histogram`, `histogram2d`, `histogram2dcontour`, `icicle`, `image`, `indicator`, `isosurface`, `mesh3d`, `ohlc`, `parcats`, `parcoords`, `pie`, `sankey`, `scatter`, `scattergl`, `scatter3d`, `scattercarpet`, `scattergeo`, `scattermap`, `scatterpolar`, `scatterpolargl`, `scattersmith`, `scatterternary`, `splom`, `streamtube`, `sunburst`, `surface`, `table`, `treemap`, `violin`, `volume` and `waterfall`.
 
 #### Stats
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 11.5 MB | 5 MB | 1.5 MB |
+| 9.7 MB | 4.2 MB | 1.3 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-strict-3.7.0.js
+> https://cdn.plot.ly/plotly-strict-4.0.0-rc.0.js
 
-> https://cdn.plot.ly/plotly-strict-3.7.0.min.js
+> https://cdn.plot.ly/plotly-strict-4.0.0-rc.0.min.js
 
 
 #### npm packages

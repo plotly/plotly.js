@@ -1,0 +1,114 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "name": "'#d62728' (hex 6)",
+      "x": [0],
+      "y": [3],
+      "marker": { "color": "#d62728" }
+    },
+    {
+      "type": "bar",
+      "name": "'#1f77b4cc' (hex 8 alpha)",
+      "x": [1],
+      "y": [3],
+      "marker": { "color": "#1f77b4cc" }
+    },
+    {
+      "type": "bar",
+      "name": "'#f00' (hex 3 short)",
+      "x": [2],
+      "y": [3],
+      "marker": { "color": "#f00" }
+    },
+    {
+      "type": "bar",
+      "name": "'#0f08' (hex 4 short alpha)",
+      "x": [3],
+      "y": [3],
+      "marker": { "color": "#0f08" }
+    },
+    {
+      "type": "bar",
+      "name": "'rgb(255 165 0)' (space)",
+      "x": [5],
+      "y": [3],
+      "marker": { "color": "rgb(255 165 0)" }
+    },
+    {
+      "type": "bar",
+      "name": "'rgba(128 0 128 / 0.6)' (slash alpha)",
+      "x": [6],
+      "y": [3],
+      "marker": { "color": "rgba(128 0 128 / 0.6)" }
+    },
+    {
+      "type": "bar",
+      "name": "'hsl(210, 80%, 50%)'",
+      "x": [8],
+      "y": [3],
+      "marker": { "color": "hsl(210, 80%, 50%)" }
+    },
+    {
+      "type": "bar",
+      "name": "'hsla(0, 90%, 55%, 0.7)'",
+      "x": [9],
+      "y": [3],
+      "marker": { "color": "hsla(0, 90%, 55%, 0.7)" }
+    },
+    {
+      "type": "bar",
+      "name": "'hsl(120deg 60% 40%)' (modern)",
+      "x": [10],
+      "y": [3],
+      "marker": { "color": "hsl(120deg 60% 40%)" }
+    },
+    {
+      "type": "bar",
+      "name": "'hwb(200, 10%, 20%)'",
+      "x": [12],
+      "y": [3],
+      "marker": { "color": "hwb(200, 10%, 20%)" }
+    },
+    {
+      "type": "bar",
+      "name": "'rebeccapurple' (named)",
+      "x": [13],
+      "y": [3],
+      "marker": { "color": "rebeccapurple" }
+    },
+    {
+      "type": "bar",
+      "name": "'transparent'",
+      "x": [14],
+      "y": [3],
+      "marker": {
+        "color": "transparent",
+        "line": { "color": "  #444  ", "width": 1 }
+      }
+    }
+  ],
+  "layout": {
+    "title": { "text": "Modern color syntax formats" },
+    "barmode": "group",
+    "bargap": 0.1,
+    "width": 900,
+    "height": 500,
+    "paper_bgcolor": "rgb(250 250 250)",
+    "plot_bgcolor": "hsl(0, 0%, 98%)",
+    "xaxis": {
+      "tickmode": "array",
+      "tickvals": [1.5, 5.5, 9, 13],
+      "ticktext": ["hex", "rgb", "hsl", "other"],
+      "showgrid": false,
+      "range": [-1, 15]
+    },
+    "yaxis": { "gridcolor": "#00000014" },
+    "legend": {
+      "bgcolor": "#ffffffcc",
+      "bordercolor": "hwb(0deg, 50%, 50%)",
+      "borderwidth": 1
+    },
+    "font": { "color": "  rgb(40, 40, 40)  " }
+  }
+}

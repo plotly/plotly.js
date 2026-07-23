@@ -193,12 +193,7 @@ function assertFileNames() {
             var base = path.basename(file);
 
             if(
-                base === 'README.md' ||
-                base === 'CONTRIBUTING.md' ||
-                base === 'CHANGELOG.md' ||
-                base === 'SECURITY.md' ||
-                base === 'BUILDING.md' ||
-                base === 'CUSTOM_BUNDLE.md' ||
+                base.endsWith('.md') ||
                 base === 'CITATION.cff' ||
                 file.indexOf('mathjax') !== -1
             ) return;

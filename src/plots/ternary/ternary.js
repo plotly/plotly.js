@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -593,7 +592,7 @@ proto.initInteractions = function() {
         };
         mins = mins0;
         span0 = _this.aaxis.range[1] - mins0.a;
-        lum = tinycolor(_this.graphDiv._fullLayout[_this.id].bgcolor).getLuminance();
+        lum = Color.color(_this.graphDiv._fullLayout[_this.id].bgcolor).luminosity();
         path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) + ', 0L' + _this.w + ',' + _this.h + 'Z';
         dimmed = false;
 

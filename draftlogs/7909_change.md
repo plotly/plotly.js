@@ -1,0 +1,1 @@
+- Update `plot_config` to show the "Upload to Cloud" button by default, and set the default server URL to cloud.plotly.com via [[#7909](https://github.com/plotly/plotly.js/pull/7909)]

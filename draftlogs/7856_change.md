@@ -1,0 +1,2 @@
+- **Breaking**: Replace `country-regex` with `country-iso-search` to search for country names in choropleth, scattergeo traces [[#7856](https://github.com/plotly/plotly.js/pull/7856)]
+  - The vast majority of country names are handled exactly the same with the new library; a small number of legacy entries have been removed

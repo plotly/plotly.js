@@ -1,0 +1,3 @@
+- **Breaking:** Change `layout.geo.fitbounds` default from `false` to `'locations'` [[#7895](https://github.com/plotly/plotly.js/pull/7895)]
+  - `geo` subplots will now auto-fit the initial view to the trace data 
+  - Set `fitbounds: false` explicitly to opt out

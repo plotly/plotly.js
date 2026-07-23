@@ -3,7 +3,6 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var Color = require('../../components/color');
-var tinycolor = require('tinycolor2');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleHoverLabelDefaults = require('../../components/fx/hoverlabel_defaults');
 var Template = require('../../plot_api/plot_template');
@@ -35,14 +34,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(nodeIn, nodeOut, coerceNode, hoverlabelDefault);
     coerceNode('hovertemplate');
     coerceNode('align');
+    coerceNode('sort');
 
     var colors = layout.colorway;
 
-    var defaultNodePalette = function(i) {return colors[i % colors.length];};
+    const defaultNodePalette = (i) => colors[i % colors.length];
 
-    coerceNode('color', nodeOut.label.map(function(d, i) {
-        return Color.addOpacity(defaultNodePalette(i), 0.8);
-    }));
+    coerceNode(
+        'color',
+        nodeOut.label.map((d, i) => Color.addOpacity(defaultNodePalette(i), 0.8))
+    );
     coerceNode('customdata');
 
     // link attributes
@@ -62,29 +63,32 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('hoverinfo', traceIn.hoverinfo);
     handleHoverLabelDefaults(linkIn, linkOut, coerceLink, hoverlabelDefault);
     coerceLink('hovertemplate');
+    coerceLink('sort');
 
-    var darkBG = tinycolor(layout.paper_bgcolor).getLuminance() < 0.333;
+    var darkBG = Color.color(layout.paper_bgcolor).luminosity() < 0.333;
     var defaultLinkColor = darkBG ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
     var linkColor = coerceLink('color', defaultLinkColor);
 
     function makeDefaultHoverColor(_linkColor) {
-        var tc = tinycolor(_linkColor);
-        if(!tc.isValid()) {
-            // hopefully the user-specified color is valid, but if not that can be caught elsewhere
-            return _linkColor;
-        }
-        var alpha = tc.getAlpha();
-        if(alpha <= 0.8) {
-            tc.setAlpha(alpha + 0.2);
+        // hopefully the user-specified color is valid, but if not that can be caught elsewhere
+        if (!Color.isValid(_linkColor)) return _linkColor;
+
+        const c = Color.color(_linkColor);
+        const alpha = c.alpha();
+
+        if (alpha <= 0.8) {
+            return c
+                .alpha(alpha + 0.2)
+                .rgb()
+                .string();
         } else {
-            tc = darkBG ? tc.brighten() : tc.darken();
+            return darkBG ? Color.brighten(c, 10) : Color.adjustLightness(c, -10).rgb().string();
         }
-        return tc.toRgbString();
     }
 
-    coerceLink('hovercolor', Array.isArray(linkColor) ?
-        linkColor.map(makeDefaultHoverColor) :
-        makeDefaultHoverColor(linkColor)
+    coerceLink(
+        'hovercolor',
+        Array.isArray(linkColor) ? linkColor.map(makeDefaultHoverColor) : makeDefaultHoverColor(linkColor)
     );
 
     coerceLink('customdata');
@@ -100,16 +104,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('valueformat');
     coerce('valuesuffix');
 
-    var dfltArrangement;
-    if(nodeOut.x.length && nodeOut.y.length) {
-        dfltArrangement = 'freeform';
-    }
+    const dfltArrangement = nodeOut.x.length && nodeOut.y.length ? 'freeform' : undefined;
     coerce('arrangement', dfltArrangement);
 
     Lib.coerceFont(coerce, 'textfont', layout.font, { autoShadowDflt: true });
 
-    // disable 1D transforms - arrays here are 1D but their lengths/meanings
-    // don't match, between nodes and links
+    // Ensure _length is defined
     traceOut._length = null;
 };
 

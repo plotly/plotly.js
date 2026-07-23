@@ -99,7 +99,8 @@
                 outline-offset: 1px;
             }
 
-            &.plotly-cloud-dialog-btn--cancel {
+            &.plotly-cloud-dialog-btn--cancel,
+            &--cancel {
                 background-color: vars.$color-bg-base;
                 margin-left: auto;
                 color: vars.$color-muted-text;
@@ -130,7 +131,14 @@
                 }
             }
 
-        }
+            &--confirm {
+                background-color: vars.$color-brand-primary;
+                color: vars.$color-bg-light;
 
+                &:hover {
+                    background-color: vars.$color-brand-accent;
+                }
+            }
+        }
     }
 }

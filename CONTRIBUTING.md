@@ -14,7 +14,7 @@ but the general idea is to be nice.
 
 ## Plotly.js vs Plotly.py and Plotly.R
 
-[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r), respectively, for clarity). There also exist Plotly.js-powered libraries for other languages such as Julia, Scala, Rust, .NET and even C++!
+[Plotly.js](https://plotly.com/javascript) is a standalone Javascript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](https://plotly.com/r), respectively, for clarity). There also exist Plotly.js-powered libraries for other languages such as Julia, Scala, Rust, .NET and even C++!
 
 The basic architecture of Plotly.js is to accept [JSON](https://json.org/) representation of figures that adhere to the [figure schema](https://plotly.com/javascript/reference/index/) and draw interactive graphical representations of these figures in a browser. Libraries in other languages like Python and R provide idiomatic interfaces for users of those languages to create and manipulate these JSON structures, and arrange for them to be rendered in a browser context by Plotly.js. This means that in many cases, when a Python or R user wishes to add a feature to the library they know as `plotly`, the relevant changes must be implemented in Plotly.js, in this repo.
 
@@ -78,7 +78,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 #### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v18.x.
+- [node.js](https://nodejs.org/en/). We recommend using node.js v22.x.
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/nvm-sh/nvm) or its Windows alternatives.
 - [`npm`](https://www.npmjs.com/) v10.x and up to ensure that the
@@ -405,8 +405,10 @@ All traces modules set:
   This object is used to generate the plot-schema JSON.
 - `_module.supplyDefaults`: Takes in input trace settings and coerces them into "full" settings
   under `gd._fullData`. This one is called during the figure-wide `Plots.supplyDefaults` routine.
-  Note that the `supplyDefaults` method performance should scale with the number of attributes (**not** the
-  number of data points - so it should not loop over any data arrays).
+  As a rule, `supplyDefaults` performance should scale with the number of attributes rather than
+  the number of data points, so avoid looping over data arrays in this function. That being said,
+  there are a few exceptions to this rule due to technical requirements (`fitbounds` on map subplots).
+  The same guidance applies to `_module.supplyLayoutDefaults`.
 - `_module.calc`: Converts inputs data into "calculated" (or sanitized) data. This one is called during
   the figure-wide `Plots.doCalcdata` routine. The `calc` method is allowed to
   scale with the number of data points and is in general more costly than `supplyDefaults`.
@@ -432,7 +434,7 @@ Other methods used by some trace modules:
   selections.
 - `_module.convert`: Sometimes separated from `_module.plot` or `_module.calc` to convert the
   plotly.js settings to another framework e.g. to `gl-plot3d` for `gl3d` traces, to
-  `mapbox-gl` for `mapbox` traces. This split can make the logic easier to test.
+  `maplibre-gl` for `map` traces. This split can make the logic easier to test.
   If you make a `convert`, you should call it from either `calc` or `plot`.
 
 ## Coding style

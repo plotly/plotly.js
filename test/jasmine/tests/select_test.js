@@ -654,8 +654,8 @@ describe('Click-to-select', function() {
               { width: 1100, height: 450 }),
             testCase('ohlc', require('../../image/mocks/ohlc_first.json'), 669, 165, [9]),
             testCase('candlestick', require('../../image/mocks/finance_style.json'), 331, 162, [[], [5]]),
-            testCase('choropleth', require('../../image/mocks/geo_choropleth-text.json'), 440, 163, [6]),
-            testCase('scattergeo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('choropleth', require('../../image/mocks/geo_choropleth-text.json'), 440, 163, [6], {geo: {fitbounds: false}}),
+            testCase('scattergeo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1], {geo: {fitbounds: false}}),
             testCase('scatterternary', require('../../image/mocks/ternary_markers.json'), 485, 335, [7]),
 
             // Note that first trace (carpet) in mock doesn't support selection,
@@ -770,7 +770,7 @@ describe('Click-to-select', function() {
     describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
         [
             testCase('cartesian', require('../../image/mocks/14.json'), 270, 160, [7]),
-            testCase('geo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('geo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1], {geo: {fitbounds: false}}),
             testCase('ternary', require('../../image/mocks/ternary_markers.json'), 485, 335, [7]),
             testCase('polar', require('../../image/mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' })
@@ -2276,6 +2276,87 @@ describe('Test select box and lasso per trace:', function() {
         }, LONG_TIMEOUT_INTERVAL);
     });
 
+    it('@gl should select scattermap points across the antimeridian', function(done) {
+        var lons = [174.76, 178.44, 179.9, -176.2, -171.77, -175.2];
+        var lats = [-36.85, -18.14, -16.5, -13.3, -13.83, -21.14];
+        var expectedPoints = lons.map(function(lon, i) { return [lon, lats[i]]; });
+        var assertPoints = makeAssertPoints(['lon', 'lat']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+        var boxPath;
+        var lassoPath;
+
+        var fig = {
+            data: [{
+                type: 'scattermap',
+                mode: 'markers',
+                lon: lons,
+                lat: lats,
+                marker: {size: 10}
+            }],
+            layout: {
+                dragmode: 'select',
+                width: 900,
+                height: 600,
+                map: {
+                    center: {lon: 180, lat: -24},
+                    style: 'white-bg',
+                    zoom: 3
+                }
+            },
+            config: {}
+        };
+
+        _newPlot(gd, fig)
+        .then(function() {
+            var subplot = gd._fullLayout.map._subplot;
+            var points = lons.map(function(lon, i) {
+                var unwrappedLon = lon < 0 ? lon + 360 : lon;
+                var pt = subplot.map.project([unwrappedLon, lats[i]]);
+                return [pt.x + subplot.xaxis._offset, pt.y + subplot.yaxis._offset];
+            });
+            var xs = points.map(function(pt) { return pt[0]; });
+            var ys = points.map(function(pt) { return pt[1]; });
+            var x0 = Math.min.apply(null, xs) - 10;
+            var x1 = Math.max.apply(null, xs) + 10;
+            var y0 = Math.min.apply(null, ys) - 10;
+            var y1 = Math.max.apply(null, ys) + 10;
+
+            boxPath = [[x0, y0], [x1, y1]];
+            lassoPath = [[x0, y0], [x0, y1], [x1, y1], [x1, y0], [x0, y0]];
+
+            return _run(false, boxPath,
+                function() {
+                    assertPoints(expectedPoints);
+                    assertSelectedPoints({0: [0, 1, 2, 3, 4, 5]});
+
+                    var range = selectedData.range.map;
+                    expect(range[1][0]).toBeGreaterThan(range[0][0], 'continuous longitude range');
+                    expect(range[1][0]).toBeGreaterThan(180, 'east edge is unwrapped past 180');
+                },
+                null, BOXEVENTS, 'scattermap antimeridian select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(false, lassoPath,
+                function() {
+                    assertPoints(expectedPoints);
+                    assertSelectedPoints({0: [0, 1, 2, 3, 4, 5]});
+
+                    var lassoPoints = selectedData.lassoPoints.map;
+                    for(var i = 1; i < lassoPoints.length; i++) {
+                        expect(Math.abs(lassoPoints[i][0] - lassoPoints[i - 1][0]))
+                            .toBeLessThan(180, 'continuous lasso longitude');
+                    }
+                },
+                null, LASSOEVENTS, 'scattermap antimeridian lasso'
+            );
+        })
+        .then(done, done.fail);
+    }, LONG_TIMEOUT_INTERVAL);
+
     [false, true].forEach(function(hasCssTransform) {
         it('@gl should work on choroplethmap traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
@@ -2359,7 +2440,8 @@ describe('Test select box and lasso per trace:', function() {
                     showlegend: false,
                     dragmode: 'select',
                     width: 800,
-                    height: 600
+                    height: 600,
+                    geo: {fitbounds: false}
                 }
             };
             addInvisible(fig);
@@ -2583,6 +2665,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.height = 450;
             fig.layout.dragmode = 'select';
             fig.layout.geo.scope = 'europe';
+            fig.layout.geo.fitbounds = false;
             addInvisible(fig, false);
 
             // add a trace with no locations which will then make trace invisible, lacking DOM elements

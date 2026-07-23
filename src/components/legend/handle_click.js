@@ -50,7 +50,7 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
 
     var fullTrace = legendItem.trace;
     if (fullTrace._isShape) {
-        fullTrace = fullTrace._fullInput;
+        fullTrace = fullLayout.shapes[fullTrace.index];
     }
 
     var legendgroup = fullTrace.legendgroup;
@@ -92,15 +92,14 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
     function setVisibility(fullTrace, visibility) {
         if (legendItem.groupTitle && !toggleGroup) return;
 
-        var fullInput = fullTrace._fullInput || fullTrace;
-        var isShape = fullInput._isShape;
-        var index = fullInput.index;
-        if (index === undefined) index = fullInput._index;
+        var isShape = fullTrace._isShape;
+        var index = fullTrace.index;
+        if (index === undefined) index = fullTrace._index;
 
         // false -> false (not possible since will not be visible in legend)
         // true -> legendonly
         // legendonly -> true
-        var nextVisibility = fullInput.visible === false ? false : visibility;
+        var nextVisibility = fullTrace.visible === false ? false : visibility;
 
         if (isShape) {
             insertShapesUpdate(index, nextVisibility);
@@ -111,10 +110,7 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
 
     var thisLegend = fullTrace.legend;
 
-    var fullInput = fullTrace._fullInput;
-    var isShape = fullInput && fullInput._isShape;
-
-    if (!isShape && Registry.traceIs(fullTrace, 'pie-like')) {
+    if (!fullTrace._isShape && Registry.traceIs(fullTrace, 'pie-like')) {
         var thisLabel = legendItem.label;
         var thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 

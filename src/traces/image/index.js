@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    attributes: require('./attributes'),
+    attributes: require('./attributes').default,
     supplyDefaults: require('./defaults'),
     calc: require('./calc'),
     plot: require('./plot'),

@@ -1,0 +1,81 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "name": "tail anchor",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "u": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "v": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "sizemode": "scaled",
+      "anchor": "tail",
+      "marker": {
+        "color": "#4466ee",
+        "line": {"width": 2}
+      },
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "type": "quiver",
+      "name": "tip anchor",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "u": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "v": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "sizemode": "scaled",
+      "anchor": "tip",
+      "marker": {
+        "color": "#ee3344",
+        "line": {"width": 2}
+      },
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "type": "quiver",
+      "name": "center anchor",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "u": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "v": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "sizemode": "scaled",
+      "anchor": "center",
+      "marker": {
+        "color": "#8811cc",
+        "line": {"width": 2}
+      },
+      "xaxis": "x3",
+      "yaxis": "y3"
+    }
+  ],
+  "layout": {
+    "width": 700,
+    "height": 400,
+    "showlegend": false,
+    "title": {"text": "Quiver anchors"},
+    "xaxis": {
+      "domain": [0, 0.3],
+      "title": {"text": "tail anchor"}
+    },
+    "yaxis": {
+      "domain": [0, 1]
+    },
+    "xaxis2": {
+      "domain": [0.35, 0.65],
+      "title": {"text": "tip anchor"}
+    },
+    "yaxis2": {
+      "domain": [0, 1],
+      "anchor": "x2"
+    },
+    "xaxis3": {
+      "domain": [0.7, 1],
+      "title": {"text": "center anchor"}
+    },
+    "yaxis3": {
+      "domain": [0, 1],
+      "anchor": "x3"
+    }
+  }
+}

@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
@@ -548,10 +547,9 @@ function drawColorBar(g, opts, gd) {
             if(opts._fillgradient) {
                 Drawing.gradient(fillEl, gd, opts._id, isVertical ? 'vertical' : 'horizontalreversed', opts._fillgradient, 'fill');
             } else {
-                // tinycolor can't handle exponents and
-                // at this scale, removing it makes no difference.
+                // The color library can't handle exponents and at this scale, removing it makes no difference.
                 var colorString = fillColormap(d).replace('e-', '');
-                fillEl.attr('fill', tinycolor(colorString).toHexString());
+                fillEl.attr('fill', Color.color(colorString).hex());
             }
         });
 
@@ -716,8 +714,8 @@ function drawColorBar(g, opts, gd) {
 
         if(!isVertical && (
             borderwidth || (
-                tinycolor(bgcolor).getAlpha() &&
-                !tinycolor.equals(fullLayout.paper_bgcolor, bgcolor)
+                Color.opacity(bgcolor) &&
+                !Color.equals(fullLayout.paper_bgcolor, bgcolor)
             )
         )) {
             // for horizontal colorbars when there is a border line or having different background color

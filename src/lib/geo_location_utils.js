@@ -1,10 +1,11 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var countryRegex = require('country-regex');
+const { COUNTRIES, createLookup } = require('country-iso-search');
 var { area: turfArea } = require('@turf/area');
 var { centroid: turfCentroid } = require('@turf/centroid');
-var { bbox: turfBbox } = require('@turf/bbox');
+const { coordAll } = require('@turf/meta');
+const { geoBounds } = require('d3-geo');
 
 var identity = require('./identity');
 var loggers = require('./loggers');
@@ -12,9 +13,9 @@ var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
 const { usaLocationAbbreviations, usaLocationList } = require('./usa_location_names');
+const { COUNTRIES_X } = require('./custom_country_codes');
 
-// make list of all country iso3 ids from at runtime
-var countryIds = Object.keys(countryRegex);
+const { lookupAlpha3 } = createLookup([...COUNTRIES, ...COUNTRIES_X]);
 
 var locationmodeToIdFinder = {
     'ISO-3': identity,
@@ -23,13 +24,8 @@ var locationmodeToIdFinder = {
 };
 
 function countryNameToISO3(countryName) {
-    for (var i = 0; i < countryIds.length; i++) {
-        var iso3 = countryIds[i];
-        var regex = new RegExp(countryRegex[iso3]);
-
-        if (regex.test(countryName.trim().toLowerCase())) return iso3;
-    }
-
+    const iso3 = lookupAlpha3(countryName);
+    if (iso3) return iso3;
     loggers.log('Unrecognized country name: ' + countryName + '.');
 
     return false;
@@ -390,10 +386,46 @@ function fetchTraceGeoData(calcData) {
     return promises;
 }
 
-// TODO `turf/bbox` gives wrong result when the input feature/geometry
-// crosses the anti-meridian. We should try to implement our own bbox logic.
+/**
+ * Compute a `[west, south, east, north]` bounding box for a GeoJSON object
+ * (Feature, Geometry, FeatureCollection, or GeometryCollection). This function
+ * handles geometry that crosses the antimeridian. `north`/`south` will be in the
+ * range `[-90, 90]`; `west` will typically be in the range `[-180, 180]`; `east`
+ * will typically be in the range `[-180, 180]`, but when the input crosses the
+ * antimeridian, it will be shifted by +360° so the range will be `[180, west + 360)`.
+ *
+ * @param {object} d - a GeoJSON Feature, Geometry, FeatureCollection, or
+ *   GeometryCollection.
+ * @return {[number, number, number, number]|null} `[west, south, east, north]`
+ *   in degrees; `east` may exceed 180° when the input crosses ±180°.
+ *   Returns `null` for input with no extractable coordinates (e.g. `Sphere`,
+ *   empty FeatureCollection).
+ */
 function computeBbox(d) {
-    return turfBbox(d);
+    // Extract an array containing all points contained in the GeoJSON object.
+    // coordAll throws an error on Sphere, malformed inputs, and nullish values.
+    // Treat any failure as "no bounds" so callers can null-guard uniformly.
+    let points;
+    try {
+        points = coordAll(d);
+    } catch (_) {
+        return null;
+    }
+    if (points.length === 0) return null;
+    if (points.length === 1) {
+        const [lon, lat] = points[0];
+        return [lon, lat, lon, lat];
+    }
+    // Pass as MultiPoint (just a bunch of vertices) to avoid
+    // geobounds treating collection as polygons
+    const [[west, south], [east, north]] = geoBounds({ type: 'MultiPoint', coordinates: points });
+
+    return [
+        west,
+        south,
+        unwrapLonRange([west, east])[1], // Unwrap antimeridian crossing; east may exceed 180°
+        north
+    ];
 }
 
 /**
@@ -446,7 +478,7 @@ function getFitboundsLonRange(lons) {
 
 /**
  * Return an unwrapped version of a `[lon0, lon1]` longitude range.
- * When the range crosses the antimeridian (`lon0 > 0`, `lon1 < 0`),
+ * When the range crosses the antimeridian (`lon0 > lon1`),
  * 360 is added to `lon1` to produce a continuous range;
  * otherwise the input pair is returned unchanged. Function assumes
  * `lon0` is west of `lon1`.
@@ -454,13 +486,14 @@ function getFitboundsLonRange(lons) {
  * @example
  *   unwrapLonRange([170, -170]) // → [170, 190]  (span = 20°, midpoint = 180°)
  *   unwrapLonRange([-10, 20])   // → [-10, 20]   (no crossing, passthrough)
+ *   unwrapLonRange([-5, -170])  // → [-5, 190]   (mixed-sign crossing, e.g. from geoBounds)
  *
  * @param {[number, number]} lonRange - `[lon0, lon1]`, each in the range [-180, 180]
  * @return {[number, number]} The unwrapped range; when the input contract is
  *   respected, `lon1` falls in the range `[lon0, lon0 + 360)`.
  */
 function unwrapLonRange([lon0, lon1]) {
-    return [lon0, lon0 > 0 && lon1 < 0 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
+    return [lon0, lon0 > lon1 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
 }
 
 module.exports = {

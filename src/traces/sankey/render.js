@@ -7,7 +7,6 @@ var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 
 var c = require('./constants');
-var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
@@ -70,6 +69,21 @@ function sankeyModel(layout, d, traceIndex) {
       .nodeAlign(nodeAlign)
       .nodes(nodes)
       .links(links);
+
+    function applyInputSort(type) {
+        if (trace[type].sort === 'input') {
+            if (circular) {
+                Lib.warn(
+                    `Circular Sankey diagrams do not support the "input" ${type}.sort mode; falling back to the default sort.`
+                );
+            } else {
+                // Passing null maintains the input order
+                sankey[`${type}Sort`](null);
+            }
+        }
+    }
+    applyInputSort('link');
+    applyInputSort('node');
 
     var graph = sankey();
 
@@ -151,7 +165,7 @@ function sankeyModel(layout, d, traceIndex) {
                         links: flowLinks
                     };
                     if(link.concentrationscale) {
-                        link.color = tinycolor(link.concentrationscale(link.flow.labelConcentration));
+                        link.color = link.concentrationscale(link.flow.labelConcentration);
                     }
                 }
             }
@@ -298,8 +312,6 @@ function sankeyModel(layout, d, traceIndex) {
 }
 
 function linkModel(d, l, i) {
-    var tc = tinycolor(l.color);
-    var htc = tinycolor(l.hovercolor);
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
 
@@ -313,10 +325,10 @@ function linkModel(d, l, i) {
         traceId: d.key,
         pointNumber: l.pointNumber,
         link: l,
-        tinyColorHue: Color.tinyRGB(tc),
-        tinyColorAlpha: tc.getAlpha(),
-        tinyColorHoverHue: Color.tinyRGB(htc),
-        tinyColorHoverAlpha: htc.getAlpha(),
+        rgb: Color.rgb(l.color),
+        alpha: Color.color(l.color).alpha(),
+        hoverRgb: Color.rgb(l.hovercolor),
+        hoverAlpha: Color.color(l.hovercolor).alpha(),
         linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
@@ -535,7 +547,6 @@ function linkPath() {
 }
 
 function nodeModel(d, n) {
-    var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
     n.dx = n.x1 - n.x0;
@@ -577,9 +588,9 @@ function nodeModel(d, n) {
         sizeAcross: d.width,
         forceLayouts: d.forceLayouts,
         horizontal: d.horizontal,
-        darkBackground: tc.getBrightness() <= 128,
-        tinyColorHue: Color.tinyRGB(tc),
-        tinyColorAlpha: tc.getAlpha(),
+        darkBackground: Color.color(n.color).isDark(),
+        rgb: Color.rgb(n.color),
+        alpha: Color.color(n.color).alpha(),
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
@@ -937,21 +948,11 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
           .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
-        .style('stroke', function(d) {
-            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
-        })
-        .style('stroke-opacity', function(d) {
-            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
-        })
-        .style('fill', function(d) {
-            return d.tinyColorHue;
-        })
-        .style('fill-opacity', function(d) {
-            return d.tinyColorAlpha;
-        })
-        .style('stroke-width', function(d) {
-            return salientEnough(d) ? d.linkLineWidth : 1;
-        })
+        .style('stroke', d => salientEnough(d) ? Color.rgb(d.linkLineColor) : d.rgb)
+        .style('stroke-opacity', d => salientEnough(d) ? Color.opacity(d.linkLineColor) : d.alpha)
+        .style('fill', d => d.rgb)
+        .style('fill-opacity', d => d.alpha)
+        .style('stroke-width', d => salientEnough(d) ? d.linkLineWidth : 1)
         .attr('d', linkPath());
 
     sankeyLink
@@ -1022,10 +1023,10 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     nodeRect
         .style('stroke-width', function(d) {return d.nodeLineWidth;})
-        .style('stroke', function(d) {return Color.tinyRGB(tinycolor(d.nodeLineColor));})
+        .style('stroke', function(d) {return Color.rgb(d.nodeLineColor);})
         .style('stroke-opacity', function(d) {return Color.opacity(d.nodeLineColor);})
-        .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        .style('fill', d => d.rgb)
+        .style('fill-opacity', d => d.alpha);
 
     nodeRect.transition()
         .ease(c.ease).duration(c.duration)

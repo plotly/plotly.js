@@ -22,17 +22,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
         delete out.pointNumber;
         delete out.pointIndex;
 
-        var pointIndices;
-        if(trace._indexToPoints) {
-            pointIndices = [];
-            for(var i = 0; i < pts.length; i++) {
-                pointIndices = pointIndices.concat(trace._indexToPoints[pts[i]]);
-            }
-        } else {
-            pointIndices = pts;
-        }
-
-        out.pointIndices = pointIndices;
+        out.pointIndices = pts;
     }
 
     return out;

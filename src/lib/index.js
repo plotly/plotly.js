@@ -105,7 +105,7 @@ lib.roundUp = searchModule.roundUp;
 lib.sort = searchModule.sort;
 lib.findIndexOfMin = searchModule.findIndexOfMin;
 
-lib.sortObjectKeys = require('./sort_object_keys');
+lib.sortObjectKeys = require('./sort_object_keys').default;
 
 var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;
@@ -206,7 +206,9 @@ lib.pushUnique = require('./push_unique');
 
 lib.increment = require('./increment');
 
-lib.cleanNumber = require('./clean_number');
+lib.cleanNumber = require('./clean_number').default;
+
+lib.slugify = require('./slugify');
 
 lib.ensureNumber = function ensureNumber(v) {
     if (!isNumeric(v)) return BADNUM;
@@ -585,39 +587,17 @@ lib.extractOption = function (calcPt, trace, calcKey, traceKey) {
     if (!Array.isArray(traceVal)) return traceVal;
 };
 
-function makePtIndex2PtNumber(indexToPoints) {
-    var ptIndex2ptNumber = {};
-    for (var k in indexToPoints) {
-        var pts = indexToPoints[k];
-        for (var j = 0; j < pts.length; j++) {
-            ptIndex2ptNumber[pts[j]] = +k;
-        }
-    }
-    return ptIndex2ptNumber;
-}
-
 /** Tag selected calcdata items
- *
- * N.B. note that point 'index' corresponds to input data array index
- *  whereas 'number' is its post-transform version.
  *
  * @param {array} calcTrace
  * @param {object} trace
  *  - selectedpoints {array}
- *  - _indexToPoints {object}
  * @param {ptNumber2cdIndex} ptNumber2cdIndex (optional)
  *  optional map object for trace types that do not have 1-to-1 point number to
  *  calcdata item index correspondence (e.g. histogram)
  */
 lib.tagSelected = function (calcTrace, trace, ptNumber2cdIndex) {
     var selectedpoints = trace.selectedpoints;
-    var indexToPoints = trace._indexToPoints;
-    var ptIndex2ptNumber;
-
-    // make pt index-to-number map object, which takes care of transformed traces
-    if (indexToPoints) {
-        ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
-    }
 
     function isCdIndexValid(v) {
         return v !== undefined && v < calcTrace.length;
@@ -630,37 +610,13 @@ lib.tagSelected = function (calcTrace, trace, ptNumber2cdIndex) {
             lib.isIndex(ptIndex) ||
             (lib.isArrayOrTypedArray(ptIndex) && lib.isIndex(ptIndex[0]) && lib.isIndex(ptIndex[1]))
         ) {
-            var ptNumber = ptIndex2ptNumber ? ptIndex2ptNumber[ptIndex] : ptIndex;
+            var ptNumber = ptIndex;
             var cdIndex = ptNumber2cdIndex ? ptNumber2cdIndex[ptNumber] : ptNumber;
 
             if (isCdIndexValid(cdIndex)) {
                 calcTrace[cdIndex].selected = 1;
             }
         }
-    }
-};
-
-lib.selIndices2selPoints = function (trace) {
-    var selectedpoints = trace.selectedpoints;
-    var indexToPoints = trace._indexToPoints;
-
-    if (indexToPoints) {
-        var ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
-        var out = [];
-
-        for (var i = 0; i < selectedpoints.length; i++) {
-            var ptIndex = selectedpoints[i];
-            if (lib.isIndex(ptIndex)) {
-                var ptNumber = ptIndex2ptNumber[ptIndex];
-                if (lib.isIndex(ptNumber)) {
-                    out.push(ptNumber);
-                }
-            }
-        }
-
-        return out;
-    } else {
-        return selectedpoints;
     }
 };
 
@@ -956,8 +912,8 @@ lib.expandObjectPaths = function (data) {
                     data[prop] = data[prop] || [];
 
                     if (match[3] === '.') {
-                        // This is the case where theere are subsequent properties into which
-                        // we must recurse, e.g. transforms[0].value
+                        // This is the case where there are subsequent properties into which
+                        // we must recurse, e.g. annotations[0].text
                         trailingPath = match[4];
                         dest = data[prop][idx] = data[prop][idx] || {};
 

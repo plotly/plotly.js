@@ -1,0 +1,1 @@
+- Remove config attributes `showLink`, `linkText`, `sendData`, `showSources`, and `showEditInChartStudio`, as well as trace attribute `stream`, since all of these were associated with Chart Studio and are no longer needed [[#7812](https://github.com/plotly/plotly.js/pull/7812)]

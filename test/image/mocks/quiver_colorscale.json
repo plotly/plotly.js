@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "x": [0, 1, 2, 0, 1, 2, 0, 1, 2],
+      "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
+      "u": [1, 2, 3, 1, 2, 3, 1, 2, 3],
+      "v": [1, 1, 1, 2, 2, 2, 3, 3, 3],
+      "sizemode": "scaled",
+      "anchor": "tail",
+      "anglemode": "paper",
+      "marker": {
+        "showscale": true,
+        "colorbar": {
+          "title": {"text": "Magnitude"}
+        },
+        "line": {"width": 2}
+      }
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 500,
+    "title": {
+      "text": "Quiver with Colorscale",
+      "subtitle": {"text": "When using a colorscale, vector magnitude is used for color,<br> unless marker.color is an array of values"}
+    }
+  }
+}

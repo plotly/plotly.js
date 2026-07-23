@@ -1,69 +1,70 @@
-Autoscale                                              // components/modebar/buttons.js:217
-Box Select                                             // components/modebar/buttons.js:125
-Cancel                                                 // components/modebar/cloud_confirm.js:60
-Click to enter Colorscale title                        // plots/plots.js:328
-Click to enter Component A title                       // plots/ternary/ternary.js:379
-Click to enter Component B title                       // plots/ternary/ternary.js:389
-Click to enter Component C title                       // plots/ternary/ternary.js:399
-Click to enter Plot subtitle                           // plots/plots.js:325
-Click to enter Plot title                              // plots/plots.js:324
-Click to enter X axis title                            // plots/plots.js:326
-Click to enter Y axis title                            // plots/plots.js:327
-Click to enter radial axis title                       // plots/polar/polar.js:593
-Compare data on hover                                  // components/modebar/buttons.js:248
-Double-click on legend to isolate one trace            // components/legend/handle_click.js:38
-Double-click to zoom back out                          // plots/ternary/ternary.js:681
-Download plot                                          // components/modebar/buttons.js:46
-Download plot as a PNG                                 // components/modebar/buttons.js:45
-Draw circle                                            // components/modebar/buttons.js:180
-Draw closed freeform                                   // components/modebar/buttons.js:144
-Draw line                                              // components/modebar/buttons.js:162
-Draw open freeform                                     // components/modebar/buttons.js:153
-Draw rectangle                                         // components/modebar/buttons.js:171
-Erase active shape                                     // components/modebar/buttons.js:189
-Lasso Select                                           // components/modebar/buttons.js:135
-Orbital rotation                                       // components/modebar/buttons.js:358
-Pan                                                    // components/modebar/buttons.js:115
-Produced with Plotly.js                                // components/modebar/modebar.js:329
-Reset                                                  // components/modebar/buttons.js:531
-Reset axes                                             // components/modebar/buttons.js:227
-Reset camera to default                                // components/modebar/buttons.js:397
-Reset camera to last save                              // components/modebar/buttons.js:406
-Reset view                                             // components/modebar/buttons.js:603
-Reset views                                            // components/modebar/buttons.js:641
-Share                                                  // components/modebar/cloud_confirm.js:66
-Share with Plotly Cloud                                // components/modebar/cloud_confirm.js:33
-Show closest data on hover                             // components/modebar/buttons.js:237
-Snapshot succeeded                                     // components/modebar/buttons.js:63
-Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:66
-Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:53
-This chart and its data will be sent to                // components/modebar/cloud_confirm.js:37
-Toggle Spike Lines                                     // components/modebar/buttons.js:661
-Toggle show closest data on hover                      // components/modebar/buttons.js:456
-Turntable rotation                                     // components/modebar/buttons.js:367
-Zoom                                                   // components/modebar/buttons.js:105
-Zoom in                                                // components/modebar/buttons.js:197
-Zoom out                                               // components/modebar/buttons.js:207
-close:                                                 // traces/ohlc/calc.js:108
-concentration:                                         // traces/sankey/plot.js:176
-high:                                                  // traces/ohlc/calc.js:106
-incoming flow count:                                   // traces/sankey/plot.js:177
-kde:                                                   // traces/violin/calc.js:88
-lat:                                                   // traces/scattergeo/calc.js:51
-lon:                                                   // traces/scattergeo/calc.js:52
-low:                                                   // traces/ohlc/calc.js:107
-lower fence:                                           // traces/box/calc.js:293
-max:                                                   // traces/box/calc.js:289
-mean ± σ:                                              // traces/box/calc.js:291
-mean:                                                  // traces/box/calc.js:292
-median:                                                // traces/box/calc.js:285
-min:                                                   // traces/box/calc.js:286
-new text                                               // plots/plots.js:329
-open:                                                  // traces/ohlc/calc.js:105
-outgoing flow count:                                   // traces/sankey/plot.js:178
-q1:                                                    // traces/box/calc.js:287
-q3:                                                    // traces/box/calc.js:288
-source:                                                // traces/sankey/plot.js:174
-target:                                                // traces/sankey/plot.js:175
-trace                                                  // plots/plots.js:331
-upper fence:                                           // traces/box/calc.js:294
+Autoscale                                           // components/modebar/buttons.js:241
+Box Select                                          // components/modebar/buttons.js:129
+Cancel                                              // components/modebar/cloud_confirm.js:64
+Click to enter Colorscale title                     // plots/plots.js:238
+Click to enter Component A title                    // plots/ternary/ternary.js:378
+Click to enter Component B title                    // plots/ternary/ternary.js:388
+Click to enter Component C title                    // plots/ternary/ternary.js:398
+Click to enter Plot subtitle                        // plots/plots.js:235
+Click to enter Plot title                           // plots/plots.js:234
+Click to enter X axis title                         // plots/plots.js:236
+Click to enter Y axis title                         // plots/plots.js:237
+Click to enter radial axis title                    // plots/polar/polar.js:592
+Compare data on hover                               // components/modebar/buttons.js:278
+Double-click on legend to isolate one trace         // components/legend/handle_click.js:38
+Double-click to zoom back out                       // plots/ternary/ternary.js:680
+Download plot                                       // components/modebar/buttons.js:47
+Download plot as a PNG                              // components/modebar/buttons.js:45
+Draw circle                                         // components/modebar/buttons.js:196
+Draw closed freeform                                // components/modebar/buttons.js:152
+Draw line                                           // components/modebar/buttons.js:174
+Draw open freeform                                  // components/modebar/buttons.js:163
+Draw rectangle                                      // components/modebar/buttons.js:185
+Erase active shape                                  // components/modebar/buttons.js:207
+Image download succeeded                            // components/modebar/buttons.js:64
+Lasso Select                                        // components/modebar/buttons.js:141
+Orbital rotation                                    // components/modebar/buttons.js:388
+Pan                                                 // components/modebar/buttons.js:117
+Preparing image - this may take a few seconds       // components/modebar/buttons.js:54
+Produced with Plotly.js                             // components/modebar/modebar.js:329
+Reset                                               // components/modebar/buttons.js:575
+Reset axes                                          // components/modebar/buttons.js:253
+Reset camera to default                             // components/modebar/buttons.js:431
+Reset camera to last save                           // components/modebar/buttons.js:442
+Reset view                                          // components/modebar/buttons.js:679
+Reset views                                         // components/modebar/buttons.js:721
+Share                                               // components/modebar/cloud_confirm.js:70
+Share Chart                                         // components/modebar/buttons.js:75
+Share with Plotly Cloud                             // components/modebar/cloud_confirm.js:33
+Show closest data on hover                          // components/modebar/buttons.js:265
+Sorry, there was a problem downloading your image!  // components/modebar/buttons.js:67
+This chart and its data will be sent to             // components/modebar/cloud_confirm.js:39
+Toggle Spike Lines                                  // components/modebar/buttons.js:742
+Toggle show closest data on hover                   // components/modebar/buttons.js:494
+Turntable rotation                                  // components/modebar/buttons.js:399
+Zoom                                                // components/modebar/buttons.js:105
+Zoom in                                             // components/modebar/buttons.js:217
+Zoom out                                            // components/modebar/buttons.js:229
+close:                                              // traces/ohlc/calc.js:108
+concentration:                                      // traces/sankey/plot.js:176
+high:                                               // traces/ohlc/calc.js:106
+incoming flow count:                                // traces/sankey/plot.js:177
+kde:                                                // traces/violin/calc.js:88
+lat:                                                // traces/scattergeo/calc.js:51
+lon:                                                // traces/scattergeo/calc.js:52
+low:                                                // traces/ohlc/calc.js:107
+lower fence:                                        // traces/box/calc.js:293
+max:                                                // traces/box/calc.js:289
+mean ± σ:                                           // traces/box/calc.js:291
+mean:                                               // traces/box/calc.js:292
+median:                                             // traces/box/calc.js:285
+min:                                                // traces/box/calc.js:286
+new text                                            // plots/plots.js:239
+open:                                               // traces/ohlc/calc.js:105
+outgoing flow count:                                // traces/sankey/plot.js:178
+q1:                                                 // traces/box/calc.js:287
+q3:                                                 // traces/box/calc.js:288
+source:                                             // traces/sankey/plot.js:174
+target:                                             // traces/sankey/plot.js:175
+trace                                               // plots/plots.js:241
+upper fence:                                        // traces/box/calc.js:294
