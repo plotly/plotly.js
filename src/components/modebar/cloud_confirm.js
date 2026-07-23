@@ -56,7 +56,7 @@ module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
     urlField.append('label')
         .classed('plotly-cloud-dialog-label', true)
         .attr('for', 'plotly-cloud-dialog-url')
-        .text(_(gd, 'Dash Enterprise URL'));
+        .text(_(gd, 'Chart Server URL'));
 
     var input = urlField.append('input')
         .classed('plotly-cloud-dialog-input', true)
@@ -129,7 +129,7 @@ module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
     customBtn.on('click', function() {
         customBtn.style('display', 'none');
         urlField.style('display', '');
-        description.text(_(gd, 'If your Dash Enterprise instance supports chart sharing, you can enter its URL below. This chart and its data will be sent to the URL you provide.'));
+        description.text(_(gd, 'Enter the url of your Dash Enterprise chart server below or contact Plotly support to get set up. This chart and its data will be sent to the URL you provide.'));
         input.node().focus();
     });
 
