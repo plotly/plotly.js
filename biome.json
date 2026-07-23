@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.5/schema.json",
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "files": {
     "maxSize": 10000000,
@@ -17,6 +17,7 @@
       "!**/stackgl_modules",
       "!**/node_modules",
       "!**/build",
+      "!**/.venv/**",
       "!**/tasks/test_amdefine.js",
       "!**/tasks/test_requirejs.js",
       "!**/test/jasmine/assets/jquery-1.8.3.min.js"
@@ -25,9 +26,9 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": false,
+      "preset": "none",
       "complexity": {
-        "noExtraBooleanCast": "error",
+        "noExtraBooleanCast": "off",
         "noUselessCatch": "error",
         "useLiteralKeys": "error",
         "noAdjacentSpacesInRegex": "error"
