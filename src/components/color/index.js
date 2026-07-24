@@ -49,7 +49,9 @@ const opacity = (cstr) => (cstr ? color(cstr).alpha() : 0);
  * @return {Number[]|Uint8Array}
  */
 const normalize = (cstr, type) => {
-    const [r, g, b, a] = color(cstr).rgb().array();
+    // color's `.rgb().array()` omits alpha when it is 1, so default `a`
+    // back to 1 to keep the 4-element shape callers expect.
+    const [r, g, b, a = 1] = color(cstr).rgb().array();
     if (type === 'uint8') {
         const out = new Uint8Array(4);
         out[0] = r;
