@@ -33,7 +33,7 @@
     "schema-typegen-diff-check": "npm run schema && git diff --exit-code src/types/generated/ test/plot-schema.json",
     "stats": "node tasks/stats.mjs",
     "find-strings": "node tasks/find_locale_strings.js",
-    "preprocess": "ts-node tasks/preprocess.js",
+    "preprocess": "node tasks/preprocess.js",
     "use-draftlogs": "node tasks/use_draftlogs.js",
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
@@ -49,7 +49,7 @@
     "test-mock": "node tasks/test_mock.mjs",
     "test-image": "node test/image/compare_pixels_test.mjs",
     "test-export": "node test/image/export_test.js",
-    "test-syntax": "ts-node tasks/test_syntax.js && npm run find-strings -- --no-output",
+    "test-syntax": "tsx tasks/test_syntax.js && npm run find-strings -- --no-output",
     "test-bundle": "node tasks/test_bundle.js",
     "test-plain-obj": "node tasks/test_plain_obj.mjs",
     "test": "npm run test-jasmine -- --nowatch && npm run test-bundle && npm run test-image && npm run test-export && npm run test-syntax && npm run lint",
@@ -169,8 +169,8 @@
     "style-loader": "^4.0.0",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
+    "tsx": "^4.23.1",
+    "typescript": "^6.0.3",
     "virtual-webgl": "^1.0.7"
   },
   "overrides": {
