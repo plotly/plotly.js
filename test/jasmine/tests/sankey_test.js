@@ -979,10 +979,12 @@ describe('sankey tests', function () {
                 })
                 .then(done, done.fail);
         });
-
+        
         it('@noCI should position hover labels correctly - horizontal, reversed', function (done) {
             var gd = createGraphDiv();
             var forwardOffsetX;
+            var forwardPosY;
+            var forwardLinkLeft;
 
             function plotWith(direction) {
                 var fig = Lib.extendDeep({}, mock);
@@ -1001,6 +1003,8 @@ describe('sankey tests', function () {
                     var linkRect = rectForLink('Thermal generation', 'Losses');
                     var pos = d3Select('.hovertext').node().getBoundingClientRect();
                     forwardOffsetX = pos.x - (linkRect.left + linkRect.width / 2);
+                    forwardPosY = pos.y;
+                    forwardLinkLeft = linkRect.left;
 
                     return plotWith('reversed');
                 })
@@ -1029,6 +1033,20 @@ describe('sankey tests', function () {
                         -1.5,
                         'label offset from its link is direction-independent'
                     );
+
+                    // matrix(-1 0 0 1 0 0) mirrors along x only.
+                    expect(pos.y).toBeCloseTo(
+                        forwardPosY,
+                        -1.5,
+                        'y position is unaffected by direction'
+                    );
+
+                    // Guard against a vacuously passing test: the offset above is
+                    // only meaningful if the link actually moved.
+                    expect(Math.abs(linkRect.left - forwardLinkLeft)).toBeGreaterThan(
+                        50,
+                        'link is actually mirrored along x'
+                    );
                 })
                 .then(done, done.fail);
         });
@@ -1036,6 +1054,8 @@ describe('sankey tests', function () {
         it('@noCI should position hover labels correctly - vertical, reversed', function (done) {
             var gd = createGraphDiv();
             var forwardOffsetY;
+            var forwardPosX;
+            var forwardLinkTop;
 
             function plotWith(direction) {
                 var fig = Lib.extendDeep({}, mock);
@@ -1050,6 +1070,8 @@ describe('sankey tests', function () {
                     var linkRect = rectForLink('Thermal generation', 'Losses');
                     var pos = d3Select('.hovertext').node().getBoundingClientRect();
                     forwardOffsetY = pos.y - (linkRect.top + linkRect.height / 2);
+                    forwardPosX = pos.x;
+                    forwardLinkTop = linkRect.top;
 
                     return plotWith('reversed');
                 })
@@ -1069,6 +1091,19 @@ describe('sankey tests', function () {
                         forwardOffsetY,
                         -1.5,
                         'label offset from its link is direction-independent'
+                    );
+
+                    // matrix(0 -1 1 0 0 0) maps data y to screen x (unmirrored)
+                    // and mirrors along screen y only.
+                    expect(pos.x).toBeCloseTo(
+                        forwardPosX,
+                        -1.5,
+                        'x position is unaffected by direction'
+                    );
+
+                    expect(Math.abs(linkRect.top - forwardLinkTop)).toBeGreaterThan(
+                        50,
+                        'link is actually mirrored along y'
                     );
                 })
                 .then(done, done.fail);

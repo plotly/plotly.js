@@ -194,13 +194,13 @@ module.exports = function plot(gd, calcData) {
                 hoverCenterY = (link.y0 + link.y1) / 2;
             }
             var vertical = link.trace.orientation === 'v';
-            var reverse = link.trace.direction === 'reverse';
+            var reversed = link.trace.direction === 'reversed';
             var center = [hoverCenterX, hoverCenterY];
             // Vertical orientation transposes x/y to match the group transform.
             if(vertical) center.reverse();
-            // reverse direction additionally mirrors the flow axis (matching the translate).
-            if(vertical && reverse) center[1] = d.parent.height - center[1];
-            if(!vertical && reverse) center[0] = d.parent.width - center[0];
+            // reversed direction additionally mirrors the flow axis (matching the translate).
+            if(vertical && reversed) center[1] = d.parent.height - center[1];
+            if(!vertical && reversed) center[0] = d.parent.width - center[0];
             center[0] += d.parent.translateX;
             center[1] += d.parent.translateY;
             return center;

@@ -8,7 +8,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var model = fullData._sankey;
     var nodes = model.graph.nodes;
     var vertical = fullData.orientation === 'v';
-    var reverse = fullData.direction === 'reverse';
+    var reversed = fullData.direction === 'reversed';
 
     for(var i = 0; i < nodes.length; i++) {
         var node = nodes[i];
@@ -20,14 +20,14 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
 
         // Mirror/swap to match the group transform applied in render.js (sankeyTransform):
         //   h + forward:  (cx, cy)
-        //   h + reverse:  (width - cx, cy)     -> matrix(-1  0 0 1) + translate(width, 0)
+        //   h + reversed: (width - cx, cy)     -> matrix(-1  0 0 1) + translate(width, 0)
         //   v + forward:  (cy, cx)             -> matrix( 0  1 1 0)  (swap x/y)
-        //   v + reverse:  (cy, height - cx)    -> matrix( 0 -1 1 0) + translate(0, height)
+        //   v + reversed: (cy, height - cx)    -> matrix( 0 -1 1 0) + translate(0, height)
         var pos;
         if(vertical) {
-            pos = [cy, reverse ? model.height - cx : cx];
+            pos = [cy, reversed ? model.height - cx : cx];
         } else {
-            pos = [reverse ? model.width - cx : cx, cy];
+            pos = [reversed ? model.width - cx : cx, cy];
         }
 
         if(selectionTester && selectionTester.contains(pos, false, i, searchInfo)) {
