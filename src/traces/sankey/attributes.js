@@ -33,7 +33,23 @@ var attrs = (module.exports = overrideAll(
             valType: 'enumerated',
             values: ['v', 'h'],
             dflt: 'h',
-            description: 'Sets the orientation of the Sankey diagram.'
+            description: [
+                'Sets the orientation of the Sankey diagram.',
+                'With `h` (the default), the flow runs horizontally.',
+                'With `v`, the flow runs vertically.',
+                'Use `direction` to control which side the sources are placed on.'
+            ].join(' ')
+        },
+
+        direction: {
+            valType: 'enumerated',
+            values: ['forward', 'reversed'],
+            dflt: 'forward',
+            description: [
+                'Sets the direction of the flow along the `orientation` axis.',
+                'With `forward` (the default), sources are on the left (horizontal) or top (vertical).',
+                'With `reversed`, sources are on the right (horizontal) or bottom (vertical).',
+            ].join(' ')
         },
 
         valueformat: {

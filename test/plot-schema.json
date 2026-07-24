@@ -51264,6 +51264,16 @@
           "editType": "calc",
           "valType": "data_array"
         },
+        "direction": {
+          "description": "Sets the direction of the flow along the `orientation` axis. With `forward` (the default), sources are on the left (horizontal) or top (vertical). With `reversed`, sources are on the right (horizontal) or bottom (vertical).",
+          "dflt": "forward",
+          "editType": "calc",
+          "valType": "enumerated",
+          "values": [
+            "forward",
+            "reversed"
+          ]
+        },
         "domain": {
           "column": {
             "description": "If there is a layout grid, use the domain for this column in the grid for this sankey trace.",
@@ -52187,7 +52197,7 @@
           }
         },
         "orientation": {
-          "description": "Sets the orientation of the Sankey diagram.",
+          "description": "Sets the orientation of the Sankey diagram. With `h` (the default), the flow runs horizontally. With `v`, the flow runs vertically. Use `direction` to control which side the sources are placed on.",
           "dflt": "h",
           "editType": "calc",
           "valType": "enumerated",

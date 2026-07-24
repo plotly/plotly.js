@@ -101,6 +101,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('orientation');
+    coerce('direction');
     coerce('valueformat');
     coerce('valuesuffix');
 

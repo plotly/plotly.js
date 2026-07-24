@@ -127,6 +127,8 @@ describe('sankey tests', function () {
 
             expect(fullTrace.orientation).toEqual(attributes.orientation.dflt, 'use orientation by default');
 
+            expect(fullTrace.direction).toEqual(attributes.direction.dflt, 'use direction by default');
+
             expect(fullTrace.valueformat).toEqual(attributes.valueformat.dflt, 'valueformat by default');
 
             expect(fullTrace.valuesuffix).toEqual(attributes.valuesuffix.dflt, 'valuesuffix by default');
@@ -136,6 +138,24 @@ describe('sankey tests', function () {
             expect(fullTrace.domain.x).toEqual(attributes.domain.x.dflt, 'x domain by default');
 
             expect(fullTrace.domain.y).toEqual(attributes.domain.y.dflt, 'y domain by default');
+        });
+
+        it('coerces the orientation values', function() {
+            ['h', 'v'].forEach(function(o) {
+                expect(_supply({orientation: o}).orientation)
+                    .toBe(o, o + ' is a valid orientation');
+            });
+            expect(_supply({orientation: 'sideways'}).orientation)
+                .toBe(attributes.orientation.dflt, 'invalid orientation falls back to default');
+        });
+
+        it('coerces the direction values', function() {
+            ['forward', 'reversed'].forEach(function(dir) {
+                expect(_supply({direction: dir}).direction)
+                    .toBe(dir, dir + ' is a valid direction');
+            });
+            expect(_supply({direction: 'backward'}).direction)
+                .toBe(attributes.direction.dflt, 'invalid direction falls back to default');
         });
 
         it("'Sankey' layout dependent specification should have proper types", function () {
@@ -375,6 +395,47 @@ describe('sankey tests', function () {
             gd = createGraphDiv();
         });
         afterEach(destroyGraphDiv);
+
+        it('applies the correct group transform per orientation and direction', function(done) {
+            function groupTransform() {
+                return d3Select('.sankey').attr('transform');
+            }
+            function plotWith(orientation, direction) {
+                var fig = Lib.extendDeep({}, mock);
+                fig.data[0].orientation = orientation;
+                if(direction !== undefined) fig.data[0].direction = direction;
+                // newPlot re-enters the trace, so the transform is set synchronously
+                // (no mid-transition interpolation to race against).
+                return Plotly.newPlot(gd, fig);
+            }
+
+            plotWith('h')
+                .then(function() {
+                    // forward is the default direction
+                    expect(groupTransform()).toContain('matrix(1 0 0 1 0 0)');
+                    return plotWith('h', 'forward');
+                })
+                .then(function() {
+                    expect(groupTransform()).toContain('matrix(1 0 0 1 0 0)');
+                    return plotWith('h', 'reversed');
+                })
+                .then(function() {
+                    expect(groupTransform()).toContain('matrix(-1 0 0 1 0 0)');
+                    return plotWith('v', 'forward');
+                })
+                .then(function() {
+                    expect(groupTransform()).toContain('matrix(0 1 1 0 0 0)');
+                    return plotWith('v'); // forward is the default direction
+                })
+                .then(function() {
+                    expect(groupTransform()).toContain('matrix(0 1 1 0 0 0)');
+                    return plotWith('v', 'reversed');
+                })
+                .then(function() {
+                    expect(groupTransform()).toContain('matrix(0 -1 1 0 0 0)');
+                })
+                .then(done, done.fail);
+        });
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function (done) {
             var mockCopy = Lib.extendDeep({}, mock);
@@ -915,6 +976,135 @@ describe('sankey tests', function () {
                     var pos = g.node().getBoundingClientRect();
                     expect(pos.x).toBeCloseTo(236, -1.5);
                     expect(pos.y).toBeCloseTo(500, -1.5);
+                })
+                .then(done, done.fail);
+        });
+        
+        it('@noCI should position hover labels correctly - horizontal, reversed', function (done) {
+            var gd = createGraphDiv();
+            var forwardOffsetX;
+            var forwardPosY;
+            var forwardLinkLeft;
+
+            function plotWith(direction) {
+                var fig = Lib.extendDeep({}, mock);
+                if (direction !== undefined) fig.data[0].direction = direction;
+                return Plotly.newPlot(gd, fig);
+            }
+
+            plotWith()
+                .then(function () {
+                    // Baseline: the label's offset from its own link's center,
+                    // under the default 'forward' direction (absolute pixel
+                    // positions are font/browser sensitive - see the plain
+                    // 'horizontal'/'vertical' tests above - so we anchor to the
+                    // link itself rather than a hard-coded literal).
+                    hoverLink('Thermal generation', 'Losses');
+                    var linkRect = rectForLink('Thermal generation', 'Losses');
+                    var pos = d3Select('.hovertext').node().getBoundingClientRect();
+                    forwardOffsetX = pos.x - (linkRect.left + linkRect.width / 2);
+                    forwardPosY = pos.y;
+                    forwardLinkLeft = linkRect.left;
+
+                    return plotWith('reversed');
+                })
+                .then(function () {
+                    hoverLink('Thermal generation', 'Losses');
+
+                    assertLabel(
+                        ['source: Thermal generation', 'target: Losses', '787TWh'],
+                        ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                    );
+
+                    // The link itself is drawn mirrored under direction:'reversed'
+                    // (see 'applies the correct group transform per orientation and
+                    // direction' above). hoverCenterPosition places the label at a
+                    // fixed offset from its anchor regardless of direction, so that
+                    // offset - not the absolute position - is what should stay
+                    // constant here. If hoverCenterPosition ignored `direction`, the
+                    // link would still be mirrored but the label would stay glued to
+                    // the old, un-mirrored anchor, breaking this invariant.
+                    var linkRect = rectForLink('Thermal generation', 'Losses');
+                    var pos = d3Select('.hovertext').node().getBoundingClientRect();
+                    var reverseOffsetX = pos.x - (linkRect.left + linkRect.width / 2);
+
+                    expect(reverseOffsetX).toBeCloseTo(
+                        forwardOffsetX,
+                        -1.5,
+                        'label offset from its link is direction-independent'
+                    );
+
+                    // matrix(-1 0 0 1 0 0) mirrors along x only.
+                    expect(pos.y).toBeCloseTo(
+                        forwardPosY,
+                        -1.5,
+                        'y position is unaffected by direction'
+                    );
+
+                    // Guard against a vacuously passing test: the offset above is
+                    // only meaningful if the link actually moved.
+                    expect(Math.abs(linkRect.left - forwardLinkLeft)).toBeGreaterThan(
+                        50,
+                        'link is actually mirrored along x'
+                    );
+                })
+                .then(done, done.fail);
+        });
+
+        it('@noCI should position hover labels correctly - vertical, reversed', function (done) {
+            var gd = createGraphDiv();
+            var forwardOffsetY;
+            var forwardPosX;
+            var forwardLinkTop;
+
+            function plotWith(direction) {
+                var fig = Lib.extendDeep({}, mock);
+                fig.data[0].orientation = 'v';
+                if (direction !== undefined) fig.data[0].direction = direction;
+                return Plotly.newPlot(gd, fig);
+            }
+
+            plotWith()
+                .then(function () {
+                    hoverLink('Thermal generation', 'Losses');
+                    var linkRect = rectForLink('Thermal generation', 'Losses');
+                    var pos = d3Select('.hovertext').node().getBoundingClientRect();
+                    forwardOffsetY = pos.y - (linkRect.top + linkRect.height / 2);
+                    forwardPosX = pos.x;
+                    forwardLinkTop = linkRect.top;
+
+                    return plotWith('reversed');
+                })
+                .then(function () {
+                    hoverLink('Thermal generation', 'Losses');
+
+                    assertLabel(
+                        ['source: Thermal generation', 'target: Losses', '787TWh'],
+                        ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
+                    );
+
+                    var linkRect = rectForLink('Thermal generation', 'Losses');
+                    var pos = d3Select('.hovertext').node().getBoundingClientRect();
+                    var reverseOffsetY = pos.y - (linkRect.top + linkRect.height / 2);
+
+                    expect(reverseOffsetY).toBeCloseTo(
+                        forwardOffsetY,
+                        -1.5,
+                        'label offset from its link is direction-independent'
+                    );
+
+                    // matrix(0 -1 1 0 0 0) maps data y to screen x (unmirrored)
+                    // and mirrors along screen y only.
+                    expect(pos.x).toBeCloseTo(
+                        forwardPosX,
+                        -1.5,
+                        'x position is unaffected by direction'
+                    );
+
+                    expect(Math.abs(linkRect.top - forwardLinkTop)).toBeGreaterThan(
+                        50,
+                        'link is actually mirrored along y'
+                    );
                 })
                 .then(done, done.fail);
         });
@@ -1617,6 +1807,60 @@ describe('sankey tests', function () {
                         })
                         .then(done, done.fail);
                 });
+            });
+        });
+
+        describe('for mirrored direction:', function () {
+            var gd;
+            var mockCopy;
+            var nodeId = 4; // Selecting node with label 'Solid'
+
+            beforeEach(function () {
+                gd = createGraphDiv();
+                mockCopy = Lib.extendDeep({}, mock);
+                mockCopy.data[0].arrangement = 'freeform';
+            });
+
+            afterEach(function () {
+                Plotly.purge(gd);
+                destroyGraphDiv();
+            });
+
+            // Same helper as 'for arrangement freeform:' above: getNodeCoords
+            // reads the node's actual on-screen position, so a correct drag
+            // must land at position + move regardless of any mirroring applied
+            // by the orientation/direction group transform.
+            const testDragNode = (move) => async () => {
+                let nodes = document.getElementsByClassName('sankey-node');
+                const node = nodes.item(nodeId);
+                const position = getNodeCoords(node);
+                await drag({ node: node, dpos: move, nsteps: 10, timeDelay: 0 });
+
+                nodes = document.getElementsByClassName('sankey-node');
+                const draggedNode = nodes.item(nodes.length - 1);
+                if (!draggedNode) return;
+                const newPosition = getNodeCoords(draggedNode);
+                expect(newPosition.x).toBeCloseTo(position.x + move[0], 0, 'final x position is off');
+                expect(newPosition.y).toBeCloseTo(position.y + move[1], 0, 'final y position is off');
+            };
+
+            [
+                { orientation: 'h', direction: 'reversed' },
+                { orientation: 'v', direction: 'reversed' }
+            ].forEach(function (combo) {
+                it(
+                    'should change the position of a node on drag - orientation ' +
+                        combo.orientation +
+                        ', direction ' +
+                        combo.direction,
+                    function (done) {
+                        mockCopy.data[0].orientation = combo.orientation;
+                        mockCopy.data[0].direction = combo.direction;
+                        var move = [50, -50];
+
+                        Plotly.newPlot(gd, mockCopy).then(testDragNode(move)).then(done, done.fail);
+                    }
+                );
             });
         });
 
