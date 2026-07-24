@@ -75,7 +75,7 @@
     "@turf/meta": "^7.3.5",
     "base64-arraybuffer": "^1.0.2",
     "color": "^5.0.3",
-    "color-normalize": "^2.1.1",
+    "color-normalize": "^1.5.2",
     "country-iso-search": "^0.1.1",
     "d3-force": "^1.2.1",
     "d3-format": "^1.4.5",
@@ -161,8 +161,6 @@
     "color": {
       "color-string": "^2.1.4"
     },
-    "color-normalize": "^2.1.1",
-    "color-rgba": "^3.1.1",
     "falafel": {
       "acorn": "^8.1.1"
     }

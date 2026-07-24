@@ -1,7 +1,7 @@
 'use strict';
 
 const _color = require('color').default;
-const colorNormalize = require('color-normalize').default;
+const colorNormalize = require('color-normalize');
 const { warn } = require('../../lib/loggers');
 const { background, defaultLine, defaults, lightLine } = require('./attributes');
 
