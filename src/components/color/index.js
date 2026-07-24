@@ -1,6 +1,7 @@
-'use strict'
+'use strict';
 
 const _color = require('color').default;
+const colorNormalize = require('color-normalize').default;
 const { warn } = require('../../lib/loggers');
 const { background, defaultLine, defaults, lightLine } = require('./attributes');
 
@@ -42,26 +43,14 @@ const opacity = (cstr) => (cstr ? color(cstr).alpha() : 0);
 
 /**
  * Convert a color specifier to a 4-element `[r, g, b, a]` representation.
+ * Accepts strings, numeric float arrays (`[0, 1]`), or uint8 arrays (`[0, 255]`).
  *
- * @param {*} cstr - color specifier
+ * @param {*} input - color specifier or numeric array
  * @param {'float'|'uint8'} [type='float'] - `'float'` returns `[r, g, b, a]` in `[0, 1]`;
  *   `'uint8'` returns a `Uint8Array` in `[0, 255]`.
  * @return {Number[]|Uint8Array}
  */
-const normalize = (cstr, type) => {
-    // color's `.rgb().array()` omits alpha when it is 1, so default `a`
-    // back to 1 to keep the 4-element shape callers expect.
-    const [r, g, b, a = 1] = color(cstr).rgb().array();
-    if (type === 'uint8') {
-        const out = new Uint8Array(4);
-        out[0] = r;
-        out[1] = g;
-        out[2] = b;
-        out[3] = Math.floor(a * 255);
-        return out;
-    }
-    return [r / 255, g / 255, b / 255, a];
-};
+const normalize = (input, type) => colorNormalize(input, type);
 
 /**
  * Build an `rgba(...)` string from a color and an explicit opacity value.
@@ -160,8 +149,12 @@ const contrast = (cstr, lightAmount, darkAmount) => {
 
     if (c.alpha() !== 1) c = color(combine(cstr, background));
     const newColor = c.isDark()
-        ? (lightAmount ? adjustLightness(c, lightAmount) : color(background))
-        : (darkAmount ? adjustLightness(c, -darkAmount) : color(defaultLine));
+        ? lightAmount
+            ? adjustLightness(c, lightAmount)
+            : color(background)
+        : darkAmount
+          ? adjustLightness(c, -darkAmount)
+          : color(defaultLine);
 
     return newColor.rgb().string();
 };
