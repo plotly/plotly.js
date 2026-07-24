@@ -150,12 +150,12 @@
     "pretty-bytes": "^7.1.1",
     "read-last-lines": "^1.8.0",
     "run-series": "^1.1.9",
-    "sass": "^1.101.6",
+    "sass": "^1.101.7",
     "sirv": "^3.0.2",
     "stream-browserify": "^3.0.0",
     "true-case-path": "^2.2.1",
     "tsx": "^4.23.1",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "virtual-webgl": "^1.0.7"
   },
   "overrides": {
