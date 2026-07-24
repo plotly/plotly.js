@@ -1,10 +1,10 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
 var Color = require('../components/color');
+var rgba = Color.normalize;
 var colorDflt = require('../components/color/attributes').defaultLine;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 

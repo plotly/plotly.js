@@ -41,6 +41,27 @@ const rgb = (cstr) => {
 const opacity = (cstr) => (cstr ? color(cstr).alpha() : 0);
 
 /**
+ * Convert a color specifier to a 4-element `[r, g, b, a]` representation.
+ *
+ * @param {*} cstr - color specifier
+ * @param {'float'|'uint8'} [type='float'] - `'float'` returns `[r, g, b, a]` in `[0, 1]`;
+ *   `'uint8'` returns a `Uint8Array` in `[0, 255]`.
+ * @return {Number[]|Uint8Array}
+ */
+const normalize = (cstr, type) => {
+    const [r, g, b, a] = color(cstr).rgb().array();
+    if (type === 'uint8') {
+        const out = new Uint8Array(4);
+        out[0] = r;
+        out[1] = g;
+        out[2] = b;
+        out[3] = Math.floor(a * 255);
+        return out;
+    }
+    return [r / 255, g / 255, b / 255, a];
+};
+
+/**
  * Build an `rgba(...)` string from a color and an explicit opacity value.
  *
  * @param {*} cstr - color specifier
@@ -265,6 +286,7 @@ module.exports = {
     lightLine,
     mix,
     mostReadable,
+    normalize,
     opacity,
     rgb,
     stroke
