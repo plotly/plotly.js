@@ -331,6 +331,9 @@ function findCentroid(feature) {
         poly = geometry;
     }
 
+    // Degenerate MultiPolygons may not contain a positive-area polygon.
+    if (!poly) return [NaN, NaN];
+
     return turfCentroid(poly).geometry.coordinates;
 }
 

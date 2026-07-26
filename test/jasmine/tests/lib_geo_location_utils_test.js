@@ -1,4 +1,67 @@
-const { getFitboundsLonRange, unwrapLonRange, doesCrossAntiMeridian } = require('../../../src/lib/geo_location_utils');
+const {
+    extractTraceFeature,
+    getFitboundsLonRange,
+    unwrapLonRange,
+    doesCrossAntiMeridian
+} = require('../../../src/lib/geo_location_utils');
+
+describe('Test geo_location_utils.extractTraceFeature', () => {
+    it('keeps degenerate MultiPolygons without affecting valid features', () => {
+        const trace = {
+            _length: 2,
+            geojson: {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                        type: 'Feature',
+                        id: 'degenerate',
+                        geometry: {
+                            type: 'MultiPolygon',
+                            coordinates: [
+                                [
+                                    [
+                                        [0, 0],
+                                        [1, 1],
+                                        [0, 0],
+                                        [0, 0]
+                                    ]
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        type: 'Feature',
+                        id: 'valid',
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: [
+                                [
+                                    [0, 0],
+                                    [0, 1],
+                                    [1, 1],
+                                    [1, 0],
+                                    [0, 0]
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        };
+        const calcTrace = [
+            { loc: 'degenerate', trace },
+            { loc: 'valid', trace }
+        ];
+
+        const features = extractTraceFeature(calcTrace);
+
+        expect(features.length).toBe(2);
+        expect(features[0].id).toBe('degenerate');
+        expect(features[0].properties.ct.every(Number.isNaN)).toBe(true);
+        expect(features[1].id).toBe('valid');
+        expect(features[1].properties.ct.every(Number.isFinite)).toBe(true);
+    });
+});
 
 describe('Test geo_location_utils.getFitboundsLonRange', () => {
     it('returns the compact crossing range when point data straddles the antimeridian', () => {
