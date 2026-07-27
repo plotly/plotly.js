@@ -7003,11 +7003,24 @@ export interface SankeyData {
          * @default []
          */
         target?: Datum[] | Datum[][] | TypedArray;
+        /** Sets the font for the permanent link labels. */
+        textfont?: Font;
+        /**
+         * Determines which trace information appears permanently on the links. Any combination of *label* and *value* joined with a *+* OR *none*.
+         * @default 'none'
+         */
+        textinfo?: 'label' | 'value' | 'none' | (string & {});
+        /** Template string used for rendering the information text that appears permanently on the links. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example *%{label}: %{value}*. Available variables are `label`, `value`, `valueLabel` (the value formatted with `valueformat`/`valuesuffix`), `source`, `target` and `customdata`. */
+        texttemplate?: string | string[];
         /**
          * A numeric value representing the flow volume value.
          * @default []
          */
         value?: Datum[] | Datum[][] | TypedArray;
+        /** Sets the value formatting rule for the permanent link labels, using d3 formatting mini-languages. Falls back to the trace-level `valueformat` when empty. */
+        valueformat?: string;
+        /** Adds a unit to follow the value in the permanent link labels. Falls back to the trace-level `valuesuffix` when empty. */
+        valuesuffix?: string;
     };
     /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
     meta?: any;

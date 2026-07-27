@@ -586,8 +586,22 @@ function linkTextGetter(trace) {
     };
 }
 
+// Counter-transform that cancels the group matrix applied in sankeyTransform, so
+// the label glyphs always read left-to-right and upright. Mirrors the node-label
+// handling: for every combination the product (group matrix x this) is the identity.
+//   h + forward : matrix( 1  0 0 1) -> ''
+//   h + reversed: matrix(-1  0 0 1) -> scale(-1,1)
+//   v + forward : matrix( 0  1 1 0) -> scale(-1,1) rotate(90)
+//   v + reversed: matrix( 0 -1 1 0) -> rotate(90)
+function linkLabelFlip(p) {
+    if(p.horizontal) return p.reversed ? 'scale(-1,1)' : '';
+    return p.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
+}
+
 // Positions a permanent link label at the link midpoint (layout frame) and keeps
-// the glyphs upright.
+// the glyphs upright. The midpoint stays in the layout frame: the enclosing
+// `.sankey` group already carries the orientation/direction transform, so the
+// coordinates themselves must not be mirrored here.
 function linkLabelTransform(d) {
     var l = d.link;
     var midX, midY;
@@ -599,9 +613,7 @@ function linkLabelTransform(d) {
         midX = (l.source.x1 + l.target.x0) / 2;
         midY = (l.y0 + l.y1) / 2;
     }
-    var p = d.parent;
-    var flip = p.horizontal ? '' : ('scale(-1,1)' + strRotate(90));
-    return strTranslate(midX, midY) + flip;
+    return strTranslate(midX, midY) + linkLabelFlip(d.parent);
 }
 
 function nodeModel(d, n) {
