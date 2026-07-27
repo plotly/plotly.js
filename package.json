@@ -91,7 +91,7 @@
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
     "is-mobile": "^5.0.0",
-    "maplibre-gl": "^4.7.1",
+    "maplibre-gl": "^5.24.0",
     "mouse-event-offset": "^3.0.2",
     "native-promise-only": "^0.8.1",
     "parse-svg-path": "^0.2.0",
