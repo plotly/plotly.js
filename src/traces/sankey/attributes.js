@@ -230,9 +230,10 @@ var attrs = (module.exports = overrideAll(
                     'Variables are inserted using %{variable}, for example',
                     '*%{label}: %{value}*. Available variables are `label`, `value`,',
                     '`valueLabel` (the value formatted with `valueformat`/`valuesuffix`),',
-                    '`source`, `target` and `customdata`.'
+                    '`source`, `target`, `customdata` and `meta`.'
                 ].join(' ')
             },
+            texttemplatefallback: templatefallbackAttrs(),
             textfont: fontAttrs({
                 autoShadowDflt: true,
                 description: 'Sets the font for the permanent link labels.'

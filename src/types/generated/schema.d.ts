@@ -7010,8 +7010,13 @@ export interface SankeyData {
          * @default 'none'
          */
         textinfo?: 'label' | 'value' | 'none' | (string & {});
-        /** Template string used for rendering the information text that appears permanently on the links. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example *%{label}: %{value}*. Available variables are `label`, `value`, `valueLabel` (the value formatted with `valueformat`/`valuesuffix`), `source`, `target` and `customdata`. */
+        /** Template string used for rendering the information text that appears permanently on the links. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example *%{label}: %{value}*. Available variables are `label`, `value`, `valueLabel` (the value formatted with `valueformat`/`valuesuffix`), `source`, `target`, `customdata` and `meta`. */
         texttemplate?: string | string[];
+        /**
+         * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
+         * @default '-'
+         */
+        texttemplatefallback?: any;
         /**
          * A numeric value representing the flow volume value.
          * @default []

@@ -551,16 +551,23 @@ function linkPath() {
 }
 
 // Builds the permanent-label string for a link from textinfo / texttemplate.
-function linkTextGetter(trace) {
+// Returns null when the feature is opted out, so that traces which do not use it
+// do no per-link work at all.
+function linkTextGetter(gd, trace) {
     var linkAttr = trace.link;
     var textinfo = linkAttr.textinfo;
     var texttemplate = linkAttr.texttemplate;
-    var vFmt = linkAttr.valueformat;
-    var vSuf = linkAttr.valuesuffix;
     var flags = (textinfo && textinfo !== 'none') ? textinfo.split('+') : [];
+    var hasTemplate = Array.isArray(texttemplate) ? texttemplate.length > 0 : !!texttemplate;
+    if(!flags.length && !hasTemplate) return null;
+
+    // the formatter depends on the trace only, so build it once per draw
+    var formatValue = Lib.numberFormat(linkAttr.valueformat);
+    var vSuf = linkAttr.valuesuffix;
+    var locale = gd._fullLayout._d3locale;
 
     return function(l, i) {
-        var valueLabel = Lib.numberFormat(vFmt)(l.value) + vSuf;
+        var valueLabel = formatValue(l.value) + vSuf;
 
         var tt = Array.isArray(texttemplate) ? texttemplate[i] : texttemplate;
         if(tt) {
@@ -574,7 +581,9 @@ function linkTextGetter(trace) {
                     source: l.source.label,
                     target: l.target.label,
                     customdata: l.customdata
-                }]
+                }, trace._meta],
+                locale: locale,
+                fallback: linkAttr.texttemplatefallback
             });
         }
 
@@ -587,21 +596,25 @@ function linkTextGetter(trace) {
 }
 
 // Counter-transform that cancels the group matrix applied in sankeyTransform, so
-// the label glyphs always read left-to-right and upright. Mirrors the node-label
-// handling: for every combination the product (group matrix x this) is the identity.
+// the label glyphs always read left-to-right and upright. For every combination
+// the product (group matrix x this) is the identity:
 //   h + forward : matrix( 1  0 0 1) -> ''
 //   h + reversed: matrix(-1  0 0 1) -> scale(-1,1)
 //   v + forward : matrix( 0  1 1 0) -> scale(-1,1) rotate(90)
 //   v + reversed: matrix( 0 -1 1 0) -> rotate(90)
-function linkLabelFlip(p) {
-    if(p.horizontal) return p.reversed ? 'scale(-1,1)' : '';
-    return p.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
+// Shared by the node labels and the permanent link labels.
+function uprightTransform(d) {
+    if(d.horizontal) return d.reversed ? 'scale(-1,1)' : '';
+    return d.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
 }
 
 // Positions a permanent link label at the link midpoint (layout frame) and keeps
 // the glyphs upright. The midpoint stays in the layout frame: the enclosing
 // `.sankey` group already carries the orientation/direction transform, so the
-// coordinates themselves must not be mirrored here.
+// coordinates themselves must not be mirrored here. The trailing translate runs
+// in the already uprighted frame and is therefore a plain screen-space shift: it
+// centres the whole text block on the anchor instead of its first baseline,
+// using the same block metric as the node labels.
 function linkLabelTransform(d) {
     var l = d.link;
     var midX, midY;
@@ -613,7 +626,12 @@ function linkLabelTransform(d) {
         midX = (l.source.x1 + l.target.x0) / 2;
         midY = (l.y0 + l.y1) / 2;
     }
-    return strTranslate(midX, midY) + linkLabelFlip(d.parent);
+    var blockShift = l.trace.link.textfont.size *
+        (CAP_SHIFT - ((d.linkLabelLines || 1) - 1) * LINE_SPACING) / 2;
+
+    return strTranslate(midX, midY) +
+        uprightTransform(d.parent) +
+        strTranslate(0, blockShift);
 }
 
 function nodeModel(d, n) {
@@ -1058,7 +1076,8 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     var sankeyLinkLabel = sankeyLinks.selectAll('.' + c.cn.sankeyLinkLabel)
         .data(function(d) {
-            var getText = linkTextGetter(d.trace);
+            var getText = linkTextGetter(gd, d.trace);
+            if(!getText) return [];
             var out = [];
             d.graph.links.forEach(function(l, i) {
                 if(!l.value) return;
@@ -1075,7 +1094,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .append('text')
         .classed(c.cn.sankeyLinkLabel, true)
         .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'central')
         .style('pointer-events', 'none');
 
     sankeyLinkLabel
@@ -1085,6 +1103,9 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             var e = d3.select(this);
             Drawing.font(e, d.link.trace.link.textfont);
             svgTextUtils.convertToTspans(e, gd);
+            // cached for linkLabelTransform, which is re-applied on every drag
+            // frame and must not query the DOM there
+            d.linkLabelLines = svgTextUtils.lineCount(e);
         })
         .attr('transform', linkLabelTransform);
 
@@ -1198,8 +1219,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
                 var posY = d.reversed
                     ? (d.visibleWidth + blockHeight) / 2
                     : (d.visibleWidth - blockHeight) / 2;
-                var flipV = d.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
-                return strTranslate(posY, pad) + flipV;
+                return strTranslate(posY, pad) + uprightTransform(d);
             }
 
             // horizontal: center along the node length, place just past the thickness edge.
@@ -1210,7 +1230,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             } else {
                 posX += d.visibleWidth;
             }
-            return strTranslate(posX, posY) + (d.reversed ? 'scale(-1,1)' : '');
+            return strTranslate(posX, posY) + uprightTransform(d);
         });
 
     nodeLabel

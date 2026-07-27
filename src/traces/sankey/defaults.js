@@ -117,6 +117,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Lib.coerceFont(coerceLink, 'textfont', traceOut.textfont, { autoShadowDflt: true });
         coerceLink('valueformat', traceOut.valueformat);
         coerceLink('valuesuffix', traceOut.valuesuffix);
+        if(linkTextTemplate) coerceLink('texttemplatefallback');
     }
 
     // Ensure _length is defined

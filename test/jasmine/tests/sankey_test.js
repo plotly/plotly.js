@@ -1869,6 +1869,38 @@ describe('sankey tests', function () {
                 .then(done, done.fail);
         });
 
+        it('formats with the layout locale and resolves meta and the fallback', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+            fig.layout.separators = ',.';
+            Lib.extendDeep(fig.data[0], {
+                meta: ['GWh'],
+                link: {
+                    texttemplate: '%{value:,.2f} %{meta[0]} %{notAVariable}',
+                    texttemplatefallback: 'n/a'
+                }
+            });
+
+            Plotly.newPlot(gd, fig)
+                .then(function() {
+                    var texts = [];
+                    d3SelectAll('.sankey-link-label').each(function() {
+                        texts.push(d3Select(this).text());
+                    });
+
+                    expect(texts.length).toBeGreaterThan(0, 'labels were drawn');
+                    texts.forEach(function(t) {
+                        // ',.' swaps the decimal and thousands separators, which
+                        // only reaches d3-format if _d3locale is handed to
+                        // Lib.texttemplateString. %{meta[0]} likewise only
+                        // resolves if trace._meta is part of its data array, and
+                        // an unknown variable has to hit the fallback rather than
+                        // rendering the string 'undefined'.
+                        expect(t).toMatch(/^[\d.]+,\d{2} GWh n\/a$/);
+                    });
+                })
+                .then(done, done.fail);
+        });
+
         it('keeps link labels upright and centred per orientation and direction', function(done) {
             function assertUprightAndCentred(msg) {
                 // The labels live inside the .sankey group and therefore inherit the
