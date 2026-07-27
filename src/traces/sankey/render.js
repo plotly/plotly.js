@@ -346,6 +346,17 @@ function linkModel(d, l, i) {
     };
 }
 
+// The link paths and their permanent labels are two joins over the same links,
+// so the models are built once per draw and shared between both selections.
+function linkModels(d) {
+    if(!d._linkModels) {
+        d._linkModels = d.graph.links
+            .filter(function(l) {return l.value;})
+            .map(linkModel.bind(null, d));
+    }
+    return d._linkModels;
+}
+
 function createCircularClosedPathString(link, arrowLen) {
     // Using coordinates computed by d3-sankey-circular
     var pathString = '';
@@ -704,14 +715,11 @@ function updateNodeShapes(sankeyNode) {
     sankeyNode.call(updateNodePositions);
 }
 
-function updateShapes(sankeyNode, sankeyLink) {
+function updateShapes(sankeyNode, sankeyLink, sankeyLinkLabel) {
     sankeyNode.call(updateNodeShapes);
     sankeyLink.attr('d', linkPath());
-    var linkNode = sankeyLink.node();
-    if(linkNode) {
-        d3.select(linkNode.parentNode).selectAll('.' + c.cn.sankeyLinkLabel)
-            .attr('transform', linkLabelTransform);
-    }
+    // empty selection when the permanent labels are not opted in
+    sankeyLinkLabel.attr('transform', linkLabelTransform);
 }
 
 function sizeNode(rect) {
@@ -774,7 +782,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
         });
 }
 
-function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
+function attachDragHandler(sankeyNode, sankeyLink, sankeyLinkLabel, callbacks, gd) {
     var dragBehavior = d3.behavior.drag()
         .origin(function(d) {
             return {
@@ -803,7 +811,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
                 } else { // make a forceLayout if needed
                     attachForce(sankeyNode, forceKey, d, gd);
                 }
-                startForce(sankeyNode, sankeyLink, d, forceKey, gd);
+                startForce(sankeyNode, sankeyLink, sankeyLinkLabel, d, forceKey, gd);
             }
         })
 
@@ -829,7 +837,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
             saveCurrentDragPosition(d.node);
             if(d.arrangement !== 'snap') {
                 d.sankey.update(d.graph);
-                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink, sankeyLinkLabel);
             }
         })
 
@@ -865,7 +873,7 @@ function attachForce(sankeyNode, forceKey, d, gd) {
         .stop();
 }
 
-function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
+function startForce(sankeyNode, sankeyLink, sankeyLinkLabel, d, forceKey, gd) {
     window.requestAnimationFrame(function faster() {
         var i;
         for(i = 0; i < c.forceTicksPerFrame; i++) {
@@ -876,7 +884,7 @@ function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
         switchToSankeyFormat(nodes);
 
         d.sankey.update(d.graph);
-        updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+        updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink, sankeyLinkLabel);
 
         if(d.forceLayouts[forceKey].alpha() > 0) {
             window.requestAnimationFrame(faster);
@@ -1042,12 +1050,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.' + c.cn.sankeyLink)
-          .data(function(d) {
-              var links = d.graph.links;
-              return links
-                .filter(function(l) {return l.value;})
-                .map(linkModel.bind(null, d));
-          }, keyFun);
+          .data(linkModels, keyFun);
 
     sankeyLink
           .enter().append('path')
@@ -1074,16 +1077,26 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('opacity', 0)
         .remove();
 
-    var sankeyLinkLabel = sankeyLinks.selectAll('.' + c.cn.sankeyLinkLabel)
+    // Own group, appended between the links and the nodes: entering link paths
+    // of a later draw must not end up on top of already rendered labels.
+    var sankeyLinkLabelSet = sankey.selectAll('.' + c.cn.sankeyLinkLabelSet)
+        .data(repeat, keyFun);
+
+    sankeyLinkLabelSet.enter()
+        .append('g')
+        .classed(c.cn.sankeyLinkLabelSet, true)
+        .style('pointer-events', 'none');
+
+    var sankeyLinkLabel = sankeyLinkLabelSet.selectAll('.' + c.cn.sankeyLinkLabel)
         .data(function(d) {
             var getText = linkTextGetter(gd, d.trace);
             if(!getText) return [];
             var out = [];
-            d.graph.links.forEach(function(l, i) {
-                if(!l.value) return;
-                var txt = getText(l, i);
+            linkModels(d).forEach(function(m) {
+                // pointNumber indexes the input arrays, so it is the one an
+                // arrayOk texttemplate has to be looked up with
+                var txt = getText(m.link, m.pointNumber);
                 if(!txt) return;
-                var m = linkModel(d, l, i);
                 m.linkLabelText = txt;
                 out.push(m);
             });
@@ -1093,8 +1106,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     sankeyLinkLabel.enter()
         .append('text')
         .classed(c.cn.sankeyLinkLabel, true)
-        .attr('text-anchor', 'middle')
-        .style('pointer-events', 'none');
+        .attr('text-anchor', 'middle');
 
     sankeyLinkLabel
         .attr('data-notex', 1)
@@ -1143,7 +1155,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankeyNode
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
-        .call(attachDragHandler, sankeyLink, callbacks, gd); // has to be here as it binds sankeyLink
+        .call(attachDragHandler, sankeyLink, sankeyLinkLabel, callbacks, gd); // has to be here as it binds sankeyLink
 
     sankeyNode
         .transition()

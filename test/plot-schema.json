@@ -52011,7 +52011,7 @@
           },
           "texttemplate": {
             "arrayOk": true,
-            "description": "Template string used for rendering the information text that appears permanently on the links. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example *%{label}: %{value}*. Available variables are `label`, `value`, `valueLabel` (the value formatted with `valueformat`/`valuesuffix`), `source`, `target`, `customdata` and `meta`.",
+            "description": "Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Finally, the template string has access to variables `label`, `value`, `valueLabel`, `source`, `target`, `customdata` and `meta`.",
             "dflt": "",
             "editType": "calc",
             "valType": "string"

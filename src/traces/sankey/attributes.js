@@ -5,7 +5,7 @@ var baseAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
@@ -220,19 +220,13 @@ var attrs = (module.exports = overrideAll(
                     'Any combination of *label* and *value* joined with a *+* OR *none*.'
                 ].join(' ')
             },
-            texttemplate: {
-                valType: 'string',
-                dflt: '',
-                arrayOk: true,
+            texttemplate: texttemplateAttrs({editType: 'calc'}, {
                 description: [
-                    'Template string used for rendering the information text that appears',
-                    'permanently on the links. Note that this will override `textinfo`.',
-                    'Variables are inserted using %{variable}, for example',
-                    '*%{label}: %{value}*. Available variables are `label`, `value`,',
-                    '`valueLabel` (the value formatted with `valueformat`/`valuesuffix`),',
-                    '`source`, `target`, `customdata` and `meta`.'
-                ].join(' ')
-            },
+                    '*%{label}: %{valueLabel}* renders the link label and its formatted',
+                    'value; `valueLabel` is the value formatted with `valueformat`/`valuesuffix`.'
+                ].join(' '),
+                keys: ['label', 'value', 'valueLabel', 'source', 'target', 'customdata', 'meta']
+            }),
             texttemplatefallback: templatefallbackAttrs(),
             textfont: fontAttrs({
                 autoShadowDflt: true,
