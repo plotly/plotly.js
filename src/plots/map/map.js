@@ -94,7 +94,7 @@ proto.createMap = function (calcData, fullLayout, resolve, reject) {
         pitch: opts.pitch,
         maxBounds: maxBounds,
         interactive: !self.isStatic,
-        preserveDrawingBuffer: self.isStatic,
+        canvasContextAttributes: { preserveDrawingBuffer: self.isStatic },
         doubleClickZoom: false,
         boxZoom: false,
         attributionControl: false

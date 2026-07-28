@@ -1,6 +1,7 @@
-'use strict'
+'use strict';
 
 const _color = require('color').default;
+const colorNormalize = require('color-normalize');
 const { warn } = require('../../lib/loggers');
 const { background, defaultLine, defaults, lightLine } = require('./attributes');
 
@@ -39,6 +40,17 @@ const rgb = (cstr) => {
  * @return {Number}
  */
 const opacity = (cstr) => (cstr ? color(cstr).alpha() : 0);
+
+/**
+ * Convert a color specifier to a 4-element `[r, g, b, a]` representation.
+ * Accepts strings, numeric float arrays (`[0, 1]`), or uint8 arrays (`[0, 255]`).
+ *
+ * @param {*} input - color specifier or numeric array
+ * @param {'float'|'uint8'} [type='float'] - `'float'` returns `[r, g, b, a]` in `[0, 1]`;
+ *   `'uint8'` returns a `Uint8Array` in `[0, 255]`.
+ * @return {Number[]|Uint8Array}
+ */
+const normalize = (input, type) => colorNormalize(input, type);
 
 /**
  * Build an `rgba(...)` string from a color and an explicit opacity value.
@@ -137,8 +149,12 @@ const contrast = (cstr, lightAmount, darkAmount) => {
 
     if (c.alpha() !== 1) c = color(combine(cstr, background));
     const newColor = c.isDark()
-        ? (lightAmount ? adjustLightness(c, lightAmount) : color(background))
-        : (darkAmount ? adjustLightness(c, -darkAmount) : color(defaultLine));
+        ? lightAmount
+            ? adjustLightness(c, lightAmount)
+            : color(background)
+        : darkAmount
+          ? adjustLightness(c, -darkAmount)
+          : color(defaultLine);
 
     return newColor.rgb().string();
 };
@@ -265,6 +281,7 @@ module.exports = {
     lightLine,
     mix,
     mostReadable,
+    normalize,
     opacity,
     rgb,
     stroke

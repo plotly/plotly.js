@@ -2,26 +2,16 @@
   "compilerOptions": {
     // Target and module - optimized for CommonJS codebase
     "target": "ES2016",
-    "module": "CommonJS",
+    "module": "preserve",
     "lib": ["ES2016", "DOM"],
 
     // Module resolution
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
 
-    // Paths
-    "baseUrl": ".",
-    "paths": {
-      "stream": ["node_modules/stream-browserify"],
-      "@types": ["src/types"],
-      "@types/*": ["src/types/*"]
-    },
-
-    // Emit
     "noEmit": true,
-
     "strict": true,
 
     // Linting

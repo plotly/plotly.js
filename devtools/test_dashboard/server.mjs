@@ -1,7 +1,7 @@
-import ecstatic from 'ecstatic';
+import http from 'node:http';
 import { build, context } from 'esbuild';
-import http from 'http';
 import minimist from 'minimist';
+import sirv from 'sirv';
 import { devtoolsConfig, localDevConfig } from '../../esbuild-config.js';
 import constants from '../../tasks/util/constants.js';
 import { createMocksList, getMockFiles, readFiles, saveMockListToFile } from '../dashboard_utilities.mjs';
@@ -26,11 +26,13 @@ console.log('watching esbuild...');
 await ctx.watch();
 
 function devServer() {
-    const staticFilesHandler = ecstatic({
-        root: constants.pathToRoot,
-        cache: 0,
+    const staticFilesHandler = sirv(constants.pathToRoot, {
+        dev: true,
+        maxAge: 0,
         gzip: true,
-        cors: true
+        setHeaders: (res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+        }
     });
 
     const server = http.createServer((req, res) => {

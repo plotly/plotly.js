@@ -337,11 +337,11 @@ function makeItem(
 
         drwLayer: drwLayer,
         contextColor: [
-            deselectedLinesColor[0] / 255,
-            deselectedLinesColor[1] / 255,
-            deselectedLinesColor[2] / 255,
+            deselectedLinesColor.red() / 255,
+            deselectedLinesColor.green() / 255,
+            deselectedLinesColor.blue() / 255,
             deselectedLinesOpacity !== 'auto' ?
-                deselectedLinesColor[3] * deselectedLinesOpacity :
+                deselectedLinesColor.alpha() * deselectedLinesOpacity :
                 Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
         ],
 

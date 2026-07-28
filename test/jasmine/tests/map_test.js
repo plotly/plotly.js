@@ -1385,7 +1385,7 @@ describe('map plots', function() {
         var out = [];
 
         mapInfo.traceSources.forEach(function(s) {
-            var info = mapInfo.sources[s];
+            var info = mapInfo.sources[s].getSource();
 
             if(s.indexOf(mode) === -1) return;
 
@@ -1979,7 +1979,7 @@ function getMapInfo(gd) {
     var subplot = gd._fullLayout.map._subplot;
     var map = subplot.map;
 
-    var sources = map.style.sourceCaches;
+    var sources = map.style.tileManagers;
     var layers = map.style._layers;
     var uid = subplot.uid;
 
