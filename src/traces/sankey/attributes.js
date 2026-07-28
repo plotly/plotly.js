@@ -223,7 +223,10 @@ var attrs = (module.exports = overrideAll(
             texttemplate: texttemplateAttrs({editType: 'calc'}, {
                 description: [
                     '*%{label}: %{valueLabel}* renders the link label and its formatted',
-                    'value; `valueLabel` is the value formatted with `valueformat`/`valuesuffix`.'
+                    'value; `valueLabel` is the value formatted with `valueformat`/`valuesuffix`.',
+                    'When set per link, an empty entry makes that link fall back to `textinfo`',
+                    'rather than leaving it unlabeled; to label only some of the links,',
+                    'set `textinfo` to *none* and give a template to those links alone.'
                 ].join(' '),
                 keys: ['label', 'value', 'valueLabel', 'source', 'target', 'customdata', 'meta']
             }),

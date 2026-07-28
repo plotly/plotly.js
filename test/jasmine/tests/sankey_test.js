@@ -171,6 +171,8 @@ describe('sankey tests', function () {
             expect(off.link.textfont).toBe(undefined, 'textfont not coerced while off');
             expect(off.link.valueformat).toBe(undefined, 'valueformat not coerced while off');
             expect(off.link.valuesuffix).toBe(undefined, 'valuesuffix not coerced while off');
+            expect(off.link.texttemplatefallback)
+                .toBe(undefined, 'texttemplatefallback not coerced while off');
 
             ['label', 'value', 'label+value'].forEach(function(ti) {
                 expect(_supply({link: {textinfo: ti}}).link.textinfo)
@@ -181,6 +183,17 @@ describe('sankey tests', function () {
 
             expect(_supply({link: {texttemplate: '%{valueLabel}'}}).link.valueformat)
                 .not.toBe(undefined, 'texttemplate alone also opts in');
+
+            // texttemplatefallback only matters once a template can actually
+            // reference a missing variable, so textinfo alone must not pull it
+            // in - only texttemplate does, and an explicit value wins over the
+            // attribute default.
+            expect(_supply({link: {textinfo: 'value'}}).link.texttemplatefallback)
+                .toBe(undefined, 'textinfo alone does not coerce texttemplatefallback');
+            expect(_supply({link: {texttemplate: '%{valueLabel}'}}).link.texttemplatefallback)
+                .toBe(attributes.link.texttemplatefallback.dflt, 'texttemplate opts texttemplatefallback in');
+            expect(_supply({link: {texttemplate: '%{nope}', texttemplatefallback: 'n/a'}}).link.texttemplatefallback)
+                .toBe('n/a', 'an explicit texttemplatefallback wins');
         });
 
         it('falls back to the trace level formatting for permanent link labels', function() {
@@ -1847,9 +1860,11 @@ describe('sankey tests', function () {
                     expect(textFor(SOURCE, TARGET))
                         .toBe(SOURCE + '/' + TARGET + ': 787TWh', 'texttemplate overrides textinfo');
 
-                    // Per-link opt-out: an empty entry in an arrayOk texttemplate
-                    // falls back to textinfo for that link alone. Pure string logic,
-                    // so it is asserted here rather than in an image baseline.
+                    // An empty entry in an arrayOk texttemplate falls back to
+                    // textinfo for that link alone - it does not hide the label.
+                    // Leaving a single link unlabeled is only possible with
+                    // textinfo 'none'. Pure string logic, so it is asserted here
+                    // rather than in an image baseline.
                     var fd = gd._fullData[0];
                     var srcIdx = fd.node.label.indexOf(SOURCE);
                     var tgtIdx = fd.node.label.indexOf(TARGET);
@@ -1904,7 +1919,7 @@ describe('sankey tests', function () {
         it('keeps link labels upright and centred per orientation and direction', function(done) {
             function assertUprightAndCentred(msg) {
                 // The labels live inside the .sankey group and therefore inherit the
-                // matrix from sankeyTransform. linkLabelFlip has to cancel it exactly,
+                // matrix from sankeyTransform. uprightTransform has to cancel it exactly,
                 // so the glyphs' own screen matrix is the identity - without that the
                 // text renders mirrored (reversed) or rotated (vertical).
                 var ctm = d3Select('.sankey-link-label').node().getScreenCTM();
@@ -1973,6 +1988,27 @@ describe('sankey tests', function () {
                     var link = rectForLink('Solid', 'Industry');
                     expect(after.top + after.height / 2)
                         .toBeCloseTo(link.top + link.height / 2, -1, 'still centred on its link');
+                })
+                .then(done, done.fail);
+        });
+
+        it('keeps the link labels on their links while a snap layout settles', function(done) {
+            var nodeId = 4; // node with label 'Solid'
+
+            // Unlike freeform, snap keeps ticking a force simulation after the
+            // drop; startForce calls updateShapes on every tick, so the labels
+            // have to stay glued to their links through that as well, not just
+            // through the drag itself.
+            plotWith({arrangement: 'snap', link: {textinfo: 'value'}})
+                .then(function() {
+                    var node = document.getElementsByClassName('sankey-node').item(nodeId);
+                    return drag({node: node, dpos: [0, 100], nsteps: 10, timeDelay: 2000});
+                })
+                .then(function() {
+                    var link = rectForLink('Solid', 'Industry');
+                    var label = rectForLinkLabel('Solid', 'Industry');
+                    expect(label.top + label.height / 2)
+                        .toBeCloseTo(link.top + link.height / 2, -1, 'still centred on its link once settled');
                 })
                 .then(done, done.fail);
         });
