@@ -92,8 +92,8 @@ modeBarButtons.sendChartToCloud = {
             return;
         }
 
-        confirmCloudDialog(gd, baseUrl, function () {
-            Plots.sendDataToCloud(gd, baseUrl);
+        confirmCloudDialog(gd, baseUrl, function (chosenUrl) {
+            Plots.sendDataToCloud(gd, chosenUrl);
         });
     }
 };
