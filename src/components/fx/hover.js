@@ -580,7 +580,24 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             if (_mode === 'array') {
                 var selection = evt[curvenum];
                 if ('pointNumber' in selection) {
-                    pointData.index = selection.pointNumber;
+                    // populate xval/yval from the targeted calcdata point so trace
+                    // hoverPoints implementations that read them outside getClosest
+                    // (e.g. scattermap's longitude winding) get valid coordinates
+                    const cdi = cd[selection.pointNumber];
+                    if (cdi) {
+                        pointData.index = selection.pointNumber;
+                        // map and geo traces store coords as lonlat: [lon, lat];
+                        // everything else uses Cartesian .x/.y. This is good enough
+                        // for now, but may need to be updated to a per trace accessor
+                        // in the future.
+                        if (cdi.lonlat) {
+                            xval = cdi.lonlat[0];
+                            yval = cdi.lonlat[1];
+                        } else {
+                            xval = cdi.x;
+                            yval = cdi.y;
+                        }
+                    }
                     _mode = 'closest';
                 } else {
                     _mode = '';

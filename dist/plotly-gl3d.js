@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v3.6.0
+* plotly.js (gl3d) v3.7.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -35,14 +35,18 @@ var Plotly = (() => {
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
   };
 
   // src/version.js
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.6.0";
+      exports.version = "3.7.0";
     }
   });
 
@@ -78,7 +82,7 @@ var Plotly = (() => {
             return obj;
           };
         }
-        scheduling_queue = /* @__PURE__ */ function Queue() {
+        scheduling_queue = /* @__PURE__ */ (function Queue() {
           var first, last, item;
           function Item(fn, self2) {
             this.fn = fn;
@@ -105,7 +109,7 @@ var Plotly = (() => {
               }
             }
           };
-        }();
+        })();
         function schedule(fn, self2) {
           scheduling_queue.add(fn, self2);
           if (!cycle) {
@@ -8131,7 +8135,7 @@ var Plotly = (() => {
     "node_modules/d3-format/dist/d3-format.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.d3 = global2.d3 || {}));
-      })(exports, function(exports2) {
+      })(exports, (function(exports2) {
         "use strict";
         function formatDecimal(x) {
           return Math.abs(x = Math.round(x)) >= 1e21 ? x.toLocaleString("en").replace(/,/g, "") : x.toString(10);
@@ -8371,7 +8375,7 @@ var Plotly = (() => {
         exports2.precisionPrefix = precisionPrefix;
         exports2.precisionRound = precisionRound;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -8488,7 +8492,7 @@ var Plotly = (() => {
     "node_modules/base64-arraybuffer/dist/base64-arraybuffer.umd.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["base64-arraybuffer"] = {}));
-      })(exports, function(exports2) {
+      })(exports, (function(exports2) {
         "use strict";
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         var lookup = typeof Uint8Array === "undefined" ? [] : new Uint8Array(256);
@@ -8533,7 +8537,7 @@ var Plotly = (() => {
         exports2.decode = decode;
         exports2.encode = encode;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -9936,7 +9940,7 @@ var Plotly = (() => {
         function convertHexToDecimal(h) {
           return parseIntFromHex(h) / 255;
         }
-        var matchers = function() {
+        var matchers = (function() {
           var CSS_INTEGER = "[-\\+]?\\d+%?";
           var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
           var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
@@ -9955,7 +9959,7 @@ var Plotly = (() => {
             hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
             hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
           };
-        }();
+        })();
         function isValidCSSUnit(color) {
           return !!matchers.CSS_UNIT.exec(color);
         }
@@ -13778,9 +13782,9 @@ var Plotly = (() => {
   var require_maplibre_gl = __commonJS({
     "node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       (function() {
-        if (!document.getElementById("8431bff7cc77ea8693f8122c6e0981316b936a0a4930625e08b1512d134062bc")) {
+        if (!document.getElementById("ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe")) {
           var e = document.createElement("style");
-          e.id = "8431bff7cc77ea8693f8122c6e0981316b936a0a4930625e08b1512d134062bc";
+          e.id = "ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe";
           e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-map:fullscreen{height:100%;width:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl-group{background:#fff;border-radius:4px}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{background-color:transparent;border:0;box-sizing:border-box;cursor:pointer;display:block;height:29px;outline:none;padding:0;width:29px}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{background-position:50%;background-repeat:no-repeat;display:block;height:100%;width:100%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}.maplibregl-ctrl button:not(:disabled):hover{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;cursor:pointer;display:block;height:23px;margin:0 0 -4px -4px;overflow:hidden;width:88px}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{background-color:#fff;border-radius:12px;box-sizing:content-box;color:#000;margin:10px;min-height:20px;padding:2px 24px 2px 0;position:relative}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{border-radius:12px;padding:2px 8px 2px 28px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{background-color:hsla(0,0%,100%,.5);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");border:0;border-radius:12px;box-sizing:border-box;cursor:pointer;display:none;height:24px;outline:none;position:absolute;right:0;top:0;width:24px}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{right:0;top:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{left:0;top:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);border:2px solid #333;border-top:#333;box-sizing:border-box;color:#333;font-size:10px;padding:0 5px}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:#fff;border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:#fff;border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:#fff;border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:#fff;border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgb(0 0 0/5%)}.maplibregl-popup-content{background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}@keyframes maplibregl-user-location-dot-pulse{0%{opacity:1;transform:scale(1)}70%{opacity:0;transform:scale(3)}to{opacity:0;transform:scale(1)}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{background:#fff;border:2px dotted #202020;height:0;left:0;opacity:.5;position:absolute;top:0;width:0}.maplibregl-cooperative-gesture-screen{align-items:center;background:rgba(0,0,0,.4);color:#fff;display:flex;font-size:1.4em;inset:0;justify-content:center;line-height:1.2;opacity:0;padding:1rem;pointer-events:none;position:absolute;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(width <= 480px){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{height:100%!important;left:0!important;position:fixed!important;top:0!important;width:100%!important;z-index:99999}`;
           document.head.appendChild(e);
         }
@@ -16033,6 +16037,17 @@ var Plotly = (() => {
         "X [data-title]:after": "content:attr(data-title);background:#69738a;color:#fff;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
         "X .vertical [data-title]:before,X .vertical [data-title]:after": "top:0%;right:200%;",
         "X .vertical [data-title]:before": "border:6px solid rgba(0,0,0,0);border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
+        "X .plotly-cloud-dialog": 'font-family:"Open Sans",verdana,arial,sans-serif;position:absolute;top:0;left:0;width:100%;height:100%;z-index:1001;display:flex;align-items:center;justify-content:center;background-color:rgba(0,0,0,.4);',
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-box": "box-sizing:border-box;min-width:300px;max-width:420px;padding:20px 24px;background-color:#fff;border:1px solid #e0e2e5;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,.25);font-size:13px;color:#2a3f5f;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-title": "font-size:16px;font-weight:bold;margin-bottom:12px;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-message": "line-height:1.5;overflow-wrap:break-word;word-wrap:break-word;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-buttons": "display:flex;justify-content:flex-end;margin-top:20px;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn": "font-family:inherit;font-size:13px;padding:7px 16px;margin-left:8px;border-radius:3px;border:1px solid rgba(0,0,0,0);cursor:pointer;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn:focus-visible": "outline:2px solid #447adb;outline-offset:1px;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--cancel": "background-color:#fff;border-color:#e0e2e5;color:#777;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--cancel:hover": "background-color:#f3f3f3;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--confirm": "background-color:#447adb;color:#fff;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--confirm:hover": "background-color:#1d3b84;",
         Y: 'font-family:"Open Sans",verdana,arial,sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;',
         "Y p": "margin:0;",
         "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
@@ -17745,6 +17760,7 @@ var Plotly = (() => {
       var formatLocale = require_d3_format().formatLocale;
       var isNumeric = require_fast_isnumeric();
       var b64encode = require_base64_arraybuffer_umd();
+      var version = require_version().version;
       var Registry = require_registry();
       var PlotSchema = require_plot_schema();
       var Template = require_plot_template();
@@ -17873,24 +17889,31 @@ var Plotly = (() => {
           });
         }
       }
-      plots.sendDataToCloud = function(gd) {
-        var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
-        if (!baseUrl) return;
+      plots.sendDataToCloud = function(gd, serverURL) {
         gd.emit("plotly_beforeexport");
-        var hiddenformDiv = d3.select(gd).append("div").attr("id", "hiddenform").style("display", "none");
-        var hiddenform = hiddenformDiv.append("form").attr({
-          action: baseUrl + "/external",
-          method: "post",
-          target: "_blank"
-        });
-        var hiddenformInput = hiddenform.append("input").attr({
-          type: "text",
-          name: "data"
-        });
-        hiddenformInput.node().value = plots.graphJson(gd, false, "keepdata");
-        hiddenform.node().submit();
-        hiddenformDiv.remove();
-        gd.emit("plotly_afterexport");
+        const serverURLOrigin = new URL(serverURL).origin;
+        var chart = plots.graphJson(gd, false, "keepdata", "object");
+        chart.version = version;
+        var uploadUrl = new URL(serverURL);
+        uploadUrl.searchParams.set("origin", window.location.origin);
+        var cloudWindow = window.open(uploadUrl.href, "_blank");
+        if (!cloudWindow) {
+          console.error("Unable to open Plotly Cloud (the popup may have been blocked)");
+          gd.emit("plotly_exportfail");
+          return;
+        }
+        var handleMessage = function(event) {
+          if (event.origin !== serverURLOrigin) return;
+          if (event.data && event.data.type === "CHART_AUTH_SUCCESS") {
+            cloudWindow.postMessage({
+              type: "chart",
+              chart
+            }, serverURLOrigin);
+            window.removeEventListener("message", handleMessage);
+            gd.emit("plotly_afterexport");
+          }
+        };
+        window.addEventListener("message", handleMessage);
         return false;
       };
       var d3FormatKeys = [
@@ -32790,7 +32813,17 @@ var Plotly = (() => {
             if (_mode === "array") {
               var selection = evt[curvenum];
               if ("pointNumber" in selection) {
-                pointData.index = selection.pointNumber;
+                const cdi = cd[selection.pointNumber];
+                if (cdi) {
+                  pointData.index = selection.pointNumber;
+                  if (cdi.lonlat) {
+                    xval = cdi.lonlat[0];
+                    yval = cdi.lonlat[1];
+                  } else {
+                    xval = cdi.x;
+                    yval = cdi.y;
+                  }
+                }
                 _mode = "closest";
               } else {
                 _mode = "";
@@ -34591,6 +34624,12 @@ var Plotly = (() => {
           height: 1e3,
           path: "m214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z",
           transform: "matrix(1 0 0 -1 0 850)"
+        },
+        cloudupload: {
+          width: 640,
+          height: 640,
+          path: "M176 544C96.5 544 32 479.5 32 400C32 336.6 73 282.8 129.9 263.5C128.6 255.8 128 248 128 240C128 160.5 192.5 96 272 96C327.4 96 375.5 127.3 399.6 173.1C413.8 164.8 430.4 160 448 160C501 160 544 203 544 256C544 271.7 540.2 286.6 533.5 299.7C577.5 320 608 364.4 608 416C608 486.7 550.7 544 480 544L176 544zM337 255C327.6 245.6 312.4 245.6 303.1 255L231.1 327C221.7 336.4 221.7 351.6 231.1 360.9C240.5 370.2 255.7 370.3 265 360.9L296 329.9L296 432C296 445.3 306.7 456 320 456C333.3 456 344 445.3 344 432L344 329.9L375 360.9C384.4 370.3 399.6 370.3 408.9 360.9C418.2 351.5 418.3 336.3 408.9 327L336.9 255z",
+          transform: "matrix(1 0 0 1 -15 -15)"
         },
         drawopenpath: {
           width: 70,
@@ -36807,6 +36846,40 @@ var Plotly = (() => {
     }
   });
 
+  // src/components/modebar/cloud_confirm.js
+  var require_cloud_confirm = __commonJS({
+    "src/components/modebar/cloud_confirm.js"(exports, module) {
+      "use strict";
+      var d3 = require_d3();
+      var _ = require_lib()._;
+      module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
+        var container = d3.select(gd._fullLayout._paperdiv.node());
+        container.selectAll(".plotly-cloud-dialog").remove();
+        var overlay = container.append("div").classed("plotly-cloud-dialog", true);
+        var dialog = overlay.append("div").classed("plotly-cloud-dialog-box", true);
+        dialog.append("div").classed("plotly-cloud-dialog-title", true).text(_(gd, "Share with Plotly Cloud"));
+        dialog.append("div").classed("plotly-cloud-dialog-message", true).text(_(gd, "This chart and its data will be sent to") + " " + serverUrl + ".");
+        var buttons = dialog.append("div").classed("plotly-cloud-dialog-buttons", true);
+        function close() {
+          overlay.remove();
+          document.removeEventListener("keydown", onKeydown);
+        }
+        function onKeydown(e) {
+          if (e.key === "Escape" || e.keyCode === 27) close();
+        }
+        document.addEventListener("keydown", onKeydown);
+        overlay.on("click", function() {
+          if (d3.event.target === overlay.node()) close();
+        });
+        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--cancel", true).text(_(gd, "Cancel")).on("click", close);
+        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--confirm", true).text(_(gd, "Share")).on("click", function() {
+          close();
+          onConfirm();
+        });
+      };
+    }
+  });
+
   // src/components/modebar/buttons.js
   var require_buttons = __commonJS({
     "src/components/modebar/buttons.js"(exports, module) {
@@ -36816,6 +36889,7 @@ var Plotly = (() => {
       var axisIds = require_axis_ids();
       var Icons = require_ploticon();
       var eraseActiveShape = require_draw2().eraseActiveShape;
+      var confirmCloudDialog = require_cloud_confirm();
       var Lib = require_lib();
       var _ = Lib._;
       var modeBarButtons = module.exports = {};
@@ -36846,26 +36920,30 @@ var Plotly = (() => {
           });
         }
       };
-      modeBarButtons.sendDataToCloud = {
-        name: "sendDataToCloud",
+      modeBarButtons.sendChartToCloud = {
+        name: "sendChartToCloud",
         title: function(gd) {
-          return _(gd, "Edit in Chart Studio");
+          return _(gd, "Share with Plotly Cloud");
         },
-        icon: Icons.disk,
+        icon: Icons.cloudupload,
         click: function(gd) {
-          Plots.sendDataToCloud(gd);
+          var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
+          if (!baseUrl) {
+            console.error("No destination URL provided (plotlyServerURL is not set)");
+            return;
+          }
+          try {
+            new URL(baseUrl);
+          } catch (e) {
+            console.error("Invalid plotlyServerURL: " + baseUrl);
+            return;
+          }
+          confirmCloudDialog(gd, baseUrl, function() {
+            Plots.sendDataToCloud(gd, baseUrl);
+          });
         }
       };
-      modeBarButtons.editInChartStudio = {
-        name: "editInChartStudio",
-        title: function(gd) {
-          return _(gd, "Edit in Chart Studio");
-        },
-        icon: Icons.pencil,
-        click: function(gd) {
-          Plots.sendDataToCloud(gd);
-        }
-      };
+      modeBarButtons.sendDataToCloud = modeBarButtons.sendChartToCloud;
       modeBarButtons.zoom2d = {
         name: "zoom2d",
         _cat: "zoom",
@@ -38004,8 +38082,14 @@ var Plotly = (() => {
           groups.push(out);
         }
         var commonGroup = ["toImage"];
-        if (context.showEditInChartStudio) commonGroup.push("editInChartStudio");
-        else if (context.showSendToCloud) commonGroup.push("sendDataToCloud");
+        if (context.showSendToCloud) commonGroup.push("sendChartToCloud");
+        else if (context.showEditInChartStudio) {
+          console.warn([
+            "*showEditInChartStudio* is deprecated.",
+            "Use *showSendToCloud* instead."
+          ].join(" "));
+          commonGroup.push("sendChartToCloud");
+        }
         addGroup(commonGroup);
         var zoomGroup = [];
         var hoverGroup = [];
@@ -46033,6 +46117,7 @@ var Plotly = (() => {
         { pattern: /^(map\d*)\.(center|zoom|bearing|pitch)/ },
         { pattern: /^legend\.(x|y)$/, attr: "editrevision" },
         { pattern: /^(shapes|annotations)/, attr: "editrevision" },
+        { pattern: /^selections/, attr: "selectionrevision" },
         { pattern: /^title\.text$/, attr: "editrevision" }
       ];
       var traceUIControlPatterns = [
@@ -47044,19 +47129,18 @@ var Plotly = (() => {
       var xmlnsNamespaces = require_xmlns_namespaces();
       var DOUBLEQUOTE_REGEX = /"/g;
       var DUMMY_SUB = "TOBESTRIPPED";
-      var DUMMY_REGEX = new RegExp('("' + DUMMY_SUB + ")|(" + DUMMY_SUB + '")', "g");
+      var DUMMY_REGEX = new RegExp(`("${DUMMY_SUB})|(${DUMMY_SUB}")|(&quot;${DUMMY_SUB})|(${DUMMY_SUB}&quot;)`, "g");
+      var PRESERVED_ENTITIES = ["&amp;", "&#38;", "&#x26;", "&quot;", "&#34;", "&#x22;", "&apos;", "&#39;", "&#x27;"];
+      var LESS_THAN_ENTITIES = ["&lt;", "&#60;", "&#x3c;"];
+      var GREATER_THAN_ENTITIES = ["&gt;", "&#62;", "&#x3e;"];
       function htmlEntityDecode(s) {
-        var hiddenDiv = d3.select("body").append("div").style({ display: "none" }).html("");
-        var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
-          if (d === "&lt;") {
-            return "&#60;";
-          }
-          if (d === "&rt;") {
-            return "&#62;";
-          }
-          if (d.indexOf("<") !== -1 || d.indexOf(">") !== -1) {
-            return "";
-          }
+        const hiddenDiv = d3.select("body").append("div").style({ display: "none" }).html("");
+        const replaced = s.replace(/(&[^;]*;)/gi, (d) => {
+          const lower = d.toLowerCase();
+          if (PRESERVED_ENTITIES.includes(lower)) return d;
+          if (LESS_THAN_ENTITIES.includes(lower)) return "&#60;";
+          if (GREATER_THAN_ENTITIES.includes(lower)) return "&#62;";
+          if (d.includes("<") || d.includes(">")) return "";
           return hiddenDiv.html(d).text();
         });
         hiddenDiv.remove();
@@ -59723,7 +59807,7 @@ var Plotly = (() => {
           /***/
           1964: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = {
                 alpha_shape: __webpack_require__2(3502),
                 convex_hull: __webpack_require__2(7352),
@@ -59739,12 +59823,12 @@ var Plotly = (() => {
                 ndarray: __webpack_require__2(9618),
                 ndarray_linear_interpolate: __webpack_require__2(4317)
               };
-            }
+            })
           ),
           /***/
           4793: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var __webpack_unused_export__;
               function _typeof(o) {
@@ -61065,7 +61149,7 @@ var Plotly = (() => {
               function numberIsNaN(obj) {
                 return obj !== obj;
               }
-              var hexSliceLookupTable = function() {
+              var hexSliceLookupTable = (function() {
                 var alphabet = "0123456789abcdef";
                 var table = new Array(256);
                 for (var i = 0; i < 16; ++i) {
@@ -61075,13 +61159,13 @@ var Plotly = (() => {
                   }
                 }
                 return table;
-              }();
-            }
+              })();
+            })
           ),
           /***/
           9216: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = isMobile;
               module2.exports.isMobile = isMobile;
@@ -61103,12 +61187,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           6296: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createViewController;
               var createTurntable = __webpack_require__2(7261);
@@ -61245,12 +61329,12 @@ var Plotly = (() => {
                   matrix
                 }, mode);
               }
-            }
+            })
           ),
           /***/
           7169: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var weakMap = typeof WeakMap === "undefined" ? __webpack_require__2(1538) : WeakMap;
               var createBuffer = __webpack_require__2(2762);
@@ -61276,12 +61360,12 @@ var Plotly = (() => {
                 triangleVAO.unbind();
               }
               module2.exports = createABigTriangle;
-            }
+            })
           ),
           /***/
           1085: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var padLeft = __webpack_require__2(1371);
               module2.exports = addLineNumbers;
               function addLineNumbers(string, start, delim) {
@@ -61296,12 +61380,12 @@ var Plotly = (() => {
                   return prefix + delim + line;
                 }).join("\n");
               }
-            }
+            })
           ),
           /***/
           3952: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = affineHull;
               var orient = __webpack_require__2(3250);
@@ -61349,12 +61433,12 @@ var Plotly = (() => {
                 }
                 return index;
               }
-            }
+            })
           ),
           /***/
           5995: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = alphaComplex;
               var delaunay = __webpack_require__2(7642);
@@ -61368,33 +61452,33 @@ var Plotly = (() => {
                   return circumradius(simplex) * alpha < 1;
                 });
               }
-            }
+            })
           ),
           /***/
           3502: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = alphaShape;
               var ac = __webpack_require__2(5995);
               var bnd = __webpack_require__2(9127);
               function alphaShape(alpha, points) {
                 return bnd(ac(alpha, points));
               }
-            }
+            })
           ),
           /***/
           6468: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function _atob(str) {
                 return atob(str);
               };
-            }
+            })
           ),
           /***/
           2642: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = barycentric;
               var solve = __webpack_require__2(727);
@@ -61435,12 +61519,12 @@ var Plotly = (() => {
                 }
                 return y;
               }
-            }
+            })
           ),
           /***/
           7507: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               exports2.byteLength = byteLength;
               exports2.toByteArray = toByteArray;
@@ -61534,12 +61618,12 @@ var Plotly = (() => {
                 }
                 return parts.join("");
               }
-            }
+            })
           ),
           /***/
           3865: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = add;
@@ -61549,35 +61633,35 @@ var Plotly = (() => {
                   a[1].mul(b[1])
                 );
               }
-            }
+            })
           ),
           /***/
           1318: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = cmp;
               function cmp(a, b) {
                 return a[0].mul(b[1]).cmp(b[0].mul(a[1]));
               }
-            }
+            })
           ),
           /***/
           8697: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = div;
               function div(a, b) {
                 return rationalize(a[0].mul(b[1]), a[1].mul(b[0]));
               }
-            }
+            })
           ),
           /***/
           7842: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isRat = __webpack_require__2(6330);
               var isBN = __webpack_require__2(1533);
@@ -61635,36 +61719,36 @@ var Plotly = (() => {
                 }
                 return rationalize(a, b);
               }
-            }
+            })
           ),
           /***/
           6330: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isBN = __webpack_require__2(1533);
               module2.exports = isRat;
               function isRat(x) {
                 return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1]);
               }
-            }
+            })
           ),
           /***/
           5716: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               module2.exports = sign;
               function sign(x) {
                 return x.cmp(new BN(0));
               }
-            }
+            })
           ),
           /***/
           1369: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var sign = __webpack_require__2(5716);
               module2.exports = bn2num;
@@ -61684,12 +61768,12 @@ var Plotly = (() => {
                 }
                 return sign(b) * out;
               }
-            }
+            })
           ),
           /***/
           4025: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var db = __webpack_require__2(2361);
               var ctz = __webpack_require__2(8828).countTrailingZeros;
@@ -61705,24 +61789,24 @@ var Plotly = (() => {
                 }
                 return h + 32;
               }
-            }
+            })
           ),
           /***/
           1533: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               module2.exports = isBN;
               function isBN(x) {
                 return x && typeof x === "object" && Boolean(x.words);
               }
-            }
+            })
           ),
           /***/
           2651: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               var db = __webpack_require__2(2361);
@@ -61735,12 +61819,12 @@ var Plotly = (() => {
                   return new BN(x * Math.pow(2, 52 - e)).ushln(e - 52);
                 }
               }
-            }
+            })
           ),
           /***/
           869: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var num2bn = __webpack_require__2(2651);
               var sign = __webpack_require__2(5716);
@@ -61764,60 +61848,60 @@ var Plotly = (() => {
                 }
                 return [numer, denom];
               }
-            }
+            })
           ),
           /***/
           6768: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               module2.exports = str2BN;
               function str2BN(x) {
                 return new BN(x);
               }
-            }
+            })
           ),
           /***/
           6504: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = mul;
               function mul(a, b) {
                 return rationalize(a[0].mul(b[0]), a[1].mul(b[1]));
               }
-            }
+            })
           ),
           /***/
           7721: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bnsign = __webpack_require__2(5716);
               module2.exports = sign;
               function sign(x) {
                 return bnsign(x[0]) * bnsign(x[1]);
               }
-            }
+            })
           ),
           /***/
           5572: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = sub;
               function sub(a, b) {
                 return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]));
               }
-            }
+            })
           ),
           /***/
           946: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bn2num = __webpack_require__2(1369);
               var ctz = __webpack_require__2(4025);
@@ -61850,12 +61934,12 @@ var Plotly = (() => {
                   return sgn * y * Math.pow(2, 1023 - ybits);
                 }
               }
-            }
+            })
           ),
           /***/
           2478: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function ge(a, y, c, l, h) {
                 var i = h + 1;
@@ -61956,12 +62040,12 @@ var Plotly = (() => {
                   return norm(a, y, c, l, h, eq);
                 }
               };
-            }
+            })
           ),
           /***/
           8828: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               "use restrict";
               var INT_BITS = 32;
@@ -62111,12 +62195,12 @@ var Plotly = (() => {
                 var t = v | v - 1;
                 return t + 1 | (~t & -~t) - 1 >>> countTrailingZeros(v) + 1;
               };
-            }
+            })
           ),
           /***/
           6859: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2 = __webpack_require__2.nmd(module2);
               (function(module3, exports2) {
                 "use strict";
@@ -64923,12 +65007,12 @@ var Plotly = (() => {
                   return res._forceRed(this);
                 };
               })(module2, this);
-            }
+            })
           ),
           /***/
           6204: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = boundary;
               function boundary(cells) {
@@ -64961,12 +65045,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           6867: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = boxIntersectWrapper;
               var pool = __webpack_require__2(1888);
@@ -65095,12 +65179,12 @@ var Plotly = (() => {
                     throw new Error("box-intersect: Invalid arguments");
                 }
               }
-            }
+            })
           ),
           /***/
           2455: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               function full() {
                 function bruteForceRedFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
@@ -65231,12 +65315,12 @@ var Plotly = (() => {
               }
               exports2.partial = bruteForcePlanner(false);
               exports2.full = bruteForcePlanner(true);
-            }
+            })
           ),
           /***/
           7150: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = boxIntersectIter;
               var pool = __webpack_require__2(1888);
@@ -65846,12 +65930,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           3545: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = findMedian;
               var genPartition = __webpack_require__2(8105);
@@ -65976,12 +66060,12 @@ var Plotly = (() => {
                   boxes[elemSize * mid + axis]
                 );
               }
-            }
+            })
           ),
           /***/
           8105: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = genPartition;
               var P2F = {
@@ -66101,12 +66185,12 @@ var Plotly = (() => {
                 }
                 return m;
               }
-            }
+            })
           ),
           /***/
           4192: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = wrapper;
               var INSERT_SORT_CUTOFF = 32;
@@ -66312,12 +66396,12 @@ var Plotly = (() => {
                   quickSort(less, great, data);
                 }
               }
-            }
+            })
           ),
           /***/
           855: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = {
                 init: sqInit,
@@ -66656,12 +66740,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           2538: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var monotoneTriangulate = __webpack_require__2(8902);
               var makeIndex = __webpack_require__2(5542);
@@ -66721,12 +66805,12 @@ var Plotly = (() => {
                   return cells;
                 }
               }
-            }
+            })
           ),
           /***/
           2272: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var inCircle = __webpack_require__2(2646)[4];
               var bsearch = __webpack_require__2(2478);
@@ -66807,12 +66891,12 @@ var Plotly = (() => {
                   testFlip(points, triangulation, stack, b, x, y);
                 }
               }
-            }
+            })
           ),
           /***/
           5023: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               module2.exports = classifyFaces;
@@ -66829,7 +66913,7 @@ var Plotly = (() => {
               function compareCell(a, b) {
                 return a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
               }
-              proto.locate = /* @__PURE__ */ function() {
+              proto.locate = /* @__PURE__ */ (function() {
                 var key = [0, 0, 0];
                 return function(a, b, c) {
                   var x = a, y = b, z = c;
@@ -66852,7 +66936,7 @@ var Plotly = (() => {
                   key[2] = z;
                   return bsearch.eq(this.cells, key, compareCell);
                 };
-              }();
+              })();
               function indexCells(triangulation, infinity) {
                 var cells = triangulation.cells();
                 var nc = cells.length;
@@ -66972,12 +67056,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           8902: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               var orient = __webpack_require__2(3250)[3];
@@ -67141,12 +67225,12 @@ var Plotly = (() => {
                 }
                 return cells;
               }
-            }
+            })
           ),
           /***/
           5542: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               module2.exports = createTriangulation;
@@ -67165,7 +67249,7 @@ var Plotly = (() => {
                   }
                 }
               }
-              proto.isConstraint = /* @__PURE__ */ function() {
+              proto.isConstraint = /* @__PURE__ */ (function() {
                 var e = [0, 0];
                 function compareLex(a, b) {
                   return a[0] - b[0] || a[1] - b[1];
@@ -67175,7 +67259,7 @@ var Plotly = (() => {
                   e[1] = Math.max(i, j);
                   return bsearch.eq(this.edges, e, compareLex) >= 0;
                 };
-              }();
+              })();
               proto.removeTriangle = function(i, j, k) {
                 var stars = this.stars;
                 removePair(stars[i], j, k);
@@ -67238,12 +67322,12 @@ var Plotly = (() => {
                 }
                 return new Triangulation(stars, edges);
               }
-            }
+            })
           ),
           /***/
           2419: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = orientation;
               function orientation(s) {
@@ -67259,12 +67343,12 @@ var Plotly = (() => {
                 }
                 return p;
               }
-            }
+            })
           ),
           /***/
           3628: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var dup = __webpack_require__2(1338);
               var solve = __webpack_require__2(727);
@@ -67324,12 +67408,12 @@ var Plotly = (() => {
               }
               circumcenter.barycenetric = barycentricCircumcenter;
               module2.exports = circumcenter;
-            }
+            })
           ),
           /***/
           6037: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = circumradius;
               var circumcenter = __webpack_require__2(3628);
               function circumradius(points) {
@@ -67343,12 +67427,12 @@ var Plotly = (() => {
                 }
                 return Math.sqrt(avgDist / points.length);
               }
-            }
+            })
           ),
           /***/
           332: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = cleanPSLG;
               var UnionFind = __webpack_require__2(1755);
@@ -67649,12 +67733,12 @@ var Plotly = (() => {
                 }
                 return modified;
               }
-            }
+            })
           ),
           /***/
           3637: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = solveIntersection;
               var ratMul = __webpack_require__2(6504);
@@ -67681,12 +67765,12 @@ var Plotly = (() => {
                 var r = rvAdd(a, s);
                 return r;
               }
-            }
+            })
           ),
           /***/
           3642: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = {
                 "jet": [{ "index": 0, "rgb": [0, 0, 131] }, { "index": 0.125, "rgb": [0, 60, 170] }, { "index": 0.375, "rgb": [5, 255, 255] }, { "index": 0.625, "rgb": [255, 255, 0] }, { "index": 0.875, "rgb": [250, 0, 0] }, { "index": 1, "rgb": [128, 0, 0] }],
                 "hsv": [{ "index": 0, "rgb": [255, 0, 0] }, { "index": 0.169, "rgb": [253, 255, 2] }, { "index": 0.173, "rgb": [247, 255, 2] }, { "index": 0.337, "rgb": [0, 252, 4] }, { "index": 0.341, "rgb": [0, 252, 10] }, { "index": 0.506, "rgb": [1, 249, 255] }, { "index": 0.671, "rgb": [2, 0, 253] }, { "index": 0.675, "rgb": [8, 0, 253] }, { "index": 0.839, "rgb": [255, 0, 251] }, { "index": 0.843, "rgb": [255, 0, 245] }, { "index": 1, "rgb": [255, 0, 6] }],
@@ -67733,12 +67817,12 @@ var Plotly = (() => {
                 "velocity-green": [{ "index": 0, "rgb": [23, 35, 19] }, { "index": 0.13, "rgb": [24, 64, 38] }, { "index": 0.25, "rgb": [11, 95, 45] }, { "index": 0.38, "rgb": [39, 123, 35] }, { "index": 0.5, "rgb": [95, 146, 12] }, { "index": 0.63, "rgb": [152, 165, 18] }, { "index": 0.75, "rgb": [201, 186, 69] }, { "index": 0.88, "rgb": [233, 216, 137] }, { "index": 1, "rgb": [255, 253, 205] }],
                 "cubehelix": [{ "index": 0, "rgb": [0, 0, 0] }, { "index": 0.07, "rgb": [22, 5, 59] }, { "index": 0.13, "rgb": [60, 4, 105] }, { "index": 0.2, "rgb": [109, 1, 135] }, { "index": 0.27, "rgb": [161, 0, 147] }, { "index": 0.33, "rgb": [210, 2, 142] }, { "index": 0.4, "rgb": [251, 11, 123] }, { "index": 0.47, "rgb": [255, 29, 97] }, { "index": 0.53, "rgb": [255, 54, 69] }, { "index": 0.6, "rgb": [255, 85, 46] }, { "index": 0.67, "rgb": [255, 120, 34] }, { "index": 0.73, "rgb": [255, 157, 37] }, { "index": 0.8, "rgb": [241, 191, 57] }, { "index": 0.87, "rgb": [224, 220, 93] }, { "index": 0.93, "rgb": [218, 241, 142] }, { "index": 1, "rgb": [227, 253, 198] }]
               };
-            }
+            })
           ),
           /***/
           6729: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var colorScale = __webpack_require__2(3642);
               var lerp = __webpack_require__2(395);
@@ -67833,12 +67917,12 @@ var Plotly = (() => {
               function rgbaStr(rgba) {
                 return "rgba(" + rgba.join(",") + ")";
               }
-            }
+            })
           ),
           /***/
           3140: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = compareAngle;
               var orient = __webpack_require__2(3250);
@@ -67918,12 +68002,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           8572: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = function signum(x) {
                 if (x < 0) {
@@ -67934,12 +68018,12 @@ var Plotly = (() => {
                 }
                 return 0;
               };
-            }
+            })
           ),
           /***/
           8507: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = compareCells;
               var min = Math.min;
               function compareInt(a, b) {
@@ -67980,12 +68064,12 @@ var Plotly = (() => {
                     return 0;
                 }
               }
-            }
+            })
           ),
           /***/
           3788: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var compareCells = __webpack_require__2(8507);
               var parity = __webpack_require__2(2419);
@@ -67993,12 +68077,12 @@ var Plotly = (() => {
               function compareOrientedCells(a, b) {
                 return compareCells(a, b) || parity(a) - parity(b);
               }
-            }
+            })
           ),
           /***/
           7352: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var convexHull1d = __webpack_require__2(5721);
               var convexHull2d = __webpack_require__2(4750);
@@ -68021,12 +68105,12 @@ var Plotly = (() => {
                 }
                 return convexHullnd(points, d);
               }
-            }
+            })
           ),
           /***/
           5721: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = convexHull1d;
               function convexHull1d(points) {
@@ -68048,12 +68132,12 @@ var Plotly = (() => {
                   return [[lo]];
                 }
               }
-            }
+            })
           ),
           /***/
           4750: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = convexHull2D;
               var monotoneHull = __webpack_require__2(3090);
@@ -68072,12 +68156,12 @@ var Plotly = (() => {
                 }
                 return edges;
               }
-            }
+            })
           ),
           /***/
           2690: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = convexHullnD;
               var ich = __webpack_require__2(8954);
@@ -68131,12 +68215,12 @@ var Plotly = (() => {
                   return invPermute(nhull, ah);
                 }
               }
-            }
+            })
           ),
           /***/
           4769: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function dcubicHermite(p0, v0, p1, v1, t, f) {
                 var dh00 = 6 * t * t - 6 * t, dh10 = 3 * t * t - 4 * t + 1, dh01 = -6 * t * t + 6 * t, dh11 = 3 * t * t - 2 * t;
@@ -68166,12 +68250,12 @@ var Plotly = (() => {
               }
               module2.exports = cubicHermite;
               module2.exports.derivative = dcubicHermite;
-            }
+            })
           ),
           /***/
           7642: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var ch = __webpack_require__2(8954);
               var uniq = __webpack_require__2(1682);
@@ -68307,12 +68391,12 @@ var Plotly = (() => {
                 }
                 return hull;
               }
-            }
+            })
           ),
           /***/
           2361: (
             /***/
-            function(module2) {
+            (function(module2) {
               var hasTypedArrays = false;
               if (typeof Float64Array !== "undefined") {
                 var DOUBLE_VIEW = new Float64Array(1), UINT_VIEW = new Uint32Array(DOUBLE_VIEW.buffer);
@@ -68404,12 +68488,12 @@ var Plotly = (() => {
                 var hi = module2.exports.hi(n);
                 return !(hi & 2146435072);
               };
-            }
+            })
           ),
           /***/
           1338: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function dupe_array(count, value, i) {
                 var c = count[i] | 0;
@@ -68455,12 +68539,12 @@ var Plotly = (() => {
                 return [];
               }
               module2.exports = dupe;
-            }
+            })
           ),
           /***/
           3134: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = edgeToAdjacency;
               var uniq = __webpack_require__2(1682);
@@ -68491,12 +68575,12 @@ var Plotly = (() => {
                 }
                 return adj;
               }
-            }
+            })
           ),
           /***/
           5033: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = extractPlanes;
               function extractPlanes(M, zNear, zFar) {
@@ -68511,12 +68595,12 @@ var Plotly = (() => {
                   [zf * M[12] - M[8], zf * M[13] - M[9], zf * M[14] - M[10], zf * M[15] - M[11]]
                 ];
               }
-            }
+            })
           ),
           /***/
           9215: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createFilteredVector;
               var cubicHermite = __webpack_require__2(4769);
@@ -68791,12 +68875,12 @@ var Plotly = (() => {
                     return new FilteredVector(initState, initVelocity, initTime);
                 }
               }
-            }
+            })
           ),
           /***/
           3840: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = createRBTree;
               var RED = 0;
@@ -69676,12 +69760,12 @@ var Plotly = (() => {
               function createRBTree(compare) {
                 return new RedBlackTree(compare || defaultCompare, null);
               }
-            }
+            })
           ),
           /***/
           3837: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createAxes;
               var createText = __webpack_require__2(4935);
@@ -70249,12 +70333,12 @@ var Plotly = (() => {
                 axes.update(options);
                 return axes;
               }
-            }
+            })
           ),
           /***/
           5304: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createBackgroundCube;
               var createBuffer = __webpack_require__2(2762);
@@ -70360,12 +70444,12 @@ var Plotly = (() => {
                 shader.attributes.normal.location = 1;
                 return new BackgroundCube(gl2, buffer, vao, shader);
               }
-            }
+            })
           ),
           /***/
           6429: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = getCubeEdges;
               var bits = __webpack_require__2(8828);
@@ -70571,12 +70655,12 @@ var Plotly = (() => {
                 }
                 return CUBE_RESULT;
               }
-            }
+            })
           ),
           /***/
           501: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createLines;
               var createBuffer = __webpack_require__2(2762);
@@ -70792,12 +70876,12 @@ var Plotly = (() => {
                 shader.attributes.position.location = 0;
                 return new Lines(gl2, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset);
               }
-            }
+            })
           ),
           /***/
           1879: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
@@ -70823,12 +70907,12 @@ var Plotly = (() => {
                   { name: "normal", type: "vec3" }
                 ]);
               };
-            }
+            })
           ),
           /***/
           4935: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createTextSprites;
               var createBuffer = __webpack_require__2(2762);
@@ -71014,12 +71098,12 @@ var Plotly = (() => {
                 result.update(bounds, labels, labelFont, ticks, tickFont);
                 return result;
               }
-            }
+            })
           ),
           /***/
           6444: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               exports2.create = defaultTicks;
               exports2.equal = ticksEqual;
@@ -71088,12 +71172,12 @@ var Plotly = (() => {
                 }
                 return true;
               }
-            }
+            })
           ),
           /***/
           5445: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = axesProperties;
               var getPlanes = __webpack_require__2(5033);
@@ -71216,12 +71300,12 @@ var Plotly = (() => {
                 }
                 return ranges;
               }
-            }
+            })
           ),
           /***/
           2762: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var pool = __webpack_require__2(1888);
               var ops = __webpack_require__2(5298);
@@ -71362,12 +71446,12 @@ var Plotly = (() => {
                 return result;
               }
               module2.exports = createBuffer;
-            }
+            })
           ),
           /***/
           6405: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var vec3 = __webpack_require__2(2931);
               module2.exports = function(vectorfield, bounds) {
@@ -71479,12 +71563,12 @@ var Plotly = (() => {
                   traceType: "cone"
                 });
               };
-            }
+            })
           ),
           /***/
           9060: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createShader = __webpack_require__2(9405);
               var createBuffer = __webpack_require__2(2762);
@@ -71965,12 +72049,12 @@ var Plotly = (() => {
                 return mesh;
               }
               module2.exports = createVectorMesh;
-            }
+            })
           ),
           /***/
           614: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, coneScale, coneOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"]);
               var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"]);
@@ -71995,12 +72079,12 @@ var Plotly = (() => {
                   { name: "vector", type: "vec3" }
                 ]
               };
-            }
+            })
           ),
           /***/
           737: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = {
                 0: "NONE",
                 1: "ONE",
@@ -72299,22 +72383,22 @@ var Plotly = (() => {
                 37443: "UNPACK_COLORSPACE_CONVERSION_WEBGL",
                 37444: "BROWSER_DEFAULT_WEBGL"
               };
-            }
+            })
           ),
           /***/
           5171: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var gl10 = __webpack_require__2(737);
               module2.exports = function lookupConstant(number) {
                 return gl10[number];
               };
-            }
+            })
           ),
           /***/
           9165: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createErrorBars;
               var createBuffer = __webpack_require__2(2762);
@@ -72392,7 +72476,7 @@ var Plotly = (() => {
                   bounds[1][i] = Math.max(bounds[1][i], point[i]);
                 }
               }
-              var FACE_TABLE = function() {
+              var FACE_TABLE = (function() {
                 var table = new Array(3);
                 for (var d = 0; d < 3; ++d) {
                   var row = [];
@@ -72407,7 +72491,7 @@ var Plotly = (() => {
                   table[d] = row;
                 }
                 return table;
-              }();
+              })();
               function emitFace(verts, x, c, d) {
                 var offsets = FACE_TABLE[d];
                 for (var i = 0; i < offsets.length; ++i) {
@@ -72588,12 +72672,12 @@ var Plotly = (() => {
                 result.update(options);
                 return result;
               }
-            }
+            })
           ),
           /***/
           3436: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
@@ -72606,12 +72690,12 @@ var Plotly = (() => {
                   { name: "offset", type: "vec3" }
                 ]);
               };
-            }
+            })
           ),
           /***/
           2260: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createTexture = __webpack_require__2(7766);
               module2.exports = createFBO;
@@ -72994,12 +73078,12 @@ var Plotly = (() => {
                   WEBGL_draw_buffers
                 );
               }
-            }
+            })
           ),
           /***/
           2992: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var sprintf = __webpack_require__2(3387).sprintf;
               var glConstants = __webpack_require__2(5171);
               var shaderName = __webpack_require__2(1848);
@@ -73041,12 +73125,12 @@ var Plotly = (() => {
                   short: shortForm.trim()
                 };
               }
-            }
+            })
           ),
           /***/
           7319: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
               var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * (view * (model * vec4(p, 1.0)));\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"]);
@@ -73065,12 +73149,12 @@ var Plotly = (() => {
               exports2.createPickShader = function(gl2) {
                 return createShader(gl2, vertSrc, pickFrag, null, ATTRIBUTES);
               };
-            }
+            })
           ),
           /***/
           5714: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createLinePlot;
               var createBuffer = __webpack_require__2(2762);
@@ -73495,12 +73579,12 @@ var Plotly = (() => {
                 linePlot.update(options);
                 return linePlot;
               }
-            }
+            })
           ),
           /***/
           1903: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = clone;
               function clone(a) {
                 var out = new Float32Array(16);
@@ -73523,12 +73607,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6864: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = create;
               function create() {
                 var out = new Float32Array(16);
@@ -73551,24 +73635,24 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           9921: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = determinant;
               function determinant(a) {
                 var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
                 return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
               }
               ;
-            }
+            })
           ),
           /***/
           7399: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromQuat;
               function fromQuat(out, q) {
                 var x = q[0], y = q[1], z = q[2], w = q[3], x2 = x + x, y2 = y + y, z2 = z + z, xx = x * x2, yx = y * x2, yy = y * y2, zx = z * x2, zy = z * y2, zz = z * z2, wx = w * x2, wy = w * y2, wz = w * z2;
@@ -73591,12 +73675,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6743: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromRotationTranslation;
               function fromRotationTranslation(out, q, v) {
                 var x = q[0], y = q[1], z = q[2], w = q[3], x2 = x + x, y2 = y + y, z2 = z + z, xx = x * x2, xy = x * y2, xz = x * z2, yy = y * y2, yz = y * z2, zz = z * z2, wx = w * x2, wy = w * y2, wz = w * z2;
@@ -73619,12 +73703,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7894: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = identity;
               function identity(out) {
                 out[0] = 1;
@@ -73646,12 +73730,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7608: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = invert;
               function invert(out, a) {
                 var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32, det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
@@ -73678,12 +73762,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6582: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var identity = __webpack_require__2(7894);
               module2.exports = lookAt;
               function lookAt(out, eye, center, up) {
@@ -73745,12 +73829,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6760: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = multiply;
               function multiply(out, a, b) {
                 var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
@@ -73786,12 +73870,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           4040: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = ortho;
               function ortho(out, left, right, bottom, top, near, far) {
                 var lr = 1 / (left - right), bt = 1 / (bottom - top), nf = 1 / (near - far);
@@ -73814,12 +73898,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           4772: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = perspective;
               function perspective(out, fovy, aspect, near, far) {
                 var f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
@@ -73842,12 +73926,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6079: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotate;
               function rotate(out, a, rad, axis) {
                 var x = axis[0], y = axis[1], z = axis[2], len = Math.sqrt(x * x + y * y + z * z), s, c, t, a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, b00, b01, b02, b10, b11, b12, b20, b21, b22;
@@ -73903,12 +73987,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           5567: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateX;
               function rotateX(out, a, rad) {
                 var s = Math.sin(rad), c = Math.cos(rad), a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
@@ -73933,12 +74017,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           2408: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateY;
               function rotateY(out, a, rad) {
                 var s = Math.sin(rad), c = Math.cos(rad), a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
@@ -73963,12 +74047,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7089: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateZ;
               function rotateZ(out, a, rad) {
                 var s = Math.sin(rad), c = Math.cos(rad), a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
@@ -73993,12 +74077,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           2504: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scale;
               function scale(out, a, v) {
                 var x = v[0], y = v[1], z = v[2];
@@ -74021,12 +74105,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7656: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = translate;
               function translate(out, a, v) {
                 var x = v[0], y = v[1], z = v[2], a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23;
@@ -74068,12 +74152,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           5665: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transpose;
               function transpose(out, a) {
                 if (out === a) {
@@ -74111,12 +74195,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7626: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var barycentric = __webpack_require__2(2642);
               var closestPointToTriangle = __webpack_require__2(9346);
@@ -74208,12 +74292,12 @@ var Plotly = (() => {
                 }
                 return [closestIndex, interpolate(simplex, weights), weights];
               }
-            }
+            })
           ),
           /***/
           840: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * (view * (model * vec4(p, 1.0)));\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"]);
               var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (f_color.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], f_data)\n  ) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = vec4(f_color.rgb, 1.0) * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * f_color.a;\n}\n"]);
@@ -74279,12 +74363,12 @@ var Plotly = (() => {
                   { name: "position", type: "vec3" }
                 ]
               };
-            }
+            })
           ),
           /***/
           7201: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6;
               var DEFAULT_FACE_NORMALS_EPSILON = 1e-6;
@@ -75260,12 +75344,12 @@ var Plotly = (() => {
                 return mesh;
               }
               module2.exports = createSimplicialMesh;
-            }
+            })
           ),
           /***/
           4437: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createCamera;
               var now = __webpack_require__2(3025);
@@ -75505,12 +75589,12 @@ var Plotly = (() => {
                 camera.enableMouseListeners();
                 return camera;
               }
-            }
+            })
           ),
           /***/
           799: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
               var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"]);
@@ -75518,12 +75602,12 @@ var Plotly = (() => {
               module2.exports = function(gl2) {
                 return createShader(gl2, vertSrc, fragSrc, null, [{ name: "position", type: "vec2" }]);
               };
-            }
+            })
           ),
           /***/
           4100: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createCamera = __webpack_require__2(4437);
               var createAxes = __webpack_require__2(3837);
@@ -76219,12 +76303,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           783: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = slerp;
               function slerp(out, a, b, t) {
                 var ax = a[0], ay = a[1], az = a[2], aw = a[3], bx = b[0], by = b[1], bz = b[2], bw = b[3];
@@ -76252,22 +76336,22 @@ var Plotly = (() => {
                 out[3] = scale0 * aw + scale1 * bw;
                 return out;
               }
-            }
+            })
           ),
           /***/
           5964: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = function(a) {
                 return !a && a !== 0 ? "" : a.toString();
               };
-            }
+            })
           ),
           /***/
           9366: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var vectorizeText = __webpack_require__2(4359);
               module2.exports = getGlyph;
@@ -76331,12 +76415,12 @@ var Plotly = (() => {
                 }
                 return fontCache[symbol] = [triSymbol, lineSymbol, bounds];
               }
-            }
+            })
           ),
           /***/
           1283: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var createShaderWrapper = __webpack_require__2(9405);
               var glslify = __webpack_require__2(3236);
               var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"]);
@@ -76402,12 +76486,12 @@ var Plotly = (() => {
               exports2.createPickProject = function(gl2) {
                 return createShader(gl2, pickProject);
               };
-            }
+            })
           ),
           /***/
           8418: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isAllBlank = __webpack_require__2(5219);
               var createBuffer = __webpack_require__2(2762);
@@ -77138,12 +77222,12 @@ var Plotly = (() => {
                 pointCloud.update(options);
                 return pointCloud;
               }
-            }
+            })
           ),
           /***/
           3589: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createSelectBuffer;
               var createFBO = __webpack_require__2(2260);
@@ -77304,12 +77388,12 @@ var Plotly = (() => {
                 var buffer = pool.mallocUint8(width * height * 4);
                 return new SelectBuffer(gl2, fbo, buffer);
               }
-            }
+            })
           ),
           /***/
           9405: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createUniformWrapper = __webpack_require__2(3327);
               var createAttributeWrapper = __webpack_require__2(8731);
@@ -77493,12 +77577,12 @@ var Plotly = (() => {
                 return shader;
               }
               module2.exports = createShader;
-            }
+            })
           ),
           /***/
           8866: (
             /***/
-            function(module2) {
+            (function(module2) {
               function GLError(rawError, shortMessage, longMessage) {
                 this.shortMessage = shortMessage || "";
                 this.longMessage = longMessage || "";
@@ -77510,12 +77594,12 @@ var Plotly = (() => {
               GLError.prototype.name = "GLError";
               GLError.prototype.constructor = GLError;
               module2.exports = GLError;
-            }
+            })
           ),
           /***/
           8731: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createAttributeWrapper;
               var GLError = __webpack_require__2(8866);
@@ -77746,12 +77830,12 @@ var Plotly = (() => {
                 }
                 return obj;
               }
-            }
+            })
           ),
           /***/
           3327: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var coallesceUniforms = __webpack_require__2(216);
               var GLError = __webpack_require__2(8866);
@@ -77940,12 +78024,12 @@ var Plotly = (() => {
                   configurable: true
                 };
               }
-            }
+            })
           ),
           /***/
           216: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = makeReflectTypes;
               function makeReflectTypes(uniforms, useIndex) {
@@ -77996,12 +78080,12 @@ var Plotly = (() => {
                 }
                 return obj;
               }
-            }
+            })
           ),
           /***/
           2145: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               exports2.uniforms = runtimeUniforms;
               exports2.attributes = runtimeAttributes;
@@ -78074,12 +78158,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           5091: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               exports2.shader = getShaderReference;
               exports2.program = createProgram;
@@ -78199,12 +78283,12 @@ var Plotly = (() => {
               function createProgram(gl2, vref, fref, attribs, locations) {
                 return getCache(gl2).getProgram(vref, fref, attribs, locations);
               }
-            }
+            })
           ),
           /***/
           1493: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
@@ -78217,12 +78301,12 @@ var Plotly = (() => {
                   { name: "weight", type: "float" }
                 ]);
               };
-            }
+            })
           ),
           /***/
           4449: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createBuffer = __webpack_require__2(2762);
               var createVAO = __webpack_require__2(8116);
@@ -78394,12 +78478,12 @@ var Plotly = (() => {
                 spikes.update(options);
                 return spikes;
               }
-            }
+            })
           ),
           /***/
           6740: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, tubeScale;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"]);
               var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"]);
@@ -78424,12 +78508,12 @@ var Plotly = (() => {
                   { name: "vector", type: "vec4" }
                 ]
               };
-            }
+            })
           ),
           /***/
           7815: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var vec3 = __webpack_require__2(2931);
               var vec4 = __webpack_require__2(9970);
@@ -78863,12 +78947,12 @@ var Plotly = (() => {
                   traceType: "streamtube"
                 });
               };
-            }
+            })
           ),
           /***/
           990: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var createShader = __webpack_require__2(9405);
               var glslify = __webpack_require__2(3236);
               var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  mat4 objectOffsetTranslation = mat4(1.0) + mat4(vec4(0), vec4(0), vec4(0), vec4(objectOffset, 0));\n  vec4 worldPosition = (model * objectOffsetTranslation) * vec4(localCoordinate, 1.0);\n  vec4 clipPosition = projection * (view * worldPosition);\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"]);
@@ -78915,12 +78999,12 @@ var Plotly = (() => {
                 shader.attributes.f.location = 1;
                 return shader;
               };
-            }
+            })
           ),
           /***/
           9499: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createSurfacePlot;
               var bits = __webpack_require__2(8828);
@@ -80053,12 +80137,12 @@ var Plotly = (() => {
                 surface.update(nparams);
                 return surface;
               }
-            }
+            })
           ),
           /***/
           7766: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var ndarray = __webpack_require__2(9618);
               var ops = __webpack_require__2(5298);
@@ -80576,12 +80660,12 @@ var Plotly = (() => {
                 }
                 throw new Error("gl-texture2d: Invalid arguments for texture2d constructor");
               }
-            }
+            })
           ),
           /***/
           1433: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function doBind(gl2, elements, attributes) {
                 if (elements) {
@@ -80634,12 +80718,12 @@ var Plotly = (() => {
                 }
               }
               module2.exports = doBind;
-            }
+            })
           ),
           /***/
           870: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bindAttribs = __webpack_require__2(1433);
               function VAOEmulated(gl2) {
@@ -80673,12 +80757,12 @@ var Plotly = (() => {
                 return new VAOEmulated(gl2);
               }
               module2.exports = createVAOEmulated;
-            }
+            })
           ),
           /***/
           7518: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bindAttribs = __webpack_require__2(1433);
               function VertexAttribute(location, dimension, a, b, c, d) {
@@ -80755,12 +80839,12 @@ var Plotly = (() => {
                 return new VAONative(gl2, ext, ext.createVertexArrayOES());
               }
               module2.exports = createVAONative;
-            }
+            })
           ),
           /***/
           8116: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createVAONative = __webpack_require__2(7518);
               var createVAOEmulated = __webpack_require__2(870);
@@ -80781,12 +80865,12 @@ var Plotly = (() => {
                 return vao;
               }
               module2.exports = createVAO;
-            }
+            })
           ),
           /***/
           5632: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = add;
               function add(out, a, b) {
                 out[0] = a[0] + b[0];
@@ -80794,12 +80878,12 @@ var Plotly = (() => {
                 out[2] = a[2] + b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           8192: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = angle;
               var fromValues = __webpack_require__2(2825);
               var normalize = __webpack_require__2(3536);
@@ -80816,12 +80900,12 @@ var Plotly = (() => {
                   return Math.acos(cosine);
                 }
               }
-            }
+            })
           ),
           /***/
           9226: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = ceil;
               function ceil(out, a) {
                 out[0] = Math.ceil(a[0]);
@@ -80829,12 +80913,12 @@ var Plotly = (() => {
                 out[2] = Math.ceil(a[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           3126: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = clone;
               function clone(a) {
                 var out = new Float32Array(3);
@@ -80843,12 +80927,12 @@ var Plotly = (() => {
                 out[2] = a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           3990: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = copy;
               function copy(out, a) {
                 out[0] = a[0];
@@ -80856,12 +80940,12 @@ var Plotly = (() => {
                 out[2] = a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           1091: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = create;
               function create() {
                 var out = new Float32Array(3);
@@ -80870,12 +80954,12 @@ var Plotly = (() => {
                 out[2] = 0;
                 return out;
               }
-            }
+            })
           ),
           /***/
           5911: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = cross;
               function cross(out, a, b) {
                 var ax = a[0], ay = a[1], az = a[2], bx = b[0], by = b[1], bz = b[2];
@@ -80884,37 +80968,37 @@ var Plotly = (() => {
                 out[2] = ax * by - ay * bx;
                 return out;
               }
-            }
+            })
           ),
           /***/
           5455: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(7056);
-            }
+            })
           ),
           /***/
           7056: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = distance;
               function distance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2];
                 return Math.sqrt(x * x + y * y + z * z);
               }
-            }
+            })
           ),
           /***/
           4008: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(6690);
-            }
+            })
           ),
           /***/
           6690: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = divide;
               function divide(out, a, b) {
                 out[0] = a[0] / b[0];
@@ -80922,29 +81006,29 @@ var Plotly = (() => {
                 out[2] = a[2] / b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           244: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = dot;
               function dot(a, b) {
                 return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
               }
-            }
+            })
           ),
           /***/
           2613: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = 1e-6;
-            }
+            })
           ),
           /***/
           9922: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = equals;
               var EPSILON = __webpack_require__2(2613);
               function equals(a, b) {
@@ -80956,22 +81040,22 @@ var Plotly = (() => {
                 var b2 = b[2];
                 return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1, Math.abs(a2), Math.abs(b2));
               }
-            }
+            })
           ),
           /***/
           9265: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = exactEquals;
               function exactEquals(a, b) {
                 return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
               }
-            }
+            })
           ),
           /***/
           2681: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = floor;
               function floor(out, a) {
                 out[0] = Math.floor(a[0]);
@@ -80979,12 +81063,12 @@ var Plotly = (() => {
                 out[2] = Math.floor(a[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           5137: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = forEach;
               var vec = __webpack_require__2(1091)();
               function forEach(a, stride, offset, count, fn, arg) {
@@ -81011,12 +81095,12 @@ var Plotly = (() => {
                 }
                 return a;
               }
-            }
+            })
           ),
           /***/
           2825: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromValues;
               function fromValues(x, y, z) {
                 var out = new Float32Array(3);
@@ -81025,12 +81109,12 @@ var Plotly = (() => {
                 out[2] = z;
                 return out;
               }
-            }
+            })
           ),
           /***/
           2931: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = {
                 EPSILON: __webpack_require__2(2613),
                 create: __webpack_require__2(1091),
@@ -81078,12 +81162,12 @@ var Plotly = (() => {
                 rotateZ: __webpack_require__2(8692),
                 forEach: __webpack_require__2(5137)
               };
-            }
+            })
           ),
           /***/
           811: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = inverse;
               function inverse(out, a) {
                 out[0] = 1 / a[0];
@@ -81091,30 +81175,30 @@ var Plotly = (() => {
                 out[2] = 1 / a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           868: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(1387);
-            }
+            })
           ),
           /***/
           1387: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = length;
               function length(a) {
                 var x = a[0], y = a[1], z = a[2];
                 return Math.sqrt(x * x + y * y + z * z);
               }
-            }
+            })
           ),
           /***/
           6658: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = lerp;
               function lerp(out, a, b, t) {
                 var ax = a[0], ay = a[1], az = a[2];
@@ -81123,12 +81207,12 @@ var Plotly = (() => {
                 out[2] = az + t * (b[2] - az);
                 return out;
               }
-            }
+            })
           ),
           /***/
           7417: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = max;
               function max(out, a, b) {
                 out[0] = Math.max(a[0], b[0]);
@@ -81136,12 +81220,12 @@ var Plotly = (() => {
                 out[2] = Math.max(a[2], b[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           8107: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = min;
               function min(out, a, b) {
                 out[0] = Math.min(a[0], b[0]);
@@ -81149,19 +81233,19 @@ var Plotly = (() => {
                 out[2] = Math.min(a[2], b[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           4505: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(5847);
-            }
+            })
           ),
           /***/
           5847: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = multiply;
               function multiply(out, a, b) {
                 out[0] = a[0] * b[0];
@@ -81169,12 +81253,12 @@ var Plotly = (() => {
                 out[2] = a[2] * b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5093: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = negate;
               function negate(out, a) {
                 out[0] = -a[0];
@@ -81182,12 +81266,12 @@ var Plotly = (() => {
                 out[2] = -a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           3536: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = normalize;
               function normalize(out, a) {
                 var x = a[0], y = a[1], z = a[2];
@@ -81200,12 +81284,12 @@ var Plotly = (() => {
                 }
                 return out;
               }
-            }
+            })
           ),
           /***/
           7636: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = random;
               function random(out, scale) {
                 scale = scale || 1;
@@ -81217,12 +81301,12 @@ var Plotly = (() => {
                 out[2] = z * scale;
                 return out;
               }
-            }
+            })
           ),
           /***/
           6894: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateX;
               function rotateX(out, a, b, c) {
                 var by = b[1];
@@ -81236,12 +81320,12 @@ var Plotly = (() => {
                 out[2] = bz + py * sc + pz * cc;
                 return out;
               }
-            }
+            })
           ),
           /***/
           109: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateY;
               function rotateY(out, a, b, c) {
                 var bx = b[0];
@@ -81255,12 +81339,12 @@ var Plotly = (() => {
                 out[2] = bz + pz * cc - px * sc;
                 return out;
               }
-            }
+            })
           ),
           /***/
           8692: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateZ;
               function rotateZ(out, a, b, c) {
                 var bx = b[0];
@@ -81274,12 +81358,12 @@ var Plotly = (() => {
                 out[2] = a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           2447: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = round;
               function round(out, a) {
                 out[0] = Math.round(a[0]);
@@ -81287,12 +81371,12 @@ var Plotly = (() => {
                 out[2] = Math.round(a[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           6621: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scale;
               function scale(out, a, b) {
                 out[0] = a[0] * b;
@@ -81300,12 +81384,12 @@ var Plotly = (() => {
                 out[2] = a[2] * b;
                 return out;
               }
-            }
+            })
           ),
           /***/
           8489: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scaleAndAdd;
               function scaleAndAdd(out, a, b, scale) {
                 out[0] = a[0] + b[0] * scale;
@@ -81313,12 +81397,12 @@ var Plotly = (() => {
                 out[2] = a[2] + b[2] * scale;
                 return out;
               }
-            }
+            })
           ),
           /***/
           1463: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = set;
               function set(out, x, y, z) {
                 out[0] = x;
@@ -81326,55 +81410,55 @@ var Plotly = (() => {
                 out[2] = z;
                 return out;
               }
-            }
+            })
           ),
           /***/
           6141: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(2953);
-            }
+            })
           ),
           /***/
           5486: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(3066);
-            }
+            })
           ),
           /***/
           2953: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredDistance;
               function squaredDistance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2];
                 return x * x + y * y + z * z;
               }
-            }
+            })
           ),
           /***/
           3066: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredLength;
               function squaredLength(a) {
                 var x = a[0], y = a[1], z = a[2];
                 return x * x + y * y + z * z;
               }
-            }
+            })
           ),
           /***/
           2229: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(6843);
-            }
+            })
           ),
           /***/
           6843: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = subtract;
               function subtract(out, a, b) {
                 out[0] = a[0] - b[0];
@@ -81382,12 +81466,12 @@ var Plotly = (() => {
                 out[2] = a[2] - b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           492: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformMat3;
               function transformMat3(out, a, m) {
                 var x = a[0], y = a[1], z = a[2];
@@ -81396,12 +81480,12 @@ var Plotly = (() => {
                 out[2] = x * m[2] + y * m[5] + z * m[8];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5673: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformMat4;
               function transformMat4(out, a, m) {
                 var x = a[0], y = a[1], z = a[2], w = m[3] * x + m[7] * y + m[11] * z + m[15];
@@ -81411,12 +81495,12 @@ var Plotly = (() => {
                 out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           264: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformQuat;
               function transformQuat(out, a, q) {
                 var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3], ix = qw * x + qy * z - qz * y, iy = qw * y + qz * x - qx * z, iz = qw * z + qx * y - qy * x, iw = -qx * x - qy * y - qz * z;
@@ -81425,12 +81509,12 @@ var Plotly = (() => {
                 out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4361: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = add;
               function add(out, a, b) {
                 out[0] = a[0] + b[0];
@@ -81439,12 +81523,12 @@ var Plotly = (() => {
                 out[3] = a[3] + b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           2335: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = clone;
               function clone(a) {
                 var out = new Float32Array(4);
@@ -81454,12 +81538,12 @@ var Plotly = (() => {
                 out[3] = a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           2933: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = copy;
               function copy(out, a) {
                 out[0] = a[0];
@@ -81468,12 +81552,12 @@ var Plotly = (() => {
                 out[3] = a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           7536: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = create;
               function create() {
                 var out = new Float32Array(4);
@@ -81483,23 +81567,23 @@ var Plotly = (() => {
                 out[3] = 0;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4691: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = distance;
               function distance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2], w = b[3] - a[3];
                 return Math.sqrt(x * x + y * y + z * z + w * w);
               }
-            }
+            })
           ),
           /***/
           1373: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = divide;
               function divide(out, a, b) {
                 out[0] = a[0] / b[0];
@@ -81508,22 +81592,22 @@ var Plotly = (() => {
                 out[3] = a[3] / b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           3750: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = dot;
               function dot(a, b) {
                 return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
               }
-            }
+            })
           ),
           /***/
           3390: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromValues;
               function fromValues(x, y, z, w) {
                 var out = new Float32Array(4);
@@ -81533,12 +81617,12 @@ var Plotly = (() => {
                 out[3] = w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           9970: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = {
                 create: __webpack_require__2(7536),
                 clone: __webpack_require__2(2335),
@@ -81566,12 +81650,12 @@ var Plotly = (() => {
                 transformMat4: __webpack_require__2(5352),
                 transformQuat: __webpack_require__2(4041)
               };
-            }
+            })
           ),
           /***/
           4494: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = inverse;
               function inverse(out, a) {
                 out[0] = 1 / a[0];
@@ -81580,23 +81664,23 @@ var Plotly = (() => {
                 out[3] = 1 / a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           6808: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = length;
               function length(a) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
                 return Math.sqrt(x * x + y * y + z * z + w * w);
               }
-            }
+            })
           ),
           /***/
           2573: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = lerp;
               function lerp(out, a, b, t) {
                 var ax = a[0], ay = a[1], az = a[2], aw = a[3];
@@ -81606,12 +81690,12 @@ var Plotly = (() => {
                 out[3] = aw + t * (b[3] - aw);
                 return out;
               }
-            }
+            })
           ),
           /***/
           160: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = max;
               function max(out, a, b) {
                 out[0] = Math.max(a[0], b[0]);
@@ -81620,12 +81704,12 @@ var Plotly = (() => {
                 out[3] = Math.max(a[3], b[3]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           2334: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = min;
               function min(out, a, b) {
                 out[0] = Math.min(a[0], b[0]);
@@ -81634,12 +81718,12 @@ var Plotly = (() => {
                 out[3] = Math.min(a[3], b[3]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           3576: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = multiply;
               function multiply(out, a, b) {
                 out[0] = a[0] * b[0];
@@ -81648,12 +81732,12 @@ var Plotly = (() => {
                 out[3] = a[3] * b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           1498: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = negate;
               function negate(out, a) {
                 out[0] = -a[0];
@@ -81662,12 +81746,12 @@ var Plotly = (() => {
                 out[3] = -a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5177: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = normalize;
               function normalize(out, a) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
@@ -81681,12 +81765,12 @@ var Plotly = (() => {
                 }
                 return out;
               }
-            }
+            })
           ),
           /***/
           9131: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var vecNormalize = __webpack_require__2(5177);
               var vecScale = __webpack_require__2(9288);
               module2.exports = random;
@@ -81700,12 +81784,12 @@ var Plotly = (() => {
                 vecScale(out, out, scale);
                 return out;
               }
-            }
+            })
           ),
           /***/
           9288: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scale;
               function scale(out, a, b) {
                 out[0] = a[0] * b;
@@ -81714,12 +81798,12 @@ var Plotly = (() => {
                 out[3] = a[3] * b;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4844: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scaleAndAdd;
               function scaleAndAdd(out, a, b, scale) {
                 out[0] = a[0] + b[0] * scale;
@@ -81728,12 +81812,12 @@ var Plotly = (() => {
                 out[3] = a[3] + b[3] * scale;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4578: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = set;
               function set(out, x, y, z, w) {
                 out[0] = x;
@@ -81742,34 +81826,34 @@ var Plotly = (() => {
                 out[3] = w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           7960: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredDistance;
               function squaredDistance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2], w = b[3] - a[3];
                 return x * x + y * y + z * z + w * w;
               }
-            }
+            })
           ),
           /***/
           483: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredLength;
               function squaredLength(a) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
                 return x * x + y * y + z * z + w * w;
               }
-            }
+            })
           ),
           /***/
           6860: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = subtract;
               function subtract(out, a, b) {
                 out[0] = a[0] - b[0];
@@ -81778,12 +81862,12 @@ var Plotly = (() => {
                 out[3] = a[3] - b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5352: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformMat4;
               function transformMat4(out, a, m) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
@@ -81793,12 +81877,12 @@ var Plotly = (() => {
                 out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4041: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformQuat;
               function transformQuat(out, a, q) {
                 var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3], ix = qw * x + qy * z - qz * y, iy = qw * y + qz * x - qx * z, iz = qw * z + qx * y - qy * x, iw = -qx * x - qy * y - qz * z;
@@ -81808,12 +81892,12 @@ var Plotly = (() => {
                 out[3] = a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           1848: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var tokenize = __webpack_require__2(4905);
               var atob2 = __webpack_require__2(6468);
               module2.exports = getName;
@@ -81830,12 +81914,12 @@ var Plotly = (() => {
                   return (b64 ? atob2(name2) : name2).trim();
                 }
               }
-            }
+            })
           ),
           /***/
           5874: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = tokenize;
               var literals100 = __webpack_require__2(620), operators = __webpack_require__2(7827), builtins100 = __webpack_require__2(6852), literals300es = __webpack_require__2(7932), builtins300es = __webpack_require__2(3508);
               var NORMAL = 999, TOKEN = 9999, BLOCK_COMMENT = 0, LINE_COMMENT = 1, PREPROCESSOR = 2, OPERATOR = 3, INTEGER = 4, FLOAT = 5, IDENT = 6, BUILTIN = 7, KEYWORD = 8, WHITESPACE = 9, EOF = 10, HEX = 11;
@@ -82144,12 +82228,12 @@ var Plotly = (() => {
                   return i + 1;
                 }
               }
-            }
+            })
           ),
           /***/
           3508: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var v100 = __webpack_require__2(6852);
               v100 = v100.slice().filter(function(b) {
                 return !/^(gl\_|texture)/.test(b);
@@ -82212,12 +82296,12 @@ var Plotly = (() => {
                 "textureProjGrad",
                 "textureProjGradOffset"
               ]);
-            }
+            })
           ),
           /***/
           6852: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = [
                 // Keep this list sorted
                 "abs",
@@ -82368,12 +82452,12 @@ var Plotly = (() => {
                 "texture2DProjGradEXT",
                 "textureCubeGradEXT"
               ];
-            }
+            })
           ),
           /***/
           7932: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var v100 = __webpack_require__2(620);
               module2.exports = v100.slice().concat([
                 "layout",
@@ -82460,12 +82544,12 @@ var Plotly = (() => {
                 "isampler2DMSArray",
                 "usampler2DMSArray"
               ]);
-            }
+            })
           ),
           /***/
           620: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = [
                 // current
                 "precision",
@@ -82558,12 +82642,12 @@ var Plotly = (() => {
                 "namespace",
                 "using"
               ];
-            }
+            })
           ),
           /***/
           7827: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = [
                 "<<=",
                 ">>=",
@@ -82611,12 +82695,12 @@ var Plotly = (() => {
                 "{",
                 "}"
               ];
-            }
+            })
           ),
           /***/
           4905: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var tokenize = __webpack_require__2(5874);
               module2.exports = tokenizeString;
               function tokenizeString(str, opt) {
@@ -82626,12 +82710,12 @@ var Plotly = (() => {
                 tokens = tokens.concat(generator(null));
                 return tokens;
               }
-            }
+            })
           ),
           /***/
           3236: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function(strings) {
                 if (typeof strings === "string") strings = [strings];
                 var exprs = [].slice.call(arguments, 1);
@@ -82642,12 +82726,12 @@ var Plotly = (() => {
                 parts.push(strings[i]);
                 return parts.join("");
               };
-            }
+            })
           ),
           /***/
           7520: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isBrowser = __webpack_require__2(9507);
               function detect() {
@@ -82666,12 +82750,12 @@ var Plotly = (() => {
                 return supported;
               }
               module2.exports = isBrowser && detect();
-            }
+            })
           ),
           /***/
           3778: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               exports2.read = function(buffer, offset, isLE, mLen, nBytes) {
                 var e, m;
                 var eLen = nBytes * 8 - mLen - 1;
@@ -82749,12 +82833,12 @@ var Plotly = (() => {
                 }
                 buffer[offset + i - d] |= s * 128;
               };
-            }
+            })
           ),
           /***/
           8954: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = incrementalConvexHull;
               var orient = __webpack_require__2(3250);
@@ -83106,12 +83190,12 @@ var Plotly = (() => {
                 }
                 return triangles.boundary();
               }
-            }
+            })
           ),
           /***/
           3352: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bounds = __webpack_require__2(2478);
               var NOT_FOUND = 0;
@@ -83461,19 +83545,19 @@ var Plotly = (() => {
                 }
                 return new IntervalTree(createIntervalTree(intervals));
               }
-            }
+            })
           ),
           /***/
           9507: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = true;
-            }
+            })
           ),
           /***/
           7163: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function(obj) {
                 return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer);
               };
@@ -83483,12 +83567,12 @@ var Plotly = (() => {
               function isSlowBuffer(obj) {
                 return typeof obj.readFloatLE === "function" && typeof obj.slice === "function" && isBuffer(obj.slice(0, 0));
               }
-            }
+            })
           ),
           /***/
           5219: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = function(str) {
                 var l = str.length, a;
@@ -83500,22 +83584,22 @@ var Plotly = (() => {
                 }
                 return true;
               };
-            }
+            })
           ),
           /***/
           395: (
             /***/
-            function(module2) {
+            (function(module2) {
               function lerp(v0, v1, t) {
                 return v0 * (1 - t) + v1 * t;
               }
               module2.exports = lerp;
-            }
+            })
           ),
           /***/
           2652: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var normalize = __webpack_require__2(4335);
               var create = __webpack_require__2(6864);
               var clone = __webpack_require__2(1903);
@@ -83626,12 +83710,12 @@ var Plotly = (() => {
                 out[1] = a[1] * scale1 + b[1] * scale2;
                 out[2] = a[2] * scale1 + b[2] * scale2;
               }
-            }
+            })
           ),
           /***/
           4335: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function normalize(out, mat) {
                 var m44 = mat[15];
                 if (m44 === 0)
@@ -83641,12 +83725,12 @@ var Plotly = (() => {
                   out[i] = mat[i] * scale;
                 return true;
               };
-            }
+            })
           ),
           /***/
           7442: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var lerp = __webpack_require__2(6658);
               var recompose = __webpack_require__2(7182);
               var decompose = __webpack_require__2(2652);
@@ -83686,12 +83770,12 @@ var Plotly = (() => {
               function vec4() {
                 return [0, 0, 0, 1];
               }
-            }
+            })
           ),
           /***/
           7182: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var mat4 = {
                 identity: __webpack_require__2(7894),
                 translate: __webpack_require__2(7656),
@@ -83727,12 +83811,12 @@ var Plotly = (() => {
                 mat4.scale(matrix, matrix, scale);
                 return matrix;
               };
-            }
+            })
           ),
           /***/
           1811: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               var m4interp = __webpack_require__2(7442);
@@ -83922,12 +84006,12 @@ var Plotly = (() => {
                 ];
                 return new MatrixCameraController(matrix);
               }
-            }
+            })
           ),
           /***/
           3090: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = monotoneConvexHull2D;
               var orient = __webpack_require__2(3250)[3];
@@ -83990,12 +84074,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           351: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = mouseListen;
               var mouse = __webpack_require__2(4687);
@@ -84167,12 +84251,12 @@ var Plotly = (() => {
                 });
                 return result;
               }
-            }
+            })
           ),
           /***/
           24: (
             /***/
-            function(module2) {
+            (function(module2) {
               var rootPosition = { left: 0, top: 0 };
               module2.exports = mouseEventOffset;
               function mouseEventOffset(ev, target, out) {
@@ -84194,12 +84278,12 @@ var Plotly = (() => {
                   return element.getBoundingClientRect();
                 }
               }
-            }
+            })
           ),
           /***/
           4687: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               function mouseButtons(ev) {
                 if (typeof ev === "object") {
@@ -84256,12 +84340,12 @@ var Plotly = (() => {
                 return 0;
               }
               exports2.y = mouseRelativeY;
-            }
+            })
           ),
           /***/
           8512: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var toPX = __webpack_require__2(665);
               module2.exports = mouseWheelListen;
@@ -84299,12 +84383,12 @@ var Plotly = (() => {
                 element.addEventListener("wheel", listener);
                 return listener;
               }
-            }
+            })
           ),
           /***/
           2640: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var pool = __webpack_require__2(1888);
               module2.exports = createSurfaceExtractor;
@@ -84613,12 +84697,12 @@ var Plotly = (() => {
                   typesig
                 );
               }
-            }
+            })
           ),
           /***/
           6199: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var dup = __webpack_require__2(1338);
               var CACHED_CWiseOp = {
@@ -84829,12 +84913,12 @@ var Plotly = (() => {
                 var cached = generateGradient(bc);
                 return cached(out, inp);
               };
-            }
+            })
           ),
           /***/
           4317: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function interp1d(arr, x) {
                 var ix = Math.floor(x), fx = x - ix, s0 = 0 <= ix && ix < arr.shape[0], s1 = 0 <= ix + 1 && ix + 1 < arr.shape[0], w0 = s0 ? +arr.get(ix) : 0, w1 = s1 ? +arr.get(ix + 1) : 0;
@@ -84899,12 +84983,12 @@ var Plotly = (() => {
               module2.exports.d1 = interp1d;
               module2.exports.d2 = interp2d;
               module2.exports.d3 = interp3d;
-            }
+            })
           ),
           /***/
           5298: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               var CACHED_CWiseOp = {
                 "float64,2,1,0": function() {
@@ -85252,12 +85336,12 @@ var Plotly = (() => {
               exports2.assign = makeOp({
                 funcName: "assign"
               });
-            }
+            })
           ),
           /***/
           9994: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var ndarray = __webpack_require__2(9618);
               var do_convert = __webpack_require__2(8277);
@@ -85277,12 +85361,12 @@ var Plotly = (() => {
                 do_convert(result, arr);
                 return result;
               };
-            }
+            })
           ),
           /***/
           8277: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function CwiseOp() {
                 return function(SS, a0, t0, p0, Y0) {
@@ -85343,12 +85427,12 @@ var Plotly = (() => {
               module2.exports = compileCwise({
                 funcName: "convert"
               });
-            }
+            })
           ),
           /***/
           7640: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var pool = __webpack_require__2(1888);
               function getMallocFree(dtype) {
@@ -86026,12 +86110,12 @@ var Plotly = (() => {
                 return result(insertionSort, quickSort);
               }
               module2.exports = compileSort;
-            }
+            })
           ),
           /***/
           446: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var compile = __webpack_require__2(7640);
               var CACHE = {};
@@ -86048,12 +86132,12 @@ var Plotly = (() => {
                 return array;
               }
               module2.exports = sort;
-            }
+            })
           ),
           /***/
           9618: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var isBuffer = __webpack_require__2(7163);
               var hasTypedArrays = typeof Float64Array !== "undefined";
               function compare1st(a, b) {
@@ -86888,12 +86972,12 @@ var Plotly = (() => {
                 return ctor(data, shape, stride, offset);
               }
               module2.exports = wrappedNDArrayCtor;
-            }
+            })
           ),
           /***/
           1278: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var doubleBits = __webpack_require__2(2361);
               var SMALLEST_DENORM = Math.pow(2, -1074);
@@ -86932,12 +87016,12 @@ var Plotly = (() => {
                 }
                 return doubleBits.pack(lo, hi);
               }
-            }
+            })
           ),
           /***/
           8406: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               var DEFAULT_NORMALS_EPSILON = 1e-6;
               var DEFAULT_FACE_EPSILON = 1e-6;
               exports2.vertexNormals = function(faces, positions, specifiedEpsilon) {
@@ -87035,12 +87119,12 @@ var Plotly = (() => {
                 }
                 return normals;
               };
-            }
+            })
           ),
           /***/
           4081: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = quatFromFrame;
               function quatFromFrame(out, rx, ry, rz, ux, uy, uz, fx, fy, fz) {
@@ -87073,12 +87157,12 @@ var Plotly = (() => {
                 }
                 return out;
               }
-            }
+            })
           ),
           /***/
           9977: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createOrbitController;
               var filterVector = __webpack_require__2(9215);
@@ -87428,24 +87512,24 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           1371: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var repeat = __webpack_require__2(3233);
               module2.exports = function padLeft(str, num, ch) {
                 ch = typeof ch !== "undefined" ? ch + "" : " ";
                 return repeat(ch, num) + str;
               };
-            }
+            })
           ),
           /***/
           3202: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function parseUnit(str, out) {
                 if (!out)
                   out = [0, ""];
@@ -87455,12 +87539,12 @@ var Plotly = (() => {
                 out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || "";
                 return out;
               };
-            }
+            })
           ),
           /***/
           3088: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = planarDual;
               var compareAngle = __webpack_require__2(3140);
@@ -87574,12 +87658,12 @@ var Plotly = (() => {
                 }
                 return cycles;
               }
-            }
+            })
           ),
           /***/
           5609: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = trimLeaves;
               var e2a = __webpack_require__2(3134);
@@ -87627,12 +87711,12 @@ var Plotly = (() => {
                 }
                 return [nedges, npositions];
               }
-            }
+            })
           ),
           /***/
           2095: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = planarGraphToPolyline;
               var e2a = __webpack_require__2(3134);
@@ -87809,12 +87893,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           5085: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = preprocessPolygon;
               var orient = __webpack_require__2(3250)[3];
               var makeSlabs = __webpack_require__2(4209);
@@ -87950,12 +88034,12 @@ var Plotly = (() => {
                   );
                 }
               }
-            }
+            })
           ),
           /***/
           9346: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               var diff = new Float64Array(4);
               var edge0 = new Float64Array(4);
@@ -88129,19 +88213,19 @@ var Plotly = (() => {
                 return sqrDistance;
               }
               module2.exports = closestPoint2d;
-            }
+            })
           ),
           /***/
           8648: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(783);
-            }
+            })
           ),
           /***/
           2653: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bnadd = __webpack_require__2(3865);
               module2.exports = add;
@@ -88153,12 +88237,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           5838: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = float2rat;
               var rat = __webpack_require__2(7842);
@@ -88169,12 +88253,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           8987: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rat = __webpack_require__2(7842);
               var mul = __webpack_require__2(6504);
@@ -88188,12 +88272,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           544: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bnsub = __webpack_require__2(5572);
               module2.exports = sub;
@@ -88205,12 +88289,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           5771: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var compareCell = __webpack_require__2(8507);
               var compareOrientedCell = __webpack_require__2(3788);
@@ -88238,12 +88322,12 @@ var Plotly = (() => {
                 cells.length = ptr;
                 return cells;
               }
-            }
+            })
           ),
           /***/
           3233: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               var res = "";
               var cache;
@@ -88272,23 +88356,23 @@ var Plotly = (() => {
                 res = res.substr(0, max);
                 return res;
               }
-            }
+            })
           ),
           /***/
           3025: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2.g.performance && __webpack_require__2.g.performance.now ? function now() {
                 return performance.now();
               } : Date.now || function now() {
                 return +/* @__PURE__ */ new Date();
               };
-            }
+            })
           ),
           /***/
           7004: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = compressExpansion;
               function compressExpansion(e) {
@@ -88321,12 +88405,12 @@ var Plotly = (() => {
                 e.length = top;
                 return e;
               }
-            }
+            })
           ),
           /***/
           2962: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -88396,12 +88480,12 @@ var Plotly = (() => {
                 }
               }
               generateDispatch();
-            }
+            })
           ),
           /***/
           1944: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -88413,12 +88497,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           2646: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -88607,12 +88691,12 @@ var Plotly = (() => {
                 }
               }
               generateInSphereTest();
-            }
+            })
           ),
           /***/
           727: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var determinant = __webpack_require__2(2962);
               var NUM_EXPAND = 6;
@@ -88689,12 +88773,12 @@ var Plotly = (() => {
                 }
               }
               generateDispatch();
-            }
+            })
           ),
           /***/
           3250: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -88834,12 +88918,12 @@ var Plotly = (() => {
                 }
               }
               generateOrientationProc();
-            }
+            })
           ),
           /***/
           5382: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var robustSum = __webpack_require__2(8210);
               var robustScale = __webpack_require__2(3012);
@@ -88866,12 +88950,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           3012: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var twoSum = __webpack_require__2(9362);
@@ -88919,12 +89003,12 @@ var Plotly = (() => {
                 g.length = count;
                 return g;
               }
-            }
+            })
           ),
           /***/
           1125: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = segmentsIntersect;
               var orient = __webpack_require__2(3250)[3];
@@ -88960,12 +89044,12 @@ var Plotly = (() => {
                 }
                 return true;
               }
-            }
+            })
           ),
           /***/
           8545: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = robustSubtract;
               function scalarScalar(a, b) {
@@ -89118,12 +89202,12 @@ var Plotly = (() => {
                 g.length = count;
                 return g;
               }
-            }
+            })
           ),
           /***/
           8210: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = linearExpansionSum;
               function scalarScalar(a, b) {
@@ -89276,12 +89360,12 @@ var Plotly = (() => {
                 g.length = count;
                 return g;
               }
-            }
+            })
           ),
           /***/
           9127: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = boundary;
               var bnd = __webpack_require__2(6204);
@@ -89289,12 +89373,12 @@ var Plotly = (() => {
               function boundary(cells) {
                 return reduce(bnd(cells));
               }
-            }
+            })
           ),
           /***/
           7765: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = extractContour;
               var ndarray = __webpack_require__2(9618);
@@ -89428,12 +89512,12 @@ var Plotly = (() => {
                   vertexWeights: uweights
                 };
               }
-            }
+            })
           ),
           /***/
           1570: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = getPolygonizer;
               var allFns = [
@@ -89706,12 +89790,12 @@ var Plotly = (() => {
               function getPolygonizer(d) {
                 return allFns[d]();
               }
-            }
+            })
           ),
           /***/
           6803: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var __webpack_unused_export__;
               "use restrict";
@@ -90004,12 +90088,12 @@ var Plotly = (() => {
                 return connectedComponents_sparse(cells);
               }
               __webpack_unused_export__ = connectedComponents;
-            }
+            })
           ),
           /***/
           3105: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               "use restrict";
               var INT_BITS = 32;
@@ -90159,12 +90243,12 @@ var Plotly = (() => {
                 var t = v | v - 1;
                 return t + 1 | (~t & -~t) - 1 >>> countTrailingZeros(v) + 1;
               };
-            }
+            })
           ),
           /***/
           2014: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               "use restrict";
               var bits = __webpack_require__2(3105), UnionFind = __webpack_require__2(4623);
@@ -90456,12 +90540,12 @@ var Plotly = (() => {
                 return connectedComponents_sparse(cells);
               }
               exports2.connectedComponents = connectedComponents;
-            }
+            })
           ),
           /***/
           4623: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               "use restrict";
               module2.exports = UnionFind;
@@ -90506,12 +90590,12 @@ var Plotly = (() => {
                   ++ranks[xr];
                 }
               };
-            }
+            })
           ),
           /***/
           5878: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = simplifyPolygon;
               var orient = __webpack_require__2(3250);
@@ -90736,12 +90820,12 @@ var Plotly = (() => {
                   edges: ncells
                 };
               }
-            }
+            })
           ),
           /***/
           1303: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = orderSegments;
               var orient = __webpack_require__2(3250);
@@ -90833,12 +90917,12 @@ var Plotly = (() => {
                 }
                 return ar[0] - br[0];
               }
-            }
+            })
           ),
           /***/
           4209: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createSlabDecomposition;
               var bounds = __webpack_require__2(2478);
@@ -91060,12 +91144,12 @@ var Plotly = (() => {
                 }
                 return new SlabDecomposition(slabs, lines, horizontal);
               }
-            }
+            })
           ),
           /***/
           5202: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var robustDot = __webpack_require__2(1944);
               var robustSum = __webpack_require__2(8210);
@@ -91148,14 +91232,14 @@ var Plotly = (() => {
                 }
                 return neg;
               }
-            }
+            })
           ),
           /***/
           3387: (
             /***/
-            function(module2, exports2, __webpack_require__2) {
+            (function(module2, exports2, __webpack_require__2) {
               var __WEBPACK_AMD_DEFINE_RESULT__;
-              !function() {
+              !(function() {
                 "use strict";
                 var re = {
                   not_string: /[^s]/,
@@ -91343,21 +91427,21 @@ var Plotly = (() => {
                   window["sprintf"] = sprintf;
                   window["vsprintf"] = vsprintf;
                   if (true) {
-                    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+                    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
                       return {
                         "sprintf": sprintf,
                         "vsprintf": vsprintf
                       };
-                    }.call(exports2, __webpack_require__2, exports2, module2), __WEBPACK_AMD_DEFINE_RESULT__ !== void 0 && (module2.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+                    }).call(exports2, __webpack_require__2, exports2, module2), __WEBPACK_AMD_DEFINE_RESULT__ !== void 0 && (module2.exports = __WEBPACK_AMD_DEFINE_RESULT__));
                   }
                 }
-              }();
-            }
+              })();
+            })
           ),
           /***/
           3711: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = surfaceNets;
               var generateContourExtractor = __webpack_require__2(2640);
@@ -91476,12 +91560,12 @@ var Plotly = (() => {
                 }
                 return proc(array, level);
               }
-            }
+            })
           ),
           /***/
           665: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var parseUnit = __webpack_require__2(3202);
               module2.exports = toPX;
@@ -91535,12 +91619,12 @@ var Plotly = (() => {
                 }
                 return 1;
               }
-            }
+            })
           ),
           /***/
           7261: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createTurntableController;
               var filterVector = __webpack_require__2(9215);
@@ -92028,12 +92112,12 @@ var Plotly = (() => {
                   phi
                 );
               }
-            }
+            })
           ),
           /***/
           5250: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = twoProduct;
               var SPLITTER = +(Math.pow(2, 27) + 1);
@@ -92058,12 +92142,12 @@ var Plotly = (() => {
                 }
                 return [y, x];
               }
-            }
+            })
           ),
           /***/
           9362: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = fastTwoSum;
               function fastTwoSum(a, b, result) {
@@ -92079,12 +92163,12 @@ var Plotly = (() => {
                 }
                 return [ar + br, x];
               }
-            }
+            })
           ),
           /***/
           1888: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var bits = __webpack_require__2(8828);
               var dup = __webpack_require__2(1338);
@@ -92291,12 +92375,12 @@ var Plotly = (() => {
                   BUFFER[i].length = 0;
                 }
               };
-            }
+            })
           ),
           /***/
           1755: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               "use restrict";
               module2.exports = UnionFind;
@@ -92348,12 +92432,12 @@ var Plotly = (() => {
                   ++ranks[xr];
                 }
               };
-            }
+            })
           ),
           /***/
           1682: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function unique_pred(list, compare) {
                 var ptr = 1, len = list.length, a = list[0], b = list[0];
@@ -92403,12 +92487,12 @@ var Plotly = (() => {
                 return unique_eq(list);
               }
               module2.exports = unique;
-            }
+            })
           ),
           /***/
           4359: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createText;
               var vectorizeText = __webpack_require__2(7718);
@@ -92431,12 +92515,12 @@ var Plotly = (() => {
                   options
                 );
               }
-            }
+            })
           ),
           /***/
           7718: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = vectorizeText;
               module2.exports.processPixels = processPixels;
               var surfaceNets = __webpack_require__2(3711);
@@ -92794,12 +92878,12 @@ var Plotly = (() => {
                 var pixels = getPixels(canvas, context, str, size, lineSpacing, styletags);
                 return processPixels(pixels, options, size);
               }
-            }
+            })
           ),
           /***/
           1538: (
             /***/
-            function(module2) {
+            (function(module2) {
               (function WeakMapModule() {
                 "use strict";
                 if (typeof ses !== "undefined" && ses.ok && !ses.ok()) {
@@ -93128,12 +93212,12 @@ var Plotly = (() => {
                   module2.exports = OurWeakMap;
                 }
               })();
-            }
+            })
           ),
           /***/
           236: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var hiddenStore = __webpack_require__2(8284);
               module2.exports = createStore;
               function createStore() {
@@ -93146,12 +93230,12 @@ var Plotly = (() => {
                   return store && store.identity === key ? store : hiddenStore(obj, key);
                 };
               }
-            }
+            })
           ),
           /***/
           8284: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = hiddenStore;
               function hiddenStore(obj, key) {
                 var store = { identity: key };
@@ -93164,12 +93248,12 @@ var Plotly = (() => {
                 });
                 return store;
               }
-            }
+            })
           ),
           /***/
           606: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var createStore = __webpack_require__2(236);
               module2.exports = weakMap;
               function weakMap() {
@@ -93191,12 +93275,12 @@ var Plotly = (() => {
                   }
                 };
               }
-            }
+            })
           ),
           /***/
           3349: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function CWiseOp() {
                 return function(SS, a0, t0, p0, Y0, Y1) {
@@ -93241,12 +93325,12 @@ var Plotly = (() => {
               module2.exports = compileCwise({
                 funcName: "zeroCrossings"
               });
-            }
+            })
           ),
           /***/
           781: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = findZeroCrossings;
               var core = __webpack_require__2(3349);
@@ -93256,13 +93340,13 @@ var Plotly = (() => {
                 core(array.hi(array.shape[0] - 1), cross, level);
                 return cross;
               }
-            }
+            })
           ),
           /***/
           7790: (
             /***/
-            function() {
-            }
+            (function() {
+            })
           )
           /******/
         };
@@ -93285,23 +93369,23 @@ var Plotly = (() => {
           module2.loaded = true;
           return module2.exports;
         }
-        !function() {
-          __webpack_require__.g = function() {
+        !(function() {
+          __webpack_require__.g = (function() {
             if (typeof globalThis === "object") return globalThis;
             try {
               return this || new Function("return this")();
             } catch (e) {
               if (typeof window === "object") return window;
             }
-          }();
-        }();
-        !function() {
+          })();
+        })();
+        !(function() {
           __webpack_require__.nmd = function(module2) {
             module2.paths = [];
             if (!module2.children) module2.children = [];
             return module2;
           };
-        }();
+        })();
         var __webpack_exports__ = __webpack_require__(1964);
         module.exports = __webpack_exports__;
       })();

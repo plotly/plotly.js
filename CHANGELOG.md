@@ -9,6 +9,20 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [3.7.0] -- 2026-07-03
+
+### Changed
+- Update `sendDataToCloud` modebar button to upload chart to Plotly Cloud [[#7802](https://github.com/plotly/plotly.js/pull/7802), [#7852](https://github.com/plotly/plotly.js/pull/7852), [#7854](https://github.com/plotly/plotly.js/pull/7854)]
+  - NOTE: The Plotly Cloud endpoint for receiving charts is not yet functional, so this button won't complete the upload.
+
+### Fixed
+- Fix stale `scattergl` error bars after toggling traces with mixed error bar visibility [[#7773](https://github.com/plotly/plotly.js/issues/7773)], with thanks to @JulienIcon for the contribution!
+- Fix "unrecognized GUI edit: selections[0]..." warnings emitted after making a box or lasso selection and then calling `Plotly.react()` [[#7836](https://github.com/plotly/plotly.js/issues/7836)]
+- Fix geo `fitbounds` to choose a compact longitude range when point data straddles the antimeridian [[#7837](https://github.com/plotly/plotly.js/pull/7837)], with thanks to @SharadhNaidu for the contribution!
+- Preserve XML structural entities during decode when exporting SVG [[#7838](https://github.com/plotly/plotly.js/pull/7838)]
+- Fix `Plotly.Fx.hover` crash on `scattermap` traces when called programmatically with a `pointNumber` selection [[#7882](https://github.com/plotly/plotly.js/pull/7882)]
+
+
 ## [3.6.0] -- 2026-06-01
 
 ### Added

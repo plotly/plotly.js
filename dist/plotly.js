@@ -1,5 +1,5 @@
 /**
-* plotly.js v3.6.0
+* plotly.js v3.7.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -49,11 +49,20 @@ var Plotly = (() => {
       }
     return target;
   };
-  var __esm = (fn, res) => function __init() {
-    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  var __esm = (fn, res, err) => function __init() {
+    if (err) throw err[0];
+    try {
+      return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+    } catch (e) {
+      throw err = [e], e;
+    }
   };
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
   };
   var __export = (target, all) => {
     for (var name2 in all)
@@ -81,7 +90,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "3.6.0";
+      exports.version = "3.7.0";
     }
   });
 
@@ -117,7 +126,7 @@ var Plotly = (() => {
             return obj;
           };
         }
-        scheduling_queue = /* @__PURE__ */ function Queue() {
+        scheduling_queue = /* @__PURE__ */ (function Queue() {
           var first, last, item;
           function Item(fn, self2) {
             this.fn = fn;
@@ -144,7 +153,7 @@ var Plotly = (() => {
               }
             }
           };
-        }();
+        })();
         function schedule(fn, self2) {
           scheduling_queue.add(fn, self2);
           if (!cycle) {
@@ -8170,7 +8179,7 @@ var Plotly = (() => {
     "node_modules/d3-format/dist/d3-format.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.d3 = global2.d3 || {}));
-      })(exports, function(exports2) {
+      })(exports, (function(exports2) {
         "use strict";
         function formatDecimal(x) {
           return Math.abs(x = Math.round(x)) >= 1e21 ? x.toLocaleString("en").replace(/,/g, "") : x.toString(10);
@@ -8410,7 +8419,7 @@ var Plotly = (() => {
         exports2.precisionPrefix = precisionPrefix;
         exports2.precisionRound = precisionRound;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -8527,7 +8536,7 @@ var Plotly = (() => {
     "node_modules/base64-arraybuffer/dist/base64-arraybuffer.umd.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2["base64-arraybuffer"] = {}));
-      })(exports, function(exports2) {
+      })(exports, (function(exports2) {
         "use strict";
         var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         var lookup = typeof Uint8Array === "undefined" ? [] : new Uint8Array(256);
@@ -8572,7 +8581,7 @@ var Plotly = (() => {
         exports2.decode = decode;
         exports2.encode = encode;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -9975,7 +9984,7 @@ var Plotly = (() => {
         function convertHexToDecimal(h) {
           return parseIntFromHex(h) / 255;
         }
-        var matchers = function() {
+        var matchers = (function() {
           var CSS_INTEGER = "[-\\+]?\\d+%?";
           var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
           var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
@@ -9994,7 +10003,7 @@ var Plotly = (() => {
             hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
             hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
           };
-        }();
+        })();
         function isValidCSSUnit(color2) {
           return !!matchers.CSS_UNIT.exec(color2);
         }
@@ -13817,9 +13826,9 @@ var Plotly = (() => {
   var require_maplibre_gl = __commonJS({
     "node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       (function() {
-        if (!document.getElementById("8431bff7cc77ea8693f8122c6e0981316b936a0a4930625e08b1512d134062bc")) {
+        if (!document.getElementById("ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe")) {
           var e = document.createElement("style");
-          e.id = "8431bff7cc77ea8693f8122c6e0981316b936a0a4930625e08b1512d134062bc";
+          e.id = "ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe";
           e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-map:fullscreen{height:100%;width:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl-group{background:#fff;border-radius:4px}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{background-color:transparent;border:0;box-sizing:border-box;cursor:pointer;display:block;height:29px;outline:none;padding:0;width:29px}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{background-position:50%;background-repeat:no-repeat;display:block;height:100%;width:100%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}.maplibregl-ctrl button:not(:disabled):hover{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;cursor:pointer;display:block;height:23px;margin:0 0 -4px -4px;overflow:hidden;width:88px}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{background-color:#fff;border-radius:12px;box-sizing:content-box;color:#000;margin:10px;min-height:20px;padding:2px 24px 2px 0;position:relative}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{border-radius:12px;padding:2px 8px 2px 28px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{background-color:hsla(0,0%,100%,.5);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");border:0;border-radius:12px;box-sizing:border-box;cursor:pointer;display:none;height:24px;outline:none;position:absolute;right:0;top:0;width:24px}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{right:0;top:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{left:0;top:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);border:2px solid #333;border-top:#333;box-sizing:border-box;color:#333;font-size:10px;padding:0 5px}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:#fff;border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:#fff;border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:#fff;border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:#fff;border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgb(0 0 0/5%)}.maplibregl-popup-content{background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}@keyframes maplibregl-user-location-dot-pulse{0%{opacity:1;transform:scale(1)}70%{opacity:0;transform:scale(3)}to{opacity:0;transform:scale(1)}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{background:#fff;border:2px dotted #202020;height:0;left:0;opacity:.5;position:absolute;top:0;width:0}.maplibregl-cooperative-gesture-screen{align-items:center;background:rgba(0,0,0,.4);color:#fff;display:flex;font-size:1.4em;inset:0;justify-content:center;line-height:1.2;opacity:0;padding:1rem;pointer-events:none;position:absolute;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(width <= 480px){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{height:100%!important;left:0!important;position:fixed!important;top:0!important;width:100%!important;z-index:99999}`;
           document.head.appendChild(e);
         }
@@ -16072,6 +16081,17 @@ var Plotly = (() => {
         "X [data-title]:after": "content:attr(data-title);background:#69738a;color:#fff;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
         "X .vertical [data-title]:before,X .vertical [data-title]:after": "top:0%;right:200%;",
         "X .vertical [data-title]:before": "border:6px solid rgba(0,0,0,0);border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
+        "X .plotly-cloud-dialog": 'font-family:"Open Sans",verdana,arial,sans-serif;position:absolute;top:0;left:0;width:100%;height:100%;z-index:1001;display:flex;align-items:center;justify-content:center;background-color:rgba(0,0,0,.4);',
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-box": "box-sizing:border-box;min-width:300px;max-width:420px;padding:20px 24px;background-color:#fff;border:1px solid #e0e2e5;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,.25);font-size:13px;color:#2a3f5f;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-title": "font-size:16px;font-weight:bold;margin-bottom:12px;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-message": "line-height:1.5;overflow-wrap:break-word;word-wrap:break-word;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-buttons": "display:flex;justify-content:flex-end;margin-top:20px;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn": "font-family:inherit;font-size:13px;padding:7px 16px;margin-left:8px;border-radius:3px;border:1px solid rgba(0,0,0,0);cursor:pointer;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn:focus-visible": "outline:2px solid #447adb;outline-offset:1px;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--cancel": "background-color:#fff;border-color:#e0e2e5;color:#777;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--cancel:hover": "background-color:#f3f3f3;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--confirm": "background-color:#447adb;color:#fff;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-btn--confirm:hover": "background-color:#1d3b84;",
         Y: 'font-family:"Open Sans",verdana,arial,sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;',
         "Y p": "margin:0;",
         "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
@@ -17784,6 +17804,7 @@ var Plotly = (() => {
       var formatLocale = require_d3_format().formatLocale;
       var isNumeric = require_fast_isnumeric();
       var b64encode = require_base64_arraybuffer_umd();
+      var version = require_version().version;
       var Registry = require_registry();
       var PlotSchema = require_plot_schema();
       var Template = require_plot_template();
@@ -17912,24 +17933,31 @@ var Plotly = (() => {
           });
         }
       }
-      plots.sendDataToCloud = function(gd) {
-        var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
-        if (!baseUrl) return;
+      plots.sendDataToCloud = function(gd, serverURL) {
         gd.emit("plotly_beforeexport");
-        var hiddenformDiv = d3.select(gd).append("div").attr("id", "hiddenform").style("display", "none");
-        var hiddenform = hiddenformDiv.append("form").attr({
-          action: baseUrl + "/external",
-          method: "post",
-          target: "_blank"
-        });
-        var hiddenformInput = hiddenform.append("input").attr({
-          type: "text",
-          name: "data"
-        });
-        hiddenformInput.node().value = plots.graphJson(gd, false, "keepdata");
-        hiddenform.node().submit();
-        hiddenformDiv.remove();
-        gd.emit("plotly_afterexport");
+        const serverURLOrigin = new URL(serverURL).origin;
+        var chart = plots.graphJson(gd, false, "keepdata", "object");
+        chart.version = version;
+        var uploadUrl = new URL(serverURL);
+        uploadUrl.searchParams.set("origin", window.location.origin);
+        var cloudWindow = window.open(uploadUrl.href, "_blank");
+        if (!cloudWindow) {
+          console.error("Unable to open Plotly Cloud (the popup may have been blocked)");
+          gd.emit("plotly_exportfail");
+          return;
+        }
+        var handleMessage = function(event) {
+          if (event.origin !== serverURLOrigin) return;
+          if (event.data && event.data.type === "CHART_AUTH_SUCCESS") {
+            cloudWindow.postMessage({
+              type: "chart",
+              chart
+            }, serverURLOrigin);
+            window.removeEventListener("message", handleMessage);
+            gd.emit("plotly_afterexport");
+          }
+        };
+        window.addEventListener("message", handleMessage);
         return false;
       };
       var d3FormatKeys = [
@@ -32829,7 +32857,17 @@ var Plotly = (() => {
             if (_mode === "array") {
               var selection = evt[curvenum];
               if ("pointNumber" in selection) {
-                pointData.index = selection.pointNumber;
+                const cdi = cd[selection.pointNumber];
+                if (cdi) {
+                  pointData.index = selection.pointNumber;
+                  if (cdi.lonlat) {
+                    xval = cdi.lonlat[0];
+                    yval = cdi.lonlat[1];
+                  } else {
+                    xval = cdi.x;
+                    yval = cdi.y;
+                  }
+                }
                 _mode = "closest";
               } else {
                 _mode = "";
@@ -34630,6 +34668,12 @@ var Plotly = (() => {
           height: 1e3,
           path: "m214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z",
           transform: "matrix(1 0 0 -1 0 850)"
+        },
+        cloudupload: {
+          width: 640,
+          height: 640,
+          path: "M176 544C96.5 544 32 479.5 32 400C32 336.6 73 282.8 129.9 263.5C128.6 255.8 128 248 128 240C128 160.5 192.5 96 272 96C327.4 96 375.5 127.3 399.6 173.1C413.8 164.8 430.4 160 448 160C501 160 544 203 544 256C544 271.7 540.2 286.6 533.5 299.7C577.5 320 608 364.4 608 416C608 486.7 550.7 544 480 544L176 544zM337 255C327.6 245.6 312.4 245.6 303.1 255L231.1 327C221.7 336.4 221.7 351.6 231.1 360.9C240.5 370.2 255.7 370.3 265 360.9L296 329.9L296 432C296 445.3 306.7 456 320 456C333.3 456 344 445.3 344 432L344 329.9L375 360.9C384.4 370.3 399.6 370.3 408.9 360.9C418.2 351.5 418.3 336.3 408.9 327L336.9 255z",
+          transform: "matrix(1 0 0 1 -15 -15)"
         },
         drawopenpath: {
           width: 70,
@@ -36846,6 +36890,40 @@ var Plotly = (() => {
     }
   });
 
+  // src/components/modebar/cloud_confirm.js
+  var require_cloud_confirm = __commonJS({
+    "src/components/modebar/cloud_confirm.js"(exports, module) {
+      "use strict";
+      var d3 = require_d3();
+      var _ = require_lib()._;
+      module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
+        var container = d3.select(gd._fullLayout._paperdiv.node());
+        container.selectAll(".plotly-cloud-dialog").remove();
+        var overlay = container.append("div").classed("plotly-cloud-dialog", true);
+        var dialog = overlay.append("div").classed("plotly-cloud-dialog-box", true);
+        dialog.append("div").classed("plotly-cloud-dialog-title", true).text(_(gd, "Share with Plotly Cloud"));
+        dialog.append("div").classed("plotly-cloud-dialog-message", true).text(_(gd, "This chart and its data will be sent to") + " " + serverUrl + ".");
+        var buttons = dialog.append("div").classed("plotly-cloud-dialog-buttons", true);
+        function close() {
+          overlay.remove();
+          document.removeEventListener("keydown", onKeydown);
+        }
+        function onKeydown(e) {
+          if (e.key === "Escape" || e.keyCode === 27) close();
+        }
+        document.addEventListener("keydown", onKeydown);
+        overlay.on("click", function() {
+          if (d3.event.target === overlay.node()) close();
+        });
+        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--cancel", true).text(_(gd, "Cancel")).on("click", close);
+        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--confirm", true).text(_(gd, "Share")).on("click", function() {
+          close();
+          onConfirm();
+        });
+      };
+    }
+  });
+
   // src/components/modebar/buttons.js
   var require_buttons = __commonJS({
     "src/components/modebar/buttons.js"(exports, module) {
@@ -36855,6 +36933,7 @@ var Plotly = (() => {
       var axisIds = require_axis_ids();
       var Icons = require_ploticon();
       var eraseActiveShape = require_draw2().eraseActiveShape;
+      var confirmCloudDialog = require_cloud_confirm();
       var Lib = require_lib();
       var _ = Lib._;
       var modeBarButtons = module.exports = {};
@@ -36885,26 +36964,30 @@ var Plotly = (() => {
           });
         }
       };
-      modeBarButtons.sendDataToCloud = {
-        name: "sendDataToCloud",
+      modeBarButtons.sendChartToCloud = {
+        name: "sendChartToCloud",
         title: function(gd) {
-          return _(gd, "Edit in Chart Studio");
+          return _(gd, "Share with Plotly Cloud");
         },
-        icon: Icons.disk,
+        icon: Icons.cloudupload,
         click: function(gd) {
-          Plots.sendDataToCloud(gd);
+          var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
+          if (!baseUrl) {
+            console.error("No destination URL provided (plotlyServerURL is not set)");
+            return;
+          }
+          try {
+            new URL(baseUrl);
+          } catch (e) {
+            console.error("Invalid plotlyServerURL: " + baseUrl);
+            return;
+          }
+          confirmCloudDialog(gd, baseUrl, function() {
+            Plots.sendDataToCloud(gd, baseUrl);
+          });
         }
       };
-      modeBarButtons.editInChartStudio = {
-        name: "editInChartStudio",
-        title: function(gd) {
-          return _(gd, "Edit in Chart Studio");
-        },
-        icon: Icons.pencil,
-        click: function(gd) {
-          Plots.sendDataToCloud(gd);
-        }
-      };
+      modeBarButtons.sendDataToCloud = modeBarButtons.sendChartToCloud;
       modeBarButtons.zoom2d = {
         name: "zoom2d",
         _cat: "zoom",
@@ -38043,8 +38126,14 @@ var Plotly = (() => {
           groups.push(out);
         }
         var commonGroup = ["toImage"];
-        if (context.showEditInChartStudio) commonGroup.push("editInChartStudio");
-        else if (context.showSendToCloud) commonGroup.push("sendDataToCloud");
+        if (context.showSendToCloud) commonGroup.push("sendChartToCloud");
+        else if (context.showEditInChartStudio) {
+          console.warn([
+            "*showEditInChartStudio* is deprecated.",
+            "Use *showSendToCloud* instead."
+          ].join(" "));
+          commonGroup.push("sendChartToCloud");
+        }
         addGroup(commonGroup);
         var zoomGroup = [];
         var hoverGroup = [];
@@ -46072,6 +46161,7 @@ var Plotly = (() => {
         { pattern: /^(map\d*)\.(center|zoom|bearing|pitch)/ },
         { pattern: /^legend\.(x|y)$/, attr: "editrevision" },
         { pattern: /^(shapes|annotations)/, attr: "editrevision" },
+        { pattern: /^selections/, attr: "selectionrevision" },
         { pattern: /^title\.text$/, attr: "editrevision" }
       ];
       var traceUIControlPatterns = [
@@ -47083,19 +47173,18 @@ var Plotly = (() => {
       var xmlnsNamespaces = require_xmlns_namespaces();
       var DOUBLEQUOTE_REGEX = /"/g;
       var DUMMY_SUB = "TOBESTRIPPED";
-      var DUMMY_REGEX = new RegExp('("' + DUMMY_SUB + ")|(" + DUMMY_SUB + '")', "g");
+      var DUMMY_REGEX = new RegExp(`("${DUMMY_SUB})|(${DUMMY_SUB}")|(&quot;${DUMMY_SUB})|(${DUMMY_SUB}&quot;)`, "g");
+      var PRESERVED_ENTITIES = ["&amp;", "&#38;", "&#x26;", "&quot;", "&#34;", "&#x22;", "&apos;", "&#39;", "&#x27;"];
+      var LESS_THAN_ENTITIES = ["&lt;", "&#60;", "&#x3c;"];
+      var GREATER_THAN_ENTITIES = ["&gt;", "&#62;", "&#x3e;"];
       function htmlEntityDecode(s) {
-        var hiddenDiv = d3.select("body").append("div").style({ display: "none" }).html("");
-        var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
-          if (d === "&lt;") {
-            return "&#60;";
-          }
-          if (d === "&rt;") {
-            return "&#62;";
-          }
-          if (d.indexOf("<") !== -1 || d.indexOf(">") !== -1) {
-            return "";
-          }
+        const hiddenDiv = d3.select("body").append("div").style({ display: "none" }).html("");
+        const replaced = s.replace(/(&[^;]*;)/gi, (d) => {
+          const lower = d.toLowerCase();
+          if (PRESERVED_ENTITIES.includes(lower)) return d;
+          if (LESS_THAN_ENTITIES.includes(lower)) return "&#60;";
+          if (GREATER_THAN_ENTITIES.includes(lower)) return "&#62;";
+          if (d.includes("<") || d.includes(">")) return "";
           return hiddenDiv.html(d).text();
         });
         hiddenDiv.remove();
@@ -73655,7 +73744,7 @@ var Plotly = (() => {
       function numberIsNaN(obj) {
         return obj !== obj;
       }
-      var hexSliceLookupTable = function() {
+      var hexSliceLookupTable = (function() {
         const alphabet = "0123456789abcdef";
         const table = new Array(256);
         for (let i = 0; i < 16; ++i) {
@@ -73665,7 +73754,7 @@ var Plotly = (() => {
           }
         }
         return table;
-      }();
+      })();
       function defineBigIntMethod(fn) {
         return typeof BigInt === "undefined" ? BufferBigIntNotDefined : fn;
       }
@@ -73687,7 +73776,7 @@ var Plotly = (() => {
           return true;
         }
         var obj = {};
-        var sym = Symbol("test");
+        var sym = /* @__PURE__ */ Symbol("test");
         var symObj = Object(sym);
         if (typeof sym === "string") {
           return false;
@@ -73933,7 +74022,7 @@ var Plotly = (() => {
         if (typeof origSymbol("foo") !== "symbol") {
           return false;
         }
-        if (typeof Symbol("bar") !== "symbol") {
+        if (typeof /* @__PURE__ */ Symbol("bar") !== "symbol") {
           return false;
         }
         return hasSymbolSham();
@@ -74190,7 +74279,7 @@ var Plotly = (() => {
       var throwTypeError = function() {
         throw new $TypeError();
       };
-      var ThrowTypeError = $gOPD ? function() {
+      var ThrowTypeError = $gOPD ? (function() {
         try {
           arguments.callee;
           return throwTypeError;
@@ -74201,7 +74290,7 @@ var Plotly = (() => {
             return throwTypeError;
           }
         }
-      }() : throwTypeError;
+      })() : throwTypeError;
       var hasSymbols = require_has_symbols()();
       var getProto = require_get_proto();
       var $ObjectGPO = require_Object_getPrototypeOf();
@@ -74683,9 +74772,9 @@ var Plotly = (() => {
         }
         return value !== null && typeof value === "object" && typeof value.length === "number" && value.length >= 0 && $toString(value) !== "[object Array]" && $toString(value.callee) === "[object Function]";
       };
-      var supportsStandardArguments = function() {
+      var supportsStandardArguments = (function() {
         return isStandardArguments(arguments);
-      }();
+      })();
       isStandardArguments.isLegacyArguments = isLegacyArguments;
       module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
     }
@@ -75812,7 +75901,7 @@ var Plotly = (() => {
       function hasOwnProperty2(obj, prop) {
         return Object.prototype.hasOwnProperty.call(obj, prop);
       }
-      var kCustomPromisifiedSymbol = typeof Symbol !== "undefined" ? Symbol("util.promisify.custom") : void 0;
+      var kCustomPromisifiedSymbol = typeof Symbol !== "undefined" ? /* @__PURE__ */ Symbol("util.promisify.custom") : void 0;
       exports.promisify = function promisify(original) {
         if (typeof original !== "function")
           throw new TypeError('The "original" argument must be of type Function');
@@ -75978,7 +76067,7 @@ var Plotly = (() => {
       function copyBuffer(src, target, offset) {
         Buffer2.prototype.copy.call(src, target, offset);
       }
-      module.exports = /* @__PURE__ */ function() {
+      module.exports = /* @__PURE__ */ (function() {
         function BufferList() {
           _classCallCheck(this, BufferList);
           this.head = null;
@@ -76142,7 +76231,7 @@ var Plotly = (() => {
           }
         }]);
         return BufferList;
-      }();
+      })();
     }
   });
 
@@ -76256,13 +76345,13 @@ var Plotly = (() => {
             return message(arg1, arg2, arg3);
           }
         }
-        var NodeError = /* @__PURE__ */ function(_Base) {
+        var NodeError = /* @__PURE__ */ (function(_Base) {
           _inheritsLoose(NodeError2, _Base);
           function NodeError2(arg1, arg2, arg3) {
             return _Base.call(this, getMessage(arg1, arg2, arg3)) || this;
           }
           return NodeError2;
-        }(Base);
+        })(Base);
         NodeError.prototype.name = Base.name;
         NodeError.prototype.code = code;
         codes[code] = NodeError;
@@ -77371,13 +77460,13 @@ var Plotly = (() => {
         return obj;
       }
       var finished = require_end_of_stream();
-      var kLastResolve = Symbol("lastResolve");
-      var kLastReject = Symbol("lastReject");
-      var kError = Symbol("error");
-      var kEnded = Symbol("ended");
-      var kLastPromise = Symbol("lastPromise");
-      var kHandlePromise = Symbol("handlePromise");
-      var kStream = Symbol("stream");
+      var kLastResolve = /* @__PURE__ */ Symbol("lastResolve");
+      var kLastReject = /* @__PURE__ */ Symbol("lastReject");
+      var kError = /* @__PURE__ */ Symbol("error");
+      var kEnded = /* @__PURE__ */ Symbol("ended");
+      var kLastPromise = /* @__PURE__ */ Symbol("lastPromise");
+      var kHandlePromise = /* @__PURE__ */ Symbol("handlePromise");
+      var kStream = /* @__PURE__ */ Symbol("stream");
       function createIterResult(value, done) {
         return {
           value,
@@ -78149,11 +78238,11 @@ var Plotly = (() => {
         });
         for (var i in stream) {
           if (this[i] === void 0 && typeof stream[i] === "function") {
-            this[i] = /* @__PURE__ */ function methodWrap(method) {
+            this[i] = /* @__PURE__ */ (function methodWrap(method) {
               return function methodWrapReturnFunction() {
                 return stream[method].apply(stream, arguments);
               };
-            }(i);
+            })(i);
           }
         }
         for (var n = 0; n < kProxyEvents.length; n++) {
@@ -79011,7 +79100,7 @@ var Plotly = (() => {
       function hasOwnProperty2(obj, prop) {
         return Object.prototype.hasOwnProperty.call(obj, prop);
       }
-      var kCustomPromisifiedSymbol = typeof Symbol !== "undefined" ? Symbol("util.promisify.custom") : void 0;
+      var kCustomPromisifiedSymbol = typeof Symbol !== "undefined" ? /* @__PURE__ */ Symbol("util.promisify.custom") : void 0;
       exports.promisify = function promisify(original) {
         if (typeof original !== "function")
           throw new TypeError('The "original" argument must be of type Function');
@@ -79230,7 +79319,7 @@ var Plotly = (() => {
             return message(arg1, arg2, arg3);
           }
         }
-        var NodeError = /* @__PURE__ */ function(_Base) {
+        var NodeError = /* @__PURE__ */ (function(_Base) {
           _inherits(NodeError2, _Base);
           var _super = _createSuper(NodeError2);
           function NodeError2(arg1, arg2, arg3) {
@@ -79241,7 +79330,7 @@ var Plotly = (() => {
             return _this;
           }
           return _createClass(NodeError2);
-        }(Base);
+        })(Base);
         codes[code] = NodeError;
       }
       function oneOf(expected, thing) {
@@ -79733,7 +79822,7 @@ var Plotly = (() => {
         }
         return "".concat(msg).concat(skipped ? skippedMsg : "", "\n").concat(res).concat(other).concat(end).concat(indicator);
       }
-      var AssertionError = /* @__PURE__ */ function(_Error, _inspect$custom) {
+      var AssertionError = /* @__PURE__ */ (function(_Error, _inspect$custom) {
         _inherits(AssertionError2, _Error);
         var _super = _createSuper(AssertionError2);
         function AssertionError2(options) {
@@ -79845,7 +79934,7 @@ var Plotly = (() => {
           }
         }]);
         return AssertionError2;
-      }(/* @__PURE__ */ _wrapNativeSuper(Error), inspect.custom);
+      })(/* @__PURE__ */ _wrapNativeSuper(Error), inspect.custom);
       module.exports = AssertionError;
     }
   });
@@ -79917,7 +80006,7 @@ var Plotly = (() => {
           $webkitStorageInfo: true,
           $window: true
         };
-        hasAutomationEqualityBug = function() {
+        hasAutomationEqualityBug = (function() {
           if (typeof window === "undefined") {
             return false;
           }
@@ -79935,7 +80024,7 @@ var Plotly = (() => {
             }
           }
           return false;
-        }();
+        })();
         equalsConstructorPrototypeIfNotBuggy = function(o) {
           if (typeof window === "undefined" || !hasAutomationEqualityBug) {
             return equalsConstructorPrototype(o);
@@ -80011,10 +80100,10 @@ var Plotly = (() => {
       var originalKeys = Object.keys;
       keysShim.shim = function shimObjectKeys() {
         if (Object.keys) {
-          var keysWorksWithArguments = function() {
+          var keysWorksWithArguments = (function() {
             var args = Object.keys(arguments);
             return args && args.length === arguments.length;
-          }(1, 2);
+          })(1, 2);
           if (!keysWorksWithArguments) {
             Object.keys = function keys(object) {
               if (isArgs(object)) {
@@ -80164,7 +80253,7 @@ var Plotly = (() => {
     "node_modules/define-properties/index.js"(exports, module) {
       "use strict";
       var keys = require_object_keys();
-      var hasSymbols = typeof Symbol === "function" && typeof Symbol("foo") === "symbol";
+      var hasSymbols = typeof Symbol === "function" && typeof /* @__PURE__ */ Symbol("foo") === "symbol";
       var toStr = Object.prototype.toString;
       var concat = Array.prototype.concat;
       var origDefineProperty = Object.defineProperty;
@@ -85707,7 +85796,7 @@ var Plotly = (() => {
           }
           return rows;
         }
-        var squarify = function custom(ratio) {
+        var squarify = (function custom(ratio) {
           function squarify2(parent, x0, y0, x1, y1) {
             squarifyRatio(ratio, parent, x0, y0, x1, y1);
           }
@@ -85715,7 +85804,7 @@ var Plotly = (() => {
             return custom((x = +x) > 1 ? x : 1);
           };
           return squarify2;
-        }(phi);
+        })(phi);
         function index$1() {
           var tile = squarify, round = false, dx = 1, dy = 1, paddingStack = [0], paddingInner = constantZero, paddingTop = constantZero, paddingRight = constantZero, paddingBottom = constantZero, paddingLeft = constantZero;
           function treemap(root) {
@@ -85813,7 +85902,7 @@ var Plotly = (() => {
         function sliceDice(parent, x0, y0, x1, y1) {
           (parent.depth & 1 ? treemapSlice : treemapDice)(parent, x0, y0, x1, y1);
         }
-        var resquarify = function custom(ratio) {
+        var resquarify = (function custom(ratio) {
           function resquarify2(parent, x0, y0, x1, y1) {
             if ((rows = parent._squarify) && rows.ratio === ratio) {
               var rows, row, nodes, i, j = -1, n, m = rows.length, value = parent.value;
@@ -85833,7 +85922,7 @@ var Plotly = (() => {
             return custom((x = +x) > 1 ? x : 1);
           };
           return resquarify2;
-        }(phi);
+        })(phi);
         exports2.cluster = cluster;
         exports2.hierarchy = hierarchy;
         exports2.pack = index;
@@ -86751,7 +86840,7 @@ var Plotly = (() => {
       init_basis();
       init_basisClosed();
       init_color2();
-      rgb_default = function rgbGamma(y) {
+      rgb_default = (function rgbGamma(y) {
         var color2 = gamma(y);
         function rgb2(start, end) {
           var r = color2((start = rgb(start)).r, (end = rgb(end)).r), g = color2(start.g, end.g), b = color2(start.b, end.b), opacity = nogamma(start.opacity, end.opacity);
@@ -86765,7 +86854,7 @@ var Plotly = (() => {
         }
         rgb2.gamma = rgbGamma;
         return rgb2;
-      }(1);
+      })(1);
       rgbBasis = rgbSpline(basis_default);
       rgbBasisClosed = rgbSpline(basisClosed_default);
     }
@@ -87085,7 +87174,7 @@ var Plotly = (() => {
   var init_zoom = __esm({
     "node_modules/d3-interpolate/src/zoom.js"() {
       epsilon2 = 1e-12;
-      zoom_default = function zoomRho(rho, rho2, rho4) {
+      zoom_default = (function zoomRho(rho, rho2, rho4) {
         function zoom(p0, p1) {
           var ux0 = p0[0], uy0 = p0[1], w0 = p0[2], ux1 = p1[0], uy1 = p1[1], w1 = p1[2], dx = ux1 - ux0, dy = uy1 - uy0, d2 = dx * dx + dy * dy, i, S;
           if (d2 < epsilon2) {
@@ -87117,7 +87206,7 @@ var Plotly = (() => {
           return zoomRho(_1, _2, _4);
         };
         return zoom;
-      }(Math.SQRT2, 2, 4);
+      })(Math.SQRT2, 2, 4);
     }
   });
 
@@ -87187,7 +87276,7 @@ var Plotly = (() => {
 
   // node_modules/d3-interpolate/src/cubehelix.js
   function cubehelix2(hue2) {
-    return function cubehelixGamma(y) {
+    return (function cubehelixGamma(y) {
       y = +y;
       function cubehelix3(start, end) {
         var h = hue2((start = cubehelix(start)).h, (end = cubehelix(end)).h), s = nogamma(start.s, end.s), l = nogamma(start.l, end.l), opacity = nogamma(start.opacity, end.opacity);
@@ -87201,7 +87290,7 @@ var Plotly = (() => {
       }
       cubehelix3.gamma = cubehelixGamma;
       return cubehelix3;
-    }(1);
+    })(1);
   }
   var cubehelix_default, cubehelixLong;
   var init_cubehelix2 = __esm({
@@ -90647,7 +90736,7 @@ var Plotly = (() => {
           /***/
           1964: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = {
                 alpha_shape: __webpack_require__2(3502),
                 convex_hull: __webpack_require__2(7352),
@@ -90663,12 +90752,12 @@ var Plotly = (() => {
                 ndarray: __webpack_require__2(9618),
                 ndarray_linear_interpolate: __webpack_require__2(4317)
               };
-            }
+            })
           ),
           /***/
           4793: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var __webpack_unused_export__;
               function _typeof(o) {
@@ -91989,7 +92078,7 @@ var Plotly = (() => {
               function numberIsNaN(obj) {
                 return obj !== obj;
               }
-              var hexSliceLookupTable = function() {
+              var hexSliceLookupTable = (function() {
                 var alphabet = "0123456789abcdef";
                 var table = new Array(256);
                 for (var i = 0; i < 16; ++i) {
@@ -91999,13 +92088,13 @@ var Plotly = (() => {
                   }
                 }
                 return table;
-              }();
-            }
+              })();
+            })
           ),
           /***/
           9216: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = isMobile;
               module2.exports.isMobile = isMobile;
@@ -92027,12 +92116,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           6296: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createViewController;
               var createTurntable = __webpack_require__2(7261);
@@ -92169,12 +92258,12 @@ var Plotly = (() => {
                   matrix
                 }, mode);
               }
-            }
+            })
           ),
           /***/
           7169: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var weakMap = typeof WeakMap === "undefined" ? __webpack_require__2(1538) : WeakMap;
               var createBuffer = __webpack_require__2(2762);
@@ -92200,12 +92289,12 @@ var Plotly = (() => {
                 triangleVAO.unbind();
               }
               module2.exports = createABigTriangle;
-            }
+            })
           ),
           /***/
           1085: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var padLeft = __webpack_require__2(1371);
               module2.exports = addLineNumbers;
               function addLineNumbers(string, start, delim) {
@@ -92220,12 +92309,12 @@ var Plotly = (() => {
                   return prefix + delim + line;
                 }).join("\n");
               }
-            }
+            })
           ),
           /***/
           3952: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = affineHull;
               var orient = __webpack_require__2(3250);
@@ -92273,12 +92362,12 @@ var Plotly = (() => {
                 }
                 return index;
               }
-            }
+            })
           ),
           /***/
           5995: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = alphaComplex;
               var delaunay = __webpack_require__2(7642);
@@ -92292,33 +92381,33 @@ var Plotly = (() => {
                   return circumradius(simplex) * alpha < 1;
                 });
               }
-            }
+            })
           ),
           /***/
           3502: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = alphaShape;
               var ac = __webpack_require__2(5995);
               var bnd = __webpack_require__2(9127);
               function alphaShape(alpha, points) {
                 return bnd(ac(alpha, points));
               }
-            }
+            })
           ),
           /***/
           6468: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function _atob(str) {
                 return atob(str);
               };
-            }
+            })
           ),
           /***/
           2642: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = barycentric;
               var solve = __webpack_require__2(727);
@@ -92359,12 +92448,12 @@ var Plotly = (() => {
                 }
                 return y;
               }
-            }
+            })
           ),
           /***/
           7507: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               exports2.byteLength = byteLength;
               exports2.toByteArray = toByteArray;
@@ -92458,12 +92547,12 @@ var Plotly = (() => {
                 }
                 return parts.join("");
               }
-            }
+            })
           ),
           /***/
           3865: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = add;
@@ -92473,35 +92562,35 @@ var Plotly = (() => {
                   a[1].mul(b[1])
                 );
               }
-            }
+            })
           ),
           /***/
           1318: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = cmp;
               function cmp(a, b) {
                 return a[0].mul(b[1]).cmp(b[0].mul(a[1]));
               }
-            }
+            })
           ),
           /***/
           8697: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = div;
               function div(a, b) {
                 return rationalize(a[0].mul(b[1]), a[1].mul(b[0]));
               }
-            }
+            })
           ),
           /***/
           7842: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isRat = __webpack_require__2(6330);
               var isBN = __webpack_require__2(1533);
@@ -92559,36 +92648,36 @@ var Plotly = (() => {
                 }
                 return rationalize(a, b);
               }
-            }
+            })
           ),
           /***/
           6330: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isBN = __webpack_require__2(1533);
               module2.exports = isRat;
               function isRat(x) {
                 return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1]);
               }
-            }
+            })
           ),
           /***/
           5716: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               module2.exports = sign;
               function sign(x) {
                 return x.cmp(new BN(0));
               }
-            }
+            })
           ),
           /***/
           1369: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var sign = __webpack_require__2(5716);
               module2.exports = bn2num;
@@ -92608,12 +92697,12 @@ var Plotly = (() => {
                 }
                 return sign(b) * out;
               }
-            }
+            })
           ),
           /***/
           4025: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var db = __webpack_require__2(2361);
               var ctz = __webpack_require__2(8828).countTrailingZeros;
@@ -92629,24 +92718,24 @@ var Plotly = (() => {
                 }
                 return h + 32;
               }
-            }
+            })
           ),
           /***/
           1533: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               module2.exports = isBN;
               function isBN(x) {
                 return x && typeof x === "object" && Boolean(x.words);
               }
-            }
+            })
           ),
           /***/
           2651: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               var db = __webpack_require__2(2361);
@@ -92659,12 +92748,12 @@ var Plotly = (() => {
                   return new BN(x * Math.pow(2, 52 - e)).ushln(e - 52);
                 }
               }
-            }
+            })
           ),
           /***/
           869: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var num2bn = __webpack_require__2(2651);
               var sign = __webpack_require__2(5716);
@@ -92688,60 +92777,60 @@ var Plotly = (() => {
                 }
                 return [numer, denom];
               }
-            }
+            })
           ),
           /***/
           6768: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var BN = __webpack_require__2(6859);
               module2.exports = str2BN;
               function str2BN(x) {
                 return new BN(x);
               }
-            }
+            })
           ),
           /***/
           6504: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = mul;
               function mul(a, b) {
                 return rationalize(a[0].mul(b[0]), a[1].mul(b[1]));
               }
-            }
+            })
           ),
           /***/
           7721: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bnsign = __webpack_require__2(5716);
               module2.exports = sign;
               function sign(x) {
                 return bnsign(x[0]) * bnsign(x[1]);
               }
-            }
+            })
           ),
           /***/
           5572: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rationalize = __webpack_require__2(869);
               module2.exports = sub;
               function sub(a, b) {
                 return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]));
               }
-            }
+            })
           ),
           /***/
           946: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bn2num = __webpack_require__2(1369);
               var ctz = __webpack_require__2(4025);
@@ -92774,12 +92863,12 @@ var Plotly = (() => {
                   return sgn * y * Math.pow(2, 1023 - ybits);
                 }
               }
-            }
+            })
           ),
           /***/
           2478: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function ge(a, y, c, l, h) {
                 var i = h + 1;
@@ -92880,12 +92969,12 @@ var Plotly = (() => {
                   return norm(a, y, c, l, h, eq);
                 }
               };
-            }
+            })
           ),
           /***/
           8828: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               "use restrict";
               var INT_BITS = 32;
@@ -93035,12 +93124,12 @@ var Plotly = (() => {
                 var t = v | v - 1;
                 return t + 1 | (~t & -~t) - 1 >>> countTrailingZeros(v) + 1;
               };
-            }
+            })
           ),
           /***/
           6859: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2 = __webpack_require__2.nmd(module2);
               (function(module3, exports2) {
                 "use strict";
@@ -95847,12 +95936,12 @@ var Plotly = (() => {
                   return res._forceRed(this);
                 };
               })(module2, this);
-            }
+            })
           ),
           /***/
           6204: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = boundary;
               function boundary(cells) {
@@ -95885,12 +95974,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           6867: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = boxIntersectWrapper;
               var pool = __webpack_require__2(1888);
@@ -96019,12 +96108,12 @@ var Plotly = (() => {
                     throw new Error("box-intersect: Invalid arguments");
                 }
               }
-            }
+            })
           ),
           /***/
           2455: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               function full() {
                 function bruteForceRedFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
@@ -96155,12 +96244,12 @@ var Plotly = (() => {
               }
               exports2.partial = bruteForcePlanner(false);
               exports2.full = bruteForcePlanner(true);
-            }
+            })
           ),
           /***/
           7150: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = boxIntersectIter;
               var pool = __webpack_require__2(1888);
@@ -96770,12 +96859,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           3545: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = findMedian;
               var genPartition = __webpack_require__2(8105);
@@ -96900,12 +96989,12 @@ var Plotly = (() => {
                   boxes[elemSize * mid + axis]
                 );
               }
-            }
+            })
           ),
           /***/
           8105: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = genPartition;
               var P2F = {
@@ -97025,12 +97114,12 @@ var Plotly = (() => {
                 }
                 return m;
               }
-            }
+            })
           ),
           /***/
           4192: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = wrapper;
               var INSERT_SORT_CUTOFF = 32;
@@ -97236,12 +97325,12 @@ var Plotly = (() => {
                   quickSort(less, great, data);
                 }
               }
-            }
+            })
           ),
           /***/
           855: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = {
                 init: sqInit,
@@ -97580,12 +97669,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           2538: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var monotoneTriangulate = __webpack_require__2(8902);
               var makeIndex = __webpack_require__2(5542);
@@ -97645,12 +97734,12 @@ var Plotly = (() => {
                   return cells;
                 }
               }
-            }
+            })
           ),
           /***/
           2272: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var inCircle = __webpack_require__2(2646)[4];
               var bsearch = __webpack_require__2(2478);
@@ -97731,12 +97820,12 @@ var Plotly = (() => {
                   testFlip(points, triangulation, stack, b, x, y);
                 }
               }
-            }
+            })
           ),
           /***/
           5023: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               module2.exports = classifyFaces;
@@ -97753,7 +97842,7 @@ var Plotly = (() => {
               function compareCell(a, b) {
                 return a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
               }
-              proto.locate = /* @__PURE__ */ function() {
+              proto.locate = /* @__PURE__ */ (function() {
                 var key = [0, 0, 0];
                 return function(a, b, c) {
                   var x = a, y = b, z = c;
@@ -97776,7 +97865,7 @@ var Plotly = (() => {
                   key[2] = z;
                   return bsearch.eq(this.cells, key, compareCell);
                 };
-              }();
+              })();
               function indexCells(triangulation, infinity) {
                 var cells = triangulation.cells();
                 var nc = cells.length;
@@ -97896,12 +97985,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           8902: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               var orient = __webpack_require__2(3250)[3];
@@ -98065,12 +98154,12 @@ var Plotly = (() => {
                 }
                 return cells;
               }
-            }
+            })
           ),
           /***/
           5542: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               module2.exports = createTriangulation;
@@ -98089,7 +98178,7 @@ var Plotly = (() => {
                   }
                 }
               }
-              proto.isConstraint = /* @__PURE__ */ function() {
+              proto.isConstraint = /* @__PURE__ */ (function() {
                 var e = [0, 0];
                 function compareLex(a, b) {
                   return a[0] - b[0] || a[1] - b[1];
@@ -98099,7 +98188,7 @@ var Plotly = (() => {
                   e[1] = Math.max(i, j);
                   return bsearch.eq(this.edges, e, compareLex) >= 0;
                 };
-              }();
+              })();
               proto.removeTriangle = function(i, j, k) {
                 var stars = this.stars;
                 removePair(stars[i], j, k);
@@ -98162,12 +98251,12 @@ var Plotly = (() => {
                 }
                 return new Triangulation(stars, edges);
               }
-            }
+            })
           ),
           /***/
           2419: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = orientation;
               function orientation(s) {
@@ -98183,12 +98272,12 @@ var Plotly = (() => {
                 }
                 return p;
               }
-            }
+            })
           ),
           /***/
           3628: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var dup = __webpack_require__2(1338);
               var solve = __webpack_require__2(727);
@@ -98248,12 +98337,12 @@ var Plotly = (() => {
               }
               circumcenter.barycenetric = barycentricCircumcenter;
               module2.exports = circumcenter;
-            }
+            })
           ),
           /***/
           6037: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = circumradius;
               var circumcenter = __webpack_require__2(3628);
               function circumradius(points) {
@@ -98267,12 +98356,12 @@ var Plotly = (() => {
                 }
                 return Math.sqrt(avgDist / points.length);
               }
-            }
+            })
           ),
           /***/
           332: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = cleanPSLG;
               var UnionFind = __webpack_require__2(1755);
@@ -98573,12 +98662,12 @@ var Plotly = (() => {
                 }
                 return modified;
               }
-            }
+            })
           ),
           /***/
           3637: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = solveIntersection;
               var ratMul = __webpack_require__2(6504);
@@ -98605,12 +98694,12 @@ var Plotly = (() => {
                 var r = rvAdd(a, s);
                 return r;
               }
-            }
+            })
           ),
           /***/
           3642: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = {
                 "jet": [{ "index": 0, "rgb": [0, 0, 131] }, { "index": 0.125, "rgb": [0, 60, 170] }, { "index": 0.375, "rgb": [5, 255, 255] }, { "index": 0.625, "rgb": [255, 255, 0] }, { "index": 0.875, "rgb": [250, 0, 0] }, { "index": 1, "rgb": [128, 0, 0] }],
                 "hsv": [{ "index": 0, "rgb": [255, 0, 0] }, { "index": 0.169, "rgb": [253, 255, 2] }, { "index": 0.173, "rgb": [247, 255, 2] }, { "index": 0.337, "rgb": [0, 252, 4] }, { "index": 0.341, "rgb": [0, 252, 10] }, { "index": 0.506, "rgb": [1, 249, 255] }, { "index": 0.671, "rgb": [2, 0, 253] }, { "index": 0.675, "rgb": [8, 0, 253] }, { "index": 0.839, "rgb": [255, 0, 251] }, { "index": 0.843, "rgb": [255, 0, 245] }, { "index": 1, "rgb": [255, 0, 6] }],
@@ -98657,12 +98746,12 @@ var Plotly = (() => {
                 "velocity-green": [{ "index": 0, "rgb": [23, 35, 19] }, { "index": 0.13, "rgb": [24, 64, 38] }, { "index": 0.25, "rgb": [11, 95, 45] }, { "index": 0.38, "rgb": [39, 123, 35] }, { "index": 0.5, "rgb": [95, 146, 12] }, { "index": 0.63, "rgb": [152, 165, 18] }, { "index": 0.75, "rgb": [201, 186, 69] }, { "index": 0.88, "rgb": [233, 216, 137] }, { "index": 1, "rgb": [255, 253, 205] }],
                 "cubehelix": [{ "index": 0, "rgb": [0, 0, 0] }, { "index": 0.07, "rgb": [22, 5, 59] }, { "index": 0.13, "rgb": [60, 4, 105] }, { "index": 0.2, "rgb": [109, 1, 135] }, { "index": 0.27, "rgb": [161, 0, 147] }, { "index": 0.33, "rgb": [210, 2, 142] }, { "index": 0.4, "rgb": [251, 11, 123] }, { "index": 0.47, "rgb": [255, 29, 97] }, { "index": 0.53, "rgb": [255, 54, 69] }, { "index": 0.6, "rgb": [255, 85, 46] }, { "index": 0.67, "rgb": [255, 120, 34] }, { "index": 0.73, "rgb": [255, 157, 37] }, { "index": 0.8, "rgb": [241, 191, 57] }, { "index": 0.87, "rgb": [224, 220, 93] }, { "index": 0.93, "rgb": [218, 241, 142] }, { "index": 1, "rgb": [227, 253, 198] }]
               };
-            }
+            })
           ),
           /***/
           6729: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var colorScale = __webpack_require__2(3642);
               var lerp = __webpack_require__2(395);
@@ -98757,12 +98846,12 @@ var Plotly = (() => {
               function rgbaStr(rgba3) {
                 return "rgba(" + rgba3.join(",") + ")";
               }
-            }
+            })
           ),
           /***/
           3140: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = compareAngle;
               var orient = __webpack_require__2(3250);
@@ -98842,12 +98931,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           8572: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = function signum(x) {
                 if (x < 0) {
@@ -98858,12 +98947,12 @@ var Plotly = (() => {
                 }
                 return 0;
               };
-            }
+            })
           ),
           /***/
           8507: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = compareCells;
               var min = Math.min;
               function compareInt(a, b) {
@@ -98904,12 +98993,12 @@ var Plotly = (() => {
                     return 0;
                 }
               }
-            }
+            })
           ),
           /***/
           3788: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var compareCells = __webpack_require__2(8507);
               var parity = __webpack_require__2(2419);
@@ -98917,12 +99006,12 @@ var Plotly = (() => {
               function compareOrientedCells(a, b) {
                 return compareCells(a, b) || parity(a) - parity(b);
               }
-            }
+            })
           ),
           /***/
           7352: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var convexHull1d = __webpack_require__2(5721);
               var convexHull2d = __webpack_require__2(4750);
@@ -98945,12 +99034,12 @@ var Plotly = (() => {
                 }
                 return convexHullnd(points, d);
               }
-            }
+            })
           ),
           /***/
           5721: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = convexHull1d;
               function convexHull1d(points) {
@@ -98972,12 +99061,12 @@ var Plotly = (() => {
                   return [[lo]];
                 }
               }
-            }
+            })
           ),
           /***/
           4750: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = convexHull2D;
               var monotoneHull = __webpack_require__2(3090);
@@ -98996,12 +99085,12 @@ var Plotly = (() => {
                 }
                 return edges;
               }
-            }
+            })
           ),
           /***/
           2690: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = convexHullnD;
               var ich = __webpack_require__2(8954);
@@ -99055,12 +99144,12 @@ var Plotly = (() => {
                   return invPermute(nhull, ah);
                 }
               }
-            }
+            })
           ),
           /***/
           4769: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function dcubicHermite(p0, v0, p1, v1, t, f) {
                 var dh00 = 6 * t * t - 6 * t, dh10 = 3 * t * t - 4 * t + 1, dh01 = -6 * t * t + 6 * t, dh11 = 3 * t * t - 2 * t;
@@ -99090,12 +99179,12 @@ var Plotly = (() => {
               }
               module2.exports = cubicHermite;
               module2.exports.derivative = dcubicHermite;
-            }
+            })
           ),
           /***/
           7642: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var ch = __webpack_require__2(8954);
               var uniq = __webpack_require__2(1682);
@@ -99231,12 +99320,12 @@ var Plotly = (() => {
                 }
                 return hull;
               }
-            }
+            })
           ),
           /***/
           2361: (
             /***/
-            function(module2) {
+            (function(module2) {
               var hasTypedArrays = false;
               if (typeof Float64Array !== "undefined") {
                 var DOUBLE_VIEW = new Float64Array(1), UINT_VIEW = new Uint32Array(DOUBLE_VIEW.buffer);
@@ -99328,12 +99417,12 @@ var Plotly = (() => {
                 var hi = module2.exports.hi(n);
                 return !(hi & 2146435072);
               };
-            }
+            })
           ),
           /***/
           1338: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function dupe_array(count, value, i) {
                 var c = count[i] | 0;
@@ -99379,12 +99468,12 @@ var Plotly = (() => {
                 return [];
               }
               module2.exports = dupe;
-            }
+            })
           ),
           /***/
           3134: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = edgeToAdjacency;
               var uniq = __webpack_require__2(1682);
@@ -99415,12 +99504,12 @@ var Plotly = (() => {
                 }
                 return adj;
               }
-            }
+            })
           ),
           /***/
           5033: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = extractPlanes;
               function extractPlanes(M, zNear, zFar) {
@@ -99435,12 +99524,12 @@ var Plotly = (() => {
                   [zf * M[12] - M[8], zf * M[13] - M[9], zf * M[14] - M[10], zf * M[15] - M[11]]
                 ];
               }
-            }
+            })
           ),
           /***/
           9215: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createFilteredVector;
               var cubicHermite = __webpack_require__2(4769);
@@ -99715,12 +99804,12 @@ var Plotly = (() => {
                     return new FilteredVector(initState, initVelocity, initTime);
                 }
               }
-            }
+            })
           ),
           /***/
           3840: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = createRBTree;
               var RED = 0;
@@ -100600,12 +100689,12 @@ var Plotly = (() => {
               function createRBTree(compare) {
                 return new RedBlackTree(compare || defaultCompare, null);
               }
-            }
+            })
           ),
           /***/
           3837: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createAxes;
               var createText = __webpack_require__2(4935);
@@ -101173,12 +101262,12 @@ var Plotly = (() => {
                 axes.update(options);
                 return axes;
               }
-            }
+            })
           ),
           /***/
           5304: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createBackgroundCube;
               var createBuffer = __webpack_require__2(2762);
@@ -101284,12 +101373,12 @@ var Plotly = (() => {
                 shader.attributes.normal.location = 1;
                 return new BackgroundCube(gl2, buffer, vao, shader);
               }
-            }
+            })
           ),
           /***/
           6429: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = getCubeEdges;
               var bits = __webpack_require__2(8828);
@@ -101495,12 +101584,12 @@ var Plotly = (() => {
                 }
                 return CUBE_RESULT;
               }
-            }
+            })
           ),
           /***/
           501: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createLines;
               var createBuffer = __webpack_require__2(2762);
@@ -101716,12 +101805,12 @@ var Plotly = (() => {
                 shader.attributes.position.location = 0;
                 return new Lines(gl2, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset);
               }
-            }
+            })
           ),
           /***/
           1879: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
@@ -101747,12 +101836,12 @@ var Plotly = (() => {
                   { name: "normal", type: "vec3" }
                 ]);
               };
-            }
+            })
           ),
           /***/
           4935: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createTextSprites;
               var createBuffer = __webpack_require__2(2762);
@@ -101938,12 +102027,12 @@ var Plotly = (() => {
                 result.update(bounds, labels, labelFont, ticks, tickFont);
                 return result;
               }
-            }
+            })
           ),
           /***/
           6444: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               exports2.create = defaultTicks;
               exports2.equal = ticksEqual;
@@ -102012,12 +102101,12 @@ var Plotly = (() => {
                 }
                 return true;
               }
-            }
+            })
           ),
           /***/
           5445: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = axesProperties;
               var getPlanes = __webpack_require__2(5033);
@@ -102140,12 +102229,12 @@ var Plotly = (() => {
                 }
                 return ranges;
               }
-            }
+            })
           ),
           /***/
           2762: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var pool = __webpack_require__2(1888);
               var ops = __webpack_require__2(5298);
@@ -102286,12 +102375,12 @@ var Plotly = (() => {
                 return result;
               }
               module2.exports = createBuffer;
-            }
+            })
           ),
           /***/
           6405: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var vec3 = __webpack_require__2(2931);
               module2.exports = function(vectorfield, bounds) {
@@ -102403,12 +102492,12 @@ var Plotly = (() => {
                   traceType: "cone"
                 });
               };
-            }
+            })
           ),
           /***/
           9060: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createShader = __webpack_require__2(9405);
               var createBuffer = __webpack_require__2(2762);
@@ -102889,12 +102978,12 @@ var Plotly = (() => {
                 return mesh;
               }
               module2.exports = createVectorMesh;
-            }
+            })
           ),
           /***/
           614: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, coneScale, coneOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"]);
               var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"]);
@@ -102919,12 +103008,12 @@ var Plotly = (() => {
                   { name: "vector", type: "vec3" }
                 ]
               };
-            }
+            })
           ),
           /***/
           737: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = {
                 0: "NONE",
                 1: "ONE",
@@ -103223,22 +103312,22 @@ var Plotly = (() => {
                 37443: "UNPACK_COLORSPACE_CONVERSION_WEBGL",
                 37444: "BROWSER_DEFAULT_WEBGL"
               };
-            }
+            })
           ),
           /***/
           5171: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var gl10 = __webpack_require__2(737);
               module2.exports = function lookupConstant(number) {
                 return gl10[number];
               };
-            }
+            })
           ),
           /***/
           9165: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createErrorBars;
               var createBuffer = __webpack_require__2(2762);
@@ -103316,7 +103405,7 @@ var Plotly = (() => {
                   bounds[1][i] = Math.max(bounds[1][i], point[i]);
                 }
               }
-              var FACE_TABLE = function() {
+              var FACE_TABLE = (function() {
                 var table = new Array(3);
                 for (var d = 0; d < 3; ++d) {
                   var row = [];
@@ -103331,7 +103420,7 @@ var Plotly = (() => {
                   table[d] = row;
                 }
                 return table;
-              }();
+              })();
               function emitFace(verts, x, c, d) {
                 var offsets = FACE_TABLE[d];
                 for (var i = 0; i < offsets.length; ++i) {
@@ -103512,12 +103601,12 @@ var Plotly = (() => {
                 result.update(options);
                 return result;
               }
-            }
+            })
           ),
           /***/
           3436: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
@@ -103530,12 +103619,12 @@ var Plotly = (() => {
                   { name: "offset", type: "vec3" }
                 ]);
               };
-            }
+            })
           ),
           /***/
           2260: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createTexture = __webpack_require__2(7766);
               module2.exports = createFBO;
@@ -103918,12 +104007,12 @@ var Plotly = (() => {
                   WEBGL_draw_buffers
                 );
               }
-            }
+            })
           ),
           /***/
           2992: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var sprintf = __webpack_require__2(3387).sprintf;
               var glConstants = __webpack_require__2(5171);
               var shaderName = __webpack_require__2(1848);
@@ -103965,12 +104054,12 @@ var Plotly = (() => {
                   short: shortForm.trim()
                 };
               }
-            }
+            })
           ),
           /***/
           7319: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
               var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvec4 project(vec3 p) {\n  return projection * (view * (model * vec4(p, 1.0)));\n}\n\nvoid main() {\n  vec4 startPoint = project(position);\n  vec4 endPoint   = project(nextPosition);\n\n  vec2 A = startPoint.xy / startPoint.w;\n  vec2 B =   endPoint.xy /   endPoint.w;\n\n  float clipAngle = atan(\n    (B.y - A.y) * screenShape.y,\n    (B.x - A.x) * screenShape.x\n  );\n\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(\n    sin(clipAngle),\n    -cos(clipAngle)\n  ) / screenShape;\n\n  gl_Position = vec4(startPoint.xy + startPoint.w * offset, startPoint.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"]);
@@ -103989,12 +104078,12 @@ var Plotly = (() => {
               exports2.createPickShader = function(gl2) {
                 return createShader(gl2, vertSrc, pickFrag, null, ATTRIBUTES);
               };
-            }
+            })
           ),
           /***/
           5714: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createLinePlot;
               var createBuffer = __webpack_require__2(2762);
@@ -104419,12 +104508,12 @@ var Plotly = (() => {
                 linePlot.update(options);
                 return linePlot;
               }
-            }
+            })
           ),
           /***/
           1903: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = clone;
               function clone(a) {
                 var out = new Float32Array(16);
@@ -104447,12 +104536,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6864: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = create;
               function create() {
                 var out = new Float32Array(16);
@@ -104475,24 +104564,24 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           9921: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = determinant;
               function determinant(a) {
                 var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
                 return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
               }
               ;
-            }
+            })
           ),
           /***/
           7399: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromQuat;
               function fromQuat(out, q) {
                 var x = q[0], y = q[1], z = q[2], w = q[3], x2 = x + x, y2 = y + y, z2 = z + z, xx = x * x2, yx = y * x2, yy = y * y2, zx = z * x2, zy = z * y2, zz = z * z2, wx = w * x2, wy = w * y2, wz = w * z2;
@@ -104515,12 +104604,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6743: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromRotationTranslation;
               function fromRotationTranslation(out, q, v) {
                 var x = q[0], y = q[1], z = q[2], w = q[3], x2 = x + x, y2 = y + y, z2 = z + z, xx = x * x2, xy = x * y2, xz = x * z2, yy = y * y2, yz = y * z2, zz = z * z2, wx = w * x2, wy = w * y2, wz = w * z2;
@@ -104543,12 +104632,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7894: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = identity2;
               function identity2(out) {
                 out[0] = 1;
@@ -104570,12 +104659,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7608: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = invert;
               function invert(out, a) {
                 var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32, det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
@@ -104602,12 +104691,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6582: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var identity2 = __webpack_require__2(7894);
               module2.exports = lookAt;
               function lookAt(out, eye, center, up) {
@@ -104669,12 +104758,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6760: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = multiply;
               function multiply(out, a, b) {
                 var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
@@ -104710,12 +104799,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           4040: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = ortho;
               function ortho(out, left, right, bottom, top, near, far) {
                 var lr = 1 / (left - right), bt = 1 / (bottom - top), nf = 1 / (near - far);
@@ -104738,12 +104827,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           4772: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = perspective;
               function perspective(out, fovy, aspect, near, far) {
                 var f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far);
@@ -104766,12 +104855,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           6079: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotate;
               function rotate(out, a, rad, axis) {
                 var x = axis[0], y = axis[1], z = axis[2], len = Math.sqrt(x * x + y * y + z * z), s, c, t, a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, b00, b01, b02, b10, b11, b12, b20, b21, b22;
@@ -104827,12 +104916,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           5567: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateX;
               function rotateX(out, a, rad) {
                 var s = Math.sin(rad), c = Math.cos(rad), a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
@@ -104857,12 +104946,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           2408: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateY;
               function rotateY(out, a, rad) {
                 var s = Math.sin(rad), c = Math.cos(rad), a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
@@ -104887,12 +104976,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7089: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateZ;
               function rotateZ(out, a, rad) {
                 var s = Math.sin(rad), c = Math.cos(rad), a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
@@ -104917,12 +105006,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           2504: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scale;
               function scale(out, a, v) {
                 var x = v[0], y = v[1], z = v[2];
@@ -104945,12 +105034,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7656: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = translate;
               function translate(out, a, v) {
                 var x = v[0], y = v[1], z = v[2], a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23;
@@ -104992,12 +105081,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           5665: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transpose;
               function transpose(out, a) {
                 if (out === a) {
@@ -105035,12 +105124,12 @@ var Plotly = (() => {
                 return out;
               }
               ;
-            }
+            })
           ),
           /***/
           7626: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var barycentric = __webpack_require__2(2642);
               var closestPointToTriangle = __webpack_require__2(9346);
@@ -105132,12 +105221,12 @@ var Plotly = (() => {
                 }
                 return [closestIndex, interpolate(simplex, weights), weights];
               }
-            }
+            })
           ),
           /***/
           840: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * (view * (model * vec4(p, 1.0)));\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"]);
               var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n//#pragma glslify: beckmann = require(glsl-specular-beckmann) // used in gl-surface3d\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (f_color.a == 0.0 ||\n    outOfRange(clipBounds[0], clipBounds[1], f_data)\n  ) discard;\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  //float specular = max(0.0, beckmann(L, V, N, roughness)); // used in gl-surface3d\n\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = vec4(f_color.rgb, 1.0) * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * f_color.a;\n}\n"]);
@@ -105203,12 +105292,12 @@ var Plotly = (() => {
                   { name: "position", type: "vec3" }
                 ]
               };
-            }
+            })
           ),
           /***/
           7201: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6;
               var DEFAULT_FACE_NORMALS_EPSILON = 1e-6;
@@ -106184,12 +106273,12 @@ var Plotly = (() => {
                 return mesh;
               }
               module2.exports = createSimplicialMesh;
-            }
+            })
           ),
           /***/
           4437: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createCamera;
               var now = __webpack_require__2(3025);
@@ -106429,12 +106518,12 @@ var Plotly = (() => {
                 camera.enableMouseListeners();
                 return camera;
               }
-            }
+            })
           ),
           /***/
           799: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
               var vertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\nattribute vec2 position;\nvarying vec2 uv;\nvoid main() {\n  uv = position;\n  gl_Position = vec4(position, 0, 1);\n}"]);
@@ -106442,12 +106531,12 @@ var Plotly = (() => {
               module2.exports = function(gl2) {
                 return createShader(gl2, vertSrc, fragSrc, null, [{ name: "position", type: "vec2" }]);
               };
-            }
+            })
           ),
           /***/
           4100: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createCamera = __webpack_require__2(4437);
               var createAxes = __webpack_require__2(3837);
@@ -107143,12 +107232,12 @@ var Plotly = (() => {
                   }
                 }
               }
-            }
+            })
           ),
           /***/
           783: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = slerp;
               function slerp(out, a, b, t) {
                 var ax = a[0], ay = a[1], az = a[2], aw = a[3], bx = b[0], by = b[1], bz = b[2], bw = b[3];
@@ -107176,22 +107265,22 @@ var Plotly = (() => {
                 out[3] = scale0 * aw + scale1 * bw;
                 return out;
               }
-            }
+            })
           ),
           /***/
           5964: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = function(a) {
                 return !a && a !== 0 ? "" : a.toString();
               };
-            }
+            })
           ),
           /***/
           9366: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var vectorizeText = __webpack_require__2(4359);
               module2.exports = getGlyph;
@@ -107255,12 +107344,12 @@ var Plotly = (() => {
                 }
                 return fontCache[symbol] = [triSymbol, lineSymbol, bounds];
               }
-            }
+            })
           ),
           /***/
           1283: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var createShaderWrapper = __webpack_require__2(9405);
               var glslify = __webpack_require__2(3236);
               var perspectiveVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], position)) {\n\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"]);
@@ -107326,12 +107415,12 @@ var Plotly = (() => {
               exports2.createPickProject = function(gl2) {
                 return createShader(gl2, pickProject);
               };
-            }
+            })
           ),
           /***/
           8418: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isAllBlank = __webpack_require__2(5219);
               var createBuffer = __webpack_require__2(2762);
@@ -108062,12 +108151,12 @@ var Plotly = (() => {
                 pointCloud.update(options);
                 return pointCloud;
               }
-            }
+            })
           ),
           /***/
           3589: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createSelectBuffer;
               var createFBO = __webpack_require__2(2260);
@@ -108228,12 +108317,12 @@ var Plotly = (() => {
                 var buffer = pool.mallocUint8(width * height * 4);
                 return new SelectBuffer(gl2, fbo, buffer);
               }
-            }
+            })
           ),
           /***/
           9405: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createUniformWrapper = __webpack_require__2(3327);
               var createAttributeWrapper = __webpack_require__2(8731);
@@ -108417,12 +108506,12 @@ var Plotly = (() => {
                 return shader;
               }
               module2.exports = createShader;
-            }
+            })
           ),
           /***/
           8866: (
             /***/
-            function(module2) {
+            (function(module2) {
               function GLError(rawError, shortMessage, longMessage) {
                 this.shortMessage = shortMessage || "";
                 this.longMessage = longMessage || "";
@@ -108434,12 +108523,12 @@ var Plotly = (() => {
               GLError.prototype.name = "GLError";
               GLError.prototype.constructor = GLError;
               module2.exports = GLError;
-            }
+            })
           ),
           /***/
           8731: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createAttributeWrapper;
               var GLError = __webpack_require__2(8866);
@@ -108670,12 +108759,12 @@ var Plotly = (() => {
                 }
                 return obj;
               }
-            }
+            })
           ),
           /***/
           3327: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var coallesceUniforms = __webpack_require__2(216);
               var GLError = __webpack_require__2(8866);
@@ -108864,12 +108953,12 @@ var Plotly = (() => {
                   configurable: true
                 };
               }
-            }
+            })
           ),
           /***/
           216: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = makeReflectTypes;
               function makeReflectTypes(uniforms, useIndex) {
@@ -108920,12 +109009,12 @@ var Plotly = (() => {
                 }
                 return obj;
               }
-            }
+            })
           ),
           /***/
           2145: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               exports2.uniforms = runtimeUniforms;
               exports2.attributes = runtimeAttributes;
@@ -108998,12 +109087,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           5091: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               exports2.shader = getShaderReference;
               exports2.program = createProgram;
@@ -109123,12 +109212,12 @@ var Plotly = (() => {
               function createProgram(gl2, vref, fref, attribs, locations) {
                 return getCache(gl2).getProgram(vref, fref, attribs, locations);
               }
-            }
+            })
           ),
           /***/
           1493: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var glslify = __webpack_require__2(3236);
               var createShader = __webpack_require__2(9405);
@@ -109141,12 +109230,12 @@ var Plotly = (() => {
                   { name: "weight", type: "float" }
                 ]);
               };
-            }
+            })
           ),
           /***/
           4449: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createBuffer = __webpack_require__2(2762);
               var createVAO = __webpack_require__2(8116);
@@ -109318,12 +109407,12 @@ var Plotly = (() => {
                 spikes.update(options);
                 return spikes;
               }
-            }
+            })
           ),
           /***/
           6740: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var glslify = __webpack_require__2(3236);
               var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, tubeScale;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"]);
               var triFragSrc = glslify(["#extension GL_OES_standard_derivatives : enable\n\nprecision highp float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nbool outOfRange(float a, float b, float p) {\n  return ((p > max(a, b)) || \n          (p < min(a, b)));\n}\n\nbool outOfRange(vec2 a, vec2 b, vec2 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y));\n}\n\nbool outOfRange(vec3 a, vec3 b, vec3 p) {\n  return (outOfRange(a.x, b.x, p.x) ||\n          outOfRange(a.y, b.y, p.y) ||\n          outOfRange(a.z, b.z, p.z));\n}\n\nbool outOfRange(vec4 a, vec4 b, vec4 p) {\n  return outOfRange(a.xyz, b.xyz, p.xyz);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if (outOfRange(clipBounds[0], clipBounds[1], f_position)) discard;\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = min(1.0, max(0.0, cookTorranceSpecular(L, V, N, roughness, fresnel)));\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}\n"]);
@@ -109348,12 +109437,12 @@ var Plotly = (() => {
                   { name: "vector", type: "vec4" }
                 ]
               };
-            }
+            })
           ),
           /***/
           7815: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var vec3 = __webpack_require__2(2931);
               var vec4 = __webpack_require__2(9970);
@@ -109787,12 +109876,12 @@ var Plotly = (() => {
                   traceType: "streamtube"
                 });
               };
-            }
+            })
           ),
           /***/
           990: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               var createShader = __webpack_require__2(9405);
               var glslify = __webpack_require__2(3236);
               var vertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform vec3 objectOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\nuniform sampler2D colormap;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\nvarying vec4 vColor;\n\nvoid main() {\n  vec3 localCoordinate = vec3(uv.zw, f.x);\n  worldCoordinate = objectOffset + localCoordinate;\n  mat4 objectOffsetTranslation = mat4(1.0) + mat4(vec4(0), vec4(0), vec4(0), vec4(objectOffset, 0));\n  vec4 worldPosition = (model * objectOffsetTranslation) * vec4(localCoordinate, 1.0);\n  vec4 clipPosition = projection * (view * worldPosition);\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  vColor = texture2D(colormap, vec2(value, value));\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"]);
@@ -109839,12 +109928,12 @@ var Plotly = (() => {
                 shader.attributes.f.location = 1;
                 return shader;
               };
-            }
+            })
           ),
           /***/
           9499: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createSurfacePlot;
               var bits = __webpack_require__2(8828);
@@ -110977,12 +111066,12 @@ var Plotly = (() => {
                 surface.update(nparams);
                 return surface;
               }
-            }
+            })
           ),
           /***/
           7766: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var ndarray = __webpack_require__2(9618);
               var ops = __webpack_require__2(5298);
@@ -111500,12 +111589,12 @@ var Plotly = (() => {
                 }
                 throw new Error("gl-texture2d: Invalid arguments for texture2d constructor");
               }
-            }
+            })
           ),
           /***/
           1433: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function doBind(gl2, elements, attributes) {
                 if (elements) {
@@ -111558,12 +111647,12 @@ var Plotly = (() => {
                 }
               }
               module2.exports = doBind;
-            }
+            })
           ),
           /***/
           870: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bindAttribs = __webpack_require__2(1433);
               function VAOEmulated(gl2) {
@@ -111597,12 +111686,12 @@ var Plotly = (() => {
                 return new VAOEmulated(gl2);
               }
               module2.exports = createVAOEmulated;
-            }
+            })
           ),
           /***/
           7518: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bindAttribs = __webpack_require__2(1433);
               function VertexAttribute(location2, dimension, a, b, c, d) {
@@ -111679,12 +111768,12 @@ var Plotly = (() => {
                 return new VAONative(gl2, ext, ext.createVertexArrayOES());
               }
               module2.exports = createVAONative;
-            }
+            })
           ),
           /***/
           8116: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var createVAONative = __webpack_require__2(7518);
               var createVAOEmulated = __webpack_require__2(870);
@@ -111705,12 +111794,12 @@ var Plotly = (() => {
                 return vao;
               }
               module2.exports = createVAO;
-            }
+            })
           ),
           /***/
           5632: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = add;
               function add(out, a, b) {
                 out[0] = a[0] + b[0];
@@ -111718,12 +111807,12 @@ var Plotly = (() => {
                 out[2] = a[2] + b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           8192: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = angle;
               var fromValues = __webpack_require__2(2825);
               var normalize = __webpack_require__2(3536);
@@ -111740,12 +111829,12 @@ var Plotly = (() => {
                   return Math.acos(cosine);
                 }
               }
-            }
+            })
           ),
           /***/
           9226: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = ceil;
               function ceil(out, a) {
                 out[0] = Math.ceil(a[0]);
@@ -111753,12 +111842,12 @@ var Plotly = (() => {
                 out[2] = Math.ceil(a[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           3126: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = clone;
               function clone(a) {
                 var out = new Float32Array(3);
@@ -111767,12 +111856,12 @@ var Plotly = (() => {
                 out[2] = a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           3990: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = copy;
               function copy(out, a) {
                 out[0] = a[0];
@@ -111780,12 +111869,12 @@ var Plotly = (() => {
                 out[2] = a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           1091: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = create;
               function create() {
                 var out = new Float32Array(3);
@@ -111794,12 +111883,12 @@ var Plotly = (() => {
                 out[2] = 0;
                 return out;
               }
-            }
+            })
           ),
           /***/
           5911: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = cross;
               function cross(out, a, b) {
                 var ax = a[0], ay = a[1], az = a[2], bx = b[0], by = b[1], bz = b[2];
@@ -111808,37 +111897,37 @@ var Plotly = (() => {
                 out[2] = ax * by - ay * bx;
                 return out;
               }
-            }
+            })
           ),
           /***/
           5455: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(7056);
-            }
+            })
           ),
           /***/
           7056: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = distance;
               function distance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2];
                 return Math.sqrt(x * x + y * y + z * z);
               }
-            }
+            })
           ),
           /***/
           4008: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(6690);
-            }
+            })
           ),
           /***/
           6690: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = divide;
               function divide(out, a, b) {
                 out[0] = a[0] / b[0];
@@ -111846,29 +111935,29 @@ var Plotly = (() => {
                 out[2] = a[2] / b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           244: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = dot;
               function dot(a, b) {
                 return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
               }
-            }
+            })
           ),
           /***/
           2613: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = 1e-6;
-            }
+            })
           ),
           /***/
           9922: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = equals;
               var EPSILON = __webpack_require__2(2613);
               function equals(a, b) {
@@ -111880,22 +111969,22 @@ var Plotly = (() => {
                 var b2 = b[2];
                 return Math.abs(a0 - b0) <= EPSILON * Math.max(1, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1, Math.abs(a2), Math.abs(b2));
               }
-            }
+            })
           ),
           /***/
           9265: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = exactEquals;
               function exactEquals(a, b) {
                 return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
               }
-            }
+            })
           ),
           /***/
           2681: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = floor;
               function floor(out, a) {
                 out[0] = Math.floor(a[0]);
@@ -111903,12 +111992,12 @@ var Plotly = (() => {
                 out[2] = Math.floor(a[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           5137: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = forEach;
               var vec = __webpack_require__2(1091)();
               function forEach(a, stride, offset, count, fn, arg) {
@@ -111935,12 +112024,12 @@ var Plotly = (() => {
                 }
                 return a;
               }
-            }
+            })
           ),
           /***/
           2825: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromValues;
               function fromValues(x, y, z) {
                 var out = new Float32Array(3);
@@ -111949,12 +112038,12 @@ var Plotly = (() => {
                 out[2] = z;
                 return out;
               }
-            }
+            })
           ),
           /***/
           2931: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = {
                 EPSILON: __webpack_require__2(2613),
                 create: __webpack_require__2(1091),
@@ -112002,12 +112091,12 @@ var Plotly = (() => {
                 rotateZ: __webpack_require__2(8692),
                 forEach: __webpack_require__2(5137)
               };
-            }
+            })
           ),
           /***/
           811: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = inverse;
               function inverse(out, a) {
                 out[0] = 1 / a[0];
@@ -112015,30 +112104,30 @@ var Plotly = (() => {
                 out[2] = 1 / a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           868: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(1387);
-            }
+            })
           ),
           /***/
           1387: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = length;
               function length(a) {
                 var x = a[0], y = a[1], z = a[2];
                 return Math.sqrt(x * x + y * y + z * z);
               }
-            }
+            })
           ),
           /***/
           6658: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = lerp;
               function lerp(out, a, b, t) {
                 var ax = a[0], ay = a[1], az = a[2];
@@ -112047,12 +112136,12 @@ var Plotly = (() => {
                 out[2] = az + t * (b[2] - az);
                 return out;
               }
-            }
+            })
           ),
           /***/
           7417: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = max;
               function max(out, a, b) {
                 out[0] = Math.max(a[0], b[0]);
@@ -112060,12 +112149,12 @@ var Plotly = (() => {
                 out[2] = Math.max(a[2], b[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           8107: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = min;
               function min(out, a, b) {
                 out[0] = Math.min(a[0], b[0]);
@@ -112073,19 +112162,19 @@ var Plotly = (() => {
                 out[2] = Math.min(a[2], b[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           4505: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(5847);
-            }
+            })
           ),
           /***/
           5847: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = multiply;
               function multiply(out, a, b) {
                 out[0] = a[0] * b[0];
@@ -112093,12 +112182,12 @@ var Plotly = (() => {
                 out[2] = a[2] * b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5093: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = negate;
               function negate(out, a) {
                 out[0] = -a[0];
@@ -112106,12 +112195,12 @@ var Plotly = (() => {
                 out[2] = -a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           3536: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = normalize;
               function normalize(out, a) {
                 var x = a[0], y = a[1], z = a[2];
@@ -112124,12 +112213,12 @@ var Plotly = (() => {
                 }
                 return out;
               }
-            }
+            })
           ),
           /***/
           7636: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = random;
               function random(out, scale) {
                 scale = scale || 1;
@@ -112141,12 +112230,12 @@ var Plotly = (() => {
                 out[2] = z * scale;
                 return out;
               }
-            }
+            })
           ),
           /***/
           6894: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateX;
               function rotateX(out, a, b, c) {
                 var by = b[1];
@@ -112160,12 +112249,12 @@ var Plotly = (() => {
                 out[2] = bz + py * sc + pz * cc;
                 return out;
               }
-            }
+            })
           ),
           /***/
           109: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateY;
               function rotateY(out, a, b, c) {
                 var bx = b[0];
@@ -112179,12 +112268,12 @@ var Plotly = (() => {
                 out[2] = bz + pz * cc - px * sc;
                 return out;
               }
-            }
+            })
           ),
           /***/
           8692: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = rotateZ;
               function rotateZ(out, a, b, c) {
                 var bx = b[0];
@@ -112198,12 +112287,12 @@ var Plotly = (() => {
                 out[2] = a[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           2447: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = round;
               function round(out, a) {
                 out[0] = Math.round(a[0]);
@@ -112211,12 +112300,12 @@ var Plotly = (() => {
                 out[2] = Math.round(a[2]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           6621: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scale;
               function scale(out, a, b) {
                 out[0] = a[0] * b;
@@ -112224,12 +112313,12 @@ var Plotly = (() => {
                 out[2] = a[2] * b;
                 return out;
               }
-            }
+            })
           ),
           /***/
           8489: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scaleAndAdd;
               function scaleAndAdd(out, a, b, scale) {
                 out[0] = a[0] + b[0] * scale;
@@ -112237,12 +112326,12 @@ var Plotly = (() => {
                 out[2] = a[2] + b[2] * scale;
                 return out;
               }
-            }
+            })
           ),
           /***/
           1463: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = set;
               function set(out, x, y, z) {
                 out[0] = x;
@@ -112250,55 +112339,55 @@ var Plotly = (() => {
                 out[2] = z;
                 return out;
               }
-            }
+            })
           ),
           /***/
           6141: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(2953);
-            }
+            })
           ),
           /***/
           5486: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(3066);
-            }
+            })
           ),
           /***/
           2953: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredDistance;
               function squaredDistance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2];
                 return x * x + y * y + z * z;
               }
-            }
+            })
           ),
           /***/
           3066: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredLength;
               function squaredLength(a) {
                 var x = a[0], y = a[1], z = a[2];
                 return x * x + y * y + z * z;
               }
-            }
+            })
           ),
           /***/
           2229: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(6843);
-            }
+            })
           ),
           /***/
           6843: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = subtract;
               function subtract(out, a, b) {
                 out[0] = a[0] - b[0];
@@ -112306,12 +112395,12 @@ var Plotly = (() => {
                 out[2] = a[2] - b[2];
                 return out;
               }
-            }
+            })
           ),
           /***/
           492: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformMat3;
               function transformMat3(out, a, m) {
                 var x = a[0], y = a[1], z = a[2];
@@ -112320,12 +112409,12 @@ var Plotly = (() => {
                 out[2] = x * m[2] + y * m[5] + z * m[8];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5673: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformMat4;
               function transformMat4(out, a, m) {
                 var x = a[0], y = a[1], z = a[2], w = m[3] * x + m[7] * y + m[11] * z + m[15];
@@ -112335,12 +112424,12 @@ var Plotly = (() => {
                 out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           264: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformQuat;
               function transformQuat(out, a, q) {
                 var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3], ix = qw * x + qy * z - qz * y, iy = qw * y + qz * x - qx * z, iz = qw * z + qx * y - qy * x, iw = -qx * x - qy * y - qz * z;
@@ -112349,12 +112438,12 @@ var Plotly = (() => {
                 out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4361: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = add;
               function add(out, a, b) {
                 out[0] = a[0] + b[0];
@@ -112363,12 +112452,12 @@ var Plotly = (() => {
                 out[3] = a[3] + b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           2335: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = clone;
               function clone(a) {
                 var out = new Float32Array(4);
@@ -112378,12 +112467,12 @@ var Plotly = (() => {
                 out[3] = a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           2933: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = copy;
               function copy(out, a) {
                 out[0] = a[0];
@@ -112392,12 +112481,12 @@ var Plotly = (() => {
                 out[3] = a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           7536: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = create;
               function create() {
                 var out = new Float32Array(4);
@@ -112407,23 +112496,23 @@ var Plotly = (() => {
                 out[3] = 0;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4691: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = distance;
               function distance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2], w = b[3] - a[3];
                 return Math.sqrt(x * x + y * y + z * z + w * w);
               }
-            }
+            })
           ),
           /***/
           1373: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = divide;
               function divide(out, a, b) {
                 out[0] = a[0] / b[0];
@@ -112432,22 +112521,22 @@ var Plotly = (() => {
                 out[3] = a[3] / b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           3750: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = dot;
               function dot(a, b) {
                 return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
               }
-            }
+            })
           ),
           /***/
           3390: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = fromValues;
               function fromValues(x, y, z, w) {
                 var out = new Float32Array(4);
@@ -112457,12 +112546,12 @@ var Plotly = (() => {
                 out[3] = w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           9970: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = {
                 create: __webpack_require__2(7536),
                 clone: __webpack_require__2(2335),
@@ -112490,12 +112579,12 @@ var Plotly = (() => {
                 transformMat4: __webpack_require__2(5352),
                 transformQuat: __webpack_require__2(4041)
               };
-            }
+            })
           ),
           /***/
           4494: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = inverse;
               function inverse(out, a) {
                 out[0] = 1 / a[0];
@@ -112504,23 +112593,23 @@ var Plotly = (() => {
                 out[3] = 1 / a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           6808: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = length;
               function length(a) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
                 return Math.sqrt(x * x + y * y + z * z + w * w);
               }
-            }
+            })
           ),
           /***/
           2573: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = lerp;
               function lerp(out, a, b, t) {
                 var ax = a[0], ay = a[1], az = a[2], aw = a[3];
@@ -112530,12 +112619,12 @@ var Plotly = (() => {
                 out[3] = aw + t * (b[3] - aw);
                 return out;
               }
-            }
+            })
           ),
           /***/
           160: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = max;
               function max(out, a, b) {
                 out[0] = Math.max(a[0], b[0]);
@@ -112544,12 +112633,12 @@ var Plotly = (() => {
                 out[3] = Math.max(a[3], b[3]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           2334: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = min;
               function min(out, a, b) {
                 out[0] = Math.min(a[0], b[0]);
@@ -112558,12 +112647,12 @@ var Plotly = (() => {
                 out[3] = Math.min(a[3], b[3]);
                 return out;
               }
-            }
+            })
           ),
           /***/
           3576: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = multiply;
               function multiply(out, a, b) {
                 out[0] = a[0] * b[0];
@@ -112572,12 +112661,12 @@ var Plotly = (() => {
                 out[3] = a[3] * b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           1498: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = negate;
               function negate(out, a) {
                 out[0] = -a[0];
@@ -112586,12 +112675,12 @@ var Plotly = (() => {
                 out[3] = -a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5177: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = normalize;
               function normalize(out, a) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
@@ -112605,12 +112694,12 @@ var Plotly = (() => {
                 }
                 return out;
               }
-            }
+            })
           ),
           /***/
           9131: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var vecNormalize = __webpack_require__2(5177);
               var vecScale = __webpack_require__2(9288);
               module2.exports = random;
@@ -112624,12 +112713,12 @@ var Plotly = (() => {
                 vecScale(out, out, scale);
                 return out;
               }
-            }
+            })
           ),
           /***/
           9288: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scale;
               function scale(out, a, b) {
                 out[0] = a[0] * b;
@@ -112638,12 +112727,12 @@ var Plotly = (() => {
                 out[3] = a[3] * b;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4844: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = scaleAndAdd;
               function scaleAndAdd(out, a, b, scale) {
                 out[0] = a[0] + b[0] * scale;
@@ -112652,12 +112741,12 @@ var Plotly = (() => {
                 out[3] = a[3] + b[3] * scale;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4578: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = set;
               function set(out, x, y, z, w) {
                 out[0] = x;
@@ -112666,34 +112755,34 @@ var Plotly = (() => {
                 out[3] = w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           7960: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredDistance;
               function squaredDistance(a, b) {
                 var x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2], w = b[3] - a[3];
                 return x * x + y * y + z * z + w * w;
               }
-            }
+            })
           ),
           /***/
           483: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = squaredLength;
               function squaredLength(a) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
                 return x * x + y * y + z * z + w * w;
               }
-            }
+            })
           ),
           /***/
           6860: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = subtract;
               function subtract(out, a, b) {
                 out[0] = a[0] - b[0];
@@ -112702,12 +112791,12 @@ var Plotly = (() => {
                 out[3] = a[3] - b[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           5352: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformMat4;
               function transformMat4(out, a, m) {
                 var x = a[0], y = a[1], z = a[2], w = a[3];
@@ -112717,12 +112806,12 @@ var Plotly = (() => {
                 out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
                 return out;
               }
-            }
+            })
           ),
           /***/
           4041: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = transformQuat;
               function transformQuat(out, a, q) {
                 var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3], ix = qw * x + qy * z - qz * y, iy = qw * y + qz * x - qx * z, iz = qw * z + qx * y - qy * x, iw = -qx * x - qy * y - qz * z;
@@ -112732,12 +112821,12 @@ var Plotly = (() => {
                 out[3] = a[3];
                 return out;
               }
-            }
+            })
           ),
           /***/
           1848: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var tokenize = __webpack_require__2(4905);
               var atob2 = __webpack_require__2(6468);
               module2.exports = getName;
@@ -112754,12 +112843,12 @@ var Plotly = (() => {
                   return (b64 ? atob2(name2) : name2).trim();
                 }
               }
-            }
+            })
           ),
           /***/
           5874: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = tokenize;
               var literals100 = __webpack_require__2(620), operators = __webpack_require__2(7827), builtins100 = __webpack_require__2(6852), literals300es = __webpack_require__2(7932), builtins300es = __webpack_require__2(3508);
               var NORMAL = 999, TOKEN = 9999, BLOCK_COMMENT = 0, LINE_COMMENT = 1, PREPROCESSOR = 2, OPERATOR = 3, INTEGER = 4, FLOAT = 5, IDENT = 6, BUILTIN = 7, KEYWORD = 8, WHITESPACE = 9, EOF = 10, HEX = 11;
@@ -113068,12 +113157,12 @@ var Plotly = (() => {
                   return i + 1;
                 }
               }
-            }
+            })
           ),
           /***/
           3508: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var v100 = __webpack_require__2(6852);
               v100 = v100.slice().filter(function(b) {
                 return !/^(gl\_|texture)/.test(b);
@@ -113136,12 +113225,12 @@ var Plotly = (() => {
                 "textureProjGrad",
                 "textureProjGradOffset"
               ]);
-            }
+            })
           ),
           /***/
           6852: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = [
                 // Keep this list sorted
                 "abs",
@@ -113292,12 +113381,12 @@ var Plotly = (() => {
                 "texture2DProjGradEXT",
                 "textureCubeGradEXT"
               ];
-            }
+            })
           ),
           /***/
           7932: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var v100 = __webpack_require__2(620);
               module2.exports = v100.slice().concat([
                 "layout",
@@ -113384,12 +113473,12 @@ var Plotly = (() => {
                 "isampler2DMSArray",
                 "usampler2DMSArray"
               ]);
-            }
+            })
           ),
           /***/
           620: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = [
                 // current
                 "precision",
@@ -113482,12 +113571,12 @@ var Plotly = (() => {
                 "namespace",
                 "using"
               ];
-            }
+            })
           ),
           /***/
           7827: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = [
                 "<<=",
                 ">>=",
@@ -113535,12 +113624,12 @@ var Plotly = (() => {
                 "{",
                 "}"
               ];
-            }
+            })
           ),
           /***/
           4905: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var tokenize = __webpack_require__2(5874);
               module2.exports = tokenizeString;
               function tokenizeString(str, opt) {
@@ -113550,12 +113639,12 @@ var Plotly = (() => {
                 tokens = tokens.concat(generator(null));
                 return tokens;
               }
-            }
+            })
           ),
           /***/
           3236: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function(strings) {
                 if (typeof strings === "string") strings = [strings];
                 var exprs = [].slice.call(arguments, 1);
@@ -113566,12 +113655,12 @@ var Plotly = (() => {
                 parts.push(strings[i]);
                 return parts.join("");
               };
-            }
+            })
           ),
           /***/
           7520: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var isBrowser = __webpack_require__2(9507);
               function detect() {
@@ -113590,12 +113679,12 @@ var Plotly = (() => {
                 return supported;
               }
               module2.exports = isBrowser && detect();
-            }
+            })
           ),
           /***/
           3778: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               exports2.read = function(buffer, offset, isLE, mLen, nBytes) {
                 var e, m;
                 var eLen = nBytes * 8 - mLen - 1;
@@ -113673,12 +113762,12 @@ var Plotly = (() => {
                 }
                 buffer[offset + i - d] |= s * 128;
               };
-            }
+            })
           ),
           /***/
           8954: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = incrementalConvexHull;
               var orient = __webpack_require__2(3250);
@@ -114030,12 +114119,12 @@ var Plotly = (() => {
                 }
                 return triangles.boundary();
               }
-            }
+            })
           ),
           /***/
           3352: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bounds = __webpack_require__2(2478);
               var NOT_FOUND = 0;
@@ -114385,19 +114474,19 @@ var Plotly = (() => {
                 }
                 return new IntervalTree(createIntervalTree(intervals));
               }
-            }
+            })
           ),
           /***/
           9507: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = true;
-            }
+            })
           ),
           /***/
           7163: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function(obj) {
                 return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer);
               };
@@ -114407,12 +114496,12 @@ var Plotly = (() => {
               function isSlowBuffer(obj) {
                 return typeof obj.readFloatLE === "function" && typeof obj.slice === "function" && isBuffer(obj.slice(0, 0));
               }
-            }
+            })
           ),
           /***/
           5219: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = function(str) {
                 var l = str.length, a;
@@ -114424,22 +114513,22 @@ var Plotly = (() => {
                 }
                 return true;
               };
-            }
+            })
           ),
           /***/
           395: (
             /***/
-            function(module2) {
+            (function(module2) {
               function lerp(v0, v1, t) {
                 return v0 * (1 - t) + v1 * t;
               }
               module2.exports = lerp;
-            }
+            })
           ),
           /***/
           2652: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var normalize = __webpack_require__2(4335);
               var create = __webpack_require__2(6864);
               var clone = __webpack_require__2(1903);
@@ -114550,12 +114639,12 @@ var Plotly = (() => {
                 out[1] = a[1] * scale1 + b[1] * scale2;
                 out[2] = a[2] * scale1 + b[2] * scale2;
               }
-            }
+            })
           ),
           /***/
           4335: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function normalize(out, mat) {
                 var m44 = mat[15];
                 if (m44 === 0)
@@ -114565,12 +114654,12 @@ var Plotly = (() => {
                   out[i] = mat[i] * scale;
                 return true;
               };
-            }
+            })
           ),
           /***/
           7442: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var lerp = __webpack_require__2(6658);
               var recompose = __webpack_require__2(7182);
               var decompose = __webpack_require__2(2652);
@@ -114610,12 +114699,12 @@ var Plotly = (() => {
               function vec4() {
                 return [0, 0, 0, 1];
               }
-            }
+            })
           ),
           /***/
           7182: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var mat4 = {
                 identity: __webpack_require__2(7894),
                 translate: __webpack_require__2(7656),
@@ -114651,12 +114740,12 @@ var Plotly = (() => {
                 mat4.scale(matrix, matrix, scale);
                 return matrix;
               };
-            }
+            })
           ),
           /***/
           1811: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bsearch = __webpack_require__2(2478);
               var m4interp = __webpack_require__2(7442);
@@ -114846,12 +114935,12 @@ var Plotly = (() => {
                 ];
                 return new MatrixCameraController(matrix);
               }
-            }
+            })
           ),
           /***/
           3090: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = monotoneConvexHull2D;
               var orient = __webpack_require__2(3250)[3];
@@ -114914,12 +115003,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           351: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = mouseListen;
               var mouse = __webpack_require__2(4687);
@@ -115091,12 +115180,12 @@ var Plotly = (() => {
                 });
                 return result;
               }
-            }
+            })
           ),
           /***/
           24: (
             /***/
-            function(module2) {
+            (function(module2) {
               var rootPosition = { left: 0, top: 0 };
               module2.exports = mouseEventOffset;
               function mouseEventOffset(ev, target, out) {
@@ -115118,12 +115207,12 @@ var Plotly = (() => {
                   return element.getBoundingClientRect();
                 }
               }
-            }
+            })
           ),
           /***/
           4687: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               function mouseButtons(ev) {
                 if (typeof ev === "object") {
@@ -115180,12 +115269,12 @@ var Plotly = (() => {
                 return 0;
               }
               exports2.y = mouseRelativeY;
-            }
+            })
           ),
           /***/
           8512: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var toPX = __webpack_require__2(665);
               module2.exports = mouseWheelListen;
@@ -115223,12 +115312,12 @@ var Plotly = (() => {
                 element.addEventListener("wheel", listener);
                 return listener;
               }
-            }
+            })
           ),
           /***/
           2640: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var pool = __webpack_require__2(1888);
               module2.exports = createSurfaceExtractor;
@@ -115537,12 +115626,12 @@ var Plotly = (() => {
                   typesig
                 );
               }
-            }
+            })
           ),
           /***/
           6199: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var dup = __webpack_require__2(1338);
               var CACHED_CWiseOp = {
@@ -115753,12 +115842,12 @@ var Plotly = (() => {
                 var cached = generateGradient(bc);
                 return cached(out, inp);
               };
-            }
+            })
           ),
           /***/
           4317: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function interp1d(arr, x) {
                 var ix = Math.floor(x), fx = x - ix, s0 = 0 <= ix && ix < arr.shape[0], s1 = 0 <= ix + 1 && ix + 1 < arr.shape[0], w0 = s0 ? +arr.get(ix) : 0, w1 = s1 ? +arr.get(ix + 1) : 0;
@@ -115823,12 +115912,12 @@ var Plotly = (() => {
               module2.exports.d1 = interp1d;
               module2.exports.d2 = interp2d;
               module2.exports.d3 = interp3d;
-            }
+            })
           ),
           /***/
           5298: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               var CACHED_CWiseOp = {
                 "float64,2,1,0": function() {
@@ -116176,12 +116265,12 @@ var Plotly = (() => {
               exports2.assign = makeOp({
                 funcName: "assign"
               });
-            }
+            })
           ),
           /***/
           9994: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var ndarray = __webpack_require__2(9618);
               var do_convert = __webpack_require__2(8277);
@@ -116201,12 +116290,12 @@ var Plotly = (() => {
                 do_convert(result, arr);
                 return result;
               };
-            }
+            })
           ),
           /***/
           8277: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function CwiseOp() {
                 return function(SS, a0, t02, p0, Y0) {
@@ -116267,12 +116356,12 @@ var Plotly = (() => {
               module2.exports = compileCwise({
                 funcName: "convert"
               });
-            }
+            })
           ),
           /***/
           7640: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var pool = __webpack_require__2(1888);
               function getMallocFree(dtype) {
@@ -116950,12 +117039,12 @@ var Plotly = (() => {
                 return result(insertionSort, quickSort);
               }
               module2.exports = compileSort;
-            }
+            })
           ),
           /***/
           446: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var compile = __webpack_require__2(7640);
               var CACHE = {};
@@ -116972,12 +117061,12 @@ var Plotly = (() => {
                 return array;
               }
               module2.exports = sort;
-            }
+            })
           ),
           /***/
           9618: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var isBuffer = __webpack_require__2(7163);
               var hasTypedArrays = typeof Float64Array !== "undefined";
               function compare1st(a, b) {
@@ -117812,12 +117901,12 @@ var Plotly = (() => {
                 return ctor(data, shape, stride, offset);
               }
               module2.exports = wrappedNDArrayCtor;
-            }
+            })
           ),
           /***/
           1278: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var doubleBits = __webpack_require__2(2361);
               var SMALLEST_DENORM = Math.pow(2, -1074);
@@ -117856,12 +117945,12 @@ var Plotly = (() => {
                 }
                 return doubleBits.pack(lo, hi);
               }
-            }
+            })
           ),
           /***/
           8406: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               var DEFAULT_NORMALS_EPSILON = 1e-6;
               var DEFAULT_FACE_EPSILON = 1e-6;
               exports2.vertexNormals = function(faces, positions, specifiedEpsilon) {
@@ -117959,12 +118048,12 @@ var Plotly = (() => {
                 }
                 return normals;
               };
-            }
+            })
           ),
           /***/
           4081: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = quatFromFrame;
               function quatFromFrame(out, rx, ry, rz, ux, uy, uz, fx, fy, fz) {
@@ -117997,12 +118086,12 @@ var Plotly = (() => {
                 }
                 return out;
               }
-            }
+            })
           ),
           /***/
           9977: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createOrbitController;
               var filterVector = __webpack_require__2(9215);
@@ -118352,24 +118441,24 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           1371: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var repeat = __webpack_require__2(3233);
               module2.exports = function padLeft(str, num, ch) {
                 ch = typeof ch !== "undefined" ? ch + "" : " ";
                 return repeat(ch, num) + str;
               };
-            }
+            })
           ),
           /***/
           3202: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = function parseUnit(str, out) {
                 if (!out)
                   out = [0, ""];
@@ -118379,12 +118468,12 @@ var Plotly = (() => {
                 out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || "";
                 return out;
               };
-            }
+            })
           ),
           /***/
           3088: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = planarDual;
               var compareAngle = __webpack_require__2(3140);
@@ -118498,12 +118587,12 @@ var Plotly = (() => {
                 }
                 return cycles;
               }
-            }
+            })
           ),
           /***/
           5609: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = trimLeaves;
               var e2a = __webpack_require__2(3134);
@@ -118551,12 +118640,12 @@ var Plotly = (() => {
                 }
                 return [nedges, npositions];
               }
-            }
+            })
           ),
           /***/
           2095: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = planarGraphToPolyline;
               var e2a = __webpack_require__2(3134);
@@ -118733,12 +118822,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           5085: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = preprocessPolygon;
               var orient = __webpack_require__2(3250)[3];
               var makeSlabs = __webpack_require__2(4209);
@@ -118874,12 +118963,12 @@ var Plotly = (() => {
                   );
                 }
               }
-            }
+            })
           ),
           /***/
           9346: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               var diff = new Float64Array(4);
               var edge0 = new Float64Array(4);
@@ -119053,19 +119142,19 @@ var Plotly = (() => {
                 return sqrDistance;
               }
               module2.exports = closestPoint2d;
-            }
+            })
           ),
           /***/
           8648: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2(783);
-            }
+            })
           ),
           /***/
           2653: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bnadd = __webpack_require__2(3865);
               module2.exports = add;
@@ -119077,12 +119166,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           5838: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = float2rat;
               var rat = __webpack_require__2(7842);
@@ -119093,12 +119182,12 @@ var Plotly = (() => {
                 }
                 return result;
               }
-            }
+            })
           ),
           /***/
           8987: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var rat = __webpack_require__2(7842);
               var mul = __webpack_require__2(6504);
@@ -119112,12 +119201,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           544: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var bnsub = __webpack_require__2(5572);
               module2.exports = sub;
@@ -119129,12 +119218,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           5771: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var compareCell = __webpack_require__2(8507);
               var compareOrientedCell = __webpack_require__2(3788);
@@ -119162,12 +119251,12 @@ var Plotly = (() => {
                 cells.length = ptr;
                 return cells;
               }
-            }
+            })
           ),
           /***/
           3233: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               var res = "";
               var cache;
@@ -119196,23 +119285,23 @@ var Plotly = (() => {
                 res = res.substr(0, max);
                 return res;
               }
-            }
+            })
           ),
           /***/
           3025: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = __webpack_require__2.g.performance && __webpack_require__2.g.performance.now ? function now() {
                 return performance.now();
               } : Date.now || function now() {
                 return +/* @__PURE__ */ new Date();
               };
-            }
+            })
           ),
           /***/
           7004: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = compressExpansion;
               function compressExpansion(e) {
@@ -119245,12 +119334,12 @@ var Plotly = (() => {
                 e.length = top;
                 return e;
               }
-            }
+            })
           ),
           /***/
           2962: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -119320,12 +119409,12 @@ var Plotly = (() => {
                 }
               }
               generateDispatch();
-            }
+            })
           ),
           /***/
           1944: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -119337,12 +119426,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           2646: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -119531,12 +119620,12 @@ var Plotly = (() => {
                 }
               }
               generateInSphereTest();
-            }
+            })
           ),
           /***/
           727: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var determinant = __webpack_require__2(2962);
               var NUM_EXPAND = 6;
@@ -119613,12 +119702,12 @@ var Plotly = (() => {
                 }
               }
               generateDispatch();
-            }
+            })
           ),
           /***/
           3250: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var robustSum = __webpack_require__2(8210);
@@ -119758,12 +119847,12 @@ var Plotly = (() => {
                 }
               }
               generateOrientationProc();
-            }
+            })
           ),
           /***/
           5382: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var robustSum = __webpack_require__2(8210);
               var robustScale = __webpack_require__2(3012);
@@ -119790,12 +119879,12 @@ var Plotly = (() => {
                 }
                 return r;
               }
-            }
+            })
           ),
           /***/
           3012: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var twoProduct = __webpack_require__2(5250);
               var twoSum = __webpack_require__2(9362);
@@ -119843,12 +119932,12 @@ var Plotly = (() => {
                 g.length = count;
                 return g;
               }
-            }
+            })
           ),
           /***/
           1125: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = segmentsIntersect;
               var orient = __webpack_require__2(3250)[3];
@@ -119884,12 +119973,12 @@ var Plotly = (() => {
                 }
                 return true;
               }
-            }
+            })
           ),
           /***/
           8545: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = robustSubtract;
               function scalarScalar(a, b) {
@@ -120042,12 +120131,12 @@ var Plotly = (() => {
                 g.length = count;
                 return g;
               }
-            }
+            })
           ),
           /***/
           8210: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = linearExpansionSum;
               function scalarScalar(a, b) {
@@ -120200,12 +120289,12 @@ var Plotly = (() => {
                 g.length = count;
                 return g;
               }
-            }
+            })
           ),
           /***/
           9127: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = boundary;
               var bnd = __webpack_require__2(6204);
@@ -120213,12 +120302,12 @@ var Plotly = (() => {
               function boundary(cells) {
                 return reduce(bnd(cells));
               }
-            }
+            })
           ),
           /***/
           7765: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = extractContour;
               var ndarray = __webpack_require__2(9618);
@@ -120352,12 +120441,12 @@ var Plotly = (() => {
                   vertexWeights: uweights
                 };
               }
-            }
+            })
           ),
           /***/
           1570: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = getPolygonizer;
               var allFns = [
@@ -120630,12 +120719,12 @@ var Plotly = (() => {
               function getPolygonizer(d) {
                 return allFns[d]();
               }
-            }
+            })
           ),
           /***/
           6803: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var __webpack_unused_export__;
               "use restrict";
@@ -120928,12 +121017,12 @@ var Plotly = (() => {
                 return connectedComponents_sparse(cells);
               }
               __webpack_unused_export__ = connectedComponents;
-            }
+            })
           ),
           /***/
           3105: (
             /***/
-            function(__unused_webpack_module, exports2) {
+            (function(__unused_webpack_module, exports2) {
               "use strict";
               "use restrict";
               var INT_BITS = 32;
@@ -121083,12 +121172,12 @@ var Plotly = (() => {
                 var t = v | v - 1;
                 return t + 1 | (~t & -~t) - 1 >>> countTrailingZeros(v) + 1;
               };
-            }
+            })
           ),
           /***/
           2014: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               "use restrict";
               var bits = __webpack_require__2(3105), UnionFind = __webpack_require__2(4623);
@@ -121380,12 +121469,12 @@ var Plotly = (() => {
                 return connectedComponents_sparse(cells);
               }
               exports2.connectedComponents = connectedComponents;
-            }
+            })
           ),
           /***/
           4623: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               "use restrict";
               module2.exports = UnionFind;
@@ -121430,12 +121519,12 @@ var Plotly = (() => {
                   ++ranks[xr];
                 }
               };
-            }
+            })
           ),
           /***/
           5878: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = simplifyPolygon;
               var orient = __webpack_require__2(3250);
@@ -121660,12 +121749,12 @@ var Plotly = (() => {
                   edges: ncells
                 };
               }
-            }
+            })
           ),
           /***/
           1303: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = orderSegments;
               var orient = __webpack_require__2(3250);
@@ -121757,12 +121846,12 @@ var Plotly = (() => {
                 }
                 return ar[0] - br[0];
               }
-            }
+            })
           ),
           /***/
           4209: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createSlabDecomposition;
               var bounds = __webpack_require__2(2478);
@@ -121984,12 +122073,12 @@ var Plotly = (() => {
                 }
                 return new SlabDecomposition(slabs, lines, horizontal);
               }
-            }
+            })
           ),
           /***/
           5202: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var robustDot = __webpack_require__2(1944);
               var robustSum = __webpack_require__2(8210);
@@ -122072,14 +122161,14 @@ var Plotly = (() => {
                 }
                 return neg;
               }
-            }
+            })
           ),
           /***/
           3387: (
             /***/
-            function(module2, exports2, __webpack_require__2) {
+            (function(module2, exports2, __webpack_require__2) {
               var __WEBPACK_AMD_DEFINE_RESULT__;
-              !function() {
+              !(function() {
                 "use strict";
                 var re = {
                   not_string: /[^s]/,
@@ -122267,21 +122356,21 @@ var Plotly = (() => {
                   window["sprintf"] = sprintf;
                   window["vsprintf"] = vsprintf;
                   if (true) {
-                    !(__WEBPACK_AMD_DEFINE_RESULT__ = function() {
+                    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
                       return {
                         "sprintf": sprintf,
                         "vsprintf": vsprintf
                       };
-                    }.call(exports2, __webpack_require__2, exports2, module2), __WEBPACK_AMD_DEFINE_RESULT__ !== void 0 && (module2.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+                    }).call(exports2, __webpack_require__2, exports2, module2), __WEBPACK_AMD_DEFINE_RESULT__ !== void 0 && (module2.exports = __WEBPACK_AMD_DEFINE_RESULT__));
                   }
                 }
-              }();
-            }
+              })();
+            })
           ),
           /***/
           3711: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = surfaceNets;
               var generateContourExtractor = __webpack_require__2(2640);
@@ -122400,12 +122489,12 @@ var Plotly = (() => {
                 }
                 return proc(array, level);
               }
-            }
+            })
           ),
           /***/
           665: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               var parseUnit = __webpack_require__2(3202);
               module2.exports = toPX;
@@ -122459,12 +122548,12 @@ var Plotly = (() => {
                 }
                 return 1;
               }
-            }
+            })
           ),
           /***/
           7261: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createTurntableController;
               var filterVector = __webpack_require__2(9215);
@@ -122952,12 +123041,12 @@ var Plotly = (() => {
                   phi
                 );
               }
-            }
+            })
           ),
           /***/
           5250: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = twoProduct;
               var SPLITTER = +(Math.pow(2, 27) + 1);
@@ -122982,12 +123071,12 @@ var Plotly = (() => {
                 }
                 return [y, x];
               }
-            }
+            })
           ),
           /***/
           9362: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               module2.exports = fastTwoSum;
               function fastTwoSum(a, b, result) {
@@ -123003,12 +123092,12 @@ var Plotly = (() => {
                 }
                 return [ar + br, x];
               }
-            }
+            })
           ),
           /***/
           1888: (
             /***/
-            function(__unused_webpack_module, exports2, __webpack_require__2) {
+            (function(__unused_webpack_module, exports2, __webpack_require__2) {
               "use strict";
               var bits = __webpack_require__2(8828);
               var dup = __webpack_require__2(1338);
@@ -123215,12 +123304,12 @@ var Plotly = (() => {
                   BUFFER[i].length = 0;
                 }
               };
-            }
+            })
           ),
           /***/
           1755: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               "use restrict";
               module2.exports = UnionFind;
@@ -123272,12 +123361,12 @@ var Plotly = (() => {
                   ++ranks[xr];
                 }
               };
-            }
+            })
           ),
           /***/
           1682: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function unique_pred(list, compare) {
                 var ptr = 1, len = list.length, a = list[0], b = list[0];
@@ -123327,12 +123416,12 @@ var Plotly = (() => {
                 return unique_eq(list);
               }
               module2.exports = unique;
-            }
+            })
           ),
           /***/
           4359: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = createText;
               var vectorizeText = __webpack_require__2(7718);
@@ -123355,12 +123444,12 @@ var Plotly = (() => {
                   options
                 );
               }
-            }
+            })
           ),
           /***/
           7718: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               module2.exports = vectorizeText;
               module2.exports.processPixels = processPixels;
               var surfaceNets = __webpack_require__2(3711);
@@ -123718,12 +123807,12 @@ var Plotly = (() => {
                 var pixels = getPixels(canvas, context, str, size, lineSpacing, styletags);
                 return processPixels(pixels, options, size);
               }
-            }
+            })
           ),
           /***/
           1538: (
             /***/
-            function(module2) {
+            (function(module2) {
               (function WeakMapModule() {
                 "use strict";
                 if (typeof ses !== "undefined" && ses.ok && !ses.ok()) {
@@ -124052,12 +124141,12 @@ var Plotly = (() => {
                   module2.exports = OurWeakMap;
                 }
               })();
-            }
+            })
           ),
           /***/
           236: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var hiddenStore = __webpack_require__2(8284);
               module2.exports = createStore;
               function createStore() {
@@ -124070,12 +124159,12 @@ var Plotly = (() => {
                   return store && store.identity === key ? store : hiddenStore(obj, key);
                 };
               }
-            }
+            })
           ),
           /***/
           8284: (
             /***/
-            function(module2) {
+            (function(module2) {
               module2.exports = hiddenStore;
               function hiddenStore(obj, key) {
                 var store = { identity: key };
@@ -124088,12 +124177,12 @@ var Plotly = (() => {
                 });
                 return store;
               }
-            }
+            })
           ),
           /***/
           606: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               var createStore = __webpack_require__2(236);
               module2.exports = weakMap;
               function weakMap() {
@@ -124115,12 +124204,12 @@ var Plotly = (() => {
                   }
                 };
               }
-            }
+            })
           ),
           /***/
           3349: (
             /***/
-            function(module2) {
+            (function(module2) {
               "use strict";
               function CWiseOp() {
                 return function(SS, a0, t02, p0, Y0, Y1) {
@@ -124165,12 +124254,12 @@ var Plotly = (() => {
               module2.exports = compileCwise({
                 funcName: "zeroCrossings"
               });
-            }
+            })
           ),
           /***/
           781: (
             /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
+            (function(module2, __unused_webpack_exports, __webpack_require__2) {
               "use strict";
               module2.exports = findZeroCrossings;
               var core = __webpack_require__2(3349);
@@ -124180,13 +124269,13 @@ var Plotly = (() => {
                 core(array.hi(array.shape[0] - 1), cross, level);
                 return cross;
               }
-            }
+            })
           ),
           /***/
           7790: (
             /***/
-            function() {
-            }
+            (function() {
+            })
           )
           /******/
         };
@@ -124209,23 +124298,23 @@ var Plotly = (() => {
           module2.loaded = true;
           return module2.exports;
         }
-        !function() {
-          __webpack_require__.g = function() {
+        !(function() {
+          __webpack_require__.g = (function() {
             if (typeof globalThis === "object") return globalThis;
             try {
               return this || new Function("return this")();
             } catch (e) {
               if (typeof window === "object") return window;
             }
-          }();
-        }();
-        !function() {
+          })();
+        })();
+        !(function() {
           __webpack_require__.nmd = function(module2) {
             module2.paths = [];
             if (!module2.children) module2.children = [];
             return module2;
           };
-        }();
+        })();
         var __webpack_exports__ = __webpack_require__(1964);
         module.exports = __webpack_exports__;
       })();
@@ -133931,34 +134020,35 @@ var Plotly = (() => {
         }
         return false;
       }
+      var ANTIMERIDIAN_LON_SHIFT = 360;
+      function doesCrossAntiMeridian(pts) {
+        for (let l = 0; l < pts.length - 1; l++) {
+          if (pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
+        }
+        return null;
+      }
       function feature2polygons(feature) {
         var geometry = feature.geometry;
         var coords = geometry.coordinates;
         var loc = feature.id;
         var polygons = [];
         var appendPolygon, j, k, m;
-        function doesCrossAntiMerdian(pts) {
-          for (var l = 0; l < pts.length - 1; l++) {
-            if (pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
-          }
-          return null;
-        }
         if (loc === "RUS" || loc === "FJI") {
           appendPolygon = function(_pts) {
             var pts;
-            if (doesCrossAntiMerdian(_pts) === null) {
+            if (doesCrossAntiMeridian(_pts) === null) {
               pts = _pts;
             } else {
               pts = new Array(_pts.length);
               for (m = 0; m < _pts.length; m++) {
-                pts[m] = [_pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0], _pts[m][1]];
+                pts[m] = [_pts[m][0] < 0 ? _pts[m][0] + ANTIMERIDIAN_LON_SHIFT : _pts[m][0], _pts[m][1]];
               }
             }
             polygons.push(polygon.tester(pts));
           };
         } else if (loc === "ATA") {
           appendPolygon = function(pts) {
-            var crossAntiMeridianIndex = doesCrossAntiMerdian(pts);
+            var crossAntiMeridianIndex = doesCrossAntiMeridian(pts);
             if (crossAntiMeridianIndex === null) {
               return polygons.push(polygon.tester(pts));
             }
@@ -133966,7 +134056,7 @@ var Plotly = (() => {
             var si = 0;
             for (m = 0; m < pts.length; m++) {
               if (m > crossAntiMeridianIndex) {
-                stitch[si++] = [pts[m][0] + 360, pts[m][1]];
+                stitch[si++] = [pts[m][0] + ANTIMERIDIAN_LON_SHIFT, pts[m][1]];
               } else if (m === crossAntiMeridianIndex) {
                 stitch[si++] = pts[m];
                 stitch[si++] = [pts[m][0], -90];
@@ -134156,13 +134246,39 @@ var Plotly = (() => {
       function computeBbox(d) {
         return turfBbox(d);
       }
+      function getFitboundsLonRange(lons) {
+        const sorted = lons.filter(isFinite).sort((a, b) => a - b);
+        if (sorted.length < 2) return null;
+        const n = sorted.length;
+        const naiveSpan = sorted[n - 1] - sorted[0];
+        if (naiveSpan >= 360) return null;
+        let maxGap = -Infinity;
+        let gapStart = -1;
+        for (let i = 0; i < n - 1; i++) {
+          const gap = sorted[i + 1] - sorted[i];
+          if (gap > maxGap) {
+            maxGap = gap;
+            gapStart = i;
+          }
+        }
+        const antimeridianGap = 360 - naiveSpan;
+        if (maxGap <= antimeridianGap) return null;
+        return [sorted[gapStart + 1], sorted[gapStart] + ANTIMERIDIAN_LON_SHIFT];
+      }
+      function unwrapLonRange([lon0, lon1]) {
+        return [lon0, lon0 > 0 && lon1 < 0 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
+      }
       module.exports = {
         locationToFeature,
         feature2polygons,
         getTraceGeojson,
         extractTraceFeature,
         fetchTraceGeoData,
-        computeBbox
+        computeBbox,
+        doesCrossAntiMeridian,
+        getFitboundsLonRange,
+        unwrapLonRange,
+        ANTIMERIDIAN_LON_SHIFT
       };
     }
   });
@@ -134430,7 +134546,7 @@ var Plotly = (() => {
     "node_modules/d3-array/dist/d3-array.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : factory(global2.d3 = global2.d3 || {});
-      })(exports, function(exports2) {
+      })(exports, (function(exports2) {
         "use strict";
         function ascending(a, b) {
           return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
@@ -134841,7 +134957,7 @@ var Plotly = (() => {
         exports2.variance = variance;
         exports2.zip = zip;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -134850,7 +134966,7 @@ var Plotly = (() => {
     "node_modules/d3-geo/dist/d3-geo.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_array()) : typeof define === "function" && false ? define(["exports", "d3-array"], factory) : (global2 = global2 || self, factory(global2.d3 = global2.d3 || {}, global2.d3));
-      })(exports, function(exports2, d3Array) {
+      })(exports, (function(exports2, d3Array) {
         "use strict";
         function adder() {
           return new Adder();
@@ -137159,7 +137275,7 @@ var Plotly = (() => {
         exports2.geoTransverseMercator = transverseMercator;
         exports2.geoTransverseMercatorRaw = transverseMercatorRaw;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -137168,7 +137284,7 @@ var Plotly = (() => {
     "node_modules/d3-geo-projection/dist/d3-geo-projection.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_geo(), require_d3_array()) : typeof define === "function" && false ? define(["exports", "d3-geo", "d3-array"], factory) : factory(global2.d3 = global2.d3 || {}, global2.d3, global2.d3);
-      })(exports, function(exports2, d3Geo, d3Array) {
+      })(exports, (function(exports2, d3Geo, d3Array) {
         "use strict";
         var abs = Math.abs;
         var atan = Math.atan;
@@ -140545,7 +140661,7 @@ var Plotly = (() => {
         exports2.geoWinkel3 = winkel3;
         exports2.geoWinkel3Raw = winkel3Raw;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -140928,6 +141044,7 @@ var Plotly = (() => {
       var createGeoZoom = require_zoom();
       var constants = require_constants22();
       var geoUtils = require_geo_location_utils();
+      var { getFitboundsLonRange, unwrapLonRange } = geoUtils;
       var topojsonUtils = require_topojson_utils();
       var topojsonFeature = require_topojson_client().feature;
       function Geo(opts) {
@@ -141065,6 +141182,7 @@ var Plotly = (() => {
         this._render();
       };
       proto.updateProjection = function(geoCalcData, fullLayout) {
+        var _a;
         var gd = this.graphDiv;
         var geoLayout = fullLayout[this.id];
         var gs = fullLayout._size;
@@ -141091,6 +141209,31 @@ var Plotly = (() => {
           axLat._length = extent[1][1] - extent[0][1];
           axLon.range = getAutoRange(gd, axLon);
           axLat.range = getAutoRange(gd, axLat);
+          if (!this.hasChoropleth && geoLayout.fitbounds === "locations") {
+            var lons = [];
+            var hasLocationData = false;
+            for (var i = 0; i < geoCalcData.length; i++) {
+              var calcTrace = geoCalcData[i];
+              var fitTrace = calcTrace[0].trace;
+              if (fitTrace.visible !== true) continue;
+              if ((_a = fitTrace.locations) == null ? void 0 : _a.length) {
+                hasLocationData = true;
+                break;
+              }
+              for (var j = 0; j < calcTrace.length; j++) {
+                var lonlat = calcTrace[j].lonlat;
+                if (lonlat) lons.push(lonlat[0]);
+              }
+            }
+            if (!hasLocationData) {
+              var fitLonRange = getFitboundsLonRange(lons);
+              if (fitLonRange) {
+                var lonDataSpan = Lib.aggNums(Math.max, null, lons) - Lib.aggNums(Math.min, null, lons);
+                var lonPad = lonDataSpan > 0 ? (axLon.range[1] - axLon.range[0] - lonDataSpan) / 2 * (fitLonRange[1] - fitLonRange[0]) / lonDataSpan : 0;
+                axLon.range = [fitLonRange[0] - lonPad, fitLonRange[1] + lonPad];
+              }
+            }
+          }
           var midLon = (axLon.range[0] + axLon.range[1]) / 2;
           var midLat = (axLat.range[0] + axLat.range[1]) / 2;
           if (geoLayout._isScoped) {
@@ -141500,11 +141643,9 @@ var Plotly = (() => {
       }
       function makeRangeBox(lon, lat) {
         var clipPad = constants.clipPad;
-        var lon0 = lon[0] + clipPad;
-        var lon1 = lon[1] - clipPad;
+        const [lon0, lon1] = unwrapLonRange([lon[0] + clipPad, lon[1] - clipPad]);
         var lat0 = lat[0] + clipPad;
         var lat1 = lat[1] - clipPad;
-        if (lon0 > 0 && lon1 < 0) lon1 += 360;
         var dlon4 = (lon1 - lon0) / 4;
         return {
           type: "Polygon",
@@ -141741,6 +141882,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var handleSubplotDefaults = require_subplot_defaults();
       var getSubplotData = require_get_data().getSubplotData;
+      var { unwrapLonRange } = require_geo_location_utils();
       var constants = require_constants22();
       var layoutAttributes = require_layout_attributes18();
       var axesNames = constants.axesNames;
@@ -141823,9 +141965,7 @@ var Plotly = (() => {
         }
         var lonRange = geoLayoutOut.lonaxis.range;
         var latRange = geoLayoutOut.lataxis.range;
-        var lon0 = lonRange[0];
-        var lon1 = lonRange[1];
-        if (lon0 > 0 && lon1 < 0) lon1 += 360;
+        const [lon0, lon1] = unwrapLonRange(lonRange);
         var centerLon = (lon0 + lon1) / 2;
         var projLon;
         if (!isAlbersUsa) {
@@ -142291,13 +142431,14 @@ var Plotly = (() => {
       var Axes = require_axes();
       var attributes = require_attributes49();
       var fillText = require_lib().fillText;
+      var { ANTIMERIDIAN_LON_SHIFT } = require_geo_location_utils();
       module.exports = function hoverPoints(pointData, xval, yval) {
         var cd = pointData.cd;
         var trace = cd[0].trace;
         var geo = pointData.subplot;
         var pt, i, j, isInside;
         var xy = [xval, yval];
-        var altXy = [xval + 360, yval];
+        const altXy = [xval + ANTIMERIDIAN_LON_SHIFT, yval];
         for (i = 0; i < cd.length; i++) {
           pt = cd[i];
           isInside = false;
@@ -143489,7 +143630,7 @@ var Plotly = (() => {
       Object.defineProperty(exports, "__esModule", {
         value: true
       });
-      var _slicedToArray = /* @__PURE__ */ function() {
+      var _slicedToArray = /* @__PURE__ */ (function() {
         function sliceIterator(arr, i) {
           var _arr = [];
           var _n = true;
@@ -143521,7 +143662,7 @@ var Plotly = (() => {
             throw new TypeError("Invalid attempt to destructure non-iterable instance");
           }
         };
-      }();
+      })();
       var TAU = Math.PI * 2;
       var mapToEllipse = function mapToEllipse2(_ref, rx, ry, cosphi, sinphi, centerx, centery) {
         var x = _ref.x, y = _ref.y;
@@ -146717,7 +146858,7 @@ var Plotly = (() => {
       if (!require_is_implemented2()()) {
         shim = require_shim3();
       }
-      module.exports = function() {
+      module.exports = (function() {
         var nullObject, polyProps, desc;
         if (!shim) return create;
         if (shim.level !== 1) return create;
@@ -146746,7 +146887,7 @@ var Plotly = (() => {
         return function(prototype, props) {
           return create(prototype === null ? nullObject : prototype, props);
         };
-      }();
+      })();
     }
   });
 
@@ -146765,7 +146906,7 @@ var Plotly = (() => {
         if (prototype === null || isObject(prototype)) return obj;
         throw new TypeError("Prototype must be null or an object");
       };
-      module.exports = function(status) {
+      module.exports = (function(status) {
         var fn, set;
         if (!status) return null;
         if (status.level === 2) {
@@ -146799,8 +146940,8 @@ var Plotly = (() => {
           writable: false,
           value: status.level
         });
-      }(
-        function() {
+      })(
+        (function() {
           var tmpObj1 = /* @__PURE__ */ Object.create(null), tmpObj2 = {}, set, desc = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__");
           if (desc) {
             try {
@@ -146816,7 +146957,7 @@ var Plotly = (() => {
           tmpObj1.__proto__ = tmpObj2;
           if (Object.getPrototypeOf(tmpObj1) === tmpObj2) return { level: 1 };
           return false;
-        }()
+        })()
       );
       require_create2();
     }
@@ -147144,9 +147285,9 @@ var Plotly = (() => {
     "node_modules/es5-ext/function/is-arguments.js"(exports, module) {
       "use strict";
       var objToString = Object.prototype.toString;
-      var id = objToString.call(/* @__PURE__ */ function() {
+      var id = objToString.call(/* @__PURE__ */ (function() {
         return arguments;
-      }());
+      })());
       module.exports = function(value) {
         return objToString.call(value) === id;
       };
@@ -147185,7 +147326,7 @@ var Plotly = (() => {
         if (typeof window === "object" && window) return window;
         throw new Error("Unable to resolve global `this`");
       };
-      module.exports = function() {
+      module.exports = (function() {
         if (this) return this;
         try {
           Object.defineProperty(Object.prototype, "__global__", {
@@ -147203,7 +147344,7 @@ var Plotly = (() => {
         } finally {
           delete Object.prototype.__global__;
         }
-      }();
+      })();
     }
   });
 
@@ -148183,10 +148324,10 @@ var Plotly = (() => {
   var require_is_native_implemented = __commonJS({
     "node_modules/es6-weak-map/is-native-implemented.js"(exports, module) {
       "use strict";
-      module.exports = function() {
+      module.exports = (function() {
         if (typeof WeakMap !== "function") return false;
         return Object.prototype.toString.call(/* @__PURE__ */ new WeakMap()) === "[object WeakMap]";
-      }();
+      })();
     }
   });
 
@@ -150135,7 +150276,7 @@ void main() {
     "node_modules/regl/dist/regl.unchecked.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && false ? define(factory) : global2.createREGL = factory();
-      })(exports, function() {
+      })(exports, (function() {
         "use strict";
         var extend2 = function(base, opts) {
           var keys = Object.keys(opts);
@@ -157688,7 +157829,7 @@ void main() {
           return {
             next: nextState,
             current: currentState,
-            procs: function() {
+            procs: (function() {
               var env = createREGLEnvironment();
               var poll = env.proc("poll");
               var refresh = env.proc("refresh");
@@ -157871,7 +158012,7 @@ void main() {
                 refresh(block);
               });
               return env.compile();
-            }(),
+            })(),
             compile: compileCommand
           };
         }
@@ -158503,7 +158644,7 @@ void main() {
           return regl;
         }
         return wrapREGL;
-      });
+      }));
     }
   });
 
@@ -159962,7 +160103,7 @@ void main() {
     "node_modules/@plotly/regl/dist/regl.unchecked.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && false ? define(factory) : global2.createREGL = factory();
-      })(exports, function() {
+      })(exports, (function() {
         "use strict";
         var extend2 = function(base, opts) {
           var keys = Object.keys(opts);
@@ -167515,7 +167656,7 @@ void main() {
           return {
             next: nextState,
             current: currentState,
-            procs: function() {
+            procs: (function() {
               var env = createREGLEnvironment();
               var poll = env.proc("poll");
               var refresh = env.proc("refresh");
@@ -167698,7 +167839,7 @@ void main() {
                 refresh(block);
               });
               return env.compile();
-            }(),
+            })(),
             compile: compileCommand
           };
         }
@@ -168330,7 +168471,7 @@ void main() {
           return regl;
         }
         return wrapREGL;
-      });
+      }));
     }
   });
 
@@ -168490,7 +168631,9 @@ void main() {
             scene.line2d.update(scene.lineOptions);
           }
           if (scene.error2d) {
-            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
+            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []).map(function(errorOptions) {
+              return errorOptions || { positions: [], errors: [] };
+            });
             scene.error2d.update(errorBatch);
           }
           if (scene.scatter2d) {
@@ -175641,7 +175784,7 @@ void main() {
     "node_modules/@plotly/mapbox-gl/dist/mapbox-gl-unminified.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && false ? define(factory) : (global2 = global2 || self, global2.mapboxgl = factory());
-      })(exports, function() {
+      })(exports, (function() {
         "use strict";
         var shared, worker, mapboxgl;
         function define2(_, chunk) {
@@ -176541,7 +176684,7 @@ void main() {
             this.queue.push(event);
             this.processRequests(customAccessToken);
           };
-          var MapLoadEvent = function(TelemetryEvent2) {
+          var MapLoadEvent = (function(TelemetryEvent2) {
             function MapLoadEvent2() {
               TelemetryEvent2.call(this, "map.load");
               this.success = {};
@@ -176588,8 +176731,8 @@ void main() {
               }, customAccessToken);
             };
             return MapLoadEvent2;
-          }(TelemetryEvent);
-          var TurnstileEvent = function(TelemetryEvent2) {
+          })(TelemetryEvent);
+          var TurnstileEvent = (function(TelemetryEvent2) {
             function TurnstileEvent2(customAccessToken) {
               TelemetryEvent2.call(this, "appUserTurnstile");
               this._customAccessToken = customAccessToken;
@@ -176640,7 +176783,7 @@ void main() {
               }, customAccessToken);
             };
             return TurnstileEvent2;
-          }(TelemetryEvent);
+          })(TelemetryEvent);
           var turnstileEvent_ = new TurnstileEvent();
           var postTurnstileEvent = turnstileEvent_.postTurnstileEvent.bind(turnstileEvent_);
           var mapLoadEvent_ = new MapLoadEvent();
@@ -176790,7 +176933,7 @@ void main() {
           if (typeof Object.freeze == "function") {
             Object.freeze(ResourceType);
           }
-          var AJAXError = function(Error2) {
+          var AJAXError = (function(Error2) {
             function AJAXError2(message, status2, url) {
               if (status2 === 401 && isMapboxHTTPURL(url)) {
                 message += ": you may have provided an invalid Mapbox access token. See https://www.mapbox.com/api-documentation/#access-tokens-and-token-scopes";
@@ -176809,7 +176952,7 @@ void main() {
               return this.name + ": " + this.message + " (" + this.status + "): " + this.url;
             };
             return AJAXError2;
-          }(Error);
+          })(Error);
           var getReferrer = isWorker() ? function() {
             return self.worker && self.worker.referrer;
           } : function() {
@@ -177086,7 +177229,7 @@ void main() {
             extend2(this, data);
             this.type = type;
           };
-          var ErrorEvent = function(Event2) {
+          var ErrorEvent = (function(Event2) {
             function ErrorEvent2(error2, data) {
               if (data === void 0)
                 data = {};
@@ -177097,7 +177240,7 @@ void main() {
             ErrorEvent2.prototype = Object.create(Event2 && Event2.prototype);
             ErrorEvent2.prototype.constructor = ErrorEvent2;
             return ErrorEvent2;
-          }(Event);
+          })(Event);
           var Evented = function Evented2() {
           };
           Evented.prototype.on = function on(type, listener) {
@@ -180006,7 +180149,7 @@ void main() {
             }
             return unbundle(value);
           }
-          var ParsingError = function(Error2) {
+          var ParsingError = (function(Error2) {
             function ParsingError2(key, message) {
               Error2.call(this, message);
               this.message = message;
@@ -180017,7 +180160,7 @@ void main() {
             ParsingError2.prototype = Object.create(Error2 && Error2.prototype);
             ParsingError2.prototype.constructor = ParsingError2;
             return ParsingError2;
-          }(Error);
+          })(Error);
           var Scope = function Scope2(parent, bindings) {
             if (bindings === void 0)
               bindings = [];
@@ -183598,7 +183741,7 @@ void main() {
           }
           function makeComparison(op, compareBasic, compareWithCollator) {
             var isOrderComparison = op !== "==" && op !== "!=";
-            return function() {
+            return (function() {
               function Comparison(lhs, rhs, collator) {
                 this.type = BooleanType;
                 this.lhs = lhs;
@@ -183684,7 +183827,7 @@ void main() {
                 return serialized;
               };
               return Comparison;
-            }();
+            })();
           }
           var Equals = makeComparison("==", eq, eqCollate);
           var NotEquals = makeComparison("!=", neq, neqCollate);
@@ -187256,7 +187399,7 @@ void main() {
               return value.evaluate(parameters, feature, featureState, canonical, availableImages);
             }
           };
-          var CrossFadedDataDrivenProperty = function(DataDrivenProperty2) {
+          var CrossFadedDataDrivenProperty = (function(DataDrivenProperty2) {
             function CrossFadedDataDrivenProperty2() {
               DataDrivenProperty2.apply(this, arguments);
             }
@@ -187313,7 +187456,7 @@ void main() {
               return a;
             };
             return CrossFadedDataDrivenProperty2;
-          }(DataDrivenProperty);
+          })(DataDrivenProperty);
           var CrossFadedProperty = function CrossFadedProperty2(specification) {
             this.specification = specification;
           };
@@ -187373,7 +187516,7 @@ void main() {
           register("CrossFadedProperty", CrossFadedProperty);
           register("ColorRampProperty", ColorRampProperty);
           var TRANSITION_SUFFIX = "-transition";
-          var StyleLayer = function(Evented2) {
+          var StyleLayer = (function(Evented2) {
             function StyleLayer2(layer2, properties2) {
               Evented2.call(this);
               this.id = layer2.id;
@@ -187562,7 +187705,7 @@ void main() {
               return false;
             };
             return StyleLayer2;
-          }(Evented);
+          })(Evented);
           var viewTypes = {
             "Int8": Int8Array,
             "Uint8": Uint8Array,
@@ -187664,7 +187807,7 @@ void main() {
           function align(offset, size) {
             return Math.ceil(offset / size) * size;
           }
-          var StructArrayLayout2i4 = function(StructArray2) {
+          var StructArrayLayout2i4 = (function(StructArray2) {
             function StructArrayLayout2i42() {
               StructArray2.apply(this, arguments);
             }
@@ -187688,10 +187831,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2i42;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2i4.prototype.bytesPerElement = 4;
           register("StructArrayLayout2i4", StructArrayLayout2i4);
-          var StructArrayLayout4i8 = function(StructArray2) {
+          var StructArrayLayout4i8 = (function(StructArray2) {
             function StructArrayLayout4i82() {
               StructArray2.apply(this, arguments);
             }
@@ -187717,10 +187860,10 @@ void main() {
               return i;
             };
             return StructArrayLayout4i82;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout4i8.prototype.bytesPerElement = 8;
           register("StructArrayLayout4i8", StructArrayLayout4i8);
-          var StructArrayLayout2i4i12 = function(StructArray2) {
+          var StructArrayLayout2i4i12 = (function(StructArray2) {
             function StructArrayLayout2i4i122() {
               StructArray2.apply(this, arguments);
             }
@@ -187748,10 +187891,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2i4i122;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2i4i12.prototype.bytesPerElement = 12;
           register("StructArrayLayout2i4i12", StructArrayLayout2i4i12);
-          var StructArrayLayout2i4ub8 = function(StructArray2) {
+          var StructArrayLayout2i4ub8 = (function(StructArray2) {
             function StructArrayLayout2i4ub82() {
               StructArray2.apply(this, arguments);
             }
@@ -187780,10 +187923,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2i4ub82;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2i4ub8.prototype.bytesPerElement = 8;
           register("StructArrayLayout2i4ub8", StructArrayLayout2i4ub8);
-          var StructArrayLayout2f8 = function(StructArray2) {
+          var StructArrayLayout2f8 = (function(StructArray2) {
             function StructArrayLayout2f82() {
               StructArray2.apply(this, arguments);
             }
@@ -187807,10 +187950,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2f82;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2f8.prototype.bytesPerElement = 8;
           register("StructArrayLayout2f8", StructArrayLayout2f8);
-          var StructArrayLayout10ui20 = function(StructArray2) {
+          var StructArrayLayout10ui20 = (function(StructArray2) {
             function StructArrayLayout10ui202() {
               StructArray2.apply(this, arguments);
             }
@@ -187842,10 +187985,10 @@ void main() {
               return i;
             };
             return StructArrayLayout10ui202;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout10ui20.prototype.bytesPerElement = 20;
           register("StructArrayLayout10ui20", StructArrayLayout10ui20);
-          var StructArrayLayout4i4ui4i24 = function(StructArray2) {
+          var StructArrayLayout4i4ui4i24 = (function(StructArray2) {
             function StructArrayLayout4i4ui4i242() {
               StructArray2.apply(this, arguments);
             }
@@ -187880,10 +188023,10 @@ void main() {
               return i;
             };
             return StructArrayLayout4i4ui4i242;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout4i4ui4i24.prototype.bytesPerElement = 24;
           register("StructArrayLayout4i4ui4i24", StructArrayLayout4i4ui4i24);
-          var StructArrayLayout3f12 = function(StructArray2) {
+          var StructArrayLayout3f12 = (function(StructArray2) {
             function StructArrayLayout3f122() {
               StructArray2.apply(this, arguments);
             }
@@ -187908,10 +188051,10 @@ void main() {
               return i;
             };
             return StructArrayLayout3f122;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout3f12.prototype.bytesPerElement = 12;
           register("StructArrayLayout3f12", StructArrayLayout3f12);
-          var StructArrayLayout1ul4 = function(StructArray2) {
+          var StructArrayLayout1ul4 = (function(StructArray2) {
             function StructArrayLayout1ul42() {
               StructArray2.apply(this, arguments);
             }
@@ -187934,10 +188077,10 @@ void main() {
               return i;
             };
             return StructArrayLayout1ul42;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout1ul4.prototype.bytesPerElement = 4;
           register("StructArrayLayout1ul4", StructArrayLayout1ul4);
-          var StructArrayLayout6i1ul2ui20 = function(StructArray2) {
+          var StructArrayLayout6i1ul2ui20 = (function(StructArray2) {
             function StructArrayLayout6i1ul2ui202() {
               StructArray2.apply(this, arguments);
             }
@@ -187971,10 +188114,10 @@ void main() {
               return i;
             };
             return StructArrayLayout6i1ul2ui202;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout6i1ul2ui20.prototype.bytesPerElement = 20;
           register("StructArrayLayout6i1ul2ui20", StructArrayLayout6i1ul2ui20);
-          var StructArrayLayout2i2i2i12 = function(StructArray2) {
+          var StructArrayLayout2i2i2i12 = (function(StructArray2) {
             function StructArrayLayout2i2i2i122() {
               StructArray2.apply(this, arguments);
             }
@@ -188002,10 +188145,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2i2i2i122;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2i2i2i12.prototype.bytesPerElement = 12;
           register("StructArrayLayout2i2i2i12", StructArrayLayout2i2i2i12);
-          var StructArrayLayout2f1f2i16 = function(StructArray2) {
+          var StructArrayLayout2f1f2i16 = (function(StructArray2) {
             function StructArrayLayout2f1f2i162() {
               StructArray2.apply(this, arguments);
             }
@@ -188034,10 +188177,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2f1f2i162;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2f1f2i16.prototype.bytesPerElement = 16;
           register("StructArrayLayout2f1f2i16", StructArrayLayout2f1f2i16);
-          var StructArrayLayout2ub2f12 = function(StructArray2) {
+          var StructArrayLayout2ub2f12 = (function(StructArray2) {
             function StructArrayLayout2ub2f122() {
               StructArray2.apply(this, arguments);
             }
@@ -188064,10 +188207,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2ub2f122;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2ub2f12.prototype.bytesPerElement = 12;
           register("StructArrayLayout2ub2f12", StructArrayLayout2ub2f12);
-          var StructArrayLayout3ui6 = function(StructArray2) {
+          var StructArrayLayout3ui6 = (function(StructArray2) {
             function StructArrayLayout3ui62() {
               StructArray2.apply(this, arguments);
             }
@@ -188092,10 +188235,10 @@ void main() {
               return i;
             };
             return StructArrayLayout3ui62;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout3ui6.prototype.bytesPerElement = 6;
           register("StructArrayLayout3ui6", StructArrayLayout3ui6);
-          var StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48 = function(StructArray2) {
+          var StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48 = (function(StructArray2) {
             function StructArrayLayout2i2ui3ul3ui2f3ub1ul1i482() {
               StructArray2.apply(this, arguments);
             }
@@ -188139,10 +188282,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2i2ui3ul3ui2f3ub1ul1i482;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48.prototype.bytesPerElement = 48;
           register("StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48", StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48);
-          var StructArrayLayout8i15ui1ul4f68 = function(StructArray2) {
+          var StructArrayLayout8i15ui1ul4f68 = (function(StructArray2) {
             function StructArrayLayout8i15ui1ul4f682() {
               StructArray2.apply(this, arguments);
             }
@@ -188196,10 +188339,10 @@ void main() {
               return i;
             };
             return StructArrayLayout8i15ui1ul4f682;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout8i15ui1ul4f68.prototype.bytesPerElement = 68;
           register("StructArrayLayout8i15ui1ul4f68", StructArrayLayout8i15ui1ul4f68);
-          var StructArrayLayout1f4 = function(StructArray2) {
+          var StructArrayLayout1f4 = (function(StructArray2) {
             function StructArrayLayout1f42() {
               StructArray2.apply(this, arguments);
             }
@@ -188222,10 +188365,10 @@ void main() {
               return i;
             };
             return StructArrayLayout1f42;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout1f4.prototype.bytesPerElement = 4;
           register("StructArrayLayout1f4", StructArrayLayout1f4);
-          var StructArrayLayout3i6 = function(StructArray2) {
+          var StructArrayLayout3i6 = (function(StructArray2) {
             function StructArrayLayout3i62() {
               StructArray2.apply(this, arguments);
             }
@@ -188250,10 +188393,10 @@ void main() {
               return i;
             };
             return StructArrayLayout3i62;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout3i6.prototype.bytesPerElement = 6;
           register("StructArrayLayout3i6", StructArrayLayout3i6);
-          var StructArrayLayout1ul2ui8 = function(StructArray2) {
+          var StructArrayLayout1ul2ui8 = (function(StructArray2) {
             function StructArrayLayout1ul2ui82() {
               StructArray2.apply(this, arguments);
             }
@@ -188280,10 +188423,10 @@ void main() {
               return i;
             };
             return StructArrayLayout1ul2ui82;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout1ul2ui8.prototype.bytesPerElement = 8;
           register("StructArrayLayout1ul2ui8", StructArrayLayout1ul2ui8);
-          var StructArrayLayout2ui4 = function(StructArray2) {
+          var StructArrayLayout2ui4 = (function(StructArray2) {
             function StructArrayLayout2ui42() {
               StructArray2.apply(this, arguments);
             }
@@ -188307,10 +188450,10 @@ void main() {
               return i;
             };
             return StructArrayLayout2ui42;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout2ui4.prototype.bytesPerElement = 4;
           register("StructArrayLayout2ui4", StructArrayLayout2ui4);
-          var StructArrayLayout1ui2 = function(StructArray2) {
+          var StructArrayLayout1ui2 = (function(StructArray2) {
             function StructArrayLayout1ui22() {
               StructArray2.apply(this, arguments);
             }
@@ -188333,10 +188476,10 @@ void main() {
               return i;
             };
             return StructArrayLayout1ui22;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout1ui2.prototype.bytesPerElement = 2;
           register("StructArrayLayout1ui2", StructArrayLayout1ui2);
-          var StructArrayLayout4f16 = function(StructArray2) {
+          var StructArrayLayout4f16 = (function(StructArray2) {
             function StructArrayLayout4f162() {
               StructArray2.apply(this, arguments);
             }
@@ -188362,10 +188505,10 @@ void main() {
               return i;
             };
             return StructArrayLayout4f162;
-          }(StructArray);
+          })(StructArray);
           StructArrayLayout4f16.prototype.bytesPerElement = 16;
           register("StructArrayLayout4f16", StructArrayLayout4f16);
-          var CollisionBoxStruct = function(Struct2) {
+          var CollisionBoxStruct = (function(Struct2) {
             function CollisionBoxStruct2() {
               Struct2.apply(this, arguments);
             }
@@ -188417,9 +188560,9 @@ void main() {
             };
             Object.defineProperties(CollisionBoxStruct2.prototype, prototypeAccessors2);
             return CollisionBoxStruct2;
-          }(Struct);
+          })(Struct);
           CollisionBoxStruct.prototype.size = 20;
-          var CollisionBoxArray = function(StructArrayLayout6i1ul2ui202) {
+          var CollisionBoxArray = (function(StructArrayLayout6i1ul2ui202) {
             function CollisionBoxArray2() {
               StructArrayLayout6i1ul2ui202.apply(this, arguments);
             }
@@ -188431,9 +188574,9 @@ void main() {
               return new CollisionBoxStruct(this, index);
             };
             return CollisionBoxArray2;
-          }(StructArrayLayout6i1ul2ui20);
+          })(StructArrayLayout6i1ul2ui20);
           register("CollisionBoxArray", CollisionBoxArray);
-          var PlacedSymbolStruct = function(Struct2) {
+          var PlacedSymbolStruct = (function(Struct2) {
             function PlacedSymbolStruct2() {
               Struct2.apply(this, arguments);
             }
@@ -188522,9 +188665,9 @@ void main() {
             };
             Object.defineProperties(PlacedSymbolStruct2.prototype, prototypeAccessors$12);
             return PlacedSymbolStruct2;
-          }(Struct);
+          })(Struct);
           PlacedSymbolStruct.prototype.size = 48;
-          var PlacedSymbolArray = function(StructArrayLayout2i2ui3ul3ui2f3ub1ul1i482) {
+          var PlacedSymbolArray = (function(StructArrayLayout2i2ui3ul3ui2f3ub1ul1i482) {
             function PlacedSymbolArray2() {
               StructArrayLayout2i2ui3ul3ui2f3ub1ul1i482.apply(this, arguments);
             }
@@ -188536,9 +188679,9 @@ void main() {
               return new PlacedSymbolStruct(this, index);
             };
             return PlacedSymbolArray2;
-          }(StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48);
+          })(StructArrayLayout2i2ui3ul3ui2f3ub1ul1i48);
           register("PlacedSymbolArray", PlacedSymbolArray);
-          var SymbolInstanceStruct = function(Struct2) {
+          var SymbolInstanceStruct = (function(Struct2) {
             function SymbolInstanceStruct2() {
               Struct2.apply(this, arguments);
             }
@@ -188665,9 +188808,9 @@ void main() {
             };
             Object.defineProperties(SymbolInstanceStruct2.prototype, prototypeAccessors$2);
             return SymbolInstanceStruct2;
-          }(Struct);
+          })(Struct);
           SymbolInstanceStruct.prototype.size = 68;
-          var SymbolInstanceArray = function(StructArrayLayout8i15ui1ul4f682) {
+          var SymbolInstanceArray = (function(StructArrayLayout8i15ui1ul4f682) {
             function SymbolInstanceArray2() {
               StructArrayLayout8i15ui1ul4f682.apply(this, arguments);
             }
@@ -188679,9 +188822,9 @@ void main() {
               return new SymbolInstanceStruct(this, index);
             };
             return SymbolInstanceArray2;
-          }(StructArrayLayout8i15ui1ul4f68);
+          })(StructArrayLayout8i15ui1ul4f68);
           register("SymbolInstanceArray", SymbolInstanceArray);
-          var GlyphOffsetArray = function(StructArrayLayout1f42) {
+          var GlyphOffsetArray = (function(StructArrayLayout1f42) {
             function GlyphOffsetArray2() {
               StructArrayLayout1f42.apply(this, arguments);
             }
@@ -188693,9 +188836,9 @@ void main() {
               return this.float32[index * 1 + 0];
             };
             return GlyphOffsetArray2;
-          }(StructArrayLayout1f4);
+          })(StructArrayLayout1f4);
           register("GlyphOffsetArray", GlyphOffsetArray);
-          var SymbolLineVertexArray = function(StructArrayLayout3i62) {
+          var SymbolLineVertexArray = (function(StructArrayLayout3i62) {
             function SymbolLineVertexArray2() {
               StructArrayLayout3i62.apply(this, arguments);
             }
@@ -188713,9 +188856,9 @@ void main() {
               return this.int16[index * 3 + 2];
             };
             return SymbolLineVertexArray2;
-          }(StructArrayLayout3i6);
+          })(StructArrayLayout3i6);
           register("SymbolLineVertexArray", SymbolLineVertexArray);
-          var FeatureIndexStruct = function(Struct2) {
+          var FeatureIndexStruct = (function(Struct2) {
             function FeatureIndexStruct2() {
               Struct2.apply(this, arguments);
             }
@@ -188739,9 +188882,9 @@ void main() {
             };
             Object.defineProperties(FeatureIndexStruct2.prototype, prototypeAccessors$3);
             return FeatureIndexStruct2;
-          }(Struct);
+          })(Struct);
           FeatureIndexStruct.prototype.size = 8;
-          var FeatureIndexArray = function(StructArrayLayout1ul2ui82) {
+          var FeatureIndexArray = (function(StructArrayLayout1ul2ui82) {
             function FeatureIndexArray2() {
               StructArrayLayout1ul2ui82.apply(this, arguments);
             }
@@ -188753,7 +188896,7 @@ void main() {
               return new FeatureIndexStruct(this, index);
             };
             return FeatureIndexArray2;
-          }(StructArrayLayout1ul2ui8);
+          })(StructArrayLayout1ul2ui8);
           register("FeatureIndexArray", FeatureIndexArray);
           var layout$1 = createLayout([{
             name: "a_pos",
@@ -189016,7 +189159,7 @@ void main() {
             this.gl = context.gl;
             this.location = location2;
           };
-          var Uniform1i = function(Uniform2) {
+          var Uniform1i = (function(Uniform2) {
             function Uniform1i2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = 0;
@@ -189032,8 +189175,8 @@ void main() {
               }
             };
             return Uniform1i2;
-          }(Uniform);
-          var Uniform1f = function(Uniform2) {
+          })(Uniform);
+          var Uniform1f = (function(Uniform2) {
             function Uniform1f2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = 0;
@@ -189049,8 +189192,8 @@ void main() {
               }
             };
             return Uniform1f2;
-          }(Uniform);
-          var Uniform2f = function(Uniform2) {
+          })(Uniform);
+          var Uniform2f = (function(Uniform2) {
             function Uniform2f2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = [
@@ -189069,8 +189212,8 @@ void main() {
               }
             };
             return Uniform2f2;
-          }(Uniform);
-          var Uniform3f = function(Uniform2) {
+          })(Uniform);
+          var Uniform3f = (function(Uniform2) {
             function Uniform3f2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = [
@@ -189090,8 +189233,8 @@ void main() {
               }
             };
             return Uniform3f2;
-          }(Uniform);
-          var Uniform4f = function(Uniform2) {
+          })(Uniform);
+          var Uniform4f = (function(Uniform2) {
             function Uniform4f2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = [
@@ -189112,8 +189255,8 @@ void main() {
               }
             };
             return Uniform4f2;
-          }(Uniform);
-          var UniformColor = function(Uniform2) {
+          })(Uniform);
+          var UniformColor = (function(Uniform2) {
             function UniformColor2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = Color2.transparent;
@@ -189129,9 +189272,9 @@ void main() {
               }
             };
             return UniformColor2;
-          }(Uniform);
+          })(Uniform);
           var emptyMat4 = new Float32Array(16);
-          var UniformMatrix4f = function(Uniform2) {
+          var UniformMatrix4f = (function(Uniform2) {
             function UniformMatrix4f2(context, location2) {
               Uniform2.call(this, context, location2);
               this.current = emptyMat4;
@@ -189155,7 +189298,7 @@ void main() {
               }
             };
             return UniformMatrix4f2;
-          }(Uniform);
+          })(Uniform);
           function packColor(color3) {
             return [
               packUint8ToFloat(255 * color3.r, 255 * color3.g),
@@ -190489,7 +190632,7 @@ void main() {
             return out;
           }
           var sub = subtract;
-          var forEach = function() {
+          var forEach = (function() {
             var vec = create$3();
             return function(a, stride, offset, count, fn, arg) {
               var i, l;
@@ -190515,7 +190658,7 @@ void main() {
               }
               return a;
             };
-          }();
+          })();
           function create$4() {
             var out = new ARRAY_TYPE(4);
             if (ARRAY_TYPE != Float32Array) {
@@ -190544,7 +190687,7 @@ void main() {
             out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
             return out;
           }
-          var forEach$1 = function() {
+          var forEach$1 = (function() {
             var vec = create$4();
             return function(a, stride, offset, count, fn, arg) {
               var i, l;
@@ -190572,7 +190715,7 @@ void main() {
               }
               return a;
             };
-          }();
+          })();
           function create$5() {
             var out = new ARRAY_TYPE(2);
             if (ARRAY_TYPE != Float32Array) {
@@ -190586,7 +190729,7 @@ void main() {
             return x * x + y * y;
           }
           var sqrLen = squaredLength;
-          var forEach$2 = function() {
+          var forEach$2 = (function() {
             var vec = create$5();
             return function(a, stride, offset, count, fn, arg) {
               var i, l;
@@ -190610,8 +190753,8 @@ void main() {
               }
               return a;
             };
-          }();
-          var CircleStyleLayer = function(StyleLayer2) {
+          })();
+          var CircleStyleLayer = (function(StyleLayer2) {
             function CircleStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties);
             }
@@ -190659,7 +190802,7 @@ void main() {
               return false;
             };
             return CircleStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           function projectPoint(p, pixelPosMatrix) {
             var point = transformMat4([], [
               p.x,
@@ -190674,7 +190817,7 @@ void main() {
               return projectPoint(p, pixelPosMatrix);
             });
           }
-          var HeatmapBucket = function(CircleBucket2) {
+          var HeatmapBucket = (function(CircleBucket2) {
             function HeatmapBucket2() {
               CircleBucket2.apply(this, arguments);
             }
@@ -190683,7 +190826,7 @@ void main() {
             HeatmapBucket2.prototype = Object.create(CircleBucket2 && CircleBucket2.prototype);
             HeatmapBucket2.prototype.constructor = HeatmapBucket2;
             return HeatmapBucket2;
-          }(CircleBucket);
+          })(CircleBucket);
           register("HeatmapBucket", HeatmapBucket, { omit: ["layers"] });
           function createImage(image, ref, channels, data) {
             var width = ref.width;
@@ -190829,7 +190972,7 @@ void main() {
             }
             return image;
           }
-          var HeatmapStyleLayer = function(StyleLayer2) {
+          var HeatmapStyleLayer = (function(StyleLayer2) {
             function HeatmapStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$1);
               this._updateColorRamp();
@@ -190871,7 +191014,7 @@ void main() {
               return this.paint.get("heatmap-opacity") !== 0 && this.visibility !== "none";
             };
             return HeatmapStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           var paint$3 = new Properties({
             "hillshade-illumination-direction": new DataConstantProperty(spec["paint_hillshade"]["hillshade-illumination-direction"]),
             "hillshade-illumination-anchor": new DataConstantProperty(spec["paint_hillshade"]["hillshade-illumination-anchor"]),
@@ -190881,7 +191024,7 @@ void main() {
             "hillshade-accent-color": new DataConstantProperty(spec["paint_hillshade"]["hillshade-accent-color"])
           });
           var properties$2 = { paint: paint$3 };
-          var HillshadeStyleLayer = function(StyleLayer2) {
+          var HillshadeStyleLayer = (function(StyleLayer2) {
             function HillshadeStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$2);
             }
@@ -190893,7 +191036,7 @@ void main() {
               return this.paint.get("hillshade-exaggeration") !== 0 && this.visibility !== "none";
             };
             return HillshadeStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           var layout$3 = createLayout([{
             name: "a_pos",
             components: 2,
@@ -191715,7 +191858,7 @@ void main() {
             paint: paint$4,
             layout: layout$4
           };
-          var FillStyleLayer = function(StyleLayer2) {
+          var FillStyleLayer = (function(StyleLayer2) {
             function FillStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$3);
             }
@@ -191744,7 +191887,7 @@ void main() {
               return true;
             };
             return FillStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           var layout$5 = createLayout([
             {
               name: "a_pos",
@@ -192218,7 +192361,7 @@ void main() {
             "fill-extrusion-vertical-gradient": new DataConstantProperty(spec["paint_fill-extrusion"]["fill-extrusion-vertical-gradient"])
           });
           var properties$4 = { paint: paint$5 };
-          var FillExtrusionStyleLayer = function(StyleLayer2) {
+          var FillExtrusionStyleLayer = (function(StyleLayer2) {
             function FillExtrusionStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$4);
             }
@@ -192246,7 +192389,7 @@ void main() {
               return checkIntersection(projectedBase, projectedTop, projectedQueryGeometry);
             };
             return FillExtrusionStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           function dot$2(a, b) {
             return a.x * b.x + a.y * b.y;
           }
@@ -192782,7 +192925,7 @@ void main() {
             paint: paint$6,
             layout: layout$6
           };
-          var LineFloorwidthProperty = function(DataDrivenProperty2) {
+          var LineFloorwidthProperty = (function(DataDrivenProperty2) {
             function LineFloorwidthProperty2() {
               DataDrivenProperty2.apply(this, arguments);
             }
@@ -192804,10 +192947,10 @@ void main() {
               return DataDrivenProperty2.prototype.evaluate.call(this, value, globals, feature, featureState);
             };
             return LineFloorwidthProperty2;
-          }(DataDrivenProperty);
+          })(DataDrivenProperty);
           var lineFloorwidthProperty = new LineFloorwidthProperty(properties$5.paint.properties["line-width"].specification);
           lineFloorwidthProperty.useIntegerZoom = true;
-          var LineStyleLayer = function(StyleLayer2) {
+          var LineStyleLayer = (function(StyleLayer2) {
             function LineStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$5);
               this.gradientVersion = 0;
@@ -192852,7 +192995,7 @@ void main() {
               return true;
             };
             return LineStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           function getLineWidth(lineWidth, lineGapWidth) {
             if (lineGapWidth > 0) {
               return lineGapWidth + 2 * lineWidth;
@@ -195000,7 +195143,7 @@ void main() {
               collisionPadding
             };
           }
-          var Anchor = function(Point2) {
+          var Anchor = (function(Point2) {
             function Anchor2(x, y, angle, segment) {
               Point2.call(this, x, y);
               this.angle = angle;
@@ -195016,7 +195159,7 @@ void main() {
               return new Anchor2(this.x, this.y, this.angle, this.segment);
             };
             return Anchor2;
-          }(pointGeometry);
+          })(pointGeometry);
           register("Anchor", Anchor);
           var SIZE_PACK_FACTOR = 128;
           function getSizeData(tileZoom, value) {
@@ -196909,7 +197052,7 @@ void main() {
             return null;
           };
           register("FormatSectionOverride", FormatSectionOverride, { omit: ["defaultValue"] });
-          var SymbolStyleLayer = function(StyleLayer2) {
+          var SymbolStyleLayer = (function(StyleLayer2) {
             function SymbolStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$6);
             }
@@ -197034,14 +197177,14 @@ void main() {
               return hasOverrides;
             };
             return SymbolStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           var paint$8 = new Properties({
             "background-color": new DataConstantProperty(spec["paint_background"]["background-color"]),
             "background-pattern": new CrossFadedProperty(spec["paint_background"]["background-pattern"]),
             "background-opacity": new DataConstantProperty(spec["paint_background"]["background-opacity"])
           });
           var properties$7 = { paint: paint$8 };
-          var BackgroundStyleLayer = function(StyleLayer2) {
+          var BackgroundStyleLayer = (function(StyleLayer2) {
             function BackgroundStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$7);
             }
@@ -197050,7 +197193,7 @@ void main() {
             BackgroundStyleLayer2.prototype = Object.create(StyleLayer2 && StyleLayer2.prototype);
             BackgroundStyleLayer2.prototype.constructor = BackgroundStyleLayer2;
             return BackgroundStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           var paint$9 = new Properties({
             "raster-opacity": new DataConstantProperty(spec["paint_raster"]["raster-opacity"]),
             "raster-hue-rotate": new DataConstantProperty(spec["paint_raster"]["raster-hue-rotate"]),
@@ -197062,7 +197205,7 @@ void main() {
             "raster-fade-duration": new DataConstantProperty(spec["paint_raster"]["raster-fade-duration"])
           });
           var properties$8 = { paint: paint$9 };
-          var RasterStyleLayer = function(StyleLayer2) {
+          var RasterStyleLayer = (function(StyleLayer2) {
             function RasterStyleLayer2(layer2) {
               StyleLayer2.call(this, layer2, properties$8);
             }
@@ -197071,7 +197214,7 @@ void main() {
             RasterStyleLayer2.prototype = Object.create(StyleLayer2 && StyleLayer2.prototype);
             RasterStyleLayer2.prototype.constructor = RasterStyleLayer2;
             return RasterStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           function validateCustomStyleLayer(layerObject) {
             var errors = [];
             var id2 = layerObject.id;
@@ -197086,7 +197229,7 @@ void main() {
             }
             return errors;
           }
-          var CustomStyleLayer = function(StyleLayer2) {
+          var CustomStyleLayer = (function(StyleLayer2) {
             function CustomStyleLayer2(implementation) {
               StyleLayer2.call(this, implementation, {});
               this.implementation = implementation;
@@ -197120,7 +197263,7 @@ void main() {
               }
             };
             return CustomStyleLayer2;
-          }(StyleLayer);
+          })(StyleLayer);
           var subclasses = {
             circle: CircleStyleLayer,
             heatmap: HeatmapStyleLayer,
@@ -200783,7 +200926,7 @@ void main() {
               rawData: pbf.buffer
             });
           }
-          var GeoJSONWorkerSource = function(VectorTileWorkerSource2) {
+          var GeoJSONWorkerSource = (function(VectorTileWorkerSource2) {
             function GeoJSONWorkerSource2(actor, layerIndex, availableImages, loadGeoJSON) {
               VectorTileWorkerSource2.call(this, actor, layerIndex, availableImages, loadGeoJSONTile);
               if (loadGeoJSON) {
@@ -200919,7 +201062,7 @@ void main() {
               }
             };
             return GeoJSONWorkerSource2;
-          }(VectorTileWorkerSource);
+          })(VectorTileWorkerSource);
           function getSuperclusterOptions(ref) {
             var superclusterOptions = ref.superclusterOptions;
             var clusterProperties = ref.clusterProperties;
@@ -201456,7 +201599,7 @@ void main() {
             return false;
           }
           var padding = 1;
-          var ImageManager = function(Evented) {
+          var ImageManager = (function(Evented) {
             function ImageManager2() {
               Evented.call(this);
               this.images = {};
@@ -201759,7 +201902,7 @@ void main() {
               }
             };
             return ImageManager2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           function loadGlyphRange(fontstack, range, urlTemplate, requestManager, callback) {
             var begin = range * 256;
             var end = begin + 255;
@@ -202036,7 +202179,7 @@ void main() {
             "intensity": new performance2.DataConstantProperty(performance2.styleSpec.light.intensity)
           });
           var TRANSITION_SUFFIX = "-transition";
-          var Light = function(Evented) {
+          var Light = (function(Evented) {
             function Light2(lightOptions) {
               Evented.call(this);
               this._transitionable = new performance2.Transitionable(properties);
@@ -202088,7 +202231,7 @@ void main() {
               })));
             };
             return Light2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           var LineAtlas = function LineAtlas2(width, height) {
             this.width = width;
             this.height = height;
@@ -202333,7 +202476,7 @@ void main() {
             var hit = tileID.x >= level.minX && tileID.x < level.maxX && tileID.y >= level.minY && tileID.y < level.maxY;
             return hit;
           };
-          var VectorTileSource = function(Evented) {
+          var VectorTileSource = (function(Evented) {
             function VectorTileSource2(id, options, dispatcher, eventedParent) {
               Evented.call(this);
               this.id = id;
@@ -202506,8 +202649,8 @@ void main() {
               return false;
             };
             return VectorTileSource2;
-          }(performance2.Evented);
-          var RasterTileSource = function(Evented) {
+          })(performance2.Evented);
+          var RasterTileSource = (function(Evented) {
             function RasterTileSource2(id, options, dispatcher, eventedParent) {
               Evented.call(this);
               this.id = id;
@@ -202629,8 +202772,8 @@ void main() {
               return false;
             };
             return RasterTileSource2;
-          }(performance2.Evented);
-          var RasterDEMTileSource = function(RasterTileSource2) {
+          })(performance2.Evented);
+          var RasterDEMTileSource = (function(RasterTileSource2) {
             function RasterDEMTileSource2(id, options, dispatcher, eventedParent) {
               RasterTileSource2.call(this, id, options, dispatcher, eventedParent);
               this.type = "raster-dem";
@@ -202741,8 +202884,8 @@ void main() {
               }
             };
             return RasterDEMTileSource2;
-          }(RasterTileSource);
-          var GeoJSONSource = function(Evented) {
+          })(RasterTileSource);
+          var GeoJSONSource = (function(Evented) {
             function GeoJSONSource2(id, options, dispatcher, eventedParent) {
               Evented.call(this);
               this.id = id;
@@ -202952,7 +203095,7 @@ void main() {
               return false;
             };
             return GeoJSONSource2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           var rasterBoundsAttributes = performance2.createLayout([
             {
               name: "a_pos",
@@ -202965,7 +203108,7 @@ void main() {
               components: 2
             }
           ]);
-          var ImageSource = function(Evented) {
+          var ImageSource = (function(Evented) {
             function ImageSource2(id, options, dispatcher, eventedParent) {
               Evented.call(this);
               this.id = id;
@@ -203101,7 +203244,7 @@ void main() {
               return false;
             };
             return ImageSource2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           function getCoordinatesCenterTileID(coords) {
             var minX = Infinity;
             var minY = Infinity;
@@ -203121,7 +203264,7 @@ void main() {
             var tilesAtZoom = Math.pow(2, zoom);
             return new performance2.CanonicalTileID(zoom, Math.floor((minX + maxX) / 2 * tilesAtZoom), Math.floor((minY + maxY) / 2 * tilesAtZoom));
           }
-          var VideoSource = function(ImageSource2) {
+          var VideoSource = (function(ImageSource2) {
             function VideoSource2(id, options, dispatcher, eventedParent) {
               ImageSource2.call(this, id, options, dispatcher, eventedParent);
               this.roundZoom = true;
@@ -203230,8 +203373,8 @@ void main() {
               return this.video && !this.video.paused;
             };
             return VideoSource2;
-          }(ImageSource);
-          var CanvasSource = function(ImageSource2) {
+          })(ImageSource);
+          var CanvasSource = (function(ImageSource2) {
             function CanvasSource2(id, options, dispatcher, eventedParent) {
               ImageSource2.call(this, id, options, dispatcher, eventedParent);
               if (!options.coordinates) {
@@ -203355,7 +203498,7 @@ void main() {
               return false;
             };
             return CanvasSource2;
-          }(ImageSource);
+          })(ImageSource);
           var sourceTypes = {
             vector: VectorTileSource,
             raster: RasterTileSource,
@@ -203758,7 +203901,7 @@ void main() {
           BaseValue.prototype.setDefault = function setDefault() {
             this.set(this.default);
           };
-          var ClearColor = function(BaseValue2) {
+          var ClearColor = (function(BaseValue2) {
             function ClearColor2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203779,8 +203922,8 @@ void main() {
               this.dirty = false;
             };
             return ClearColor2;
-          }(BaseValue);
-          var ClearDepth = function(BaseValue2) {
+          })(BaseValue);
+          var ClearDepth = (function(BaseValue2) {
             function ClearDepth2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203800,8 +203943,8 @@ void main() {
               this.dirty = false;
             };
             return ClearDepth2;
-          }(BaseValue);
-          var ClearStencil = function(BaseValue2) {
+          })(BaseValue);
+          var ClearStencil = (function(BaseValue2) {
             function ClearStencil2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203821,8 +203964,8 @@ void main() {
               this.dirty = false;
             };
             return ClearStencil2;
-          }(BaseValue);
-          var ColorMask = function(BaseValue2) {
+          })(BaseValue);
+          var ColorMask = (function(BaseValue2) {
             function ColorMask2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203848,8 +203991,8 @@ void main() {
               this.dirty = false;
             };
             return ColorMask2;
-          }(BaseValue);
-          var DepthMask = function(BaseValue2) {
+          })(BaseValue);
+          var DepthMask = (function(BaseValue2) {
             function DepthMask2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203869,8 +204012,8 @@ void main() {
               this.dirty = false;
             };
             return DepthMask2;
-          }(BaseValue);
-          var StencilMask = function(BaseValue2) {
+          })(BaseValue);
+          var StencilMask = (function(BaseValue2) {
             function StencilMask2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203890,8 +204033,8 @@ void main() {
               this.dirty = false;
             };
             return StencilMask2;
-          }(BaseValue);
-          var StencilFunc = function(BaseValue2) {
+          })(BaseValue);
+          var StencilFunc = (function(BaseValue2) {
             function StencilFunc2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203916,8 +204059,8 @@ void main() {
               this.dirty = false;
             };
             return StencilFunc2;
-          }(BaseValue);
-          var StencilOp = function(BaseValue2) {
+          })(BaseValue);
+          var StencilOp = (function(BaseValue2) {
             function StencilOp2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203943,8 +204086,8 @@ void main() {
               this.dirty = false;
             };
             return StencilOp2;
-          }(BaseValue);
-          var StencilTest = function(BaseValue2) {
+          })(BaseValue);
+          var StencilTest = (function(BaseValue2) {
             function StencilTest2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203969,8 +204112,8 @@ void main() {
               this.dirty = false;
             };
             return StencilTest2;
-          }(BaseValue);
-          var DepthRange = function(BaseValue2) {
+          })(BaseValue);
+          var DepthRange = (function(BaseValue2) {
             function DepthRange2() {
               BaseValue2.apply(this, arguments);
             }
@@ -203994,8 +204137,8 @@ void main() {
               this.dirty = false;
             };
             return DepthRange2;
-          }(BaseValue);
-          var DepthTest = function(BaseValue2) {
+          })(BaseValue);
+          var DepthTest = (function(BaseValue2) {
             function DepthTest2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204020,8 +204163,8 @@ void main() {
               this.dirty = false;
             };
             return DepthTest2;
-          }(BaseValue);
-          var DepthFunc = function(BaseValue2) {
+          })(BaseValue);
+          var DepthFunc = (function(BaseValue2) {
             function DepthFunc2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204041,8 +204184,8 @@ void main() {
               this.dirty = false;
             };
             return DepthFunc2;
-          }(BaseValue);
-          var Blend = function(BaseValue2) {
+          })(BaseValue);
+          var Blend = (function(BaseValue2) {
             function Blend2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204067,8 +204210,8 @@ void main() {
               this.dirty = false;
             };
             return Blend2;
-          }(BaseValue);
-          var BlendFunc = function(BaseValue2) {
+          })(BaseValue);
+          var BlendFunc = (function(BaseValue2) {
             function BlendFunc2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204093,8 +204236,8 @@ void main() {
               this.dirty = false;
             };
             return BlendFunc2;
-          }(BaseValue);
-          var BlendColor = function(BaseValue2) {
+          })(BaseValue);
+          var BlendColor = (function(BaseValue2) {
             function BlendColor2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204115,8 +204258,8 @@ void main() {
               this.dirty = false;
             };
             return BlendColor2;
-          }(BaseValue);
-          var BlendEquation = function(BaseValue2) {
+          })(BaseValue);
+          var BlendEquation = (function(BaseValue2) {
             function BlendEquation2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204136,8 +204279,8 @@ void main() {
               this.dirty = false;
             };
             return BlendEquation2;
-          }(BaseValue);
-          var CullFace = function(BaseValue2) {
+          })(BaseValue);
+          var CullFace = (function(BaseValue2) {
             function CullFace2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204162,8 +204305,8 @@ void main() {
               this.dirty = false;
             };
             return CullFace2;
-          }(BaseValue);
-          var CullFaceSide = function(BaseValue2) {
+          })(BaseValue);
+          var CullFaceSide = (function(BaseValue2) {
             function CullFaceSide2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204183,8 +204326,8 @@ void main() {
               this.dirty = false;
             };
             return CullFaceSide2;
-          }(BaseValue);
-          var FrontFace = function(BaseValue2) {
+          })(BaseValue);
+          var FrontFace = (function(BaseValue2) {
             function FrontFace2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204204,8 +204347,8 @@ void main() {
               this.dirty = false;
             };
             return FrontFace2;
-          }(BaseValue);
-          var Program = function(BaseValue2) {
+          })(BaseValue);
+          var Program = (function(BaseValue2) {
             function Program2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204225,8 +204368,8 @@ void main() {
               this.dirty = false;
             };
             return Program2;
-          }(BaseValue);
-          var ActiveTextureUnit = function(BaseValue2) {
+          })(BaseValue);
+          var ActiveTextureUnit = (function(BaseValue2) {
             function ActiveTextureUnit2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204246,8 +204389,8 @@ void main() {
               this.dirty = false;
             };
             return ActiveTextureUnit2;
-          }(BaseValue);
-          var Viewport = function(BaseValue2) {
+          })(BaseValue);
+          var Viewport = (function(BaseValue2) {
             function Viewport2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204274,8 +204417,8 @@ void main() {
               this.dirty = false;
             };
             return Viewport2;
-          }(BaseValue);
-          var BindFramebuffer = function(BaseValue2) {
+          })(BaseValue);
+          var BindFramebuffer = (function(BaseValue2) {
             function BindFramebuffer2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204296,8 +204439,8 @@ void main() {
               this.dirty = false;
             };
             return BindFramebuffer2;
-          }(BaseValue);
-          var BindRenderbuffer = function(BaseValue2) {
+          })(BaseValue);
+          var BindRenderbuffer = (function(BaseValue2) {
             function BindRenderbuffer2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204318,8 +204461,8 @@ void main() {
               this.dirty = false;
             };
             return BindRenderbuffer2;
-          }(BaseValue);
-          var BindTexture = function(BaseValue2) {
+          })(BaseValue);
+          var BindTexture = (function(BaseValue2) {
             function BindTexture2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204340,8 +204483,8 @@ void main() {
               this.dirty = false;
             };
             return BindTexture2;
-          }(BaseValue);
-          var BindVertexBuffer = function(BaseValue2) {
+          })(BaseValue);
+          var BindVertexBuffer = (function(BaseValue2) {
             function BindVertexBuffer2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204362,8 +204505,8 @@ void main() {
               this.dirty = false;
             };
             return BindVertexBuffer2;
-          }(BaseValue);
-          var BindElementBuffer = function(BaseValue2) {
+          })(BaseValue);
+          var BindElementBuffer = (function(BaseValue2) {
             function BindElementBuffer2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204381,8 +204524,8 @@ void main() {
               this.dirty = false;
             };
             return BindElementBuffer2;
-          }(BaseValue);
-          var BindVertexArrayOES = function(BaseValue2) {
+          })(BaseValue);
+          var BindVertexArrayOES = (function(BaseValue2) {
             function BindVertexArrayOES2(context) {
               BaseValue2.call(this, context);
               this.vao = context.extVertexArrayObject;
@@ -204403,8 +204546,8 @@ void main() {
               this.dirty = false;
             };
             return BindVertexArrayOES2;
-          }(BaseValue);
-          var PixelStoreUnpack = function(BaseValue2) {
+          })(BaseValue);
+          var PixelStoreUnpack = (function(BaseValue2) {
             function PixelStoreUnpack2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204425,8 +204568,8 @@ void main() {
               this.dirty = false;
             };
             return PixelStoreUnpack2;
-          }(BaseValue);
-          var PixelStoreUnpackPremultiplyAlpha = function(BaseValue2) {
+          })(BaseValue);
+          var PixelStoreUnpackPremultiplyAlpha = (function(BaseValue2) {
             function PixelStoreUnpackPremultiplyAlpha2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204447,8 +204590,8 @@ void main() {
               this.dirty = false;
             };
             return PixelStoreUnpackPremultiplyAlpha2;
-          }(BaseValue);
-          var PixelStoreUnpackFlipY = function(BaseValue2) {
+          })(BaseValue);
+          var PixelStoreUnpackFlipY = (function(BaseValue2) {
             function PixelStoreUnpackFlipY2() {
               BaseValue2.apply(this, arguments);
             }
@@ -204469,8 +204612,8 @@ void main() {
               this.dirty = false;
             };
             return PixelStoreUnpackFlipY2;
-          }(BaseValue);
-          var FramebufferAttachment = function(BaseValue2) {
+          })(BaseValue);
+          var FramebufferAttachment = (function(BaseValue2) {
             function FramebufferAttachment2(context, parent) {
               BaseValue2.call(this, context);
               this.context = context;
@@ -204484,8 +204627,8 @@ void main() {
               return null;
             };
             return FramebufferAttachment2;
-          }(BaseValue);
-          var ColorAttachment = function(FramebufferAttachment2) {
+          })(BaseValue);
+          var ColorAttachment = (function(FramebufferAttachment2) {
             function ColorAttachment2() {
               FramebufferAttachment2.apply(this, arguments);
             }
@@ -204507,8 +204650,8 @@ void main() {
               this.dirty = false;
             };
             return ColorAttachment2;
-          }(FramebufferAttachment);
-          var DepthAttachment = function(FramebufferAttachment2) {
+          })(FramebufferAttachment);
+          var DepthAttachment = (function(FramebufferAttachment2) {
             function DepthAttachment2() {
               FramebufferAttachment2.apply(this, arguments);
             }
@@ -204527,7 +204670,7 @@ void main() {
               this.dirty = false;
             };
             return DepthAttachment2;
-          }(FramebufferAttachment);
+          })(FramebufferAttachment);
           var Framebuffer = function Framebuffer2(context, width, height, hasDepth) {
             this.context = context;
             this.width = width;
@@ -204825,7 +204968,7 @@ void main() {
               this.bindVertexArrayOES.set(null);
             }
           };
-          var SourceCache = function(Evented) {
+          var SourceCache = (function(Evented) {
             function SourceCache2(id, options, dispatcher) {
               var this$1 = this;
               Evented.call(this);
@@ -205511,7 +205654,7 @@ void main() {
               });
             };
             return SourceCache2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           SourceCache.maxOverzooming = 10;
           SourceCache.maxUnderzooming = 3;
           function compareTileId(a, b) {
@@ -207830,7 +207973,7 @@ void main() {
             "setPitch"
           ]);
           var empty = emptyStyle();
-          var Style = function(Evented) {
+          var Style = (function(Evented) {
             function Style2(map, options) {
               var this$1 = this;
               if (options === void 0)
@@ -208801,7 +208944,7 @@ void main() {
               return performance2.makeRequest(params, callback);
             };
             return Style2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           Style.getSourceType = getType;
           Style.setSourceType = setType;
           Style.registerForPluginStateChange = performance2.registerForPluginStateChange;
@@ -212509,7 +212652,7 @@ void main() {
               amount: speed * (duration / 2)
             };
           }
-          var MapMouseEvent = function(Event) {
+          var MapMouseEvent = (function(Event) {
             function MapMouseEvent2(type, map, originalEvent, data) {
               if (data === void 0)
                 data = {};
@@ -212536,8 +212679,8 @@ void main() {
             };
             Object.defineProperties(MapMouseEvent2.prototype, prototypeAccessors2);
             return MapMouseEvent2;
-          }(performance2.Event);
-          var MapTouchEvent = function(Event) {
+          })(performance2.Event);
+          var MapTouchEvent = (function(Event) {
             function MapTouchEvent2(type, map, originalEvent) {
               var touches = type === "touchend" ? originalEvent.changedTouches : originalEvent.touches;
               var points = DOM.touchPos(map.getCanvasContainer(), touches);
@@ -212570,8 +212713,8 @@ void main() {
             };
             Object.defineProperties(MapTouchEvent2.prototype, prototypeAccessors$1);
             return MapTouchEvent2;
-          }(performance2.Event);
-          var MapWheelEvent = function(Event) {
+          })(performance2.Event);
+          var MapWheelEvent = (function(Event) {
             function MapWheelEvent2(type, map, originalEvent) {
               Event.call(this, type, { originalEvent });
               this._defaultPrevented = false;
@@ -212589,7 +212732,7 @@ void main() {
             };
             Object.defineProperties(MapWheelEvent2.prototype, prototypeAccessors$2);
             return MapWheelEvent2;
-          }(performance2.Event);
+          })(performance2.Event);
           var MapEventHandler = function MapEventHandler2(map, options) {
             this._map = map;
             this._clickTolerance = options.clickTolerance;
@@ -213047,7 +213190,7 @@ void main() {
           MouseHandler.prototype.isActive = function isActive() {
             return this._active;
           };
-          var MousePanHandler = function(MouseHandler2) {
+          var MousePanHandler = (function(MouseHandler2) {
             function MousePanHandler2() {
               MouseHandler2.apply(this, arguments);
             }
@@ -213071,8 +213214,8 @@ void main() {
               };
             };
             return MousePanHandler2;
-          }(MouseHandler);
-          var MouseRotateHandler = function(MouseHandler2) {
+          })(MouseHandler);
+          var MouseRotateHandler = (function(MouseHandler2) {
             function MouseRotateHandler2() {
               MouseHandler2.apply(this, arguments);
             }
@@ -213095,8 +213238,8 @@ void main() {
               e.preventDefault();
             };
             return MouseRotateHandler2;
-          }(MouseHandler);
-          var MousePitchHandler = function(MouseHandler2) {
+          })(MouseHandler);
+          var MousePitchHandler = (function(MouseHandler2) {
             function MousePitchHandler2() {
               MouseHandler2.apply(this, arguments);
             }
@@ -213119,7 +213262,7 @@ void main() {
               e.preventDefault();
             };
             return MousePitchHandler2;
-          }(MouseHandler);
+          })(MouseHandler);
           var TouchPanHandler = function TouchPanHandler2(options) {
             this._minTouches = 1;
             this._clickTolerance = options.clickTolerance || 1;
@@ -213284,7 +213427,7 @@ void main() {
           function getZoomDelta(distance, lastDistance) {
             return Math.log(distance / lastDistance) / Math.LN2;
           }
-          var TouchZoomHandler = function(TwoTouchHandler2) {
+          var TouchZoomHandler = (function(TwoTouchHandler2) {
             function TouchZoomHandler2() {
               TwoTouchHandler2.apply(this, arguments);
             }
@@ -213313,12 +213456,12 @@ void main() {
               };
             };
             return TouchZoomHandler2;
-          }(TwoTouchHandler);
+          })(TwoTouchHandler);
           var ROTATION_THRESHOLD = 25;
           function getBearingDelta(a, b) {
             return a.angleWith(b) * 180 / Math.PI;
           }
-          var TouchRotateHandler = function(TwoTouchHandler2) {
+          var TouchRotateHandler = (function(TwoTouchHandler2) {
             function TouchRotateHandler2() {
               TwoTouchHandler2.apply(this, arguments);
             }
@@ -213356,12 +213499,12 @@ void main() {
               return Math.abs(bearingDeltaSinceStart) < threshold;
             };
             return TouchRotateHandler2;
-          }(TwoTouchHandler);
+          })(TwoTouchHandler);
           function isVertical(vector) {
             return Math.abs(vector.y) > Math.abs(vector.x);
           }
           var ALLOWED_SINGLE_TOUCH_TIME = 100;
-          var TouchPitchHandler = function(TwoTouchHandler2) {
+          var TouchPitchHandler = (function(TwoTouchHandler2) {
             function TouchPitchHandler2() {
               TwoTouchHandler2.apply(this, arguments);
             }
@@ -213418,7 +213561,7 @@ void main() {
               return isVertical(vectorA) && isVertical(vectorB) && isSameDirection;
             };
             return TouchPitchHandler2;
-          }(TwoTouchHandler);
+          })(TwoTouchHandler);
           var defaultOptions = {
             panStep: 100,
             bearingStep: 15,
@@ -213924,7 +214067,7 @@ void main() {
           var isMoving = function(p) {
             return p.zoom || p.drag || p.pitch || p.rotate;
           };
-          var RenderFrameEvent = function(Event) {
+          var RenderFrameEvent = (function(Event) {
             function RenderFrameEvent2() {
               Event.apply(this, arguments);
             }
@@ -213933,7 +214076,7 @@ void main() {
             RenderFrameEvent2.prototype = Object.create(Event && Event.prototype);
             RenderFrameEvent2.prototype.constructor = RenderFrameEvent2;
             return RenderFrameEvent2;
-          }(performance2.Event);
+          })(performance2.Event);
           function hasChange(result) {
             return result.panDelta && result.panDelta.mag() || result.zoomDelta || result.bearingDelta || result.pitchDelta;
           }
@@ -214423,7 +214566,7 @@ void main() {
               this._frameId = this._requestFrame();
             }
           };
-          var Camera = function(Evented) {
+          var Camera = (function(Evented) {
             function Camera2(transform, options) {
               Evented.call(this);
               this._moving = false;
@@ -214918,7 +215061,7 @@ void main() {
               center.lng += delta > 180 ? -360 : delta < -180 ? 360 : 0;
             };
             return Camera2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           var AttributionControl = function AttributionControl2(options) {
             if (options === void 0)
               options = {};
@@ -215250,7 +215393,7 @@ void main() {
             fadeDuration: 300,
             crossSourceCollisions: true
           };
-          var Map2 = function(Camera2) {
+          var Map2 = (function(Camera2) {
             function Map3(options) {
               var this$1 = this;
               options = performance2.extend({}, defaultOptions$1, options);
@@ -216288,7 +216431,7 @@ void main() {
             };
             Object.defineProperties(Map3.prototype, prototypeAccessors2);
             return Map3;
-          }(Camera);
+          })(Camera);
           function removeNode(node) {
             if (node.parentNode) {
               node.parentNode.removeChild(node);
@@ -216555,7 +216698,7 @@ void main() {
             }
             classList.add("mapboxgl-" + prefix + "-anchor-" + anchor);
           }
-          var Marker = function(Evented) {
+          var Marker = (function(Evented) {
             function Marker2(options, legacyOptions) {
               Evented.call(this);
               if (options instanceof performance2.window.HTMLElement || legacyOptions) {
@@ -216957,7 +217100,7 @@ void main() {
               return this._pitchAlignment;
             };
             return Marker2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           var defaultOptions$3 = {
             positionOptions: {
               enableHighAccuracy: false,
@@ -216985,7 +217128,7 @@ void main() {
           }
           var numberOfWatches = 0;
           var noTimeout = false;
-          var GeolocateControl = function(Evented) {
+          var GeolocateControl = (function(Evented) {
             function GeolocateControl2(options) {
               Evented.call(this);
               this.options = performance2.extend({}, defaultOptions$3, options);
@@ -217312,7 +217455,7 @@ void main() {
               }
             };
             return GeolocateControl2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           var defaultOptions$4 = {
             maxWidth: 100,
             unit: "metric"
@@ -217501,7 +217644,7 @@ void main() {
             "select:not([disabled])",
             "textarea:not([disabled])"
           ].join(", ");
-          var Popup = function(Evented) {
+          var Popup = (function(Evented) {
             function Popup2(options) {
               Evented.call(this);
               this.options = performance2.extend(Object.create(defaultOptions$5), options);
@@ -217754,7 +217897,7 @@ void main() {
               this.remove();
             };
             return Popup2;
-          }(performance2.Evented);
+          })(performance2.Evented);
           function normalizeOffset(offset) {
             if (!offset) {
               return normalizeOffset(new performance2.Point(0, 0));
@@ -217879,7 +218022,7 @@ void main() {
           return exported;
         });
         return mapboxgl;
-      });
+      }));
     }
   });
 
@@ -223208,7 +223351,7 @@ void main() {
     "node_modules/maplibre-gl/dist/maplibre-gl.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && false ? define(factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, global2.maplibregl = factory());
-      })(exports, function() {
+      })(exports, (function() {
         "use strict";
         var maplibregl = {};
         var modules = {};
@@ -223227,10 +223370,10 @@ void main() {
           return maplibregl;
         }
         ;
-        define2("shared", ["exports"], function(t) {
+        define2("shared", ["exports"], (function(t) {
           "use strict";
           function e(t4, e2, r2, n2) {
-            return new (r2 || (r2 = Promise))(function(i2, s2) {
+            return new (r2 || (r2 = Promise))((function(i2, s2) {
               function a2(t5) {
                 try {
                   l2(n2.next(t5));
@@ -223247,12 +223390,12 @@ void main() {
               }
               function l2(t5) {
                 var e3;
-                t5.done ? i2(t5.value) : (e3 = t5.value, e3 instanceof r2 ? e3 : new r2(function(t6) {
+                t5.done ? i2(t5.value) : (e3 = t5.value, e3 instanceof r2 ? e3 : new r2((function(t6) {
                   t6(e3);
-                })).then(a2, o2);
+                }))).then(a2, o2);
               }
               l2((n2 = n2.apply(t4, e2 || [])).next());
-            });
+            }));
           }
           function r(t4) {
             return t4 && t4.__esModule && Object.prototype.hasOwnProperty.call(t4, "default") ? t4.default : t4;
@@ -223430,17 +223573,17 @@ void main() {
           }
           const z = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=";
           function P(t4, r2, n2, i2, s2) {
-            return e(this, void 0, void 0, function* () {
+            return e(this, void 0, void 0, (function* () {
               if ("undefined" == typeof VideoFrame) throw new Error("VideoFrame not supported");
               const e2 = new VideoFrame(t4, { timestamp: 0 });
               try {
                 const a2 = null == e2 ? void 0 : e2.format;
                 if (!a2 || !a2.startsWith("BGR") && !a2.startsWith("RGB")) throw new Error(`Unrecognized format ${a2}`);
                 const o2 = a2.startsWith("BGR"), l2 = new Uint8ClampedArray(i2 * s2 * 4);
-                if (yield e2.copyTo(l2, function(t5, e3, r3, n3, i3) {
+                if (yield e2.copyTo(l2, (function(t5, e3, r3, n3, i3) {
                   const s3 = 4 * Math.max(-e3, 0), a3 = (Math.max(0, r3) - r3) * n3 * 4 + s3, o3 = 4 * n3, l3 = Math.max(0, e3), u2 = Math.max(0, r3);
                   return { rect: { x: l3, y: u2, width: Math.min(t5.width, e3 + n3) - l3, height: Math.min(t5.height, r3 + i3) - u2 }, layout: [{ offset: a3, stride: o3 }] };
-                }(t4, r2, n2, i2, s2)), o2) for (let t5 = 0; t5 < l2.length; t5 += 4) {
+                })(t4, r2, n2, i2, s2)), o2) for (let t5 = 0; t5 < l2.length; t5 += 4) {
                   const e3 = l2[t5];
                   l2[t5] = l2[t5 + 2], l2[t5 + 2] = e3;
                 }
@@ -223448,7 +223591,7 @@ void main() {
               } finally {
                 e2.close();
               }
-            });
+            }));
           }
           let C2, B2;
           const V = "AbortError";
@@ -223472,8 +223615,8 @@ void main() {
               if (k(self) && self.worker && self.worker.actor) return self.worker.actor.sendAsync({ type: "GR", data: t4, targetMapId: $ }, r2);
             }
             if (!(/^file:/.test(n2 = t4.url) || /^file:/.test(D2()) && !/^\w+:/.test(n2))) {
-              if (fetch && Request && AbortController && Object.prototype.hasOwnProperty.call(Request.prototype, "signal")) return function(t5, r3) {
-                return e(this, void 0, void 0, function* () {
+              if (fetch && Request && AbortController && Object.prototype.hasOwnProperty.call(Request.prototype, "signal")) return (function(t5, r3) {
+                return e(this, void 0, void 0, (function* () {
                   const e2 = new Request(t5.url, { method: t5.method || "GET", body: t5.body, credentials: t5.credentials, headers: t5.headers, cache: t5.cache, referrer: D2(), signal: r3.signal });
                   "json" !== t5.type || e2.headers.has("Accept") || e2.headers.set("Accept", "application/json");
                   const n3 = yield fetch(e2);
@@ -223486,13 +223629,13 @@ void main() {
                   const s2 = yield i2;
                   if (r3.signal.aborted) throw E2();
                   return { data: s2, cacheControl: n3.headers.get("Cache-Control"), expires: n3.headers.get("Expires") };
-                });
-              }(t4, r2);
+                }));
+              })(t4, r2);
               if (k(self) && self.worker && self.worker.actor) return self.worker.actor.sendAsync({ type: "GR", data: t4, mustQueue: true, targetMapId: $ }, r2);
             }
             var n2;
-            return function(t5, e2) {
-              return new Promise((r3, n3) => {
+            return (function(t5, e2) {
+              return new Promise(((r3, n3) => {
                 var i2;
                 const s2 = new XMLHttpRequest();
                 s2.open(t5.method || "GET", t5.url, true), "arrayBuffer" !== t5.type && "image" !== t5.type || (s2.responseType = "arraybuffer");
@@ -223512,11 +223655,11 @@ void main() {
                     const e3 = new Blob([s2.response], { type: s2.getResponseHeader("Content-Type") });
                     n3(new L(s2.status, s2.statusText, t5.url, e3));
                   }
-                }, e2.signal.addEventListener("abort", () => {
+                }, e2.signal.addEventListener("abort", (() => {
                   s2.abort(), n3(E2());
-                }), s2.send(t5.body);
-              });
-            }(t4, r2);
+                })), s2.send(t5.body);
+              }));
+            })(t4, r2);
           };
           function j(t4) {
             if (!t4 || t4.indexOf("://") <= 0 || 0 === t4.indexOf("data:image/") || 0 === t4.indexOf("blob:")) return true;
@@ -223550,7 +223693,7 @@ void main() {
               return U(t4, e2, this._listeners), U(t4, e2, this._oneTimeListeners), this;
             }
             once(t4, e2) {
-              return e2 ? (this._oneTimeListeners = this._oneTimeListeners || {}, R(t4, e2, this._oneTimeListeners), this) : new Promise((e3) => this.once(t4, e3));
+              return e2 ? (this._oneTimeListeners = this._oneTimeListeners || {}, R(t4, e2, this._oneTimeListeners), this) : new Promise(((e3) => this.once(t4, e3)));
             }
             fire(t4, e2) {
               "string" == typeof t4 && (t4 = new q(t4, e2 || {}));
@@ -223578,9 +223721,9 @@ void main() {
           function X(t4, e2) {
             const r2 = {};
             for (const e3 in t4) "ref" !== e3 && (r2[e3] = t4[e3]);
-            return K2.forEach((t5) => {
+            return K2.forEach(((t5) => {
               t5 in e2 && (r2[t5] = e2[t5]);
-            }), r2;
+            })), r2;
           }
           function H(t4, e2) {
             if (Array.isArray(t4)) {
@@ -223681,10 +223824,10 @@ void main() {
             return `Expected ${wt(t4)} but found ${wt(e2)} instead.`;
           }
           function St(t4, e2) {
-            return e2.some((e3) => e3.kind === t4.kind);
+            return e2.some(((e3) => e3.kind === t4.kind));
           }
           function kt(t4, e2) {
-            return e2.some((e3) => "null" === e3 ? null === t4 : "array" === e3 ? Array.isArray(t4) : "object" === e3 ? t4 && !Array.isArray(t4) && "object" == typeof t4 : e3 === typeof t4);
+            return e2.some(((e3) => "null" === e3 ? null === t4 : "array" === e3 ? Array.isArray(t4) : "object" === e3 ? t4 && !Array.isArray(t4) && "object" == typeof t4 : e3 === typeof t4));
           }
           function Mt(t4, e2) {
             return "array" === t4.kind && "array" === e2.kind ? t4.itemType.kind === e2.itemType.kind && "number" == typeof t4.N : t4.kind === e2.kind;
@@ -223736,7 +223879,7 @@ void main() {
             static parse(t4) {
               if (t4 instanceof Kt) return t4;
               if ("string" != typeof t4) return;
-              const e2 = function(t5) {
+              const e2 = (function(t5) {
                 if ("transparent" === (t5 = t5.toLowerCase().trim())) return [0, 0, 0, 0];
                 const e3 = Gt[t5];
                 if (e3) {
@@ -223767,16 +223910,16 @@ void main() {
                   const [t6, e4, n2, i2, s2, a2, o2, l2, u2] = r2, c2 = [n2 || " ", s2 || " ", o2].join("");
                   if ("  " === c2 || "  /" === c2 || ",," === c2 || ",,," === c2) {
                     const t7 = [+e4, Nt(+i2, 0, 100), Nt(+a2, 0, 100), l2 ? qt(+l2, u2) : 1];
-                    if (Zt(t7)) return function([t8, e5, r3, n3]) {
+                    if (Zt(t7)) return (function([t8, e5, r3, n3]) {
                       function i3(n4) {
                         const i4 = (n4 + t8 / 30) % 12, s3 = e5 * Math.min(r3, 1 - r3);
                         return r3 - s3 * Math.max(-1, Math.min(i4 - 3, 9 - i4, 1));
                       }
                       return t8 = Tt(t8), e5 /= 100, r3 /= 100, [i3(0), i3(8), i3(4), n3];
-                    }(t7);
+                    })(t7);
                   }
                 }
-              }(t4);
+              })(t4);
               return e2 ? new Kt(...e2, false) : void 0;
             }
             get rgb() {
@@ -223784,10 +223927,10 @@ void main() {
               return this.overwriteGetter("rgb", [t4 / i2, e2 / i2, r2 / i2, n2]);
             }
             get hcl() {
-              return this.overwriteGetter("hcl", function(t4) {
+              return this.overwriteGetter("hcl", (function(t4) {
                 const [e2, r2, n2, i2] = $t(t4), s2 = Math.sqrt(r2 * r2 + n2 * n2);
                 return [Math.round(1e4 * s2) ? Tt(Math.atan2(n2, r2) * Ft) : NaN, s2, e2, i2];
-              }(this.rgb));
+              })(this.rgb));
             }
             get lab() {
               return this.overwriteGetter("lab", $t(this.rgb));
@@ -223797,7 +223940,7 @@ void main() {
             }
             toString() {
               const [t4, e2, r2, n2] = this.rgb;
-              return `rgba(${[t4, e2, r2].map((t5) => Math.round(255 * t5)).join(",")},${n2})`;
+              return `rgba(${[t4, e2, r2].map(((t5) => Math.round(255 * t5))).join(",")},${n2})`;
             }
           }
           Kt.black = new Kt(0, 0, 0, 1), Kt.white = new Kt(1, 1, 1, 1), Kt.transparent = new Kt(0, 0, 0, 0), Kt.red = new Kt(1, 0, 0, 1);
@@ -223825,13 +223968,13 @@ void main() {
               return new Yt([new Ht(t4, null, null, null, null)]);
             }
             isEmpty() {
-              return 0 === this.sections.length || !this.sections.some((t4) => 0 !== t4.text.length || t4.image && 0 !== t4.image.name.length);
+              return 0 === this.sections.length || !this.sections.some(((t4) => 0 !== t4.text.length || t4.image && 0 !== t4.image.name.length));
             }
             static factory(t4) {
               return t4 instanceof Yt ? t4 : Yt.fromString(t4);
             }
             toString() {
-              return 0 === this.sections.length ? "" : this.sections.map((t4) => t4.text).join("");
+              return 0 === this.sections.length ? "" : this.sections.map(((t4) => t4.text)).join("");
             }
           }
           class Jt {
@@ -224011,7 +224154,7 @@ void main() {
               this.args.forEach(t4);
             }
             outputDefined() {
-              return this.args.every((t4) => t4.outputDefined());
+              return this.args.every(((t4) => t4.outputDefined()));
             }
           }
           const ue = { "to-boolean": ht, "to-color": pt, "to-number": ut, "to-string": ct };
@@ -224086,7 +224229,7 @@ void main() {
               this.args.forEach(t4);
             }
             outputDefined() {
-              return this.args.every((t4) => t4.outputDefined());
+              return this.args.every(((t4) => t4.outputDefined()));
             }
           }
           const he = ["Unknown", "Point", "LineString", "Polygon"];
@@ -224116,7 +224259,7 @@ void main() {
           }
           class fe {
             constructor(t4, e2, r2 = [], n2, i2 = new ot(), s2 = []) {
-              this.registry = t4, this.path = r2, this.key = r2.map((t5) => `[${t5}]`).join(""), this.scope = i2, this.errors = s2, this.expectedType = n2, this._isConstant = e2;
+              this.registry = t4, this.path = r2, this.key = r2.map(((t5) => `[${t5}]`)).join(""), this.scope = i2, this.errors = s2, this.expectedType = n2, this._isConstant = e2;
             }
             parse(t4, e2, r2, n2, i2 = {}) {
               return e2 ? this.concat(e2, r2, n2)._parse(t4, i2) : this._parse(t4, i2);
@@ -224161,7 +224304,7 @@ void main() {
               return new fe(this.registry, this._isConstant, n2, e2 || null, i2, this.errors);
             }
             error(t4, ...e2) {
-              const r2 = `${this.key}${e2.map((t5) => `[${t5}]`).join("")}`;
+              const r2 = `${this.key}${e2.map(((t5) => `[${t5}]`)).join("")}`;
               this.errors.push(new at(r2, t4));
             }
             checkSubtype(t4, e2) {
@@ -224338,7 +224481,7 @@ void main() {
               t4(this.input), this.outputs.forEach(t4), t4(this.otherwise);
             }
             outputDefined() {
-              return this.outputs.every((t4) => t4.outputDefined()) && this.otherwise.outputDefined();
+              return this.outputs.every(((t4) => t4.outputDefined())) && this.otherwise.outputDefined();
             }
           }
           class be {
@@ -224372,7 +224515,7 @@ void main() {
               t4(this.otherwise);
             }
             outputDefined() {
-              return this.branches.every(([t4, e2]) => e2.outputDefined()) && this.otherwise.outputDefined();
+              return this.branches.every((([t4, e2]) => e2.outputDefined())) && this.otherwise.outputDefined();
             }
           }
           class we {
@@ -224452,7 +224595,7 @@ void main() {
               for (const e2 of this.outputs) t4(e2);
             }
             outputDefined() {
-              return this.outputs.every((t4) => t4.outputDefined());
+              return this.outputs.every(((t4) => t4.outputDefined()));
             }
           }
           function Se(t4) {
@@ -224489,7 +224632,7 @@ void main() {
             return t4 + r2 * (e2 - t4);
           }
           function Pe(t4, e2, r2) {
-            return t4.map((t5, n2) => ze(t5, e2[n2], r2));
+            return t4.map(((t5, n2) => ze(t5, e2[n2], r2)));
           }
           const Ce = { number: ze, color: function(t4, e2, r2, n2 = "rgb") {
             switch (n2) {
@@ -224505,9 +224648,9 @@ void main() {
                   let t5 = o2 - n3;
                   o2 > n3 && t5 > 180 ? t5 -= 360 : o2 < n3 && n3 - o2 > 180 && (t5 += 360), h2 = n3 + r2 * t5;
                 }
-                const [f2, d2, y2, m2] = function([t5, e3, r3, n4]) {
+                const [f2, d2, y2, m2] = (function([t5, e3, r3, n4]) {
                   return t5 = isNaN(t5) ? 0 : t5 * Et, Ot([r3, Math.cos(t5) * e3, Math.sin(t5) * e3, n4]);
-                }([h2, null != p2 ? p2 : ze(i2, l2, r2), ze(s2, u2, r2), ze(a2, c2, r2)]);
+                })([h2, null != p2 ? p2 : ze(i2, l2, r2), ze(s2, u2, r2), ze(a2, c2, r2)]);
                 return new Kt(f2, d2, y2, m2, false);
               }
               case "lab": {
@@ -224556,7 +224699,7 @@ void main() {
                 if ("cubic-bezier" !== n2[0]) return e2.error(`Unknown interpolation type ${String(n2[0])}`, 1, 0);
                 {
                   const t5 = n2.slice(1);
-                  if (4 !== t5.length || t5.some((t6) => "number" != typeof t6 || t6 < 0 || t6 > 1)) return e2.error("Cubic bezier interpolation requires four numeric arguments with values between 0 and 1.", 1);
+                  if (4 !== t5.length || t5.some(((t6) => "number" != typeof t6 || t6 < 0 || t6 > 1))) return e2.error("Cubic bezier interpolation requires four numeric arguments with values between 0 and 1.", 1);
                   n2 = { name: "cubic-bezier", controlPoints: t5 };
                 }
               }
@@ -224598,7 +224741,7 @@ void main() {
               for (const e2 of this.outputs) t4(e2);
             }
             outputDefined() {
-              return this.outputs.every((t4) => t4.outputDefined());
+              return this.outputs.every(((t4) => t4.outputDefined()));
             }
           }
           function Ve(t4, e2, r2, n2) {
@@ -224621,7 +224764,7 @@ void main() {
                 r2 = r2 || t5.type, i2.push(t5);
               }
               if (!r2) throw new Error("No output type");
-              const s2 = n2 && i2.some((t5) => At(n2, t5.type));
+              const s2 = n2 && i2.some(((t5) => At(n2, t5.type)));
               return new Ee(s2 ? dt : r2, i2);
             }
             evaluate(t4) {
@@ -224633,7 +224776,7 @@ void main() {
               this.args.forEach(t4);
             }
             outputDefined() {
-              return this.args.every((t4) => t4.outputDefined());
+              return this.args.every(((t4) => t4.outputDefined()));
             }
           }
           function Fe(t4, e2) {
@@ -224686,29 +224829,29 @@ void main() {
               }
             };
           }
-          const Le = $e("==", function(t4, e2, r2) {
+          const Le = $e("==", (function(t4, e2, r2) {
             return e2 === r2;
-          }, Te), De = $e("!=", function(t4, e2, r2) {
+          }), Te), De = $e("!=", (function(t4, e2, r2) {
             return e2 !== r2;
-          }, function(t4, e2, r2, n2) {
+          }), (function(t4, e2, r2, n2) {
             return !Te(0, e2, r2, n2);
-          }), Oe = $e("<", function(t4, e2, r2) {
+          })), Oe = $e("<", (function(t4, e2, r2) {
             return e2 < r2;
-          }, function(t4, e2, r2, n2) {
+          }), (function(t4, e2, r2, n2) {
             return n2.compare(e2, r2) < 0;
-          }), je = $e(">", function(t4, e2, r2) {
+          })), je = $e(">", (function(t4, e2, r2) {
             return e2 > r2;
-          }, function(t4, e2, r2, n2) {
+          }), (function(t4, e2, r2, n2) {
             return n2.compare(e2, r2) > 0;
-          }), Re = $e("<=", function(t4, e2, r2) {
+          })), Re = $e("<=", (function(t4, e2, r2) {
             return e2 <= r2;
-          }, function(t4, e2, r2, n2) {
+          }), (function(t4, e2, r2, n2) {
             return n2.compare(e2, r2) <= 0;
-          }), Ue = $e(">=", function(t4, e2, r2) {
+          })), Ue = $e(">=", (function(t4, e2, r2) {
             return e2 >= r2;
-          }, function(t4, e2, r2, n2) {
+          }), (function(t4, e2, r2, n2) {
             return n2.compare(e2, r2) >= 0;
-          });
+          }));
           class qe {
             constructor(t4, e2, r2) {
               this.type = yt, this.locale = r2, this.caseSensitive = t4, this.diacriticSensitive = e2;
@@ -224796,10 +224939,10 @@ void main() {
               return new Ze(n2);
             }
             evaluate(t4) {
-              return new Yt(this.sections.map((e2) => {
+              return new Yt(this.sections.map(((e2) => {
                 const r2 = e2.content.evaluate(t4);
                 return ne(r2) === xt ? new Ht("", r2, null, null, null) : new Ht(ie(r2), null, e2.scale ? e2.scale.evaluate(t4) : null, e2.font ? e2.font.evaluate(t4).join(",") : null, e2.textColor ? e2.textColor.evaluate(t4) : null);
-              }));
+              })));
             }
             eachChild(t4) {
               for (const e2 of this.sections) t4(e2.content), e2.scale && t4(e2.scale), e2.font && t4(e2.font), e2.textColor && t4(e2.textColor);
@@ -224981,7 +225124,7 @@ void main() {
             }
             evaluate(t4) {
               if (null != t4.geometry() && null != t4.canonicalID()) {
-                if ("Point" === t4.geometryType()) return function(t5, e2) {
+                if ("Point" === t4.geometryType()) return (function(t5, e2) {
                   const r2 = [1 / 0, 1 / 0, -1 / 0, -1 / 0], n2 = [1 / 0, 1 / 0, -1 / 0, -1 / 0], i2 = t5.canonicalID();
                   if ("Polygon" === e2.type) {
                     const s2 = or(e2.coordinates, n2, i2), a2 = cr(t5.geometry(), r2, n2, i2);
@@ -224994,8 +225137,8 @@ void main() {
                     for (const t6 of a2) if (!nr(t6, s2)) return false;
                   }
                   return true;
-                }(t4, this.geometries);
-                if ("LineString" === t4.geometryType()) return function(t5, e2) {
+                })(t4, this.geometries);
+                if ("LineString" === t4.geometryType()) return (function(t5, e2) {
                   const r2 = [1 / 0, 1 / 0, -1 / 0, -1 / 0], n2 = [1 / 0, 1 / 0, -1 / 0, -1 / 0], i2 = t5.canonicalID();
                   if ("Polygon" === e2.type) {
                     const s2 = or(e2.coordinates, n2, i2), a2 = hr(t5.geometry(), r2, n2, i2);
@@ -225008,7 +225151,7 @@ void main() {
                     for (const t6 of a2) if (!sr(t6, s2)) return false;
                   }
                   return true;
-                }(t4, this.geometries);
+                })(t4, this.geometries);
               }
               return false;
             }
@@ -225019,7 +225162,7 @@ void main() {
             }
           }
           let fr = class {
-            constructor(t4 = [], e2 = (t5, e3) => t5 < e3 ? -1 : t5 > e3 ? 1 : 0) {
+            constructor(t4 = [], e2 = ((t5, e3) => t5 < e3 ? -1 : t5 > e3 ? 1 : 0)) {
               if (this.data = t4, this.length = this.data.length, this.compare = e2, this.length > 0) for (let t5 = (this.length >> 1) - 1; t5 >= 0; t5--) this._down(t5);
             }
             push(t4) {
@@ -225297,7 +225440,7 @@ void main() {
             return a2;
           }
           function Zr(t4) {
-            return "MultiPolygon" === t4.type ? t4.coordinates.map((t5) => ({ type: "Polygon", coordinates: t5 })) : "MultiLineString" === t4.type ? t4.coordinates.map((t5) => ({ type: "LineString", coordinates: t5 })) : "MultiPoint" === t4.type ? t4.coordinates.map((t5) => ({ type: "Point", coordinates: t5 })) : [t4];
+            return "MultiPolygon" === t4.type ? t4.coordinates.map(((t5) => ({ type: "Polygon", coordinates: t5 }))) : "MultiLineString" === t4.type ? t4.coordinates.map(((t5) => ({ type: "LineString", coordinates: t5 }))) : "MultiPoint" === t4.type ? t4.coordinates.map(((t5) => ({ type: "Point", coordinates: t5 }))) : [t4];
           }
           class Gr {
             constructor(t4, e2) {
@@ -225307,7 +225450,7 @@ void main() {
               if (2 !== t4.length) return e2.error(`'distance' expression requires exactly one argument, but found ${t4.length - 1} instead.`);
               if (re(t4[1])) {
                 const e3 = t4[1];
-                if ("FeatureCollection" === e3.type) return new Gr(e3, e3.features.map((t5) => Zr(t5.geometry)).flat());
+                if ("FeatureCollection" === e3.type) return new Gr(e3, e3.features.map(((t5) => Zr(t5.geometry))).flat());
                 if ("Feature" === e3.type) return new Gr(e3, Zr(e3.geometry));
                 if ("type" in e3 && "coordinates" in e3) return new Gr(e3, Zr(e3));
               }
@@ -225315,8 +225458,8 @@ void main() {
             }
             evaluate(t4) {
               if (null != t4.geometry() && null != t4.canonicalID()) {
-                if ("Point" === t4.geometryType()) return function(t5, e2) {
-                  const r2 = t5.geometry(), n2 = r2.flat().map((e3) => Ye([e3.x, e3.y], t5.canonical));
+                if ("Point" === t4.geometryType()) return (function(t5, e2) {
+                  const r2 = t5.geometry(), n2 = r2.flat().map(((e3) => Ye([e3.x, e3.y], t5.canonical)));
                   if (0 === r2.length) return NaN;
                   const i2 = new Sr(n2[0][1]);
                   let s2 = 1 / 0;
@@ -225334,9 +225477,9 @@ void main() {
                     if (0 === s2) return s2;
                   }
                   return s2;
-                }(t4, this.geometries);
-                if ("LineString" === t4.geometryType()) return function(t5, e2) {
-                  const r2 = t5.geometry(), n2 = r2.flat().map((e3) => Ye([e3.x, e3.y], t5.canonical));
+                })(t4, this.geometries);
+                if ("LineString" === t4.geometryType()) return (function(t5, e2) {
+                  const r2 = t5.geometry(), n2 = r2.flat().map(((e3) => Ye([e3.x, e3.y], t5.canonical)));
                   if (0 === r2.length) return NaN;
                   const i2 = new Sr(n2[0][1]);
                   let s2 = 1 / 0;
@@ -225354,11 +225497,11 @@ void main() {
                     if (0 === s2) return s2;
                   }
                   return s2;
-                }(t4, this.geometries);
-                if ("Polygon" === t4.geometryType()) return function(t5, e2) {
+                })(t4, this.geometries);
+                if ("Polygon" === t4.geometryType()) return (function(t5, e2) {
                   const r2 = t5.geometry();
                   if (0 === r2.length || 0 === r2[0].length) return NaN;
-                  const n2 = xr(r2, 0).map((e3) => e3.map((e4) => e4.map((e5) => Ye([e5.x, e5.y], t5.canonical)))), i2 = new Sr(n2[0][0][0][1]);
+                  const n2 = xr(r2, 0).map(((e3) => e3.map(((e4) => e4.map(((e5) => Ye([e5.x, e5.y], t5.canonical))))))), i2 = new Sr(n2[0][0][0][1]);
                   let s2 = 1 / 0;
                   for (const t6 of e2) for (const e3 of n2) {
                     switch (t6.type) {
@@ -225374,7 +225517,7 @@ void main() {
                     if (0 === s2) return s2;
                   }
                   return s2;
-                }(t4, this.geometries);
+                })(t4, this.geometries);
               }
               return NaN;
             }
@@ -225401,7 +225544,7 @@ void main() {
             static parse(t4, e2) {
               const r2 = t4[0], n2 = Xr.definitions[r2];
               if (!n2) return e2.error(`Unknown expression "${r2}". If you wanted a literal array, use ["literal", [...]].`, 0);
-              const i2 = Array.isArray(n2) ? n2[0] : n2.type, s2 = Array.isArray(n2) ? [[n2[1], n2[2]]] : n2.overloads, a2 = s2.filter(([e3]) => !Array.isArray(e3) || e3.length === t4.length - 1);
+              const i2 = Array.isArray(n2) ? n2[0] : n2.type, s2 = Array.isArray(n2) ? [[n2[1], n2[2]]] : n2.overloads, a2 = s2.filter((([e3]) => !Array.isArray(e3) || e3.length === t4.length - 1));
               let o2 = null;
               for (const [n3, s3] of a2) {
                 o2 = new fe(e2.registry, Qr, e2.path, null, e2.scope);
@@ -225426,10 +225569,10 @@ void main() {
               }
               if (1 === a2.length) e2.errors.push(...o2.errors);
               else {
-                const r3 = (a2.length ? a2 : s2).map(([t5]) => {
+                const r3 = (a2.length ? a2 : s2).map((([t5]) => {
                   return e3 = t5, Array.isArray(e3) ? `(${e3.map(wt).join(", ")})` : `(${wt(e3.type)}...)`;
                   var e3;
-                }).join(" | "), n3 = [];
+                })).join(" | "), n3 = [];
                 for (let r4 = 1; r4 < t4.length; r4++) {
                   const i3 = e2.parse(t4[r4], 1 + n3.length);
                   if (!i3) return null;
@@ -225468,9 +225611,9 @@ void main() {
             if (t4 instanceof Gr) return false;
             const e2 = t4 instanceof ce || t4 instanceof le;
             let r2 = true;
-            return t4.eachChild((t5) => {
+            return t4.eachChild(((t5) => {
               r2 = e2 ? r2 && Qr(t5) : r2 && t5 instanceof se;
-            }), !!r2 && tn(t4) && rn(t4, ["zoom", "heatmap-density", "line-progress", "accumulated", "is-supported-script"]);
+            })), !!r2 && tn(t4) && rn(t4, ["zoom", "heatmap-density", "line-progress", "accumulated", "is-supported-script"]);
           }
           function tn(t4) {
             if (t4 instanceof Xr) {
@@ -225483,23 +225626,23 @@ void main() {
             if (t4 instanceof pr) return false;
             if (t4 instanceof Gr) return false;
             let e2 = true;
-            return t4.eachChild((t5) => {
+            return t4.eachChild(((t5) => {
               e2 && !tn(t5) && (e2 = false);
-            }), e2;
+            })), e2;
           }
           function en(t4) {
             if (t4 instanceof Xr && "feature-state" === t4.name) return false;
             let e2 = true;
-            return t4.eachChild((t5) => {
+            return t4.eachChild(((t5) => {
               e2 && !en(t5) && (e2 = false);
-            }), e2;
+            })), e2;
           }
           function rn(t4, e2) {
             if (t4 instanceof Xr && e2.indexOf(t4.name) >= 0) return false;
             let r2 = true;
-            return t4.eachChild((t5) => {
+            return t4.eachChild(((t5) => {
               r2 && !rn(t5, e2) && (r2 = false);
-            }), r2;
+            })), r2;
           }
           function nn(t4) {
             return { result: "success", value: t4 };
@@ -225529,7 +225672,7 @@ void main() {
             const r2 = "color" === e2.type, n2 = t4.stops && "object" == typeof t4.stops[0][0], i2 = n2 || !(n2 || void 0 !== t4.property), s2 = t4.type || (ln(e2) ? "exponential" : "interval");
             if (r2 || "padding" === e2.type) {
               const n3 = r2 ? Kt.parse : Jt.parse;
-              (t4 = st({}, t4)).stops && (t4.stops = t4.stops.map((t5) => [t5[0], n3(t5[1])])), t4.default = n3(t4.default ? t4.default : e2.default);
+              (t4 = st({}, t4)).stops && (t4.stops = t4.stops.map(((t5) => [t5[0], n3(t5[1])]))), t4.default = n3(t4.default ? t4.default : e2.default);
             }
             if (t4.colorSpace && "rgb" !== (a2 = t4.colorSpace) && "hcl" !== a2 && "lab" !== a2) throw new Error(`Unknown color space: "${t4.colorSpace}"`);
             var a2;
@@ -225553,11 +225696,11 @@ void main() {
               const i3 = [];
               for (const t5 of n3) i3.push([r3[t5].zoom, pn(r3[t5], e2)]);
               const s3 = { name: "linear" };
-              return { kind: "composite", interpolationType: s3, interpolationFactor: Be.interpolationFactor.bind(void 0, s3), zoomStops: i3.map((t5) => t5[0]), evaluate: ({ zoom: r4 }, n4) => mn({ stops: i3, base: t4.base }, e2, r4).evaluate(r4, n4) };
+              return { kind: "composite", interpolationType: s3, interpolationFactor: Be.interpolationFactor.bind(void 0, s3), zoomStops: i3.map(((t5) => t5[0])), evaluate: ({ zoom: r4 }, n4) => mn({ stops: i3, base: t4.base }, e2, r4).evaluate(r4, n4) };
             }
             if (i2) {
               const r3 = "exponential" === s2 ? { name: "exponential", base: void 0 !== t4.base ? t4.base : 1 } : null;
-              return { kind: "camera", interpolationType: r3, interpolationFactor: Be.interpolationFactor.bind(void 0, r3), zoomStops: t4.stops.map((t5) => t5[0]), evaluate: ({ zoom: r4 }) => o2(t4, e2, r4, l2, u2) };
+              return { kind: "camera", interpolationType: r3, interpolationFactor: Be.interpolationFactor.bind(void 0, r3), zoomStops: t4.stops.map(((t5) => t5[0])), evaluate: ({ zoom: r4 }) => o2(t4, e2, r4, l2, u2) };
             }
             return { kind: "source", evaluate(r3, n3) {
               const i3 = n3 && n3.properties ? n3.properties[t4.property] : void 0;
@@ -225576,7 +225719,7 @@ void main() {
             if (1 === n2) return t4.stops[0][1];
             if (r2 <= t4.stops[0][0]) return t4.stops[0][1];
             if (r2 >= t4.stops[n2 - 1][0]) return t4.stops[n2 - 1][1];
-            const i2 = _e(t4.stops.map((t5) => t5[0]), r2);
+            const i2 = _e(t4.stops.map(((t5) => t5[0])), r2);
             return t4.stops[i2][1];
           }
           function mn(t4, e2, r2) {
@@ -225586,10 +225729,10 @@ void main() {
             if (1 === i2) return t4.stops[0][1];
             if (r2 <= t4.stops[0][0]) return t4.stops[0][1];
             if (r2 >= t4.stops[i2 - 1][0]) return t4.stops[i2 - 1][1];
-            const s2 = _e(t4.stops.map((t5) => t5[0]), r2), a2 = function(t5, e3, r3, n3) {
+            const s2 = _e(t4.stops.map(((t5) => t5[0])), r2), a2 = (function(t5, e3, r3, n3) {
               const i3 = n3 - r3, s3 = t5 - r3;
               return 0 === i3 ? 0 : 1 === e3 ? s3 / i3 : (Math.pow(e3, s3) - 1) / (Math.pow(e3, i3) - 1);
-            }(r2, n2, t4.stops[s2][0], t4.stops[s2 + 1][0]), o2 = t4.stops[s2][1], l2 = t4.stops[s2 + 1][1], u2 = Ce[e2.type] || hn;
+            })(r2, n2, t4.stops[s2][0], t4.stops[s2 + 1][0]), o2 = t4.stops[s2][1], l2 = t4.stops[s2 + 1][1], u2 = Ce[e2.type] || hn;
             return "function" == typeof o2.evaluate ? { evaluate(...e3) {
               const r3 = o2.evaluate.apply(void 0, e3), n3 = l2.evaluate.apply(void 0, e3);
               if (void 0 !== r3 && void 0 !== n3) return u2(r3, n3, a2, t4.colorSpace);
@@ -225627,7 +225770,7 @@ void main() {
             let r2 = 1;
             for (const n2 of e2) r2 *= n2.evaluate(t4);
             return r2;
-          }], "-": { type: ut, overloads: [[[ut, ut], (t4, [e2, r2]) => e2.evaluate(t4) - r2.evaluate(t4)], [[ut], (t4, [e2]) => -e2.evaluate(t4)]] }, "/": [ut, [ut, ut], (t4, [e2, r2]) => e2.evaluate(t4) / r2.evaluate(t4)], "%": [ut, [ut, ut], (t4, [e2, r2]) => e2.evaluate(t4) % r2.evaluate(t4)], ln2: [ut, [], () => Math.LN2], pi: [ut, [], () => Math.PI], e: [ut, [], () => Math.E], "^": [ut, [ut, ut], (t4, [e2, r2]) => Math.pow(e2.evaluate(t4), r2.evaluate(t4))], sqrt: [ut, [ut], (t4, [e2]) => Math.sqrt(e2.evaluate(t4))], log10: [ut, [ut], (t4, [e2]) => Math.log(e2.evaluate(t4)) / Math.LN10], ln: [ut, [ut], (t4, [e2]) => Math.log(e2.evaluate(t4))], log2: [ut, [ut], (t4, [e2]) => Math.log(e2.evaluate(t4)) / Math.LN2], sin: [ut, [ut], (t4, [e2]) => Math.sin(e2.evaluate(t4))], cos: [ut, [ut], (t4, [e2]) => Math.cos(e2.evaluate(t4))], tan: [ut, [ut], (t4, [e2]) => Math.tan(e2.evaluate(t4))], asin: [ut, [ut], (t4, [e2]) => Math.asin(e2.evaluate(t4))], acos: [ut, [ut], (t4, [e2]) => Math.acos(e2.evaluate(t4))], atan: [ut, [ut], (t4, [e2]) => Math.atan(e2.evaluate(t4))], min: [ut, Wr(ut), (t4, e2) => Math.min(...e2.map((e3) => e3.evaluate(t4)))], max: [ut, Wr(ut), (t4, e2) => Math.max(...e2.map((e3) => e3.evaluate(t4)))], abs: [ut, [ut], (t4, [e2]) => Math.abs(e2.evaluate(t4))], round: [ut, [ut], (t4, [e2]) => {
+          }], "-": { type: ut, overloads: [[[ut, ut], (t4, [e2, r2]) => e2.evaluate(t4) - r2.evaluate(t4)], [[ut], (t4, [e2]) => -e2.evaluate(t4)]] }, "/": [ut, [ut, ut], (t4, [e2, r2]) => e2.evaluate(t4) / r2.evaluate(t4)], "%": [ut, [ut, ut], (t4, [e2, r2]) => e2.evaluate(t4) % r2.evaluate(t4)], ln2: [ut, [], () => Math.LN2], pi: [ut, [], () => Math.PI], e: [ut, [], () => Math.E], "^": [ut, [ut, ut], (t4, [e2, r2]) => Math.pow(e2.evaluate(t4), r2.evaluate(t4))], sqrt: [ut, [ut], (t4, [e2]) => Math.sqrt(e2.evaluate(t4))], log10: [ut, [ut], (t4, [e2]) => Math.log(e2.evaluate(t4)) / Math.LN10], ln: [ut, [ut], (t4, [e2]) => Math.log(e2.evaluate(t4))], log2: [ut, [ut], (t4, [e2]) => Math.log(e2.evaluate(t4)) / Math.LN2], sin: [ut, [ut], (t4, [e2]) => Math.sin(e2.evaluate(t4))], cos: [ut, [ut], (t4, [e2]) => Math.cos(e2.evaluate(t4))], tan: [ut, [ut], (t4, [e2]) => Math.tan(e2.evaluate(t4))], asin: [ut, [ut], (t4, [e2]) => Math.asin(e2.evaluate(t4))], acos: [ut, [ut], (t4, [e2]) => Math.acos(e2.evaluate(t4))], atan: [ut, [ut], (t4, [e2]) => Math.atan(e2.evaluate(t4))], min: [ut, Wr(ut), (t4, e2) => Math.min(...e2.map(((e3) => e3.evaluate(t4))))], max: [ut, Wr(ut), (t4, e2) => Math.max(...e2.map(((e3) => e3.evaluate(t4))))], abs: [ut, [ut], (t4, [e2]) => Math.abs(e2.evaluate(t4))], round: [ut, [ut], (t4, [e2]) => {
             const r2 = e2.evaluate(t4);
             return r2 < 0 ? -Math.round(-r2) : Math.round(r2);
           }], floor: [ut, [ut], (t4, [e2]) => Math.floor(e2.evaluate(t4))], ceil: [ut, [ut], (t4, [e2]) => Math.ceil(e2.evaluate(t4))], "filter-==": [ht, [ct, dt], (t4, [e2, r2]) => t4.properties()[e2.value] === r2.value], "filter-id-==": [ht, [dt], (t4, [e2]) => t4.id() === e2.value], "filter-type-==": [ht, [ct], (t4, [e2]) => t4.geometryType() === e2.value], "filter-<": [ht, [ct, dt], (t4, [e2, r2]) => {
@@ -225654,14 +225797,14 @@ void main() {
           }], "filter-id->=": [ht, [dt], (t4, [e2]) => {
             const r2 = t4.id(), n2 = e2.value;
             return typeof r2 == typeof n2 && r2 >= n2;
-          }], "filter-has": [ht, [dt], (t4, [e2]) => e2.value in t4.properties()], "filter-has-id": [ht, [], (t4) => null !== t4.id() && void 0 !== t4.id()], "filter-type-in": [ht, [bt(ct)], (t4, [e2]) => e2.value.indexOf(t4.geometryType()) >= 0], "filter-id-in": [ht, [bt(dt)], (t4, [e2]) => e2.value.indexOf(t4.id()) >= 0], "filter-in-small": [ht, [ct, bt(dt)], (t4, [e2, r2]) => r2.value.indexOf(t4.properties()[e2.value]) >= 0], "filter-in-large": [ht, [ct, bt(dt)], (t4, [e2, r2]) => function(t5, e3, r3, n2) {
+          }], "filter-has": [ht, [dt], (t4, [e2]) => e2.value in t4.properties()], "filter-has-id": [ht, [], (t4) => null !== t4.id() && void 0 !== t4.id()], "filter-type-in": [ht, [bt(ct)], (t4, [e2]) => e2.value.indexOf(t4.geometryType()) >= 0], "filter-id-in": [ht, [bt(dt)], (t4, [e2]) => e2.value.indexOf(t4.id()) >= 0], "filter-in-small": [ht, [ct, bt(dt)], (t4, [e2, r2]) => r2.value.indexOf(t4.properties()[e2.value]) >= 0], "filter-in-large": [ht, [ct, bt(dt)], (t4, [e2, r2]) => (function(t5, e3, r3, n2) {
             for (; r3 <= n2; ) {
               const i2 = r3 + n2 >> 1;
               if (e3[i2] === t5) return true;
               e3[i2] > t5 ? n2 = i2 - 1 : r3 = i2 + 1;
             }
             return false;
-          }(t4.properties()[e2.value], r2.value, 0, r2.value.length - 1)], all: { type: ht, overloads: [[[ht, ht], (t4, [e2, r2]) => e2.evaluate(t4) && r2.evaluate(t4)], [Wr(ht), (t4, e2) => {
+          })(t4.properties()[e2.value], r2.value, 0, r2.value.length - 1)], all: { type: ht, overloads: [[[ht, ht], (t4, [e2, r2]) => e2.evaluate(t4) && r2.evaluate(t4)], [Wr(ht), (t4, e2) => {
             for (const r2 of e2) if (!r2.evaluate(t4)) return false;
             return true;
           }]] }, any: { type: ht, overloads: [[[ht, ht], (t4, [e2, r2]) => e2.evaluate(t4) || r2.evaluate(t4)], [Wr(ht), (t4, e2) => {
@@ -225670,7 +225813,7 @@ void main() {
           }]] }, "!": [ht, [ht], (t4, [e2]) => !e2.evaluate(t4)], "is-supported-script": [ht, [ct], (t4, [e2]) => {
             const r2 = t4.globals && t4.globals.isSupportedScript;
             return !r2 || r2(e2.evaluate(t4));
-          }], upcase: [ct, [ct], (t4, [e2]) => e2.evaluate(t4).toUpperCase()], downcase: [ct, [ct], (t4, [e2]) => e2.evaluate(t4).toLowerCase()], concat: [ct, Wr(dt), (t4, e2) => e2.map((e3) => ie(e3.evaluate(t4))).join("")], "resolved-locale": [ct, [yt], (t4, [e2]) => e2.evaluate(t4).resolvedLocale()] });
+          }], upcase: [ct, [ct], (t4, [e2]) => e2.evaluate(t4).toUpperCase()], downcase: [ct, [ct], (t4, [e2]) => e2.evaluate(t4).toLowerCase()], concat: [ct, Wr(dt), (t4, e2) => e2.map(((e3) => ie(e3.evaluate(t4)))).join("")], "resolved-locale": [ct, [yt], (t4, [e2]) => e2.evaluate(t4).resolvedLocale()] });
           class xn {
             constructor(t4, e2) {
               var r2;
@@ -225684,7 +225827,7 @@ void main() {
               try {
                 const t5 = this.expression.evaluate(this._evaluator);
                 if (null == t5 || "number" == typeof t5 && t5 != t5) return this._defaultValue;
-                if (this._enumValues && !(t5 in this._enumValues)) throw new ae(`Expected value to be one of ${Object.keys(this._enumValues).map((t6) => JSON.stringify(t6)).join(", ")}, but found ${JSON.stringify(t5)} instead.`);
+                if (this._enumValues && !(t5 in this._enumValues)) throw new ae(`Expected value to be one of ${Object.keys(this._enumValues).map(((t6) => JSON.stringify(t6))).join(", ")}, but found ${JSON.stringify(t5)} instead.`);
                 return t5;
               } catch (t5) {
                 return this._warningHistory[t5.message] || (this._warningHistory[t5.message] = true, "undefined" != typeof console && console.warn(t5.message)), this._defaultValue;
@@ -225695,10 +225838,10 @@ void main() {
             return Array.isArray(t4) && t4.length > 0 && "string" == typeof t4[0] && t4[0] in Kr;
           }
           function bn(t4, e2) {
-            const r2 = new fe(Kr, Qr, [], e2 ? function(t5) {
+            const r2 = new fe(Kr, Qr, [], e2 ? (function(t5) {
               const e3 = { color: pt, string: ct, number: ut, enum: ct, boolean: ht, formatted: mt, padding: gt, resolvedImage: xt, variableAnchorOffsetCollection: vt };
               return "array" === t5.type ? bt(e3[t5.value] || dt, t5.length) : e3[t5.type];
-            }(e2) : void 0), n2 = r2.parse(t4, void 0, void 0, void 0, e2 && "string" === e2.type ? { typeAnnotation: "coerce" } : void 0);
+            })(e2) : void 0), n2 = r2.parse(t4, void 0, void 0, void 0, e2 && "string" === e2.type ? { typeAnnotation: "coerce" } : void 0);
             return n2 ? nn(new xn(n2, e2)) : sn(r2.errors);
           }
           class wn {
@@ -225753,10 +225896,10 @@ void main() {
             else if (t4 instanceof Ee) {
               for (const r2 of t4.args) if (e2 = kn(r2), e2) break;
             } else (t4 instanceof Ae || t4 instanceof Be) && t4.input instanceof Xr && "zoom" === t4.input.name && (e2 = t4);
-            return e2 instanceof at || t4.eachChild((t5) => {
+            return e2 instanceof at || t4.eachChild(((t5) => {
               const r2 = kn(t5);
               r2 instanceof at ? e2 = r2 : !e2 && r2 ? e2 = new at("", '"zoom" expression may only be used as input to a top-level "step" or "interpolate" expression.') : e2 && r2 && e2 !== r2 && (e2 = new at("", 'Only one zoom-based "step" or "interpolate" subexpression may be used in an expression.'));
-            }), e2;
+            })), e2;
           }
           function Mn(t4) {
             if (true === t4 || false === t4) return true;
@@ -225790,7 +225933,7 @@ void main() {
             if (null == t4) return { filter: () => true, needGeometry: false };
             Mn(t4) || (t4 = Bn(t4));
             const e2 = bn(t4, In);
-            if ("error" === e2.result) throw new Error(e2.value.map((t5) => `${t5.key}: ${t5.message}`).join(", "));
+            if ("error" === e2.result) throw new Error(e2.value.map(((t5) => `${t5.key}: ${t5.message}`)).join(", "));
             return { filter: (t5, r2, n2) => e2.value.evaluate(t5, r2, {}, n2), needGeometry: Cn(t4) };
           }
           function Pn(t4, e2) {
@@ -225826,7 +225969,7 @@ void main() {
               case "$id":
                 return ["filter-id-in", ["literal", e2]];
               default:
-                return e2.length > 200 && !e2.some((t5) => typeof t5 != typeof e2[0]) ? ["filter-in-large", t4, ["literal", e2.sort(Pn)]] : ["filter-in-small", t4, ["literal", e2]];
+                return e2.length > 200 && !e2.some(((t5) => typeof t5 != typeof e2[0])) ? ["filter-in-large", t4, ["literal", e2.sort(Pn)]] : ["filter-in-small", t4, ["literal", e2]];
             }
           }
           function Fn(t4) {
@@ -225956,7 +226099,7 @@ void main() {
           }
           function Zn2(t4) {
             const e2 = ("property" === t4.expressionContext ? An : bn)(jn(t4.value), t4.valueSpec);
-            if ("error" === e2.result) return e2.value.map((e3) => new it(`${t4.key}${e3.key}`, t4.value, e3.message));
+            if ("error" === e2.result) return e2.value.map(((e3) => new it(`${t4.key}${e3.key}`, t4.value, e3.message)));
             const r2 = e2.value.expression || e2.value._styleExpression.expression;
             if ("property" === t4.expressionContext && "text-font" === t4.propertyKey && !r2.outputDefined()) return [new it(t4.key, t4.value, `Invalid data expression for "${t4.propertyKey}". Output values must be contained as literals within the expression.`)];
             if ("property" === t4.expressionContext && "layout" === t4.propertyType && !en(r2)) return [new it(t4.key, t4.value, '"feature-state" data expressions are not supported with layout properties.')];
@@ -226039,11 +226182,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             if ("ref" in r2) {
               let t5;
-              ["type", "source", "source-layer", "filter", "layout"].forEach((t6) => {
+              ["type", "source", "source-layer", "filter", "layout"].forEach(((t6) => {
                 t6 in r2 && e2.push(new it(n2, r2[t6], `"${t6}" is prohibited for ref layers`));
-              }), i2.layers.forEach((e3) => {
+              })), i2.layers.forEach(((e3) => {
                 On(e3.id) === o2 && (t5 = e3);
-              }), t5 ? t5.ref ? e2.push(new it(n2, r2.ref, "ref cannot reference another ref layer")) : a2 = On(t5.type) : e2.push(new it(n2, r2.ref, `ref layer "${o2}" not found`));
+              })), t5 ? t5.ref ? e2.push(new it(n2, r2.ref, "ref cannot reference another ref layer")) : a2 = On(t5.type) : e2.push(new it(n2, r2.ref, `ref layer "${o2}" not found`));
             } else if ("background" !== a2) if (r2.source) {
               const t5 = i2.sources && i2.sources[r2.source], s3 = t5 && On(t5.type);
               t5 ? "vector" === s3 && "raster" === a2 ? e2.push(new it(n2, r2.source, `layer "${r2.id}" requires a raster source`)) : "raster-dem" !== s3 && "hillshade" === a2 ? e2.push(new it(n2, r2.source, `layer "${r2.id}" requires a raster-dem source`)) : "raster" === s3 && "raster" !== a2 ? e2.push(new it(n2, r2.source, `layer "${r2.id}" requires a vector source`)) : "vector" !== s3 || r2["source-layer"] ? "raster-dem" === s3 && "hillshade" !== a2 ? e2.push(new it(n2, r2.source, "raster-dem source can only be used with layer type 'hillshade'.")) : "line" !== a2 || !r2.paint || !r2.paint["line-gradient"] || "geojson" === s3 && t5.lineMetrics || e2.push(new it(n2, r2, `layer "${r2.id}" specifies a line-gradient, which requires a GeoJSON source with \`lineMetrics\` enabled.`)) : e2.push(new it(n2, r2, `layer "${r2.id}" must specify a "source-layer"`)) : e2.push(new it(n2, r2.source, `source "${r2.source}" not found`));
@@ -226072,7 +226215,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               case "raster":
                 return o2 = Rn({ key: r2, value: e2, valueSpec: n2[`source_${a2.replace("-", "_")}`], style: t4.style, styleSpec: n2, objectElementValidators: ti, validateSpec: s2 }), o2;
               case "raster-dem":
-                return o2 = function(t5) {
+                return o2 = (function(t5) {
                   var e3;
                   const r3 = null !== (e3 = t5.sourceName) && void 0 !== e3 ? e3 : "", n3 = t5.value, i3 = t5.styleSpec, s3 = i3.source_raster_dem, a3 = t5.style;
                   let o3 = [];
@@ -226082,7 +226225,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   const u2 = "custom" === On(n3.encoding), c2 = ["redFactor", "greenFactor", "blueFactor", "baseShift"], h2 = t5.value.encoding ? `"${t5.value.encoding}"` : "Default";
                   for (const e4 in n3) !u2 && c2.includes(e4) ? o3.push(new it(e4, n3[e4], `In "${r3}": "${e4}" is only valid when "encoding" is set to "custom". ${h2} encoding found`)) : s3[e4] ? o3 = o3.concat(t5.validateSpec({ key: e4, value: n3[e4], valueSpec: s3[e4], validateSpec: t5.validateSpec, style: a3, styleSpec: i3 })) : o3.push(new it(e4, n3[e4], `unknown property "${e4}"`));
                   return o3;
-                }({ sourceName: r2, value: e2, style: t4.style, styleSpec: n2, validateSpec: s2 }), o2;
+                })({ sourceName: r2, value: e2, style: t4.style, styleSpec: n2, validateSpec: s2 }), o2;
               case "geojson":
                 if (o2 = Rn({ key: r2, value: e2, valueSpec: n2.source_geojson, style: i2, styleSpec: n2, validateSpec: s2, objectElementValidators: ti }), e2.cluster) for (const t5 in e2.clusterProperties) {
                   const [n3, i3] = e2.clusterProperties[t5], a3 = "string" == typeof n3 ? [n3, ["accumulated"], ["get", t5]] : n3;
@@ -226190,7 +226333,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             };
           }
           function hi(t4) {
-            return [].concat(t4).sort((t5, e2) => t5.line - e2.line);
+            return [].concat(t4).sort(((t5, e2) => t5.line - e2.line));
           }
           function pi(t4) {
             return function(...e2) {
@@ -226305,11 +226448,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return t4.$name || t4.constructor._classRegistryKey;
           }
           function Si(t4) {
-            return !function(t5) {
+            return !(function(t5) {
               if (null === t5 || "object" != typeof t5) return false;
               const e2 = Ai(t5);
               return !(!e2 || "Object" === e2);
-            }(t4) && (null == t4 || "boolean" == typeof t4 || "number" == typeof t4 || "string" == typeof t4 || t4 instanceof Boolean || t4 instanceof Number || t4 instanceof String || t4 instanceof Date || t4 instanceof RegExp || t4 instanceof Blob || t4 instanceof Error || _i(t4) || I(t4) || ArrayBuffer.isView(t4) || t4 instanceof ImageData);
+            })(t4) && (null == t4 || "boolean" == typeof t4 || "number" == typeof t4 || "string" == typeof t4 || t4 instanceof Boolean || t4 instanceof Number || t4 instanceof String || t4 instanceof Date || t4 instanceof RegExp || t4 instanceof Blob || t4 instanceof Error || _i(t4) || I(t4) || ArrayBuffer.isView(t4) || t4 instanceof ImageData);
           }
           function ki(t4, e2) {
             if (Si(t4)) return (_i(t4) || I(t4)) && e2 && e2.push(t4), ArrayBuffer.isView(t4) && e2 && e2.push(t4.buffer), t4 instanceof ImageData && e2 && e2.push(t4.data.buffer), t4;
@@ -226373,13 +226516,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return true;
           }
           function Bi(t4) {
-            const e2 = t4.map((t5) => {
+            const e2 = t4.map(((t5) => {
               try {
                 return new RegExp(`\\p{sc=${t5}}`, "u").source;
               } catch (t6) {
                 return null;
               }
-            }).filter((t5) => t5);
+            })).filter(((t5) => t5));
             return new RegExp(e2.join("|"), "u");
           }
           const Vi = Bi(["Arab", "Dupl", "Mong", "Ougr", "Syrc"]);
@@ -226391,9 +226534,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return !(746 !== t4 && 747 !== t4 && (t4 < 4352 || !(zi["CJK Compatibility Forms"](t4) && !(t4 >= 65097 && t4 <= 65103) || zi["CJK Compatibility"](t4) || zi["CJK Strokes"](t4) || !(!zi["CJK Symbols and Punctuation"](t4) || t4 >= 12296 && t4 <= 12305 || t4 >= 12308 && t4 <= 12319 || 12336 === t4) || zi["Enclosed CJK Letters and Months"](t4) || zi["Ideographic Description Characters"](t4) || zi.Kanbun(t4) || zi.Katakana(t4) && 12540 !== t4 || !(!zi["Halfwidth and Fullwidth Forms"](t4) || 65288 === t4 || 65289 === t4 || 65293 === t4 || t4 >= 65306 && t4 <= 65310 || 65339 === t4 || 65341 === t4 || 65343 === t4 || t4 >= 65371 && t4 <= 65503 || 65507 === t4 || t4 >= 65512 && t4 <= 65519) || !(!zi["Small Form Variants"](t4) || t4 >= 65112 && t4 <= 65118 || t4 >= 65123 && t4 <= 65126) || zi["Vertical Forms"](t4) || zi["Yijing Hexagram Symbols"](t4) || new RegExp("\\p{sc=Cans}", "u").test(String.fromCodePoint(t4)) || new RegExp("\\p{sc=Hang}", "u").test(String.fromCodePoint(t4)) || Fi.test(String.fromCodePoint(t4)))));
           }
           function $i(t4) {
-            return !(Ti(t4) || function(t5) {
+            return !(Ti(t4) || (function(t5) {
               return !!(zi["Latin-1 Supplement"](t5) && (167 === t5 || 169 === t5 || 174 === t5 || 177 === t5 || 188 === t5 || 189 === t5 || 190 === t5 || 215 === t5 || 247 === t5) || zi["General Punctuation"](t5) && (8214 === t5 || 8224 === t5 || 8225 === t5 || 8240 === t5 || 8241 === t5 || 8251 === t5 || 8252 === t5 || 8258 === t5 || 8263 === t5 || 8264 === t5 || 8265 === t5 || 8273 === t5) || zi["Letterlike Symbols"](t5) || zi["Number Forms"](t5) || zi["Miscellaneous Technical"](t5) && (t5 >= 8960 && t5 <= 8967 || t5 >= 8972 && t5 <= 8991 || t5 >= 8996 && t5 <= 9e3 || 9003 === t5 || t5 >= 9085 && t5 <= 9114 || t5 >= 9150 && t5 <= 9165 || 9167 === t5 || t5 >= 9169 && t5 <= 9179 || t5 >= 9186 && t5 <= 9215) || zi["Control Pictures"](t5) && 9251 !== t5 || zi["Optical Character Recognition"](t5) || zi["Enclosed Alphanumerics"](t5) || zi["Geometric Shapes"](t5) || zi["Miscellaneous Symbols"](t5) && !(t5 >= 9754 && t5 <= 9759) || zi["Miscellaneous Symbols and Arrows"](t5) && (t5 >= 11026 && t5 <= 11055 || t5 >= 11088 && t5 <= 11097 || t5 >= 11192 && t5 <= 11243) || zi["CJK Symbols and Punctuation"](t5) || zi.Katakana(t5) || zi["Private Use Area"](t5) || zi["CJK Compatibility Forms"](t5) || zi["Small Form Variants"](t5) || zi["Halfwidth and Fullwidth Forms"](t5) || 8734 === t5 || 8756 === t5 || 8757 === t5 || t5 >= 9984 && t5 <= 10087 || t5 >= 10102 && t5 <= 10131 || 65532 === t5 || 65533 === t5);
-            }(t4));
+            })(t4));
           }
           const Li = Bi(["Adlm", "Arab", "Armi", "Avst", "Chrs", "Cprt", "Egyp", "Elym", "Gara", "Hatr", "Hebr", "Hung", "Khar", "Lydi", "Mand", "Mani", "Mend", "Merc", "Mero", "Narb", "Nbat", "Nkoo", "Orkh", "Palm", "Phli", "Phlp", "Phnx", "Prti", "Rohg", "Samr", "Sarb", "Sogo", "Syrc", "Thaa", "Todr", "Yezi"]);
           function Di(t4) {
@@ -226434,10 +226577,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.zoom = t4, e2 ? (this.now = e2.now, this.fadeDuration = e2.fadeDuration, this.zoomHistory = e2.zoomHistory, this.transition = e2.transition) : (this.now = 0, this.fadeDuration = 0, this.zoomHistory = new Ii(), this.transition = {});
             }
             isSupportedScript(t4) {
-              return function(t5, e2) {
+              return (function(t5, e2) {
                 for (const r2 of t5) if (!Oi(r2.charCodeAt(0), e2)) return false;
                 return true;
-              }(t4, "loaded" === Ri.getRTLTextPluginStatus());
+              })(t4, "loaded" === Ri.getRTLTextPluginStatus());
             }
             crossFadingFactor() {
               return 0 === this.fadeDuration ? 1 : Math.min((this.now - this.zoomHistory.lastIntegerZoomTime) / this.fadeDuration, 1);
@@ -226449,18 +226592,18 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class qi {
             constructor(t4, e2) {
-              this.property = t4, this.value = e2, this.expression = function(t5, e3) {
+              this.property = t4, this.value = e2, this.expression = (function(t5, e3) {
                 if (cn(t5)) return new Sn(t5, e3);
                 if (vn(t5)) {
                   const r2 = An(t5, e3);
-                  if ("error" === r2.result) throw new Error(r2.value.map((t6) => `${t6.key}: ${t6.message}`).join(", "));
+                  if ("error" === r2.result) throw new Error(r2.value.map(((t6) => `${t6.key}: ${t6.message}`)).join(", "));
                   return r2.value;
                 }
                 {
                   let r2 = t5;
                   return "color" === e3.type && "string" == typeof t5 ? r2 = Kt.parse(t5) : "padding" !== e3.type || "number" != typeof t5 && !Array.isArray(t5) ? "variableAnchorOffsetCollection" === e3.type && Array.isArray(t5) && (r2 = Qt.parse(t5)) : r2 = Jt.parse(t5), { kind: "constant", evaluate: () => r2 };
                 }
-              }(void 0 === e2 ? t4.specification.default : e2, t4.specification);
+              })(void 0 === e2 ? t4.specification.default : e2, t4.specification);
             }
             isDataDriven() {
               return "source" === this.expression.kind || "composite" === this.expression.kind;
@@ -226529,12 +226672,12 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 if (n2 < this.begin) return s2.possiblyEvaluate(t4, e2, r2);
                 {
                   const a2 = (n2 - this.begin) / (this.end - this.begin);
-                  return this.property.interpolate(s2.possiblyEvaluate(t4, e2, r2), i2, function(t5) {
+                  return this.property.interpolate(s2.possiblyEvaluate(t4, e2, r2), i2, (function(t5) {
                     if (t5 <= 0) return 0;
                     if (t5 >= 1) return 1;
                     const e3 = t5 * t5, r3 = e3 * t5;
                     return 4 * (t5 < 0.5 ? r3 : 3 * (t5 - e3) + r3 - 0.75);
-                  }(a2));
+                  })(a2));
                 }
               }
               return i2;
@@ -226758,7 +226901,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             serialize() {
               const t4 = { id: this.id, type: this.type, source: this.source, "source-layer": this.sourceLayer, metadata: this.metadata, minzoom: this.minzoom, maxzoom: this.maxzoom, filter: this.filter, layout: this._unevaluatedLayout && this._unevaluatedLayout.serialize(), paint: this._transitionablePaint && this._transitionablePaint.serialize() };
-              return this.visibility && (t4.layout = t4.layout || {}, t4.layout.visibility = this.visibility), b(t4, (t5, e2) => !(void 0 === t5 || "layout" === e2 && !Object.keys(t5).length || "paint" === e2 && !Object.keys(t5).length));
+              return this.visibility && (t4.layout = t4.layout || {}, t4.layout.visibility = this.visibility), b(t4, ((t5, e2) => !(void 0 === t5 || "layout" === e2 && !Object.keys(t5).length || "paint" === e2 && !Object.keys(t5).length)));
             }
             _validate(t4, e2, r2, n2, i2 = {}) {
               return (!i2 || false !== i2.validate) && xi(this, t4.call(fi, { key: e2, layerType: this.type, objectKey: r2, value: n2, styleSpec: G, style: { glyphs: true, sprite: true } }));
@@ -226821,10 +226964,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           function ls(t4, e2 = 1) {
             let r2 = 0, n2 = 0;
-            return { members: t4.map((t5) => {
+            return { members: t4.map(((t5) => {
               const i2 = ss[t5.type].BYTES_PER_ELEMENT, s2 = r2 = us(r2, Math.max(e2, i2)), a2 = t5.components || 1;
               return n2 = Math.max(n2, i2), r2 += i2 * a2, { name: t5.name, type: t5.type, components: a2, offset: s2 };
-            }), size: us(r2, Math.max(n2, e2)), alignment: e2 };
+            })), size: us(r2, Math.max(n2, e2)), alignment: e2 };
           }
           function us(t4, e2) {
             return Math.ceil(t4 / e2) * e2;
@@ -227577,7 +227720,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class Ia {
             constructor(t4, e2, r2) {
-              this.value = t4, this.uniformNames = e2.map((t5) => `u_${t5}`), this.type = r2;
+              this.value = t4, this.uniformNames = e2.map(((t5) => `u_${t5}`)), this.type = r2;
             }
             setUniform(t4, e2, r2) {
               t4.set(r2.constantOr(this.value));
@@ -227588,7 +227731,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class za {
             constructor(t4, e2) {
-              this.uniformNames = e2.map((t5) => `u_${t5}`), this.patternFrom = null, this.patternTo = null, this.pixelRatioFrom = 1, this.pixelRatioTo = 1;
+              this.uniformNames = e2.map(((t5) => `u_${t5}`)), this.patternFrom = null, this.patternTo = null, this.pixelRatioFrom = 1, this.pixelRatioTo = 1;
             }
             setConstantPatternPositions(t4, e2) {
               this.pixelRatioFrom = e2.pixelRatio, this.pixelRatioTo = t4.pixelRatio, this.patternFrom = e2.tlbr, this.patternTo = t4.tlbr;
@@ -227603,7 +227746,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class Pa {
             constructor(t4, e2, r2, n2) {
-              this.expression = t4, this.type = r2, this.maxValue = 0, this.paintVertexAttributes = e2.map((t5) => ({ name: `a_${t5}`, type: "Float32", components: "color" === r2 ? 2 : 1, offset: 0 })), this.paintVertexArray = new n2();
+              this.expression = t4, this.type = r2, this.maxValue = 0, this.paintVertexAttributes = e2.map(((t5) => ({ name: `a_${t5}`, type: "Float32", components: "color" === r2 ? 2 : 1, offset: 0 }))), this.paintVertexArray = new n2();
             }
             populatePaintArray(t4, e2, r2, n2, i2) {
               const s2 = this.paintVertexArray.length, a2 = this.expression.evaluate(new Ui(0), e2, {}, n2, [], i2);
@@ -227631,7 +227774,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class Ca {
             constructor(t4, e2, r2, n2, i2, s2) {
-              this.expression = t4, this.uniformNames = e2.map((t5) => `u_${t5}_t`), this.type = r2, this.useIntegerZoom = n2, this.zoom = i2, this.maxValue = 0, this.paintVertexAttributes = e2.map((t5) => ({ name: `a_${t5}`, type: "Float32", components: "color" === r2 ? 4 : 2, offset: 0 })), this.paintVertexArray = new s2();
+              this.expression = t4, this.uniformNames = e2.map(((t5) => `u_${t5}_t`)), this.type = r2, this.useIntegerZoom = n2, this.zoom = i2, this.maxValue = 0, this.paintVertexAttributes = e2.map(((t5) => ({ name: `a_${t5}`, type: "Float32", components: "color" === r2 ? 4 : 2, offset: 0 }))), this.paintVertexArray = new s2();
             }
             populatePaintArray(t4, e2, r2, n2, i2) {
               const s2 = this.expression.evaluate(new Ui(this.zoom), e2, {}, n2, [], i2), a2 = this.expression.evaluate(new Ui(this.zoom + 1), e2, {}, n2, [], i2), o2 = this.paintVertexArray.length;
@@ -227744,7 +227887,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               const t4 = [];
               for (const e2 in this.binders) {
                 const r2 = this.binders[e2];
-                (r2 instanceof Ia || r2 instanceof za) && t4.push(...r2.uniformNames.map((t5) => `#define HAS_UNIFORM_${t5}`));
+                (r2 instanceof Ia || r2 instanceof za) && t4.push(...r2.uniformNames.map(((t5) => `#define HAS_UNIFORM_${t5}`)));
               }
               return t4;
             }
@@ -227809,7 +227952,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
           }
           class Ea {
-            constructor(t4, e2, r2 = () => true) {
+            constructor(t4, e2, r2 = (() => true)) {
               this.programConfigurations = {};
               for (const n2 of t4) this.programConfigurations[n2.id] = new Va(n2, e2, r2);
               this.needsUpload = false, this._featureMap = new ga(), this._bufferOffset = 0;
@@ -227838,9 +227981,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return { "text-opacity": ["opacity"], "icon-opacity": ["opacity"], "text-color": ["fill_color"], "icon-color": ["fill_color"], "text-halo-color": ["halo_color"], "icon-halo-color": ["halo_color"], "text-halo-blur": ["halo_blur"], "icon-halo-blur": ["halo_blur"], "text-halo-width": ["halo_width"], "icon-halo-width": ["halo_width"], "line-gap-width": ["gapwidth"], "line-pattern": ["pattern_to", "pattern_from", "pixel_ratio_to", "pixel_ratio_from"], "fill-pattern": ["pattern_to", "pattern_from", "pixel_ratio_to", "pixel_ratio_from"], "fill-extrusion-pattern": ["pattern_to", "pattern_from", "pixel_ratio_to", "pixel_ratio_from"] }[t4] || [t4.replace(`${e2}-`, "").replace(/-/g, "_")];
           }
           function Ta(t4, e2, r2) {
-            const n2 = { color: { source: ys, composite: Vs }, number: { source: Is, composite: ys } }, i2 = function(t5) {
+            const n2 = { color: { source: ys, composite: Vs }, number: { source: Is, composite: ys } }, i2 = (function(t5) {
               return { "line-pattern": { source: Js, composite: Js }, "fill-pattern": { source: Js, composite: Js }, "fill-extrusion-pattern": { source: Js, composite: Js } }[t5];
-            }(t4);
+            })(t4);
             return i2 && i2[r2] || n2[e2][r2];
           }
           wi("ConstantBinder", Ia), wi("CrossFadedConstantBinder", za), wi("SourceExpressionBinder", Pa), wi("CrossFadedCompositeBinder", Ba), wi("CompositeExpressionBinder", Ca), wi("ProgramConfiguration", Va, { omit: ["_buffers"] }), wi("ProgramConfigurationSet", Ea);
@@ -227864,7 +228007,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class Ua {
             constructor(t4) {
-              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map((t5) => t5.id), this.index = t4.index, this.hasPattern = false, this.layoutVertexArray = new Gs(), this.indexArray = new na(), this.segments = new oa(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.stateDependentLayerIds = this.layers.filter((t5) => t5.isStateDependent()).map((t5) => t5.id);
+              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map(((t5) => t5.id)), this.index = t4.index, this.hasPattern = false, this.layoutVertexArray = new Gs(), this.indexArray = new na(), this.segments = new oa(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.stateDependentLayerIds = this.layers.filter(((t5) => t5.isStateDependent())).map(((t5) => t5.id));
             }
             populate(t4, e2, r2) {
               const n2 = this.layers[0], i2 = [];
@@ -227876,7 +228019,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const c2 = a2 ? s2.evaluate(u2, {}, r2) : void 0, h2 = { id: n3, properties: e3.properties, type: e3.type, sourceLayerIndex: l2, index: o2, geometry: t5 ? u2.geometry : Oa(e3), patterns: {}, sortKey: c2 };
                 i2.push(h2);
               }
-              a2 && i2.sort((t5, e3) => t5.sortKey - e3.sortKey);
+              a2 && i2.sort(((t5, e3) => t5.sortKey - e3.sortKey));
               for (const n3 of i2) {
                 const { geometry: i3, index: s3, sourceLayerIndex: a3 } = n3, o2 = t4[s3].feature;
                 this.addFeature(n3, i3, s3, r2), e2.featureIndex.insert(o2, i3, s3, a3, this.index);
@@ -228029,9 +228172,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return to("circle-radius", this, e2) + to("circle-stroke-width", this, e2) + eo(this.paint.get("circle-translate"));
             }
             queryIntersectsFeature(t4, e2, r2, n2, i2, s2, a2, o2) {
-              const l2 = ro(t4, this.paint.get("circle-translate"), this.paint.get("circle-translate-anchor"), s2.angle, a2), u2 = this.paint.get("circle-radius").evaluate(e2, r2) + this.paint.get("circle-stroke-width").evaluate(e2, r2), c2 = "map" === this.paint.get("circle-pitch-alignment"), h2 = c2 ? l2 : function(t5, e3) {
-                return t5.map((t6) => yo(t6, e3));
-              }(l2, o2), p2 = c2 ? u2 * a2 : u2;
+              const l2 = ro(t4, this.paint.get("circle-translate"), this.paint.get("circle-translate-anchor"), s2.angle, a2), u2 = this.paint.get("circle-radius").evaluate(e2, r2) + this.paint.get("circle-stroke-width").evaluate(e2, r2), c2 = "map" === this.paint.get("circle-pitch-alignment"), h2 = c2 ? l2 : (function(t5, e3) {
+                return t5.map(((t6) => yo(t6, e3)));
+              })(l2, o2), p2 = c2 ? u2 * a2 : u2;
               for (const t5 of n2) for (const e3 of t5) {
                 const t6 = c2 ? e3 : yo(e3, o2);
                 let r3 = p2;
@@ -228169,7 +228312,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             const a2 = [];
             if (!s2 || s2.next === s2.prev) return a2;
             let o2, l2, u2;
-            if (n2 && (s2 = function(t5, e3, r3, n3) {
+            if (n2 && (s2 = (function(t5, e3, r3, n3) {
               const i3 = [];
               for (let r4 = 0, s3 = e3.length; r4 < s3; r4++) {
                 const a3 = Eo(t5, e3[r4] * n3, r4 < s3 - 1 ? e3[r4 + 1] * n3 : t5.length, n3, false);
@@ -228178,7 +228321,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               i3.sort(jo);
               for (let t6 = 0; t6 < i3.length; t6++) r3 = Ro(i3[t6], r3);
               return r3;
-            }(t4, e2, s2, r2)), t4.length > 80 * r2) {
+            })(t4, e2, s2, r2)), t4.length > 80 * r2) {
               o2 = 1 / 0, l2 = 1 / 0;
               let e3 = -1 / 0, n3 = -1 / 0;
               for (let s3 = r2; s3 < i2; s3 += r2) {
@@ -228191,11 +228334,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           function Eo(t4, e2, r2, n2, i2) {
             let s2;
-            if (i2 === function(t5, e3, r3, n3) {
+            if (i2 === (function(t5, e3, r3, n3) {
               let i3 = 0;
               for (let s3 = e3, a2 = r3 - n3; s3 < r3; s3 += n3) i3 += (t5[a2] - t5[s3]) * (t5[s3 + 1] + t5[a2 + 1]), a2 = s3;
               return i3;
-            }(t4, e2, r2, n2) > 0) for (let i3 = e2; i3 < r2; i3 += n2) s2 = tl(i3 / n2 | 0, t4[i3], t4[i3 + 1], s2);
+            })(t4, e2, r2, n2) > 0) for (let i3 = e2; i3 < r2; i3 += n2) s2 = tl(i3 / n2 | 0, t4[i3], t4[i3 + 1], s2);
             else for (let i3 = r2 - n2; i3 >= e2; i3 -= n2) s2 = tl(i3 / n2 | 0, t4[i3], t4[i3 + 1], s2);
             return s2 && Xo(s2, s2.next) && (el(s2), s2 = s2.next), s2;
           }
@@ -228214,12 +228357,12 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           function To(t4, e2, r2, n2, i2, s2, a2) {
             if (!t4) return;
-            !a2 && s2 && function(t5, e3, r3, n3) {
+            !a2 && s2 && (function(t5, e3, r3, n3) {
               let i3 = t5;
               do {
                 0 === i3.z && (i3.z = qo(i3.x, i3.y, e3, r3, n3)), i3.prevZ = i3.prev, i3.nextZ = i3.next, i3 = i3.next;
               } while (i3 !== t5);
-              i3.prevZ.nextZ = null, i3.prevZ = null, function(t6) {
+              i3.prevZ.nextZ = null, i3.prevZ = null, (function(t6) {
                 let e4, r4 = 1;
                 do {
                   let n4, i4 = t6;
@@ -228235,8 +228378,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   }
                   s3.nextZ = null, r4 *= 2;
                 } while (e4 > 1);
-              }(i3);
-            }(t4, n2, i2, s2);
+              })(i3);
+            })(t4, n2, i2, s2);
             let o2 = t4;
             for (; t4.prev !== t4.next; ) {
               const l2 = t4.prev, u2 = t4.next;
@@ -228304,7 +228447,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return t4.x - e2.x;
           }
           function Ro(t4, e2) {
-            const r2 = function(t5, e3) {
+            const r2 = (function(t5, e3) {
               let r3 = e3;
               const n3 = t5.x, i2 = t5.y;
               let s2, a2 = -1 / 0;
@@ -228327,7 +228470,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 r3 = r3.next;
               } while (r3 !== o2);
               return s2;
-            }(t4, e2);
+            })(t4, e2);
             if (!r2) return e2;
             const n2 = Qo(r2, t4);
             return Fo(n2, n2.next), Fo(r2, r2.next);
@@ -228349,21 +228492,21 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return (i2 - a2) * (e2 - o2) >= (t4 - a2) * (s2 - o2) && (t4 - a2) * (n2 - o2) >= (r2 - a2) * (e2 - o2) && (r2 - a2) * (s2 - o2) >= (i2 - a2) * (n2 - o2);
           }
           function Go(t4, e2) {
-            return t4.next.i !== e2.i && t4.prev.i !== e2.i && !function(t5, e3) {
+            return t4.next.i !== e2.i && t4.prev.i !== e2.i && !(function(t5, e3) {
               let r2 = t5;
               do {
                 if (r2.i !== t5.i && r2.next.i !== t5.i && r2.i !== e3.i && r2.next.i !== e3.i && Ho(r2, r2.next, t5, e3)) return true;
                 r2 = r2.next;
               } while (r2 !== t5);
               return false;
-            }(t4, e2) && (Wo(t4, e2) && Wo(e2, t4) && function(t5, e3) {
+            })(t4, e2) && (Wo(t4, e2) && Wo(e2, t4) && (function(t5, e3) {
               let r2 = t5, n2 = false;
               const i2 = (t5.x + e3.x) / 2, s2 = (t5.y + e3.y) / 2;
               do {
                 r2.y > s2 != r2.next.y > s2 && r2.next.y !== r2.y && i2 < (r2.next.x - r2.x) * (s2 - r2.y) / (r2.next.y - r2.y) + r2.x && (n2 = !n2), r2 = r2.next;
               } while (r2 !== t5);
               return n2;
-            }(t4, e2) && (Ko(t4.prev, t4, e2.prev) || Ko(t4, e2.prev, e2)) || Xo(t4, e2) && Ko(t4.prev, t4, t4.next) > 0 && Ko(e2.prev, e2, e2.next) > 0);
+            })(t4, e2) && (Ko(t4.prev, t4, e2.prev) || Ko(t4, e2.prev, e2)) || Xo(t4, e2) && Ko(t4.prev, t4, t4.next) > 0 && Ko(e2.prev, e2, e2.next) > 0);
           }
           function Ko(t4, e2, r2) {
             return (e2.y - t4.y) * (r2.x - e2.x) - (e2.x - t4.x) * (r2.y - e2.y);
@@ -228422,7 +228565,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class sl {
             constructor(t4) {
-              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map((t5) => t5.id), this.index = t4.index, this.hasPattern = false, this.patternFeatures = [], this.layoutVertexArray = new Ks(), this.indexArray = new na(), this.indexArray2 = new ia(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.segments = new oa(), this.segments2 = new oa(), this.stateDependentLayerIds = this.layers.filter((t5) => t5.isStateDependent()).map((t5) => t5.id);
+              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map(((t5) => t5.id)), this.index = t4.index, this.hasPattern = false, this.patternFeatures = [], this.layoutVertexArray = new Ks(), this.indexArray = new na(), this.indexArray2 = new ia(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.segments = new oa(), this.segments2 = new oa(), this.stateDependentLayerIds = this.layers.filter(((t5) => t5.isStateDependent())).map(((t5) => t5.id));
             }
             populate(t4, e2, r2) {
               this.hasPattern = nl("fill", this.layers, e2);
@@ -228433,7 +228576,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const h2 = i2 ? n2.evaluate(c2, {}, r2, e2.availableImages) : void 0, p2 = { id: o2, properties: a2.properties, type: a2.type, sourceLayerIndex: u2, index: l2, geometry: t5 ? c2.geometry : Oa(a2), patterns: {}, sortKey: h2 };
                 s2.push(p2);
               }
-              i2 && s2.sort((t5, e3) => t5.sortKey - e3.sortKey);
+              i2 && s2.sort(((t5, e3) => t5.sortKey - e3.sortKey));
               for (const n3 of s2) {
                 const { geometry: i3, index: s3, sourceLayerIndex: a2 } = n3;
                 if (this.hasPattern) {
@@ -228516,12 +228659,12 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             this.properties = {}, this.extent = r2, this.type = 0, this._pbf = t4, this._geometry = -1, this._keys = n2, this._values = i2, t4.readFields(gl2, this, e2);
           }
           function gl2(t4, e2, r2) {
-            1 == t4 ? e2.id = r2.readVarint() : 2 == t4 ? function(t5, e3) {
+            1 == t4 ? e2.id = r2.readVarint() : 2 == t4 ? (function(t5, e3) {
               for (var r3 = t5.readVarint() + t5.pos; t5.pos < r3; ) {
                 var n2 = e3._keys[t5.readVarint()], i2 = e3._values[t5.readVarint()];
                 e3.properties[n2] = i2;
               }
-            }(r2, e2) : 3 == t4 ? e2.type = r2.readVarint() : 4 == t4 && (e2._geometry = r2.pos);
+            })(r2, e2) : 3 == t4 ? e2.type = r2.readVarint() : 4 == t4 && (e2._geometry = r2.pos);
           }
           function xl(t4) {
             for (var e2, r2, n2 = 0, i2 = 0, s2 = t4.length, a2 = s2 - 1; i2 < s2; a2 = i2++) n2 += ((r2 = t4[a2]).x - (e2 = t4[i2]).x) * (e2.y + r2.y);
@@ -228572,7 +228715,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 for (n2 = 0; n2 < l2.length; n2++) c2(l2[n2]);
                 break;
               case 3:
-                for (l2 = function(t5) {
+                for (l2 = (function(t5) {
                   var e3 = t5.length;
                   if (e3 <= 1) return [t5];
                   for (var r3, n3, i3 = [], s3 = 0; s3 < e3; s3++) {
@@ -228580,7 +228723,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                     0 !== a3 && (void 0 === n3 && (n3 = a3 < 0), n3 === a3 < 0 ? (r3 && i3.push(r3), r3 = [t5[s3]]) : r3.push(t5[s3]));
                   }
                   return r3 && i3.push(r3), i3;
-                }(l2), n2 = 0; n2 < l2.length; n2++) for (i2 = 0; i2 < l2[n2].length; i2++) c2(l2[n2][i2]);
+                })(l2), n2 = 0; n2 < l2.length; n2++) for (i2 = 0; i2 < l2[n2].length; i2++) c2(l2[n2][i2]);
             }
             1 === l2.length ? l2 = l2[0] : u2 = "Multi" + u2;
             var p2 = { type: "Feature", geometry: { type: u2, coordinates: l2 }, properties: this.properties };
@@ -228591,13 +228734,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             this.version = 1, this.name = null, this.extent = 4096, this.length = 0, this._pbf = t4, this._keys = [], this._values = [], this._features = [], t4.readFields(_l, this, e2), this.length = this._features.length;
           }
           function _l(t4, e2, r2) {
-            15 === t4 ? e2.version = r2.readVarint() : 1 === t4 ? e2.name = r2.readString() : 5 === t4 ? e2.extent = r2.readVarint() : 2 === t4 ? e2._features.push(r2.pos) : 3 === t4 ? e2._keys.push(r2.readString()) : 4 === t4 && e2._values.push(function(t5) {
+            15 === t4 ? e2.version = r2.readVarint() : 1 === t4 ? e2.name = r2.readString() : 5 === t4 ? e2.extent = r2.readVarint() : 2 === t4 ? e2._features.push(r2.pos) : 3 === t4 ? e2._keys.push(r2.readString()) : 4 === t4 && e2._values.push((function(t5) {
               for (var e3 = null, r3 = t5.readVarint() + t5.pos; t5.pos < r3; ) {
                 var n2 = t5.readVarint() >> 3;
                 e3 = 1 === n2 ? t5.readString() : 2 === n2 ? t5.readFloat() : 3 === n2 ? t5.readDouble() : 4 === n2 ? t5.readVarint64() : 5 === n2 ? t5.readVarint() : 6 === n2 ? t5.readSVarint() : 7 === n2 ? t5.readBoolean() : null;
               }
               return e3;
-            }(r2));
+            })(r2));
           }
           wl.prototype.feature = function(t4) {
             if (t4 < 0 || t4 >= this._features.length) throw new Error("feature index out of bounds");
@@ -228621,7 +228764,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class zl {
             constructor(t4) {
-              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map((t5) => t5.id), this.index = t4.index, this.hasPattern = false, this.layoutVertexArray = new Xs(), this.centroidVertexArray = new Zs(), this.indexArray = new na(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.segments = new oa(), this.stateDependentLayerIds = this.layers.filter((t5) => t5.isStateDependent()).map((t5) => t5.id);
+              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map(((t5) => t5.id)), this.index = t4.index, this.hasPattern = false, this.layoutVertexArray = new Xs(), this.centroidVertexArray = new Zs(), this.indexArray = new na(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.segments = new oa(), this.stateDependentLayerIds = this.layers.filter(((t5) => t5.isStateDependent())).map(((t5) => t5.id));
             }
             populate(t4, e2, r2) {
               this.features = [], this.hasPattern = nl("fill-extrusion", this.layers, e2);
@@ -228701,7 +228844,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return t4.x === e2.x && (t4.x < 0 || t4.x > $a) || t4.y === e2.y && (t4.y < 0 || t4.y > $a);
           }
           function Cl(t4) {
-            return t4.every((t5) => t5.x < 0) || t4.every((t5) => t5.x > $a) || t4.every((t5) => t5.y < 0) || t4.every((t5) => t5.y > $a);
+            return t4.every(((t5) => t5.x < 0)) || t4.every(((t5) => t5.x > $a)) || t4.every(((t5) => t5.y < 0)) || t4.every(((t5) => t5.y > $a));
           }
           let Bl;
           wi("FillExtrusionBucket", zl, { omit: ["layers", "features"] });
@@ -228722,14 +228865,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return true;
             }
             queryIntersectsFeature(t4, e2, r2, n2, i2, a2, o2, l2) {
-              const u2 = ro(t4, this.paint.get("fill-extrusion-translate"), this.paint.get("fill-extrusion-translate-anchor"), a2.angle, o2), c2 = this.paint.get("fill-extrusion-height").evaluate(e2, r2), h2 = this.paint.get("fill-extrusion-base").evaluate(e2, r2), p2 = function(t5, e3, r3, n3) {
+              const u2 = ro(t4, this.paint.get("fill-extrusion-translate"), this.paint.get("fill-extrusion-translate-anchor"), a2.angle, o2), c2 = this.paint.get("fill-extrusion-height").evaluate(e2, r2), h2 = this.paint.get("fill-extrusion-base").evaluate(e2, r2), p2 = (function(t5, e3, r3, n3) {
                 const i3 = [];
                 for (const r4 of t5) {
                   const t6 = [r4.x, r4.y, 0, 1];
                   po(t6, t6, e3), i3.push(new s(t6[0] / t6[3], t6[1] / t6[3]));
                 }
                 return i3;
-              }(u2, l2), f2 = function(t5, e3, r3, n3) {
+              })(u2, l2), f2 = (function(t5, e3, r3, n3) {
                 const i3 = [], a3 = [], o3 = n3[8] * e3, l3 = n3[9] * e3, u3 = n3[10] * e3, c3 = n3[11] * e3, h3 = n3[8] * r3, p3 = n3[9] * r3, f3 = n3[10] * r3, d2 = n3[11] * r3;
                 for (const e4 of t5) {
                   const t6 = [], r4 = [];
@@ -228742,8 +228885,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   i3.push(t6), a3.push(r4);
                 }
                 return [i3, a3];
-              }(n2, h2, c2, l2);
-              return function(t5, e3, r3) {
+              })(n2, h2, c2, l2);
+              return (function(t5, e3, r3) {
                 let n3 = 1 / 0;
                 Za(r3, e3) && (n3 = Tl(r3, e3[0]));
                 for (let i3 = 0; i3 < e3.length; i3++) {
@@ -228754,7 +228897,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   }
                 }
                 return n3 !== 1 / 0 && n3;
-              }(f2[0], f2[1], p2);
+              })(f2[0], f2[1], p2);
             }
           }
           function Fl(t4, e2) {
@@ -228781,9 +228924,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           const $l = ls([{ name: "a_pos_normal", components: 2, type: "Int16" }, { name: "a_data", components: 4, type: "Uint8" }], 4), { members: Ll } = $l, Dl = ls([{ name: "a_uv_x", components: 1, type: "Float32" }, { name: "a_split_index", components: 1, type: "Float32" }]), { members: Ol } = Dl, jl = fl.VectorTileFeature.types, Rl = Math.cos(Math.PI / 180 * 37.5), Ul = Math.pow(2, 14) / 0.5;
           class ql {
             constructor(t4) {
-              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map((t5) => t5.id), this.index = t4.index, this.hasPattern = false, this.patternFeatures = [], this.lineClipsArray = [], this.gradients = {}, this.layers.forEach((t5) => {
+              this.zoom = t4.zoom, this.overscaling = t4.overscaling, this.layers = t4.layers, this.layerIds = this.layers.map(((t5) => t5.id)), this.index = t4.index, this.hasPattern = false, this.patternFeatures = [], this.lineClipsArray = [], this.gradients = {}, this.layers.forEach(((t5) => {
                 this.gradients[t5.id] = {};
-              }), this.layoutVertexArray = new Hs(), this.layoutVertexArray2 = new Ys(), this.indexArray = new na(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.segments = new oa(), this.maxLineLength = 0, this.stateDependentLayerIds = this.layers.filter((t5) => t5.isStateDependent()).map((t5) => t5.id);
+              })), this.layoutVertexArray = new Hs(), this.layoutVertexArray2 = new Ys(), this.indexArray = new na(), this.programConfigurations = new Ea(t4.layers, t4.zoom), this.segments = new oa(), this.maxLineLength = 0, this.stateDependentLayerIds = this.layers.filter(((t5) => t5.isStateDependent())).map(((t5) => t5.id));
             }
             populate(t4, e2, r2) {
               this.hasPattern = nl("line", this.layers, e2);
@@ -228794,7 +228937,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const c2 = i2 ? n2.evaluate(u2, {}, r2) : void 0, h2 = { id: a2, properties: e3.properties, type: e3.type, sourceLayerIndex: l2, index: o2, geometry: t5 ? u2.geometry : Oa(e3), patterns: {}, sortKey: c2 };
                 s2.push(h2);
               }
-              i2 && s2.sort((t5, e3) => t5.sortKey - e3.sortKey);
+              i2 && s2.sort(((t5, e3) => t5.sortKey - e3.sortKey));
               for (const n3 of s2) {
                 const { geometry: i3, index: s3, sourceLayerIndex: a2 } = n3;
                 if (this.hasPattern) {
@@ -228939,9 +229082,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             _handleSpecialPaintPropertyUpdate(t4) {
               if ("line-gradient" === t4) {
                 const t5 = this.gradientExpression();
-                this.stepInterpolant = !!function(t6) {
+                this.stepInterpolant = !!(function(t6) {
                   return void 0 !== t6._styleExpression;
-                }(t5) && t5._styleExpression.expression instanceof Ae, this.gradientVersion = (this.gradientVersion + 1) % Number.MAX_SAFE_INTEGER;
+                })(t5) && t5._styleExpression.expression instanceof Ae, this.gradientVersion = (this.gradientVersion + 1) % Number.MAX_SAFE_INTEGER;
               }
             }
             gradientExpression() {
@@ -228959,7 +229102,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             queryIntersectsFeature(t4, e2, r2, n2, i2, a2, o2) {
               const l2 = ro(t4, this.paint.get("line-translate"), this.paint.get("line-translate-anchor"), a2.angle, o2), u2 = o2 / 2 * Yl(this.paint.get("line-width").evaluate(e2, r2), this.paint.get("line-gap-width").evaluate(e2, r2)), c2 = this.paint.get("line-offset").evaluate(e2, r2);
-              return c2 && (n2 = function(t5, e3) {
+              return c2 && (n2 = (function(t5, e3) {
                 const r3 = [];
                 for (let n3 = 0; n3 < t5.length; n3++) {
                   const i3 = t5[n3], a3 = [];
@@ -228970,7 +229113,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   r3.push(a3);
                 }
                 return r3;
-              }(n2, c2 * o2)), function(t5, e3, r3) {
+              })(n2, c2 * o2)), (function(t5, e3, r3) {
                 for (let n3 = 0; n3 < e3.length; n3++) {
                   const i3 = e3[n3];
                   if (t5.length >= 3) {
@@ -228979,7 +229122,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   if (Ga(t5, i3, r3)) return true;
                 }
                 return false;
-              }(l2, n2, u2);
+              })(l2, n2, u2);
             }
             isTileClipped() {
               return true;
@@ -228994,12 +229137,12 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           ls([{ type: "Int16", name: "anchorPointX" }, { type: "Int16", name: "anchorPointY" }, { type: "Int16", name: "x1" }, { type: "Int16", name: "y1" }, { type: "Int16", name: "x2" }, { type: "Int16", name: "y2" }, { type: "Uint32", name: "featureIndex" }, { type: "Uint16", name: "sourceLayerIndex" }, { type: "Uint16", name: "bucketIndex" }]);
           const tu = ls([{ name: "a_pos", components: 2, type: "Int16" }, { name: "a_anchor_pos", components: 2, type: "Int16" }, { name: "a_extrude", components: 2, type: "Int16" }], 4), eu = ls([{ name: "a_pos", components: 2, type: "Float32" }, { name: "a_radius", components: 1, type: "Float32" }, { name: "a_flags", components: 2, type: "Int16" }], 4);
           function ru(t4, e2, r2) {
-            return t4.sections.forEach((t5) => {
-              t5.text = function(t6, e3, r3) {
+            return t4.sections.forEach(((t5) => {
+              t5.text = (function(t6, e3, r3) {
                 const n2 = e3.layout.get("text-transform").evaluate(r3, {});
                 return "uppercase" === n2 ? t6 = t6.toLocaleUpperCase() : "lowercase" === n2 && (t6 = t6.toLocaleLowerCase()), Ri.applyArabicShaping && (t6 = Ri.applyArabicShaping(t6)), t6;
-              }(t5.text, e2, r2);
-            }), t4;
+              })(t5.text, e2, r2);
+            })), t4;
           }
           ls([{ name: "triangle", components: 3, type: "Uint16" }]), ls([{ type: "Int16", name: "anchorX" }, { type: "Int16", name: "anchorY" }, { type: "Uint16", name: "glyphStartIndex" }, { type: "Uint16", name: "numGlyphs" }, { type: "Uint32", name: "vertexStartIndex" }, { type: "Uint32", name: "lineStartIndex" }, { type: "Uint32", name: "lineLength" }, { type: "Uint16", name: "segment" }, { type: "Uint16", name: "lowerSize" }, { type: "Uint16", name: "upperSize" }, { type: "Float32", name: "lineOffsetX" }, { type: "Float32", name: "lineOffsetY" }, { type: "Uint8", name: "writingMode" }, { type: "Uint8", name: "placedOrientation" }, { type: "Uint8", name: "hidden" }, { type: "Uint32", name: "crossTileID" }, { type: "Int16", name: "associatedIconIndex" }]), ls([{ type: "Int16", name: "anchorX" }, { type: "Int16", name: "anchorY" }, { type: "Int16", name: "rightJustifiedTextSymbolIndex" }, { type: "Int16", name: "centerJustifiedTextSymbolIndex" }, { type: "Int16", name: "leftJustifiedTextSymbolIndex" }, { type: "Int16", name: "verticalPlacedTextSymbolIndex" }, { type: "Int16", name: "placedIconSymbolIndex" }, { type: "Int16", name: "verticalPlacedIconSymbolIndex" }, { type: "Uint16", name: "key" }, { type: "Uint16", name: "textBoxStartIndex" }, { type: "Uint16", name: "textBoxEndIndex" }, { type: "Uint16", name: "verticalTextBoxStartIndex" }, { type: "Uint16", name: "verticalTextBoxEndIndex" }, { type: "Uint16", name: "iconBoxStartIndex" }, { type: "Uint16", name: "iconBoxEndIndex" }, { type: "Uint16", name: "verticalIconBoxStartIndex" }, { type: "Uint16", name: "verticalIconBoxEndIndex" }, { type: "Uint16", name: "featureIndex" }, { type: "Uint16", name: "numHorizontalGlyphVertices" }, { type: "Uint16", name: "numVerticalGlyphVertices" }, { type: "Uint16", name: "numIconVertices" }, { type: "Uint16", name: "numVerticalIconVertices" }, { type: "Uint16", name: "useRuntimeCollisionCircles" }, { type: "Uint32", name: "crossTileID" }, { type: "Float32", name: "textBoxScale" }, { type: "Float32", name: "collisionCircleDiameter" }, { type: "Uint16", name: "textAnchorOffsetStartIndex" }, { type: "Uint16", name: "textAnchorOffsetEndIndex" }]), ls([{ type: "Float32", name: "offsetX" }]), ls([{ type: "Int16", name: "x" }, { type: "Int16", name: "y" }, { type: "Int16", name: "tileUnitDistanceFromAnchor" }]), ls([{ type: "Uint16", name: "textAnchor" }, { type: "Float32", components: 2, name: "textOffset" }]);
           const nu = { "!": "\uFE15", "#": "\uFF03", $: "\uFF04", "%": "\uFF05", "&": "\uFF06", "(": "\uFE35", ")": "\uFE36", "*": "\uFF0A", "+": "\uFF0B", ",": "\uFE10", "-": "\uFE32", ".": "\u30FB", "/": "\uFF0F", ":": "\uFE13", ";": "\uFE14", "<": "\uFE3F", "=": "\uFF1D", ">": "\uFE40", "?": "\uFE16", "@": "\uFF20", "[": "\uFE47", "\\": "\uFF3C", "]": "\uFE48", "^": "\uFF3E", _: "\uFE33", "`": "\uFF40", "{": "\uFE37", "|": "\u2015", "}": "\uFE38", "~": "\uFF5E", "\xA2": "\uFFE0", "\xA3": "\uFFE1", "\xA5": "\uFFE5", "\xA6": "\uFFE4", "\xAC": "\uFFE2", "\xAF": "\uFFE3", "\u2013": "\uFE32", "\u2014": "\uFE31", "\u2018": "\uFE43", "\u2019": "\uFE44", "\u201C": "\uFE41", "\u201D": "\uFE42", "\u2026": "\uFE19", "\u2027": "\u30FB", "\u20A9": "\uFFE6", "\u3001": "\uFE11", "\u3002": "\uFE12", "\u3008": "\uFE3F", "\u3009": "\uFE40", "\u300A": "\uFE3D", "\u300B": "\uFE3E", "\u300C": "\uFE41", "\u300D": "\uFE42", "\u300E": "\uFE43", "\u300F": "\uFE44", "\u3010": "\uFE3B", "\u3011": "\uFE3C", "\u3014": "\uFE39", "\u3015": "\uFE3A", "\u3016": "\uFE17", "\u3017": "\uFE18", "\uFF01": "\uFE15", "\uFF08": "\uFE35", "\uFF09": "\uFE36", "\uFF0C": "\uFE10", "\uFF0D": "\uFE32", "\uFF0E": "\u30FB", "\uFF1A": "\uFE13", "\uFF1B": "\uFE14", "\uFF1C": "\uFE3F", "\uFF1E": "\uFE40", "\uFF1F": "\uFE16", "\uFF3B": "\uFE47", "\uFF3D": "\uFE48", "\uFF3F": "\uFE33", "\uFF5B": "\uFE37", "\uFF5C": "\u2015", "\uFF5D": "\uFE38", "\uFF5F": "\uFE35", "\uFF60": "\uFE36", "\uFF61": "\uFE12", "\uFF62": "\uFE41", "\uFF63": "\uFE42" };
@@ -229101,7 +229244,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return this.pos += 8, t4;
           }, readVarint: function(t4) {
             var e2, r2, n2 = this.buf;
-            return e2 = 127 & (r2 = n2[this.pos++]), r2 < 128 ? e2 : (e2 |= (127 & (r2 = n2[this.pos++])) << 7, r2 < 128 ? e2 : (e2 |= (127 & (r2 = n2[this.pos++])) << 14, r2 < 128 ? e2 : (e2 |= (127 & (r2 = n2[this.pos++])) << 21, r2 < 128 ? e2 : function(t5, e3, r3) {
+            return e2 = 127 & (r2 = n2[this.pos++]), r2 < 128 ? e2 : (e2 |= (127 & (r2 = n2[this.pos++])) << 7, r2 < 128 ? e2 : (e2 |= (127 & (r2 = n2[this.pos++])) << 14, r2 < 128 ? e2 : (e2 |= (127 & (r2 = n2[this.pos++])) << 21, r2 < 128 ? e2 : (function(t5, e3, r3) {
               var n3, i2, s2 = r3.buf;
               if (n3 = (112 & (i2 = s2[r3.pos++])) >> 4, i2 < 128) return fu(t5, n3, e3);
               if (n3 |= (127 & (i2 = s2[r3.pos++])) << 3, i2 < 128) return fu(t5, n3, e3);
@@ -229110,7 +229253,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               if (n3 |= (127 & (i2 = s2[r3.pos++])) << 24, i2 < 128) return fu(t5, n3, e3);
               if (n3 |= (1 & (i2 = s2[r3.pos++])) << 31, i2 < 128) return fu(t5, n3, e3);
               throw new Error("Expected varint not more than 10 bytes");
-            }(e2 |= (15 & (r2 = n2[this.pos])) << 28, t4, this))));
+            })(e2 |= (15 & (r2 = n2[this.pos])) << 28, t4, this))));
           }, readVarint64: function() {
             return this.readVarint(true);
           }, readSVarint: function() {
@@ -229120,16 +229263,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return Boolean(this.readVarint());
           }, readString: function() {
             var t4 = this.readVarint() + this.pos, e2 = this.pos;
-            return this.pos = t4, t4 - e2 >= 12 && hu ? function(t5, e3, r2) {
+            return this.pos = t4, t4 - e2 >= 12 && hu ? (function(t5, e3, r2) {
               return hu.decode(t5.subarray(e3, r2));
-            }(this.buf, e2, t4) : function(t5, e3, r2) {
+            })(this.buf, e2, t4) : (function(t5, e3, r2) {
               for (var n2 = "", i2 = e3; i2 < r2; ) {
                 var s2, a2, o2, l2 = t5[i2], u2 = null, c2 = l2 > 239 ? 4 : l2 > 223 ? 3 : l2 > 191 ? 2 : 1;
                 if (i2 + c2 > r2) break;
                 1 === c2 ? l2 < 128 && (u2 = l2) : 2 === c2 ? 128 == (192 & (s2 = t5[i2 + 1])) && (u2 = (31 & l2) << 6 | 63 & s2) <= 127 && (u2 = null) : 3 === c2 ? (a2 = t5[i2 + 2], 128 == (192 & (s2 = t5[i2 + 1])) && 128 == (192 & a2) && ((u2 = (15 & l2) << 12 | (63 & s2) << 6 | 63 & a2) <= 2047 || u2 >= 55296 && u2 <= 57343) && (u2 = null)) : 4 === c2 && (a2 = t5[i2 + 2], o2 = t5[i2 + 3], 128 == (192 & (s2 = t5[i2 + 1])) && 128 == (192 & a2) && 128 == (192 & o2) && ((u2 = (15 & l2) << 18 | (63 & s2) << 12 | (63 & a2) << 6 | 63 & o2) <= 65535 || u2 >= 1114112) && (u2 = null)), null === u2 ? (u2 = 65533, c2 = 1) : u2 > 65535 && (u2 -= 65536, n2 += String.fromCharCode(u2 >>> 10 & 1023 | 55296), u2 = 56320 | 1023 & u2), n2 += String.fromCharCode(u2), i2 += c2;
               }
               return n2;
-            }(this.buf, e2, t4);
+            })(this.buf, e2, t4);
           }, readBytes: function() {
             var t4 = this.readVarint() + this.pos, e2 = this.buf.subarray(this.pos, t4);
             return this.pos = t4, e2;
@@ -229206,16 +229349,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }, writeSFixed64: function(t4) {
             this.realloc(8), ku(this.buf, -1 & t4, this.pos), ku(this.buf, Math.floor(t4 * cu), this.pos + 4), this.pos += 8;
           }, writeVarint: function(t4) {
-            (t4 = +t4 || 0) > 268435455 || t4 < 0 ? function(t5, e2) {
+            (t4 = +t4 || 0) > 268435455 || t4 < 0 ? (function(t5, e2) {
               var r2, n2;
               if (t5 >= 0 ? (r2 = t5 % 4294967296 | 0, n2 = t5 / 4294967296 | 0) : (n2 = ~(-t5 / 4294967296), 4294967295 ^ (r2 = ~(-t5 % 4294967296)) ? r2 = r2 + 1 | 0 : (r2 = 0, n2 = n2 + 1 | 0)), t5 >= 18446744073709552e3 || t5 < -18446744073709552e3) throw new Error("Given varint doesn't fit into 10 bytes");
-              e2.realloc(10), function(t6, e3, r3) {
+              e2.realloc(10), (function(t6, e3, r3) {
                 r3.buf[r3.pos++] = 127 & t6 | 128, t6 >>>= 7, r3.buf[r3.pos++] = 127 & t6 | 128, t6 >>>= 7, r3.buf[r3.pos++] = 127 & t6 | 128, t6 >>>= 7, r3.buf[r3.pos++] = 127 & t6 | 128, r3.buf[r3.pos] = 127 & (t6 >>>= 7);
-              }(r2, 0, e2), function(t6, e3) {
+              })(r2, 0, e2), (function(t6, e3) {
                 var r3 = (7 & t6) << 4;
                 e3.buf[e3.pos++] |= r3 | ((t6 >>>= 3) ? 128 : 0), t6 && (e3.buf[e3.pos++] = 127 & t6 | ((t6 >>>= 7) ? 128 : 0), t6 && (e3.buf[e3.pos++] = 127 & t6 | ((t6 >>>= 7) ? 128 : 0), t6 && (e3.buf[e3.pos++] = 127 & t6 | ((t6 >>>= 7) ? 128 : 0), t6 && (e3.buf[e3.pos++] = 127 & t6 | ((t6 >>>= 7) ? 128 : 0), t6 && (e3.buf[e3.pos++] = 127 & t6)))));
-              }(n2, e2);
-            }(t4, this) : (this.realloc(4), this.buf[this.pos++] = 127 & t4 | (t4 > 127 ? 128 : 0), t4 <= 127 || (this.buf[this.pos++] = 127 & (t4 >>>= 7) | (t4 > 127 ? 128 : 0), t4 <= 127 || (this.buf[this.pos++] = 127 & (t4 >>>= 7) | (t4 > 127 ? 128 : 0), t4 <= 127 || (this.buf[this.pos++] = t4 >>> 7 & 127))));
+              })(n2, e2);
+            })(t4, this) : (this.realloc(4), this.buf[this.pos++] = 127 & t4 | (t4 > 127 ? 128 : 0), t4 <= 127 || (this.buf[this.pos++] = 127 & (t4 >>>= 7) | (t4 > 127 ? 128 : 0), t4 <= 127 || (this.buf[this.pos++] = 127 & (t4 >>>= 7) | (t4 > 127 ? 128 : 0), t4 <= 127 || (this.buf[this.pos++] = t4 >>> 7 & 127))));
           }, writeSVarint: function(t4) {
             this.writeVarint(t4 < 0 ? 2 * -t4 - 1 : 2 * t4);
           }, writeBoolean: function(t4) {
@@ -229223,7 +229366,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }, writeString: function(t4) {
             t4 = String(t4), this.realloc(4 * t4.length), this.pos++;
             var e2 = this.pos;
-            this.pos = function(t5, e3, r3) {
+            this.pos = (function(t5, e3, r3) {
               for (var n2, i2, s2 = 0; s2 < e3.length; s2++) {
                 if ((n2 = e3.charCodeAt(s2)) > 55295 && n2 < 57344) {
                   if (!i2) {
@@ -229239,7 +229382,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 n2 < 128 ? t5[r3++] = n2 : (n2 < 2048 ? t5[r3++] = n2 >> 6 | 192 : (n2 < 65536 ? t5[r3++] = n2 >> 12 | 224 : (t5[r3++] = n2 >> 18 | 240, t5[r3++] = n2 >> 12 & 63 | 128), t5[r3++] = n2 >> 6 & 63 | 128), t5[r3++] = 63 & n2 | 128);
               }
               return r3;
-            }(this.buf, t4, this.pos);
+            })(this.buf, t4, this.pos);
             var r2 = this.pos - e2;
             r2 >= 128 && du(e2, r2, this), this.pos = e2 - 1, this.writeVarint(r2), this.pos += r2;
           }, writeFloat: function(t4) {
@@ -229317,7 +229460,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           function Eu(t4) {
             let e2 = 0, r2 = 0;
             for (const n3 of t4) e2 += n3.w * n3.h, r2 = Math.max(r2, n3.w);
-            t4.sort((t5, e3) => e3.h - t5.h);
+            t4.sort(((t5, e3) => e3.h - t5.h));
             const n2 = [{ x: 0, y: 0, w: Math.max(Math.ceil(Math.sqrt(e2 / 0.95)), r2), h: 1 / 0 }];
             let i2 = 0, s2 = 0;
             for (const e3 of t4) for (let t5 = n2.length - 1; t5 >= 0; t5--) {
@@ -229426,14 +229569,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return this.text.charCodeAt(t4);
             }
             verticalizePunctuation() {
-              this.text = function(t4) {
+              this.text = (function(t4) {
                 let e2 = "";
                 for (let r2 = 0; r2 < t4.length; r2++) {
                   const n2 = t4.charCodeAt(r2 + 1) || null, i2 = t4.charCodeAt(r2 - 1) || null;
                   e2 += n2 && $i(n2) && !nu[t4[r2 + 1]] || i2 && $i(i2) && !nu[t4[r2 - 1]] || !nu[t4[r2]] ? t4[r2] : nu[t4[r2]];
                 }
                 return e2;
-              }(this.text);
+              })(this.text);
             }
             trim() {
               let t4 = 0;
@@ -229450,7 +229593,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return this.text;
             }
             getMaxScale() {
-              return this.sectionIndex.reduce((t4, e2) => Math.max(t4, this.sections[e2].scale), 0);
+              return this.sectionIndex.reduce(((t4, e2) => Math.max(t4, this.sections[e2].scale)), 0);
             }
             addTextSection(t4, e2) {
               this.text += t4.text, this.sections.push(Ou.forText(t4.scale, t4.fontStack || e2));
@@ -229488,14 +229631,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const t5 = new ju();
                 t5.text = e3[0], t5.sectionIndex = e3[1], t5.sections = m2.sections, g2.push(t5);
               }
-            } else g2 = function(t4, e3) {
+            } else g2 = (function(t4, e3) {
               const r3 = [], n3 = t4.text;
               let i3 = 0;
               for (const n4 of e3) r3.push(t4.substring(i3, n4)), i3 = n4;
               return i3 < n3.length && r3.push(t4.substring(i3, n3.length)), r3;
-            }(m2, Yu(m2, c2, a2, r2, i2, d2));
+            })(m2, Yu(m2, c2, a2, r2, i2, d2));
             const b2 = [], w2 = { positionedLines: b2, text: m2.toString(), top: h2[1], bottom: h2[1], left: h2[0], right: h2[0], writingMode: p2, iconsInText: false, verticalizable: false };
-            return function(e3, r3, n3, i3, s3, a3, o3, l3, u3, c3, h3, p3) {
+            return (function(e3, r3, n3, i3, s3, a3, o3, l3, u3, c3, h3, p3) {
               let f3 = 0, d3 = Du, y3 = 0, m3 = 0;
               const g3 = "right" === l3 ? 1 : "left" === l3 ? 0 : 0.5;
               let x3 = 0;
@@ -229545,10 +229688,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 c4 = s4 !== a4 ? -o4 * n4 - Du : (-n4 * l4 + 0.5) * a4;
                 for (const e5 of t4) for (const t5 of e5.positionedGlyphs) t5.x += u4, t5.y += c4;
               })(e3.positionedLines, g3, w3, _2, y3, m3, a3, b3, s3.length), e3.top += -_2 * b3, e3.bottom = e3.top + b3, e3.left += -w3 * y3, e3.right = e3.left + y3;
-            }(w2, r2, n2, i2, g2, o2, l2, u2, p2, c2, f2, y2), !function(t4) {
+            })(w2, r2, n2, i2, g2, o2, l2, u2, p2, c2, f2, y2), !(function(t4) {
               for (const e3 of t4) if (0 !== e3.positionedGlyphs.length) return false;
               return true;
-            }(b2) && w2;
+            })(b2) && w2;
           }
           const Uu = { 9: true, 10: true, 11: true, 12: true, 13: true, 32: true }, qu = { 10: true, 32: true, 38: true, 41: true, 43: true, 45: true, 47: true, 173: true, 183: true, 8203: true, 8208: true, 8211: true, 8231: true }, Nu = { 40: true };
           function Zu(t4, e2, r2, n2, i2, s2) {
@@ -229582,14 +229725,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           function Yu(t4, e2, r2, n2, i2, s2) {
             if (!t4) return [];
-            const a2 = [], o2 = function(t5, e3, r3, n3, i3, s3) {
+            const a2 = [], o2 = (function(t5, e3, r3, n3, i3, s3) {
               let a3 = 0;
               for (let r4 = 0; r4 < t5.length(); r4++) {
                 const o3 = t5.getSection(r4);
                 a3 += Zu(t5.getCharCode(r4), o3, n3, i3, e3, s3);
               }
               return a3 / Math.max(1, Math.ceil(a3 / r3));
-            }(t4, e2, r2, n2, i2, s2), l2 = t4.text.indexOf("\u200B") >= 0;
+            })(t4, e2, r2, n2, i2, s2), l2 = t4.text.indexOf("\u200B") >= 0;
             let u2 = 0;
             for (let r3 = 0; r3 < t4.length(); r3++) {
               const h2 = t4.getSection(r3), p2 = t4.getCharCode(r3);
@@ -229727,14 +229870,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           wi("CollisionBuffers", fc);
           class dc {
             constructor(e2) {
-              this.collisionBoxArray = e2.collisionBoxArray, this.zoom = e2.zoom, this.overscaling = e2.overscaling, this.layers = e2.layers, this.layerIds = this.layers.map((t4) => t4.id), this.index = e2.index, this.pixelRatio = e2.pixelRatio, this.sourceLayerIndex = e2.sourceLayerIndex, this.hasPattern = false, this.hasRTLText = false, this.sortKeyRanges = [], this.collisionCircleArray = [], this.placementInvProjMatrix = lo([]), this.placementViewportMatrix = lo([]);
+              this.collisionBoxArray = e2.collisionBoxArray, this.zoom = e2.zoom, this.overscaling = e2.overscaling, this.layers = e2.layers, this.layerIds = this.layers.map(((t4) => t4.id)), this.index = e2.index, this.pixelRatio = e2.pixelRatio, this.sourceLayerIndex = e2.sourceLayerIndex, this.hasPattern = false, this.hasRTLText = false, this.sortKeyRanges = [], this.collisionCircleArray = [], this.placementInvProjMatrix = lo([]), this.placementViewportMatrix = lo([]);
               const r2 = this.layers[0]._unevaluatedLayout._values;
               this.textSizeData = sc(this.zoom, r2["text-size"]), this.iconSizeData = sc(this.zoom, r2["icon-size"]);
               const n2 = this.layers[0].layout, i2 = n2.get("symbol-sort-key"), s2 = n2.get("symbol-z-order");
-              this.canOverlap = "never" !== ac(n2, "text-overlap", "text-allow-overlap") || "never" !== ac(n2, "icon-overlap", "icon-allow-overlap") || n2.get("text-ignore-placement") || n2.get("icon-ignore-placement"), this.sortFeaturesByKey = "viewport-y" !== s2 && !i2.isConstant(), this.sortFeaturesByY = ("viewport-y" === s2 || "auto" === s2 && !this.sortFeaturesByKey) && this.canOverlap, "point" === n2.get("symbol-placement") && (this.writingModes = n2.get("text-writing-mode").map((e3) => t.ah[e3])), this.stateDependentLayerIds = this.layers.filter((t4) => t4.isStateDependent()).map((t4) => t4.id), this.sourceID = e2.sourceID;
+              this.canOverlap = "never" !== ac(n2, "text-overlap", "text-allow-overlap") || "never" !== ac(n2, "icon-overlap", "icon-allow-overlap") || n2.get("text-ignore-placement") || n2.get("icon-ignore-placement"), this.sortFeaturesByKey = "viewport-y" !== s2 && !i2.isConstant(), this.sortFeaturesByY = ("viewport-y" === s2 || "auto" === s2 && !this.sortFeaturesByKey) && this.canOverlap, "point" === n2.get("symbol-placement") && (this.writingModes = n2.get("text-writing-mode").map(((e3) => t.ah[e3]))), this.stateDependentLayerIds = this.layers.filter(((t4) => t4.isStateDependent())).map(((t4) => t4.id)), this.sourceID = e2.sourceID;
             }
             createArrays() {
-              this.text = new pc(new Ea(this.layers, this.zoom, (t4) => /^text/.test(t4))), this.icon = new pc(new Ea(this.layers, this.zoom, (t4) => /^icon/.test(t4))), this.glyphOffsetArray = new Os(), this.lineVertexArray = new js(), this.symbolInstances = new Ds(), this.textAnchorOffsets = new Us();
+              this.text = new pc(new Ea(this.layers, this.zoom, ((t4) => /^text/.test(t4)))), this.icon = new pc(new Ea(this.layers, this.zoom, ((t4) => /^icon/.test(t4)))), this.glyphOffsetArray = new Os(), this.lineVertexArray = new js(), this.symbolInstances = new Ds(), this.textAnchorOffsets = new Us();
             }
             calculateGlyphDependencies(t4, e2, r2, n2, i2) {
               for (let s2 = 0; s2 < t4.length; s2++) if (e2[t4.charCodeAt(s2)] = true, (r2 || n2) && i2) {
@@ -229770,7 +229913,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   }
                 }
               }
-              "line" === s2.get("symbol-placement") && (this.features = function(t4) {
+              "line" === s2.get("symbol-placement") && (this.features = (function(t4) {
                 const e3 = {}, r3 = {}, n3 = [];
                 let i3 = 0;
                 function s3(e4) {
@@ -229800,8 +229943,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                     delete e3[f3], delete r3[d3], r3[l3(p3, n3[i4].geometry, true)] = i4, n3[t5].geometry = null;
                   } else f3 in r3 ? a3(f3, d3, h3) : d3 in e3 ? o3(f3, d3, h3) : (s3(u3), e3[f3] = i3 - 1, r3[d3] = i3 - 1);
                 }
-                return n3.filter((t5) => t5.geometry);
-              }(this.features)), this.sortFeaturesByKey && this.features.sort((t4, e3) => t4.sortKey - e3.sortKey);
+                return n3.filter(((t5) => t5.geometry));
+              })(this.features)), this.sortFeaturesByKey && this.features.sort(((t4, e3) => t4.sortKey - e3.sortKey));
             }
             update(t4, e2, r2) {
               this.stateDependentLayers.length && (this.text.programConfigurations.updatePaintArrays(t4, e2, this.layers, r2), this.icon.programConfigurations.updatePaintArrays(t4, e2, this.layers, r2));
@@ -229923,7 +230066,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const a2 = this.symbolInstances.get(t5);
                 n2.push(0 | Math.round(e2 * a2.anchorX + r2 * a2.anchorY)), i2.push(a2.featureIndex);
               }
-              return s2.sort((t5, e3) => n2[t5] - n2[e3] || i2[e3] - i2[t5]), s2;
+              return s2.sort(((t5, e3) => n2[t5] - n2[e3] || i2[e3] - i2[t5])), s2;
             }
             addToSortKeyRanges(t4, e2) {
               const r2 = this.sortKeyRanges[this.sortKeyRanges.length - 1];
@@ -229934,9 +230077,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 this.symbolInstanceIndexes = this.getSortedSymbolIndexes(t4), this.sortedAngle = t4, this.text.indexArray.clear(), this.icon.indexArray.clear(), this.featureSortOrder = [];
                 for (const t5 of this.symbolInstanceIndexes) {
                   const e2 = this.symbolInstances.get(t5);
-                  this.featureSortOrder.push(e2.featureIndex), [e2.rightJustifiedTextSymbolIndex, e2.centerJustifiedTextSymbolIndex, e2.leftJustifiedTextSymbolIndex].forEach((t6, e3, r2) => {
+                  this.featureSortOrder.push(e2.featureIndex), [e2.rightJustifiedTextSymbolIndex, e2.centerJustifiedTextSymbolIndex, e2.leftJustifiedTextSymbolIndex].forEach(((t6, e3, r2) => {
                     t6 >= 0 && r2.indexOf(t6) === e3 && this.addIndicesForPlacedSymbol(this.text, t6);
-                  }), e2.verticalPlacedTextSymbolIndex >= 0 && this.addIndicesForPlacedSymbol(this.text, e2.verticalPlacedTextSymbolIndex), e2.placedIconSymbolIndex >= 0 && this.addIndicesForPlacedSymbol(this.icon, e2.placedIconSymbolIndex), e2.verticalPlacedIconSymbolIndex >= 0 && this.addIndicesForPlacedSymbol(this.icon, e2.verticalPlacedIconSymbolIndex);
+                  })), e2.verticalPlacedTextSymbolIndex >= 0 && this.addIndicesForPlacedSymbol(this.text, e2.verticalPlacedTextSymbolIndex), e2.placedIconSymbolIndex >= 0 && this.addIndicesForPlacedSymbol(this.icon, e2.placedIconSymbolIndex), e2.verticalPlacedIconSymbolIndex >= 0 && this.addIndicesForPlacedSymbol(this.icon, e2.verticalPlacedIconSymbolIndex);
                 }
                 this.text.indexBuffer && this.text.indexBuffer.updateData(this.text.indexArray), this.icon.indexBuffer && this.icon.indexBuffer.updateData(this.icon.indexArray);
               }
@@ -229989,9 +230132,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             getValueAndResolveTokens(t4, e2, r2, n2) {
               const i2 = this.layout.get(t4).evaluate(e2, {}, r2, n2), s2 = this._unevaluatedLayout._values[t4];
-              return s2.isDataDriven() || vn(s2.value) || !i2 ? i2 : function(t5, e3) {
-                return e3.replace(/{([^{}]+)}/g, (e4, r3) => t5 && r3 in t5 ? String(t5[r3]) : "");
-              }(e2.properties, i2);
+              return s2.isDataDriven() || vn(s2.value) || !i2 ? i2 : (function(t5, e3) {
+                return e3.replace(/{([^{}]+)}/g, ((e4, r3) => t5 && r3 in t5 ? String(t5[r3]) : ""));
+              })(e2.properties, i2);
             }
             createBucket(t4) {
               return new dc(t4);
@@ -230079,9 +230222,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               });
             }
             trigger() {
-              this._triggered || (this._triggered = true, this._channel ? this._channel.port1.postMessage(true) : setTimeout(() => {
+              this._triggered || (this._triggered = true, this._channel ? this._channel.port1.postMessage(true) : setTimeout((() => {
                 this._triggered = false, this._methodToThrottle();
-              }, 0));
+              }), 0));
             }
             remove() {
               delete this._channel, this._methodToThrottle = () => {
@@ -230155,9 +230298,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class Dc {
             constructor(t4, e2, r2) {
-              if (!function(t5, e3, r3) {
+              if (!(function(t5, e3, r3) {
                 return !(t5 < 0 || t5 > 25 || r3 < 0 || r3 >= Math.pow(2, t5) || e3 < 0 || e3 >= Math.pow(2, t5));
-              }(t4, e2, r2)) throw new Error(`x=${e2}, y=${r2}, z=${t4} outside of bounds. 0<=x<${Math.pow(2, t4)}, 0<=y<${Math.pow(2, t4)} 0<=z<=25 `);
+              })(t4, e2, r2)) throw new Error(`x=${e2}, y=${r2}, z=${t4} outside of bounds. 0<=x<${Math.pow(2, t4)}, 0<=y<${Math.pow(2, t4)} 0<=z<=25 `);
               this.z = t4, this.x = e2, this.y = r2, this.key = Rc(0, t4, t4, e2, r2);
             }
             equals(t4) {
@@ -230166,11 +230309,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             url(t4, e2, r2) {
               const n2 = (s2 = this.y, a2 = this.z, o2 = Lc(256 * (i2 = this.x), 256 * (s2 = Math.pow(2, a2) - s2 - 1), a2), l2 = Lc(256 * (i2 + 1), 256 * (s2 + 1), a2), o2[0] + "," + o2[1] + "," + l2[0] + "," + l2[1]);
               var i2, s2, a2, o2, l2;
-              const u2 = function(t5, e3, r3) {
+              const u2 = (function(t5, e3, r3) {
                 let n3, i3 = "";
                 for (let s3 = t5; s3 > 0; s3--) n3 = 1 << s3 - 1, i3 += (e3 & n3 ? 1 : 0) + (r3 & n3 ? 2 : 0);
                 return i3;
-              }(this.z, this.x, this.y);
+              })(this.z, this.x, this.y);
               return t4[(this.x + this.y) % t4.length].replace(/{prefix}/g, (this.x % 16).toString(16) + (this.y % 16).toString(16)).replace(/{z}/g, String(this.z)).replace(/{x}/g, String(this.x)).replace(/{y}/g, String("tms" === r2 ? Math.pow(2, this.z) - this.y - 1 : this.y)).replace(/{ratio}/g, e2 > 1 ? "@2x" : "").replace(/{quadkey}/g, u2).replace(/{bbox-epsg-3857}/g, n2);
             }
             isChildOf(t4) {
@@ -230365,7 +230508,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             query(t4, e2, r2, n2) {
               this.loadVTLayers();
-              const i2 = t4.params || {}, a2 = $a / t4.tileSize / t4.scale, o2 = zn(i2.filter), l2 = t4.queryGeometry, u2 = t4.queryPadding * a2, c2 = Kc(l2), h2 = this.grid.query(c2.minX - u2, c2.minY - u2, c2.maxX + u2, c2.maxY + u2), p2 = Kc(t4.cameraQueryGeometry), f2 = this.grid3D.query(p2.minX - u2, p2.minY - u2, p2.maxX + u2, p2.maxY + u2, (e3, r3, n3, i3) => function(t5, e4, r4, n4, i4) {
+              const i2 = t4.params || {}, a2 = $a / t4.tileSize / t4.scale, o2 = zn(i2.filter), l2 = t4.queryGeometry, u2 = t4.queryPadding * a2, c2 = Kc(l2), h2 = this.grid.query(c2.minX - u2, c2.minY - u2, c2.maxX + u2, c2.maxY + u2), p2 = Kc(t4.cameraQueryGeometry), f2 = this.grid3D.query(p2.minX - u2, p2.minY - u2, p2.maxX + u2, p2.maxY + u2, ((e3, r3, n3, i3) => (function(t5, e4, r4, n4, i4) {
                 for (const s2 of t5) if (e4 <= s2.x && r4 <= s2.y && n4 >= s2.x && i4 >= s2.y) return true;
                 const a3 = [new s(e4, r4), new s(e4, i4), new s(n4, i4), new s(n4, r4)];
                 if (t5.length > 2) {
@@ -230373,7 +230516,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 }
                 for (let e5 = 0; e5 < t5.length - 1; e5++) if (Qa(t5[e5], t5[e5 + 1], a3)) return true;
                 return false;
-              }(t4.cameraQueryGeometry, e3 - u2, r3 - u2, n3 + u2, i3 + u2));
+              })(t4.cameraQueryGeometry, e3 - u2, r3 - u2, n3 + u2, i3 + u2)));
               for (const t5 of f2) h2.push(t5);
               h2.sort(Xc);
               const d2 = {};
@@ -230384,16 +230527,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 y2 = u3;
                 const c3 = this.featureIndexArray.get(u3);
                 let p3 = null;
-                this.loadMatchingFeature(d2, c3.bucketIndex, c3.sourceLayerIndex, c3.featureIndex, o2, i2.layers, i2.availableImages, e2, r2, n2, (e3, r3, n3) => (p3 || (p3 = Oa(e3)), r3.queryIntersectsFeature(l2, e3, n3, p3, this.z, t4.transform, a2, t4.pixelPosMatrix)));
+                this.loadMatchingFeature(d2, c3.bucketIndex, c3.sourceLayerIndex, c3.featureIndex, o2, i2.layers, i2.availableImages, e2, r2, n2, ((e3, r3, n3) => (p3 || (p3 = Oa(e3)), r3.queryIntersectsFeature(l2, e3, n3, p3, this.z, t4.transform, a2, t4.pixelPosMatrix))));
               }
               return d2;
             }
             loadMatchingFeature(t4, e2, r2, n2, i2, s2, a2, o2, l2, u2, c2) {
               const h2 = this.bucketLayerIDs[e2];
-              if (s2 && !function(t5, e3) {
+              if (s2 && !(function(t5, e3) {
                 for (let r3 = 0; r3 < t5.length; r3++) if (e3.indexOf(t5[r3]) >= 0) return true;
                 return false;
-              }(s2, h2)) return;
+              })(s2, h2)) return;
               const p2 = this.sourceLayerCoder.decode(r2), f2 = this.vtLayers[p2].feature(n2);
               if (i2.needGeometry) {
                 const t5 = ja(f2, true);
@@ -230434,10 +230577,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
           }
           function Gc(t4, e2, r2, n2, i2) {
-            return v(t4, (t5, s2) => {
+            return v(t4, ((t5, s2) => {
               const a2 = e2 instanceof Yi ? e2.get(s2) : null;
               return a2 && a2.evaluate ? a2.evaluate(r2, n2, i2) : a2;
-            });
+            }));
           }
           function Kc(t4) {
             let e2 = 1 / 0, r2 = 1 / 0, n2 = -1 / 0, i2 = -1 / 0;
@@ -230604,7 +230747,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
           }
           class hh {
-            constructor(t4 = [], e2 = (t5, e3) => t5 < e3 ? -1 : t5 > e3 ? 1 : 0) {
+            constructor(t4 = [], e2 = ((t5, e3) => t5 < e3 ? -1 : t5 > e3 ? 1 : 0)) {
               if (this.data = t4, this.length = this.data.length, this.compare = e2, this.length > 0) for (let t5 = (this.length >> 1) - 1; t5 >= 0; t5--) this._down(t5);
             }
             push(t4) {
@@ -230650,7 +230793,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             const h2 = new hh([], fh);
             if (0 === u2) return new s(n2, i2);
             for (let e3 = n2; e3 < a2; e3 += u2) for (let r3 = i2; r3 < o2; r3 += u2) h2.push(new dh(e3 + c2, r3 + c2, c2, t4));
-            let p2 = function(t5) {
+            let p2 = (function(t5) {
               let e3 = 0, r3 = 0, n3 = 0;
               const i3 = t5[0];
               for (let t6 = 0, s2 = i3.length, a3 = s2 - 1; t6 < s2; a3 = t6++) {
@@ -230658,7 +230801,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 r3 += (s3.x + o3.x) * l3, n3 += (s3.y + o3.y) * l3, e3 += 3 * l3;
               }
               return new dh(r3 / e3, n3 / e3, 0, t5);
-            }(t4), f2 = h2.length;
+            })(t4), f2 = h2.length;
             for (; h2.length; ) {
               const n3 = h2.pop();
               (n3.d > p2.d || !p2.d) && (p2 = n3, r2 && console.log("found best %d after %d probes", Math.round(1e4 * n3.d) / 1e4, f2)), n3.max - p2.d <= e2 || (c2 = n3.h / 2, h2.push(new dh(n3.p.x - c2, n3.p.y - c2, c2, t4)), h2.push(new dh(n3.p.x + c2, n3.p.y - c2, c2, t4)), h2.push(new dh(n3.p.x - c2, n3.p.y + c2, c2, t4)), h2.push(new dh(n3.p.x + c2, n3.p.y + c2, c2, t4)), f2 += 4);
@@ -230669,7 +230812,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return e2.max - t4.max;
           }
           function dh(t4, e2, r2, n2) {
-            this.p = new s(t4, e2), this.h = r2, this.d = function(t5, e3) {
+            this.p = new s(t4, e2), this.h = r2, this.d = (function(t5, e3) {
               let r3 = false, n3 = 1 / 0;
               for (let i2 = 0; i2 < e3.length; i2++) {
                 const s2 = e3[i2];
@@ -230679,13 +230822,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 }
               }
               return (r3 ? 1 : -1) * Math.sqrt(n3);
-            }(this.p, n2), this.max = this.d + this.h * Math.SQRT2;
+            })(this.p, n2), this.max = this.d + this.h * Math.SQRT2;
           }
           var yh;
           t.aq = void 0, (yh = t.aq || (t.aq = {}))[yh.center = 1] = "center", yh[yh.left = 2] = "left", yh[yh.right = 3] = "right", yh[yh.top = 4] = "top", yh[yh.bottom = 5] = "bottom", yh[yh["top-left"] = 6] = "top-left", yh[yh["top-right"] = 7] = "top-right", yh[yh["bottom-left"] = 8] = "bottom-left", yh[yh["bottom-right"] = 9] = "bottom-right";
           const mh = 7, gh = Number.POSITIVE_INFINITY;
           function xh(t4, e2) {
-            return e2[1] !== gh ? function(t5, e3, r2) {
+            return e2[1] !== gh ? (function(t5, e3, r2) {
               let n2 = 0, i2 = 0;
               switch (e3 = Math.abs(e3), r2 = Math.abs(r2), t5) {
                 case "top-right":
@@ -230710,7 +230853,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   n2 = e3;
               }
               return [n2, i2];
-            }(t4, e2[0], e2[1]) : function(t5, e3) {
+            })(t4, e2[0], e2[1]) : (function(t5, e3) {
               let r2 = 0, n2 = 0;
               e3 < 0 && (e3 = 0);
               const i2 = e3 / Math.SQRT2;
@@ -230745,7 +230888,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   r2 = -e3;
               }
               return [r2, n2];
-            }(t4, e2[0]);
+            })(t4, e2[0]);
           }
           function vh(t4, e2, r2) {
             var n2;
@@ -230753,7 +230896,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             if (s2) {
               const t5 = s2.values, e3 = [];
               for (let r3 = 0; r3 < t5.length; r3 += 2) {
-                const n3 = e3[r3] = t5[r3], i3 = t5[r3 + 1].map((t6) => t6 * iu);
+                const n3 = e3[r3] = t5[r3], i3 = t5[r3 + 1].map(((t6) => t6 * iu));
                 n3.startsWith("top") ? i3[1] -= mh : n3.startsWith("bottom") && (i3[1] += mh), e3[r3 + 1] = i3;
               }
               return new Qt(e3);
@@ -230761,7 +230904,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             const a2 = i2.get("text-variable-anchor");
             if (a2) {
               let n3;
-              n3 = void 0 !== t4._unevaluatedLayout.getValue("text-radial-offset") ? [i2.get("text-radial-offset").evaluate(e2, {}, r2) * iu, gh] : i2.get("text-offset").evaluate(e2, {}, r2).map((t5) => t5 * iu);
+              n3 = void 0 !== t4._unevaluatedLayout.getValue("text-radial-offset") ? [i2.get("text-radial-offset").evaluate(e2, {}, r2) * iu, gh] : i2.get("text-offset").evaluate(e2, {}, r2).map(((t5) => t5 * iu));
               const s3 = [];
               for (const t5 of a2) s3.push(t5, xh(t5, n3));
               return new Qt(s3);
@@ -230784,14 +230927,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           function wh(e2, r2, n2, i2, s2, a2, o2, l2, u2, c2, h2) {
             let p2 = a2.textMaxSize.evaluate(r2, {});
             void 0 === p2 && (p2 = o2);
-            const f2 = e2.layers[0].layout, d2 = f2.get("icon-offset").evaluate(r2, {}, h2), y2 = Ah(n2.horizontal), m2 = o2 / 24, g2 = e2.tilePixelRatio * m2, x2 = e2.tilePixelRatio * p2 / 24, v2 = e2.tilePixelRatio * l2, b2 = e2.tilePixelRatio * f2.get("symbol-spacing"), w2 = f2.get("text-padding") * e2.tilePixelRatio, _2 = function(t4, e3, r3, n3 = 1) {
+            const f2 = e2.layers[0].layout, d2 = f2.get("icon-offset").evaluate(r2, {}, h2), y2 = Ah(n2.horizontal), m2 = o2 / 24, g2 = e2.tilePixelRatio * m2, x2 = e2.tilePixelRatio * p2 / 24, v2 = e2.tilePixelRatio * l2, b2 = e2.tilePixelRatio * f2.get("symbol-spacing"), w2 = f2.get("text-padding") * e2.tilePixelRatio, _2 = (function(t4, e3, r3, n3 = 1) {
               const i3 = t4.get("icon-padding").evaluate(e3, {}, r3), s3 = i3 && i3.values;
               return [s3[0] * n3, s3[1] * n3, s3[2] * n3, s3[3] * n3];
-            }(f2, r2, h2, e2.tilePixelRatio), S2 = f2.get("text-max-angle") / 180 * Math.PI, k2 = "viewport" !== f2.get("text-rotation-alignment") && "point" !== f2.get("symbol-placement"), M2 = "map" === f2.get("icon-rotation-alignment") && "point" !== f2.get("symbol-placement"), I2 = f2.get("symbol-placement"), z2 = b2 / 2, P2 = f2.get("icon-text-fit");
+            })(f2, r2, h2, e2.tilePixelRatio), S2 = f2.get("text-max-angle") / 180 * Math.PI, k2 = "viewport" !== f2.get("text-rotation-alignment") && "point" !== f2.get("symbol-placement"), M2 = "map" === f2.get("icon-rotation-alignment") && "point" !== f2.get("symbol-placement"), I2 = f2.get("symbol-placement"), z2 = b2 / 2, P2 = f2.get("icon-text-fit");
             let C3;
             i2 && "none" !== P2 && (e2.allowVerticalPlacement && n2.vertical && (C3 = ec(i2, n2.vertical, P2, f2.get("icon-text-fit-padding"), d2, m2)), y2 && (i2 = ec(i2, y2, P2, f2.get("icon-text-fit-padding"), d2, m2)));
             const B3 = (l3, p3) => {
-              p3.x < 0 || p3.x >= $a || p3.y < 0 || p3.y >= $a || function(e3, r3, n3, i3, s3, a3, o3, l4, u3, c3, h3, p4, f3, d3, y3, m3, g3, x3, v3, b3, w3, _3, S3, k3, M3) {
+              p3.x < 0 || p3.x >= $a || p3.y < 0 || p3.y >= $a || (function(e3, r3, n3, i3, s3, a3, o3, l4, u3, c3, h3, p4, f3, d3, y3, m3, g3, x3, v3, b3, w3, _3, S3, k3, M3) {
                 const I3 = e3.addToLineVertexArray(r3, n3);
                 let z3, P3, C4, B4, V2 = 0, E3 = 0, F2 = 0, T2 = 0, $2 = -1, L2 = -1;
                 const D3 = {};
@@ -230825,16 +230968,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 H2 = Y2(z3, H2), H2 = Y2(C4, H2), H2 = Y2(P3, H2), H2 = Y2(B4, H2);
                 const J2 = H2 > -1 ? 1 : 0;
                 J2 && (H2 *= M3 / iu), e3.glyphOffsetArray.length >= dc.MAX_GLYPHS && A2("Too many glyphs being rendered in a tile. See https://github.com/mapbox/mapbox-gl-js/issues/2907"), void 0 !== w3.sortKey && e3.addToSortKeyRanges(e3.symbolInstances.length, w3.sortKey);
-                const W2 = vh(l4, w3, k3), [Q2, tt2] = function(e4, r4) {
+                const W2 = vh(l4, w3, k3), [Q2, tt2] = (function(e4, r4) {
                   const n4 = e4.length, i4 = null == r4 ? void 0 : r4.values;
                   if ((null == i4 ? void 0 : i4.length) > 0) for (let r5 = 0; r5 < i4.length; r5 += 2) {
                     const n5 = i4[r5 + 1];
                     e4.emplaceBack(t.aq[i4[r5]], n5[0], n5[1]);
                   }
                   return [n4, e4.length];
-                }(e3.textAnchorOffsets, W2);
+                })(e3.textAnchorOffsets, W2);
                 e3.symbolInstances.emplaceBack(r3.x, r3.y, D3.right >= 0 ? D3.right : -1, D3.center >= 0 ? D3.center : -1, D3.left >= 0 ? D3.left : -1, D3.vertical || -1, $2, L2, O2, R2, U2, q2, N2, Z2, G2, K3, X2, c3, F2, T2, V2, E3, J2, 0, f3, H2, Q2, tt2);
-              }(e2, p3, l3, n2, i2, s2, C3, e2.layers[0], e2.collisionBoxArray, r2.index, r2.sourceLayerIndex, e2.index, g2, [w2, w2, w2, w2], k2, u2, v2, _2, M2, d2, r2, a2, c2, h2, o2);
+              })(e2, p3, l3, n2, i2, s2, C3, e2.layers[0], e2.collisionBoxArray, r2.index, r2.sourceLayerIndex, e2.index, g2, [w2, w2, w2, w2], k2, u2, v2, _2, M2, d2, r2, a2, c2, h2, o2);
             };
             if ("line" === I2) for (const t4 of Hc(r2.geometry, 0, 0, $a, $a)) {
               const r3 = rh(t4, b2, S2, n2.vertical || y2, i2, 24, x2, e2.overscaling, $a);
@@ -230853,7 +230996,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             else if ("Point" === r2.type) for (const t4 of r2.geometry) for (const e3 of t4) B3([e3], new Yc(e3.x, e3.y, 0));
           }
           function _h(t4, e2, r2, n2, i2, a2, o2, l2, u2, c2, h2, p2, f2, d2, y2) {
-            const m2 = function(t5, e3, r3, n3, i3, a3, o3, l3) {
+            const m2 = (function(t5, e3, r3, n3, i3, a3, o3, l3) {
               const u3 = n3.layout.get("text-rotate").evaluate(a3, {}) * Math.PI / 180, c3 = [];
               for (const t6 of e3.positionedLines) for (const n4 of t6.positionedGlyphs) {
                 if (!n4.rect) continue;
@@ -230880,7 +231023,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 c3.push({ tl: k2, tr: M2, bl: I2, br: z2, tex: a4, writingMode: e3.writingMode, glyphOffset: g3, sectionIndex: n4.sectionIndex, isSDF: p3, pixelOffsetTL: P2, pixelOffsetBR: C3, minFontScaleX: 0, minFontScaleY: 0 });
               }
               return c3;
-            }(0, r2, l2, i2, a2, o2, n2, t4.allowVerticalPlacement), g2 = t4.textSizeData;
+            })(0, r2, l2, i2, a2, o2, n2, t4.allowVerticalPlacement), g2 = t4.textSizeData;
             let x2 = null;
             "source" === g2.kind ? (x2 = [nc * i2.layout.get("text-size").evaluate(o2, {})], x2[0] > ic && A2(`${t4.layerIds[0]}: Value for "text-size" is >= ${rc}. Reduce your "text-size".`)) : "composite" === g2.kind && (x2 = [nc * d2.compositeTextSizes[0].evaluate(o2, {}, y2), nc * d2.compositeTextSizes[1].evaluate(o2, {}, y2)], (x2[0] > ic || x2[1] > ic) && A2(`${t4.layerIds[0]}: Value for "text-size" is >= ${rc}. Reduce your "text-size".`)), t4.addSymbols(t4.text, m2, x2, l2, a2, o2, c2, e2, u2.lineStartIndex, u2.lineLength, f2, y2);
             for (const e3 of h2) p2[e3] = t4.text.placedSymbolArray.length - 1;
@@ -231003,7 +231146,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             for (const e2 in t.bg) performance.clearMarks(t.bg[e2]);
           }, getPerformanceMetrics() {
             performance.measure($h, t.bg.create, t.bg.load), performance.measure(Lh, t.bg.create, t.bg.fullLoad);
-            const e2 = performance.getEntriesByName($h)[0].duration, r2 = performance.getEntriesByName(Lh)[0].duration, n2 = Fh.length, i2 = 1 / (Fh.reduce((t4, e3) => t4 + e3, 0) / n2 / 1e3), s2 = Fh.filter((t4) => t4 > Th).reduce((t4, e3) => t4 + (e3 - Th) / Th, 0);
+            const e2 = performance.getEntriesByName($h)[0].duration, r2 = performance.getEntriesByName(Lh)[0].duration, n2 = Fh.length, i2 = 1 / (Fh.reduce(((t4, e3) => t4 + e3), 0) / n2 / 1e3), s2 = Fh.filter(((t4) => t4 > Th)).reduce(((t4, e3) => t4 + (e3 - Th) / Th), 0);
             return { loadTime: e2, fullLoadTime: r2, fps: i2, percentDroppedFrames: s2 / (n2 + s2) * 100, totalFrames: n2 };
           } };
           t.$ = class extends ps {
@@ -231015,26 +231158,26 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return M;
           }, t.D = Ji, t.E = Z, t.F = class {
             constructor(t4, e2) {
-              this.target = t4, this.mapId = e2, this.resolveRejects = {}, this.tasks = {}, this.taskQueue = [], this.abortControllers = {}, this.messageHandlers = {}, this.invoker = new Ic(() => this.process()), this.subscription = function(t5, e3, r2, n2) {
+              this.target = t4, this.mapId = e2, this.resolveRejects = {}, this.tasks = {}, this.taskQueue = [], this.abortControllers = {}, this.messageHandlers = {}, this.invoker = new Ic((() => this.process())), this.subscription = (function(t5, e3, r2, n2) {
                 return t5.addEventListener(e3, r2, false), { unsubscribe: () => {
                   t5.removeEventListener(e3, r2, false);
                 } };
-              }(this.target, "message", (t5) => this.receive(t5)), this.globalScope = k(self) ? t4 : window;
+              })(this.target, "message", ((t5) => this.receive(t5))), this.globalScope = k(self) ? t4 : window;
             }
             registerMessageHandler(t4, e2) {
               this.messageHandlers[t4] = e2;
             }
             sendAsync(t4, e2) {
-              return new Promise((r2, n2) => {
+              return new Promise(((r2, n2) => {
                 const i2 = Math.round(1e18 * Math.random()).toString(36).substring(0, 10);
-                this.resolveRejects[i2] = { resolve: r2, reject: n2 }, e2 && e2.signal.addEventListener("abort", () => {
+                this.resolveRejects[i2] = { resolve: r2, reject: n2 }, e2 && e2.signal.addEventListener("abort", (() => {
                   delete this.resolveRejects[i2];
                   const e3 = { id: i2, type: "<cancel>", origin: location.origin, targetMapId: t4.targetMapId, sourceMapId: this.mapId };
                   this.target.postMessage(e3);
-                }, { once: true });
+                }), { once: true });
                 const s2 = [], a2 = Object.assign(Object.assign({}, t4), { id: i2, sourceMapId: this.mapId, origin: location.origin, data: ki(t4.data, s2) });
                 this.target.postMessage(a2, { transfer: s2 });
-              });
+              }));
             }
             receive(t4) {
               const e2 = t4.data, r2 = e2.id;
@@ -231054,7 +231197,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               delete this.tasks[t4], this.taskQueue.length > 0 && this.invoker.trigger(), e2 && this.processTask(t4, e2);
             }
             processTask(t4, r2) {
-              return e(this, void 0, void 0, function* () {
+              return e(this, void 0, void 0, (function* () {
                 if ("<response>" === r2.type) {
                   const e3 = this.resolveRejects[t4];
                   if (delete this.resolveRejects[t4], !e3) return;
@@ -231069,7 +231212,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 } catch (e3) {
                   this.completeTask(t4, e3);
                 }
-              });
+              }));
             }
             completeTask(t4, e2, r2) {
               const n2 = [];
@@ -231101,7 +231244,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return Math.abs(r2 - x2) <= ao * Math.max(1, Math.abs(r2), Math.abs(x2)) && Math.abs(n2 - v2) <= ao * Math.max(1, Math.abs(n2), Math.abs(v2)) && Math.abs(i2 - b2) <= ao * Math.max(1, Math.abs(i2), Math.abs(b2)) && Math.abs(s2 - w2) <= ao * Math.max(1, Math.abs(s2), Math.abs(w2)) && Math.abs(a2 - _2) <= ao * Math.max(1, Math.abs(a2), Math.abs(_2)) && Math.abs(o2 - A3) <= ao * Math.max(1, Math.abs(o2), Math.abs(A3)) && Math.abs(l2 - S2) <= ao * Math.max(1, Math.abs(l2), Math.abs(S2)) && Math.abs(u2 - k2) <= ao * Math.max(1, Math.abs(u2), Math.abs(k2)) && Math.abs(c2 - M2) <= ao * Math.max(1, Math.abs(c2), Math.abs(M2)) && Math.abs(h2 - I2) <= ao * Math.max(1, Math.abs(h2), Math.abs(I2)) && Math.abs(p2 - z2) <= ao * Math.max(1, Math.abs(p2), Math.abs(z2)) && Math.abs(f2 - P2) <= ao * Math.max(1, Math.abs(f2), Math.abs(P2)) && Math.abs(d2 - C3) <= ao * Math.max(1, Math.abs(d2), Math.abs(C3)) && Math.abs(y2 - B3) <= ao * Math.max(1, Math.abs(y2), Math.abs(B3)) && Math.abs(m2 - V2) <= ao * Math.max(1, Math.abs(m2), Math.abs(V2)) && Math.abs(g2 - E3) <= ao * Math.max(1, Math.abs(g2), Math.abs(E3));
           }, t.a0 = oa, t.a1 = Dc, t.a2 = it, t.a3 = (t4) => {
             const e2 = window.document.createElement("video");
-            return e2.muted = true, new Promise((r2) => {
+            return e2.muted = true, new Promise(((r2) => {
               e2.onloadstart = () => {
                 r2(e2);
               };
@@ -231109,7 +231252,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const t5 = window.document.createElement("source");
                 j(r3) || (e2.crossOrigin = "Anonymous"), t5.src = r3, e2.appendChild(t5);
               }
-            });
+            }));
           }, t.a4 = function() {
             return x++;
           }, t.a5 = Fs, t.a6 = dc, t.a7 = zn, t.a8 = ja, t.a9 = Nc, t.aA = function(t4) {
@@ -231141,15 +231284,15 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               if (!H(t4.version, e2.version)) return [{ command: "setStyle", args: [e2] }];
               H(t4.center, e2.center) || r2.push({ command: "setCenter", args: [e2.center] }), H(t4.zoom, e2.zoom) || r2.push({ command: "setZoom", args: [e2.zoom] }), H(t4.bearing, e2.bearing) || r2.push({ command: "setBearing", args: [e2.bearing] }), H(t4.pitch, e2.pitch) || r2.push({ command: "setPitch", args: [e2.pitch] }), H(t4.sprite, e2.sprite) || r2.push({ command: "setSprite", args: [e2.sprite] }), H(t4.glyphs, e2.glyphs) || r2.push({ command: "setGlyphs", args: [e2.glyphs] }), H(t4.transition, e2.transition) || r2.push({ command: "setTransition", args: [e2.transition] }), H(t4.light, e2.light) || r2.push({ command: "setLight", args: [e2.light] }), H(t4.terrain, e2.terrain) || r2.push({ command: "setTerrain", args: [e2.terrain] }), H(t4.sky, e2.sky) || r2.push({ command: "setSky", args: [e2.sky] }), H(t4.projection, e2.projection) || r2.push({ command: "setProjection", args: [e2.projection] });
               const n2 = {}, i2 = [];
-              !function(t5, e3, r3, n3) {
+              !(function(t5, e3, r3, n3) {
                 let i3;
                 for (i3 in e3 = e3 || {}, t5 = t5 || {}) Object.prototype.hasOwnProperty.call(t5, i3) && (Object.prototype.hasOwnProperty.call(e3, i3) || W(i3, r3, n3));
                 for (i3 in e3) Object.prototype.hasOwnProperty.call(e3, i3) && (Object.prototype.hasOwnProperty.call(t5, i3) ? H(t5[i3], e3[i3]) || ("geojson" === t5[i3].type && "geojson" === e3[i3].type && tt(t5, e3, i3) ? Y(r3, { command: "setGeoJSONSourceData", args: [i3, e3[i3].data] }) : Q(i3, e3, r3, n3)) : J(i3, e3, r3));
-              }(t4.sources, e2.sources, i2, n2);
+              })(t4.sources, e2.sources, i2, n2);
               const s2 = [];
-              t4.layers && t4.layers.forEach((t5) => {
+              t4.layers && t4.layers.forEach(((t5) => {
                 "source" in t5 && n2[t5.source] ? r2.push({ command: "removeLayer", args: [t5.id] }) : s2.push(t5);
-              }), r2 = r2.concat(i2), function(t5, e3, r3) {
+              })), r2 = r2.concat(i2), (function(t5, e3, r3) {
                 e3 = e3 || [];
                 const n3 = (t5 = t5 || []).map(rt), i3 = e3.map(rt), s3 = t5.reduce(nt, {}), a2 = e3.reduce(nt, {}), o2 = n3.slice(), l2 = /* @__PURE__ */ Object.create(null);
                 let u2, c2, h2, p2, f2;
@@ -231159,7 +231302,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   for (f2 in et(c2.layout, h2.layout, r3, u2, null, "setLayoutProperty"), et(c2.paint, h2.paint, r3, u2, null, "setPaintProperty"), H(c2.filter, h2.filter) || Y(r3, { command: "setFilter", args: [u2, h2.filter] }), H(c2.minzoom, h2.minzoom) && H(c2.maxzoom, h2.maxzoom) || Y(r3, { command: "setLayerZoomRange", args: [u2, h2.minzoom, h2.maxzoom] }), c2) Object.prototype.hasOwnProperty.call(c2, f2) && "layout" !== f2 && "paint" !== f2 && "filter" !== f2 && "metadata" !== f2 && "minzoom" !== f2 && "maxzoom" !== f2 && (0 === f2.indexOf("paint.") ? et(c2[f2], h2[f2], r3, u2, f2.slice(6), "setPaintProperty") : H(c2[f2], h2[f2]) || Y(r3, { command: "setLayerProperty", args: [u2, f2, h2[f2]] }));
                   for (f2 in h2) Object.prototype.hasOwnProperty.call(h2, f2) && !Object.prototype.hasOwnProperty.call(c2, f2) && "layout" !== f2 && "paint" !== f2 && "filter" !== f2 && "metadata" !== f2 && "minzoom" !== f2 && "maxzoom" !== f2 && (0 === f2.indexOf("paint.") ? et(c2[f2], h2[f2], r3, u2, f2.slice(6), "setPaintProperty") : H(c2[f2], h2[f2]) || Y(r3, { command: "setLayerProperty", args: [u2, f2, h2[f2]] }));
                 } else Y(r3, { command: "removeLayer", args: [u2] }), p2 = o2[o2.lastIndexOf(u2) + 1], Y(r3, { command: "addLayer", args: [h2, p2] });
-              }(s2, e2.layers, r2);
+              })(s2, e2.layers, r2);
             } catch (t5) {
               console.warn("Unable to compute style diff:", t5), r2 = [{ command: "setStyle", args: [e2] }];
             }
@@ -231224,10 +231367,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return t4[0] === e2[0] && t4[1] === e2[1] && t4[2] === e2[2] && t4[3] === e2[3] && t4[4] === e2[4] && t4[5] === e2[5] && t4[6] === e2[6] && t4[7] === e2[7] && t4[8] === e2[8] && t4[9] === e2[9] && t4[10] === e2[10] && t4[11] === e2[11] && t4[12] === e2[12] && t4[13] === e2[13] && t4[14] === e2[14] && t4[15] === e2[15];
           }, t.aa = function(t4) {
             const e2 = {};
-            if (t4.replace(/(?:^|(?:\s*\,\s*))([^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)(?:\=(?:([^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)|(?:\"((?:[^"\\]|\\.)*)\")))?/g, (t5, r2, n2, i2) => {
+            if (t4.replace(/(?:^|(?:\s*\,\s*))([^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)(?:\=(?:([^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)|(?:\"((?:[^"\\]|\\.)*)\")))?/g, ((t5, r2, n2, i2) => {
               const s2 = n2 || i2;
               return e2[r2] = !s2 || s2.toLowerCase(), "";
-            }), e2["max-age"]) {
+            })), e2["max-age"]) {
               const t5 = parseInt(e2["max-age"], 10);
               isNaN(t5) ? delete e2["max-age"] : e2["max-age"] = t5;
             }
@@ -231336,7 +231479,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const s3 = y2.toString(), u3 = n2.get("text-letter-spacing").evaluate(i3, {}, e2.canonical) * iu, f3 = Ci(s3) ? u3 : 0, m3 = n2.get("text-anchor").evaluate(i3, {}, e2.canonical), x3 = vh(r2, i3, e2.canonical);
                 if (!x3) {
                   const t4 = n2.get("text-radial-offset").evaluate(i3, {}, e2.canonical);
-                  g2 = t4 ? xh(m3, [t4 * iu, gh]) : n2.get("text-offset").evaluate(i3, {}, e2.canonical).map((t5) => t5 * iu);
+                  g2 = t4 ? xh(m3, [t4 * iu, gh]) : n2.get("text-offset").evaluate(i3, {}, e2.canonical).map(((t5) => t5 * iu));
                 }
                 let v3 = o2 ? "center" : n2.get("text-justify").evaluate(i3, {}, e2.canonical);
                 const b2 = "point" === n2.get("symbol-placement") ? n2.get("text-max-width").evaluate(i3, {}, e2.canonical) * iu : 1 / 0, w2 = () => {
@@ -231378,19 +231521,19 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return 0 === t4.length && (performance.measure(this._marks.measure, this._marks.start, this._marks.end), t4 = performance.getEntriesByName(this._marks.measure), performance.clearMarks(this._marks.start), performance.clearMarks(this._marks.end), performance.clearMeasures(this._marks.measure)), t4;
             }
           }, t.bw = function(t4, r2, n2, i2, s2) {
-            return e(this, void 0, void 0, function* () {
+            return e(this, void 0, void 0, (function* () {
               if (p()) try {
                 return yield P(t4, r2, n2, i2, s2);
               } catch (t5) {
               }
-              return function(t5, e2, r3, n3, i3) {
+              return (function(t5, e2, r3, n3, i3) {
                 const s3 = t5.width, a2 = t5.height;
                 C2 && B2 || (C2 = new OffscreenCanvas(s3, a2), B2 = C2.getContext("2d", { willReadFrequently: true })), C2.width = s3, C2.height = a2, B2.drawImage(t5, 0, 0, s3, a2);
                 const o2 = B2.getImageData(e2, r3, n3, i3);
                 return B2.clearRect(0, 0, s3, a2), o2.data;
-              }(t4, r2, n2, i2, s2);
-            });
-          }, t.bx = Uc, t.by = r, t.bz = n, t.c = E2, t.d = (t4) => e(void 0, void 0, void 0, function* () {
+              })(t4, r2, n2, i2, s2);
+            }));
+          }, t.bx = Uc, t.by = r, t.bz = n, t.c = E2, t.d = (t4) => e(void 0, void 0, void 0, (function* () {
             if (0 === t4.byteLength) return createImageBitmap(new ImageData(1, 1));
             const e2 = new Blob([new Uint8Array(t4)], { type: "image/png" });
             try {
@@ -231398,22 +231541,22 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             } catch (t5) {
               throw new Error(`Could not load image because of ${t5.message}. Please make sure to use a supported image type such as PNG or JPEG. Note that SVGs are not supported.`);
             }
-          }), t.e = g, t.f = (t4) => new Promise((e2, r2) => {
+          })), t.e = g, t.f = (t4) => new Promise(((e2, r2) => {
             const n2 = new Image();
             n2.onload = () => {
-              e2(n2), URL.revokeObjectURL(n2.src), n2.onload = null, window.requestAnimationFrame(() => {
+              e2(n2), URL.revokeObjectURL(n2.src), n2.onload = null, window.requestAnimationFrame((() => {
                 n2.src = z;
-              });
+              }));
             }, n2.onerror = () => r2(new Error("Could not load image. Please make sure to use a supported image type such as PNG or JPEG. Note that SVGs are not supported."));
             const i2 = new Blob([new Uint8Array(t4)], { type: "image/png" });
             n2.src = t4.byteLength ? URL.createObjectURL(i2) : z;
-          }), t.g = T, t.h = (t4, e2) => O(g(t4, { type: "json" }), e2), t.i = k, t.j = N, t.k = q, t.l = (t4, e2) => O(g(t4, { type: "arrayBuffer" }), e2), t.m = O, t.n = function(t4) {
+          })), t.g = T, t.h = (t4, e2) => O(g(t4, { type: "json" }), e2), t.i = k, t.j = N, t.k = q, t.l = (t4, e2) => O(g(t4, { type: "arrayBuffer" }), e2), t.m = O, t.n = function(t4) {
             return new Iu(t4).readFields(Pu, []);
           }, t.o = _o, t.p = Eu, t.q = rs, t.r = di, t.s = j, t.t = xi, t.u = fi, t.v = G, t.w = A2, t.x = function([t4, e2, r2]) {
             return e2 += 90, e2 *= Math.PI / 180, r2 *= Math.PI / 180, { x: t4 * Math.cos(e2) * Math.sin(r2), y: t4 * Math.sin(e2) * Math.sin(r2), z: t4 * Math.cos(r2) };
           }, t.y = Ce, t.z = Ui;
-        });
-        define2("worker", ["./shared"], function(e) {
+        }));
+        define2("worker", ["./shared"], (function(e) {
           "use strict";
           class t {
             constructor(e2) {
@@ -231432,7 +231575,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.familiesBySource = {};
               const i2 = e.bk(Object.values(this._layerConfigs), this.keyCache);
               for (const e2 of i2) {
-                const t5 = e2.map((e3) => this._layers[e3.id]), o3 = t5[0];
+                const t5 = e2.map(((e3) => this._layers[e3.id])), o3 = t5[0];
                 if ("none" === o3.visibility) continue;
                 const i3 = o3.source || "";
                 let s2 = this.familiesBySource[i3];
@@ -231474,7 +231617,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.tileID = new e.S(t4.tileID.overscaledZ, t4.tileID.wrap, t4.tileID.canonical.z, t4.tileID.canonical.x, t4.tileID.canonical.y), this.uid = t4.uid, this.zoom = t4.zoom, this.pixelRatio = t4.pixelRatio, this.tileSize = t4.tileSize, this.source = t4.source, this.overscaling = this.tileID.overscaleFactor(), this.showCollisionBoxes = t4.showCollisionBoxes, this.collectResourceTiming = !!t4.collectResourceTiming, this.returnDependencies = !!t4.returnDependencies, this.promoteId = t4.promoteId, this.inFlightDependencies = [];
             }
             parse(t4, i2, r2, n2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this.status = "parsing", this.data = t4, this.collisionBoxArray = new e.a5();
                 const a2 = new e.bm(Object.keys(t4.layers).sort()), l2 = new e.bn(this.tileID, this.promoteId);
                 l2.bucketLayerIDs = [];
@@ -231490,11 +231633,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   }
                   for (const t5 of h2[o2]) {
                     const o3 = t5[0];
-                    o3.source !== this.source && e.w(`layer.source = ${o3.source} does not equal this.source = ${this.source}`), o3.minzoom && this.zoom < Math.floor(o3.minzoom) || o3.maxzoom && this.zoom >= o3.maxzoom || "none" !== o3.visibility && (s(t5, this.zoom, r2), (c2[o3.id] = o3.createBucket({ index: l2.bucketLayerIDs.length, layers: t5, zoom: this.zoom, pixelRatio: this.pixelRatio, overscaling: this.overscaling, collisionBoxArray: this.collisionBoxArray, sourceLayerIndex: n3, sourceID: this.source })).populate(d3, u2, this.tileID.canonical), l2.bucketLayerIDs.push(t5.map((e2) => e2.id)));
+                    o3.source !== this.source && e.w(`layer.source = ${o3.source} does not equal this.source = ${this.source}`), o3.minzoom && this.zoom < Math.floor(o3.minzoom) || o3.maxzoom && this.zoom >= o3.maxzoom || "none" !== o3.visibility && (s(t5, this.zoom, r2), (c2[o3.id] = o3.createBucket({ index: l2.bucketLayerIDs.length, layers: t5, zoom: this.zoom, pixelRatio: this.pixelRatio, overscaling: this.overscaling, collisionBoxArray: this.collisionBoxArray, sourceLayerIndex: n3, sourceID: this.source })).populate(d3, u2, this.tileID.canonical), l2.bucketLayerIDs.push(t5.map(((e2) => e2.id))));
                   }
                 }
-                const d2 = e.aF(u2.glyphDependencies, (e2) => Object.keys(e2).map(Number));
-                this.inFlightDependencies.forEach((e2) => null == e2 ? void 0 : e2.abort()), this.inFlightDependencies = [];
+                const d2 = e.aF(u2.glyphDependencies, ((e2) => Object.keys(e2).map(Number)));
+                this.inFlightDependencies.forEach(((e2) => null == e2 ? void 0 : e2.abort())), this.inFlightDependencies = [];
                 let f2 = Promise.resolve({});
                 if (Object.keys(d2).length) {
                   const e2 = new AbortController();
@@ -231517,8 +231660,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   const o2 = c2[t5];
                   o2 instanceof e.a6 ? (s(o2.layers, this.zoom, r2), e.bp({ bucket: o2, glyphMap: v2, glyphPositions: b2.positions, imageMap: w2, imagePositions: S2.iconPositions, showCollisionBoxes: this.showCollisionBoxes, canonical: this.tileID.canonical })) : o2.hasPattern && (o2 instanceof e.bq || o2 instanceof e.br || o2 instanceof e.bs) && (s(o2.layers, this.zoom, r2), o2.addFeatures(u2, this.tileID.canonical, S2.patternPositions));
                 }
-                return this.status = "done", { buckets: Object.values(c2).filter((e2) => !e2.isEmpty()), featureIndex: l2, collisionBoxArray: this.collisionBoxArray, glyphAtlasImage: b2.image, imageAtlas: S2, glyphMap: this.returnDependencies ? v2 : null, iconMap: this.returnDependencies ? w2 : null, glyphPositions: this.returnDependencies ? b2.positions : null };
-              });
+                return this.status = "done", { buckets: Object.values(c2).filter(((e2) => !e2.isEmpty())), featureIndex: l2, collisionBoxArray: this.collisionBoxArray, glyphAtlasImage: b2.image, imageAtlas: S2, glyphMap: this.returnDependencies ? v2 : null, iconMap: this.returnDependencies ? w2 : null, glyphPositions: this.returnDependencies ? b2.positions : null };
+              }));
             }
           }
           function s(t4, o2, i2) {
@@ -231530,7 +231673,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.actor = e2, this.layerIndex = t4, this.availableImages = o2, this.fetching = {}, this.loading = {}, this.loaded = {};
             }
             loadVectorTile(t4, o2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const i2 = yield e.l(t4.request, o2);
                 try {
                   return { vectorTile: new e.bt.VectorTile(new e.bu(i2.data)), rawData: i2.data, cacheControl: i2.cacheControl, expires: i2.expires };
@@ -231539,10 +231682,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   let s2 = `Unable to parse the tile at ${t4.request.url}, `;
                   throw s2 += 31 === o3[0] && 139 === o3[1] ? "please make sure the data is not gzipped and that you have configured the relevant header in the server" : `got error: ${e2.message}`, new Error(s2);
                 }
-              });
+              }));
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const o2 = t4.uid, s2 = !!(t4 && t4.request && t4.request.collectResourceTiming) && new e.bv(t4.request), r2 = new i(t4);
                 this.loading[o2] = r2;
                 const n2 = new AbortController();
@@ -231569,10 +231712,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 } catch (e2) {
                   throw delete this.loading[o2], r2.status = "done", this.loaded[o2] = r2, e2;
                 }
-              });
+              }));
             }
             reloadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const o2 = t4.uid;
                 if (!this.loaded || !this.loaded[o2]) throw new Error("Should not be trying to reload a tile that was never loaded or has been removed");
                 const i2 = this.loaded[o2];
@@ -231586,18 +231729,18 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   return s2;
                 }
                 if ("done" === i2.status && i2.vectorTile) return i2.parse(i2.vectorTile, this.layerIndex, this.availableImages, this.actor);
-              });
+              }));
             }
             abortTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const e2 = this.loading, o2 = t4.uid;
                 e2 && e2[o2] && e2[o2].abort && (e2[o2].abort.abort(), delete e2[o2]);
-              });
+              }));
             }
             removeTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this.loaded && this.loaded[t4.uid] && delete this.loaded[t4.uid];
-              });
+              }));
             }
           }
           class n {
@@ -231605,10 +231748,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.loaded = {};
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const { uid: o2, encoding: i2, rawImageData: s2, redFactor: r2, greenFactor: n2, blueFactor: a2, baseShift: l2 } = t4, c2 = s2.width + 2, u2 = s2.height + 2, h2 = e.b(s2) ? new e.R({ width: c2, height: u2 }, yield e.bw(s2, -1, -1, c2, u2)) : s2, d2 = new e.bx(o2, h2, i2, r2, n2, a2, l2);
                 return this.loaded = this.loaded || {}, this.loaded[o2] = d2, d2;
-              });
+              }));
             }
             removeTile(e2) {
               const t4 = this.loaded, o2 = e2.uid;
@@ -231628,7 +231771,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             o2 + i2 >= 0 != !!t4 && e2.reverse();
           }
-          var c = e.by(function e2(t4, o2) {
+          var c = e.by((function e2(t4, o2) {
             var i2, s2 = t4 && t4.type;
             if ("FeatureCollection" === s2) for (i2 = 0; i2 < t4.features.length; i2++) e2(t4.features[i2], o2);
             else if ("GeometryCollection" === s2) for (i2 = 0; i2 < t4.geometries.length; i2++) e2(t4.geometries[i2], o2);
@@ -231636,7 +231779,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             else if ("Polygon" === s2) a(t4.coordinates, o2);
             else if ("MultiPolygon" === s2) for (i2 = 0; i2 < t4.coordinates.length; i2++) a(t4.coordinates[i2], o2);
             return t4;
-          });
+          }));
           const u = e.bt.VectorTileFeature.prototype.toGeoJSON;
           var h = { exports: {} }, d = e.bz, f = e.bt.VectorTileFeature, g = p;
           function p(e2, t4) {
@@ -231666,9 +231809,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           var y = e.bA, v = g;
           function w(e2) {
             var t4 = new y();
-            return function(e3, t5) {
+            return (function(e3, t5) {
               for (var o2 in e3.layers) t5.writeMessage(3, x, e3.layers[o2]);
-            }(e2, t4), t4.finish();
+            })(e2, t4), t4.finish();
           }
           function x(e2, t4) {
             var o2;
@@ -232134,36 +232277,36 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             if (i2 > 0 && t4.size < (s2 ? n2 : i2)) return void (o2.numPoints += t4.length / 3);
             const a2 = [];
             for (let e3 = 0; e3 < t4.length; e3 += 3) (0 === i2 || t4[e3 + 2] > n2) && (o2.numSimplified++, a2.push(t4[e3], t4[e3 + 1])), o2.numPoints++;
-            s2 && function(e3, t5) {
+            s2 && (function(e3, t5) {
               let o3 = 0;
               for (let t6 = 0, i3 = e3.length, s3 = i3 - 2; t6 < i3; s3 = t6, t6 += 2) o3 += (e3[t6] - e3[s3]) * (e3[t6 + 1] + e3[s3 + 1]);
               if (o3 > 0 === t5) for (let t6 = 0, o4 = e3.length; t6 < o4 / 2; t6 += 2) {
                 const i3 = e3[t6], s3 = e3[t6 + 1];
                 e3[t6] = e3[o4 - 2 - t6], e3[t6 + 1] = e3[o4 - 1 - t6], e3[o4 - 2 - t6] = i3, e3[o4 - 1 - t6] = s3;
               }
-            }(a2, r2), e2.push(a2);
+            })(a2, r2), e2.push(a2);
           }
           const he = { maxZoom: 14, indexMaxZoom: 5, indexMaxPoints: 1e5, tolerance: 3, extent: 4096, buffer: 64, lineMetrics: false, promoteId: null, generateId: false, debug: 0 };
           class de {
             constructor(e2, t4) {
-              const o2 = (t4 = this.options = function(e3, t5) {
+              const o2 = (t4 = this.options = (function(e3, t5) {
                 for (const o3 in t5) e3[o3] = t5[o3];
                 return e3;
-              }(Object.create(he), t4)).debug;
+              })(Object.create(he), t4)).debug;
               if (o2 && console.time("preprocess data"), t4.maxZoom < 0 || t4.maxZoom > 24) throw new Error("maxZoom should be in the 0-24 range");
               if (t4.promoteId && t4.generateId) throw new Error("promoteId and generateId cannot be used together.");
-              let i2 = function(e3, t5) {
+              let i2 = (function(e3, t5) {
                 const o3 = [];
                 if ("FeatureCollection" === e3.type) for (let i3 = 0; i3 < e3.features.length; i3++) Y(o3, e3.features[i3], t5, i3);
                 else Y(o3, "Feature" === e3.type ? e3 : { geometry: e3 }, t5);
                 return o3;
-              }(e2, t4);
-              this.tiles = {}, this.tileCoords = [], o2 && (console.timeEnd("preprocess data"), console.log("index: maxZoom: %d, maxPoints: %d", t4.indexMaxZoom, t4.indexMaxPoints), console.time("generate tiles"), this.stats = {}, this.total = 0), i2 = function(e3, t5) {
+              })(e2, t4);
+              this.tiles = {}, this.tileCoords = [], o2 && (console.timeEnd("preprocess data"), console.log("index: maxZoom: %d, maxPoints: %d", t4.indexMaxZoom, t4.indexMaxPoints), console.time("generate tiles"), this.stats = {}, this.total = 0), i2 = (function(e3, t5) {
                 const o3 = t5.buffer / t5.extent;
                 let i3 = e3;
                 const s2 = U(e3, 1, -1 - o3, o3, 0, -1, 2, t5), r2 = U(e3, 1, 1 - o3, 2 + o3, 0, -1, 2, t5);
                 return (s2 || r2) && (i3 = U(e3, 1, -o3, 1 + o3, 0, -1, 2, t5) || [], s2 && (i3 = se(s2, 1).concat(i3)), r2 && (i3 = i3.concat(se(r2, -1)))), i3;
-              }(i2, t4), i2.length && this.splitTile(i2, 0, 0, 0), o2 && (i2.length && console.log("features: %d, points: %d", this.tiles[0].numFeatures, this.tiles[0].numPoints), console.timeEnd("generate tiles"), console.log("tiles generated:", this.total, JSON.stringify(this.stats)));
+              })(i2, t4), i2.length && this.splitTile(i2, 0, 0, 0), o2 && (i2.length && console.log("features: %d, points: %d", this.tiles[0].numFeatures, this.tiles[0].numPoints), console.timeEnd("generate tiles"), console.log("tiles generated:", this.total, JSON.stringify(this.stats)));
             }
             splitTile(e2, t4, o2, i2, s2, r2, n2) {
               const a2 = [e2, t4, o2, i2], l2 = this.options, c2 = l2.debug;
@@ -232237,7 +232380,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               super(...arguments), this._dataUpdateable = /* @__PURE__ */ new Map();
             }
             loadVectorTile(t4, o2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const o3 = t4.tileID.canonical;
                 if (!this._geoJSONIndex) throw new Error("Unable to parse the data into a cluster or geojson");
                 const i2 = this._geoJSONIndex.getTile(o3.z, o3.x, o3.y);
@@ -232275,16 +232418,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 }(i2.features);
                 let r2 = k(s2);
                 return 0 === r2.byteOffset && r2.byteLength === r2.buffer.byteLength || (r2 = new Uint8Array(r2)), { vectorTile: s2, rawData: r2.buffer };
-              });
+              }));
             }
             loadData(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 var o2;
                 null === (o2 = this._pendingRequest) || void 0 === o2 || o2.abort();
                 const i2 = !!(t4 && t4.request && t4.request.collectResourceTiming) && new e.bv(t4.request);
                 this._pendingRequest = new AbortController();
                 try {
-                  this._pendingData = this.loadAndProcessGeoJSON(t4, this._pendingRequest), this._geoJSONIndex = t4.cluster ? new z(function({ superclusterOptions: t5, clusterProperties: o4 }) {
+                  this._pendingData = this.loadAndProcessGeoJSON(t4, this._pendingRequest), this._geoJSONIndex = t4.cluster ? new z((function({ superclusterOptions: t5, clusterProperties: o4 }) {
                     if (!o4 || !t5) return t5;
                     const i3 = {}, s3 = {}, r2 = { accumulated: null, zoom: 0 }, n2 = { properties: null }, a2 = Object.keys(o4);
                     for (const t6 of a2) {
@@ -232300,7 +232443,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                       n2.properties = t6;
                       for (const t7 of a2) r2.accumulated = e2[t7], e2[t7] = s3[t7].evaluate(r2, n2);
                     }, t5;
-                  }(t4)).load((yield this._pendingData).features) : (s2 = yield this._pendingData, new de(s2, t4.geojsonVtOptions)), this.loaded = {};
+                  })(t4)).load((yield this._pendingData).features) : (s2 = yield this._pendingData, new de(s2, t4.geojsonVtOptions)), this.loaded = {};
                   const o3 = {};
                   if (i2) {
                     const e2 = i2.finish();
@@ -232312,32 +232455,32 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   throw t5;
                 }
                 var s2;
-              });
+              }));
             }
             getData() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 return this._pendingData;
-              });
+              }));
             }
             reloadTile(e2) {
               const t4 = this.loaded;
               return t4 && t4[e2.uid] ? super.reloadTile(e2) : this.loadTile(e2);
             }
             loadAndProcessGeoJSON(t4, o2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 let i2 = yield this.loadGeoJSON(t4, o2);
                 if (delete this._pendingRequest, "object" != typeof i2) throw new Error(`Input data given to '${t4.source}' is not a valid GeoJSON object.`);
                 if (c(i2, true), t4.filter) {
                   const o3 = e.bC(t4.filter, { type: "boolean", "property-type": "data-driven", overridable: false, transition: false });
-                  if ("error" === o3.result) throw new Error(o3.value.map((e2) => `${e2.key}: ${e2.message}`).join(", "));
-                  const s2 = i2.features.filter((e2) => o3.value.evaluate({ zoom: 0 }, e2));
+                  if ("error" === o3.result) throw new Error(o3.value.map(((e2) => `${e2.key}: ${e2.message}`)).join(", "));
+                  const s2 = i2.features.filter(((e2) => o3.value.evaluate({ zoom: 0 }, e2)));
                   i2 = { type: "FeatureCollection", features: s2 };
                 }
                 return i2;
-              });
+              }));
             }
             loadGeoJSON(t4, o2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const { promoteId: i2 } = t4;
                 if (t4.request) {
                   const s2 = yield e.h(t4.request, o2);
@@ -232351,7 +232494,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 }
                 if (!t4.dataDiff) throw new Error(`Input data given to '${t4.source}' is not a valid GeoJSON object.`);
                 if (!this._dataUpdateable) throw new Error(`Cannot update existing geojson data in ${t4.source}`);
-                return function(e2, t5, o3) {
+                return (function(e2, t5, o3) {
                   var i3, s2, r2, n2;
                   if (t5.removeAll && e2.clear(), t5.remove) for (const o4 of t5.remove) e2.delete(o4);
                   if (t5.add) for (const i4 of t5.add) {
@@ -232366,13 +232509,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                     else if ((null === (r2 = o4.removeProperties) || void 0 === r2 ? void 0 : r2.length) > 0) for (const e3 of o4.removeProperties) Object.prototype.hasOwnProperty.call(t6.properties, e3) && delete t6.properties[e3];
                     if ((null === (n2 = o4.addOrUpdateProperties) || void 0 === n2 ? void 0 : n2.length) > 0) for (const { key: e3, value: i4 } of o4.addOrUpdateProperties) t6.properties[e3] = i4;
                   }
-                }(this._dataUpdateable, t4.dataDiff, i2), { type: "FeatureCollection", features: Array.from(this._dataUpdateable.values()) };
-              });
+                })(this._dataUpdateable, t4.dataDiff, i2), { type: "FeatureCollection", features: Array.from(this._dataUpdateable.values()) };
+              }));
             }
             removeSource(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this._pendingRequest && this._pendingRequest.abort();
-              });
+              }));
             }
             getClusterExpansionZoom(e2) {
               return this._geoJSONIndex.getClusterExpansionZoom(e2.clusterId);
@@ -232392,41 +232535,41 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               }, this.self.addProtocol = e.bi, this.self.removeProtocol = e.bj, this.self.registerRTLTextPlugin = (t5) => {
                 if (e.bD.isParsed()) throw new Error("RTL text plugin already registered.");
                 e.bD.setMethods(t5);
-              }, this.actor.registerMessageHandler("LDT", (e2, t5) => this._getDEMWorkerSource(e2, t5.source).loadTile(t5)), this.actor.registerMessageHandler("RDT", (t5, o2) => e._(this, void 0, void 0, function* () {
+              }, this.actor.registerMessageHandler("LDT", ((e2, t5) => this._getDEMWorkerSource(e2, t5.source).loadTile(t5))), this.actor.registerMessageHandler("RDT", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 this._getDEMWorkerSource(t5, o2.source).removeTile(o2);
-              })), this.actor.registerMessageHandler("GCEZ", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("GCEZ", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 return this._getWorkerSource(t5, o2.type, o2.source).getClusterExpansionZoom(o2);
-              })), this.actor.registerMessageHandler("GCC", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("GCC", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 return this._getWorkerSource(t5, o2.type, o2.source).getClusterChildren(o2);
-              })), this.actor.registerMessageHandler("GCL", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("GCL", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 return this._getWorkerSource(t5, o2.type, o2.source).getClusterLeaves(o2);
-              })), this.actor.registerMessageHandler("LD", (e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).loadData(t5)), this.actor.registerMessageHandler("GD", (e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).getData()), this.actor.registerMessageHandler("LT", (e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).loadTile(t5)), this.actor.registerMessageHandler("RT", (e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).reloadTile(t5)), this.actor.registerMessageHandler("AT", (e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).abortTile(t5)), this.actor.registerMessageHandler("RMT", (e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).removeTile(t5)), this.actor.registerMessageHandler("RS", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("LD", ((e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).loadData(t5))), this.actor.registerMessageHandler("GD", ((e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).getData())), this.actor.registerMessageHandler("LT", ((e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).loadTile(t5))), this.actor.registerMessageHandler("RT", ((e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).reloadTile(t5))), this.actor.registerMessageHandler("AT", ((e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).abortTile(t5))), this.actor.registerMessageHandler("RMT", ((e2, t5) => this._getWorkerSource(e2, t5.type, t5.source).removeTile(t5))), this.actor.registerMessageHandler("RS", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 if (!this.workerSources[t5] || !this.workerSources[t5][o2.type] || !this.workerSources[t5][o2.type][o2.source]) return;
                 const e2 = this.workerSources[t5][o2.type][o2.source];
                 delete this.workerSources[t5][o2.type][o2.source], void 0 !== e2.removeSource && e2.removeSource(o2);
-              })), this.actor.registerMessageHandler("RM", (t5) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("RM", ((t5) => e._(this, void 0, void 0, (function* () {
                 delete this.layerIndexes[t5], delete this.availableImages[t5], delete this.workerSources[t5], delete this.demWorkerSources[t5];
-              })), this.actor.registerMessageHandler("SR", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("SR", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 this.referrer = o2;
-              })), this.actor.registerMessageHandler("SRPS", (e2, t5) => this._syncRTLPluginState(e2, t5)), this.actor.registerMessageHandler("IS", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("SRPS", ((e2, t5) => this._syncRTLPluginState(e2, t5))), this.actor.registerMessageHandler("IS", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 this.self.importScripts(o2);
-              })), this.actor.registerMessageHandler("SI", (e2, t5) => this._setImages(e2, t5)), this.actor.registerMessageHandler("UL", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("SI", ((e2, t5) => this._setImages(e2, t5))), this.actor.registerMessageHandler("UL", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 this._getLayerIndex(t5).update(o2.layers, o2.removedIds);
-              })), this.actor.registerMessageHandler("SL", (t5, o2) => e._(this, void 0, void 0, function* () {
+              })))), this.actor.registerMessageHandler("SL", ((t5, o2) => e._(this, void 0, void 0, (function* () {
                 this._getLayerIndex(t5).replace(o2);
-              }));
+              }))));
             }
             _setImages(t4, o2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this.availableImages[t4] = o2;
                 for (const e2 in this.workerSources[t4]) {
                   const i2 = this.workerSources[t4][e2];
                   for (const e3 in i2) i2[e3].availableImages = o2;
                 }
-              });
+              }));
             }
             _syncRTLPluginState(t4, o2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 if (e.bD.isParsed()) return e.bD.getState();
                 if ("loading" !== o2.pluginStatus) return e.bD.setState(o2), o2;
                 const t5 = o2.pluginURL;
@@ -232435,7 +232578,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   return e.bD.setState(o3), o3;
                 }
                 throw e.bD.setState({ pluginStatus: "error", pluginURL: "" }), new Error(`RTL Text Plugin failed to import scripts from ${t5}`);
-              });
+              }));
             }
             _getAvailableImages(e2) {
               let t4 = this.availableImages[e2];
@@ -232466,17 +232609,17 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
           }
           return e.i(self) && (self.worker = new ve(self)), ve;
-        });
-        define2("index", ["exports", "./shared"], function(t, e) {
+        }));
+        define2("index", ["exports", "./shared"], (function(t, e) {
           "use strict";
           var i = "4.7.1";
           let a, s;
-          const o = { now: "undefined" != typeof performance && performance && performance.now ? performance.now.bind(performance) : Date.now.bind(Date), frameAsync: (t4) => new Promise((i2, a2) => {
+          const o = { now: "undefined" != typeof performance && performance && performance.now ? performance.now.bind(performance) : Date.now.bind(Date), frameAsync: (t4) => new Promise(((i2, a2) => {
             const s2 = requestAnimationFrame(i2);
-            t4.signal.addEventListener("abort", () => {
+            t4.signal.addEventListener("abort", (() => {
               cancelAnimationFrame(s2), a2(e.c());
-            });
-          }), getImageData(t4, e2 = 0) {
+            }));
+          })), getImageData(t4, e2 = 0) {
             return this.getImageCanvasContext(t4).getImageData(-e2, -e2, t4.width + 2 * e2, t4.height + 2 * e2);
           }, getImageCanvasContext(t4) {
             const e2 = window.document.createElement("canvas"), i2 = e2.getContext("2d", { willReadFrequently: true });
@@ -232517,9 +232660,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               t4.preventDefault(), t4.stopPropagation(), window.removeEventListener("click", r.suppressClickInternal, true);
             }
             static suppressClick() {
-              window.addEventListener("click", r.suppressClickInternal, true), window.setTimeout(() => {
+              window.addEventListener("click", r.suppressClickInternal, true), window.setTimeout((() => {
                 window.removeEventListener("click", r.suppressClickInternal, true);
-              }, 0);
+              }), 0);
             }
             static getScale(t4) {
               const e2 = t4.getBoundingClientRect();
@@ -232565,7 +232708,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             l && d(l), l = null, u = true;
           }, h.onerror = () => {
             c = true, l = null;
-          }, h.src = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA="), function(t4) {
+          }, h.src = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA="), (function(t4) {
             let i2, a2, s2, o2;
             t4.resetRequestQueue = () => {
               i2 = [], a2 = 0, s2 = 0, o2 = {};
@@ -232574,16 +232717,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return o2[e2] = t5, e2;
             }, t4.removeThrottleControl = (t5) => {
               delete o2[t5], l2();
-            }, t4.getImage = (t5, a3, s3 = true) => new Promise((o3, r3) => {
+            }, t4.getImage = (t5, a3, s3 = true) => new Promise(((o3, r3) => {
               n.supported && (t5.headers || (t5.headers = {}), t5.headers.accept = "image/webp,*/*"), e.e(t5, { type: "image" }), i2.push({ abortController: a3, requestParameters: t5, supportImageRefresh: s3, state: "queued", onError: (t6) => {
                 r3(t6);
               }, onSuccess: (t6) => {
                 o3(t6);
               } }), l2();
-            });
-            const r2 = (t5) => e._(this, void 0, void 0, function* () {
+            }));
+            const r2 = (t5) => e._(this, void 0, void 0, (function* () {
               t5.state = "running";
-              const { requestParameters: i3, supportImageRefresh: s3, onError: o3, onSuccess: r3, abortController: n2 } = t5, c2 = false === s3 && !e.i(self) && !e.g(i3.url) && (!i3.headers || Object.keys(i3.headers).reduce((t6, e2) => t6 && "accept" === e2, true));
+              const { requestParameters: i3, supportImageRefresh: s3, onError: o3, onSuccess: r3, abortController: n2 } = t5, c2 = false === s3 && !e.i(self) && !e.g(i3.url) && (!i3.headers || Object.keys(i3.headers).reduce(((t6, e2) => t6 && "accept" === e2), true));
               a2++;
               const u2 = c2 ? h2(i3, n2) : e.m(i3, n2);
               try {
@@ -232595,7 +232738,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 a2--, l2();
               }
               var d2;
-            }), l2 = () => {
+            })), l2 = () => {
               const t5 = (() => {
                 for (const t6 of Object.keys(o2)) if (o2[t6]()) return true;
                 return false;
@@ -232604,17 +232747,17 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const t6 = i2.shift();
                 t6.abortController.signal.aborted ? e2-- : r2(t6);
               }
-            }, h2 = (t5, i3) => new Promise((a3, s3) => {
+            }, h2 = (t5, i3) => new Promise(((a3, s3) => {
               const o3 = new Image(), r3 = t5.url, n2 = t5.credentials;
-              n2 && "include" === n2 ? o3.crossOrigin = "use-credentials" : (n2 && "same-origin" === n2 || !e.s(r3)) && (o3.crossOrigin = "anonymous"), i3.signal.addEventListener("abort", () => {
+              n2 && "include" === n2 ? o3.crossOrigin = "use-credentials" : (n2 && "same-origin" === n2 || !e.s(r3)) && (o3.crossOrigin = "anonymous"), i3.signal.addEventListener("abort", (() => {
                 o3.src = "", s3(e.c());
-              }), o3.fetchPriority = "high", o3.onload = () => {
+              })), o3.fetchPriority = "high", o3.onload = () => {
                 o3.onerror = o3.onload = null, a3({ data: o3 });
               }, o3.onerror = () => {
                 o3.onerror = o3.onload = null, i3.signal.aborted || s3(new Error("Could not load image. Please make sure to use a supported image type such as PNG or JPEG. Note that SVGs are not supported."));
               }, o3.src = r3;
-            });
-          }(_ || (_ = {})), _.resetRequestQueue();
+            }));
+          })(_ || (_ = {})), _.resetRequestQueue();
           class p {
             constructor(t4) {
               this._transformRequestFn = t4;
@@ -232654,10 +232797,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             const a2 = t4.split("?");
             return a2[0] += `${e2}${i2}`, a2.join("?");
           }
-          !function() {
+          !(function() {
             var t4 = new e.A(2);
             e.A != Float32Array && (t4[0] = 0, t4[1] = 0);
-          }();
+          })();
           class b {
             constructor(t4, e2, i2, a2) {
               this.context = t4, this.format = i2, this.texture = t4.gl.createTexture(), this.update(e2, a2);
@@ -232745,11 +232888,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return Object.keys(this.images);
             }
             getImages(t4) {
-              return new Promise((e2, i2) => {
+              return new Promise(((e2, i2) => {
                 let a2 = true;
                 if (!this.isLoaded()) for (const e3 of t4) this.images[e3] || (a2 = false);
                 this.isLoaded() || a2 ? e2(this._getImagesForIds(t4)) : this.requestors.push({ ids: t4, promiseResolve: e2 });
-              });
+              }));
             }
             _getImagesForIds(t4) {
               const i2 = {};
@@ -232831,16 +232974,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.url = t4;
             }
             getGlyphs(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const e2 = [];
                 for (const i3 in t4) for (const a3 of t4[i3]) e2.push(this._getAndCacheGlyphsPromise(i3, a3));
                 const i2 = yield Promise.all(e2), a2 = {};
                 for (const { stack: t5, id: e3, glyph: s2 } of i2) a2[t5] || (a2[t5] = {}), a2[t5][e3] = s2 && { id: s2.id, bitmap: s2.bitmap.clone(), metrics: s2.metrics };
                 return a2;
-              });
+              }));
             }
             _getAndCacheGlyphsPromise(t4, i2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 let e2 = this.entries[t4];
                 e2 || (e2 = this.entries[t4] = { glyphs: {}, requests: {}, ranges: {} });
                 let a2 = e2.glyphs[i2];
@@ -232857,7 +233000,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const o2 = yield e2.requests[s2];
                 for (const t5 in o2) this._doesCharSupportLocalGlyph(+t5) || (e2.glyphs[+t5] = o2[+t5]);
                 return e2.ranges[s2] = true, { stack: t4, id: i2, glyph: o2[i2] || null };
-              });
+              }));
             }
             _doesCharSupportLocalGlyph(t4) {
               return !!this.localIdeographFontFamily && new RegExp("\\p{Ideo}|\\p{sc=Hang}|\\p{sc=Hira}|\\p{sc=Kana}", "u").test(String.fromCodePoint(t4));
@@ -232876,13 +233019,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
           }
           C2.loadGlyphRange = function(t4, i2, a2, s2) {
-            return e._(this, void 0, void 0, function* () {
+            return e._(this, void 0, void 0, (function* () {
               const o2 = 256 * i2, r2 = o2 + 255, n2 = s2.transformRequest(a2.replace("{fontstack}", t4).replace("{range}", `${o2}-${r2}`), "Glyphs"), l2 = yield e.l(n2, new AbortController());
               if (!l2 || !l2.data) throw new Error(`Could not load glyph range. range: ${i2}, ${o2}-${r2}`);
               const h2 = {};
               for (const t5 of e.n(l2.data)) h2[t5.id] = t5;
               return h2;
-            });
+            }));
           }, C2.TinySDF = class {
             constructor({ fontSize: t4 = 24, buffer: e2 = 3, radius: i2 = 8, cutoff: a2 = 0.25, fontFamily: s2 = "sans-serif", fontWeight: o2 = "normal", fontStyle: r2 = "normal" } = {}) {
               this.buffer = e2, this.cutoff = a2, this.radius = i2;
@@ -233069,9 +233212,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return this.active[t4] = true, this.workers.slice();
             }
             release(t4) {
-              delete this.active[t4], 0 === this.numActive() && (this.workers.forEach((t5) => {
+              delete this.active[t4], 0 === this.numActive() && (this.workers.forEach(((t5) => {
                 t5.terminate();
-              }), this.workers = null);
+              })), this.workers = null);
             }
             isPreloaded() {
               return !!this.active[k];
@@ -233105,23 +233248,23 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return this.currentActor = (this.currentActor + 1) % this.actors.length, this.actors[this.currentActor];
             }
             remove(t4 = true) {
-              this.actors.forEach((t5) => {
+              this.actors.forEach(((t5) => {
                 t5.remove();
-              }), this.actors = [], t4 && this.workerPool.release(this.id);
+              })), this.actors = [], t4 && this.workerPool.release(this.id);
             }
             registerMessageHandler(t4, e2) {
               for (const i2 of this.actors) i2.registerMessageHandler(t4, e2);
             }
           }
           function j() {
-            return O || (O = new U(N(), e.G), O.registerMessageHandler("GR", (t4, i2, a2) => e.m(i2, a2))), O;
+            return O || (O = new U(N(), e.G), O.registerMessageHandler("GR", ((t4, i2, a2) => e.m(i2, a2)))), O;
           }
           function Z(t4, i2) {
             const a2 = e.H();
             return e.J(a2, a2, [1, 1, 0]), e.K(a2, a2, [0.5 * t4.width, 0.5 * t4.height, 1]), e.L(a2, a2, t4.calculatePosMatrix(i2.toUnwrapped()));
           }
           function q(t4, e2, i2, a2, s2, o2) {
-            const r2 = function(t5, e3, i3) {
+            const r2 = (function(t5, e3, i3) {
               if (t5) for (const a3 of t5) {
                 const t6 = e3[a3];
                 if (t6 && t6.source === i3 && "fill-extrusion" === t6.type) return true;
@@ -233131,11 +233274,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 if (a3.source === i3 && "fill-extrusion" === a3.type) return true;
               }
               return false;
-            }(s2 && s2.layers, e2, t4.id), n2 = o2.maxPitchScaleFactor(), l2 = t4.tilesIn(a2, n2, r2);
+            })(s2 && s2.layers, e2, t4.id), n2 = o2.maxPitchScaleFactor(), l2 = t4.tilesIn(a2, n2, r2);
             l2.sort(V);
             const h2 = [];
             for (const a3 of l2) h2.push({ wrappedTileID: a3.tileID.wrapped().key, queryResults: a3.tile.queryRenderedFeatures(e2, i2, t4._state, a3.queryGeometry, a3.cameraQueryGeometry, a3.scale, s2, o2, n2, Z(t4.transform, a3.tileID)) });
-            const c2 = function(t5) {
+            const c2 = (function(t5) {
               const e3 = {}, i3 = {};
               for (const a3 of t5) {
                 const t6 = a3.queryResults, s3 = a3.wrappedTileID, o3 = i3[s3] = i3[s3] || {};
@@ -233145,11 +233288,11 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 }
               }
               return e3;
-            }(h2);
-            for (const e3 in c2) c2[e3].forEach((e4) => {
+            })(h2);
+            for (const e3 in c2) c2[e3].forEach(((e4) => {
               const i3 = e4.feature, a3 = t4.getFeatureState(i3.layer["source-layer"], i3.id);
               i3.source = i3.layer.source, i3.layer["source-layer"] && (i3.sourceLayer = i3.layer["source-layer"]), i3.state = a3;
-            });
+            }));
             return c2;
           }
           function V(t4, e2) {
@@ -233157,12 +233300,12 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             return i2.overscaledZ - a2.overscaledZ || i2.canonical.y - a2.canonical.y || i2.wrap - a2.wrap || i2.canonical.x - a2.canonical.x;
           }
           function G(t4, i2, a2) {
-            return e._(this, void 0, void 0, function* () {
+            return e._(this, void 0, void 0, (function* () {
               let s2 = t4;
               if (t4.url ? s2 = (yield e.h(i2.transformRequest(t4.url, "Source"), a2)).data : yield o.frameAsync(a2), !s2) return null;
               const r2 = e.M(e.e(s2, t4), ["tiles", "minzoom", "maxzoom", "attribution", "bounds", "scheme", "tileSize", "encoding"]);
-              return "vector_layers" in s2 && s2.vector_layers && (r2.vectorLayerIds = s2.vector_layers.map((t5) => t5.id)), r2;
-            });
+              return "vector_layers" in s2 && s2.vector_layers && (r2.vectorLayerIds = s2.vector_layers.map(((t5) => t5.id))), r2;
+            }));
           }
           class H {
             constructor(t4, e2) {
@@ -233255,7 +233398,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.setEventedParent(s2);
             }
             load() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this._loaded = false, this.fire(new e.k("dataloading", { dataType: "source" })), this._tileJSONRequest = new AbortController();
                 try {
                   const t4 = yield G(this._options, this.map._requestManager, this._tileJSONRequest);
@@ -233263,7 +233406,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 } catch (t4) {
                   this._tileJSONRequest = null, this.fire(new e.j(t4));
                 }
-              });
+              }));
             }
             loaded() {
               return this._loaded;
@@ -233278,14 +233421,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this._tileJSONRequest && this._tileJSONRequest.abort(), t4(), this.load();
             }
             setTiles(t4) {
-              return this.setSourceProperty(() => {
+              return this.setSourceProperty((() => {
                 this._options.tiles = t4;
-              }), this;
+              })), this;
             }
             setUrl(t4) {
-              return this.setSourceProperty(() => {
+              return this.setSourceProperty((() => {
                 this.url = t4, this._options.url = t4;
-              }), this;
+              })), this;
             }
             onRemove() {
               this._tileJSONRequest && (this._tileJSONRequest.abort(), this._tileJSONRequest = null);
@@ -233294,14 +233437,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return e.e({}, this._options);
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const e2 = t4.tileID.canonical.url(this.tiles, this.map.getPixelRatio(), this.scheme), i2 = { request: this.map._requestManager.transformRequest(e2, "Tile"), uid: t4.uid, tileID: t4.tileID, zoom: t4.tileID.overscaledZ, tileSize: this.tileSize * t4.tileID.overscaleFactor(), type: this.type, source: this.id, pixelRatio: this.map.getPixelRatio(), showCollisionBoxes: this.map.showCollisionBoxes, promoteId: this.promoteId };
                 i2.request.collectResourceTiming = this._collectResourceTiming;
                 let a2 = "RT";
                 if (t4.actor && "expired" !== t4.state) {
-                  if ("loading" === t4.state) return new Promise((e3, i3) => {
+                  if ("loading" === t4.state) return new Promise(((e3, i3) => {
                     t4.reloadPromise = { resolve: e3, reject: i3 };
-                  });
+                  }));
                 } else t4.actor = this.dispatcher.getActor(), a2 = "LT";
                 t4.abortController = new AbortController();
                 try {
@@ -233313,7 +233456,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   if (e3 && 404 !== e3.status) throw e3;
                   this._afterTileLoadWorkerResponse(t4, null);
                 }
-              });
+              }));
             }
             _afterTileLoadWorkerResponse(t4, e2) {
               if (e2 && e2.resourceTiming && (t4.resourceTiming = e2.resourceTiming), e2 && this.map._refreshExpiredTiles && t4.setExpiryData(e2), t4.loadVectorData(e2, this.map.painter), t4.reloadPromise) {
@@ -233322,14 +233465,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               }
             }
             abortTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.abortController && (t4.abortController.abort(), delete t4.abortController), t4.actor && (yield t4.actor.sendAsync({ type: "AT", data: { uid: t4.uid, type: this.type, source: this.id } }));
-              });
+              }));
             }
             unloadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.unloadVectorData(), t4.actor && (yield t4.actor.sendAsync({ type: "RMT", data: { uid: t4.uid, type: this.type, source: this.id } }));
-              });
+              }));
             }
             hasTransition() {
               return false;
@@ -233340,7 +233483,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               super(), this.id = t4, this.dispatcher = a2, this.setEventedParent(s2), this.type = "raster", this.minzoom = 0, this.maxzoom = 22, this.roundZoom = true, this.scheme = "xyz", this.tileSize = 512, this._loaded = false, this._options = e.e({ type: "raster" }, i2), e.e(this, e.M(i2, ["url", "scheme", "tileSize"]));
             }
             load() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this._loaded = false, this.fire(new e.k("dataloading", { dataType: "source" })), this._tileJSONRequest = new AbortController();
                 try {
                   const t4 = yield G(this._options, this.map._requestManager, this._tileJSONRequest);
@@ -233348,7 +233491,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 } catch (t4) {
                   this._tileJSONRequest = null, this.fire(new e.j(t4));
                 }
-              });
+              }));
             }
             loaded() {
               return this._loaded;
@@ -233363,14 +233506,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this._tileJSONRequest && (this._tileJSONRequest.abort(), this._tileJSONRequest = null), t4(), this.load();
             }
             setTiles(t4) {
-              return this.setSourceProperty(() => {
+              return this.setSourceProperty((() => {
                 this._options.tiles = t4;
-              }), this;
+              })), this;
             }
             setUrl(t4) {
-              return this.setSourceProperty(() => {
+              return this.setSourceProperty((() => {
                 this.url = t4, this._options.url = t4;
-              }), this;
+              })), this;
             }
             serialize() {
               return e.e({}, this._options);
@@ -233379,7 +233522,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return !this.tileBounds || this.tileBounds.contains(t4.canonical);
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const e2 = t4.tileID.canonical.url(this.tiles, this.map.getPixelRatio(), this.scheme);
                 t4.abortController = new AbortController();
                 try {
@@ -233394,17 +233537,17 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   if (delete t4.abortController, t4.aborted) t4.state = "unloaded";
                   else if (e3) throw t4.state = "errored", e3;
                 }
-              });
+              }));
             }
             abortTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.abortController && (t4.abortController.abort(), delete t4.abortController);
-              });
+              }));
             }
             unloadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.texture && this.map.painter.saveTileTexture(t4.texture);
-              });
+              }));
             }
             hasTransition() {
               return false;
@@ -233415,7 +233558,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               super(t4, i2, a2, s2), this.type = "raster-dem", this.maxzoom = 22, this._options = e.e({ type: "raster-dem" }, i2), this.encoding = i2.encoding || "mapbox", this.redFactor = i2.redFactor, this.greenFactor = i2.greenFactor, this.blueFactor = i2.blueFactor, this.baseShift = i2.baseShift;
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const i2 = t4.tileID.canonical.url(this.tiles, this.map.getPixelRatio(), this.scheme), a2 = this.map._requestManager.transformRequest(i2, "Tile");
                 t4.neighboringTiles = this._getNeighboringTiles(t4.tileID), t4.abortController = new AbortController();
                 try {
@@ -233435,10 +233578,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   if (delete t4.abortController, t4.aborted) t4.state = "unloaded";
                   else if (e2) throw t4.state = "errored", e2;
                 }
-              });
+              }));
             }
             readImageNow(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 if ("undefined" != typeof VideoFrame && e.V()) {
                   const i2 = t4.width + 2, a2 = t4.height + 2;
                   try {
@@ -233447,16 +233590,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   }
                 }
                 return o.getImageData(t4, 1);
-              });
+              }));
             }
             _getNeighboringTiles(t4) {
               const i2 = t4.canonical, a2 = Math.pow(2, i2.z), s2 = (i2.x - 1 + a2) % a2, o2 = 0 === i2.x ? t4.wrap - 1 : t4.wrap, r2 = (i2.x + 1 + a2) % a2, n2 = i2.x + 1 === a2 ? t4.wrap + 1 : t4.wrap, l2 = {};
               return l2[new e.S(t4.overscaledZ, o2, i2.z, s2, i2.y).key] = { backfilled: false }, l2[new e.S(t4.overscaledZ, n2, i2.z, r2, i2.y).key] = { backfilled: false }, i2.y > 0 && (l2[new e.S(t4.overscaledZ, o2, i2.z, s2, i2.y - 1).key] = { backfilled: false }, l2[new e.S(t4.overscaledZ, t4.wrap, i2.z, i2.x, i2.y - 1).key] = { backfilled: false }, l2[new e.S(t4.overscaledZ, n2, i2.z, r2, i2.y - 1).key] = { backfilled: false }), i2.y + 1 < a2 && (l2[new e.S(t4.overscaledZ, o2, i2.z, s2, i2.y + 1).key] = { backfilled: false }, l2[new e.S(t4.overscaledZ, t4.wrap, i2.z, i2.x, i2.y + 1).key] = { backfilled: false }, l2[new e.S(t4.overscaledZ, n2, i2.z, r2, i2.y + 1).key] = { backfilled: false }), l2;
             }
             unloadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.demTexture && this.map.painter.saveTileTexture(t4.demTexture), t4.fbo && (t4.fbo.destroy(), delete t4.fbo), t4.dem && delete t4.dem, delete t4.neighboringTiles, t4.state = "unloaded", t4.actor && (yield t4.actor.sendAsync({ type: "RDT", data: { type: this.type, uid: t4.uid, source: this.id } }));
-              });
+              }));
             }
           }
           class J extends e.E {
@@ -233466,9 +233609,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               void 0 !== i2.clusterMaxZoom && this.maxzoom <= i2.clusterMaxZoom && e.w(`The maxzoom value "${this.maxzoom}" is expected to be greater than the clusterMaxZoom value "${i2.clusterMaxZoom}".`), this.workerOptions = e.e({ source: this.id, cluster: i2.cluster || false, geojsonVtOptions: { buffer: (void 0 !== i2.buffer ? i2.buffer : 128) * o2, tolerance: (void 0 !== i2.tolerance ? i2.tolerance : 0.375) * o2, extent: e.X, maxZoom: this.maxzoom, lineMetrics: i2.lineMetrics || false, generateId: i2.generateId || false }, superclusterOptions: { maxZoom: void 0 !== i2.clusterMaxZoom ? i2.clusterMaxZoom : this.maxzoom - 1, minPoints: Math.max(2, i2.clusterMinPoints || 2), extent: e.X, radius: (i2.clusterRadius || 50) * o2, log: false, generateId: i2.generateId || false }, clusterProperties: i2.clusterProperties, filter: i2.filter }, i2.workerOptions), "string" == typeof this.promoteId && (this.workerOptions.promoteId = this.promoteId);
             }
             load() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 yield this._updateWorkerData();
-              });
+              }));
             }
             onAdd(t4) {
               this.map = t4, this.load();
@@ -233480,10 +233623,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return this._updateWorkerData(t4), this;
             }
             getData() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const t4 = e.e({ type: this.type }, this.workerOptions);
                 return this.actor.sendAsync({ type: "GD", data: t4 });
-              });
+              }));
             }
             setClusterOptions(t4) {
               return this.workerOptions.cluster = t4.cluster, t4 && (void 0 !== t4.clusterRadius && (this.workerOptions.superclusterOptions.radius = t4.clusterRadius), void 0 !== t4.clusterMaxZoom && (this.workerOptions.superclusterOptions.maxZoom = t4.clusterMaxZoom)), this._updateWorkerData(), this;
@@ -233498,7 +233641,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return this.actor.sendAsync({ type: "GCL", data: { type: this.type, source: this.id, clusterId: t4, limit: e2, offset: i2 } });
             }
             _updateWorkerData(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const i2 = e.e({ type: this.type }, this.workerOptions);
                 t4 ? i2.dataDiff = t4 : "string" == typeof this._data ? (i2.request = this.map._requestManager.transformRequest(o.resolveURL(this._data), "Source"), i2.request.collectResourceTiming = this._collectResourceTiming) : i2.data = JSON.stringify(this._data), this._pendingLoads++, this.fire(new e.k("dataloading", { dataType: "source" }));
                 try {
@@ -233512,30 +233655,30 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   if (this._pendingLoads--, this._removed) return void this.fire(new e.k("dataabort", { dataType: "source" }));
                   this.fire(new e.j(t5));
                 }
-              });
+              }));
             }
             loaded() {
               return 0 === this._pendingLoads;
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const e2 = t4.actor ? "RT" : "LT";
                 t4.actor = this.actor;
                 const i2 = { type: this.type, uid: t4.uid, tileID: t4.tileID, zoom: t4.tileID.overscaledZ, maxZoom: this.maxzoom, tileSize: this.tileSize, source: this.id, pixelRatio: this.map.getPixelRatio(), showCollisionBoxes: this.map.showCollisionBoxes, promoteId: this.promoteId };
                 t4.abortController = new AbortController();
                 const a2 = yield this.actor.sendAsync({ type: e2, data: i2 }, t4.abortController);
                 delete t4.abortController, t4.unloadVectorData(), t4.aborted || t4.loadVectorData(a2, this.map.painter, "RT" === e2);
-              });
+              }));
             }
             abortTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.abortController && (t4.abortController.abort(), delete t4.abortController), t4.aborted = true;
-              });
+              }));
             }
             unloadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 t4.unloadVectorData(), yield this.actor.sendAsync({ type: "RMT", data: { uid: t4.uid, type: this.type, source: this.id } });
-              });
+              }));
             }
             onRemove() {
               this._removed = true, this.actor.sendAsync({ type: "RS", data: { type: this.type, source: this.id } });
@@ -233553,7 +233696,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               super(), this.id = t4, this.dispatcher = i2, this.coordinates = e2.coordinates, this.type = "image", this.minzoom = 0, this.maxzoom = 22, this.tileSize = 512, this.tiles = {}, this._loaded = false, this.setEventedParent(a2), this.options = e2;
             }
             load(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this._loaded = false, this.fire(new e.k("dataloading", { dataType: "source" })), this.url = this.options.url, this._request = new AbortController();
                 try {
                   const e2 = yield _.getImage(this.map._requestManager.transformRequest(this.url, "Image"), this._request);
@@ -233561,15 +233704,15 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 } catch (t5) {
                   this._request = null, this._loaded = true, this.fire(new e.j(t5));
                 }
-              });
+              }));
             }
             loaded() {
               return this._loaded;
             }
             updateImage(t4) {
-              return t4.url ? (this._request && (this._request.abort(), this._request = null), this.options.url = t4.url, this.load(t4.coordinates).finally(() => {
+              return t4.url ? (this._request && (this._request.abort(), this._request = null), this.options.url = t4.url, this.load(t4.coordinates).finally((() => {
                 this.texture = null;
-              }), this) : this;
+              })), this) : this;
             }
             _finishLoading() {
               this.map && (this.setCoordinates(this.coordinates), this.fire(new e.k("data", { dataType: "source", sourceDataType: "metadata" })));
@@ -233583,13 +233726,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             setCoordinates(t4) {
               this.coordinates = t4;
               const i2 = t4.map(e.Z.fromLngLat);
-              this.tileID = function(t5) {
+              this.tileID = (function(t5) {
                 let i3 = 1 / 0, a3 = 1 / 0, s2 = -1 / 0, o2 = -1 / 0;
                 for (const e2 of t5) i3 = Math.min(i3, e2.x), a3 = Math.min(a3, e2.y), s2 = Math.max(s2, e2.x), o2 = Math.max(o2, e2.y);
                 const r2 = Math.max(s2 - i3, o2 - a3), n2 = Math.max(0, Math.floor(-Math.log(r2) / Math.LN2)), l2 = Math.pow(2, n2);
                 return new e.a1(n2, Math.floor((i3 + s2) / 2 * l2), Math.floor((a3 + o2) / 2 * l2));
-              }(i2), this.minzoom = this.maxzoom = this.tileID.z;
-              const a2 = i2.map((t5) => this.tileID.getTilePoint(t5)._round());
+              })(i2), this.minzoom = this.maxzoom = this.tileID.z;
+              const a2 = i2.map(((t5) => this.tileID.getTilePoint(t5)._round()));
               return this._boundsArray = new e.$(), this._boundsArray.emplaceBack(a2[0].x, a2[0].y, 0, 0), this._boundsArray.emplaceBack(a2[1].x, a2[1].y, e.X, 0), this._boundsArray.emplaceBack(a2[3].x, a2[3].y, 0, e.X), this._boundsArray.emplaceBack(a2[2].x, a2[2].y, e.X, e.X), this.boundsBuffer && (this.boundsBuffer.destroy(), delete this.boundsBuffer), this.fire(new e.k("data", { dataType: "source", sourceDataType: "content" })), this;
             }
             prepare() {
@@ -233604,9 +233747,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               a2 && this.fire(new e.k("data", { dataType: "source", sourceDataType: "idle", sourceId: this.id }));
             }
             loadTile(t4) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this.tileID && this.tileID.equals(t4.tileID.canonical) ? (this.tiles[String(t4.tileID.wrap)] = t4, t4.buckets = {}) : t4.state = "errored";
-              });
+              }));
             }
             serialize() {
               return { type: "image", url: this.options.url, coordinates: this.coordinates };
@@ -233620,7 +233763,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               super(t4, e2, i2, a2), this.roundZoom = true, this.type = "video", this.options = e2;
             }
             load() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this._loaded = false;
                 const t4 = this.options;
                 this.urls = [];
@@ -233628,13 +233771,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 try {
                   const t5 = yield e.a3(this.urls);
                   if (this._loaded = true, !t5) return;
-                  this.video = t5, this.video.loop = true, this.video.addEventListener("playing", () => {
+                  this.video = t5, this.video.loop = true, this.video.addEventListener("playing", (() => {
                     this.map.triggerRepaint();
-                  }), this.map && this.video.play(), this._finishLoading();
+                  })), this.map && this.video.play(), this._finishLoading();
                 } catch (t5) {
                   this.fire(new e.j(t5));
                 }
-              });
+              }));
             }
             pause() {
               this.video && this.video.pause();
@@ -233674,16 +233817,16 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class et extends Q {
             constructor(t4, i2, a2, s2) {
-              super(t4, i2, a2, s2), i2.coordinates ? Array.isArray(i2.coordinates) && 4 === i2.coordinates.length && !i2.coordinates.some((t5) => !Array.isArray(t5) || 2 !== t5.length || t5.some((t6) => "number" != typeof t6)) || this.fire(new e.j(new e.a2(`sources.${t4}`, null, '"coordinates" property must be an array of 4 longitude/latitude array pairs'))) : this.fire(new e.j(new e.a2(`sources.${t4}`, null, 'missing required property "coordinates"'))), i2.animate && "boolean" != typeof i2.animate && this.fire(new e.j(new e.a2(`sources.${t4}`, null, 'optional "animate" property must be a boolean value'))), i2.canvas ? "string" == typeof i2.canvas || i2.canvas instanceof HTMLCanvasElement || this.fire(new e.j(new e.a2(`sources.${t4}`, null, '"canvas" must be either a string representing the ID of the canvas element from which to read, or an HTMLCanvasElement instance'))) : this.fire(new e.j(new e.a2(`sources.${t4}`, null, 'missing required property "canvas"'))), this.options = i2, this.animate = void 0 === i2.animate || i2.animate;
+              super(t4, i2, a2, s2), i2.coordinates ? Array.isArray(i2.coordinates) && 4 === i2.coordinates.length && !i2.coordinates.some(((t5) => !Array.isArray(t5) || 2 !== t5.length || t5.some(((t6) => "number" != typeof t6)))) || this.fire(new e.j(new e.a2(`sources.${t4}`, null, '"coordinates" property must be an array of 4 longitude/latitude array pairs'))) : this.fire(new e.j(new e.a2(`sources.${t4}`, null, 'missing required property "coordinates"'))), i2.animate && "boolean" != typeof i2.animate && this.fire(new e.j(new e.a2(`sources.${t4}`, null, 'optional "animate" property must be a boolean value'))), i2.canvas ? "string" == typeof i2.canvas || i2.canvas instanceof HTMLCanvasElement || this.fire(new e.j(new e.a2(`sources.${t4}`, null, '"canvas" must be either a string representing the ID of the canvas element from which to read, or an HTMLCanvasElement instance'))) : this.fire(new e.j(new e.a2(`sources.${t4}`, null, 'missing required property "canvas"'))), this.options = i2, this.animate = void 0 === i2.animate || i2.animate;
             }
             load() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 this._loaded = true, this.canvas || (this.canvas = this.options.canvas instanceof HTMLCanvasElement ? this.options.canvas : document.getElementById(this.options.canvas)), this.width = this.canvas.width, this.height = this.canvas.height, this._hasInvalidDimensions() ? this.fire(new e.j(new Error("Canvas dimensions cannot be less than or equal to zero."))) : (this.play = function() {
                   this._playing = true, this.map.triggerRepaint();
                 }, this.pause = function() {
                   this._playing && (this.prepare(), this._playing = false);
                 }, this._finishLoading());
-              });
+              }));
             }
             getCanvas() {
               return this.canvas;
@@ -233742,9 +233885,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               super(...arguments), this.status = "unavailable", this.url = null, this.dispatcher = j();
             }
             _syncState(t4) {
-              return this.status = t4, this.dispatcher.broadcast("SRPS", { pluginStatus: t4, pluginURL: this.url }).catch((t5) => {
+              return this.status = t4, this.dispatcher.broadcast("SRPS", { pluginStatus: t4, pluginURL: this.url }).catch(((t5) => {
                 throw this.status = "error", t5;
-              });
+              }));
             }
             getRTLTextPluginStatus() {
               return this.status;
@@ -233753,19 +233896,19 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this.status = "unavailable", this.url = null;
             }
             setRTLTextPlugin(t4) {
-              return e._(this, arguments, void 0, function* (t5, e2 = false) {
+              return e._(this, arguments, void 0, (function* (t5, e2 = false) {
                 if (this.url) throw new Error("setRTLTextPlugin cannot be called multiple times.");
                 if (this.url = o.resolveURL(t5), !this.url) throw new Error(`requested url ${t5} is invalid`);
                 if ("unavailable" === this.status) {
                   if (!e2) return this._requestImport();
                   this.status = "deferred", this._syncState(this.status);
                 } else if ("requested" === this.status) return this._requestImport();
-              });
+              }));
             }
             _requestImport() {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 yield this._syncState("loading"), this.status = "loaded", this.fire(new e.k(st));
-              });
+              }));
             }
             lazyLoad() {
               "unavailable" === this.status ? this.status = "requested" : "deferred" === this.status && this._requestImport();
@@ -233791,18 +233934,18 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             loadVectorData(t4, i2, a2) {
               if (this.hasData() && this.unloadVectorData(), this.state = "loaded", t4) {
-                t4.featureIndex && (this.latestFeatureIndex = t4.featureIndex, t4.rawTileData ? (this.latestRawTileData = t4.rawTileData, this.latestFeatureIndex.rawTileData = t4.rawTileData) : this.latestRawTileData && (this.latestFeatureIndex.rawTileData = this.latestRawTileData)), this.collisionBoxArray = t4.collisionBoxArray, this.buckets = function(t5, e2) {
+                t4.featureIndex && (this.latestFeatureIndex = t4.featureIndex, t4.rawTileData ? (this.latestRawTileData = t4.rawTileData, this.latestFeatureIndex.rawTileData = t4.rawTileData) : this.latestRawTileData && (this.latestFeatureIndex.rawTileData = this.latestRawTileData)), this.collisionBoxArray = t4.collisionBoxArray, this.buckets = (function(t5, e2) {
                   const i3 = {};
                   if (!e2) return i3;
                   for (const a3 of t5) {
-                    const t6 = a3.layerIds.map((t7) => e2.getLayer(t7)).filter(Boolean);
+                    const t6 = a3.layerIds.map(((t7) => e2.getLayer(t7))).filter(Boolean);
                     if (0 !== t6.length) {
-                      a3.layers = t6, a3.stateDependentLayerIds && (a3.stateDependentLayers = a3.stateDependentLayerIds.map((e3) => t6.filter((t7) => t7.id === e3)[0]));
+                      a3.layers = t6, a3.stateDependentLayerIds && (a3.stateDependentLayers = a3.stateDependentLayerIds.map(((e3) => t6.filter(((t7) => t7.id === e3))[0])));
                       for (const e3 of t6) i3[e3.id] = a3;
                     }
                   }
                   return i3;
-                }(t4.buckets, i2.style), this.hasSymbolBuckets = false;
+                })(t4.buckets, i2.style), this.hasSymbolBuckets = false;
                 for (const t5 in this.buckets) {
                   const i3 = this.buckets[t5];
                   if (i3 instanceof e.a6) {
@@ -233941,9 +234084,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               const a2 = t4.wrapped().key;
               void 0 === this.data[a2] && (this.data[a2] = []);
               const s2 = { value: e2, timeout: void 0 };
-              if (void 0 !== i2 && (s2.timeout = setTimeout(() => {
+              if (void 0 !== i2 && (s2.timeout = setTimeout((() => {
                 this.remove(t4, s2);
-              }, i2)), this.data[a2].push(s2), this.order.push(a2), this.order.length > this.max) {
+              }), i2)), this.data[a2].push(s2), this.order.push(a2), this.order.length > this.max) {
                 const t5 = this._getAndRemoveByKey(this.order[0]);
                 t5 && this.onRemove(t5);
               }
@@ -234043,15 +234186,15 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           }
           class ut extends e.E {
             constructor(t4, e2, i2) {
-              super(), this.id = t4, this.dispatcher = i2, this.on("data", (t5) => this._dataHandler(t5)), this.on("dataloading", () => {
+              super(), this.id = t4, this.dispatcher = i2, this.on("data", ((t5) => this._dataHandler(t5))), this.on("dataloading", (() => {
                 this._sourceErrored = false;
-              }), this.on("error", () => {
+              })), this.on("error", (() => {
                 this._sourceErrored = this._source.loaded();
-              }), this._source = ((t5, e3, i3, a2) => {
+              })), this._source = ((t5, e3, i3, a2) => {
                 const s2 = new (at(e3.type))(t5, e3, i3, a2);
                 if (s2.id !== t5) throw new Error(`Expected Source id to be ${t5} instead of ${s2.id}`);
                 return s2;
-              })(t4, e2, i2, this), this._tiles = {}, this._cache = new ht(0, (t5) => this._unloadTile(t5)), this._timers = {}, this._cacheTimers = {}, this._maxTileCacheSize = null, this._maxTileCacheZoomLevels = null, this._loadedParentTiles = {}, this._coveredTiles = {}, this._state = new ct(), this._didEmitContent = false, this._updated = false;
+              })(t4, e2, i2, this), this._tiles = {}, this._cache = new ht(0, ((t5) => this._unloadTile(t5))), this._timers = {}, this._cacheTimers = {}, this._maxTileCacheSize = null, this._maxTileCacheZoomLevels = null, this._loadedParentTiles = {}, this._coveredTiles = {}, this._state = new ct(), this._didEmitContent = false, this._updated = false;
             }
             onAdd(t4) {
               this.map = t4, this._maxTileCacheSize = t4 ? t4._maxTileCacheSize : null, this._maxTileCacheZoomLevels = t4 ? t4._maxTileCacheZoomLevels : null, this._source && this._source.onAdd && this._source.onAdd(t4);
@@ -234083,13 +234226,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               this._paused = false, this._shouldReloadOnResume = false, t4 && this.reload(), this.transform && this.update(this.transform, this.terrain);
             }
             _loadTile(t4, i2, a2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 try {
                   yield this._source.loadTile(t4), this._tileLoaded(t4, i2, a2);
                 } catch (i3) {
                   t4.state = "errored", 404 !== i3.status ? this._source.fire(new e.j(i3, { tile: t4 })) : this.update(this.transform, this.terrain);
                 }
-              });
+              }));
             }
             _unloadTile(t4) {
               this._source.unloadTile && this._source.unloadTile(t4);
@@ -234108,15 +234251,15 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               }
             }
             getIds() {
-              return Object.values(this._tiles).map((t4) => t4.tileID).sort(dt).map((t4) => t4.key);
+              return Object.values(this._tiles).map(((t4) => t4.tileID)).sort(dt).map(((t4) => t4.key));
             }
             getRenderableIds(t4) {
               const i2 = [];
               for (const e2 in this._tiles) this._isIdRenderable(e2, t4) && i2.push(this._tiles[e2]);
-              return t4 ? i2.sort((t5, i3) => {
+              return t4 ? i2.sort(((t5, i3) => {
                 const a2 = t5.tileID, s2 = i3.tileID, o2 = new e.P(a2.canonical.x, a2.canonical.y)._rotate(this.transform.angle), r2 = new e.P(s2.canonical.x, s2.canonical.y)._rotate(this.transform.angle);
                 return a2.overscaledZ - s2.overscaledZ || r2.y - o2.y || r2.x - o2.x;
-              }).map((t5) => t5.tileID.key) : i2.map((t5) => t5.tileID).sort(dt).map((t5) => t5.key);
+              })).map(((t5) => t5.tileID.key)) : i2.map(((t5) => t5.tileID)).sort(dt).map(((t5) => t5.key));
             }
             hasRenderableParent(t4) {
               const e2 = this.findLoadedParent(t4, 0);
@@ -234133,10 +234276,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               }
             }
             _reloadTile(t4, i2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const e2 = this._tiles[t4];
                 e2 && ("loading" !== e2.state && (e2.state = i2), yield this._loadTile(e2, t4, i2));
-              });
+              }));
             }
             _tileLoaded(t4, i2, a2) {
               t4.timeAdded = o.now(), "expired" === a2 && (t4.refreshedUponExpiration = true), this._setTileReloadTimer(i2, t4), "raster-dem" === this.getSource().type && t4.dem && this._backfillDEM(t4), this._state.initializeTileState(t4, this.map ? this.map.painter : null), t4.aborted || this._source.fire(new e.k("data", { dataType: "source", tile: t4, coord: t4.tileID }));
@@ -234243,7 +234386,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             update(t4, i2) {
               if (!this._sourceLoaded || this._paused) return;
               let a2;
-              this.transform = t4, this.terrain = i2, this.updateCacheSize(t4), this.handleWrapJump(this.transform.center.lng), this._coveredTiles = {}, this.used || this.usedForTerrain ? this._source.tileID ? a2 = t4.getVisibleUnwrappedCoordinates(this._source.tileID).map((t5) => new e.S(t5.canonical.z, t5.wrap, t5.canonical.z, t5.canonical.x, t5.canonical.y)) : (a2 = t4.coveringTiles({ tileSize: this.usedForTerrain ? this.tileSize : this._source.tileSize, minzoom: this._source.minzoom, maxzoom: this._source.maxzoom, roundZoom: !this.usedForTerrain && this._source.roundZoom, reparseOverscaled: this._source.reparseOverscaled, terrain: i2 }), this._source.hasTile && (a2 = a2.filter((t5) => this._source.hasTile(t5)))) : a2 = [];
+              this.transform = t4, this.terrain = i2, this.updateCacheSize(t4), this.handleWrapJump(this.transform.center.lng), this._coveredTiles = {}, this.used || this.usedForTerrain ? this._source.tileID ? a2 = t4.getVisibleUnwrappedCoordinates(this._source.tileID).map(((t5) => new e.S(t5.canonical.z, t5.wrap, t5.canonical.z, t5.canonical.x, t5.canonical.y))) : (a2 = t4.coveringTiles({ tileSize: this.usedForTerrain ? this.tileSize : this._source.tileSize, minzoom: this._source.minzoom, maxzoom: this._source.maxzoom, roundZoom: !this.usedForTerrain && this._source.roundZoom, reparseOverscaled: this._source.reparseOverscaled, terrain: i2 }), this._source.hasTile && (a2 = a2.filter(((t5) => this._source.hasTile(t5))))) : a2 = [];
               const s2 = t4.coveringZoomLevel(this._source), o2 = Math.max(s2 - ut.maxOverzooming, this._source.minzoom), r2 = Math.max(s2 + ut.maxUnderzooming, this._source.minzoom);
               if (this.usedForTerrain) {
                 const t5 = {};
@@ -234338,9 +234481,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             _setTileReloadTimer(t4, e2) {
               t4 in this._timers && (clearTimeout(this._timers[t4]), delete this._timers[t4]);
               const i2 = e2.getExpiryTimeout();
-              i2 && (this._timers[t4] = setTimeout(() => {
+              i2 && (this._timers[t4] = setTimeout((() => {
                 this._reloadTile(t4, "expired"), delete this._timers[t4];
-              }, i2));
+              }), i2));
             }
             _removeTile(t4) {
               const e2 = this._tiles[t4];
@@ -234358,7 +234501,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             tilesIn(t4, i2, a2) {
               const s2 = [], o2 = this.transform;
               if (!o2) return s2;
-              const r2 = a2 ? o2.getCameraQueryGeometry(t4) : t4, n2 = t4.map((t5) => o2.pointCoordinate(t5, this.terrain)), l2 = r2.map((t5) => o2.pointCoordinate(t5, this.terrain)), h2 = this.getIds();
+              const r2 = a2 ? o2.getCameraQueryGeometry(t4) : t4, n2 = t4.map(((t5) => o2.pointCoordinate(t5, this.terrain))), l2 = r2.map(((t5) => o2.pointCoordinate(t5, this.terrain))), h2 = this.getIds();
               let c2 = 1 / 0, u2 = 1 / 0, d2 = -1 / 0, _2 = -1 / 0;
               for (const t5 of l2) c2 = Math.min(c2, t5.x), u2 = Math.min(u2, t5.y), d2 = Math.max(d2, t5.x), _2 = Math.max(_2, t5.y);
               for (let t5 = 0; t5 < h2.length; t5++) {
@@ -234366,14 +234509,14 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 if (a3.holdingForFade()) continue;
                 const r3 = a3.tileID, p2 = Math.pow(2, o2.zoom - a3.tileID.overscaledZ), m2 = i2 * a3.queryPadding * e.X / a3.tileSize / p2, f2 = [r3.getTilePoint(new e.Z(c2, u2)), r3.getTilePoint(new e.Z(d2, _2))];
                 if (f2[0].x - m2 < e.X && f2[0].y - m2 < e.X && f2[1].x + m2 >= 0 && f2[1].y + m2 >= 0) {
-                  const t6 = n2.map((t7) => r3.getTilePoint(t7)), e2 = l2.map((t7) => r3.getTilePoint(t7));
+                  const t6 = n2.map(((t7) => r3.getTilePoint(t7))), e2 = l2.map(((t7) => r3.getTilePoint(t7)));
                   s2.push({ tile: a3, tileID: r3, queryGeometry: t6, cameraQueryGeometry: e2, scale: p2 });
                 }
               }
               return s2;
             }
             getVisibleCoordinates(t4) {
-              const e2 = this.getRenderableIds(t4).map((t5) => this._tiles[t5].tileID);
+              const e2 = this.getRenderableIds(t4).map(((t5) => this._tiles[t5].tileID));
               for (const t5 of e2) t5.posMatrix = this.transform.calculatePosMatrix(t5.toUnwrapped());
               return e2;
             }
@@ -234400,7 +234543,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             reloadTilesForDependencies(t4, e2) {
               for (const i2 in this._tiles) this._tiles[i2].hasDependency(t4, e2) && this._reloadTile(i2, "reloading");
-              this._cache.filter((i2) => !i2.hasDependency(t4, e2));
+              this._cache.filter(((i2) => !i2.hasDependency(t4, e2)));
             }
           }
           function dt(t4, e2) {
@@ -234619,9 +234762,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               m2.push(h3.last);
             } else {
               if (o2 && !s2) {
-                const a4 = xt(t4.tileAnchorPoint.x, t4.tileAnchorPoint.y, r2, t4.getElevation).point, s3 = i2.lineStartIndex + i2.segment + 1, o3 = new e.P(t4.lineVertexArray.getx(s3), t4.lineVertexArray.gety(s3)), n3 = xt(o3.x, o3.y, r2, t4.getElevation), l3 = n3.signedDistanceFromCamera > 0 ? n3.point : function(t5, e2, i3, a5, s4, o4) {
+                const a4 = xt(t4.tileAnchorPoint.x, t4.tileAnchorPoint.y, r2, t4.getElevation).point, s3 = i2.lineStartIndex + i2.segment + 1, o3 = new e.P(t4.lineVertexArray.getx(s3), t4.lineVertexArray.gety(s3)), n3 = xt(o3.x, o3.y, r2, t4.getElevation), l3 = n3.signedDistanceFromCamera > 0 ? n3.point : (function(t5, e2, i3, a5, s4, o4) {
                   return Pt(t5, e2, i3, 1, s4, o4);
-                }(t4.tileAnchorPoint, o3, a4, 0, r2, t4), h3 = It(i2.writingMode, a4, l3, c2);
+                })(t4.tileAnchorPoint, o3, a4, 0, r2, t4), h3 = It(i2.writingMode, a4, l3, c2);
                 if (h3) return h3;
               }
               const a3 = Mt(d2 * l2.getoffsetX(i2.glyphStartIndex), _2, p2, s2, i2.segment, i2.lineStartIndex, i2.lineStartIndex + i2.lineLength, t4, u2);
@@ -234641,9 +234784,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             const o2 = new e.P(i2.lineVertexArray.getx(t4), i2.lineVertexArray.gety(t4)), r2 = St(o2.x, o2.y, i2);
             if (r2.signedDistanceFromCamera > 0) return s2.projections[t4] = r2.point, s2.anyProjectionOccluded = s2.anyProjectionOccluded || r2.isOccluded, r2.point;
             const n2 = t4 - a2.direction;
-            return function(t5, e2, i3, a3, s3) {
+            return (function(t5, e2, i3, a3, s3) {
               return Pt(t5, e2, i3, a3, void 0, s3);
-            }(0 === a2.distanceFromAnchor ? i2.tileAnchorPoint : new e.P(i2.lineVertexArray.getx(n2), i2.lineVertexArray.gety(n2)), o2, a2.previousVertex, a2.absOffsetX - a2.distanceFromAnchor + 1, i2);
+            })(0 === a2.distanceFromAnchor ? i2.tileAnchorPoint : new e.P(i2.lineVertexArray.getx(n2), i2.lineVertexArray.gety(n2)), o2, a2.previousVertex, a2.absOffsetX - a2.distanceFromAnchor + 1, i2);
           }
           function St(t4, e2, i2) {
             const a2 = t4 + i2.translation[0], s2 = e2 + i2.translation[1];
@@ -234722,7 +234865,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 const u3 = 2.5 * i3;
                 if (h2) {
                   const t5 = this.projectPathToScreenSpace(l3, b2, h2);
-                  l3 = t5.some((t6) => t6.signedDistanceFromCamera <= 0) ? [] : t5.map((t6) => t6.point);
+                  l3 = t5.some(((t6) => t6.signedDistanceFromCamera <= 0)) ? [] : t5.map(((t6) => t6.point));
                 }
                 let m3 = [];
                 if (l3.length > 0) {
@@ -234745,7 +234888,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return { circles: !c2 && T2 || !I2 || x2 < this.perspectiveRatioCutoff ? [] : g2, offscreen: E3, collisionDetected: T2 };
             }
             projectPathToScreenSpace(t4, e2, i2) {
-              return t4.map((t5) => xt(t5.x, t5.y, i2, e2.getElevation));
+              return t4.map(((t5) => xt(t5.x, t5.y, i2, e2.getElevation)));
             }
             queryRenderedSymbols(t4) {
               if (0 === t4.length || 0 === this.grid.keysLength() && 0 === this.ignoredGrid.keysLength()) return {};
@@ -234813,8 +234956,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               for (const { offsetX: t5, offsetY: i3 } of w2) T2.push(new e.P(p2.x + u2.x * t5 + d2.x * i3, p2.y + u2.y * t5 + d2.y * i3));
               let I2 = false;
               if (o2) {
-                const t5 = T2.map((t6) => this.projectAndGetPerspectiveRatio(a2, t6.x, t6.y, s2, h2));
-                I2 = t5.some((t6) => !t6.isOccluded), T2 = t5.map((t6) => t6.point);
+                const t5 = T2.map(((t6) => this.projectAndGetPerspectiveRatio(a2, t6.x, t6.y, s2, h2)));
+                I2 = t5.some(((t6) => !t6.isOccluded)), T2 = t5.map(((t6) => t6.point));
               } else I2 = true;
               return { box: e.ao(T2), allPointsOccluded: !I2 };
             }
@@ -234931,10 +235074,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                       const a4 = this.collisionIndex.placeCollisionBox(e2, x2, d2, l2, h2, I2, T2, r2, f2.predicate, z2);
                       return a4 && a4.placeable && (this.markUsedOrientation(s2, i4, t5), this.placedOrientations[t5.crossTileID] = i4), a4;
                     };
-                    o3(() => a3(q2, e.ah.horizontal), () => {
+                    o3((() => a3(q2, e.ah.horizontal)), (() => {
                       const i4 = p3.verticalTextBox;
                       return s2.allowVerticalPlacement && t5.numVerticalGlyphVertices > 0 && i4 ? a3(i4, e.ah.vertical) : { box: null, offscreen: null };
-                    }), i3(L2 && L2.placeable);
+                    })), i3(L2 && L2.placeable);
                   } else {
                     let _3 = e.aq[null === (D4 = null === (P3 = this.prevPlacement) || void 0 === P3 ? void 0 : P3.variableOffsets[t5.crossTileID]) || void 0 === D4 ? void 0 : D4.anchor];
                     const m3 = (i4, o4, p4) => {
@@ -234952,10 +235095,10 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                       }
                       return a2 && !w4 && (w4 = { box: this.collisionIndex.placeCollisionBox(q2, "always", d2, l2, h2, I2, T2, r2, f2.predicate, z2, new e.P(0, 0)).box, offscreen: false, placeable: false }), w4;
                     };
-                    o3(() => m3(q2, p3.iconBox, e.ah.horizontal), () => {
+                    o3((() => m3(q2, p3.iconBox, e.ah.horizontal)), (() => {
                       const i4 = p3.verticalTextBox;
                       return s2.allowVerticalPlacement && (!L2 || !L2.placeable) && t5.numVerticalGlyphVertices > 0 && i4 ? m3(i4, p3.verticalIconBox, e.ah.vertical) : { box: null, occluded: true, offscreen: null };
-                    }), L2 && (M2 = L2.placeable, R2 = L2.offscreen);
+                    })), L2 && (M2 = L2.placeable, R2 = L2.offscreen);
                     const g3 = i3(L2 && L2.placeable);
                     if (!M2 && this.prevPlacement) {
                       const e2 = this.prevPlacement.variableOffsets[t5.crossTileID];
@@ -235060,9 +235203,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   const e2 = te(h3.text);
                   m2(t4.text, o3, x2 ? ee : e2), m2(t4.text, r3, y2 ? ee : e2);
                   const i4 = h3.text.isHidden();
-                  [s3.rightJustifiedTextSymbolIndex, s3.centerJustifiedTextSymbolIndex, s3.leftJustifiedTextSymbolIndex].forEach((e3) => {
+                  [s3.rightJustifiedTextSymbolIndex, s3.centerJustifiedTextSymbolIndex, s3.leftJustifiedTextSymbolIndex].forEach(((e3) => {
                     e3 >= 0 && (t4.text.placedSymbolArray.get(e3).hidden = i4 || x2 ? 1 : 0);
-                  }), s3.verticalPlacedTextSymbolIndex >= 0 && (t4.text.placedSymbolArray.get(s3.verticalPlacedTextSymbolIndex).hidden = i4 || y2 ? 1 : 0);
+                  })), s3.verticalPlacedTextSymbolIndex >= 0 && (t4.text.placedSymbolArray.get(s3.verticalPlacedTextSymbolIndex).hidden = i4 || y2 ? 1 : 0);
                   const a3 = this.variableOffsets[s3.crossTileID];
                   a3 && this.markUsedJustification(t4, a3.anchor, s3, v2);
                   const n3 = this.placedOrientations[s3.crossTileID];
@@ -235138,7 +235281,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               return false;
             }, projectTileCoordinates(t4, e2, i2, a2) {
               throw new Error("Not implemented.");
-            }, translatePosition: (t4, e2, i2, a2) => function(t5, e3, i3, a3, s2 = false) {
+            }, translatePosition: (t4, e2, i2, a2) => (function(t5, e3, i3, a3, s2 = false) {
               if (!i3[0] && !i3[1]) return [0, 0];
               const o2 = s2 ? "map" === a3 ? t5.angle : 0 : "viewport" === a3 ? -t5.angle : 0;
               if (o2) {
@@ -235146,7 +235289,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 i3 = [i3[0] * e4 - i3[1] * t6, i3[0] * t6 + i3[1] * e4];
               }
               return [s2 ? i3[0] : Bt(e3, i3[0], t5.zoom), s2 ? i3[1] : Bt(e3, i3[1], t5.zoom)];
-            }(t4, e2, i2, a2), getCircleRadiusCorrection: (t4) => 1 };
+            })(t4, e2, i2, a2), getCircleRadiusCorrection: (t4) => 1 };
           }
           class ae {
             constructor(t4) {
@@ -235155,7 +235298,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             continuePlacement(t4, e2, i2, a2, s2) {
               const o2 = this._bucketParts;
               for (; this._currentTileIndex < t4.length; ) if (e2.getBucketParts(o2, a2, t4[this._currentTileIndex], this._sortAcrossTiles), this._currentTileIndex++, s2()) return true;
-              for (this._sortAcrossTiles && (this._sortAcrossTiles = false, o2.sort((t5, e3) => t5.sortKey - e3.sortKey)); this._currentPartIndex < o2.length; ) if (e2.placeLayerBucketPart(o2[this._currentPartIndex], this._seenCrossTileIDs, i2), this._currentPartIndex++, s2()) return true;
+              for (this._sortAcrossTiles && (this._sortAcrossTiles = false, o2.sort(((t5, e3) => t5.sortKey - e3.sortKey))); this._currentPartIndex < o2.length; ) if (e2.placeLayerBucketPart(o2[this._currentPartIndex], this._seenCrossTileIDs, i2), this._currentPartIndex++, s2()) return true;
               return false;
             }
           }
@@ -235192,7 +235335,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 o2 ? o2.push(e2) : s2.set(a3, [e2]);
               }
               for (const [t5, i3] of s2) {
-                const a3 = { positions: i3.map((t6) => ({ x: Math.floor(t6.anchorX * oe), y: Math.floor(t6.anchorY * oe) })), crossTileIDs: i3.map((t6) => t6.crossTileID) };
+                const a3 = { positions: i3.map(((t6) => ({ x: Math.floor(t6.anchorX * oe), y: Math.floor(t6.anchorY * oe) }))), crossTileIDs: i3.map(((t6) => t6.crossTileID)) };
                 if (a3.positions.length > 128) {
                   const t6 = new e.av(a3.positions.length, 16, Uint16Array);
                   for (const { x: e2, y: i4 } of a3.positions) t6.add(e2, i4);
@@ -235232,7 +235375,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               }
             }
             getCrossTileIDsLists() {
-              return Object.values(this._symbolsByKey).map(({ crossTileIDs: t4 }) => t4);
+              return Object.values(this._symbolsByKey).map((({ crossTileIDs: t4 }) => t4));
             }
           }
           class ne {
@@ -235314,13 +235457,13 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             pruneUnusedLayers(t4) {
               const e2 = {};
-              t4.forEach((t5) => {
+              t4.forEach(((t5) => {
                 e2[t5] = true;
-              });
+              }));
               for (const t5 in this.layerIndexes) e2[t5] || delete this.layerIndexes[t5];
             }
           }
-          const ce = (t4, i2) => e.t(t4, i2 && i2.filter((t5) => "source.canvas" !== t5.identifier)), ue = e.aw();
+          const ce = (t4, i2) => e.t(t4, i2 && i2.filter(((t5) => "source.canvas" !== t5.identifier))), ue = e.aw();
           class de extends e.E {
             constructor(t4, i2 = {}) {
               super(), this._rtlPluginLoaded = () => {
@@ -235328,7 +235471,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   const e2 = this.sourceCaches[t5].getSource().type;
                   "vector" !== e2 && "geojson" !== e2 || this.sourceCaches[t5].reload();
                 }
-              }, this.map = t4, this.dispatcher = new U(N(), t4._getMapId()), this.dispatcher.registerMessageHandler("GG", (t5, e2) => this.getGlyphs(t5, e2)), this.dispatcher.registerMessageHandler("GI", (t5, e2) => this.getImages(t5, e2)), this.imageManager = new T(), this.imageManager.setEventedParent(this), this.glyphManager = new C2(t4._requestManager, i2.localIdeographFontFamily), this.lineAtlas = new R(256, 512), this.crossTileSymbolIndex = new he(), this._spritesImagesIds = {}, this._layers = {}, this._order = [], this.sourceCaches = {}, this.zoomHistory = new e.ax(), this._loaded = false, this._availableImages = [], this._resetUpdates(), this.dispatcher.broadcast("SR", e.ay()), nt().on(st, this._rtlPluginLoaded), this.on("data", (t5) => {
+              }, this.map = t4, this.dispatcher = new U(N(), t4._getMapId()), this.dispatcher.registerMessageHandler("GG", ((t5, e2) => this.getGlyphs(t5, e2))), this.dispatcher.registerMessageHandler("GI", ((t5, e2) => this.getImages(t5, e2))), this.imageManager = new T(), this.imageManager.setEventedParent(this), this.glyphManager = new C2(t4._requestManager, i2.localIdeographFontFamily), this.lineAtlas = new R(256, 512), this.crossTileSymbolIndex = new he(), this._spritesImagesIds = {}, this._layers = {}, this._order = [], this.sourceCaches = {}, this.zoomHistory = new e.ax(), this._loaded = false, this._availableImages = [], this._resetUpdates(), this.dispatcher.broadcast("SR", e.ay()), nt().on(st, this._rtlPluginLoaded), this.on("data", ((t5) => {
                 if ("source" !== t5.dataType || "metadata" !== t5.sourceDataType) return;
                 const e2 = this.sourceCaches[t5.sourceId];
                 if (!e2) return;
@@ -235337,24 +235480,24 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   const e3 = this._layers[t6];
                   e3.source === i3.id && this._validateLayer(e3);
                 }
-              });
+              }));
             }
             loadURL(t4, i2 = {}, a2) {
               this.fire(new e.k("dataloading", { dataType: "style" })), i2.validate = "boolean" != typeof i2.validate || i2.validate;
               const s2 = this.map._requestManager.transformRequest(t4, "Style");
               this._loadStyleRequest = new AbortController();
               const o2 = this._loadStyleRequest;
-              e.h(s2, this._loadStyleRequest).then((t5) => {
+              e.h(s2, this._loadStyleRequest).then(((t5) => {
                 this._loadStyleRequest = null, this._load(t5.data, i2, a2);
-              }).catch((t5) => {
+              })).catch(((t5) => {
                 this._loadStyleRequest = null, t5 && !o2.signal.aborted && this.fire(new e.j(t5));
-              });
+              }));
             }
             loadJSON(t4, i2 = {}, a2) {
-              this.fire(new e.k("dataloading", { dataType: "style" })), this._frameRequest = new AbortController(), o.frameAsync(this._frameRequest).then(() => {
+              this.fire(new e.k("dataloading", { dataType: "style" })), this._frameRequest = new AbortController(), o.frameAsync(this._frameRequest).then((() => {
                 this._frameRequest = null, i2.validate = false !== i2.validate, this._load(t4, i2, a2);
-              }).catch(() => {
-              });
+              })).catch((() => {
+              }));
             }
             loadEmpty() {
               this.fire(new e.k("dataloading", { dataType: "style" })), this._load(ue, { validate: false });
@@ -235370,7 +235513,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             _createLayers() {
               const t4 = e.az(this.stylesheet.layers);
-              this.dispatcher.broadcast("SL", t4), this._order = t4.map((t5) => t5.id), this._layers = {}, this._serializedLayers = null;
+              this.dispatcher.broadcast("SL", t4), this._order = t4.map(((t5) => t5.id)), this._layers = {}, this._serializedLayers = null;
               for (const i2 of t4) {
                 const t5 = e.aA(i2);
                 t5.setEventedParent(this, { layer: { id: i2.id } }), this._layers[i2.id] = t5;
@@ -235378,8 +235521,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             _loadSprite(t4, i2 = false, a2 = void 0) {
               let s2;
-              this.imageManager.setLoaded(false), this._spriteRequest = new AbortController(), function(t5, i3, a3, s3) {
-                return e._(this, void 0, void 0, function* () {
+              this.imageManager.setLoaded(false), this._spriteRequest = new AbortController(), (function(t5, i3, a3, s3) {
+                return e._(this, void 0, void 0, (function* () {
                   const r2 = x(t5), n2 = a3 > 1 ? "@2x" : "", l2 = {}, h2 = {};
                   for (const { id: t6, url: a4 } of r2) {
                     const o2 = i3.transformRequest(y(a4, n2, ".json"), "SpriteJSON");
@@ -235387,8 +235530,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                     const r3 = i3.transformRequest(y(a4, n2, ".png"), "SpriteImage");
                     h2[t6] = _.getImage(r3, s3);
                   }
-                  return yield Promise.all([...Object.values(l2), ...Object.values(h2)]), function(t6, i4) {
-                    return e._(this, void 0, void 0, function* () {
+                  return yield Promise.all([...Object.values(l2), ...Object.values(h2)]), (function(t6, i4) {
+                    return e._(this, void 0, void 0, (function* () {
                       const e2 = {};
                       for (const a4 in t6) {
                         e2[a4] = {};
@@ -235399,24 +235542,24 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                         }
                       }
                       return e2;
-                    });
-                  }(l2, h2);
-                });
-              }(t4, this.map._requestManager, this.map.getPixelRatio(), this._spriteRequest).then((t5) => {
+                    }));
+                  })(l2, h2);
+                }));
+              })(t4, this.map._requestManager, this.map.getPixelRatio(), this._spriteRequest).then(((t5) => {
                 if (this._spriteRequest = null, t5) for (const e2 in t5) {
                   this._spritesImagesIds[e2] = [];
-                  const a3 = this._spritesImagesIds[e2] ? this._spritesImagesIds[e2].filter((e3) => !(e3 in t5)) : [];
+                  const a3 = this._spritesImagesIds[e2] ? this._spritesImagesIds[e2].filter(((e3) => !(e3 in t5))) : [];
                   for (const t6 of a3) this.imageManager.removeImage(t6), this._changedImages[t6] = true;
                   for (const a4 in t5[e2]) {
                     const s3 = "default" === e2 ? a4 : `${e2}:${a4}`;
                     this._spritesImagesIds[e2].push(s3), s3 in this.imageManager.images ? this.imageManager.updateImage(s3, t5[e2][a4], false) : this.imageManager.addImage(s3, t5[e2][a4]), i2 && (this._changedImages[s3] = true);
                   }
                 }
-              }).catch((t5) => {
+              })).catch(((t5) => {
                 this._spriteRequest = null, s2 = t5, this.fire(new e.j(s2));
-              }).finally(() => {
+              })).finally((() => {
                 this.imageManager.setLoaded(true), this._availableImages = this.imageManager.listImages(), i2 && (this._changed = true), this.dispatcher.broadcast("SI", this._availableImages), this.fire(new e.k("data", { dataType: "style" })), a2 && a2(s2);
-              });
+              }));
             }
             _unloadSprite() {
               for (const t4 of Object.values(this._spritesImagesIds).flat()) this.imageManager.removeImage(t4), this._changedImages[t4] = true;
@@ -235540,50 +235683,50 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 case "setPitch":
                   continue;
                 case "addLayer":
-                  e2.push(() => this.addLayer.apply(this, a2.args));
+                  e2.push((() => this.addLayer.apply(this, a2.args)));
                   break;
                 case "removeLayer":
-                  e2.push(() => this.removeLayer.apply(this, a2.args));
+                  e2.push((() => this.removeLayer.apply(this, a2.args)));
                   break;
                 case "setPaintProperty":
-                  e2.push(() => this.setPaintProperty.apply(this, a2.args));
+                  e2.push((() => this.setPaintProperty.apply(this, a2.args)));
                   break;
                 case "setLayoutProperty":
-                  e2.push(() => this.setLayoutProperty.apply(this, a2.args));
+                  e2.push((() => this.setLayoutProperty.apply(this, a2.args)));
                   break;
                 case "setFilter":
-                  e2.push(() => this.setFilter.apply(this, a2.args));
+                  e2.push((() => this.setFilter.apply(this, a2.args)));
                   break;
                 case "addSource":
-                  e2.push(() => this.addSource.apply(this, a2.args));
+                  e2.push((() => this.addSource.apply(this, a2.args)));
                   break;
                 case "removeSource":
-                  e2.push(() => this.removeSource.apply(this, a2.args));
+                  e2.push((() => this.removeSource.apply(this, a2.args)));
                   break;
                 case "setLayerZoomRange":
-                  e2.push(() => this.setLayerZoomRange.apply(this, a2.args));
+                  e2.push((() => this.setLayerZoomRange.apply(this, a2.args)));
                   break;
                 case "setLight":
-                  e2.push(() => this.setLight.apply(this, a2.args));
+                  e2.push((() => this.setLight.apply(this, a2.args)));
                   break;
                 case "setGeoJSONSourceData":
-                  e2.push(() => this.setGeoJSONSourceData.apply(this, a2.args));
+                  e2.push((() => this.setGeoJSONSourceData.apply(this, a2.args)));
                   break;
                 case "setGlyphs":
-                  e2.push(() => this.setGlyphs.apply(this, a2.args));
+                  e2.push((() => this.setGlyphs.apply(this, a2.args)));
                   break;
                 case "setSprite":
-                  e2.push(() => this.setSprite.apply(this, a2.args));
+                  e2.push((() => this.setSprite.apply(this, a2.args)));
                   break;
                 case "setSky":
-                  e2.push(() => this.setSky.apply(this, a2.args));
+                  e2.push((() => this.setSky.apply(this, a2.args)));
                   break;
                 case "setTerrain":
-                  e2.push(() => this.map.setTerrain.apply(this, a2.args));
+                  e2.push((() => this.map.setTerrain.apply(this, a2.args)));
                   break;
                 case "setTransition":
-                  e2.push(() => {
-                  });
+                  e2.push((() => {
+                  }));
                   break;
                 default:
                   i2.push(a2.command);
@@ -235616,7 +235759,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               if (["vector", "raster", "geojson", "video", "image"].indexOf(i2.type) >= 0 && this._validate(e.u.source, `sources.${t4}`, i2, null, a2)) return;
               this.map && this.map._collectResourceTiming && (i2.collectResourceTiming = true);
               const s2 = this.sourceCaches[t4] = new ut(t4, i2, this.dispatcher);
-              s2.style = this, s2.setEventedParent(this, () => ({ isSourceLoaded: s2.loaded(), source: s2.serialize(), sourceId: t4 })), s2.onAdd(this.map), this._changed = true;
+              s2.style = this, s2.setEventedParent(this, (() => ({ isSourceLoaded: s2.loaded(), source: s2.serialize(), sourceId: t4 }))), s2.onAdd(this.map), this._changed = true;
             }
             removeSource(t4) {
               if (this._checkLoaded(), void 0 === this.sourceCaches[t4]) throw new Error("There is no source with this ID");
@@ -235738,8 +235881,8 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             }
             serialize() {
               if (!this._loaded) return;
-              const t4 = e.aF(this.sourceCaches, (t5) => t5.serialize()), i2 = this._serializeByIds(this._order, true), a2 = this.map.getTerrain() || void 0, s2 = this.stylesheet;
-              return e.aG({ version: s2.version, name: s2.name, metadata: s2.metadata, light: s2.light, sky: s2.sky, center: s2.center, zoom: s2.zoom, bearing: s2.bearing, pitch: s2.pitch, sprite: s2.sprite, glyphs: s2.glyphs, transition: s2.transition, sources: t4, layers: i2, terrain: a2 }, (t5) => void 0 !== t5);
+              const t4 = e.aF(this.sourceCaches, ((t5) => t5.serialize())), i2 = this._serializeByIds(this._order, true), a2 = this.map.getTerrain() || void 0, s2 = this.stylesheet;
+              return e.aG({ version: s2.version, name: s2.name, metadata: s2.metadata, light: s2.light, sky: s2.sky, center: s2.center, zoom: s2.zoom, bearing: s2.bearing, pitch: s2.pitch, sprite: s2.sprite, glyphs: s2.glyphs, transition: s2.transition, sources: t4, layers: i2, terrain: a2 }, ((t5) => void 0 !== t5));
             }
             _updateLayer(t4) {
               this._updatedLayers[t4.id] = true, t4.source && !this._updatedSources[t4.source] && "raster" !== this.sourceCaches[t4.source].getSource().type && (this._updatedSources[t4.source] = "reload", this.sourceCaches[t4.source].pause()), this._serializedLayers = null, this._changed = true;
@@ -235756,7 +235899,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   }
                 }
               }
-              a2.sort((t5, e3) => e3.intersectionZ - t5.intersectionZ);
+              a2.sort(((t5, e3) => e3.intersectionZ - t5.intersectionZ));
               const s2 = [];
               for (let o2 = this._order.length - 1; o2 >= 0; o2--) {
                 const r2 = this._order[o2];
@@ -235787,7 +235930,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               i2.availableImages = this._availableImages;
               const r2 = this._serializedAllLayers();
               for (const e2 in this.sourceCaches) i2.layers && !s2[e2] || o2.push(q(this.sourceCaches[e2], this._layers, r2, t4, i2, a2));
-              return this.placement && o2.push(function(t5, e2, i3, a3, s3, o3, r3) {
+              return this.placement && o2.push((function(t5, e2, i3, a3, s3, o3, r3) {
                 const n2 = {}, l2 = o3.queryRenderedSymbols(a3), h2 = [];
                 for (const t6 of Object.keys(l2).map(Number)) h2.push(r3[t6]);
                 h2.sort(V);
@@ -235795,35 +235938,35 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                   const a4 = i4.featureIndex.lookupSymbolFeatures(l2[i4.bucketInstanceId], e2, i4.bucketIndex, i4.sourceLayerIndex, s3.filter, s3.layers, s3.availableImages, t5);
                   for (const t6 in a4) {
                     const e3 = n2[t6] = n2[t6] || [], s4 = a4[t6];
-                    s4.sort((t7, e4) => {
+                    s4.sort(((t7, e4) => {
                       const a5 = i4.featureSortOrder;
                       if (a5) {
                         const i5 = a5.indexOf(t7.featureIndex);
                         return a5.indexOf(e4.featureIndex) - i5;
                       }
                       return e4.featureIndex - t7.featureIndex;
-                    });
+                    }));
                     for (const t7 of s4) e3.push(t7);
                   }
                 }
-                for (const e3 in n2) n2[e3].forEach((a4) => {
+                for (const e3 in n2) n2[e3].forEach(((a4) => {
                   const s4 = a4.feature, o4 = i3[t5[e3].source].getFeatureState(s4.layer["source-layer"], s4.id);
                   s4.source = s4.layer.source, s4.layer["source-layer"] && (s4.sourceLayer = s4.layer["source-layer"]), s4.state = o4;
-                });
+                }));
                 return n2;
-              }(this._layers, r2, this.sourceCaches, t4, i2, this.placement.collisionIndex, this.placement.retainedQueryData)), this._flattenAndSortRenderedFeatures(o2);
+              })(this._layers, r2, this.sourceCaches, t4, i2, this.placement.collisionIndex, this.placement.retainedQueryData)), this._flattenAndSortRenderedFeatures(o2);
             }
             querySourceFeatures(t4, i2) {
               i2 && i2.filter && this._validate(e.u.filter, "querySourceFeatures.filter", i2.filter, null, i2);
               const a2 = this.sourceCaches[t4];
-              return a2 ? function(t5, e2) {
-                const i3 = t5.getRenderableIds().map((e3) => t5.getTileByID(e3)), a3 = [], s2 = {};
+              return a2 ? (function(t5, e2) {
+                const i3 = t5.getRenderableIds().map(((e3) => t5.getTileByID(e3))), a3 = [], s2 = {};
                 for (let t6 = 0; t6 < i3.length; t6++) {
                   const o2 = i3[t6], r2 = o2.tileID.canonical.key;
                   s2[r2] || (s2[r2] = true, o2.querySourceFeatures(a3, e2));
                 }
                 return a3;
-              }(a2, i2) : [];
+              })(a2, i2) : [];
             }
             getLight() {
               return this.light.getLight();
@@ -235890,7 +236033,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
                 if ("symbol" !== i3.type) continue;
                 if (!l2[i3.source]) {
                   const t5 = this.sourceCaches[i3.source];
-                  l2[i3.source] = t5.getRenderableIds(true).map((e4) => t5.getTileByID(e4)).sort((t6, e4) => e4.tileID.overscaledZ - t6.tileID.overscaledZ || (t6.tileID.isLessThan(e4.tileID) ? -1 : 1));
+                  l2[i3.source] = t5.getRenderableIds(true).map(((e4) => t5.getTileByID(e4))).sort(((t6, e4) => e4.tileID.overscaledZ - t6.tileID.overscaledZ || (t6.tileID.isLessThan(e4.tileID) ? -1 : 1)));
                 }
                 const a3 = this.crossTileSymbolIndex.addLayer(i3, l2[i3.source], t4.center.lng);
                 r2 = r2 || a3;
@@ -235905,18 +236048,18 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
               for (const t4 in this.sourceCaches) this.sourceCaches[t4].releaseSymbolFadeTiles();
             }
             getImages(t4, i2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const t5 = yield this.imageManager.getImages(i2.icons);
                 this._updateTilesForChangedImages();
                 const e2 = this.sourceCaches[i2.source];
                 return e2 && e2.setDependencies(i2.tileID.key, i2.type, i2.icons), t5;
-              });
+              }));
             }
             getGlyphs(t4, i2) {
-              return e._(this, void 0, void 0, function* () {
+              return e._(this, void 0, void 0, (function* () {
                 const t5 = yield this.glyphManager.getGlyphs(i2.stacks), e2 = this.sourceCaches[i2.source];
                 return e2 && e2.setDependencies(i2.tileID.key, i2.type, [""]), t5;
-              });
+              }));
             }
             getGlyphsUrl() {
               return this.stylesheet.glyphs || null;
@@ -235932,9 +236075,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
             removeSprite(t4) {
               this._checkLoaded();
               const i2 = x(this.stylesheet.sprite);
-              if (i2.find((e2) => e2.id === t4)) {
+              if (i2.find(((e2) => e2.id === t4))) {
                 if (this._spritesImagesIds[t4]) for (const e2 of this._spritesImagesIds[t4]) this.imageManager.removeImage(e2), this._changedImages[e2] = true;
-                i2.splice(i2.findIndex((e2) => e2.id === t4), 1), this.stylesheet.sprite = i2.length > 0 ? i2 : void 0, delete this._spritesImagesIds[t4], this._availableImages = this.imageManager.listImages(), this._changed = true, this.dispatcher.broadcast("SI", this._availableImages), this.fire(new e.k("data", { dataType: "style" }));
+                i2.splice(i2.findIndex(((e2) => e2.id === t4)), 1), this.stylesheet.sprite = i2.length > 0 ? i2 : void 0, delete this._spritesImagesIds[t4], this._availableImages = this.imageManager.listImages(), this._changed = true, this.dispatcher.broadcast("SI", this._availableImages), this.fire(new e.k("data", { dataType: "style" }));
               } else this.fire(new e.j(new Error(`Sprite "${t4}" doesn't exists on this map.`)));
             }
             getSprite() {
@@ -235948,7 +236091,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
           const pe = { prelude: me("#ifdef GL_ES\nprecision mediump float;\n#else\n#if !defined(lowp)\n#define lowp\n#endif\n#if !defined(mediump)\n#define mediump\n#endif\n#if !defined(highp)\n#define highp\n#endif\n#endif\n", "#ifdef GL_ES\nprecision highp float;\n#else\n#if !defined(lowp)\n#define lowp\n#endif\n#if !defined(mediump)\n#define mediump\n#endif\n#if !defined(highp)\n#define highp\n#endif\n#endif\nvec2 unpack_float(const float packedValue) {int packedIntValue=int(packedValue);int v0=packedIntValue/256;return vec2(v0,packedIntValue-v0*256);}vec2 unpack_opacity(const float packedOpacity) {int intOpacity=int(packedOpacity)/2;return vec2(float(intOpacity)/127.0,mod(packedOpacity,2.0));}vec4 decode_color(const vec2 encodedColor) {return vec4(unpack_float(encodedColor[0])/255.0,unpack_float(encodedColor[1])/255.0\n);}float unpack_mix_vec2(const vec2 packedValue,const float t) {return mix(packedValue[0],packedValue[1],t);}vec4 unpack_mix_color(const vec4 packedColors,const float t) {vec4 minColor=decode_color(vec2(packedColors[0],packedColors[1]));vec4 maxColor=decode_color(vec2(packedColors[2],packedColors[3]));return mix(minColor,maxColor,t);}vec2 get_pattern_pos(const vec2 pixel_coord_upper,const vec2 pixel_coord_lower,const vec2 pattern_size,const float tile_units_to_pixels,const vec2 pos) {vec2 offset=mod(mod(mod(pixel_coord_upper,pattern_size)*256.0,pattern_size)*256.0+pixel_coord_lower,pattern_size);return (tile_units_to_pixels*pos+offset)/pattern_size;}\n#ifdef TERRAIN3D\nuniform sampler2D u_terrain;uniform float u_terrain_dim;uniform mat4 u_terrain_matrix;uniform vec4 u_terrain_unpack;uniform float u_terrain_exaggeration;uniform highp sampler2D u_depth;\n#endif\nconst highp vec4 bitSh=vec4(256.*256.*256.,256.*256.,256.,1.);const highp vec4 bitShifts=vec4(1.)/bitSh;highp float unpack(highp vec4 color) {return dot(color,bitShifts);}highp float depthOpacity(vec3 frag) {\n#ifdef TERRAIN3D\nhighp float d=unpack(texture2D(u_depth,frag.xy*0.5+0.5))+0.0001-frag.z;return 1.0-max(0.0,min(1.0,-d*500.0));\n#else\nreturn 1.0;\n#endif\n}float calculate_visibility(vec4 pos) {\n#ifdef TERRAIN3D\nvec3 frag=pos.xyz/pos.w;highp float d=depthOpacity(frag);if (d > 0.95) return 1.0;return (d+depthOpacity(frag+vec3(0.0,0.01,0.0)))/2.0;\n#else\nreturn 1.0;\n#endif\n}float ele(vec2 pos) {\n#ifdef TERRAIN3D\nvec4 rgb=(texture2D(u_terrain,pos)*255.0)*u_terrain_unpack;return rgb.r+rgb.g+rgb.b-u_terrain_unpack.a;\n#else\nreturn 0.0;\n#endif\n}float get_elevation(vec2 pos) {\n#ifdef TERRAIN3D\nvec2 coord=(u_terrain_matrix*vec4(pos,0.0,1.0)).xy*u_terrain_dim+1.0;vec2 f=fract(coord);vec2 c=(floor(coord)+0.5)/(u_terrain_dim+2.0);float d=1.0/(u_terrain_dim+2.0);float tl=ele(c);float tr=ele(c+vec2(d,0.0));float bl=ele(c+vec2(0.0,d));float br=ele(c+vec2(d,d));float elevation=mix(mix(tl,tr,f.x),mix(bl,br,f.x),f.y);return elevation*u_terrain_exaggeration;\n#else\nreturn 0.0;\n#endif\n}"), background: me("uniform vec4 u_color;uniform float u_opacity;void main() {gl_FragColor=u_color*u_opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "attribute vec2 a_pos;uniform mat4 u_matrix;void main() {gl_Position=u_matrix*vec4(a_pos,0,1);}"), backgroundPattern: me("uniform vec2 u_pattern_tl_a;uniform vec2 u_pattern_br_a;uniform vec2 u_pattern_tl_b;uniform vec2 u_pattern_br_b;uniform vec2 u_texsize;uniform float u_mix;uniform float u_opacity;uniform sampler2D u_image;varying vec2 v_pos_a;varying vec2 v_pos_b;void main() {vec2 imagecoord=mod(v_pos_a,1.0);vec2 pos=mix(u_pattern_tl_a/u_texsize,u_pattern_br_a/u_texsize,imagecoord);vec4 color1=texture2D(u_image,pos);vec2 imagecoord_b=mod(v_pos_b,1.0);vec2 pos2=mix(u_pattern_tl_b/u_texsize,u_pattern_br_b/u_texsize,imagecoord_b);vec4 color2=texture2D(u_image,pos2);gl_FragColor=mix(color1,color2,u_mix)*u_opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_pattern_size_a;uniform vec2 u_pattern_size_b;uniform vec2 u_pixel_coord_upper;uniform vec2 u_pixel_coord_lower;uniform float u_scale_a;uniform float u_scale_b;uniform float u_tile_units_to_pixels;attribute vec2 a_pos;varying vec2 v_pos_a;varying vec2 v_pos_b;void main() {gl_Position=u_matrix*vec4(a_pos,0,1);v_pos_a=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,u_scale_a*u_pattern_size_a,u_tile_units_to_pixels,a_pos);v_pos_b=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,u_scale_b*u_pattern_size_b,u_tile_units_to_pixels,a_pos);}"), circle: me("varying vec3 v_data;varying float v_visibility;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define mediump float radius\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define highp vec4 stroke_color\n#pragma mapbox: define mediump float stroke_width\n#pragma mapbox: define lowp float stroke_opacity\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize mediump float radius\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize highp vec4 stroke_color\n#pragma mapbox: initialize mediump float stroke_width\n#pragma mapbox: initialize lowp float stroke_opacity\nvec2 extrude=v_data.xy;float extrude_length=length(extrude);float antialiased_blur=v_data.z;float opacity_t=smoothstep(0.0,antialiased_blur,extrude_length-1.0);float color_t=stroke_width < 0.01 ? 0.0 : smoothstep(antialiased_blur,0.0,extrude_length-radius/(radius+stroke_width));gl_FragColor=v_visibility*opacity_t*mix(color*opacity,stroke_color*stroke_opacity,color_t);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform bool u_scale_with_map;uniform bool u_pitch_with_map;uniform vec2 u_extrude_scale;uniform lowp float u_device_pixel_ratio;uniform highp float u_camera_to_center_distance;attribute vec2 a_pos;varying vec3 v_data;varying float v_visibility;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define mediump float radius\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define highp vec4 stroke_color\n#pragma mapbox: define mediump float stroke_width\n#pragma mapbox: define lowp float stroke_opacity\nvoid main(void) {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize mediump float radius\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize highp vec4 stroke_color\n#pragma mapbox: initialize mediump float stroke_width\n#pragma mapbox: initialize lowp float stroke_opacity\nvec2 extrude=vec2(mod(a_pos,2.0)*2.0-1.0);vec2 circle_center=floor(a_pos*0.5);float ele=get_elevation(circle_center);v_visibility=calculate_visibility(u_matrix*vec4(circle_center,ele,1.0));if (u_pitch_with_map) {vec2 corner_position=circle_center;if (u_scale_with_map) {corner_position+=extrude*(radius+stroke_width)*u_extrude_scale;} else {vec4 projected_center=u_matrix*vec4(circle_center,0,1);corner_position+=extrude*(radius+stroke_width)*u_extrude_scale*(projected_center.w/u_camera_to_center_distance);}gl_Position=u_matrix*vec4(corner_position,ele,1);} else {gl_Position=u_matrix*vec4(circle_center,ele,1);if (u_scale_with_map) {gl_Position.xy+=extrude*(radius+stroke_width)*u_extrude_scale*u_camera_to_center_distance;} else {gl_Position.xy+=extrude*(radius+stroke_width)*u_extrude_scale*gl_Position.w;}}float antialiasblur=-max(1.0/u_device_pixel_ratio/(radius+stroke_width),blur);v_data=vec3(extrude.x,extrude.y,antialiasblur);}"), clippingMask: me("void main() {gl_FragColor=vec4(1.0);}", "attribute vec2 a_pos;uniform mat4 u_matrix;void main() {gl_Position=u_matrix*vec4(a_pos,0,1);}"), heatmap: me("uniform highp float u_intensity;varying vec2 v_extrude;\n#pragma mapbox: define highp float weight\n#define GAUSS_COEF 0.3989422804014327\nvoid main() {\n#pragma mapbox: initialize highp float weight\nfloat d=-0.5*3.0*3.0*dot(v_extrude,v_extrude);float val=weight*u_intensity*GAUSS_COEF*exp(d);gl_FragColor=vec4(val,1.0,1.0,1.0);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform float u_extrude_scale;uniform float u_opacity;uniform float u_intensity;attribute vec2 a_pos;varying vec2 v_extrude;\n#pragma mapbox: define highp float weight\n#pragma mapbox: define mediump float radius\nconst highp float ZERO=1.0/255.0/16.0;\n#define GAUSS_COEF 0.3989422804014327\nvoid main(void) {\n#pragma mapbox: initialize highp float weight\n#pragma mapbox: initialize mediump float radius\nvec2 unscaled_extrude=vec2(mod(a_pos,2.0)*2.0-1.0);float S=sqrt(-2.0*log(ZERO/weight/u_intensity/GAUSS_COEF))/3.0;v_extrude=S*unscaled_extrude;vec2 extrude=v_extrude*radius*u_extrude_scale;vec4 pos=vec4(floor(a_pos*0.5)+extrude,get_elevation(floor(a_pos*0.5)),1);gl_Position=u_matrix*pos;}"), heatmapTexture: me("uniform sampler2D u_image;uniform sampler2D u_color_ramp;uniform float u_opacity;varying vec2 v_pos;void main() {float t=texture2D(u_image,v_pos).r;vec4 color=texture2D(u_color_ramp,vec2(t,0.5));gl_FragColor=color*u_opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(0.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_world;attribute vec2 a_pos;varying vec2 v_pos;void main() {gl_Position=u_matrix*vec4(a_pos*u_world,0,1);v_pos.x=a_pos.x;v_pos.y=1.0-a_pos.y;}"), collisionBox: me("varying float v_placed;varying float v_notUsed;void main() {float alpha=0.5;gl_FragColor=vec4(1.0,0.0,0.0,1.0)*alpha;if (v_placed > 0.5) {gl_FragColor=vec4(0.0,0.0,1.0,0.5)*alpha;}if (v_notUsed > 0.5) {gl_FragColor*=.1;}}", "attribute vec2 a_anchor_pos;attribute vec2 a_placed;attribute vec2 a_box_real;uniform mat4 u_matrix;uniform vec2 u_pixel_extrude_scale;varying float v_placed;varying float v_notUsed;vec4 projectTileWithElevation(vec2 posInTile,float elevation) {return u_matrix*vec4(posInTile,elevation,1.0);}void main() {gl_Position=projectTileWithElevation(a_anchor_pos,get_elevation(a_anchor_pos));gl_Position.xy=((a_box_real+0.5)*u_pixel_extrude_scale*2.0-1.0)*vec2(1.0,-1.0)*gl_Position.w;if (gl_Position.z/gl_Position.w < 1.1) {gl_Position.z=0.5;}v_placed=a_placed.x;v_notUsed=a_placed.y;}"), collisionCircle: me("varying float v_radius;varying vec2 v_extrude;varying float v_perspective_ratio;varying float v_collision;void main() {float alpha=0.5*min(v_perspective_ratio,1.0);float stroke_radius=0.9*max(v_perspective_ratio,1.0);float distance_to_center=length(v_extrude);float distance_to_edge=abs(distance_to_center-v_radius);float opacity_t=smoothstep(-stroke_radius,0.0,-distance_to_edge);vec4 color=mix(vec4(0.0,0.0,1.0,0.5),vec4(1.0,0.0,0.0,1.0),v_collision);gl_FragColor=color*alpha*opacity_t;}", "attribute vec2 a_pos;attribute float a_radius;attribute vec2 a_flags;uniform mat4 u_matrix;uniform mat4 u_inv_matrix;uniform vec2 u_viewport_size;uniform float u_camera_to_center_distance;varying float v_radius;varying vec2 v_extrude;varying float v_perspective_ratio;varying float v_collision;vec3 toTilePosition(vec2 screenPos) {vec4 rayStart=u_inv_matrix*vec4(screenPos,-1.0,1.0);vec4 rayEnd  =u_inv_matrix*vec4(screenPos, 1.0,1.0);rayStart.xyz/=rayStart.w;rayEnd.xyz  /=rayEnd.w;highp float t=(0.0-rayStart.z)/(rayEnd.z-rayStart.z);return mix(rayStart.xyz,rayEnd.xyz,t);}void main() {vec2 quadCenterPos=a_pos;float radius=a_radius;float collision=a_flags.x;float vertexIdx=a_flags.y;vec2 quadVertexOffset=vec2(mix(-1.0,1.0,float(vertexIdx >=2.0)),mix(-1.0,1.0,float(vertexIdx >=1.0 && vertexIdx <=2.0)));vec2 quadVertexExtent=quadVertexOffset*radius;vec3 tilePos=toTilePosition(quadCenterPos);vec4 clipPos=u_matrix*vec4(tilePos,1.0);highp float camera_to_anchor_distance=clipPos.w;highp float collision_perspective_ratio=clamp(0.5+0.5*(u_camera_to_center_distance/camera_to_anchor_distance),0.0,4.0);float padding_factor=1.2;v_radius=radius;v_extrude=quadVertexExtent*padding_factor;v_perspective_ratio=collision_perspective_ratio;v_collision=collision;gl_Position=vec4(clipPos.xyz/clipPos.w,1.0)+vec4(quadVertexExtent*padding_factor/u_viewport_size*2.0,0.0,0.0);}"), debug: me("uniform highp vec4 u_color;uniform sampler2D u_overlay;varying vec2 v_uv;void main() {vec4 overlay_color=texture2D(u_overlay,v_uv);gl_FragColor=mix(u_color,overlay_color,overlay_color.a);}", "attribute vec2 a_pos;varying vec2 v_uv;uniform mat4 u_matrix;uniform float u_overlay_scale;void main() {v_uv=a_pos/8192.0;gl_Position=u_matrix*vec4(a_pos*u_overlay_scale,get_elevation(a_pos),1);}"), fill: me("#pragma mapbox: define highp vec4 color\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize lowp float opacity\ngl_FragColor=color*opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "attribute vec2 a_pos;uniform mat4 u_matrix;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize lowp float opacity\ngl_Position=u_matrix*vec4(a_pos,0,1);}"), fillOutline: me("varying vec2 v_pos;\n#pragma mapbox: define highp vec4 outline_color\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize highp vec4 outline_color\n#pragma mapbox: initialize lowp float opacity\nfloat dist=length(v_pos-gl_FragCoord.xy);float alpha=1.0-smoothstep(0.0,1.0,dist);gl_FragColor=outline_color*(alpha*opacity);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "attribute vec2 a_pos;uniform mat4 u_matrix;uniform vec2 u_world;varying vec2 v_pos;\n#pragma mapbox: define highp vec4 outline_color\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize highp vec4 outline_color\n#pragma mapbox: initialize lowp float opacity\ngl_Position=u_matrix*vec4(a_pos,0,1);v_pos=(gl_Position.xy/gl_Position.w+1.0)/2.0*u_world;}"), fillOutlinePattern: me("uniform vec2 u_texsize;uniform sampler2D u_image;uniform float u_fade;varying vec2 v_pos_a;varying vec2 v_pos_b;varying vec2 v_pos;\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\nvoid main() {\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;vec2 imagecoord=mod(v_pos_a,1.0);vec2 pos=mix(pattern_tl_a/u_texsize,pattern_br_a/u_texsize,imagecoord);vec4 color1=texture2D(u_image,pos);vec2 imagecoord_b=mod(v_pos_b,1.0);vec2 pos2=mix(pattern_tl_b/u_texsize,pattern_br_b/u_texsize,imagecoord_b);vec4 color2=texture2D(u_image,pos2);float dist=length(v_pos-gl_FragCoord.xy);float alpha=1.0-smoothstep(0.0,1.0,dist);gl_FragColor=mix(color1,color2,u_fade)*alpha*opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_world;uniform vec2 u_pixel_coord_upper;uniform vec2 u_pixel_coord_lower;uniform vec3 u_scale;attribute vec2 a_pos;varying vec2 v_pos_a;varying vec2 v_pos_b;varying vec2 v_pos;\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\n#pragma mapbox: define lowp float pixel_ratio_from\n#pragma mapbox: define lowp float pixel_ratio_to\nvoid main() {\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\n#pragma mapbox: initialize lowp float pixel_ratio_from\n#pragma mapbox: initialize lowp float pixel_ratio_to\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;float tileRatio=u_scale.x;float fromScale=u_scale.y;float toScale=u_scale.z;gl_Position=u_matrix*vec4(a_pos,0,1);vec2 display_size_a=(pattern_br_a-pattern_tl_a)/pixel_ratio_from;vec2 display_size_b=(pattern_br_b-pattern_tl_b)/pixel_ratio_to;v_pos_a=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,fromScale*display_size_a,tileRatio,a_pos);v_pos_b=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,toScale*display_size_b,tileRatio,a_pos);v_pos=(gl_Position.xy/gl_Position.w+1.0)/2.0*u_world;}"), fillPattern: me("#ifdef GL_ES\nprecision highp float;\n#endif\nuniform vec2 u_texsize;uniform float u_fade;uniform sampler2D u_image;varying vec2 v_pos_a;varying vec2 v_pos_b;\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\nvoid main() {\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;vec2 imagecoord=mod(v_pos_a,1.0);vec2 pos=mix(pattern_tl_a/u_texsize,pattern_br_a/u_texsize,imagecoord);vec4 color1=texture2D(u_image,pos);vec2 imagecoord_b=mod(v_pos_b,1.0);vec2 pos2=mix(pattern_tl_b/u_texsize,pattern_br_b/u_texsize,imagecoord_b);vec4 color2=texture2D(u_image,pos2);gl_FragColor=mix(color1,color2,u_fade)*opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_pixel_coord_upper;uniform vec2 u_pixel_coord_lower;uniform vec3 u_scale;attribute vec2 a_pos;varying vec2 v_pos_a;varying vec2 v_pos_b;\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\n#pragma mapbox: define lowp float pixel_ratio_from\n#pragma mapbox: define lowp float pixel_ratio_to\nvoid main() {\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\n#pragma mapbox: initialize lowp float pixel_ratio_from\n#pragma mapbox: initialize lowp float pixel_ratio_to\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;float tileZoomRatio=u_scale.x;float fromScale=u_scale.y;float toScale=u_scale.z;vec2 display_size_a=(pattern_br_a-pattern_tl_a)/pixel_ratio_from;vec2 display_size_b=(pattern_br_b-pattern_tl_b)/pixel_ratio_to;gl_Position=u_matrix*vec4(a_pos,0,1);v_pos_a=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,fromScale*display_size_a,tileZoomRatio,a_pos);v_pos_b=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,toScale*display_size_b,tileZoomRatio,a_pos);}"), fillExtrusion: me("varying vec4 v_color;void main() {gl_FragColor=v_color;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec3 u_lightcolor;uniform lowp vec3 u_lightpos;uniform lowp float u_lightintensity;uniform float u_vertical_gradient;uniform lowp float u_opacity;attribute vec2 a_pos;attribute vec4 a_normal_ed;\n#ifdef TERRAIN3D\nattribute vec2 a_centroid;\n#endif\nvarying vec4 v_color;\n#pragma mapbox: define highp float base\n#pragma mapbox: define highp float height\n#pragma mapbox: define highp vec4 color\nvoid main() {\n#pragma mapbox: initialize highp float base\n#pragma mapbox: initialize highp float height\n#pragma mapbox: initialize highp vec4 color\nvec3 normal=a_normal_ed.xyz;\n#ifdef TERRAIN3D\nfloat height_terrain3d_offset=get_elevation(a_centroid);float base_terrain3d_offset=height_terrain3d_offset-(base > 0.0 ? 0.0 : 10.0);\n#else\nfloat height_terrain3d_offset=0.0;float base_terrain3d_offset=0.0;\n#endif\nbase=max(0.0,base)+base_terrain3d_offset;height=max(0.0,height)+height_terrain3d_offset;float t=mod(normal.x,2.0);gl_Position=u_matrix*vec4(a_pos,t > 0.0 ? height : base,1);float colorvalue=color.r*0.2126+color.g*0.7152+color.b*0.0722;v_color=vec4(0.0,0.0,0.0,1.0);vec4 ambientlight=vec4(0.03,0.03,0.03,1.0);color+=ambientlight;float directional=clamp(dot(normal/16384.0,u_lightpos),0.0,1.0);directional=mix((1.0-u_lightintensity),max((1.0-colorvalue+u_lightintensity),1.0),directional);if (normal.y !=0.0) {directional*=((1.0-u_vertical_gradient)+(u_vertical_gradient*clamp((t+base)*pow(height/150.0,0.5),mix(0.7,0.98,1.0-u_lightintensity),1.0)));}v_color.r+=clamp(color.r*directional*u_lightcolor.r,mix(0.0,0.3,1.0-u_lightcolor.r),1.0);v_color.g+=clamp(color.g*directional*u_lightcolor.g,mix(0.0,0.3,1.0-u_lightcolor.g),1.0);v_color.b+=clamp(color.b*directional*u_lightcolor.b,mix(0.0,0.3,1.0-u_lightcolor.b),1.0);v_color*=u_opacity;}"), fillExtrusionPattern: me("uniform vec2 u_texsize;uniform float u_fade;uniform sampler2D u_image;varying vec2 v_pos_a;varying vec2 v_pos_b;varying vec4 v_lighting;\n#pragma mapbox: define lowp float base\n#pragma mapbox: define lowp float height\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\n#pragma mapbox: define lowp float pixel_ratio_from\n#pragma mapbox: define lowp float pixel_ratio_to\nvoid main() {\n#pragma mapbox: initialize lowp float base\n#pragma mapbox: initialize lowp float height\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\n#pragma mapbox: initialize lowp float pixel_ratio_from\n#pragma mapbox: initialize lowp float pixel_ratio_to\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;vec2 imagecoord=mod(v_pos_a,1.0);vec2 pos=mix(pattern_tl_a/u_texsize,pattern_br_a/u_texsize,imagecoord);vec4 color1=texture2D(u_image,pos);vec2 imagecoord_b=mod(v_pos_b,1.0);vec2 pos2=mix(pattern_tl_b/u_texsize,pattern_br_b/u_texsize,imagecoord_b);vec4 color2=texture2D(u_image,pos2);vec4 mixedColor=mix(color1,color2,u_fade);gl_FragColor=mixedColor*v_lighting;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_pixel_coord_upper;uniform vec2 u_pixel_coord_lower;uniform float u_height_factor;uniform vec3 u_scale;uniform float u_vertical_gradient;uniform lowp float u_opacity;uniform vec3 u_lightcolor;uniform lowp vec3 u_lightpos;uniform lowp float u_lightintensity;attribute vec2 a_pos;attribute vec4 a_normal_ed;\n#ifdef TERRAIN3D\nattribute vec2 a_centroid;\n#endif\nvarying vec2 v_pos_a;varying vec2 v_pos_b;varying vec4 v_lighting;\n#pragma mapbox: define lowp float base\n#pragma mapbox: define lowp float height\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\n#pragma mapbox: define lowp float pixel_ratio_from\n#pragma mapbox: define lowp float pixel_ratio_to\nvoid main() {\n#pragma mapbox: initialize lowp float base\n#pragma mapbox: initialize lowp float height\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\n#pragma mapbox: initialize lowp float pixel_ratio_from\n#pragma mapbox: initialize lowp float pixel_ratio_to\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;float tileRatio=u_scale.x;float fromScale=u_scale.y;float toScale=u_scale.z;vec3 normal=a_normal_ed.xyz;float edgedistance=a_normal_ed.w;vec2 display_size_a=(pattern_br_a-pattern_tl_a)/pixel_ratio_from;vec2 display_size_b=(pattern_br_b-pattern_tl_b)/pixel_ratio_to;\n#ifdef TERRAIN3D\nfloat height_terrain3d_offset=get_elevation(a_centroid);float base_terrain3d_offset=height_terrain3d_offset-(base > 0.0 ? 0.0 : 10.0);\n#else\nfloat height_terrain3d_offset=0.0;float base_terrain3d_offset=0.0;\n#endif\nbase=max(0.0,base)+base_terrain3d_offset;height=max(0.0,height)+height_terrain3d_offset;float t=mod(normal.x,2.0);float z=t > 0.0 ? height : base;gl_Position=u_matrix*vec4(a_pos,z,1);vec2 pos=normal.x==1.0 && normal.y==0.0 && normal.z==16384.0\n? a_pos\n: vec2(edgedistance,z*u_height_factor);v_pos_a=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,fromScale*display_size_a,tileRatio,pos);v_pos_b=get_pattern_pos(u_pixel_coord_upper,u_pixel_coord_lower,toScale*display_size_b,tileRatio,pos);v_lighting=vec4(0.0,0.0,0.0,1.0);float directional=clamp(dot(normal/16383.0,u_lightpos),0.0,1.0);directional=mix((1.0-u_lightintensity),max((0.5+u_lightintensity),1.0),directional);if (normal.y !=0.0) {directional*=((1.0-u_vertical_gradient)+(u_vertical_gradient*clamp((t+base)*pow(height/150.0,0.5),mix(0.7,0.98,1.0-u_lightintensity),1.0)));}v_lighting.rgb+=clamp(directional*u_lightcolor,mix(vec3(0.0),vec3(0.3),1.0-u_lightcolor),vec3(1.0));v_lighting*=u_opacity;}"), hillshadePrepare: me("#ifdef GL_ES\nprecision highp float;\n#endif\nuniform sampler2D u_image;varying vec2 v_pos;uniform vec2 u_dimension;uniform float u_zoom;uniform vec4 u_unpack;float getElevation(vec2 coord,float bias) {vec4 data=texture2D(u_image,coord)*255.0;data.a=-1.0;return dot(data,u_unpack)/4.0;}void main() {vec2 epsilon=1.0/u_dimension;float a=getElevation(v_pos+vec2(-epsilon.x,-epsilon.y),0.0);float b=getElevation(v_pos+vec2(0,-epsilon.y),0.0);float c=getElevation(v_pos+vec2(epsilon.x,-epsilon.y),0.0);float d=getElevation(v_pos+vec2(-epsilon.x,0),0.0);float e=getElevation(v_pos,0.0);float f=getElevation(v_pos+vec2(epsilon.x,0),0.0);float g=getElevation(v_pos+vec2(-epsilon.x,epsilon.y),0.0);float h=getElevation(v_pos+vec2(0,epsilon.y),0.0);float i=getElevation(v_pos+vec2(epsilon.x,epsilon.y),0.0);float exaggerationFactor=u_zoom < 2.0 ? 0.4 : u_zoom < 4.5 ? 0.35 : 0.3;float exaggeration=u_zoom < 15.0 ? (u_zoom-15.0)*exaggerationFactor : 0.0;vec2 deriv=vec2((c+f+f+i)-(a+d+d+g),(g+h+h+i)-(a+b+b+c))/pow(2.0,exaggeration+(19.2562-u_zoom));gl_FragColor=clamp(vec4(deriv.x/2.0+0.5,deriv.y/2.0+0.5,1.0,1.0),0.0,1.0);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_dimension;attribute vec2 a_pos;attribute vec2 a_texture_pos;varying vec2 v_pos;void main() {gl_Position=u_matrix*vec4(a_pos,0,1);highp vec2 epsilon=1.0/u_dimension;float scale=(u_dimension.x-2.0)/u_dimension.x;v_pos=(a_texture_pos/8192.0)*scale+epsilon;}"), hillshade: me("uniform sampler2D u_image;varying vec2 v_pos;uniform vec2 u_latrange;uniform vec2 u_light;uniform vec4 u_shadow;uniform vec4 u_highlight;uniform vec4 u_accent;\n#define PI 3.141592653589793\nvoid main() {vec4 pixel=texture2D(u_image,v_pos);vec2 deriv=((pixel.rg*2.0)-1.0);float scaleFactor=cos(radians((u_latrange[0]-u_latrange[1])*(1.0-v_pos.y)+u_latrange[1]));float slope=atan(1.25*length(deriv)/scaleFactor);float aspect=deriv.x !=0.0 ? atan(deriv.y,-deriv.x) : PI/2.0*(deriv.y > 0.0 ? 1.0 :-1.0);float intensity=u_light.x;float azimuth=u_light.y+PI;float base=1.875-intensity*1.75;float maxValue=0.5*PI;float scaledSlope=intensity !=0.5 ? ((pow(base,slope)-1.0)/(pow(base,maxValue)-1.0))*maxValue : slope;float accent=cos(scaledSlope);vec4 accent_color=(1.0-accent)*u_accent*clamp(intensity*2.0,0.0,1.0);float shade=abs(mod((aspect+azimuth)/PI+0.5,2.0)-1.0);vec4 shade_color=mix(u_shadow,u_highlight,shade)*sin(scaledSlope)*clamp(intensity*2.0,0.0,1.0);gl_FragColor=accent_color*(1.0-shade_color.a)+shade_color;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;attribute vec2 a_pos;attribute vec2 a_texture_pos;varying vec2 v_pos;void main() {gl_Position=u_matrix*vec4(a_pos,0,1);v_pos=a_texture_pos/8192.0;}"), line: me("uniform lowp float u_device_pixel_ratio;varying vec2 v_width2;varying vec2 v_normal;varying float v_gamma_scale;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\nfloat dist=length(v_normal)*v_width2.s;float blur2=(blur+1.0/u_device_pixel_ratio)*v_gamma_scale;float alpha=clamp(min(dist-(v_width2.t-blur2),v_width2.s-dist)/blur2,0.0,1.0);gl_FragColor=color*(alpha*opacity);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "\n#define scale 0.015873016\nattribute vec2 a_pos_normal;attribute vec4 a_data;uniform mat4 u_matrix;uniform mediump float u_ratio;uniform vec2 u_units_to_pixels;uniform lowp float u_device_pixel_ratio;varying vec2 v_normal;varying vec2 v_width2;varying float v_gamma_scale;varying highp float v_linesofar;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define mediump float gapwidth\n#pragma mapbox: define lowp float offset\n#pragma mapbox: define mediump float width\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump float gapwidth\n#pragma mapbox: initialize lowp float offset\n#pragma mapbox: initialize mediump float width\nfloat ANTIALIASING=1.0/u_device_pixel_ratio/2.0;vec2 a_extrude=a_data.xy-128.0;float a_direction=mod(a_data.z,4.0)-1.0;v_linesofar=(floor(a_data.z/4.0)+a_data.w*64.0)*2.0;vec2 pos=floor(a_pos_normal*0.5);mediump vec2 normal=a_pos_normal-2.0*pos;normal.y=normal.y*2.0-1.0;v_normal=normal;gapwidth=gapwidth/2.0;float halfwidth=width/2.0;offset=-1.0*offset;float inset=gapwidth+(gapwidth > 0.0 ? ANTIALIASING : 0.0);float outset=gapwidth+halfwidth*(gapwidth > 0.0 ? 2.0 : 1.0)+(halfwidth==0.0 ? 0.0 : ANTIALIASING);mediump vec2 dist=outset*a_extrude*scale;mediump float u=0.5*a_direction;mediump float t=1.0-abs(u);mediump vec2 offset2=offset*a_extrude*scale*normal.y*mat2(t,-u,u,t);vec4 projected_extrude=u_matrix*vec4(dist/u_ratio,0.0,0.0);gl_Position=u_matrix*vec4(pos+offset2/u_ratio,0.0,1.0)+projected_extrude;\n#ifdef TERRAIN3D\nv_gamma_scale=1.0;\n#else\nfloat extrude_length_without_perspective=length(dist);float extrude_length_with_perspective=length(projected_extrude.xy/gl_Position.w*u_units_to_pixels);v_gamma_scale=extrude_length_without_perspective/extrude_length_with_perspective;\n#endif\nv_width2=vec2(outset,inset);}"), lineGradient: me("uniform lowp float u_device_pixel_ratio;uniform sampler2D u_image;varying vec2 v_width2;varying vec2 v_normal;varying float v_gamma_scale;varying highp vec2 v_uv;\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\nfloat dist=length(v_normal)*v_width2.s;float blur2=(blur+1.0/u_device_pixel_ratio)*v_gamma_scale;float alpha=clamp(min(dist-(v_width2.t-blur2),v_width2.s-dist)/blur2,0.0,1.0);vec4 color=texture2D(u_image,v_uv);gl_FragColor=color*(alpha*opacity);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "\n#define scale 0.015873016\nattribute vec2 a_pos_normal;attribute vec4 a_data;attribute float a_uv_x;attribute float a_split_index;uniform mat4 u_matrix;uniform mediump float u_ratio;uniform lowp float u_device_pixel_ratio;uniform vec2 u_units_to_pixels;uniform float u_image_height;varying vec2 v_normal;varying vec2 v_width2;varying float v_gamma_scale;varying highp vec2 v_uv;\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define mediump float gapwidth\n#pragma mapbox: define lowp float offset\n#pragma mapbox: define mediump float width\nvoid main() {\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump float gapwidth\n#pragma mapbox: initialize lowp float offset\n#pragma mapbox: initialize mediump float width\nfloat ANTIALIASING=1.0/u_device_pixel_ratio/2.0;vec2 a_extrude=a_data.xy-128.0;float a_direction=mod(a_data.z,4.0)-1.0;highp float texel_height=1.0/u_image_height;highp float half_texel_height=0.5*texel_height;v_uv=vec2(a_uv_x,a_split_index*texel_height-half_texel_height);vec2 pos=floor(a_pos_normal*0.5);mediump vec2 normal=a_pos_normal-2.0*pos;normal.y=normal.y*2.0-1.0;v_normal=normal;gapwidth=gapwidth/2.0;float halfwidth=width/2.0;offset=-1.0*offset;float inset=gapwidth+(gapwidth > 0.0 ? ANTIALIASING : 0.0);float outset=gapwidth+halfwidth*(gapwidth > 0.0 ? 2.0 : 1.0)+(halfwidth==0.0 ? 0.0 : ANTIALIASING);mediump vec2 dist=outset*a_extrude*scale;mediump float u=0.5*a_direction;mediump float t=1.0-abs(u);mediump vec2 offset2=offset*a_extrude*scale*normal.y*mat2(t,-u,u,t);vec4 projected_extrude=u_matrix*vec4(dist/u_ratio,0.0,0.0);gl_Position=u_matrix*vec4(pos+offset2/u_ratio,0.0,1.0)+projected_extrude;\n#ifdef TERRAIN3D\nv_gamma_scale=1.0;\n#else\nfloat extrude_length_without_perspective=length(dist);float extrude_length_with_perspective=length(projected_extrude.xy/gl_Position.w*u_units_to_pixels);v_gamma_scale=extrude_length_without_perspective/extrude_length_with_perspective;\n#endif\nv_width2=vec2(outset,inset);}"), linePattern: me("#ifdef GL_ES\nprecision highp float;\n#endif\nuniform lowp float u_device_pixel_ratio;uniform vec2 u_texsize;uniform float u_fade;uniform mediump vec3 u_scale;uniform sampler2D u_image;varying vec2 v_normal;varying vec2 v_width2;varying float v_linesofar;varying float v_gamma_scale;varying float v_width;\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\n#pragma mapbox: define lowp float pixel_ratio_from\n#pragma mapbox: define lowp float pixel_ratio_to\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\n#pragma mapbox: initialize lowp float pixel_ratio_from\n#pragma mapbox: initialize lowp float pixel_ratio_to\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\nvec2 pattern_tl_a=pattern_from.xy;vec2 pattern_br_a=pattern_from.zw;vec2 pattern_tl_b=pattern_to.xy;vec2 pattern_br_b=pattern_to.zw;float tileZoomRatio=u_scale.x;float fromScale=u_scale.y;float toScale=u_scale.z;vec2 display_size_a=(pattern_br_a-pattern_tl_a)/pixel_ratio_from;vec2 display_size_b=(pattern_br_b-pattern_tl_b)/pixel_ratio_to;vec2 pattern_size_a=vec2(display_size_a.x*fromScale/tileZoomRatio,display_size_a.y);vec2 pattern_size_b=vec2(display_size_b.x*toScale/tileZoomRatio,display_size_b.y);float aspect_a=display_size_a.y/v_width;float aspect_b=display_size_b.y/v_width;float dist=length(v_normal)*v_width2.s;float blur2=(blur+1.0/u_device_pixel_ratio)*v_gamma_scale;float alpha=clamp(min(dist-(v_width2.t-blur2),v_width2.s-dist)/blur2,0.0,1.0);float x_a=mod(v_linesofar/pattern_size_a.x*aspect_a,1.0);float x_b=mod(v_linesofar/pattern_size_b.x*aspect_b,1.0);float y=0.5*v_normal.y+0.5;vec2 texel_size=1.0/u_texsize;vec2 pos_a=mix(pattern_tl_a*texel_size-texel_size,pattern_br_a*texel_size+texel_size,vec2(x_a,y));vec2 pos_b=mix(pattern_tl_b*texel_size-texel_size,pattern_br_b*texel_size+texel_size,vec2(x_b,y));vec4 color=mix(texture2D(u_image,pos_a),texture2D(u_image,pos_b),u_fade);gl_FragColor=color*alpha*opacity;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "\n#define scale 0.015873016\n#define LINE_DISTANCE_SCALE 2.0\nattribute vec2 a_pos_normal;attribute vec4 a_data;uniform mat4 u_matrix;uniform vec2 u_units_to_pixels;uniform mediump float u_ratio;uniform lowp float u_device_pixel_ratio;varying vec2 v_normal;varying vec2 v_width2;varying float v_linesofar;varying float v_gamma_scale;varying float v_width;\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp float offset\n#pragma mapbox: define mediump float gapwidth\n#pragma mapbox: define mediump float width\n#pragma mapbox: define lowp float floorwidth\n#pragma mapbox: define lowp vec4 pattern_from\n#pragma mapbox: define lowp vec4 pattern_to\n#pragma mapbox: define lowp float pixel_ratio_from\n#pragma mapbox: define lowp float pixel_ratio_to\nvoid main() {\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize lowp float offset\n#pragma mapbox: initialize mediump float gapwidth\n#pragma mapbox: initialize mediump float width\n#pragma mapbox: initialize lowp float floorwidth\n#pragma mapbox: initialize mediump vec4 pattern_from\n#pragma mapbox: initialize mediump vec4 pattern_to\n#pragma mapbox: initialize lowp float pixel_ratio_from\n#pragma mapbox: initialize lowp float pixel_ratio_to\nfloat ANTIALIASING=1.0/u_device_pixel_ratio/2.0;vec2 a_extrude=a_data.xy-128.0;float a_direction=mod(a_data.z,4.0)-1.0;float a_linesofar=(floor(a_data.z/4.0)+a_data.w*64.0)*LINE_DISTANCE_SCALE;vec2 pos=floor(a_pos_normal*0.5);mediump vec2 normal=a_pos_normal-2.0*pos;normal.y=normal.y*2.0-1.0;v_normal=normal;gapwidth=gapwidth/2.0;float halfwidth=width/2.0;offset=-1.0*offset;float inset=gapwidth+(gapwidth > 0.0 ? ANTIALIASING : 0.0);float outset=gapwidth+halfwidth*(gapwidth > 0.0 ? 2.0 : 1.0)+(halfwidth==0.0 ? 0.0 : ANTIALIASING);mediump vec2 dist=outset*a_extrude*scale;mediump float u=0.5*a_direction;mediump float t=1.0-abs(u);mediump vec2 offset2=offset*a_extrude*scale*normal.y*mat2(t,-u,u,t);vec4 projected_extrude=u_matrix*vec4(dist/u_ratio,0.0,0.0);gl_Position=u_matrix*vec4(pos+offset2/u_ratio,0.0,1.0)+projected_extrude;\n#ifdef TERRAIN3D\nv_gamma_scale=1.0;\n#else\nfloat extrude_length_without_perspective=length(dist);float extrude_length_with_perspective=length(projected_extrude.xy/gl_Position.w*u_units_to_pixels);v_gamma_scale=extrude_length_without_perspective/extrude_length_with_perspective;\n#endif\nv_linesofar=a_linesofar;v_width2=vec2(outset,inset);v_width=floorwidth;}"), lineSDF: me("uniform lowp float u_device_pixel_ratio;uniform sampler2D u_image;uniform float u_sdfgamma;uniform float u_mix;varying vec2 v_normal;varying vec2 v_width2;varying vec2 v_tex_a;varying vec2 v_tex_b;varying float v_gamma_scale;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define mediump float width\n#pragma mapbox: define lowp float floorwidth\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump float width\n#pragma mapbox: initialize lowp float floorwidth\nfloat dist=length(v_normal)*v_width2.s;float blur2=(blur+1.0/u_device_pixel_ratio)*v_gamma_scale;float alpha=clamp(min(dist-(v_width2.t-blur2),v_width2.s-dist)/blur2,0.0,1.0);float sdfdist_a=texture2D(u_image,v_tex_a).a;float sdfdist_b=texture2D(u_image,v_tex_b).a;float sdfdist=mix(sdfdist_a,sdfdist_b,u_mix);alpha*=smoothstep(0.5-u_sdfgamma/floorwidth,0.5+u_sdfgamma/floorwidth,sdfdist);gl_FragColor=color*(alpha*opacity);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "\n#define scale 0.015873016\n#define LINE_DISTANCE_SCALE 2.0\nattribute vec2 a_pos_normal;attribute vec4 a_data;uniform mat4 u_matrix;uniform mediump float u_ratio;uniform lowp float u_device_pixel_ratio;uniform vec2 u_patternscale_a;uniform float u_tex_y_a;uniform vec2 u_patternscale_b;uniform float u_tex_y_b;uniform vec2 u_units_to_pixels;varying vec2 v_normal;varying vec2 v_width2;varying vec2 v_tex_a;varying vec2 v_tex_b;varying float v_gamma_scale;\n#pragma mapbox: define highp vec4 color\n#pragma mapbox: define lowp float blur\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define mediump float gapwidth\n#pragma mapbox: define lowp float offset\n#pragma mapbox: define mediump float width\n#pragma mapbox: define lowp float floorwidth\nvoid main() {\n#pragma mapbox: initialize highp vec4 color\n#pragma mapbox: initialize lowp float blur\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize mediump float gapwidth\n#pragma mapbox: initialize lowp float offset\n#pragma mapbox: initialize mediump float width\n#pragma mapbox: initialize lowp float floorwidth\nfloat ANTIALIASING=1.0/u_device_pixel_ratio/2.0;vec2 a_extrude=a_data.xy-128.0;float a_direction=mod(a_data.z,4.0)-1.0;float a_linesofar=(floor(a_data.z/4.0)+a_data.w*64.0)*LINE_DISTANCE_SCALE;vec2 pos=floor(a_pos_normal*0.5);mediump vec2 normal=a_pos_normal-2.0*pos;normal.y=normal.y*2.0-1.0;v_normal=normal;gapwidth=gapwidth/2.0;float halfwidth=width/2.0;offset=-1.0*offset;float inset=gapwidth+(gapwidth > 0.0 ? ANTIALIASING : 0.0);float outset=gapwidth+halfwidth*(gapwidth > 0.0 ? 2.0 : 1.0)+(halfwidth==0.0 ? 0.0 : ANTIALIASING);mediump vec2 dist=outset*a_extrude*scale;mediump float u=0.5*a_direction;mediump float t=1.0-abs(u);mediump vec2 offset2=offset*a_extrude*scale*normal.y*mat2(t,-u,u,t);vec4 projected_extrude=u_matrix*vec4(dist/u_ratio,0.0,0.0);gl_Position=u_matrix*vec4(pos+offset2/u_ratio,0.0,1.0)+projected_extrude;\n#ifdef TERRAIN3D\nv_gamma_scale=1.0;\n#else\nfloat extrude_length_without_perspective=length(dist);float extrude_length_with_perspective=length(projected_extrude.xy/gl_Position.w*u_units_to_pixels);v_gamma_scale=extrude_length_without_perspective/extrude_length_with_perspective;\n#endif\nv_tex_a=vec2(a_linesofar*u_patternscale_a.x/floorwidth,normal.y*u_patternscale_a.y+u_tex_y_a);v_tex_b=vec2(a_linesofar*u_patternscale_b.x/floorwidth,normal.y*u_patternscale_b.y+u_tex_y_b);v_width2=vec2(outset,inset);}"), raster: me("uniform float u_fade_t;uniform float u_opacity;uniform sampler2D u_image0;uniform sampler2D u_image1;varying vec2 v_pos0;varying vec2 v_pos1;uniform float u_brightness_low;uniform float u_brightness_high;uniform float u_saturation_factor;uniform float u_contrast_factor;uniform vec3 u_spin_weights;void main() {vec4 color0=texture2D(u_image0,v_pos0);vec4 color1=texture2D(u_image1,v_pos1);if (color0.a > 0.0) {color0.rgb=color0.rgb/color0.a;}if (color1.a > 0.0) {color1.rgb=color1.rgb/color1.a;}vec4 color=mix(color0,color1,u_fade_t);color.a*=u_opacity;vec3 rgb=color.rgb;rgb=vec3(dot(rgb,u_spin_weights.xyz),dot(rgb,u_spin_weights.zxy),dot(rgb,u_spin_weights.yzx));float average=(color.r+color.g+color.b)/3.0;rgb+=(average-rgb)*u_saturation_factor;rgb=(rgb-0.5)*u_contrast_factor+0.5;vec3 u_high_vec=vec3(u_brightness_low,u_brightness_low,u_brightness_low);vec3 u_low_vec=vec3(u_brightness_high,u_brightness_high,u_brightness_high);gl_FragColor=vec4(mix(u_high_vec,u_low_vec,rgb)*color.a,color.a);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "uniform mat4 u_matrix;uniform vec2 u_tl_parent;uniform float u_scale_parent;uniform float u_buffer_scale;attribute vec2 a_pos;attribute vec2 a_texture_pos;varying vec2 v_pos0;varying vec2 v_pos1;void main() {gl_Position=u_matrix*vec4(a_pos,0,1);v_pos0=(((a_texture_pos/8192.0)-0.5)/u_buffer_scale )+0.5;v_pos1=(v_pos0*u_scale_parent)+u_tl_parent;}"), symbolIcon: me("uniform sampler2D u_texture;varying vec2 v_tex;varying float v_fade_opacity;\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize lowp float opacity\nlowp float alpha=opacity*v_fade_opacity;gl_FragColor=texture2D(u_texture,v_tex)*alpha;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "attribute vec4 a_pos_offset;attribute vec4 a_data;attribute vec4 a_pixeloffset;attribute vec3 a_projected_pos;attribute float a_fade_opacity;uniform bool u_is_size_zoom_constant;uniform bool u_is_size_feature_constant;uniform highp float u_size_t;uniform highp float u_size;uniform highp float u_camera_to_center_distance;uniform highp float u_pitch;uniform bool u_rotate_symbol;uniform highp float u_aspect_ratio;uniform float u_fade_change;uniform mat4 u_matrix;uniform mat4 u_label_plane_matrix;uniform mat4 u_coord_matrix;uniform bool u_is_text;uniform bool u_pitch_with_map;uniform vec2 u_texsize;uniform bool u_is_along_line;uniform bool u_is_variable_anchor;uniform vec2 u_translation;uniform float u_pitched_scale;varying vec2 v_tex;varying float v_fade_opacity;vec4 projectTileWithElevation(vec2 posInTile,float elevation) {return u_matrix*vec4(posInTile,elevation,1.0);}\n#pragma mapbox: define lowp float opacity\nvoid main() {\n#pragma mapbox: initialize lowp float opacity\nvec2 a_pos=a_pos_offset.xy;vec2 a_offset=a_pos_offset.zw;vec2 a_tex=a_data.xy;vec2 a_size=a_data.zw;float a_size_min=floor(a_size[0]*0.5);vec2 a_pxoffset=a_pixeloffset.xy;vec2 a_minFontScale=a_pixeloffset.zw/256.0;float ele=get_elevation(a_pos);highp float segment_angle=-a_projected_pos[2];float size;if (!u_is_size_zoom_constant && !u_is_size_feature_constant) {size=mix(a_size_min,a_size[1],u_size_t)/128.0;} else if (u_is_size_zoom_constant && !u_is_size_feature_constant) {size=a_size_min/128.0;} else {size=u_size;}vec2 translated_a_pos=a_pos+u_translation;vec4 projectedPoint=projectTileWithElevation(translated_a_pos,ele);highp float camera_to_anchor_distance=projectedPoint.w;highp float distance_ratio=u_pitch_with_map ?\ncamera_to_anchor_distance/u_camera_to_center_distance :\nu_camera_to_center_distance/camera_to_anchor_distance;highp float perspective_ratio=clamp(0.5+0.5*distance_ratio,0.0,4.0);size*=perspective_ratio;float fontScale=u_is_text ? size/24.0 : size;highp float symbol_rotation=0.0;if (u_rotate_symbol) {vec4 offsetProjectedPoint=projectTileWithElevation(translated_a_pos+vec2(1,0),ele);vec2 a=projectedPoint.xy/projectedPoint.w;vec2 b=offsetProjectedPoint.xy/offsetProjectedPoint.w;symbol_rotation=atan((b.y-a.y)/u_aspect_ratio,b.x-a.x);}highp float angle_sin=sin(segment_angle+symbol_rotation);highp float angle_cos=cos(segment_angle+symbol_rotation);mat2 rotation_matrix=mat2(angle_cos,-1.0*angle_sin,angle_sin,angle_cos);vec4 projected_pos;if (u_is_along_line || u_is_variable_anchor) {projected_pos=vec4(a_projected_pos.xy,ele,1.0);} else if (u_pitch_with_map) {projected_pos=u_label_plane_matrix*vec4(a_projected_pos.xy+u_translation,ele,1.0);} else {projected_pos=u_label_plane_matrix*projectTileWithElevation(a_projected_pos.xy+u_translation,ele);}float z=float(u_pitch_with_map)*projected_pos.z/projected_pos.w;float projectionScaling=1.0;vec4 finalPos=u_coord_matrix*vec4(projected_pos.xy/projected_pos.w+rotation_matrix*(a_offset/32.0*max(a_minFontScale,fontScale)+a_pxoffset/16.0)*projectionScaling,z,1.0);if(u_pitch_with_map) {finalPos=projectTileWithElevation(finalPos.xy,finalPos.z);}gl_Position=finalPos;v_tex=a_tex/u_texsize;vec2 fade_opacity=unpack_opacity(a_fade_opacity);float fade_change=fade_opacity[1] > 0.5 ? u_fade_change :-u_fade_change;float visibility=calculate_visibility(projectedPoint);v_fade_opacity=max(0.0,min(visibility,fade_opacity[0]+fade_change));}"), symbolSDF: me("#define SDF_PX 8.0\nuniform bool u_is_halo;uniform sampler2D u_texture;uniform highp float u_gamma_scale;uniform lowp float u_device_pixel_ratio;uniform bool u_is_text;varying vec2 v_data0;varying vec3 v_data1;\n#pragma mapbox: define highp vec4 fill_color\n#pragma mapbox: define highp vec4 halo_color\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp float halo_width\n#pragma mapbox: define lowp float halo_blur\nvoid main() {\n#pragma mapbox: initialize highp vec4 fill_color\n#pragma mapbox: initialize highp vec4 halo_color\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize lowp float halo_width\n#pragma mapbox: initialize lowp float halo_blur\nfloat EDGE_GAMMA=0.105/u_device_pixel_ratio;vec2 tex=v_data0.xy;float gamma_scale=v_data1.x;float size=v_data1.y;float fade_opacity=v_data1[2];float fontScale=u_is_text ? size/24.0 : size;lowp vec4 color=fill_color;highp float gamma=EDGE_GAMMA/(fontScale*u_gamma_scale);lowp float inner_edge=(256.0-64.0)/256.0;if (u_is_halo) {color=halo_color;gamma=(halo_blur*1.19/SDF_PX+EDGE_GAMMA)/(fontScale*u_gamma_scale);inner_edge=inner_edge+gamma*gamma_scale;}lowp float dist=texture2D(u_texture,tex).a;highp float gamma_scaled=gamma*gamma_scale;highp float alpha=smoothstep(inner_edge-gamma_scaled,inner_edge+gamma_scaled,dist);if (u_is_halo) {lowp float halo_edge=(6.0-halo_width/fontScale)/SDF_PX;alpha=min(smoothstep(halo_edge-gamma_scaled,halo_edge+gamma_scaled,dist),1.0-alpha);}gl_FragColor=color*(alpha*opacity*fade_opacity);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "attribute vec4 a_pos_offset;attribute vec4 a_data;attribute vec4 a_pixeloffset;attribute vec3 a_projected_pos;attribute float a_fade_opacity;uniform bool u_is_size_zoom_constant;uniform bool u_is_size_feature_constant;uniform highp float u_size_t;uniform highp float u_size;uniform mat4 u_matrix;uniform mat4 u_label_plane_matrix;uniform mat4 u_coord_matrix;uniform bool u_is_text;uniform bool u_pitch_with_map;uniform bool u_is_along_line;uniform bool u_is_variable_anchor;uniform highp float u_pitch;uniform bool u_rotate_symbol;uniform highp float u_aspect_ratio;uniform highp float u_camera_to_center_distance;uniform float u_fade_change;uniform vec2 u_texsize;uniform vec2 u_translation;uniform float u_pitched_scale;varying vec2 v_data0;varying vec3 v_data1;vec4 projectTileWithElevation(vec2 posInTile,float elevation) {return u_matrix*vec4(posInTile,elevation,1.0);}\n#pragma mapbox: define highp vec4 fill_color\n#pragma mapbox: define highp vec4 halo_color\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp float halo_width\n#pragma mapbox: define lowp float halo_blur\nvoid main() {\n#pragma mapbox: initialize highp vec4 fill_color\n#pragma mapbox: initialize highp vec4 halo_color\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize lowp float halo_width\n#pragma mapbox: initialize lowp float halo_blur\nvec2 a_pos=a_pos_offset.xy;vec2 a_offset=a_pos_offset.zw;vec2 a_tex=a_data.xy;vec2 a_size=a_data.zw;float a_size_min=floor(a_size[0]*0.5);vec2 a_pxoffset=a_pixeloffset.xy;float ele=get_elevation(a_pos);highp float segment_angle=-a_projected_pos[2];float size;if (!u_is_size_zoom_constant && !u_is_size_feature_constant) {size=mix(a_size_min,a_size[1],u_size_t)/128.0;} else if (u_is_size_zoom_constant && !u_is_size_feature_constant) {size=a_size_min/128.0;} else {size=u_size;}vec2 translated_a_pos=a_pos+u_translation;vec4 projectedPoint=projectTileWithElevation(translated_a_pos,ele);highp float camera_to_anchor_distance=projectedPoint.w;highp float distance_ratio=u_pitch_with_map ?\ncamera_to_anchor_distance/u_camera_to_center_distance :\nu_camera_to_center_distance/camera_to_anchor_distance;highp float perspective_ratio=clamp(0.5+0.5*distance_ratio,0.0,4.0);size*=perspective_ratio;float fontScale=u_is_text ? size/24.0 : size;highp float symbol_rotation=0.0;if (u_rotate_symbol) {vec4 offsetProjectedPoint=projectTileWithElevation(translated_a_pos+vec2(1,0),ele);vec2 a=projectedPoint.xy/projectedPoint.w;vec2 b=offsetProjectedPoint.xy/offsetProjectedPoint.w;symbol_rotation=atan((b.y-a.y)/u_aspect_ratio,b.x-a.x);}highp float angle_sin=sin(segment_angle+symbol_rotation);highp float angle_cos=cos(segment_angle+symbol_rotation);mat2 rotation_matrix=mat2(angle_cos,-1.0*angle_sin,angle_sin,angle_cos);vec4 projected_pos;if (u_is_along_line || u_is_variable_anchor) {projected_pos=vec4(a_projected_pos.xy,ele,1.0);} else if (u_pitch_with_map) {projected_pos=u_label_plane_matrix*vec4(a_projected_pos.xy+u_translation,ele,1.0);} else {projected_pos=u_label_plane_matrix*projectTileWithElevation(a_projected_pos.xy+u_translation,ele);}float z=float(u_pitch_with_map)*projected_pos.z/projected_pos.w;float projectionScaling=1.0;vec4 finalPos=u_coord_matrix*vec4(projected_pos.xy/projected_pos.w+rotation_matrix*(a_offset/32.0*fontScale+a_pxoffset)*projectionScaling,z,1.0);if(u_pitch_with_map) {finalPos=projectTileWithElevation(finalPos.xy,finalPos.z);}float gamma_scale=finalPos.w;gl_Position=finalPos;vec2 fade_opacity=unpack_opacity(a_fade_opacity);float visibility=calculate_visibility(projectedPoint);float fade_change=fade_opacity[1] > 0.5 ? u_fade_change :-u_fade_change;float interpolated_fade_opacity=max(0.0,min(visibility,fade_opacity[0]+fade_change));v_data0=a_tex/u_texsize;v_data1=vec3(gamma_scale,size,interpolated_fade_opacity);}"), symbolTextAndIcon: me("#define SDF_PX 8.0\n#define SDF 1.0\n#define ICON 0.0\nuniform bool u_is_halo;uniform sampler2D u_texture;uniform sampler2D u_texture_icon;uniform highp float u_gamma_scale;uniform lowp float u_device_pixel_ratio;varying vec4 v_data0;varying vec4 v_data1;\n#pragma mapbox: define highp vec4 fill_color\n#pragma mapbox: define highp vec4 halo_color\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp float halo_width\n#pragma mapbox: define lowp float halo_blur\nvoid main() {\n#pragma mapbox: initialize highp vec4 fill_color\n#pragma mapbox: initialize highp vec4 halo_color\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize lowp float halo_width\n#pragma mapbox: initialize lowp float halo_blur\nfloat fade_opacity=v_data1[2];if (v_data1.w==ICON) {vec2 tex_icon=v_data0.zw;lowp float alpha=opacity*fade_opacity;gl_FragColor=texture2D(u_texture_icon,tex_icon)*alpha;\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\nreturn;}vec2 tex=v_data0.xy;float EDGE_GAMMA=0.105/u_device_pixel_ratio;float gamma_scale=v_data1.x;float size=v_data1.y;float fontScale=size/24.0;lowp vec4 color=fill_color;highp float gamma=EDGE_GAMMA/(fontScale*u_gamma_scale);lowp float buff=(256.0-64.0)/256.0;if (u_is_halo) {color=halo_color;gamma=(halo_blur*1.19/SDF_PX+EDGE_GAMMA)/(fontScale*u_gamma_scale);buff=(6.0-halo_width/fontScale)/SDF_PX;}lowp float dist=texture2D(u_texture,tex).a;highp float gamma_scaled=gamma*gamma_scale;highp float alpha=smoothstep(buff-gamma_scaled,buff+gamma_scaled,dist);gl_FragColor=color*(alpha*opacity*fade_opacity);\n#ifdef OVERDRAW_INSPECTOR\ngl_FragColor=vec4(1.0);\n#endif\n}", "attribute vec4 a_pos_offset;attribute vec4 a_data;attribute vec3 a_projected_pos;attribute float a_fade_opacity;uniform bool u_is_size_zoom_constant;uniform bool u_is_size_feature_constant;uniform highp float u_size_t;uniform highp float u_size;uniform mat4 u_matrix;uniform mat4 u_label_plane_matrix;uniform mat4 u_coord_matrix;uniform bool u_is_text;uniform bool u_pitch_with_map;uniform highp float u_pitch;uniform bool u_rotate_symbol;uniform highp float u_aspect_ratio;uniform highp float u_camera_to_center_distance;uniform float u_fade_change;uniform vec2 u_texsize;uniform vec2 u_texsize_icon;uniform bool u_is_along_line;uniform bool u_is_variable_anchor;uniform vec2 u_translation;uniform float u_pitched_scale;varying vec4 v_data0;varying vec4 v_data1;vec4 projectTileWithElevation(vec2 posInTile,float elevation) {return u_matrix*vec4(posInTile,elevation,1.0);}\n#pragma mapbox: define highp vec4 fill_color\n#pragma mapbox: define highp vec4 halo_color\n#pragma mapbox: define lowp float opacity\n#pragma mapbox: define lowp float halo_width\n#pragma mapbox: define lowp float halo_blur\nvoid main() {\n#pragma mapbox: initialize highp vec4 fill_color\n#pragma mapbox: initialize highp vec4 halo_color\n#pragma mapbox: initialize lowp float opacity\n#pragma mapbox: initialize lowp float halo_width\n#pragma mapbox: initialize lowp float halo_blur\nvec2 a_pos=a_pos_offset.xy;vec2 a_offset=a_pos_offset.zw;vec2 a_tex=a_data.xy;vec2 a_size=a_data.zw;float a_size_min=floor(a_size[0]*0.5);float is_sdf=a_size[0]-2.0*a_size_min;float ele=get_elevation(a_pos);highp float segment_angle=-a_projected_pos[2];float size;if (!u_is_size_zoom_constant && !u_is_size_feature_constant) {size=mix(a_size_min,a_size[1],u_size_t)/128.0;} else if (u_is_size_zoom_constant && !u_is_size_feature_constant) {size=a_size_min/128.0;} else {size=u_size;}vec2 translated_a_pos=a_pos+u_translation;vec4 projectedPoint=projectTileWithElevation(translated_a_pos,ele);highp float camera_to_anchor_distance=projectedPoint.w;highp float distance_ratio=u_pitch_with_map ?\ncamera_to_anchor_distance/u_camera_to_center_distance :\nu_camera_to_center_distance/camera_to_anchor_distance;highp float perspective_ratio=clamp(0.5+0.5*distance_ratio,0.0,4.0);size*=perspective_ratio;float fontScale=size/24.0;highp float symbol_rotation=0.0;if (u_rotate_symbol) {vec4 offsetProjectedPoint=projectTileWithElevation(translated_a_pos+vec2(1,0),ele);vec2 a=projectedPoint.xy/projectedPoint.w;vec2 b=offsetProjectedPoint.xy/offsetProjectedPoint.w;symbol_rotation=atan((b.y-a.y)/u_aspect_ratio,b.x-a.x);}highp float angle_sin=sin(segment_angle+symbol_rotation);highp float angle_cos=cos(segment_angle+symbol_rotation);mat2 rotation_matrix=mat2(angle_cos,-1.0*angle_sin,angle_sin,angle_cos);vec4 projected_pos;if (u_is_along_line || u_is_variable_anchor) {projected_pos=vec4(a_projected_pos.xy,ele,1.0);} else if (u_pitch_with_map) {projected_pos=u_label_plane_matrix*vec4(a_projected_pos.xy+u_translation,ele,1.0);} else {projected_pos=u_label_plane_matrix*projectTileWithElevation(a_projected_pos.xy+u_translation,ele);}float z=float(u_pitch_with_map)*projected_pos.z/projected_pos.w;float projectionScaling=1.0;vec4 finalPos=u_coord_matrix*vec4(projected_pos.xy/projected_pos.w+rotation_matrix*(a_offset/32.0*fontScale)*projectionScaling,z,1.0);if(u_pitch_with_map) {finalPos=projectTileWithElevation(finalPos.xy,finalPos.z);}float gamma_scale=finalPos.w;gl_Position=finalPos;vec2 fade_opacity=unpack_opacity(a_fade_opacity);float visibility=calculate_visibility(projectedPoint);float fade_change=fade_opacity[1] > 0.5 ? u_fade_change :-u_fade_change;float interpolated_fade_opacity=max(0.0,min(visibility,fade_opacity[0]+fade_change));v_data0.xy=a_tex/u_texsize;v_data0.zw=a_tex/u_texsize_icon;v_data1=vec4(gamma_scale,size,interpolated_fade_opacity,is_sdf);}"), terrain: me("uniform sampler2D u_texture;uniform vec4 u_fog_color;uniform vec4 u_horizon_color;uniform float u_fog_ground_blend;uniform float u_fog_ground_blend_opacity;uniform float u_horizon_fog_blend;varying vec2 v_texture_pos;varying float v_fog_depth;const float gamma=2.2;vec4 gammaToLinear(vec4 color) {return pow(color,vec4(gamma));}vec4 linearToGamma(vec4 color) {return pow(color,vec4(1.0/gamma));}void main() {vec4 surface_color=texture2D(u_texture,v_texture_pos);if (v_fog_depth > u_fog_ground_blend) {vec4 surface_color_linear=gammaToLinear(surface_color);float blend_color=smoothstep(0.0,1.0,max((v_fog_depth-u_horizon_fog_blend)/(1.0-u_horizon_fog_blend),0.0));vec4 fog_horizon_color_linear=mix(gammaToLinear(u_fog_color),gammaToLinear(u_horizon_color),blend_color);float factor_fog=max(v_fog_depth-u_fog_ground_blend,0.0)/(1.0-u_fog_ground_blend);gl_FragColor=linearToGamma(mix(surface_color_linear,fog_horizon_color_linear,pow(factor_fog,2.0)*u_fog_ground_blend_opacity));} else {gl_FragColor=surface_color;}}", "attribute vec3 a_pos3d;uniform mat4 u_matrix;uniform mat4 u_fog_matrix;uniform float u_ele_delta;varying vec2 v_texture_pos;varying float v_fog_depth;void main() {float ele=get_elevation(a_pos3d.xy);float ele_delta=a_pos3d.z==1.0 ? u_ele_delta : 0.0;v_texture_pos=a_pos3d.xy/8192.0;gl_Position=u_matrix*vec4(a_pos3d.xy,ele-ele_delta,1.0);vec4 pos=u_fog_matrix*vec4(a_pos3d.xy,ele,1.0);v_fog_depth=pos.z/pos.w*0.5+0.5;}"), terrainDepth: me("varying float v_depth;const highp vec4 bitSh=vec4(256.*256.*256.,256.*256.,256.,1.);const highp vec4 bitMsk=vec4(0.,vec3(1./256.0));highp vec4 pack(highp float value) {highp vec4 comp=fract(value*bitSh);comp-=comp.xxyz*bitMsk;return comp;}void main() {gl_FragColor=pack(v_depth);}", "attribute vec3 a_pos3d;uniform mat4 u_matrix;uniform float u_ele_delta;varying float v_depth;void main() {float ele=get_elevation(a_pos3d.xy);float ele_delta=a_pos3d.z==1.0 ? u_ele_delta : 0.0;gl_Position=u_matrix*vec4(a_pos3d.xy,ele-ele_delta,1.0);v_depth=gl_Position.z/gl_Position.w;}"), terrainCoords: me("precision mediump float;uniform sampler2D u_texture;uniform float u_terrain_coords_id;varying vec2 v_texture_pos;void main() {vec4 rgba=texture2D(u_texture,v_texture_pos);gl_FragColor=vec4(rgba.r,rgba.g,rgba.b,u_terrain_coords_id);}", "attribute vec3 a_pos3d;uniform mat4 u_matrix;uniform float u_ele_delta;varying vec2 v_texture_pos;void main() {float ele=get_elevation(a_pos3d.xy);float ele_delta=a_pos3d.z==1.0 ? u_ele_delta : 0.0;v_texture_pos=a_pos3d.xy/8192.0;gl_Position=u_matrix*vec4(a_pos3d.xy,ele-ele_delta,1.0);}"), sky: me("uniform vec4 u_sky_color;uniform vec4 u_horizon_color;uniform float u_horizon;uniform float u_sky_horizon_blend;void main() {float y=gl_FragCoord.y;if (y > u_horizon) {float blend=y-u_horizon;if (blend < u_sky_horizon_blend) {gl_FragColor=mix(u_sky_color,u_horizon_color,pow(1.0-blend/u_sky_horizon_blend,2.0));} else {gl_FragColor=u_sky_color;}}}", "attribute vec2 a_pos;void main() {gl_Position=vec4(a_pos,1.0,1.0);}") };
           function me(t4, e2) {
             const i2 = /#pragma mapbox: ([\w]+) ([\w]+) ([\w]+) ([\w]+)/g, a2 = e2.match(/attribute ([\w]+) ([\w]+)/g), s2 = t4.match(/uniform ([\w]+) ([\w]+)([\s]*)([\w]*)/g), o2 = e2.match(/uniform ([\w]+) ([\w]+)([\s]*)([\w]*)/g), r2 = o2 ? o2.concat(s2) : s2, n2 = {};
-            return { fragmentSource: t4 = t4.replace(i2, (t5, e3, i3, a3, s3) => (n2[s3] = true, "define" === e3 ? `
+            return { fragmentSource: t4 = t4.replace(i2, ((t5, e3, i3, a3, s3) => (n2[s3] = true, "define" === e3 ? `
 #ifndef HAS_UNIFORM_u_${s3}
 varying ${i3} ${a3} ${s3};
 #else
@@ -235958,7 +236101,7 @@ uniform ${i3} ${a3} u_${s3};
 #ifdef HAS_UNIFORM_u_${s3}
     ${i3} ${a3} ${s3} = u_${s3};
 #endif
-`)), vertexSource: e2 = e2.replace(i2, (t5, e3, i3, a3, s3) => {
+`))), vertexSource: e2 = e2.replace(i2, ((t5, e3, i3, a3, s3) => {
               const o3 = "float" === a3 ? "vec2" : "vec4", r3 = s3.match(/color/) ? "color" : o3;
               return n2[s3] ? "define" === e3 ? `
 #ifndef HAS_UNIFORM_u_${s3}
@@ -236000,7 +236143,7 @@ uniform ${i3} ${a3} u_${s3};
     ${i3} ${a3} ${s3} = u_${s3};
 #endif
 `;
-            }), staticAttributes: a2, staticUniforms: r2 };
+            })), staticAttributes: a2, staticUniforms: r2 };
           }
           class fe {
             constructor() {
@@ -236095,17 +236238,17 @@ uniform ${i3} ${a3} u_${s3};
             return { u_image: 0, u_texsize: i2.imageAtlasTexture.size, u_scale: [a2, t4.fromScale, t4.toScale], u_fade: t4.t, u_pixel_coord_upper: [r2 >> 16, n2 >> 16], u_pixel_coord_lower: [65535 & r2, 65535 & n2] };
           }
           const be = (t4, i2, a2, s2) => {
-            const o2 = i2.style.light, r2 = o2.properties.get("position"), n2 = [r2.x, r2.y, r2.z], l2 = function() {
+            const o2 = i2.style.light, r2 = o2.properties.get("position"), n2 = [r2.x, r2.y, r2.z], l2 = (function() {
               var t5 = new e.A(9);
               return e.A != Float32Array && (t5[1] = 0, t5[2] = 0, t5[3] = 0, t5[5] = 0, t5[6] = 0, t5[7] = 0), t5[0] = 1, t5[4] = 1, t5[8] = 1, t5;
-            }();
-            "viewport" === o2.properties.get("anchor") && function(t5, e2) {
+            })();
+            "viewport" === o2.properties.get("anchor") && (function(t5, e2) {
               var i3 = Math.sin(e2), a3 = Math.cos(e2);
               t5[0] = a3, t5[1] = i3, t5[2] = 0, t5[3] = -i3, t5[4] = a3, t5[5] = 0, t5[6] = 0, t5[7] = 0, t5[8] = 1;
-            }(l2, -i2.transform.angle), function(t5, e2, i3) {
+            })(l2, -i2.transform.angle), (function(t5, e2, i3) {
               var a3 = e2[0], s3 = e2[1], o3 = e2[2];
               t5[0] = a3 * i3[0] + s3 * i3[3] + o3 * i3[6], t5[1] = a3 * i3[1] + s3 * i3[4] + o3 * i3[7], t5[2] = a3 * i3[2] + s3 * i3[5] + o3 * i3[8];
-            }(n2, n2, l2);
+            })(n2, n2, l2);
             const h2 = o2.properties.get("color");
             return { u_matrix: t4, u_lightpos: n2, u_lightintensity: o2.properties.get("intensity"), u_lightcolor: [h2.r, h2.g, h2.b], u_vertical_gradient: +a2, u_opacity: s2 };
           }, we = (t4, i2, a2, s2, o2, r2, n2) => e.e(be(t4, i2, a2, s2), ye(r2, i2, n2), { u_height_factor: -Math.pow(2, o2.overscaledZ) / n2.tileSize / 8 }), Te = (t4) => ({ u_matrix: t4 }), Ie = (t4, i2, a2, s2) => e.e(Te(t4), ye(a2, i2, s2)), Ee = (t4, e2) => ({ u_matrix: t4, u_world: e2 }), Pe = (t4, i2, a2, s2, o2) => e.e(Ie(t4, i2, a2, s2), { u_world: o2 }), Ce = (t4, e2, i2, a2) => {
@@ -236157,10 +236300,10 @@ uniform ${i3} ${a3} u_${s3};
           }, qe = (t4, i2, a2, s2, o2, r2, n2, l2, h2, c2, u2, d2, _2, p2, m2) => {
             const f2 = n2.transform;
             return e.e(Ze(t4, i2, a2, s2, o2, r2, n2, l2, h2, c2, u2, d2, _2, m2), { u_gamma_scale: s2 ? Math.cos(f2._pitch) * f2.cameraToCenterDistance : 1, u_device_pixel_ratio: n2.pixelRatio, u_is_halo: +p2 });
-          }, Ve = (t4, i2, a2, s2, o2, r2, n2, l2, h2, c2, u2, d2, _2, p2) => e.e(qe(t4, i2, a2, s2, o2, r2, n2, l2, h2, c2, u2, true, d2, true, p2), { u_texsize_icon: _2, u_texture_icon: 1 }), Ge = (t4, e2, i2) => ({ u_matrix: t4, u_opacity: e2, u_color: i2 }), He = (t4, i2, a2, s2, o2, r2) => e.e(function(t5, e2, i3, a3) {
+          }, Ve = (t4, i2, a2, s2, o2, r2, n2, l2, h2, c2, u2, d2, _2, p2) => e.e(qe(t4, i2, a2, s2, o2, r2, n2, l2, h2, c2, u2, true, d2, true, p2), { u_texsize_icon: _2, u_texture_icon: 1 }), Ge = (t4, e2, i2) => ({ u_matrix: t4, u_opacity: e2, u_color: i2 }), He = (t4, i2, a2, s2, o2, r2) => e.e((function(t5, e2, i3, a3) {
             const s3 = i3.imageManager.getPattern(t5.from.toString()), o3 = i3.imageManager.getPattern(t5.to.toString()), { width: r3, height: n2 } = i3.imageManager.getPixelSize(), l2 = Math.pow(2, a3.tileID.overscaledZ), h2 = a3.tileSize * Math.pow(2, i3.transform.tileZoom) / l2, c2 = h2 * (a3.tileID.canonical.x + a3.tileID.wrap * l2), u2 = h2 * a3.tileID.canonical.y;
             return { u_image: 0, u_pattern_tl_a: s3.tl, u_pattern_br_a: s3.br, u_pattern_tl_b: o3.tl, u_pattern_br_b: o3.br, u_texsize: [r3, n2], u_mix: e2.t, u_pattern_size_a: s3.displaySize, u_pattern_size_b: o3.displaySize, u_scale_a: e2.fromScale, u_scale_b: e2.toScale, u_tile_units_to_pixels: 1 / Bt(a3, 1, i3.transform.tileZoom), u_pixel_coord_upper: [c2 >> 16, u2 >> 16], u_pixel_coord_lower: [65535 & c2, 65535 & u2] };
-          }(s2, r2, a2, o2), { u_matrix: t4, u_opacity: i2 }), We = { fillExtrusion: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_lightpos: new e.aN(t4, i2.u_lightpos), u_lightintensity: new e.aI(t4, i2.u_lightintensity), u_lightcolor: new e.aN(t4, i2.u_lightcolor), u_vertical_gradient: new e.aI(t4, i2.u_vertical_gradient), u_opacity: new e.aI(t4, i2.u_opacity) }), fillExtrusionPattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_lightpos: new e.aN(t4, i2.u_lightpos), u_lightintensity: new e.aI(t4, i2.u_lightintensity), u_lightcolor: new e.aN(t4, i2.u_lightcolor), u_vertical_gradient: new e.aI(t4, i2.u_vertical_gradient), u_height_factor: new e.aI(t4, i2.u_height_factor), u_image: new e.aH(t4, i2.u_image), u_texsize: new e.aO(t4, i2.u_texsize), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade), u_opacity: new e.aI(t4, i2.u_opacity) }), fill: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix) }), fillPattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_image: new e.aH(t4, i2.u_image), u_texsize: new e.aO(t4, i2.u_texsize), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade) }), fillOutline: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_world: new e.aO(t4, i2.u_world) }), fillOutlinePattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_world: new e.aO(t4, i2.u_world), u_image: new e.aH(t4, i2.u_image), u_texsize: new e.aO(t4, i2.u_texsize), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade) }), circle: (t4, i2) => ({ u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_scale_with_map: new e.aH(t4, i2.u_scale_with_map), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_extrude_scale: new e.aO(t4, i2.u_extrude_scale), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_matrix: new e.aJ(t4, i2.u_matrix) }), collisionBox: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_pixel_extrude_scale: new e.aO(t4, i2.u_pixel_extrude_scale) }), collisionCircle: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_inv_matrix: new e.aJ(t4, i2.u_inv_matrix), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_viewport_size: new e.aO(t4, i2.u_viewport_size) }), debug: (t4, i2) => ({ u_color: new e.aL(t4, i2.u_color), u_matrix: new e.aJ(t4, i2.u_matrix), u_overlay: new e.aH(t4, i2.u_overlay), u_overlay_scale: new e.aI(t4, i2.u_overlay_scale) }), clippingMask: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix) }), heatmap: (t4, i2) => ({ u_extrude_scale: new e.aI(t4, i2.u_extrude_scale), u_intensity: new e.aI(t4, i2.u_intensity), u_matrix: new e.aJ(t4, i2.u_matrix) }), heatmapTexture: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_world: new e.aO(t4, i2.u_world), u_image: new e.aH(t4, i2.u_image), u_color_ramp: new e.aH(t4, i2.u_color_ramp), u_opacity: new e.aI(t4, i2.u_opacity) }), hillshade: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_image: new e.aH(t4, i2.u_image), u_latrange: new e.aO(t4, i2.u_latrange), u_light: new e.aO(t4, i2.u_light), u_shadow: new e.aL(t4, i2.u_shadow), u_highlight: new e.aL(t4, i2.u_highlight), u_accent: new e.aL(t4, i2.u_accent) }), hillshadePrepare: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_image: new e.aH(t4, i2.u_image), u_dimension: new e.aO(t4, i2.u_dimension), u_zoom: new e.aI(t4, i2.u_zoom), u_unpack: new e.aK(t4, i2.u_unpack) }), line: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels) }), lineGradient: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels), u_image: new e.aH(t4, i2.u_image), u_image_height: new e.aI(t4, i2.u_image_height) }), linePattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_texsize: new e.aO(t4, i2.u_texsize), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_image: new e.aH(t4, i2.u_image), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade) }), lineSDF: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels), u_patternscale_a: new e.aO(t4, i2.u_patternscale_a), u_patternscale_b: new e.aO(t4, i2.u_patternscale_b), u_sdfgamma: new e.aI(t4, i2.u_sdfgamma), u_image: new e.aH(t4, i2.u_image), u_tex_y_a: new e.aI(t4, i2.u_tex_y_a), u_tex_y_b: new e.aI(t4, i2.u_tex_y_b), u_mix: new e.aI(t4, i2.u_mix) }), raster: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_tl_parent: new e.aO(t4, i2.u_tl_parent), u_scale_parent: new e.aI(t4, i2.u_scale_parent), u_buffer_scale: new e.aI(t4, i2.u_buffer_scale), u_fade_t: new e.aI(t4, i2.u_fade_t), u_opacity: new e.aI(t4, i2.u_opacity), u_image0: new e.aH(t4, i2.u_image0), u_image1: new e.aH(t4, i2.u_image1), u_brightness_low: new e.aI(t4, i2.u_brightness_low), u_brightness_high: new e.aI(t4, i2.u_brightness_high), u_saturation_factor: new e.aI(t4, i2.u_saturation_factor), u_contrast_factor: new e.aI(t4, i2.u_contrast_factor), u_spin_weights: new e.aN(t4, i2.u_spin_weights) }), symbolIcon: (t4, i2) => ({ u_is_size_zoom_constant: new e.aH(t4, i2.u_is_size_zoom_constant), u_is_size_feature_constant: new e.aH(t4, i2.u_is_size_feature_constant), u_size_t: new e.aI(t4, i2.u_size_t), u_size: new e.aI(t4, i2.u_size), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_pitch: new e.aI(t4, i2.u_pitch), u_rotate_symbol: new e.aH(t4, i2.u_rotate_symbol), u_aspect_ratio: new e.aI(t4, i2.u_aspect_ratio), u_fade_change: new e.aI(t4, i2.u_fade_change), u_matrix: new e.aJ(t4, i2.u_matrix), u_label_plane_matrix: new e.aJ(t4, i2.u_label_plane_matrix), u_coord_matrix: new e.aJ(t4, i2.u_coord_matrix), u_is_text: new e.aH(t4, i2.u_is_text), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_is_along_line: new e.aH(t4, i2.u_is_along_line), u_is_variable_anchor: new e.aH(t4, i2.u_is_variable_anchor), u_texsize: new e.aO(t4, i2.u_texsize), u_texture: new e.aH(t4, i2.u_texture), u_translation: new e.aO(t4, i2.u_translation), u_pitched_scale: new e.aI(t4, i2.u_pitched_scale) }), symbolSDF: (t4, i2) => ({ u_is_size_zoom_constant: new e.aH(t4, i2.u_is_size_zoom_constant), u_is_size_feature_constant: new e.aH(t4, i2.u_is_size_feature_constant), u_size_t: new e.aI(t4, i2.u_size_t), u_size: new e.aI(t4, i2.u_size), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_pitch: new e.aI(t4, i2.u_pitch), u_rotate_symbol: new e.aH(t4, i2.u_rotate_symbol), u_aspect_ratio: new e.aI(t4, i2.u_aspect_ratio), u_fade_change: new e.aI(t4, i2.u_fade_change), u_matrix: new e.aJ(t4, i2.u_matrix), u_label_plane_matrix: new e.aJ(t4, i2.u_label_plane_matrix), u_coord_matrix: new e.aJ(t4, i2.u_coord_matrix), u_is_text: new e.aH(t4, i2.u_is_text), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_is_along_line: new e.aH(t4, i2.u_is_along_line), u_is_variable_anchor: new e.aH(t4, i2.u_is_variable_anchor), u_texsize: new e.aO(t4, i2.u_texsize), u_texture: new e.aH(t4, i2.u_texture), u_gamma_scale: new e.aI(t4, i2.u_gamma_scale), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_is_halo: new e.aH(t4, i2.u_is_halo), u_translation: new e.aO(t4, i2.u_translation), u_pitched_scale: new e.aI(t4, i2.u_pitched_scale) }), symbolTextAndIcon: (t4, i2) => ({ u_is_size_zoom_constant: new e.aH(t4, i2.u_is_size_zoom_constant), u_is_size_feature_constant: new e.aH(t4, i2.u_is_size_feature_constant), u_size_t: new e.aI(t4, i2.u_size_t), u_size: new e.aI(t4, i2.u_size), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_pitch: new e.aI(t4, i2.u_pitch), u_rotate_symbol: new e.aH(t4, i2.u_rotate_symbol), u_aspect_ratio: new e.aI(t4, i2.u_aspect_ratio), u_fade_change: new e.aI(t4, i2.u_fade_change), u_matrix: new e.aJ(t4, i2.u_matrix), u_label_plane_matrix: new e.aJ(t4, i2.u_label_plane_matrix), u_coord_matrix: new e.aJ(t4, i2.u_coord_matrix), u_is_text: new e.aH(t4, i2.u_is_text), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_is_along_line: new e.aH(t4, i2.u_is_along_line), u_is_variable_anchor: new e.aH(t4, i2.u_is_variable_anchor), u_texsize: new e.aO(t4, i2.u_texsize), u_texsize_icon: new e.aO(t4, i2.u_texsize_icon), u_texture: new e.aH(t4, i2.u_texture), u_texture_icon: new e.aH(t4, i2.u_texture_icon), u_gamma_scale: new e.aI(t4, i2.u_gamma_scale), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_is_halo: new e.aH(t4, i2.u_is_halo), u_translation: new e.aO(t4, i2.u_translation), u_pitched_scale: new e.aI(t4, i2.u_pitched_scale) }), background: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_opacity: new e.aI(t4, i2.u_opacity), u_color: new e.aL(t4, i2.u_color) }), backgroundPattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_opacity: new e.aI(t4, i2.u_opacity), u_image: new e.aH(t4, i2.u_image), u_pattern_tl_a: new e.aO(t4, i2.u_pattern_tl_a), u_pattern_br_a: new e.aO(t4, i2.u_pattern_br_a), u_pattern_tl_b: new e.aO(t4, i2.u_pattern_tl_b), u_pattern_br_b: new e.aO(t4, i2.u_pattern_br_b), u_texsize: new e.aO(t4, i2.u_texsize), u_mix: new e.aI(t4, i2.u_mix), u_pattern_size_a: new e.aO(t4, i2.u_pattern_size_a), u_pattern_size_b: new e.aO(t4, i2.u_pattern_size_b), u_scale_a: new e.aI(t4, i2.u_scale_a), u_scale_b: new e.aI(t4, i2.u_scale_b), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_tile_units_to_pixels: new e.aI(t4, i2.u_tile_units_to_pixels) }), terrain: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_texture: new e.aH(t4, i2.u_texture), u_ele_delta: new e.aI(t4, i2.u_ele_delta), u_fog_matrix: new e.aJ(t4, i2.u_fog_matrix), u_fog_color: new e.aL(t4, i2.u_fog_color), u_fog_ground_blend: new e.aI(t4, i2.u_fog_ground_blend), u_fog_ground_blend_opacity: new e.aI(t4, i2.u_fog_ground_blend_opacity), u_horizon_color: new e.aL(t4, i2.u_horizon_color), u_horizon_fog_blend: new e.aI(t4, i2.u_horizon_fog_blend) }), terrainDepth: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ele_delta: new e.aI(t4, i2.u_ele_delta) }), terrainCoords: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_texture: new e.aH(t4, i2.u_texture), u_terrain_coords_id: new e.aI(t4, i2.u_terrain_coords_id), u_ele_delta: new e.aI(t4, i2.u_ele_delta) }), sky: (t4, i2) => ({ u_sky_color: new e.aL(t4, i2.u_sky_color), u_horizon_color: new e.aL(t4, i2.u_horizon_color), u_horizon: new e.aI(t4, i2.u_horizon), u_sky_horizon_blend: new e.aI(t4, i2.u_sky_horizon_blend) }) };
+          })(s2, r2, a2, o2), { u_matrix: t4, u_opacity: i2 }), We = { fillExtrusion: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_lightpos: new e.aN(t4, i2.u_lightpos), u_lightintensity: new e.aI(t4, i2.u_lightintensity), u_lightcolor: new e.aN(t4, i2.u_lightcolor), u_vertical_gradient: new e.aI(t4, i2.u_vertical_gradient), u_opacity: new e.aI(t4, i2.u_opacity) }), fillExtrusionPattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_lightpos: new e.aN(t4, i2.u_lightpos), u_lightintensity: new e.aI(t4, i2.u_lightintensity), u_lightcolor: new e.aN(t4, i2.u_lightcolor), u_vertical_gradient: new e.aI(t4, i2.u_vertical_gradient), u_height_factor: new e.aI(t4, i2.u_height_factor), u_image: new e.aH(t4, i2.u_image), u_texsize: new e.aO(t4, i2.u_texsize), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade), u_opacity: new e.aI(t4, i2.u_opacity) }), fill: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix) }), fillPattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_image: new e.aH(t4, i2.u_image), u_texsize: new e.aO(t4, i2.u_texsize), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade) }), fillOutline: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_world: new e.aO(t4, i2.u_world) }), fillOutlinePattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_world: new e.aO(t4, i2.u_world), u_image: new e.aH(t4, i2.u_image), u_texsize: new e.aO(t4, i2.u_texsize), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade) }), circle: (t4, i2) => ({ u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_scale_with_map: new e.aH(t4, i2.u_scale_with_map), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_extrude_scale: new e.aO(t4, i2.u_extrude_scale), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_matrix: new e.aJ(t4, i2.u_matrix) }), collisionBox: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_pixel_extrude_scale: new e.aO(t4, i2.u_pixel_extrude_scale) }), collisionCircle: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_inv_matrix: new e.aJ(t4, i2.u_inv_matrix), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_viewport_size: new e.aO(t4, i2.u_viewport_size) }), debug: (t4, i2) => ({ u_color: new e.aL(t4, i2.u_color), u_matrix: new e.aJ(t4, i2.u_matrix), u_overlay: new e.aH(t4, i2.u_overlay), u_overlay_scale: new e.aI(t4, i2.u_overlay_scale) }), clippingMask: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix) }), heatmap: (t4, i2) => ({ u_extrude_scale: new e.aI(t4, i2.u_extrude_scale), u_intensity: new e.aI(t4, i2.u_intensity), u_matrix: new e.aJ(t4, i2.u_matrix) }), heatmapTexture: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_world: new e.aO(t4, i2.u_world), u_image: new e.aH(t4, i2.u_image), u_color_ramp: new e.aH(t4, i2.u_color_ramp), u_opacity: new e.aI(t4, i2.u_opacity) }), hillshade: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_image: new e.aH(t4, i2.u_image), u_latrange: new e.aO(t4, i2.u_latrange), u_light: new e.aO(t4, i2.u_light), u_shadow: new e.aL(t4, i2.u_shadow), u_highlight: new e.aL(t4, i2.u_highlight), u_accent: new e.aL(t4, i2.u_accent) }), hillshadePrepare: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_image: new e.aH(t4, i2.u_image), u_dimension: new e.aO(t4, i2.u_dimension), u_zoom: new e.aI(t4, i2.u_zoom), u_unpack: new e.aK(t4, i2.u_unpack) }), line: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels) }), lineGradient: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels), u_image: new e.aH(t4, i2.u_image), u_image_height: new e.aI(t4, i2.u_image_height) }), linePattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_texsize: new e.aO(t4, i2.u_texsize), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_image: new e.aH(t4, i2.u_image), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels), u_scale: new e.aN(t4, i2.u_scale), u_fade: new e.aI(t4, i2.u_fade) }), lineSDF: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ratio: new e.aI(t4, i2.u_ratio), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_units_to_pixels: new e.aO(t4, i2.u_units_to_pixels), u_patternscale_a: new e.aO(t4, i2.u_patternscale_a), u_patternscale_b: new e.aO(t4, i2.u_patternscale_b), u_sdfgamma: new e.aI(t4, i2.u_sdfgamma), u_image: new e.aH(t4, i2.u_image), u_tex_y_a: new e.aI(t4, i2.u_tex_y_a), u_tex_y_b: new e.aI(t4, i2.u_tex_y_b), u_mix: new e.aI(t4, i2.u_mix) }), raster: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_tl_parent: new e.aO(t4, i2.u_tl_parent), u_scale_parent: new e.aI(t4, i2.u_scale_parent), u_buffer_scale: new e.aI(t4, i2.u_buffer_scale), u_fade_t: new e.aI(t4, i2.u_fade_t), u_opacity: new e.aI(t4, i2.u_opacity), u_image0: new e.aH(t4, i2.u_image0), u_image1: new e.aH(t4, i2.u_image1), u_brightness_low: new e.aI(t4, i2.u_brightness_low), u_brightness_high: new e.aI(t4, i2.u_brightness_high), u_saturation_factor: new e.aI(t4, i2.u_saturation_factor), u_contrast_factor: new e.aI(t4, i2.u_contrast_factor), u_spin_weights: new e.aN(t4, i2.u_spin_weights) }), symbolIcon: (t4, i2) => ({ u_is_size_zoom_constant: new e.aH(t4, i2.u_is_size_zoom_constant), u_is_size_feature_constant: new e.aH(t4, i2.u_is_size_feature_constant), u_size_t: new e.aI(t4, i2.u_size_t), u_size: new e.aI(t4, i2.u_size), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_pitch: new e.aI(t4, i2.u_pitch), u_rotate_symbol: new e.aH(t4, i2.u_rotate_symbol), u_aspect_ratio: new e.aI(t4, i2.u_aspect_ratio), u_fade_change: new e.aI(t4, i2.u_fade_change), u_matrix: new e.aJ(t4, i2.u_matrix), u_label_plane_matrix: new e.aJ(t4, i2.u_label_plane_matrix), u_coord_matrix: new e.aJ(t4, i2.u_coord_matrix), u_is_text: new e.aH(t4, i2.u_is_text), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_is_along_line: new e.aH(t4, i2.u_is_along_line), u_is_variable_anchor: new e.aH(t4, i2.u_is_variable_anchor), u_texsize: new e.aO(t4, i2.u_texsize), u_texture: new e.aH(t4, i2.u_texture), u_translation: new e.aO(t4, i2.u_translation), u_pitched_scale: new e.aI(t4, i2.u_pitched_scale) }), symbolSDF: (t4, i2) => ({ u_is_size_zoom_constant: new e.aH(t4, i2.u_is_size_zoom_constant), u_is_size_feature_constant: new e.aH(t4, i2.u_is_size_feature_constant), u_size_t: new e.aI(t4, i2.u_size_t), u_size: new e.aI(t4, i2.u_size), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_pitch: new e.aI(t4, i2.u_pitch), u_rotate_symbol: new e.aH(t4, i2.u_rotate_symbol), u_aspect_ratio: new e.aI(t4, i2.u_aspect_ratio), u_fade_change: new e.aI(t4, i2.u_fade_change), u_matrix: new e.aJ(t4, i2.u_matrix), u_label_plane_matrix: new e.aJ(t4, i2.u_label_plane_matrix), u_coord_matrix: new e.aJ(t4, i2.u_coord_matrix), u_is_text: new e.aH(t4, i2.u_is_text), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_is_along_line: new e.aH(t4, i2.u_is_along_line), u_is_variable_anchor: new e.aH(t4, i2.u_is_variable_anchor), u_texsize: new e.aO(t4, i2.u_texsize), u_texture: new e.aH(t4, i2.u_texture), u_gamma_scale: new e.aI(t4, i2.u_gamma_scale), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_is_halo: new e.aH(t4, i2.u_is_halo), u_translation: new e.aO(t4, i2.u_translation), u_pitched_scale: new e.aI(t4, i2.u_pitched_scale) }), symbolTextAndIcon: (t4, i2) => ({ u_is_size_zoom_constant: new e.aH(t4, i2.u_is_size_zoom_constant), u_is_size_feature_constant: new e.aH(t4, i2.u_is_size_feature_constant), u_size_t: new e.aI(t4, i2.u_size_t), u_size: new e.aI(t4, i2.u_size), u_camera_to_center_distance: new e.aI(t4, i2.u_camera_to_center_distance), u_pitch: new e.aI(t4, i2.u_pitch), u_rotate_symbol: new e.aH(t4, i2.u_rotate_symbol), u_aspect_ratio: new e.aI(t4, i2.u_aspect_ratio), u_fade_change: new e.aI(t4, i2.u_fade_change), u_matrix: new e.aJ(t4, i2.u_matrix), u_label_plane_matrix: new e.aJ(t4, i2.u_label_plane_matrix), u_coord_matrix: new e.aJ(t4, i2.u_coord_matrix), u_is_text: new e.aH(t4, i2.u_is_text), u_pitch_with_map: new e.aH(t4, i2.u_pitch_with_map), u_is_along_line: new e.aH(t4, i2.u_is_along_line), u_is_variable_anchor: new e.aH(t4, i2.u_is_variable_anchor), u_texsize: new e.aO(t4, i2.u_texsize), u_texsize_icon: new e.aO(t4, i2.u_texsize_icon), u_texture: new e.aH(t4, i2.u_texture), u_texture_icon: new e.aH(t4, i2.u_texture_icon), u_gamma_scale: new e.aI(t4, i2.u_gamma_scale), u_device_pixel_ratio: new e.aI(t4, i2.u_device_pixel_ratio), u_is_halo: new e.aH(t4, i2.u_is_halo), u_translation: new e.aO(t4, i2.u_translation), u_pitched_scale: new e.aI(t4, i2.u_pitched_scale) }), background: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_opacity: new e.aI(t4, i2.u_opacity), u_color: new e.aL(t4, i2.u_color) }), backgroundPattern: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_opacity: new e.aI(t4, i2.u_opacity), u_image: new e.aH(t4, i2.u_image), u_pattern_tl_a: new e.aO(t4, i2.u_pattern_tl_a), u_pattern_br_a: new e.aO(t4, i2.u_pattern_br_a), u_pattern_tl_b: new e.aO(t4, i2.u_pattern_tl_b), u_pattern_br_b: new e.aO(t4, i2.u_pattern_br_b), u_texsize: new e.aO(t4, i2.u_texsize), u_mix: new e.aI(t4, i2.u_mix), u_pattern_size_a: new e.aO(t4, i2.u_pattern_size_a), u_pattern_size_b: new e.aO(t4, i2.u_pattern_size_b), u_scale_a: new e.aI(t4, i2.u_scale_a), u_scale_b: new e.aI(t4, i2.u_scale_b), u_pixel_coord_upper: new e.aO(t4, i2.u_pixel_coord_upper), u_pixel_coord_lower: new e.aO(t4, i2.u_pixel_coord_lower), u_tile_units_to_pixels: new e.aI(t4, i2.u_tile_units_to_pixels) }), terrain: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_texture: new e.aH(t4, i2.u_texture), u_ele_delta: new e.aI(t4, i2.u_ele_delta), u_fog_matrix: new e.aJ(t4, i2.u_fog_matrix), u_fog_color: new e.aL(t4, i2.u_fog_color), u_fog_ground_blend: new e.aI(t4, i2.u_fog_ground_blend), u_fog_ground_blend_opacity: new e.aI(t4, i2.u_fog_ground_blend_opacity), u_horizon_color: new e.aL(t4, i2.u_horizon_color), u_horizon_fog_blend: new e.aI(t4, i2.u_horizon_fog_blend) }), terrainDepth: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_ele_delta: new e.aI(t4, i2.u_ele_delta) }), terrainCoords: (t4, i2) => ({ u_matrix: new e.aJ(t4, i2.u_matrix), u_texture: new e.aH(t4, i2.u_texture), u_terrain_coords_id: new e.aI(t4, i2.u_terrain_coords_id), u_ele_delta: new e.aI(t4, i2.u_ele_delta) }), sky: (t4, i2) => ({ u_sky_color: new e.aL(t4, i2.u_sky_color), u_horizon_color: new e.aL(t4, i2.u_horizon_color), u_horizon: new e.aI(t4, i2.u_horizon), u_sky_horizon_blend: new e.aI(t4, i2.u_sky_horizon_blend) }) };
           class $e {
             constructor(t4, e2, i2) {
               this.context = t4;
@@ -236680,7 +236823,7 @@ uniform ${i3} ${a3} u_${s3};
               const i3 = 4 * e2, a3 = t5.circleArray[i3 + 0], s3 = t5.circleArray[i3 + 1], o3 = t5.circleArray[i3 + 2], r3 = t5.circleArray[i3 + 3];
               p2.emplace(m2++, a3, s3, o3, r3, 0), p2.emplace(m2++, a3, s3, o3, r3, 1), p2.emplace(m2++, a3, s3, o3, r3, 2), p2.emplace(m2++, a3, s3, o3, r3, 3);
             }
-            (!Zi || Zi.length < 2 * c2) && (Zi = function(t5) {
+            (!Zi || Zi.length < 2 * c2) && (Zi = (function(t5) {
               const i3 = 2 * t5, a3 = new e.aT();
               a3.resize(i3), a3._trim();
               for (let t6 = 0; t6 < i3; t6++) {
@@ -236688,7 +236831,7 @@ uniform ${i3} ${a3} u_${s3};
                 a3.uint16[e2 + 0] = 4 * t6 + 0, a3.uint16[e2 + 1] = 4 * t6 + 1, a3.uint16[e2 + 2] = 4 * t6 + 2, a3.uint16[e2 + 3] = 4 * t6 + 2, a3.uint16[e2 + 4] = 4 * t6 + 3, a3.uint16[e2 + 5] = 4 * t6 + 0;
               }
               return a3;
-            }(c2));
+            })(c2));
             const f2 = r2.createIndexBuffer(Zi, true), g2 = r2.createVertexBuffer(p2, e.aS.members, true);
             for (const i3 of h2) {
               const s3 = Se(i3.transform, i3.invTransform, t4.transform);
@@ -236780,7 +236923,7 @@ uniform ${i3} ${a3} u_${s3};
                 for (const i3 of t5) P2.push({ segments: new e.a0([i3]), sortKey: i3.sortKey, state: Y2, terrainData: M2 });
               } else P2.push({ segments: u3.segments, sortKey: 0, state: Y2, terrainData: M2 });
             }
-            T2 && P2.sort((t5, e2) => t5.sortKey - e2.sortKey);
+            T2 && P2.sort(((t5, e2) => t5.sortKey - e2.sortKey));
             for (const e2 of P2) {
               const i3 = e2.state;
               if (_2.activeTexture.set(p2.TEXTURE0), i3.atlasTexture.bind(i3.atlasInterpolation, p2.CLAMP_TO_EDGE), i3.atlasTextureIcon && (_2.activeTexture.set(p2.TEXTURE1), i3.atlasTextureIcon && i3.atlasTextureIcon.bind(i3.atlasInterpolationIcon, p2.CLAMP_TO_EDGE)), i3.isSDF) {
@@ -236919,11 +237062,11 @@ uniform ${i3} ${a3} u_${s3};
             s2.activeTexture.set(o2.TEXTURE0);
             const _2 = i2.getTileByID(a2.key).latestRawTileData, p2 = Math.floor((_2 && _2.byteLength || 0) / 1024), m2 = i2.getTile(a2).tileSize, f2 = 512 / Math.min(m2, 512) * (a2.overscaledZ / t4.transform.zoom) * 0.5;
             let g2 = a2.canonical.toString();
-            a2.overscaledZ !== a2.canonical.z && (g2 += ` => ${a2.overscaledZ}`), function(t5, e2) {
+            a2.overscaledZ !== a2.canonical.z && (g2 += ` => ${a2.overscaledZ}`), (function(t5, e2) {
               t5.initDebugOverlayCanvas();
               const i3 = t5.debugOverlayCanvas, a3 = t5.context.gl, s3 = t5.debugOverlayCanvas.getContext("2d");
               s3.clearRect(0, 0, i3.width, i3.height), s3.shadowColor = "white", s3.shadowBlur = 2, s3.lineWidth = 1.5, s3.strokeStyle = "white", s3.textBaseline = "top", s3.font = "bold 36px Open Sans, sans-serif", s3.fillText(e2, 5, 5), s3.strokeText(e2, 5, 5), t5.debugOverlayTexture.update(i3), t5.debugOverlayTexture.bind(a3.LINEAR, a3.CLAMP_TO_EDGE);
-            }(t4, `${g2} ${p2}kB`), n2.draw(s2, o2.TRIANGLES, l2, h2, Fi.alphaBlended, ji.disabled, ze(r2, e.aM.transparent, f2), null, u2, t4.debugBuffer, t4.quadTriangleIndexBuffer, t4.debugSegments), n2.draw(s2, o2.LINE_STRIP, l2, h2, c2, ji.disabled, ze(r2, e.aM.red), d2, u2, t4.debugBuffer, t4.tileBorderIndexBuffer, t4.debugSegments);
+            })(t4, `${g2} ${p2}kB`), n2.draw(s2, o2.TRIANGLES, l2, h2, Fi.alphaBlended, ji.disabled, ze(r2, e.aM.transparent, f2), null, u2, t4.debugBuffer, t4.quadTriangleIndexBuffer, t4.debugSegments), n2.draw(s2, o2.LINE_STRIP, l2, h2, c2, ji.disabled, ze(r2, e.aM.red), d2, u2, t4.debugBuffer, t4.tileBorderIndexBuffer, t4.debugSegments);
           }
           function fa(t4, e2, i2) {
             const a2 = t4.context, s2 = a2.gl, o2 = t4.colorModeForRenderPass(), r2 = new Oi(s2.LEQUAL, Oi.ReadWrite, t4.depthRangeFor3D), n2 = t4.useProgram("terrain"), l2 = e2.getTerrainMesh();
@@ -236994,7 +237137,7 @@ uniform ${i3} ${a3} u_${s3};
               return new Ui({ func: e2.EQUAL, mask: 255 }, this._tileClippingMaskIDs[t4.key], 0, e2.KEEP, e2.KEEP, e2.REPLACE);
             }
             stencilConfigForOverlap(t4) {
-              const e2 = this.context.gl, i2 = t4.sort((t5, e3) => e3.overscaledZ - t5.overscaledZ), a2 = i2[i2.length - 1].overscaledZ, s2 = i2[0].overscaledZ - a2 + 1;
+              const e2 = this.context.gl, i2 = t4.sort(((t5, e3) => e3.overscaledZ - t5.overscaledZ)), a2 = i2[i2.length - 1].overscaledZ, s2 = i2[0].overscaledZ - a2 + 1;
               if (s2 > 1) {
                 this.currentStencilSource = void 0, this.nextStencilID + s2 > 256 && this.clearStencil();
                 const t5 = {};
@@ -237038,7 +237181,7 @@ uniform ${i3} ${a3} u_${s3};
                 const i3 = n2[e2.source];
                 ("custom" === e2.type || i3.length) && this.renderLayer(this, s2[e2.source], e2, i3);
               }
-              if (this.context.bindFramebuffer.set(null), this.context.clear({ color: i2.showOverdrawInspector ? e.aM.black : e.aM.transparent, depth: 1 }), this.clearStencil(), this.style.sky && function(t5, i3) {
+              if (this.context.bindFramebuffer.set(null), this.context.clear({ color: i2.showOverdrawInspector ? e.aM.black : e.aM.transparent, depth: 1 }), this.clearStencil(), this.style.sky && (function(t5, i3) {
                 const a3 = t5.context, s3 = a3.gl, o2 = ((t6, e2, i4) => ({ u_sky_color: t6.properties.get("sky-color"), u_horizon_color: t6.properties.get("horizon-color"), u_horizon: (e2.height / 2 + e2.getHorizon()) * i4, u_sky_horizon_blend: t6.properties.get("sky-horizon-blend") * e2.height / 2 * i4 }))(i3, t5.style.map.transform, t5.pixelRatio), r3 = new Oi(s3.LEQUAL, Oi.ReadWrite, [0, 1]), n3 = Ui.disabled, l3 = t5.colorModeForRenderPass(), h2 = t5.useProgram("sky");
                 if (!i3.mesh) {
                   const t6 = new e.aX();
@@ -237047,7 +237190,7 @@ uniform ${i3} ${a3} u_${s3};
                   s4.emplaceBack(0, 1, 2), s4.emplaceBack(0, 2, 3), i3.mesh = new ga(a3.createVertexBuffer(t6, _e.members), a3.createIndexBuffer(s4), e.a0.simpleSegment(0, 0, t6.length, s4.length));
                 }
                 h2.draw(a3, s3.TRIANGLES, r3, n3, l3, ji.disabled, o2, void 0, "sky", i3.mesh.vertexBuffer, i3.mesh.indexBuffer, i3.mesh.segments);
-              }(this, this.style.sky), this._showOverdrawInspector = i2.showOverdrawInspector, this.depthRangeFor3D = [0, 1 - (t4._order.length + 2) * this.numSublayers * this.depthEpsilon], !this.renderToTexture) for (this.renderPass = "opaque", this.currentLayer = a2.length - 1; this.currentLayer >= 0; this.currentLayer--) {
+              })(this, this.style.sky), this._showOverdrawInspector = i2.showOverdrawInspector, this.depthRangeFor3D = [0, 1 - (t4._order.length + 2) * this.numSublayers * this.depthEpsilon], !this.renderToTexture) for (this.renderPass = "opaque", this.currentLayer = a2.length - 1; this.currentLayer >= 0; this.currentLayer--) {
                 const t5 = this.style._layers[a2[this.currentLayer]], e2 = s2[t5.source], i3 = r2[t5.source];
                 this._renderTileClippingMasks(t5, i3), this.renderLayer(this, e2, t5, i3);
               }
@@ -237058,31 +237201,31 @@ uniform ${i3} ${a3} u_${s3};
                 this._renderTileClippingMasks(t5, r2[t5.source]), this.renderLayer(this, e2, t5, i3);
               }
               if (this.options.showTileBoundaries) {
-                const t5 = function(t6, e2) {
+                const t5 = (function(t6, e2) {
                   let i3 = null;
-                  const a3 = Object.values(t6._layers).flatMap((i4) => i4.source && !i4.isHidden(e2) ? [t6.sourceCaches[i4.source]] : []), s3 = a3.filter((t7) => "vector" === t7.getSource().type), o2 = a3.filter((t7) => "vector" !== t7.getSource().type), r3 = (t7) => {
+                  const a3 = Object.values(t6._layers).flatMap(((i4) => i4.source && !i4.isHidden(e2) ? [t6.sourceCaches[i4.source]] : [])), s3 = a3.filter(((t7) => "vector" === t7.getSource().type)), o2 = a3.filter(((t7) => "vector" !== t7.getSource().type)), r3 = (t7) => {
                     (!i3 || i3.getSource().maxzoom < t7.getSource().maxzoom) && (i3 = t7);
                   };
-                  return s3.forEach((t7) => r3(t7)), i3 || o2.forEach((t7) => r3(t7)), i3;
-                }(this.style, this.transform.zoom);
-                t5 && function(t6, e2, i3) {
+                  return s3.forEach(((t7) => r3(t7))), i3 || o2.forEach(((t7) => r3(t7))), i3;
+                })(this.style, this.transform.zoom);
+                t5 && (function(t6, e2, i3) {
                   for (let a3 = 0; a3 < i3.length; a3++) ma(t6, e2, i3[a3]);
-                }(this, t5, t5.getVisibleCoordinates());
+                })(this, t5, t5.getVisibleCoordinates());
               }
-              this.options.showPadding && function(t5) {
+              this.options.showPadding && (function(t5) {
                 const e2 = t5.transform.padding;
                 da(t5, t5.transform.height - (e2.top || 0), 3, na), da(t5, e2.bottom || 0, 3, la), _a(t5, e2.left || 0, 3, ha), _a(t5, t5.transform.width - (e2.right || 0), 3, ca);
                 const i3 = t5.transform.centerPoint;
-                !function(t6, e3, i4, a3) {
+                !(function(t6, e3, i4, a3) {
                   pa(t6, e3 - 1, i4 - 10, 2, 20, a3), pa(t6, e3 - 10, i4 - 1, 20, 2, a3);
-                }(t5, i3.x, t5.transform.height - i3.y, ua);
-              }(this), this.context.setDefault();
+                })(t5, i3.x, t5.transform.height - i3.y, ua);
+              })(this), this.context.setDefault();
             }
             maybeDrawDepthAndCoords(t4) {
               if (!this.style || !this.style.map || !this.style.map.terrain) return;
               const i2 = this.terrainFacilitator.matrix, a2 = this.transform.modelViewProjectionMatrix;
               let s2 = this.terrainFacilitator.dirty;
-              s2 || (s2 = t4 ? !e.a_(i2, a2) : !e.a$(i2, a2)), s2 || (s2 = this.style.map.terrain.sourceCache.tilesAfterTime(this.terrainFacilitator.renderTime).length > 0), s2 && (e.b0(i2, a2), this.terrainFacilitator.renderTime = Date.now(), this.terrainFacilitator.dirty = false, function(t5, i3) {
+              s2 || (s2 = t4 ? !e.a_(i2, a2) : !e.a$(i2, a2)), s2 || (s2 = this.style.map.terrain.sourceCache.tilesAfterTime(this.terrainFacilitator.renderTime).length > 0), s2 && (e.b0(i2, a2), this.terrainFacilitator.renderTime = Date.now(), this.terrainFacilitator.dirty = false, (function(t5, i3) {
                 const a3 = t5.context, s3 = a3.gl, o2 = Fi.unblended, r2 = new Oi(s3.LEQUAL, Oi.ReadWrite, [0, 1]), n2 = i3.getTerrainMesh(), l2 = i3.sourceCache.getRenderableTiles(), h2 = t5.useProgram("terrainDepth");
                 a3.bindFramebuffer.set(i3.getFramebuffer("depth").framebuffer), a3.viewport.set([0, 0, t5.width / devicePixelRatio, t5.height / devicePixelRatio]), a3.clear({ color: e.aM.transparent, depth: 1 });
                 for (const e2 of l2) {
@@ -237090,7 +237233,7 @@ uniform ${i3} ${a3} u_${s3};
                   h2.draw(a3, s3.TRIANGLES, r2, Ui.disabled, o2, ji.backCCW, c2, l3, "terrain", n2.vertexBuffer, n2.indexBuffer, n2.segments);
                 }
                 a3.bindFramebuffer.set(null), a3.viewport.set([0, 0, t5.width, t5.height]);
-              }(this, this.style.map.terrain), function(t5, i3) {
+              })(this, this.style.map.terrain), (function(t5, i3) {
                 const a3 = t5.context, s3 = a3.gl, o2 = Fi.unblended, r2 = new Oi(s3.LEQUAL, Oi.ReadWrite, [0, 1]), n2 = i3.getTerrainMesh(), l2 = i3.getCoordsTexture(), h2 = i3.sourceCache.getRenderableTiles(), c2 = t5.useProgram("terrainCoords");
                 a3.bindFramebuffer.set(i3.getFramebuffer("coords").framebuffer), a3.viewport.set([0, 0, t5.width / devicePixelRatio, t5.height / devicePixelRatio]), a3.clear({ color: e.aM.transparent, depth: 1 }), i3.coordsIndex = [];
                 for (const e2 of h2) {
@@ -237100,15 +237243,15 @@ uniform ${i3} ${a3} u_${s3};
                   c2.draw(a3, s3.TRIANGLES, r2, Ui.disabled, o2, ji.backCCW, u2, h3, "terrain", n2.vertexBuffer, n2.indexBuffer, n2.segments), i3.coordsIndex.push(e2.tileID.key);
                 }
                 a3.bindFramebuffer.set(null), a3.viewport.set([0, 0, t5.width, t5.height]);
-              }(this, this.style.map.terrain));
+              })(this, this.style.map.terrain));
             }
             renderLayer(t4, i2, a2, s2) {
               if (!a2.isHidden(this.transform.zoom) && ("background" === a2.type || "custom" === a2.type || (s2 || []).length)) switch (this.id = a2.id, a2.type) {
                 case "symbol":
-                  !function(t5, i3, a3, s3, o2) {
+                  !(function(t5, i3, a3, s3, o2) {
                     if ("translucent" !== t5.renderPass) return;
                     const r2 = Ui.disabled, n2 = t5.colorModeForRenderPass();
-                    (a3._unevaluatedLayout.hasValue("text-variable-anchor") || a3._unevaluatedLayout.hasValue("text-variable-anchor-offset")) && function(t6, i4, a4, s4, o3, r3, n3, l2, h2) {
+                    (a3._unevaluatedLayout.hasValue("text-variable-anchor") || a3._unevaluatedLayout.hasValue("text-variable-anchor-offset")) && (function(t6, i4, a4, s4, o3, r3, n3, l2, h2) {
                       const c2 = i4.transform, u2 = ie(), d2 = "map" === o3, _2 = "map" === r3;
                       for (const o4 of t6) {
                         const t7 = s4.getTile(o4), r4 = t7.getBucket(a4);
@@ -237119,11 +237262,11 @@ uniform ${i3} ${a3} u_${s3};
                           Wi(r4, d2, _2, h2, c2, f2, o4.posMatrix, e2, p2, g2, u2, s5, o4.toUnwrapped(), a5);
                         }
                       }
-                    }(s3, t5, a3, i3, a3.layout.get("text-rotation-alignment"), a3.layout.get("text-pitch-alignment"), a3.paint.get("text-translate"), a3.paint.get("text-translate-anchor"), o2), 0 !== a3.paint.get("icon-opacity").constantOr(1) && Xi(t5, i3, a3, s3, false, a3.paint.get("icon-translate"), a3.paint.get("icon-translate-anchor"), a3.layout.get("icon-rotation-alignment"), a3.layout.get("icon-pitch-alignment"), a3.layout.get("icon-keep-upright"), r2, n2), 0 !== a3.paint.get("text-opacity").constantOr(1) && Xi(t5, i3, a3, s3, true, a3.paint.get("text-translate"), a3.paint.get("text-translate-anchor"), a3.layout.get("text-rotation-alignment"), a3.layout.get("text-pitch-alignment"), a3.layout.get("text-keep-upright"), r2, n2), i3.map.showCollisionBoxes && (qi(t5, i3, a3, s3, true), qi(t5, i3, a3, s3, false));
-                  }(t4, i2, a2, s2, this.style.placement.variableOffsets);
+                    })(s3, t5, a3, i3, a3.layout.get("text-rotation-alignment"), a3.layout.get("text-pitch-alignment"), a3.paint.get("text-translate"), a3.paint.get("text-translate-anchor"), o2), 0 !== a3.paint.get("icon-opacity").constantOr(1) && Xi(t5, i3, a3, s3, false, a3.paint.get("icon-translate"), a3.paint.get("icon-translate-anchor"), a3.layout.get("icon-rotation-alignment"), a3.layout.get("icon-pitch-alignment"), a3.layout.get("icon-keep-upright"), r2, n2), 0 !== a3.paint.get("text-opacity").constantOr(1) && Xi(t5, i3, a3, s3, true, a3.paint.get("text-translate"), a3.paint.get("text-translate-anchor"), a3.layout.get("text-rotation-alignment"), a3.layout.get("text-pitch-alignment"), a3.layout.get("text-keep-upright"), r2, n2), i3.map.showCollisionBoxes && (qi(t5, i3, a3, s3, true), qi(t5, i3, a3, s3, false));
+                  })(t4, i2, a2, s2, this.style.placement.variableOffsets);
                   break;
                 case "circle":
-                  !function(t5, i3, a3, s3) {
+                  !(function(t5, i3, a3, s3) {
                     if ("translucent" !== t5.renderPass) return;
                     const o2 = a3.paint.get("circle-opacity"), r2 = a3.paint.get("circle-stroke-width"), n2 = a3.paint.get("circle-stroke-opacity"), l2 = !a3.layout.get("circle-sort-key").isConstant();
                     if (0 === o2.constantOr(1) && (0 === r2.constantOr(1) || 0 === n2.constantOr(1))) return;
@@ -237137,15 +237280,15 @@ uniform ${i3} ${a3} u_${s3};
                         for (const i4 of t6) p2.push({ segments: new e.a0([i4]), sortKey: i4.sortKey, state: f2 });
                       } else p2.push({ segments: h3.segments, sortKey: 0, state: f2 });
                     }
-                    l2 && p2.sort((t6, e2) => t6.sortKey - e2.sortKey);
+                    l2 && p2.sort(((t6, e2) => t6.sortKey - e2.sortKey));
                     for (const e2 of p2) {
                       const { programConfiguration: i4, program: s4, layoutVertexBuffer: o3, indexBuffer: r3, uniformValues: n3, terrainData: l3 } = e2.state;
                       s4.draw(h2, c2.TRIANGLES, u2, d2, _2, ji.disabled, n3, l3, a3.id, o3, r3, e2.segments, a3.paint, t5.transform.zoom, i4);
                     }
-                  }(t4, i2, a2, s2);
+                  })(t4, i2, a2, s2);
                   break;
                 case "heatmap":
-                  !function(t5, i3, a3, s3) {
+                  !(function(t5, i3, a3, s3) {
                     if (0 === a3.paint.get("heatmap-opacity")) return;
                     const o2 = t5.context;
                     if (t5.style.map.terrain) {
@@ -237154,7 +237297,7 @@ uniform ${i3} ${a3} u_${s3};
                         i3.hasRenderableParent(e2) || ("offscreen" === t5.renderPass ? Ji(t5, s4, a3, e2) : "translucent" === t5.renderPass && Yi(t5, a3, e2));
                       }
                       o2.viewport.set([0, 0, t5.width, t5.height]);
-                    } else "offscreen" === t5.renderPass ? function(t6, i4, a4, s4) {
+                    } else "offscreen" === t5.renderPass ? (function(t6, i4, a4, s4) {
                       const o3 = t6.context, r2 = o3.gl, n2 = Ui.disabled, l2 = new Fi([r2.ONE, r2.ONE], e.aM.transparent, [true, true, true, true]);
                       (function(t7, i5, a5) {
                         const s5 = t7.gl;
@@ -237171,16 +237314,16 @@ uniform ${i3} ${a3} u_${s3};
                         _2.draw(o3, r2.TRIANGLES, Oi.disabled, n2, l2, ji.disabled, Me(h2.posMatrix, c2, p2, a4.paint.get("heatmap-intensity")), null, a4.id, u2.layoutVertexBuffer, u2.indexBuffer, u2.segments, a4.paint, t6.transform.zoom, d2);
                       }
                       o3.viewport.set([0, 0, t6.width, t6.height]);
-                    }(t5, i3, a3, s3) : "translucent" === t5.renderPass && function(t6, i4) {
+                    })(t5, i3, a3, s3) : "translucent" === t5.renderPass && (function(t6, i4) {
                       const a4 = t6.context, s4 = a4.gl;
                       a4.setColorMode(t6.colorModeForRenderPass());
                       const o3 = i4.heatmapFbos.get(e.aU);
                       o3 && (a4.activeTexture.set(s4.TEXTURE0), s4.bindTexture(s4.TEXTURE_2D, o3.colorAttachment.get()), a4.activeTexture.set(s4.TEXTURE1), ta(a4, i4).bind(s4.LINEAR, s4.CLAMP_TO_EDGE), t6.useProgram("heatmapTexture").draw(a4, s4.TRIANGLES, Oi.disabled, Ui.disabled, t6.colorModeForRenderPass(), ji.disabled, Ae(t6, i4, 0, 1), null, i4.id, t6.viewportBuffer, t6.quadTriangleIndexBuffer, t6.viewportSegments, i4.paint, t6.transform.zoom));
-                    }(t5, a3);
-                  }(t4, i2, a2, s2);
+                    })(t5, a3);
+                  })(t4, i2, a2, s2);
                   break;
                 case "line":
-                  !function(t5, i3, a3, s3) {
+                  !(function(t5, i3, a3, s3) {
                     if ("translucent" !== t5.renderPass) return;
                     const o2 = a3.paint.get("line-opacity"), r2 = a3.paint.get("line-width");
                     if (0 === o2.constantOr(1) || 0 === r2.constantOr(1)) return;
@@ -237214,10 +237357,10 @@ uniform ${i3} ${a3} u_${s3};
                       }
                       y2.draw(m2, f2.TRIANGLES, n2, t5.stencilModeForClipping(o3), l2, ji.disabled, P2, T2, a3.id, r3.layoutVertexBuffer, r3.indexBuffer, r3.segments, a3.paint, t5.transform.zoom, v2, r3.layoutVertexBuffer2), g2 = false;
                     }
-                  }(t4, i2, a2, s2);
+                  })(t4, i2, a2, s2);
                   break;
                 case "fill":
-                  !function(t5, i3, a3, s3) {
+                  !(function(t5, i3, a3, s3) {
                     const o2 = a3.paint.get("fill-color"), r2 = a3.paint.get("fill-opacity");
                     if (0 === r2.constantOr(1)) return;
                     const n2 = t5.colorModeForRenderPass(), l2 = a3.paint.get("fill-pattern"), h2 = t5.opaquePassEnabledForLayer() && !l2.constantOr(1) && 1 === o2.constantOr(e.aM.transparent).a && 1 === r2.constantOr(0) ? "opaque" : "translucent";
@@ -237229,10 +237372,10 @@ uniform ${i3} ${a3} u_${s3};
                       const e2 = t5.depthModeForSublayer(a3.getPaintProperty("fill-outline-color") ? 2 : 0, Oi.ReadOnly);
                       ia(t5, i3, a3, s3, e2, n2, true);
                     }
-                  }(t4, i2, a2, s2);
+                  })(t4, i2, a2, s2);
                   break;
                 case "fill-extrusion":
-                  !function(t5, e2, i3, a3) {
+                  !(function(t5, e2, i3, a3) {
                     const s3 = i3.paint.get("fill-extrusion-opacity");
                     if (0 !== s3 && "translucent" === t5.renderPass) {
                       const o2 = new Oi(t5.context.gl.LEQUAL, Oi.ReadWrite, t5.depthRangeFor3D);
@@ -237242,10 +237385,10 @@ uniform ${i3} ${a3} u_${s3};
                         aa(t5, e2, i3, a3, o2, Ui.disabled, s4);
                       }
                     }
-                  }(t4, i2, a2, s2);
+                  })(t4, i2, a2, s2);
                   break;
                 case "hillshade":
-                  !function(t5, e2, i3, a3) {
+                  !(function(t5, e2, i3, a3) {
                     if ("offscreen" !== t5.renderPass && "translucent" !== t5.renderPass) return;
                     const s3 = t5.context, o2 = t5.depthModeForSublayer(0, Oi.ReadOnly), r2 = t5.colorModeForRenderPass(), [n2, l2] = "translucent" === t5.renderPass ? t5.stencilConfigForOverlap(a3) : [{}, a3];
                     for (const a4 of l2) {
@@ -237253,10 +237396,10 @@ uniform ${i3} ${a3} u_${s3};
                       void 0 !== s4.needsHillshadePrepare && s4.needsHillshadePrepare && "offscreen" === t5.renderPass ? oa(t5, s4, i3, o2, Ui.disabled, r2) : "translucent" === t5.renderPass && sa(t5, a4, s4, i3, o2, n2[a4.overscaledZ], r2);
                     }
                     s3.viewport.set([0, 0, t5.width, t5.height]);
-                  }(t4, i2, a2, s2);
+                  })(t4, i2, a2, s2);
                   break;
                 case "raster":
-                  !function(t5, e2, i3, a3) {
+                  !(function(t5, e2, i3, a3) {
                     if ("translucent" !== t5.renderPass) return;
                     if (0 === i3.paint.get("raster-opacity")) return;
                     if (!a3.length) return;
@@ -237271,10 +237414,10 @@ uniform ${i3} ${a3} u_${s3};
                       const y2 = t5.style.map.terrain && t5.style.map.terrain.getTerrainData(a4), b2 = y2 ? a4 : null, w2 = b2 ? b2.posMatrix : t5.transform.calculatePosMatrix(a4.toUnwrapped(), d2), T2 = Ue(w2, v2 || [0, 0], g2 || 1, f2, i3);
                       r2 instanceof Q ? n2.draw(s3, o2.TRIANGLES, c3, Ui.disabled, l2, ji.disabled, T2, y2, i3.id, r2.boundsBuffer, t5.quadTriangleIndexBuffer, r2.boundsSegments) : n2.draw(s3, o2.TRIANGLES, c3, h2[a4.overscaledZ], l2, ji.disabled, T2, y2, i3.id, t5.rasterBoundsBuffer, t5.quadTriangleIndexBuffer, t5.rasterBoundsSegments);
                     }
-                  }(t4, i2, a2, s2);
+                  })(t4, i2, a2, s2);
                   break;
                 case "background":
-                  !function(t5, e2, i3, a3) {
+                  !(function(t5, e2, i3, a3) {
                     const s3 = i3.paint.get("background-color"), o2 = i3.paint.get("background-opacity");
                     if (0 === o2) return;
                     const r2 = t5.context, n2 = r2.gl, l2 = t5.transform, h2 = l2.tileSize, c2 = i3.paint.get("background-pattern");
@@ -237288,10 +237431,10 @@ uniform ${i3} ${a3} u_${s3};
                       const l3 = a3 ? e3.posMatrix : t5.transform.calculatePosMatrix(e3.toUnwrapped()), u3 = c2 ? He(l3, o2, t5, c2, { tileID: e3, tileSize: h2 }, g2) : Ge(l3, o2, s3), f3 = t5.style.map.terrain && t5.style.map.terrain.getTerrainData(e3);
                       m2.draw(r2, n2.TRIANGLES, _2, d2, p2, ji.disabled, u3, f3, i3.id, t5.tileExtentBuffer, t5.quadTriangleIndexBuffer, t5.tileExtentSegments);
                     }
-                  }(t4, 0, a2, s2);
+                  })(t4, 0, a2, s2);
                   break;
                 case "custom":
-                  !function(t5, e2, i3) {
+                  !(function(t5, e2, i3) {
                     const a3 = t5.context, s3 = i3.implementation;
                     if ("offscreen" === t5.renderPass) {
                       const e3 = s3.prerender;
@@ -237301,7 +237444,7 @@ uniform ${i3} ${a3} u_${s3};
                       const e3 = "3d" === s3.renderingMode ? new Oi(t5.context.gl.LEQUAL, Oi.ReadWrite, t5.depthRangeFor3D) : t5.depthModeForSublayer(0, Oi.ReadOnly);
                       a3.setDepthMode(e3), s3.render(a3.gl, t5.transform.customLayerMatrix(), { farZ: t5.transform.farZ, nearZ: t5.transform.nearZ, fov: t5.transform._fov, modelViewProjectionMatrix: t5.transform.modelViewProjectionMatrix, projectionMatrix: t5.transform.projectionMatrix }), a3.setDirty(), t5.setBaseState(), a3.bindFramebuffer.set(null);
                     }
-                  }(t4, 0, a2);
+                  })(t4, 0, a2);
               }
             }
             translatePosMatrix(t4, i2, a2, s2, o2) {
@@ -237356,30 +237499,30 @@ uniform ${i3} ${a3} u_${s3};
               this.points = t4, this.planes = e2;
             }
             static fromInvProjectionMatrix(t4, i2, a2) {
-              const s2 = Math.pow(2, a2), o2 = [[-1, 1, -1, 1], [1, 1, -1, 1], [1, -1, -1, 1], [-1, -1, -1, 1], [-1, 1, 1, 1], [1, 1, 1, 1], [1, -1, 1, 1], [-1, -1, 1, 1]].map((a3) => {
+              const s2 = Math.pow(2, a2), o2 = [[-1, 1, -1, 1], [1, 1, -1, 1], [1, -1, -1, 1], [-1, -1, -1, 1], [-1, 1, 1, 1], [1, 1, 1, 1], [1, -1, 1, 1], [-1, -1, 1, 1]].map(((a3) => {
                 const o3 = 1 / (a3 = e.af([], a3, t4))[3] / i2 * s2;
                 return e.b1(a3, a3, [o3, o3, 1 / a3[3], o3]);
-              }), r2 = [[0, 1, 2], [6, 5, 4], [0, 3, 7], [2, 1, 5], [3, 2, 6], [0, 4, 5]].map((t5) => {
-                const e2 = function(t6, e3) {
+              })), r2 = [[0, 1, 2], [6, 5, 4], [0, 3, 7], [2, 1, 5], [3, 2, 6], [0, 4, 5]].map(((t5) => {
+                const e2 = (function(t6, e3) {
                   var i4 = e3[0], a4 = e3[1], s4 = e3[2], o3 = i4 * i4 + a4 * a4 + s4 * s4;
                   return o3 > 0 && (o3 = 1 / Math.sqrt(o3)), t6[0] = e3[0] * o3, t6[1] = e3[1] * o3, t6[2] = e3[2] * o3, t6;
-                }([], function(t6, e3, i4) {
+                })([], (function(t6, e3, i4) {
                   var a4 = e3[0], s4 = e3[1], o3 = e3[2], r3 = i4[0], n2 = i4[1], l2 = i4[2];
                   return t6[0] = s4 * l2 - o3 * n2, t6[1] = o3 * r3 - a4 * l2, t6[2] = a4 * n2 - s4 * r3, t6;
-                }([], g([], o2[t5[0]], o2[t5[1]]), g([], o2[t5[2]], o2[t5[1]]))), i3 = -((a3 = e2)[0] * (s3 = o2[t5[1]])[0] + a3[1] * s3[1] + a3[2] * s3[2]);
+                })([], g([], o2[t5[0]], o2[t5[1]]), g([], o2[t5[2]], o2[t5[1]]))), i3 = -((a3 = e2)[0] * (s3 = o2[t5[1]])[0] + a3[1] * s3[1] + a3[2] * s3[2]);
                 var a3, s3;
                 return e2.concat(i3);
-              });
+              }));
               return new xa(o2, r2);
             }
           }
           class ya {
             constructor(t4, e2) {
-              this.min = t4, this.max = e2, this.center = function(t5, e3, i2) {
+              this.min = t4, this.max = e2, this.center = (function(t5, e3, i2) {
                 return t5[0] = 0.5 * e3[0], t5[1] = 0.5 * e3[1], t5[2] = 0.5 * e3[2], t5;
-              }([], function(t5, e3, i2) {
+              })([], (function(t5, e3, i2) {
                 return t5[0] = e3[0] + i2[0], t5[1] = e3[1] + i2[1], t5[2] = e3[2] + i2[2], t5;
-              }([], this.min, this.max));
+              })([], this.min, this.max));
             }
             quadrant(t4) {
               const e2 = [t4 % 2 == 0, t4 < 2], i2 = m(this.min), a2 = m(this.max);
@@ -237492,13 +237635,13 @@ uniform ${i3} ${a3} u_${s3};
             }
             set bearing(t4) {
               const i2 = -e.b3(t4, -180, 180) * Math.PI / 180;
-              this.angle !== i2 && (this._unmodified = false, this.angle = i2, this._calcMatrices(), this.rotationMatrix = function() {
+              this.angle !== i2 && (this._unmodified = false, this.angle = i2, this._calcMatrices(), this.rotationMatrix = (function() {
                 var t5 = new e.A(4);
                 return e.A != Float32Array && (t5[1] = 0, t5[2] = 0), t5[0] = 1, t5[3] = 1, t5;
-              }(), function(t5, e2, i3) {
+              })(), (function(t5, e2, i3) {
                 var a2 = e2[0], s2 = e2[1], o2 = e2[2], r2 = e2[3], n2 = Math.sin(i3), l2 = Math.cos(i3);
                 t5[0] = a2 * l2 + o2 * n2, t5[1] = s2 * l2 + r2 * n2, t5[2] = a2 * -n2 + o2 * l2, t5[3] = s2 * -n2 + r2 * l2;
-              }(this.rotationMatrix, this.rotationMatrix, this.angle));
+              })(this.rotationMatrix, this.rotationMatrix, this.angle));
             }
             get pitch() {
               return this._pitch / Math.PI * 180;
@@ -237592,7 +237735,7 @@ uniform ${i3} ${a3} u_${s3};
                   m2.push({ aabb: d3, zoom: u3, x: h3, y: c3, wrap: s3.wrap, fullyVisible: n3 });
                 }
               }
-              return f2.sort((t5, e2) => t5.distanceSq - e2.distanceSq).map((t5) => t5.tileID);
+              return f2.sort(((t5, e2) => t5.distanceSq - e2.distanceSq)).map(((t5) => t5.tileID));
             }
             resize(t4, e2) {
               this.width = t4, this.height = e2, this.pixelsToGLUnits = [2 / t4, -2 / e2], this._constrain(), this._calcMatrices();
@@ -237781,14 +237924,14 @@ uniform ${i3} ${a3} u_${s3};
                 const t5 = window.location.hash.replace("#", "");
                 if (this._hashName) {
                   let e2;
-                  return t5.split("&").map((t6) => t6.split("=")).forEach((t6) => {
+                  return t5.split("&").map(((t6) => t6.split("="))).forEach(((t6) => {
                     t6[0] === this._hashName && (e2 = t6);
-                  }), (e2 && e2[1] || "").split("/");
+                  })), (e2 && e2[1] || "").split("/");
                 }
                 return t5.split("/");
               }, this._onHashChange = () => {
                 const t5 = this._getCurrentHash();
-                if (t5.length >= 3 && !t5.some((t6) => isNaN(t6))) {
+                if (t5.length >= 3 && !t5.some(((t6) => isNaN(t6)))) {
                   const e2 = this._map.dragRotate.isEnabled() && this._map.touchZoomRotate.isEnabled() ? +(t5[3] || 0) : this._map.getBearing();
                   return this._map.jumpTo({ center: [+t5[2], +t5[1]], zoom: +t5[0], bearing: e2, pitch: +(t5[4] || 0) }), true;
                 }
@@ -237820,10 +237963,10 @@ uniform ${i3} ${a3} u_${s3};
               if (h2 += t4 ? `/${o2}/${r2}/${i2}` : `${i2}/${r2}/${o2}`, (n2 || l2) && (h2 += "/" + Math.round(10 * n2) / 10), l2 && (h2 += `/${Math.round(l2)}`), this._hashName) {
                 const t5 = this._hashName;
                 let e3 = false;
-                const i3 = window.location.hash.slice(1).split("&").map((i4) => {
+                const i3 = window.location.hash.slice(1).split("&").map(((i4) => {
                   const a3 = i4.split("=")[0];
                   return a3 === t5 ? (e3 = true, `${a3}=${h2}`) : i4;
-                }).filter((t6) => t6);
+                })).filter(((t6) => t6));
                 return e3 || i3.push(`${t5}=${h2}`), `#${i3.join("&")}`;
               }
               return `#${h2}`;
@@ -237899,7 +238042,7 @@ uniform ${i3} ${a3} u_${s3};
               return this._defaultPrevented;
             }
             constructor(t4, i2, a2) {
-              const s2 = "touchend" === t4 ? a2.changedTouches : a2.touches, o2 = r.touchPos(i2.getCanvasContainer(), s2), n2 = o2.map((t5) => i2.unproject(t5)), l2 = o2.reduce((t5, e2, i3, a3) => t5.add(e2.div(a3.length)), new e.P(0, 0));
+              const s2 = "touchend" === t4 ? a2.changedTouches : a2.touches, o2 = r.touchPos(i2.getCanvasContainer(), s2), n2 = o2.map(((t5) => i2.unproject(t5))), l2 = o2.reduce(((t5, e2, i3, a3) => t5.add(e2.div(a3.length))), new e.P(0, 0));
               super(t4, { points: o2, point: l2, lngLats: n2, lngLat: i2.unproject(l2), originalEvent: a2 }), this._defaultPrevented = false;
             }
           }
@@ -238080,11 +238223,11 @@ uniform ${i3} ${a3} u_${s3};
               delete this.centroid, delete this.startTime, delete this.touches, this.aborted = false;
             }
             touchstart(t4, i2, a2) {
-              (this.centroid || a2.length > this.numTouches) && (this.aborted = true), this.aborted || (void 0 === this.startTime && (this.startTime = t4.timeStamp), a2.length === this.numTouches && (this.centroid = function(t5) {
+              (this.centroid || a2.length > this.numTouches) && (this.aborted = true), this.aborted || (void 0 === this.startTime && (this.startTime = t4.timeStamp), a2.length === this.numTouches && (this.centroid = (function(t5) {
                 const i3 = new e.P(0, 0);
                 for (const e2 of t5) i3._add(e2);
                 return i3.div(t5.length);
-              }(i2), this.touches = ja(a2, i2)));
+              })(i2), this.touches = ja(a2, i2)));
             }
             touchmove(t4, e2, i2) {
               if (this.aborted || !this.centroid) return;
@@ -238137,7 +238280,7 @@ uniform ${i3} ${a3} u_${s3};
             }
             touchend(t4, e2, i2) {
               const a2 = this._zoomIn.touchend(t4, e2, i2), s2 = this._zoomOut.touchend(t4, e2, i2), o2 = this._tr;
-              return a2 ? (this._active = true, t4.preventDefault(), setTimeout(() => this.reset(), 0), { cameraAnimation: (e3) => e3.easeTo({ duration: 300, zoom: o2.zoom + 1, around: o2.unproject(a2) }, { originalEvent: t4 }) }) : s2 ? (this._active = true, t4.preventDefault(), setTimeout(() => this.reset(), 0), { cameraAnimation: (e3) => e3.easeTo({ duration: 300, zoom: o2.zoom - 1, around: o2.unproject(s2) }, { originalEvent: t4 }) }) : void 0;
+              return a2 ? (this._active = true, t4.preventDefault(), setTimeout((() => this.reset()), 0), { cameraAnimation: (e3) => e3.easeTo({ duration: 300, zoom: o2.zoom + 1, around: o2.unproject(a2) }, { originalEvent: t4 }) }) : s2 ? (this._active = true, t4.preventDefault(), setTimeout((() => this.reset()), 0), { cameraAnimation: (e3) => e3.easeTo({ duration: 300, zoom: o2.zoom - 1, around: o2.unproject(s2) }, { originalEvent: t4 }) }) : void 0;
             }
             touchcancel() {
               this.reset();
@@ -238212,10 +238355,10 @@ uniform ${i3} ${a3} u_${s3};
               return this._correctEvent(t4);
             }
             isValidMoveEvent(t4) {
-              return !function(t5, e2) {
+              return !(function(t5, e2) {
                 const i2 = Ha[e2];
                 return void 0 === t5.buttons || (t5.buttons & i2) !== i2;
-              }(t4, this._eventButton);
+              })(t4, this._eventButton);
             }
             isValidEndEvent(t4) {
               return r.mouseButton(t4) === this._eventButton;
@@ -238544,9 +238687,9 @@ uniform ${i3} ${a3} u_${s3};
                 const t5 = Math.min(l2 / 200, 1), o2 = s2(t5);
                 r2 = e.y.number(a2, i2, o2), t5 < 1 ? this._frameId || (this._frameId = true) : n2 = true;
               } else r2 = i2, n2 = true;
-              return this._active = true, n2 && (this._active = false, this._finishTimeout = setTimeout(() => {
+              return this._active = true, n2 && (this._active = false, this._finishTimeout = setTimeout((() => {
                 this._zooming = false, this._triggerRenderFrame(), delete this._targetZoom, delete this._finishTimeout;
-              }, 200)), { noInertia: true, needsRenderFrame: !n2, zoomDelta: r2 - t4.zoom, around: this._aroundPoint, originalEvent: this._lastWheelEvent };
+              }), 200)), { noInertia: true, needsRenderFrame: !n2, zoomDelta: r2 - t4.zoom, around: this._aroundPoint, originalEvent: this._lastWheelEvent };
             }
             _smoothOutEasing(t4) {
               let i2 = e.b9;
@@ -238740,9 +238883,9 @@ uniform ${i3} ${a3} u_${s3};
               return t4[this._bypassKey];
             }
             notifyGestureBlocked(t4, i2) {
-              this._enabled && (this._map.fire(new e.k("cooperativegestureprevented", { gestureType: t4, originalEvent: i2 })), this._container.classList.add("maplibregl-show"), setTimeout(() => {
+              this._enabled && (this._map.fire(new e.k("cooperativegestureprevented", { gestureType: t4, originalEvent: i2 })), this._container.classList.add("maplibregl-show"), setTimeout((() => {
                 this._container.classList.remove("maplibregl-show");
-              }, 100));
+              }), 100));
             }
           }
           const xs = (t4) => t4.zoom || t4.drag || t4.pitch || t4.rotate;
@@ -238799,7 +238942,7 @@ uniform ${i3} ${a3} u_${s3};
               e2.dragPan = new ms(i2, d2, _2), this._add("mousePan", d2), this._add("touchPan", _2, ["touchZoom", "touchRotate"]), t4.interactive && t4.dragPan && e2.dragPan.enable(t4.dragPan);
               const p2 = new ss(), m2 = new is();
               e2.touchZoomRotate = new gs(i2, m2, p2, l2), this._add("touchRotate", p2, ["touchPan", "touchZoom"]), this._add("touchZoom", m2, ["touchPan", "touchRotate"]), t4.interactive && t4.touchZoomRotate && e2.touchZoomRotate.enable(t4.touchZoomRotate);
-              const f2 = e2.scrollZoom = new us(e2, () => this._triggerRenderFrame());
+              const f2 = e2.scrollZoom = new us(e2, (() => this._triggerRenderFrame()));
               this._add("scrollZoom", f2, ["mousePan"]), t4.interactive && t4.scrollZoom && e2.scrollZoom.enable(t4.scrollZoom);
               const g2 = e2.keyboard = new ls(e2);
               this._add("keyboard", g2), t4.interactive && t4.keyboard && e2.keyboard.enable(), this._add("blockableMapEvent", new Oa(e2));
@@ -238890,9 +239033,9 @@ uniform ${i3} ${a3} u_${s3};
               this._map.fire(new e.k(t4, i2 ? { originalEvent: i2 } : {}));
             }
             _requestFrame() {
-              return this._map.triggerRepaint(), this._map._renderTaskQueue.add((t4) => {
+              return this._map.triggerRepaint(), this._map._renderTaskQueue.add(((t4) => {
                 delete this._frameId, this.handleEvent(new ys("renderFrame", { timeStamp: t4 })), this._applyChanges();
-              });
+              }));
             }
             _triggerRenderFrame() {
               void 0 === this._frameId && (this._frameId = this._requestFrame());
@@ -238903,9 +239046,9 @@ uniform ${i3} ${a3} u_${s3};
               super(), this._renderFrameCallback = () => {
                 const t5 = Math.min((o.now() - this._easeStart) / this._easeOptions.duration, 1);
                 this._onEaseFrame(this._easeOptions.easing(t5)), t5 < 1 && this._easeFrameId ? this._easeFrameId = this._requestRenderFrame(this._renderFrameCallback) : this.stop();
-              }, this._moving = false, this._zooming = false, this.transform = t4, this._bearingSnap = e2.bearingSnap, this.on("moveend", () => {
+              }, this._moving = false, this._zooming = false, this.transform = t4, this._bearingSnap = e2.bearingSnap, this.on("moveend", (() => {
                 delete this._requestedCameraState;
-              });
+              }));
             }
             getCenter() {
               return new e.N(this.transform.center.lng, this.transform.center.lat);
@@ -239014,16 +239157,16 @@ uniform ${i3} ${a3} u_${s3};
               let b2, w2;
               t4.around && (b2 = e.N.convert(t4.around), w2 = s2.locationPoint(b2));
               const T2 = { moving: this._moving, zooming: this._zooming, rotating: this._rotating, pitching: this._pitching };
-              return this._zooming = this._zooming || g2 !== r2, this._rotating = this._rotating || n2 !== c2, this._pitching = this._pitching || u2 !== l2, this._padding = !s2.isPaddingEqual(d2), this._easeId = t4.easeId, this._prepareEase(i2, t4.noMoveStart, T2), this.terrain && this._prepareElevation(f2), this._ease((a3) => {
+              return this._zooming = this._zooming || g2 !== r2, this._rotating = this._rotating || n2 !== c2, this._pitching = this._pitching || u2 !== l2, this._padding = !s2.isPaddingEqual(d2), this._easeId = t4.easeId, this._prepareEase(i2, t4.noMoveStart, T2), this.terrain && this._prepareElevation(f2), this._ease(((a3) => {
                 if (this._zooming && (s2.zoom = e.y.number(r2, g2, a3)), this._rotating && (s2.bearing = e.y.number(n2, c2, a3)), this._pitching && (s2.pitch = e.y.number(l2, u2, a3)), this._padding && (s2.interpolatePadding(h2, d2, a3), p2 = s2.centerPoint.add(_2)), this.terrain && !t4.freezeElevation && this._updateElevation(a3), b2) s2.setLocationAtPoint(b2, w2);
                 else {
                   const t5 = s2.zoomScale(s2.zoom - r2), e2 = g2 > r2 ? Math.min(2, y2) : Math.max(0.5, y2), i3 = Math.pow(e2, 1 - a3), o2 = s2.unproject(v2.add(x2.mult(a3 * i3)).mult(t5));
                   s2.setLocationAtPoint(s2.renderWorldCopies ? o2.wrap() : o2, p2);
                 }
                 this._applyUpdatedTransform(s2), this._fireMoveEvents(i2);
-              }, (e2) => {
+              }), ((e2) => {
                 this.terrain && t4.freezeElevation && this._finalizeElevation(), this._afterEase(i2, e2);
-              }, t4), this;
+              }), t4), this;
             }
             _prepareEase(t4, i2, a2 = {}) {
               this._moving = true, i2 || a2.moving || this.fire(new e.k("movestart", t4)), this._zooming && !a2.zooming && this.fire(new e.k("zoomstart", t4)), this._rotating && !a2.rotating && this.fire(new e.k("rotatestart", t4)), this._pitching && !a2.pitching && this.fire(new e.k("pitchstart", t4));
@@ -239056,7 +239199,7 @@ uniform ${i3} ${a3} u_${s3};
             }
             _applyUpdatedTransform(t4) {
               const e2 = [];
-              if (this.terrain && e2.push((t5) => this._elevateCameraIfInsideTerrain(t5)), this.transformCameraUpdate && e2.push((t5) => this.transformCameraUpdate(t5)), !e2.length) return;
+              if (this.terrain && e2.push(((t5) => this._elevateCameraIfInsideTerrain(t5))), this.transformCameraUpdate && e2.push(((t5) => this.transformCameraUpdate(t5))), !e2.length) return;
               const i2 = t4.clone();
               for (const t5 of e2) {
                 const e3 = i2.clone(), { center: a2, zoom: s2, pitch: o2, bearing: r2, elevation: n2 } = t5(e3);
@@ -239114,14 +239257,14 @@ uniform ${i3} ${a3} u_${s3};
                 const e2 = T2 < w2 ? -1 : 1;
                 A3 = Math.abs(Math.log(T2 / w2)) / b2, M2 = () => 0, D3 = (t5) => Math.exp(e2 * b2 * t5);
               }
-              return t4.duration = "duration" in t4 ? +t4.duration : 1e3 * A3 / ("screenSpeed" in t4 ? +t4.screenSpeed / b2 : +t4.speed), t4.maxDuration && t4.duration > t4.maxDuration && (t4.duration = 0), this._zooming = true, this._rotating = n2 !== c2, this._pitching = u2 !== l2, this._padding = !s2.isPaddingEqual(d2), this._prepareEase(i2, false), this.terrain && this._prepareElevation(f2), this._ease((a3) => {
+              return t4.duration = "duration" in t4 ? +t4.duration : 1e3 * A3 / ("screenSpeed" in t4 ? +t4.screenSpeed / b2 : +t4.speed), t4.maxDuration && t4.duration > t4.maxDuration && (t4.duration = 0), this._zooming = true, this._rotating = n2 !== c2, this._pitching = u2 !== l2, this._padding = !s2.isPaddingEqual(d2), this._prepareEase(i2, false), this.terrain && this._prepareElevation(f2), this._ease(((a3) => {
                 const o2 = a3 * A3, m3 = 1 / D3(o2);
                 s2.zoom = 1 === a3 ? g2 : r2 + s2.scaleZoom(m3), this._rotating && (s2.bearing = e.y.number(n2, c2, a3)), this._pitching && (s2.pitch = e.y.number(l2, u2, a3)), this._padding && (s2.interpolatePadding(h2, d2, a3), p2 = s2.centerPoint.add(_2)), this.terrain && !t4.freezeElevation && this._updateElevation(a3);
                 const v3 = 1 === a3 ? f2 : s2.unproject(x2.add(y2.mult(M2(o2))).mult(m3));
                 s2.setLocationAtPoint(s2.renderWorldCopies ? v3.wrap() : v3, p2), this._applyUpdatedTransform(s2), this._fireMoveEvents(i2);
-              }, () => {
+              }), (() => {
                 this.terrain && t4.freezeElevation && this._finalizeElevation(), this._afterEase(i2);
-              }, t4), this;
+              }), t4), this;
             }
             isEasing() {
               return !!this._easeFrameId;
@@ -239183,7 +239326,7 @@ uniform ${i3} ${a3} u_${s3};
             _updateAttributions() {
               if (!this._map.style) return;
               let t4 = [];
-              if (this.options.customAttribution && (Array.isArray(this.options.customAttribution) ? t4 = t4.concat(this.options.customAttribution.map((t5) => "string" != typeof t5 ? "" : t5)) : "string" == typeof this.options.customAttribution && t4.push(this.options.customAttribution)), this._map.style.stylesheet) {
+              if (this.options.customAttribution && (Array.isArray(this.options.customAttribution) ? t4 = t4.concat(this.options.customAttribution.map(((t5) => "string" != typeof t5 ? "" : t5))) : "string" == typeof this.options.customAttribution && t4.push(this.options.customAttribution)), this._map.style.stylesheet) {
                 const t5 = this._map.style.stylesheet;
                 this.styleOwner = t5.owner, this.styleId = t5.id;
               }
@@ -239195,10 +239338,10 @@ uniform ${i3} ${a3} u_${s3};
                   e3.attribution && t4.indexOf(e3.attribution) < 0 && t4.push(e3.attribution);
                 }
               }
-              t4 = t4.filter((t5) => String(t5).trim()), t4.sort((t5, e3) => t5.length - e3.length), t4 = t4.filter((e3, i3) => {
+              t4 = t4.filter(((t5) => String(t5).trim())), t4.sort(((t5, e3) => t5.length - e3.length)), t4 = t4.filter(((e3, i3) => {
                 for (let a2 = i3 + 1; a2 < t4.length; a2++) if (t4[a2].indexOf(e3) >= 0) return false;
                 return true;
-              });
+              }));
               const i2 = t4.join(" | ");
               i2 !== this._attribHTML && (this._attribHTML = i2, t4.length ? (this._innerContainer.innerHTML = i2, this._container.classList.remove("maplibregl-attrib-empty")) : this._container.classList.add("maplibregl-attrib-empty"), this._updateCompact(), this._editLink = null);
             }
@@ -239269,7 +239412,7 @@ uniform ${i3} ${a3} u_${s3};
               }
             }
             getRenderableTiles() {
-              return this._renderableTilesKeys.map((t4) => this.getTileByID(t4));
+              return this._renderableTilesKeys.map(((t4) => this.getTileByID(t4)));
             }
             getTileByID(t4) {
               return this._tiles[t4];
@@ -239305,7 +239448,7 @@ uniform ${i3} ${a3} u_${s3};
               return s2;
             }
             tilesAfterTime(t4 = Date.now()) {
-              return Object.values(this._tiles).filter((e2) => e2.timeAdded >= t4);
+              return Object.values(this._tiles).filter(((e2) => e2.timeAdded >= t4));
             }
           }
           class Ds {
@@ -239317,10 +239460,10 @@ uniform ${i3} ${a3} u_${s3};
               if (!(i2 >= 0 && i2 < s2 && a2 >= 0 && a2 < s2)) return 0;
               const r2 = this.getTerrainData(t4), n2 = null === (o2 = r2.tile) || void 0 === o2 ? void 0 : o2.dem;
               if (!n2) return 0;
-              const l2 = function(t5, e2, i3) {
+              const l2 = (function(t5, e2, i3) {
                 var a3 = e2[0], s3 = e2[1];
                 return t5[0] = i3[0] * a3 + i3[4] * s3 + i3[12], t5[1] = i3[1] * a3 + i3[5] * s3 + i3[13], t5;
-              }([], [i2 / s2 * e.X, a2 / s2 * e.X], r2.u_terrain_matrix), h2 = [l2[0] * n2.dim, l2[1] * n2.dim], c2 = Math.floor(h2[0]), u2 = Math.floor(h2[1]), d2 = h2[0] - c2, _2 = h2[1] - u2;
+              })([], [i2 / s2 * e.X, a2 / s2 * e.X], r2.u_terrain_matrix), h2 = [l2[0] * n2.dim, l2[1] * n2.dim], c2 = Math.floor(h2[0]), u2 = Math.floor(h2[1]), d2 = h2[0] - c2, _2 = h2[1] - u2;
               return n2.get(c2, u2) * (1 - d2) * (1 - _2) + n2.get(c2 + 1, u2) * d2 * (1 - _2) + n2.get(c2, u2 + 1) * (1 - d2) * _2 + n2.get(c2 + 1, u2 + 1) * d2 * _2;
             }
             getElevationForLngLatZoom(t4, i2) {
@@ -239421,7 +239564,7 @@ uniform ${i3} ${a3} u_${s3};
               return this._objects[t4];
             }
             useObject(t4) {
-              t4.inUse = true, this._recentlyUsed = this._recentlyUsed.filter((e2) => t4.id !== e2), this._recentlyUsed.push(t4.id);
+              t4.inUse = true, this._recentlyUsed = this._recentlyUsed.filter(((e2) => t4.id !== e2)), this._recentlyUsed.push(t4.id);
             }
             stampObject(t4) {
               t4.stamp = ++this._stamp;
@@ -239439,7 +239582,7 @@ uniform ${i3} ${a3} u_${s3};
               for (const t4 of this._objects) this.freeObject(t4);
             }
             isFull() {
-              return !(this._objects.length < this._size) && false === this._objects.some((t4) => !t4.inUse);
+              return !(this._objects.length < this._size) && false === this._objects.some(((t4) => !t4.inUse));
             }
           }
           const As = { background: true, fill: true, line: true, raster: true, hillshade: true };
@@ -239454,7 +239597,7 @@ uniform ${i3} ${a3} u_${s3};
               return this.pool.getObjectForId(t4.rtt[this._stacks.length - 1].id).texture;
             }
             prepareForRender(t4, e2) {
-              this._stacks = [], this._prevType = null, this._rttTiles = [], this._renderableTiles = this.terrain.sourceCache.getRenderableTiles(), this._renderableLayerIds = t4._order.filter((i2) => !t4._layers[i2].isHidden(e2)), this._coordsDescendingInv = {};
+              this._stacks = [], this._prevType = null, this._rttTiles = [], this._renderableTiles = this.terrain.sourceCache.getRenderableTiles(), this._renderableLayerIds = t4._order.filter(((i2) => !t4._layers[i2].isHidden(e2))), this._coordsDescendingInv = {};
               for (const e3 in t4.sourceCaches) {
                 this._coordsDescendingInv[e3] = {};
                 const i2 = t4.sourceCaches[e3].getVisibleCoordinates();
@@ -239468,7 +239611,7 @@ uniform ${i3} ${a3} u_${s3};
                 const i2 = t4._layers[e3], a2 = i2.source;
                 if (As[i2.type] && !this._coordsDescendingInvStr[a2]) {
                   this._coordsDescendingInvStr[a2] = {};
-                  for (const t5 in this._coordsDescendingInv[a2]) this._coordsDescendingInvStr[a2][t5] = this._coordsDescendingInv[a2][t5].map((t6) => t6.key).sort().join();
+                  for (const t5 in this._coordsDescendingInv[a2]) this._coordsDescendingInvStr[a2][t5] = this._coordsDescendingInv[a2][t5].map(((t6) => t6.key)).sort().join();
                 }
               }
               for (const t5 of this._renderableTiles) for (const e3 in this._coordsDescendingInvStr) {
@@ -239596,10 +239739,10 @@ uniform ${i3} ${a3} u_${s3};
                 let a2 = "";
                 "viewport" === this._rotationAlignment || "auto" === this._rotationAlignment ? a2 = `rotateZ(${this._rotation}deg)` : "map" === this._rotationAlignment && (a2 = `rotateZ(${this._rotation - this._map.getBearing()}deg)`);
                 let s2 = "";
-                "viewport" === this._pitchAlignment || "auto" === this._pitchAlignment ? s2 = "rotateX(0deg)" : "map" === this._pitchAlignment && (s2 = `rotateX(${this._map.getPitch()}deg)`), this._subpixelPositioning || t5 && "moveend" !== t5.type || (this._pos = this._pos.round()), r.setTransform(this._element, `${Zs[this._anchor]} translate(${this._pos.x}px, ${this._pos.y}px) ${s2} ${a2}`), o.frameAsync(new AbortController()).then(() => {
+                "viewport" === this._pitchAlignment || "auto" === this._pitchAlignment ? s2 = "rotateX(0deg)" : "map" === this._pitchAlignment && (s2 = `rotateX(${this._map.getPitch()}deg)`), this._subpixelPositioning || t5 && "moveend" !== t5.type || (this._pos = this._pos.round()), r.setTransform(this._element, `${Zs[this._anchor]} translate(${this._pos.x}px, ${this._pos.y}px) ${s2} ${a2}`), o.frameAsync(new AbortController()).then((() => {
                   this._updateOpacity(t5 && "moveend" === t5.type);
-                }).catch(() => {
-                });
+                })).catch((() => {
+                }));
               }, this._onMove = (t5) => {
                 if (!this._isDragging) {
                   const e2 = this._clickTolerance || this._map._clickTolerance;
@@ -239643,11 +239786,11 @@ uniform ${i3} ${a3} u_${s3};
                 const g2 = r.createNS("http://www.w3.org/2000/svg", "circle");
                 g2.setAttributeNS(null, "fill", "#FFFFFF"), g2.setAttributeNS(null, "cx", "5.5"), g2.setAttributeNS(null, "cy", "5.5"), g2.setAttributeNS(null, "r", "5.4999962"), m2.appendChild(f2), m2.appendChild(g2), n2.appendChild(l2), n2.appendChild(c2), n2.appendChild(d2), n2.appendChild(p2), n2.appendChild(m2), i2.appendChild(n2), i2.setAttributeNS(null, "height", a2 * this._scale + "px"), i2.setAttributeNS(null, "width", s2 * this._scale + "px"), this._element.appendChild(i2), this._offset = e.P.convert(t4 && t4.offset || [0, -14]);
               }
-              if (this._element.classList.add("maplibregl-marker"), this._element.addEventListener("dragstart", (t5) => {
+              if (this._element.classList.add("maplibregl-marker"), this._element.addEventListener("dragstart", ((t5) => {
                 t5.preventDefault();
-              }), this._element.addEventListener("mousedown", (t5) => {
+              })), this._element.addEventListener("mousedown", ((t5) => {
                 t5.preventDefault();
-              }), qs(this._element, this._anchor, "marker"), t4 && t4.className) for (const e2 of t4.className.split(" ")) this._element.classList.add(e2);
+              })), qs(this._element, this._anchor, "marker"), t4 && t4.className) for (const e2 of t4.className.split(" ")) this._element.classList.add(e2);
               this._popup = null;
             }
             addTo(t4) {
@@ -239691,9 +239834,9 @@ uniform ${i3} ${a3} u_${s3};
               if (t4) this._opacityTimeout = null;
               else {
                 if (this._opacityTimeout) return;
-                this._opacityTimeout = setTimeout(() => {
+                this._opacityTimeout = setTimeout((() => {
                   this._opacityTimeout = null;
-                }, 100);
+                }), 100);
               }
               const s2 = this._map, o2 = s2.terrain.depthAtPoint(this._pos), r2 = s2.terrain.getElevationForLngLatZoom(this._lngLat, s2.transform.tileZoom);
               if (s2.transform.lngLatToCameraDepth(this._lngLat, r2) - o2 < 6e-3) return void (this._element.style.opacity = this._opacity);
@@ -239754,14 +239897,14 @@ uniform ${i3} ${a3} u_${s3};
             } else i2 && "nautical" === i2.unit ? Ks(e2, a2, n2 / 1852, t4._getUIString("ScaleControl.NauticalMiles")) : n2 >= 1e3 ? Ks(e2, a2, n2 / 1e3, t4._getUIString("ScaleControl.Kilometers")) : Ks(e2, a2, n2, t4._getUIString("ScaleControl.Meters"));
           }
           function Ks(t4, e2, i2, a2) {
-            const s2 = function(t5) {
+            const s2 = (function(t5) {
               const e3 = Math.pow(10, `${Math.floor(t5)}`.length - 1);
               let i3 = t5 / e3;
-              return i3 = i3 >= 10 ? 10 : i3 >= 5 ? 5 : i3 >= 3 ? 3 : i3 >= 2 ? 2 : i3 >= 1 ? 1 : function(t6) {
+              return i3 = i3 >= 10 ? 10 : i3 >= 5 ? 5 : i3 >= 3 ? 3 : i3 >= 2 ? 2 : i3 >= 1 ? 1 : (function(t6) {
                 const e4 = Math.pow(10, Math.ceil(-Math.log(t6) / Math.LN10));
                 return Math.round(t6 * e4) / e4;
-              }(i3), e3 * i3;
-            }(i2);
+              })(i3), e3 * i3;
+            })(i2);
             t4.style.width = e2 * (s2 / i2) + "px", t4.innerHTML = `${s2}&nbsp;${a2}`;
           }
           const Js = { closeButton: true, closeOnClick: true, focusAfterOpen: true, className: "", maxWidth: "240px", subpixelPositioning: false }, Ys = ["a[href]", "[tabindex]:not([tabindex='-1'])", "[contenteditable]:not([contenteditable='false'])", "button:not([disabled])", "input:not([disabled])", "select:not([disabled])", "textarea:not([disabled])"].join(", ");
@@ -239868,7 +240011,7 @@ uniform ${i3} ${a3} u_${s3};
               }, this._finish = () => {
                 this._timeoutId && clearTimeout(this._timeoutId), this._timeoutId = void 0;
               }, this._setupUI = () => {
-                this._map && (this._container.addEventListener("contextmenu", (t5) => t5.preventDefault()), this._geolocateButton = r.create("button", "maplibregl-ctrl-geolocate", this._container), r.create("span", "maplibregl-ctrl-icon", this._geolocateButton).setAttribute("aria-hidden", "true"), this._geolocateButton.type = "button", this._geolocateButton.disabled = true);
+                this._map && (this._container.addEventListener("contextmenu", ((t5) => t5.preventDefault())), this._geolocateButton = r.create("button", "maplibregl-ctrl-geolocate", this._container), r.create("span", "maplibregl-ctrl-icon", this._geolocateButton).setAttribute("aria-hidden", "true"), this._geolocateButton.type = "button", this._geolocateButton.disabled = true);
               }, this._finishSetupUI = (t5) => {
                 if (this._map) {
                   if (false === t5) {
@@ -239879,15 +240022,15 @@ uniform ${i3} ${a3} u_${s3};
                     const t6 = this._map._getUIString("GeolocateControl.FindMyLocation");
                     this._geolocateButton.disabled = false, this._geolocateButton.title = t6, this._geolocateButton.setAttribute("aria-label", t6);
                   }
-                  this.options.trackUserLocation && (this._geolocateButton.setAttribute("aria-pressed", "false"), this._watchState = "OFF"), this.options.showUserLocation && (this._dotElement = r.create("div", "maplibregl-user-location-dot"), this._userLocationDotMarker = new Vs({ element: this._dotElement }), this._circleElement = r.create("div", "maplibregl-user-location-accuracy-circle"), this._accuracyCircleMarker = new Vs({ element: this._circleElement, pitchAlignment: "map" }), this.options.trackUserLocation && (this._watchState = "OFF"), this._map.on("zoom", this._onZoom)), this._geolocateButton.addEventListener("click", () => this.trigger()), this._setup = true, this.options.trackUserLocation && this._map.on("movestart", (t6) => {
+                  this.options.trackUserLocation && (this._geolocateButton.setAttribute("aria-pressed", "false"), this._watchState = "OFF"), this.options.showUserLocation && (this._dotElement = r.create("div", "maplibregl-user-location-dot"), this._userLocationDotMarker = new Vs({ element: this._dotElement }), this._circleElement = r.create("div", "maplibregl-user-location-accuracy-circle"), this._accuracyCircleMarker = new Vs({ element: this._circleElement, pitchAlignment: "map" }), this.options.trackUserLocation && (this._watchState = "OFF"), this._map.on("zoom", this._onZoom)), this._geolocateButton.addEventListener("click", (() => this.trigger())), this._setup = true, this.options.trackUserLocation && this._map.on("movestart", ((t6) => {
                     t6.geolocateSource || "ACTIVE_LOCK" !== this._watchState || t6.originalEvent && "resize" === t6.originalEvent.type || (this._watchState = "BACKGROUND", this._geolocateButton.classList.add("maplibregl-ctrl-geolocate-background"), this._geolocateButton.classList.remove("maplibregl-ctrl-geolocate-active"), this.fire(new e.k("trackuserlocationend")), this.fire(new e.k("userlocationlostfocus")));
-                  });
+                  }));
                 }
               }, this.options = e.e({}, Gs, t4);
             }
             onAdd(t4) {
-              return this._map = t4, this._container = r.create("div", "maplibregl-ctrl maplibregl-ctrl-group"), this._setupUI(), function() {
-                return e._(this, arguments, void 0, function* (t5 = false) {
+              return this._map = t4, this._container = r.create("div", "maplibregl-ctrl maplibregl-ctrl-group"), this._setupUI(), (function() {
+                return e._(this, arguments, void 0, (function* (t5 = false) {
                   if (void 0 !== Us && !t5) return Us;
                   if (void 0 === window.navigator.permissions) return Us = !!window.navigator.geolocation, Us;
                   try {
@@ -239897,8 +240040,8 @@ uniform ${i3} ${a3} u_${s3};
                     Us = !!window.navigator.geolocation;
                   }
                   return Us;
-                });
-              }().then((t5) => this._finishSetupUI(t5)), this._container;
+                }));
+              })().then(((t5) => this._finishSetupUI(t5))), this._container;
             }
             onRemove() {
               void 0 !== this._geolocationWatchID && (window.navigator.geolocation.clearWatch(this._geolocationWatchID), this._geolocationWatchID = void 0), this.options.showUserLocation && this._userLocationDotMarker && this._userLocationDotMarker.remove(), this.options.showAccuracyCircle && this._accuracyCircleMarker && this._accuracyCircleMarker.remove(), r.remove(this._container), this._map.off("zoom", this._onZoom), this._map = void 0, Hs = 0, Ws = false;
@@ -239986,35 +240129,35 @@ uniform ${i3} ${a3} u_${s3};
                 if (t5.target === this._container) return this._container.scrollTop = 0, this._container.scrollLeft = 0, false;
               }, this._onWindowOnline = () => {
                 this._update();
-              }, this._interactive = i2.interactive, this._maxTileCacheSize = i2.maxTileCacheSize, this._maxTileCacheZoomLevels = i2.maxTileCacheZoomLevels, this._failIfMajorPerformanceCaveat = true === i2.failIfMajorPerformanceCaveat, this._preserveDrawingBuffer = true === i2.preserveDrawingBuffer, this._antialias = true === i2.antialias, this._trackResize = true === i2.trackResize, this._bearingSnap = i2.bearingSnap, this._refreshExpiredTiles = true === i2.refreshExpiredTiles, this._fadeDuration = i2.fadeDuration, this._crossSourceCollisions = true === i2.crossSourceCollisions, this._collectResourceTiming = true === i2.collectResourceTiming, this._locale = Object.assign(Object.assign({}, ks), i2.locale), this._clickTolerance = i2.clickTolerance, this._overridePixelRatio = i2.pixelRatio, this._maxCanvasSize = i2.maxCanvasSize, this.transformCameraUpdate = i2.transformCameraUpdate, this.cancelPendingTileRequestsWhileZooming = true === i2.cancelPendingTileRequestsWhileZooming, this._imageQueueHandle = _.addThrottleControl(() => this.isMoving()), this._requestManager = new p(i2.transformRequest), "string" == typeof i2.container) {
+              }, this._interactive = i2.interactive, this._maxTileCacheSize = i2.maxTileCacheSize, this._maxTileCacheZoomLevels = i2.maxTileCacheZoomLevels, this._failIfMajorPerformanceCaveat = true === i2.failIfMajorPerformanceCaveat, this._preserveDrawingBuffer = true === i2.preserveDrawingBuffer, this._antialias = true === i2.antialias, this._trackResize = true === i2.trackResize, this._bearingSnap = i2.bearingSnap, this._refreshExpiredTiles = true === i2.refreshExpiredTiles, this._fadeDuration = i2.fadeDuration, this._crossSourceCollisions = true === i2.crossSourceCollisions, this._collectResourceTiming = true === i2.collectResourceTiming, this._locale = Object.assign(Object.assign({}, ks), i2.locale), this._clickTolerance = i2.clickTolerance, this._overridePixelRatio = i2.pixelRatio, this._maxCanvasSize = i2.maxCanvasSize, this.transformCameraUpdate = i2.transformCameraUpdate, this.cancelPendingTileRequestsWhileZooming = true === i2.cancelPendingTileRequestsWhileZooming, this._imageQueueHandle = _.addThrottleControl((() => this.isMoving())), this._requestManager = new p(i2.transformRequest), "string" == typeof i2.container) {
                 if (this._container = document.getElementById(i2.container), !this._container) throw new Error(`Container '${i2.container}' not found.`);
               } else {
                 if (!(i2.container instanceof HTMLElement)) throw new Error("Invalid type: 'container' must be a String or HTMLElement.");
                 this._container = i2.container;
               }
-              if (i2.maxBounds && this.setMaxBounds(i2.maxBounds), this._setupContainer(), this._setupPainter(), this.on("move", () => this._update(false)).on("moveend", () => this._update(false)).on("zoom", () => this._update(true)).on("terrain", () => {
+              if (i2.maxBounds && this.setMaxBounds(i2.maxBounds), this._setupContainer(), this._setupPainter(), this.on("move", (() => this._update(false))).on("moveend", (() => this._update(false))).on("zoom", (() => this._update(true))).on("terrain", (() => {
                 this.painter.terrainFacilitator.dirty = true, this._update(true);
-              }).once("idle", () => {
+              })).once("idle", (() => {
                 this._idleTriggered = true;
-              }), "undefined" != typeof window) {
+              })), "undefined" != typeof window) {
                 addEventListener("online", this._onWindowOnline, false);
                 let t5 = false;
-                const e2 = Ia((t6) => {
+                const e2 = Ia(((t6) => {
                   this._trackResize && !this._removed && (this.resize(t6), this.redraw());
-                }, 50);
-                this._resizeObserver = new ResizeObserver((i3) => {
+                }), 50);
+                this._resizeObserver = new ResizeObserver(((i3) => {
                   t5 ? e2(i3) : t5 = true;
-                }), this._resizeObserver.observe(this._container);
+                })), this._resizeObserver.observe(this._container);
               }
-              this.handlers = new ws(this, i2), this._hash = i2.hash && new Ea("string" == typeof i2.hash && i2.hash || void 0).addTo(this), this._hash && this._hash._onHashChange() || (this.jumpTo({ center: i2.center, zoom: i2.zoom, bearing: i2.bearing, pitch: i2.pitch }), i2.bounds && (this.resize(), this.fitBounds(i2.bounds, e.e({}, i2.fitBoundsOptions, { duration: 0 })))), this.resize(), this._localIdeographFontFamily = i2.localIdeographFontFamily, this._validateStyle = i2.validateStyle, i2.style && this.setStyle(i2.style, { localIdeographFontFamily: i2.localIdeographFontFamily }), i2.attributionControl && this.addControl(new Es("boolean" == typeof i2.attributionControl ? void 0 : i2.attributionControl)), i2.maplibreLogo && this.addControl(new Ps(), i2.logoPosition), this.on("style.load", () => {
+              this.handlers = new ws(this, i2), this._hash = i2.hash && new Ea("string" == typeof i2.hash && i2.hash || void 0).addTo(this), this._hash && this._hash._onHashChange() || (this.jumpTo({ center: i2.center, zoom: i2.zoom, bearing: i2.bearing, pitch: i2.pitch }), i2.bounds && (this.resize(), this.fitBounds(i2.bounds, e.e({}, i2.fitBoundsOptions, { duration: 0 })))), this.resize(), this._localIdeographFontFamily = i2.localIdeographFontFamily, this._validateStyle = i2.validateStyle, i2.style && this.setStyle(i2.style, { localIdeographFontFamily: i2.localIdeographFontFamily }), i2.attributionControl && this.addControl(new Es("boolean" == typeof i2.attributionControl ? void 0 : i2.attributionControl)), i2.maplibreLogo && this.addControl(new Ps(), i2.logoPosition), this.on("style.load", (() => {
                 this.transform.unmodified && this.jumpTo(this.style.stylesheet);
-              }), this.on("data", (t5) => {
+              })), this.on("data", ((t5) => {
                 this._update("style" === t5.dataType), this.fire(new e.k(`${t5.dataType}data`, t5));
-              }), this.on("dataloading", (t5) => {
+              })), this.on("dataloading", ((t5) => {
                 this.fire(new e.k(`${t5.dataType}dataloading`, t5));
-              }), this.on("dataabort", (t5) => {
+              })), this.on("dataabort", ((t5) => {
                 this.fire(new e.k("sourcedataabort", t5));
-              });
+              }));
             }
             _getMapId() {
               return this._mapId;
@@ -240128,7 +240271,7 @@ uniform ${i3} ${a3} u_${s3};
               if ("mouseenter" === t4 || "mouseover" === t4) {
                 let a2 = false;
                 const s2 = (s3) => {
-                  const o2 = e2.filter((t5) => this.getLayer(t5)), r2 = 0 !== o2.length ? this.queryRenderedFeatures(s3.point, { layers: o2 }) : [];
+                  const o2 = e2.filter(((t5) => this.getLayer(t5))), r2 = 0 !== o2.length ? this.queryRenderedFeatures(s3.point, { layers: o2 }) : [];
                   r2.length ? a2 || (a2 = true, i2.call(this, new ka(t4, this, s3.originalEvent, { features: r2 }))) : a2 = false;
                 };
                 return { layers: e2, listener: i2, delegates: { mousemove: s2, mouseout: () => {
@@ -240138,7 +240281,7 @@ uniform ${i3} ${a3} u_${s3};
               if ("mouseleave" === t4 || "mouseout" === t4) {
                 let a2 = false;
                 const s2 = (s3) => {
-                  const o3 = e2.filter((t5) => this.getLayer(t5));
+                  const o3 = e2.filter(((t5) => this.getLayer(t5)));
                   (0 !== o3.length ? this.queryRenderedFeatures(s3.point, { layers: o3 }) : []).length ? a2 = true : a2 && (a2 = false, i2.call(this, new ka(t4, this, s3.originalEvent)));
                 }, o2 = (e3) => {
                   a2 && (a2 = false, i2.call(this, new ka(t4, this, e3.originalEvent)));
@@ -240147,7 +240290,7 @@ uniform ${i3} ${a3} u_${s3};
               }
               {
                 const a2 = (t5) => {
-                  const a3 = e2.filter((t6) => this.getLayer(t6)), s2 = 0 !== a3.length ? this.queryRenderedFeatures(t5.point, { layers: a3 }) : [];
+                  const a3 = e2.filter(((t6) => this.getLayer(t6))), s2 = 0 !== a3.length ? this.queryRenderedFeatures(t5.point, { layers: a3 }) : [];
                   s2.length && (t5.features = s2, i2.call(this, t5), delete t5.features);
                 };
                 return { layers: e2, listener: i2, delegates: { [t4]: a2 } };
@@ -240161,7 +240304,7 @@ uniform ${i3} ${a3} u_${s3};
               const a2 = this._delegatedListeners[t4];
               for (let t5 = 0; t5 < a2.length; t5++) {
                 const s2 = a2[t5];
-                if (s2.listener === i2 && s2.layers.length === e2.length && s2.layers.every((t6) => e2.includes(t6))) {
+                if (s2.listener === i2 && s2.layers.length === e2.length && s2.layers.every(((t6) => e2.includes(t6)))) {
                   for (const t6 in s2.delegates) this.off(t6, s2.delegates[t6]);
                   return void a2.splice(t5, 1);
                 }
@@ -240216,7 +240359,7 @@ uniform ${i3} ${a3} u_${s3};
               return e2;
             }
             _updateStyle(t4, e2) {
-              if (e2.transformStyle && this.style && !this.style._loaded) return void this.style.once("style.load", () => this._updateStyle(t4, e2));
+              if (e2.transformStyle && this.style && !this.style._loaded) return void this.style.once("style.load", (() => this._updateStyle(t4, e2)));
               const i2 = this.style && e2.transformStyle ? this.style.serialize() : void 0;
               return this.style && (this.style.setEventedParent(null), this.style._remove(!t4)), t4 ? (this.style = new de(this, e2 || {}), this.style.setEventedParent(this, { style: this.style }), "string" == typeof t4 ? this.style.loadURL(t4, e2, i2) : this.style.loadJSON(t4, e2, i2), this) : (delete this.style, this);
             }
@@ -240226,11 +240369,11 @@ uniform ${i3} ${a3} u_${s3};
             _diffStyle(t4, i2) {
               if ("string" == typeof t4) {
                 const a2 = this._requestManager.transformRequest(t4, "Style");
-                e.h(a2, new AbortController()).then((t5) => {
+                e.h(a2, new AbortController()).then(((t5) => {
                   this._updateDiff(t5.data, i2);
-                }).catch((t5) => {
+                })).catch(((t5) => {
                   t5 && this.fire(new e.j(t5));
-                });
+                }));
               } else "object" == typeof t4 && this._updateDiff(t4, i2);
             }
             _updateDiff(t4, i2) {
@@ -240371,9 +240514,9 @@ uniform ${i3} ${a3} u_${s3};
               return this.style.getGlyphsUrl();
             }
             addSprite(t4, e2, i2 = {}) {
-              return this._lazyInitEmptyStyle(), this.style.addSprite(t4, e2, i2, (t5) => {
+              return this._lazyInitEmptyStyle(), this.style.addSprite(t4, e2, i2, ((t5) => {
                 t5 || this._update(true);
-              }), this;
+              })), this;
             }
             removeSprite(t4) {
               return this._lazyInitEmptyStyle(), this.style.removeSprite(t4), this._update(true);
@@ -240382,9 +240525,9 @@ uniform ${i3} ${a3} u_${s3};
               return this.style.getSprite();
             }
             setSprite(t4, e2 = {}) {
-              return this._lazyInitEmptyStyle(), this.style.setSprite(t4, e2, (t5) => {
+              return this._lazyInitEmptyStyle(), this.style.setSprite(t4, e2, ((t5) => {
                 t5 || this._update(true);
-              }), this;
+              })), this;
             }
             setLight(t4, e2 = {}) {
               return this._lazyInitEmptyStyle(), this.style.setLight(t4, e2), this._update(true);
@@ -240428,9 +240571,9 @@ uniform ${i3} ${a3} u_${s3};
               const i2 = this._containerDimensions(), a2 = this._getClampedPixelRatio(i2[0], i2[1]);
               this._resizeCanvas(i2[0], i2[1], a2);
               const s2 = this._controlContainer = r.create("div", "maplibregl-control-container", t4), o2 = this._controlPositions = {};
-              ["top-left", "top-right", "bottom-left", "bottom-right"].forEach((t5) => {
+              ["top-left", "top-right", "bottom-left", "bottom-right"].forEach(((t5) => {
                 o2[t5] = r.create("div", `maplibregl-ctrl-${t5} `, s2);
-              }), this._container.addEventListener("scroll", this._onMapScroll, false);
+              })), this._container.addEventListener("scroll", this._onMapScroll, false);
             }
             _resizeCanvas(t4, e2, i2) {
               this._canvas.width = Math.floor(i2 * t4), this._canvas.height = Math.floor(i2 * e2), this._canvas.style.width = `${t4}px`, this._canvas.style.height = `${e2}px`;
@@ -240438,9 +240581,9 @@ uniform ${i3} ${a3} u_${s3};
             _setupPainter() {
               const t4 = { alpha: true, stencil: true, depth: true, failIfMajorPerformanceCaveat: this._failIfMajorPerformanceCaveat, preserveDrawingBuffer: this._preserveDrawingBuffer, antialias: this._antialias || false };
               let e2 = null;
-              this._canvas.addEventListener("webglcontextcreationerror", (i3) => {
+              this._canvas.addEventListener("webglcontextcreationerror", ((i3) => {
                 e2 = { requestedAttributes: t4 }, i3 && (e2.statusMessage = i3.statusMessage, e2.type = i3.type);
-              }, { once: true });
+              }), { once: true });
               const i2 = this._canvas.getContext("webgl2", t4) || this._canvas.getContext("webgl", t4);
               if (!i2) {
                 const t5 = "Failed to initialize WebGL";
@@ -240487,10 +240630,10 @@ uniform ${i3} ${a3} u_${s3};
               (null == i2 ? void 0 : i2.loseContext) && i2.loseContext(), this._canvas.removeEventListener("webglcontextrestored", this._contextRestored, false), this._canvas.removeEventListener("webglcontextlost", this._contextLost, false), r.remove(this._canvasContainer), r.remove(this._controlContainer), this._container.classList.remove("maplibregl-map"), e.bf.clearMetrics(), this._removed = true, this.fire(new e.k("remove"));
             }
             triggerRepaint() {
-              this.style && !this._frameRequest && (this._frameRequest = new AbortController(), o.frameAsync(this._frameRequest).then((t4) => {
+              this.style && !this._frameRequest && (this._frameRequest = new AbortController(), o.frameAsync(this._frameRequest).then(((t4) => {
                 e.bf.frame(t4), this._frameRequest = null, this._render(t4);
-              }).catch(() => {
-              }));
+              })).catch((() => {
+              })));
             }
             get showTileBoundaries() {
               return !!this._showTileBoundaries;
@@ -240545,9 +240688,9 @@ uniform ${i3} ${a3} u_${s3};
               }, this._setButtonTitle = (t5, e2) => {
                 const i2 = this._map._getUIString(`NavigationControl.${e2}`);
                 t5.title = i2, t5.setAttribute("aria-label", i2);
-              }, this.options = e.e({}, Os, t4), this._container = r.create("div", "maplibregl-ctrl maplibregl-ctrl-group"), this._container.addEventListener("contextmenu", (t5) => t5.preventDefault()), this.options.showZoom && (this._zoomInButton = this._createButton("maplibregl-ctrl-zoom-in", (t5) => this._map.zoomIn({}, { originalEvent: t5 })), r.create("span", "maplibregl-ctrl-icon", this._zoomInButton).setAttribute("aria-hidden", "true"), this._zoomOutButton = this._createButton("maplibregl-ctrl-zoom-out", (t5) => this._map.zoomOut({}, { originalEvent: t5 })), r.create("span", "maplibregl-ctrl-icon", this._zoomOutButton).setAttribute("aria-hidden", "true")), this.options.showCompass && (this._compass = this._createButton("maplibregl-ctrl-compass", (t5) => {
+              }, this.options = e.e({}, Os, t4), this._container = r.create("div", "maplibregl-ctrl maplibregl-ctrl-group"), this._container.addEventListener("contextmenu", ((t5) => t5.preventDefault())), this.options.showZoom && (this._zoomInButton = this._createButton("maplibregl-ctrl-zoom-in", ((t5) => this._map.zoomIn({}, { originalEvent: t5 }))), r.create("span", "maplibregl-ctrl-icon", this._zoomInButton).setAttribute("aria-hidden", "true"), this._zoomOutButton = this._createButton("maplibregl-ctrl-zoom-out", ((t5) => this._map.zoomOut({}, { originalEvent: t5 }))), r.create("span", "maplibregl-ctrl-icon", this._zoomOutButton).setAttribute("aria-hidden", "true")), this.options.showCompass && (this._compass = this._createButton("maplibregl-ctrl-compass", ((t5) => {
                 this.options.visualizePitch ? this._map.resetNorthPitch({}, { originalEvent: t5 }) : this._map.resetNorth({}, { originalEvent: t5 });
-              }), this._compassIcon = r.create("span", "maplibregl-ctrl-icon", this._compass), this._compassIcon.setAttribute("aria-hidden", "true"));
+              })), this._compassIcon = r.create("span", "maplibregl-ctrl-icon", this._compass), this._compassIcon.setAttribute("aria-hidden", "true"));
             }
             onAdd(t4) {
               return this._map = t4, this.options.showZoom && (this._setButtonTitle(this._zoomInButton, "ZoomIn"), this._setButtonTitle(this._zoomOutButton, "ZoomOut"), this._map.on("zoom", this._updateZoomButtons), this._updateZoomButtons()), this.options.showCompass && (this._setButtonTitle(this._compass, "ResetBearing"), this.options.visualizePitch && this._map.on("pitch", this._rotateCompassArrow), this._map.on("rotate", this._rotateCompassArrow), this._rotateCompassArrow(), this._handler = new Ns(this._map, this._compass, this.options.visualizePitch)), this._container;
@@ -240683,12 +240826,12 @@ uniform ${i3} ${a3} u_${s3};
             onRemove() {
               r.remove(this._container), this._map.off("terrain", this._updateTerrainIcon), this._map = void 0;
             }
-          }, t.TwoFingersTouchPitchHandler = rs, t.TwoFingersTouchRotateHandler = ss, t.TwoFingersTouchZoomHandler = is, t.TwoFingersTouchZoomRotateHandler = gs, t.VectorTileSource = $, t.VideoSource = tt, t.addSourceType = (t4, i2) => e._(void 0, void 0, void 0, function* () {
+          }, t.TwoFingersTouchPitchHandler = rs, t.TwoFingersTouchRotateHandler = ss, t.TwoFingersTouchZoomHandler = is, t.TwoFingersTouchZoomRotateHandler = gs, t.VectorTileSource = $, t.VideoSource = tt, t.addSourceType = (t4, i2) => e._(void 0, void 0, void 0, (function* () {
             if (at(t4)) throw new Error(`A source type called "${t4}" already exists.`);
             ((t5, e2) => {
               it[t5] = e2;
             })(t4, i2);
-          }), t.clearPrewarmedResources = function() {
+          })), t.clearPrewarmedResources = function() {
             const t4 = B2;
             t4 && (t4.isPreloaded() && 1 === t4.numActive() ? (t4.release(k), B2 = null) : console.warn("Could not clear WebWorkers since there are active Map instances that still reference it. The pre-warmed WebWorker pool can only be cleared when all map instances have been removed with map.remove()"));
           }, t.getMaxParallelImageRequests = function() {
@@ -240714,10 +240857,10 @@ uniform ${i3} ${a3} u_${s3};
           }, t.setWorkerUrl = function(t4) {
             e.a.WORKER_URL = t4;
           };
-        });
+        }));
         var maplibregl$1 = maplibregl;
         return maplibregl$1;
-      });
+      }));
     }
   });
 
@@ -243396,7 +243539,7 @@ uniform ${i3} ${a3} u_${s3};
     "node_modules/d3-collection/dist/d3-collection.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && false ? define(["exports"], factory) : factory(global2.d3 = global2.d3 || {});
-      })(exports, function(exports2) {
+      })(exports, (function(exports2) {
         "use strict";
         var prefix = "$";
         function Map2() {
@@ -243583,7 +243726,7 @@ uniform ${i3} ${a3} u_${s3};
         exports2.values = values;
         exports2.entries = entries;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -243799,7 +243942,7 @@ uniform ${i3} ${a3} u_${s3};
     "node_modules/d3-force/dist/d3-force.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_quadtree(), require_d3_collection(), require_d3_dispatch(), require_d3_timer()) : typeof define === "function" && false ? define(["exports", "d3-quadtree", "d3-collection", "d3-dispatch", "d3-timer"], factory) : factory(global2.d3 = global2.d3 || {}, global2.d3, global2.d3, global2.d3, global2.d3);
-      })(exports, function(exports2, d3Quadtree, d3Collection, d3Dispatch, d3Timer) {
+      })(exports, (function(exports2, d3Quadtree, d3Collection, d3Dispatch, d3Timer) {
         "use strict";
         function center(x2, y2) {
           var nodes;
@@ -244267,7 +244410,7 @@ uniform ${i3} ${a3} u_${s3};
         exports2.forceX = x$2;
         exports2.forceY = y$2;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -245133,7 +245276,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y.push(+y2);
           }
         };
-        var bundle = function custom(beta) {
+        var bundle = (function custom(beta) {
           function bundle2(context) {
             return beta === 1 ? new Basis(context) : new Bundle(context, beta);
           }
@@ -245141,7 +245284,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+beta2);
           };
           return bundle2;
-        }(0.85);
+        })(0.85);
         function point$1(that, x2, y2) {
           that._context.bezierCurveTo(
             that._x1 + that._k * (that._x2 - that._x0),
@@ -245201,7 +245344,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y0 = this._y1, this._y1 = this._y2, this._y2 = y2;
           }
         };
-        var cardinal = function custom(tension) {
+        var cardinal = (function custom(tension) {
           function cardinal2(context) {
             return new Cardinal(context, tension);
           }
@@ -245209,7 +245352,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+tension2);
           };
           return cardinal2;
-        }(0);
+        })(0);
         function CardinalClosed(context, tension) {
           this._context = context;
           this._k = (1 - tension) / 6;
@@ -245264,7 +245407,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y0 = this._y1, this._y1 = this._y2, this._y2 = y2;
           }
         };
-        var cardinalClosed = function custom(tension) {
+        var cardinalClosed = (function custom(tension) {
           function cardinal2(context) {
             return new CardinalClosed(context, tension);
           }
@@ -245272,7 +245415,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+tension2);
           };
           return cardinal2;
-        }(0);
+        })(0);
         function CardinalOpen(context, tension) {
           this._context = context;
           this._k = (1 - tension) / 6;
@@ -245316,7 +245459,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y0 = this._y1, this._y1 = this._y2, this._y2 = y2;
           }
         };
-        var cardinalOpen = function custom(tension) {
+        var cardinalOpen = (function custom(tension) {
           function cardinal2(context) {
             return new CardinalOpen(context, tension);
           }
@@ -245324,7 +245467,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+tension2);
           };
           return cardinal2;
-        }(0);
+        })(0);
         function point$2(that, x2, y2) {
           var x1 = that._x1, y1 = that._y1, x22 = that._x2, y22 = that._y2;
           if (that._l01_a > epsilon) {
@@ -245393,7 +245536,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y0 = this._y1, this._y1 = this._y2, this._y2 = y2;
           }
         };
-        var catmullRom = function custom(alpha) {
+        var catmullRom = (function custom(alpha) {
           function catmullRom2(context) {
             return alpha ? new CatmullRom(context, alpha) : new Cardinal(context, 0);
           }
@@ -245401,7 +245544,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+alpha2);
           };
           return catmullRom2;
-        }(0.5);
+        })(0.5);
         function CatmullRomClosed(context, alpha) {
           this._context = context;
           this._alpha = alpha;
@@ -245462,7 +245605,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y0 = this._y1, this._y1 = this._y2, this._y2 = y2;
           }
         };
-        var catmullRomClosed = function custom(alpha) {
+        var catmullRomClosed = (function custom(alpha) {
           function catmullRom2(context) {
             return alpha ? new CatmullRomClosed(context, alpha) : new CardinalClosed(context, 0);
           }
@@ -245470,7 +245613,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+alpha2);
           };
           return catmullRom2;
-        }(0.5);
+        })(0.5);
         function CatmullRomOpen(context, alpha) {
           this._context = context;
           this._alpha = alpha;
@@ -245520,7 +245663,7 @@ uniform ${i3} ${a3} u_${s3};
             this._y0 = this._y1, this._y1 = this._y2, this._y2 = y2;
           }
         };
-        var catmullRomOpen = function custom(alpha) {
+        var catmullRomOpen = (function custom(alpha) {
           function catmullRom2(context) {
             return alpha ? new CatmullRomOpen(context, alpha) : new CardinalOpen(context, 0);
           }
@@ -245528,7 +245671,7 @@ uniform ${i3} ${a3} u_${s3};
             return custom(+alpha2);
           };
           return catmullRom2;
-        }(0.5);
+        })(0.5);
         function LinearClosed(context) {
           this._context = context;
         }
@@ -245948,7 +246091,7 @@ uniform ${i3} ${a3} u_${s3};
     "node_modules/@plotly/d3-sankey/build/d3-sankey.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_array(), require_d3_collection(), require_d3_shape()) : typeof define === "function" && false ? define(["exports", "d3-array", "d3-collection", "d3-shape"], factory) : factory(global2.d3 = global2.d3 || {}, global2.d3, global2.d3, global2.d3);
-      })(exports, function(exports2, d3Array, d3Collection, d3Shape) {
+      })(exports, (function(exports2, d3Array, d3Collection, d3Shape) {
         "use strict";
         function targetDepth(d) {
           return d.target.depth;
@@ -246206,7 +246349,7 @@ uniform ${i3} ${a3} u_${s3};
         exports2.sankeyJustify = justify;
         exports2.sankeyLinkHorizontal = sankeyLinkHorizontal;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 
@@ -246343,7 +246486,7 @@ uniform ${i3} ${a3} u_${s3};
     "node_modules/@plotly/d3-sankey-circular/dist/d3-sankey-circular.js"(exports, module) {
       (function(global2, factory) {
         typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require_d3_array(), require_d3_collection(), require_d3_shape(), require_johnson()) : typeof define === "function" && false ? define(["exports", "d3-array", "d3-collection", "d3-shape", "elementary-circuits-directed-graph"], factory) : factory(global2.d3 = global2.d3 || {}, global2.d3, global2.d3, global2.d3, null);
-      })(exports, function(exports2, d3Array, d3Collection, d3Shape, findCircuits) {
+      })(exports, (function(exports2, d3Array, d3Collection, d3Shape, findCircuits) {
         "use strict";
         findCircuits = findCircuits && findCircuits.hasOwnProperty("default") ? findCircuits["default"] : findCircuits;
         function targetDepth(d) {
@@ -247343,7 +247486,7 @@ uniform ${i3} ${a3} u_${s3};
         exports2.sankeyRight = right;
         exports2.sankeyJustify = justify;
         Object.defineProperty(exports2, "__esModule", { value: true });
-      });
+      }));
     }
   });
 

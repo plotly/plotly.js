@@ -79,6 +79,28 @@ function locationToFeature(locationmode, location, features) {
     return false;
 }
 
+// Offset used to lift negative longitudes (-180..0) into a continuous frame
+// (180..360) so polygons and points that straddle the antimeridian can be
+// compared with linear math. Shared between polygon stitching and hover
+// hit-testing so both sides stay in sync.
+const ANTIMERIDIAN_LON_SHIFT = 360;
+
+/**
+ * Find the first index where a polygon ring crosses the antimeridian
+ * (a transition from positive to negative longitude between consecutive
+ * points). Returns null when no crossing is found.
+ *
+ * @param {Array<Array<number>>} pts - polygon points as [lon, lat] pairs
+ * @return {number|null} index of the segment that crosses, or null
+ */
+function doesCrossAntiMeridian(pts) {
+    for (let l = 0; l < pts.length - 1; l++) {
+        if (pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
+    }
+
+    return null;
+}
+
 function feature2polygons(feature) {
     var geometry = feature.geometry;
     var coords = geometry.coordinates;
@@ -86,13 +108,6 @@ function feature2polygons(feature) {
 
     var polygons = [];
     var appendPolygon, j, k, m;
-
-    function doesCrossAntiMerdian(pts) {
-        for (var l = 0; l < pts.length - 1; l++) {
-            if (pts[l][0] > 0 && pts[l + 1][0] < 0) return l;
-        }
-        return null;
-    }
 
     if (loc === 'RUS' || loc === 'FJI') {
         // Russia and Fiji have landmasses that cross the antimeridian,
@@ -105,13 +120,13 @@ function feature2polygons(feature) {
         appendPolygon = function (_pts) {
             var pts;
 
-            if (doesCrossAntiMerdian(_pts) === null) {
+            if (doesCrossAntiMeridian(_pts) === null) {
                 pts = _pts;
             } else {
                 pts = new Array(_pts.length);
                 for (m = 0; m < _pts.length; m++) {
                     // do not mutate calcdata[i][j].geojson !!
-                    pts[m] = [_pts[m][0] < 0 ? _pts[m][0] + 360 : _pts[m][0], _pts[m][1]];
+                    pts[m] = [_pts[m][0] < 0 ? _pts[m][0] + ANTIMERIDIAN_LON_SHIFT : _pts[m][0], _pts[m][1]];
                 }
             }
 
@@ -121,7 +136,7 @@ function feature2polygons(feature) {
         // Antarctica has a landmass that wraps around every longitudes which
         // confuses the 'contains' methods.
         appendPolygon = function (pts) {
-            var crossAntiMeridianIndex = doesCrossAntiMerdian(pts);
+            var crossAntiMeridianIndex = doesCrossAntiMeridian(pts);
 
             // polygon that do not cross anti-meridian need no special handling
             if (crossAntiMeridianIndex === null) {
@@ -139,7 +154,7 @@ function feature2polygons(feature) {
 
             for (m = 0; m < pts.length; m++) {
                 if (m > crossAntiMeridianIndex) {
-                    stitch[si++] = [pts[m][0] + 360, pts[m][1]];
+                    stitch[si++] = [pts[m][0] + ANTIMERIDIAN_LON_SHIFT, pts[m][1]];
                 } else if (m === crossAntiMeridianIndex) {
                     stitch[si++] = pts[m];
                     stitch[si++] = [pts[m][0], -90];
@@ -381,11 +396,82 @@ function computeBbox(d) {
     return turfBbox(d);
 }
 
+/**
+ * Pick a compact longitude range for `fitbounds`-style auto-framing when the
+ * data straddles the antimeridian (±180°).
+ *
+ * Longitude is cyclic, so the naive [min, max] range used by the autorange
+ * machinery can include a large empty span when points sit on both sides of
+ * ±180° (e.g. lon = [131.8855, -179] spans ~311° the long way round, when the
+ * compact view spans ~49° across the antimeridian). This finds the largest gap
+ * between consecutive longitudes and, when that gap is wider than the gap across
+ * the antimeridian, returns the complementary range so the map shows the dense
+ * cluster of points rather than the empty ocean between them.
+ *
+ * The returned upper bound may exceed 180°; downstream `makeRangeBox` (and
+ * MapLibre's `LngLatBounds`) handle ranges that cross the antimeridian without
+ * ambiguity.
+ *
+ * @param {Array} lons - longitude values (may contain non-finite entries)
+ * @return {Array|null} [lonStart, lonEnd] when an antimeridian-crossing range is
+ *   more compact, otherwise null (caller keeps the autorange result).
+ */
+function getFitboundsLonRange(lons) {
+    const sorted = lons.filter(isFinite).sort((a, b) => a - b);
+    if (sorted.length < 2) return null;
+
+    const n = sorted.length;
+    const naiveSpan = sorted[n - 1] - sorted[0];
+    // Data already wraps the whole globe; there is nothing to compact.
+    if (naiveSpan >= 360) return null;
+
+    // Widest gap between consecutive longitudes.
+    let maxGap = -Infinity;
+    let gapStart = -1;
+    for (let i = 0; i < n - 1; i++) {
+        const gap = sorted[i + 1] - sorted[i];
+        if (gap > maxGap) {
+            maxGap = gap;
+            gapStart = i;
+        }
+    }
+
+    // Only worth wrapping when an interior gap is wider than the gap that the
+    // naive [min, max] range already leaves open across the antimeridian.
+    const antimeridianGap = 360 - naiveSpan;
+    if (maxGap <= antimeridianGap) return null;
+
+    return [sorted[gapStart + 1], sorted[gapStart] + ANTIMERIDIAN_LON_SHIFT];
+}
+
+/**
+ * Return an unwrapped version of a `[lon0, lon1]` longitude range.
+ * When the range crosses the antimeridian (`lon0 > 0`, `lon1 < 0`),
+ * 360 is added to `lon1` to produce a continuous range;
+ * otherwise the input pair is returned unchanged. Function assumes
+ * `lon0` is west of `lon1`.
+ *
+ * @example
+ *   unwrapLonRange([170, -170]) // → [170, 190]  (span = 20°, midpoint = 180°)
+ *   unwrapLonRange([-10, 20])   // → [-10, 20]   (no crossing, passthrough)
+ *
+ * @param {[number, number]} lonRange - `[lon0, lon1]`, each in the range [-180, 180]
+ * @return {[number, number]} The unwrapped range; when the input contract is
+ *   respected, `lon1` falls in the range `[lon0, lon0 + 360)`.
+ */
+function unwrapLonRange([lon0, lon1]) {
+    return [lon0, lon0 > 0 && lon1 < 0 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
+}
+
 module.exports = {
-    locationToFeature: locationToFeature,
-    feature2polygons: feature2polygons,
-    getTraceGeojson: getTraceGeojson,
-    extractTraceFeature: extractTraceFeature,
-    fetchTraceGeoData: fetchTraceGeoData,
-    computeBbox: computeBbox
+    locationToFeature,
+    feature2polygons,
+    getTraceGeojson,
+    extractTraceFeature,
+    fetchTraceGeoData,
+    computeBbox,
+    doesCrossAntiMeridian,
+    getFitboundsLonRange,
+    unwrapLonRange,
+    ANTIMERIDIAN_LON_SHIFT
 };

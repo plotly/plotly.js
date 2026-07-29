@@ -1215,6 +1215,21 @@ describe('calculated data and points', function() {
                 })
                 .then(done, done.fail);
             });
+
+            it('does not throw when a category coordinate is null and ordering by value', function(done) {
+                Plotly.newPlot(gd, [{
+                    type: 'bar',
+                    x: ['a', null, 'b'],
+                    y: [3, 5, 7]
+                }], {
+                    xaxis: {type: 'category', categoryorder: 'sum descending'}
+                })
+                .then(function() {
+                    // the null point is dropped, remaining categories are ordered by value
+                    expect(gd._fullLayout.xaxis._categories).toEqual(['b', 'a']);
+                })
+                .then(done, done.fail);
+            });
         });
     });
 

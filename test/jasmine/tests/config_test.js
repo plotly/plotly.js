@@ -585,8 +585,9 @@ describe('config argument', function() {
                 expect(confirmBtn).not.toBe(null, 'confirm button should be shown');
                 mouseEvent('click', 0, 0, {element: confirmBtn});
 
-                // Should open the provided URL's origin in a new tab
-                expect(openSpy).toHaveBeenCalledWith('https://example.plotly.com/endpoint', '_blank');
+                // Should open the provided URL's origin in a new tab,
+                // adding the current page's origin as a query parameter
+                expect(openSpy).toHaveBeenCalledWith('https://example.plotly.com/endpoint?origin=http%3A%2F%2Flocalhost%3A9876', '_blank');
             })
             .then(done, done.fail);
         });

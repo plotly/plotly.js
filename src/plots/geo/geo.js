@@ -24,9 +24,9 @@ var selectOnClick = require('../../components/selections').selectOnClick;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
-var getFitboundsLonRange = require('./get_fitbounds_lon_range');
 
 var geoUtils = require('../../lib/geo_location_utils');
+const { getFitboundsLonRange, unwrapLonRange } = geoUtils;
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
 
@@ -827,13 +827,9 @@ function makeGraticule(axisName, geoLayout, fullLayout) {
 // Note that clipPad padding is added around range to avoid aliasing.
 function makeRangeBox(lon, lat) {
     var clipPad = constants.clipPad;
-    var lon0 = lon[0] + clipPad;
-    var lon1 = lon[1] - clipPad;
+    const [lon0, lon1] = unwrapLonRange([lon[0] + clipPad, lon[1] - clipPad]);
     var lat0 = lat[0] + clipPad;
     var lat1 = lat[1] - clipPad;
-
-    // to cross antimeridian w/o ambiguity
-    if(lon0 > 0 && lon1 < 0) lon1 += 360;
 
     var dlon4 = (lon1 - lon0) / 4;
 
