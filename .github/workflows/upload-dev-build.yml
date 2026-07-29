@@ -51,7 +51,7 @@ jobs:
 
       - name: Get required metadata (PR number, commit SHA, workflow run ID containing artifacts)
         id: get-metadata
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_EVENT_NAME: ${{ github.event_name }}
@@ -108,7 +108,7 @@ jobs:
 
       - name: Download build artifact
         id: download-artifact
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: dist  # uploaded by publish-dist.yml > publish-dist
@@ -118,7 +118,7 @@ jobs:
 
       - name: Prepare folders
         id: setup-metadata
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
@@ -143,7 +143,7 @@ jobs:
 
       - name: Generate GitHub App token
         id: generate-token
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  #v3.1.1
         with:
           client-id: ${{ vars.DEV_DEPLOY_APP_ID }}
@@ -152,7 +152,7 @@ jobs:
           repositories: plotly.js-dev-builds
 
       - name: Check out plotly.js-dev-builds repo
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           repository: plotly/plotly.js-dev-builds
@@ -161,7 +161,7 @@ jobs:
 
       - name: Commit and push files
         id: commit-and-push
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
           SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
@@ -194,7 +194,7 @@ jobs:
           fi
 
       - name: Generate summary
-        if: steps.fork-check.outputs.is_fork != 'true'
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
           SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
