@@ -23,7 +23,7 @@ lib.adjustFormat = function adjustFormat(formatStr) {
     // that prefix before deciding whether to trim, and reattach it: prepending
     // the tilde to the whole string (e.g. "~+.2f") is an invalid spec that
     // d3Format rejects, so "+.2f" used to be silently dropped.
-    var prefix = (formatStr.match(/^[+\-( ]/) || [''])[0];
+    var prefix = (formatStr.match(/^[+\-( ]?/) || [''])[0];
     var rest = formatStr.slice(prefix.length);
 
     // try adding tilde to trim trailing zeros; leave symbol-led specs ($, #)
