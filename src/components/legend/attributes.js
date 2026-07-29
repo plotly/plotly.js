@@ -141,6 +141,17 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the width (in px) of the legend item symbols (the part other than the title.text).',
     },
+    itemheight: {
+        valType: 'number',
+        min: 6,
+        dflt: 6,
+        editType: 'legend',
+        description: [
+            'Sets the height (in px) of the legend item fill swatch.',
+            'Increasing it reveals more of a trace *fill* or *fillpattern* in the legend,',
+            'and grows the legend item to fit.',
+        ].join(' '),
+    },
     itemclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
