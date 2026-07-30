@@ -710,7 +710,6 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
             constrained: constrained,
             angle: angle,
             zeroBarDir: zeroBarDir
-            zeroBarDir: zeroBarDir
         });
     } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
@@ -967,10 +966,10 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
         dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
     }
     if (isHorizontal) {
-        targetX = x1 - dir * (textpad + axisPad);
+        targetX = x1 - dir * textpad;
         anchorX = dir * extrapad;
     } else {
-        targetY = y1 + dir * (textpad + axisPad);
+        targetY = y1 + dir * textpad;
         anchorY = -dir * extrapad;
     }
 
