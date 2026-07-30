@@ -958,9 +958,11 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var anchorX = 0;
     var anchorY = 0;
 
-    var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+    var dir;
     if ((isHorizontal ? x0 === x1 : y0 === y1) && opts.zeroBarDir) {
         dir = opts.zeroBarDir;
+    } else {
+        dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
     }
     if (isHorizontal) {
         targetX = x1 - dir * (textpad + axisPad);
@@ -1197,5 +1199,4 @@ function calcTextinfo(cd, index, xa, ya) {
 module.exports = {
     plot: plot,
     toMoveInsideBar: toMoveInsideBar,
-    toMoveOutsideBar: toMoveOutsideBar
 };
