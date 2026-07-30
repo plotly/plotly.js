@@ -710,6 +710,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
             constrained: constrained,
             angle: angle,
             zeroBarDir: zeroBarDir
+            zeroBarDir: zeroBarDir
         });
     } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
