@@ -574,4 +574,34 @@ describe('Plotly.validate', function() {
         }]);
         expect(out).toBeUndefined();
     });
+
+    describe('colorbar type validation', function() {
+        it('should accept valid colorbar types', function() {
+            var trace = {
+                type: 'heatmap',
+                z: [[1, 10], [100, 1000]],
+                colorbar: {
+                    type: 'log'
+                }
+            };
+
+            // validate returns an array of errors. An empty array means success.
+            var out = Plotly.validate([trace]);
+            expect(out).toBeUndefined();
+        });
+
+        it('should reject invalid colorbar types', function() {
+            var trace = {
+                type: 'heatmap',
+                z: [[1, 2], [3, 4]],
+                colorbar: {
+                    type: 'exponential' // not in our enumerated list
+                }
+            };
+
+            var out = Plotly.validate([trace]);
+            expect(out.length).toEqual(1);
+            expect(out[0].msg).toEqual('In data trace 0, key colorbar.type is set to an invalid value (exponential)');
+        });
+    });
 });

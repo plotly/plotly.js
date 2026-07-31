@@ -654,6 +654,53 @@ describe('Test colorscale:', function() {
             expect(fullLayout.coloraxis.cmax).toBe(4);
             expect(fullLayout.coloraxis._cmax).toBe(4);
         });
+
+        it('should fall back to a linear colorbar when zmin/zmax is explicitly non-positive for a log colorbar', function() {
+            trace = {
+                type: 'heatmap',
+                z: [[-5, 10, 100], [10, 100, 1000]],
+                zmin: -5,
+                zmax: 1000,
+                zauto: false,
+                colorbar: {type: 'log'}
+            };
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
+
+            expect(trace.colorbar.type).toBe('linear');
+            expect(trace._zmin).toBe(-5);
+            expect(trace._zmax).toBe(1000);
+        });
+
+        it('should fall back to a linear colorbar when autoscaling finds no positive values for a log colorbar', function() {
+            trace = {
+                type: 'heatmap',
+                z: [[-5, -10], [-100, -1]],
+                colorbar: {type: 'log'}
+            };
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
+
+            expect(trace.colorbar.type).toBe('linear');
+            expect(trace._zmin).toBe(-100);
+            expect(trace._zmax).toBe(-1);
+        });
+
+        it('should mask out non-positive values when autoscaling a log colorbar, like log cartesian axes do', function() {
+            trace = {
+                type: 'heatmap',
+                z: [[-5, 2, 100], [10, 100, 1000]],
+                colorbar: {type: 'log'}
+            };
+            gd = _supply(trace);
+            calcColorscale(gd, trace, {vals: trace.z, containerStr: '', cLetter: 'z'});
+
+            // stays log - there is positive data to scale from
+            expect(trace.colorbar.type).toBe('log');
+            // -5 is masked out; the smallest positive value (2) becomes zmin
+            expect(trace._zmin).toBe(2);
+            expect(trace._zmax).toBe(1000);
+        });
     });
 
     describe('extractScale + makeColorScaleFunc', function() {
@@ -1198,4 +1245,107 @@ describe('Test colorscale restyle calls:', function() {
         })
         .then(done, done.fail);
     });
+
+    describe('helpers log mapping', function() {
+        var makeColorScaleFuncFromTrace = Colorscale.makeColorScaleFuncFromTrace;
+
+        it('should map domain values logarithmically to the color gradient when type is log', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],       // 0%
+                    [1, 'rgb(100, 100, 100)']  // 100%
+                ],
+                colorbar: {
+                    type: 'log'
+                }
+            };
+            
+            var colorFn = makeColorScaleFuncFromTrace(trace);
+
+            // log10(1) = 0 -> maps to 0% of the scale
+            expect(colorFn(1)).toEqual('rgb(0, 0, 0)');
+            
+            // log10(10) = 1 -> maps to 50% of the scale (halfway between log10(1) and log10(100))
+            expect(colorFn(10)).toEqual('rgb(50, 50, 50)');
+            
+            // log10(100) = 2 -> maps to 100% of the scale
+            expect(colorFn(100)).toEqual('rgb(100, 100, 100)');
+        });
+
+        it('should return a transparent color for zero or negative values on a log scale', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],
+                    [1, 'rgb(255, 255, 255)']
+                ],
+                colorbar: {
+                    type: 'log'
+                }
+            };
+            
+            var colorFn = makeColorScaleFuncFromTrace(trace);
+
+            // The logarithm of zero or a negative number is undefined, 
+            // so our wrapper should catch it and return transparent black.
+            expect(colorFn(0)).toEqual('rgba(0,0,0,0)');
+            expect(colorFn(-10)).toEqual('rgba(0,0,0,0)');
+        });
+
+        it('should return numeric rgba arrays (not strings) when called with returnArray/noNumericCheck, as heatmap rendering does', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],
+                    [1, 'rgb(200, 100, 50)']
+                ],
+                colorbar: {
+                    type: 'log'
+                }
+            };
+
+            var colorFn = makeColorScaleFuncFromTrace(trace, {noNumericCheck: true, returnArray: true});
+
+            // log10(1) = 0 -> maps to 0% of the scale
+            var cLow = colorFn(1);
+            expect(cLow).toEqual([0, 0, 0, 1]);
+            expect(typeof cLow[0]).toBe('number');
+
+            // log10(100) = 2 -> maps to 100% of the scale
+            var cHigh = colorFn(100);
+            expect(cHigh).toEqual([200, 100, 50, 1]);
+
+            // zero/negative must clamp to a numeric transparent array, not a css string,
+            // since callers like heatmap/plot.js index directly into the result (c[0], c[1], c[2])
+            var cZero = colorFn(0);
+            expect(cZero).toEqual([0, 0, 0, 0]);
+            expect(typeof cZero[0]).toBe('number');
+
+            var cNeg = colorFn(-10);
+            expect(cNeg).toEqual([0, 0, 0, 0]);
+            expect(typeof cNeg[0]).toBe('number');
+        });
+
+        it('should safely fall back to linear if type is undefined or linear', function() {
+            var trace = {
+                cmin: 1,
+                cmax: 100,
+                colorscale: [
+                    [0, 'rgb(0, 0, 0)'],
+                    [1, 'rgb(100, 100, 100)']
+                ],
+                // Omitting colorbar.type to simulate default behavior
+            };
+            
+            var colorFn = makeColorScaleFuncFromTrace(trace);
+
+            // Linear midpoint between 1 and 100 is 50.5
+            expect(colorFn(50.5)).toEqual('rgb(50, 50, 50)');
+        });
+    });
+
 });
