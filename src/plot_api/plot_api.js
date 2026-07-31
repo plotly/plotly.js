@@ -30,6 +30,8 @@ var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
 
+var Profiler = require('../lib').Profiler;
+
 var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
 var numericNameWarningCount = 0;
@@ -63,6 +65,9 @@ function _doPlot(gd, data, layout, config) {
 
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
+
+    // Start profiler if enabled (returns no-op if disabled)
+    var profiler = Profiler.start(gd);
 
     if (Lib.isPlainObject(data)) {
         var obj = data;
@@ -129,6 +134,7 @@ function _doPlot(gd, data, layout, config) {
     }
 
     Plots.supplyDefaults(gd);
+    profiler.mark('supplyDefaults');
 
     var fullLayout = gd._fullLayout;
     var hasCartesian = fullLayout._has('cartesian');
@@ -145,6 +151,7 @@ function _doPlot(gd, data, layout, config) {
             delete fullLayout._shouldCreateBgLayer;
         }
     }
+    profiler.mark('makePlotFramework');
 
     // clear gradient and pattern defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
@@ -159,6 +166,7 @@ function _doPlot(gd, data, layout, config) {
     // to force redoing calcdata, just delete it before calling _doPlot
     var recalc = !gd.calcdata || gd.calcdata.length !== (gd._fullData || []).length;
     if (recalc) Plots.doCalcdata(gd);
+    profiler.mark('doCalcdata');
 
     // in case it has changed, attach fullData traces to calcdata
     for (var i = 0; i < gd.calcdata.length; i++) {
@@ -351,11 +359,28 @@ function _doPlot(gd, data, layout, config) {
         return Axes.draw(gd, graphWasEmpty ? '' : 'redraw');
     }
 
-    var seq = [Plots.previousPromises, addFrames, drawFramework, marginPushers, marginPushersAgain];
+    var seq = [
+        Plots.previousPromises,
+        addFrames,
+        drawFramework,
+        function() { profiler.mark('drawFramework'); },
+        marginPushers,
+        function() { profiler.mark('marginPushers'); },
+        marginPushersAgain,
+        function() { profiler.mark('marginPushersAgain'); }
+    ];
 
-    if (hasCartesian) seq.push(positionAndAutorange);
+    if (hasCartesian) {
+        seq.push(
+            positionAndAutorange,
+            function() { profiler.mark('positionAndAutorange'); }
+        );
+    }
 
-    seq.push(subroutines.layoutStyles);
+    seq.push(
+        subroutines.layoutStyles,
+        function() { profiler.mark('layoutStyles'); }
+    );
     if (hasCartesian) {
         seq.push(drawAxes, function insideTickLabelsAutorange(gd) {
             var insideTickLabelsUpdaterange = gd._fullLayout._insideTickLabelsUpdaterange;
@@ -367,12 +392,16 @@ function _doPlot(gd, data, layout, config) {
                 });
             }
         });
+        seq.push(function() { profiler.mark('drawAxes'); });
     }
 
     seq.push(
         subroutines.drawData,
+        function() { profiler.mark('drawData'); },
         subroutines.finalDraw,
+        function() { profiler.mark('finalDraw'); },
         initInteractions,
+        function() { profiler.mark('initInteractions'); },
         Plots.addLinks,
         Plots.rehover,
         Plots.redrag,
@@ -391,6 +420,13 @@ function _doPlot(gd, data, layout, config) {
     if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function () {
+        // Finalize profiling and emit event if profiling is enabled
+        var profileData = profiler.end();
+        if (profileData && profileData.total) {
+            gd._profileData = profileData;
+            Events.triggerHandler(gd, 'plotly_profiled', profileData);
+        }
+
         emitAfterPlot(gd);
         return gd;
     });

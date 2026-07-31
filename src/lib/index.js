@@ -1421,3 +1421,5 @@ lib.getPositionFromD3Event = function () {
         return [d3.event.offsetX, d3.event.offsetY];
     }
 };
+
+lib.Profiler = require('./profiler');
