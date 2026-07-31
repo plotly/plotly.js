@@ -242,11 +242,18 @@ function extractTraceFeature(calcTrace) {
                     properties: {}
                 };
 
-                // Compute centroid, add it to the properties
-                if (fOut.geometry.coordinates.length > 0) {
-                    fOut.properties.ct = findCentroid(fOut);
-                } else {
-                    fOut.properties.ct = [NaN, NaN];
+                fOut.properties.ct = findCentroid(fOut);
+
+                if (isNaN(fOut.properties.ct[0])) {
+                    loggers.log(
+                        [
+                            'Location',
+                            cdi.loc,
+                            'has no polygon with positive area.',
+                            'Its centroid could not be computed,',
+                            'so hover and selection will not work for it.'
+                        ].join(' ')
+                    );
                 }
 
                 // Mutate in in/out features into calcdata
@@ -331,8 +338,10 @@ function findCentroid(feature) {
         poly = geometry;
     }
 
-    // Degenerate MultiPolygons may not contain a positive-area polygon.
-    if (!poly) return [NaN, NaN];
+    // Guard against MultiPolygons that don't contain a positive-area polygon
+    // (collapsed rings measure zero, malformed ring ordering measures negative)
+    // and when either geometry type has rings holding no points at all.
+    if (!poly || !poly.coordinates.some((ring) => ring.length > 0)) return [NaN, NaN];
 
     return turfCentroid(poly).geometry.coordinates;
 }
