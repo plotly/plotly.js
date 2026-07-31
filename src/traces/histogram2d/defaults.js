@@ -21,6 +21,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplate');
     coerce('hovertemplatefallback');
 
+    coerce('tooltip');
+    coerce('tooltiptemplate');
+
     handleHeatmapLabelDefaults(coerce, layout);
 
     coerce('xhoverformat');

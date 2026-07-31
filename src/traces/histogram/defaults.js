@@ -38,7 +38,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplatefallback');
     coerce('xhoverformat');
     coerce('yhoverformat');
-
+    coerce('tooltip');
+    coerce('tooltiptemplate');
     var orientation = coerce('orientation', y && !x ? 'h' : 'v');
     var sampleLetter = orientation === 'v' ? 'x' : 'y';
     var aggLetter = orientation === 'v' ? 'y' : 'x';

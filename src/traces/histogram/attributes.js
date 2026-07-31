@@ -2,7 +2,8 @@
 
 var barAttrs = require('../bar/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
+var annotationAttrs = require('../../components/annotations/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var makeBinAttrs = require('./bin_attributes');
 var constants = require('./constants');
@@ -235,6 +236,15 @@ module.exports = {
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected,
+
+    tooltip: {values: extendFlat({}, annotationAttrs), 
+        valType: 'any',
+        description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+        editType: 'calc'
+    },
+    tooltiptemplate: tooltiptemplateAttrs({}, {
+        keys: constants.eventDataKeys
+    }),
 
     zorder: barAttrs.zorder
 };

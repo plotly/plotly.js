@@ -5,7 +5,8 @@ var makeBinAttrs = require('../histogram/bin_attributes');
 var heatmapAttrs = require('../heatmap/attributes');
 var baseAttrs = require('../../plots/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
-const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
+var annotationAttrs = require('../../components/annotations/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -73,6 +74,12 @@ module.exports = extendFlat(
         texttemplate: texttemplateAttrs({ arrayOk: false, editType: 'plot' }, { keys: ['z'] }),
         texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
         textfont: heatmapAttrs.textfont,
+        tooltip: {values: extendFlat({}, annotationAttrs),
+            valType: 'any',
+            description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+            editType: 'calc'
+        },
+        tooltiptemplate: tooltiptemplateAttrs({}, { keys: ['z'] }),
         showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false })
     },
     colorScaleAttrs('', { cLetter: 'z', autoColorDflt: false })

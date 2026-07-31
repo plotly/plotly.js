@@ -47,7 +47,9 @@ module.exports = extendFlat(
         hovertemplatefallback: histogram2dAttrs.hovertemplatefallback,
         texttemplate: contourAttrs.texttemplate,
         texttemplatefallback: contourAttrs.texttemplatefallback,
-        textfont: contourAttrs.textfont
+        textfont: contourAttrs.textfont,
+        tooltip: histogram2dAttrs.tooltip,
+        tooltiptemplate: histogram2dAttrs.tooltiptemplate
     },
     colorScaleAttrs('', {
         cLetter: 'z',

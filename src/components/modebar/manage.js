@@ -193,7 +193,7 @@ function getButtonGroups(gd) {
     // regardless of what other types are on the plot, since they'll all
     // just treat any truthy hovermode as 'closest'
     if(hasCartesian) {
-        hoverGroup.push('toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian');
+        hoverGroup.push('toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian', 'tooltip');
     }
     if(hasNoHover(fullData) || hasUnifiedHoverLabel) {
         hoverGroup = [];
@@ -258,6 +258,8 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosestGeo');
                     enableHover('hoverClosest3d');
                     enableHover('hoverClosestPie');
+                } else if(b === 'tooltip') {
+                    enableHover('tooltip');
                 }
             } else newList.push(b);
         }

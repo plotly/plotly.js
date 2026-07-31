@@ -67,6 +67,8 @@ module.exports = extendFlat(
                 'otherwise it is defaulted to false.'
             ].join(' ')
         }),
+        tooltip: heatmapAttrs.tooltip,
+        tooltiptemplate: heatmapAttrs.tooltiptemplate,
 
         fillcolor: {
             valType: 'color',

@@ -34,6 +34,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hovertemplate');
     coerce('hovertemplatefallback');
 
+    coerce('tooltip');
+    coerce('tooltiptemplate');
+
     var textposition = coerce('textposition');
     handleText(traceIn, traceOut, layout, coerce, textposition, {
         moduleHasSelected: false,

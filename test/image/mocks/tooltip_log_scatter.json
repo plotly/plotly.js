@@ -1,0 +1,83 @@
+{
+    "data": [
+        {
+            "name": "Left Trace 1",
+            "x": [1, 10, 100, 1000, 10000],
+            "y": [5, 10, 15, 20, 25],
+            "type": "scatter",
+            "xaxis": "x",
+            "yaxis": "y"
+        },
+        {
+            "name": "Left Trace 2",
+            "x": [1, 10, 100, 1000, 10000],
+            "y": [25, 20, 15, 10, 5],
+            "type": "scatter",
+            "xaxis": "x",
+            "yaxis": "y"
+        },
+        {
+            "name": "Right Trace 1",
+            "x": [5, 10, 15, 20, 25],
+            "y": [1, 10, 100, 1000, 10000],
+            "type": "scatter",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        },
+        {
+            "name": "Right Trace 2",
+            "x": [25, 20, 15, 10, 5],
+            "y": [1, 10, 100, 1000, 10000],
+            "type": "scatter",
+            "xaxis": "x2",
+            "yaxis": "y2"
+        }
+    ],
+    "layout": {
+        "xaxis": {
+          "domain": [0, 0.45],
+          "type": "log",
+          "title": {
+            "text": "Log X-Axis"
+          }
+        },
+        "yaxis": {
+          "domain": [0, 1],
+          "title": {
+            "text": "Linear Y-Axis"
+          }
+        },
+        "xaxis2": {
+          "domain": [0.55, 1],
+          "title": {
+            "text": "Linear X-Axis"
+          }
+        },
+        "yaxis2": {
+          "domain": [0, 1],
+          "type": "log",
+          "title": {
+            "text": "Log Y-Axis"
+          }
+        },
+        "grid": {
+          "rows": 1,
+          "columns": 2,
+          "pattern": "independent"
+        },
+        "title": {
+          "text": "Dual Subplots with Log Scales"
+        }
+    },
+    "config": {
+        "editable": true,
+        "modeBarButtonsToAdd": [
+            "tooltip",
+            "hoverclosest",
+            "hovercompare",
+            "togglespikelines"
+        ],
+        "displaylogo": false,
+        "displayModeBar": true
+    }
+}

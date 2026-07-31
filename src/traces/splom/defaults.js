@@ -36,7 +36,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplatefallback');
     coerce('xhoverformat');
     coerce('yhoverformat');
-
+    coerce('tooltip');
+    coerce('tooltiptemplate');
     handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {
         noAngleRef: true,
         noLineDash: true,

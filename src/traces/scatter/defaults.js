@@ -41,7 +41,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('mode', defaultMode);
-
+    coerce('tooltip');
+    coerce('tooltiptemplate');
     if (subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, { gradient: true });
     }

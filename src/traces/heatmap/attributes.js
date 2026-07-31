@@ -5,8 +5,9 @@ const { extendFlat } = require('../../lib/extend');
 const baseAttrs = require('../../plots/attributes');
 const { axisHoverFormat } = require('../../plots/cartesian/axis_format_attributes');
 const fontAttrs = require('../../plots/font_attributes');
-const { hovertemplateAttrs, templatefallbackAttrs, texttemplateAttrs } = require('../../plots/template_attributes');
+const { hovertemplateAttrs, templatefallbackAttrs, texttemplateAttrs, tooltiptemplateAttrs } = require('../../plots/template_attributes');
 const scatterAttrs = require('../scatter/attributes');
+var annotationAttrs = require('../../components/annotations/attributes');
 
 module.exports = extendFlat(
     {
@@ -126,6 +127,12 @@ module.exports = extendFlat(
             description: 'Sets the text font.'
         }),
 
+        tooltip: {values: extendFlat({}, annotationAttrs),
+            valType: 'any',
+            description: 'Accepts any properties typically used in annotations. This flexible structure allows for customization according to specific needs.',
+            editType: 'calc'
+        },
+        tooltiptemplate: extendFlat({}, tooltiptemplateAttrs(), { dflt: 'x: %{x}<br>y: %{y}<br>z: %{z}' }),
         showlegend: extendFlat({}, baseAttrs.showlegend, { dflt: false }),
         zorder: scatterAttrs.zorder
     },
