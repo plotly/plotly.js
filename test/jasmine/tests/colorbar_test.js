@@ -146,6 +146,25 @@ describe('Test colorbar:', function() {
             .then(done, done.fail);
         });
 
+        it('does not throw when a right-side horizontal colorbar title is wider than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        orientation: 'h',
+                        title: {text: 'Long title', side: 'right', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
         function assertCB(msg, present, opts) {
             var expandedMarginR = opts.expandedMarginR;
             var expandedMarginT = opts.expandedMarginT;
