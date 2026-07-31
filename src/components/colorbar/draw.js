@@ -167,6 +167,12 @@ function makeColorBarData(gd) {
     return out;
 }
 
+// Move domain[0] toward domain[1] by delta, without crossing it
+const insetDomainStart = (domain, delta) => [Math.min(domain[0] + delta, domain[1]), domain[1]];
+
+// Move domain[1] toward domain[0] by delta, without crossing it
+const insetDomainEnd = (domain, delta) => [domain[0], Math.max(domain[1] - delta, domain[0])];
+
 function drawColorBar(g, opts, gd) {
     var isVertical = opts.orientation === 'v';
     var len = opts.len;
@@ -300,13 +306,8 @@ function drawColorBar(g, opts, gd) {
 
     // set domain after init, because we may want to
     // allow it outside [0,1]
-    ax.domain = isVertical ? [
-        vFrac + ypad / gs.h,
-        vFrac + lenFrac - ypad / gs.h
-    ] : [
-        vFrac + xpad / gs.w,
-        vFrac + lenFrac - xpad / gs.w
-    ];
+    var padFrac = isVertical ? ypad / gs.h : xpad / gs.w;
+    ax.domain = insetDomainEnd(insetDomainStart([vFrac, vFrac + lenFrac], padFrac), padFrac);
 
     ax.setScale();
 
@@ -473,10 +474,10 @@ function drawColorBar(g, opts, gd) {
                     titleHeight += 5;
 
                     if(titleSide === 'top') {
-                        ax.domain[1] -= titleHeight / gs.h;
+                        ax.domain = insetDomainEnd(ax.domain, titleHeight / gs.h);
                         titleTrans[1] *= -1;
                     } else {
-                        ax.domain[0] += titleHeight / gs.h;
+                        ax.domain = insetDomainStart(ax.domain, titleHeight / gs.h);
                         var nlines = svgTextUtils.lineCount(titleText);
                         titleTrans[1] += (1 - nlines) * lineSize;
                     }
@@ -487,7 +488,7 @@ function drawColorBar(g, opts, gd) {
             } else { // horizontal colorbars
                 if(titleWidth) {
                     if(titleSide === 'right') {
-                        ax.domain[0] += (titleWidth + titleFontSize / 2) / gs.w;
+                        ax.domain = insetDomainStart(ax.domain, (titleWidth + titleFontSize / 2) / gs.w);
                     }
 
                     titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
