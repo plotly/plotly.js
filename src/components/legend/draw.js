@@ -772,7 +772,19 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
     var height, width;
 
     if(mathjaxNode) {
-        var mathjaxBB = Drawing.bBox(mathjaxNode);
+        var mathjaxBB;
+        var mjInnerSvg = mathjaxNode.querySelector && mathjaxNode.querySelector('svg');
+        var mjViewBox = mjInnerSvg && mjInnerSvg.getAttribute('viewBox');
+        if(mjViewBox) {
+            var vbParts = mjViewBox.split(/\s+/).map(Number);
+            var emPx = parseFloat(window.getComputedStyle(mathjaxNode).fontSize) || font.size;
+            mathjaxBB = {
+                width: (vbParts[2] / 1000) * emPx,
+                height: (vbParts[3] / 1000) * emPx
+            };
+        } else {
+            mathjaxBB = Drawing.bBox(mathjaxNode);
+        }
 
         height = mathjaxBB.height;
         width = mathjaxBB.width;
