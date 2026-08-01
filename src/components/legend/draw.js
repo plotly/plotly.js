@@ -778,10 +778,11 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         if(mjViewBox) {
             var vbParts = mjViewBox.split(/\s+/).map(Number);
             var emPx = parseFloat(window.getComputedStyle(mathjaxNode).fontSize) || font.size;
-            mathjaxBB = {
-                width: (vbParts[2] / 1000) * emPx,
-                height: (vbParts[3] / 1000) * emPx
-            };
+            var vbWidth = (vbParts[2] / 1000) * emPx;
+            var vbHeight = (vbParts[3] / 1000) * emPx;
+            mathjaxBB = (isFinite(vbWidth) && isFinite(vbHeight))
+                ? {width: vbWidth, height: vbHeight}
+                : Drawing.bBox(mathjaxNode);
         } else {
             mathjaxBB = Drawing.bBox(mathjaxNode);
         }
