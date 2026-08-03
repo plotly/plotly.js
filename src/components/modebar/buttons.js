@@ -72,23 +72,27 @@ modeBarButtons.toImage = {
 modeBarButtons.sendChartToCloud = {
     name: 'sendChartToCloud',
     title: function (gd) {
-        return _(gd, 'Share Chart');
+        return _(gd, 'Share Chart...');
     },
     icon: Icons.cloudupload,
     click: function (gd) {
         var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
         if (!baseUrl) {
-            console.error('No destination URL provided (plotlyServerURL is not set)');
+            console.error('No destination URL provided (plotlyServerURL is empty)');
             return;
         }
 
-        // Plotly Cloud origin, used to validate incoming messages and to target outgoing ones.
-        // `baseUrl` (plotlyServerURL) is the upload page that handles login and signals
-        // back when authentication succeeds.
+        // Validate that the provided plotlyServerURL is a valid URL
+        // with an http or https protocol
+        var baseUrlObj;
         try {
-            new URL(baseUrl);
+            baseUrlObj = new URL(baseUrl);
         } catch (e) {
             console.error('Invalid plotlyServerURL: ' + baseUrl);
+            return;
+        }
+        if (baseUrlObj.protocol !== 'https:' && baseUrlObj.protocol !== 'http:') {
+            console.error('Invalid protocol for plotlyServerURL: ' + baseUrl);
             return;
         }
 
