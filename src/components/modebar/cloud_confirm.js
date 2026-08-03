@@ -12,7 +12,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
     const DIALOG_TITLE = _(gd, 'Share Chart');
 
     // Messages to be shown when serverUrl matches the default (Plotly Cloud) URL
-    const DIALOG_MESSAGE_CLOUD = _(gd, 'This chart will be uploaded to {Plotly Cloud} to create a sharing link. Only you can see it until you choose to share.');
+    const DIALOG_MESSAGE_CLOUD = _(gd, 'This chart will be uploaded to {Plotly Cloud} to create a sharing link. Only you can see it until you change its visibility.');
     const DIALOG_MESSAGE_CLOUD_ACCOUNT = _(gd, "If you don't have a Plotly Cloud account yet, you'll have a chance to create one.");
 
     // Message to be shown when serverUrl is not the default URL
