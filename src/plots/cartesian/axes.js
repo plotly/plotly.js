@@ -978,6 +978,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var isReversed = ax.range[0] > ax.range[1];
     var ticklabelIndex = (!ax.ticklabelindex || Lib.isArrayOrTypedArray(ax.ticklabelindex)) ?
         ax.ticklabelindex : [ax.ticklabelindex];
+    ax._useTicklabelIndex = ticklabelIndex != null && ticklabelIndex !== 0;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -997,7 +998,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
     // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
-    var calcMinor = hasMinor || ticklabelIndex;
+    var calcMinor = hasMinor || ax._useTicklabelIndex;
 
     // calc major first
     for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
@@ -1157,17 +1158,18 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
     if(!minorTickVals || minorTickVals.length < 3) {
-        ticklabelIndex = false;
+        ax._useTicklabelIndex = false;
     } else {
         var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
-            ticklabelIndex = false;
+            ax._useTicklabelIndex = false;
             // remove previously added tick before tick0 for handling ticklabelindex positioning
             minorTickVals = minorTickVals.slice(1);
         }
     }
+
     // Determine for which ticks to draw labels
-    if(!ticklabelIndex) {
+    if(!ax._useTicklabelIndex) {
         allTicklabelVals = tickVals;
     } else {
         // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
@@ -1323,7 +1325,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var _value = tickVals[i].value;
 
         if(_minor) {
-            if(ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
+            if(ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
                 t = { x: _value };
