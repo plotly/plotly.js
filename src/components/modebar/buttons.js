@@ -72,7 +72,7 @@ modeBarButtons.toImage = {
 modeBarButtons.sendChartToCloud = {
     name: 'sendChartToCloud',
     title: function (gd) {
-        return _(gd, 'Share Chart...');
+        return _(gd, 'Share chart...');
     },
     icon: Icons.cloudupload,
     click: function (gd) {

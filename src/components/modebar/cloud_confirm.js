@@ -9,7 +9,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
     // Wording for dialog box. Must be defined inside this function rather than
     // at the top of the file because localization requires a reference to the
     // graph div (gd)
-    const DIALOG_TITLE = _(gd, 'Share Chart');
+    const DIALOG_TITLE = _(gd, 'Share chart');
 
     // Messages to be shown when serverUrl matches the default (Plotly Cloud) URL
     const DIALOG_MESSAGE_CLOUD = _(gd, 'This chart will be uploaded to {Plotly Cloud} to create a sharing link. Only you can see it until you change its visibility.');
