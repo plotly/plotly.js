@@ -2386,6 +2386,120 @@ describe('Test axes', function() {
                 .then(done, done.fail);
             });
         });
+
+        describe('on multicategory axes', function() {
+            // '2023' contributes 'b' first, so under the previous behaviour
+            // '2024' rendered as b, a - one global second-level order was
+            // shared by every first-level category
+            var trace = {
+                type: 'bar',
+                x: [
+                    ['2023', '2023', '2024', '2024'],
+                    ['b', 'c', 'a', 'b']
+                ],
+                y: [1, 2, 3, 4]
+            };
+
+            function _plot(xaxis) {
+                return Plotly.newPlot(gd, [Lib.extendDeep({}, trace)], xaxis ? {xaxis: xaxis} : {});
+            }
+
+            function _categories() {
+                return gd._fullLayout.xaxis._categories;
+            }
+
+            it('should follow the data order within each first-level category', function(done) {
+                _plot()
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(_categories()).toEqual([
+                        ['2023', 'b'], ['2023', 'c'], ['2024', 'a'], ['2024', 'b']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should honour categoryorder "array" with [parent, child] pairs', function(done) {
+                _plot({
+                    categoryorder: 'array',
+                    categoryarray: [['2024', 'b'], ['2024', 'a'], ['2023', 'c'], ['2023', 'b']]
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                    expect(_categories()).toEqual([
+                        ['2024', 'b'], ['2024', 'a'], ['2023', 'c'], ['2023', 'b']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should switch categoryorder to "array" when only categoryarray is supplied', function(done) {
+                _plot({categoryarray: [['2024', 'b'], ['2024', 'a']]})
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                    // categories missing from categoryarray follow in trace order
+                    expect(_categories()).toEqual([
+                        ['2024', 'b'], ['2024', 'a'], ['2023', 'b'], ['2023', 'c']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should revert categoryorder to "trace" when categoryarray holds no valid pair', function(done) {
+                _plot({categoryorder: 'array', categoryarray: ['a', 'b']})
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(_categories()).toEqual([
+                        ['2023', 'b'], ['2023', 'c'], ['2024', 'a'], ['2024', 'b']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should drop malformed categoryarray entries', function(done) {
+                _plot({
+                    categoryorder: 'array',
+                    categoryarray: ['2024', ['2024', 'b'], null, ['2023', 'c', 'extra']]
+                })
+                .then(function() {
+                    expect(_categories()).toEqual([
+                        ['2024', 'b'], ['2023', 'b'], ['2023', 'c'], ['2024', 'a']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should honour categoryorder "category ascending"', function(done) {
+                _plot({categoryorder: 'category ascending'})
+                .then(function() {
+                    expect(_categories()).toEqual([
+                        ['2023', 'b'], ['2023', 'c'], ['2024', 'a'], ['2024', 'b']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should honour categoryorder "category descending"', function(done) {
+                _plot({categoryorder: 'category descending'})
+                .then(function() {
+                    expect(_categories()).toEqual([
+                        ['2024', 'b'], ['2024', 'a'], ['2023', 'c'], ['2023', 'b']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should revert value-based categoryorder to "trace"', function(done) {
+                _plot({categoryorder: 'total descending'})
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                    expect(_categories()).toEqual([
+                        ['2023', 'b'], ['2023', 'c'], ['2024', 'a'], ['2024', 'b']
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+        });
     });
 
     describe('bar category autorange', function() {
@@ -4352,6 +4466,27 @@ describe('Test axes', function() {
                 expect(out).toEqual([0, 2, 1, 3]);
                 expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
                 expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('should order second-level categories per parent, not globally', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1', '2', '2'], ['b', 'a', 'a', 'b']]
+                }, 'x', 'multicategory');
+
+                // '2' keeps its own 'a' then 'b' order, even though 'b' is
+                // the first second-level category seen overall (under '1')
+                expect(out).toEqual([0, 1, 2, 3]);
+                expect(ax._categories).toEqual([['1', 'b'], ['1', 'a'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,b': 0, '1,a': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('should not let second-level categories inherit the prototype chain', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1'], ['toString', 'a']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1]);
+                expect(ax._categories).toEqual([['1', 'toString'], ['1', 'a']]);
             });
 
             it('case invalid in x[0]', function() {
