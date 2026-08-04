@@ -1026,6 +1026,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
     var calcMinor = hasMinor || ax._useTicklabelIndex;
 
+    var majorDtick = ax.dtick;
     // calc major first
     for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
         var isMinor = !major;
@@ -1043,6 +1044,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             axes.prepMinorTicks(mockAx, ax, opts);
         } else {
             axes.prepTicks(mockAx, opts);
+            majorDtick = mockAx.dtick;
         }
 
         // now that we've figured out the auto values for formatting
@@ -1069,9 +1071,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var exRng = expandRange(rng);
         var startTick = exRng[0];
         var endTick = exRng[1];
+        var visibleEndTick = endTick; // for period axis, there will be an additional major tick after that
+        var dtick = mockAx.dtick;
 
-        var numDtick = isNumeric(mockAx.dtick);
-        var isDLog = (type === 'log') && !(numDtick || mockAx.dtick.charAt(0) === 'L');
+        var numDtick = isNumeric(dtick);
+        var isDLog = (type === 'log') && !(numDtick || dtick.charAt(0) === 'L');
 
         // find the first tick
         var x0 = axes.tickFirst(mockAx, opts);
@@ -1115,7 +1119,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ) / _dTick) - 1;
         }
 
-        var dtick = mockAx.dtick;
         var tick0l = (type === 'linear') ? mockAx.r2l(mockAx.tick0) : undefined;
 
         if(mockAx.rangebreaks && mockAx._tick0Init !== mockAx.tick0) {
@@ -1127,11 +1130,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
 
         if((major || ax._useTicklabelIndex) && isPeriod) {
-            // if major: add one item to label period before tick0
-            // if minor: add one item for ticklabelindex positioning. positionPeriodTicks requires
-            // at least 2 ticks to calculate the period length, so we add a dummy tick, ensuring
-            // that if a tick is labeled, there are always at least 2 ticks.
-            x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            // add an additional major tick and correspondingly many minor ticks
+            // before the first major tick to be able to label the period before the first visible ticks.
+            x = axes.tickIncrement(x, majorDtick, !axrev, calendar);
+            // same after the last major tick to be able to label the period after the last visible tick.
+            if (ax._useTicklabelIndex) endTick = axes.tickIncrement(endTick, majorDtick, axrev, calendar);
             if (major) majorId--;
         }
 
@@ -1161,6 +1164,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
             prevX = x;
 
             var obj = { value: snapToGrid(x, tick0l, dtick) };
+
+            // mark ticks that were only added for period label positioning as "noTick" so they aren't drawn.
+            if (axrev ? (x > startTick || x < visibleEndTick) : (x < startTick || x > visibleEndTick)) {
+                obj.noTick = true;
+            }
 
             if(major) {
                 if(isDLog && (x !== (x | 0))) {
@@ -1198,14 +1206,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // check if ticklabelIndex makes sense, otherwise ignore it.
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
-    if(!minorTickVals || minorTickVals.length < 3) {
-        ax._useTicklabelIndex = false;
-    } else {
-        var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
-        if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
+    const visibleMinorTicks = minorTickVals.filter((minorTick) => minorTick.noTick !== true);
+    if (ax._useTicklabelIndex) {
+        if(!visibleMinorTicks || visibleMinorTicks.length < 2) {
             ax._useTicklabelIndex = false;
-            // remove previously added tick before tick0 for handling ticklabelindex positioning
-            minorTickVals = minorTickVals.slice(1);
+        } else {
+            var diff = (visibleMinorTicks[1].value - visibleMinorTicks[0].value) * (isReversed ? -1 : 1);
+            if(!periodCompatibleWithTickformat(diff, axes.getTickFormat(ax.minor))) {
+                ax._useTicklabelIndex = false;
+            }
         }
     }
 
@@ -1229,10 +1238,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
         })
         .toSorted((a, b) => a.value - b.value);
 
-        if (isPeriod && tickVals.length) {
-            // first major tick was just added for period handling
-            tickVals[0].skipLabel = true;
-        }
         tickVals.forEach(function(majorTick) {
             if (!majorTick.skipLabel) {
                 ticklabelIndex.forEach((labelIndex) => {
@@ -1241,14 +1246,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         const absLabelIndex = Math.abs(labelIndex);
                         const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
                         if (absLabelIndex <= smallerTicks.length - 1) {
-                            allTicklabelVals.push(smallerTicks[labeledTickIndex]);
-                            if (isPeriod) periodEndTicks.push(smallerTicks[labeledTickIndex + 1]);
+                            const labelVisible = !smallerTicks[labeledTickIndex].noTick || (isPeriod && !smallerTicks[labeledTickIndex + 1].noTick);
+                            if (labelVisible) {
+                                allTicklabelVals.push(smallerTicks[labeledTickIndex]);
+                                if (isPeriod) periodEndTicks.push(smallerTicks[labeledTickIndex + 1]);
+                            }
                         }
                     } else { // labelIndex >= 0
                         const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
                         if (labelIndex < largerTicks.length - 1) {
-                            allTicklabelVals.push(largerTicks[labelIndex]);
-                            if (isPeriod) periodEndTicks.push(largerTicks[labelIndex + 1]);
+                            const labelVisible = !largerTicks[labelIndex].noTick || (isPeriod && !largerTicks[labelIndex + 1].noTick);
+                            if (labelVisible) {
+                                allTicklabelVals.push(largerTicks[labelIndex]);
+                                if (isPeriod) periodEndTicks.push(largerTicks[labelIndex + 1]);
+                            }
                         }
                     }
                     majorTick.skipLabel = majorTick.skipLabel !== false;
@@ -1266,9 +1277,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(!allowedToOverlap) {
             // remove duplicate minors
             var list = [];
-            for(var k = 0; k < minorTickVals.length; k++) {
-                if (findOverlappingTick(minorTickVals[k], tickVals) == null) {
-                    list.push(minorTickVals[k]);
+            for(var k = 0; k < visibleMinorTicks.length; k++) {
+                if (findOverlappingTick(visibleMinorTicks[k], tickVals) == null) {
+                    list.push(visibleMinorTicks[k]);
                 }
             }
             minorTickVals = list;
@@ -1371,6 +1382,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             } else {
                 t = { x: _value };
             }
+            t.noTick = tickVals[i].noTick;
             t.minor = true;
             minorTicks.push(t);
         } else {
@@ -1379,24 +1391,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if (tickVals[i].skipLabel) {
                 hideLabel(t);
             }
-
+            t.noTick = tickVals[i].noTick;
             ticksOut.push(t);
         }
     }
 
-    if(isPeriod && ax._useTicklabelIndex && minorTicks.length) {
-        // drop very first minor tick that we added to handle ticklabelindex
-        minorTicks[0].noTick = true;
-    }
-    ticksOut = ticksOut.concat(minorTicks);
-
     ax._inCalcTicks = false;
 
-    if(isPeriod && ticksOut.length) {
-        // drop very first tick that we added to handle period
-        ticksOut[0].noTick = true;
-    }
-
+    ticksOut = ticksOut.concat(minorTicks);
     return ticksOut;
 };
 
