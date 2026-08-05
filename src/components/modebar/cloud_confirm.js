@@ -3,7 +3,7 @@
 const d3 = require('@plotly/d3');
 
 const _ = require('../../lib')._;
-const dfltConfig = require('../../plot_api/plot_config').dfltConfig;
+const { dfltConfig } = require('../../plot_api/plot_config');
 
 const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) => {
     // Wording for dialog box. Must be defined inside this function rather than
