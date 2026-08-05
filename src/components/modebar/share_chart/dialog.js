@@ -2,32 +2,33 @@
 
 const d3 = require('@plotly/d3');
 
-const _ = require('../../lib')._;
-const { dfltConfig } = require('../../plot_api/plot_config');
+const { dfltConfig } = require('../../../plot_api/plot_config');
+const getDialogStrings = require('./strings');
 
+/**
+ * Build the chart-sharing confirmation dialog box and add it to DOM
+ * inside the overlay element.
+ *
+ * The message wording depends on the destination: when serverUrl is the
+ * default Plotly Cloud URL we show wording specific to Plotly Cloud,
+ * otherwise we show a generic message naming the server's hostname.
+ *
+ * @param {DOM node} gd - the graph div (used for localizing strings)
+ * @param {d3 selection} overlay - the dialog backdrop element to append the box to
+ * @param {string} serverUrl - destination URL (must be a valid URL)
+ * @param {function} onClickConfirm - called when the confirm button is clicked
+ * @param {function} onClickCancel - called when the cancel button is clicked
+ */
 const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) => {
-    // Wording for dialog box. Must be defined inside this function rather than
-    // at the top of the file because localization requires a reference to the
-    // graph div (gd)
-    const DIALOG_TITLE = _(gd, 'Share chart');
 
-    // Messages to be shown when serverUrl matches the default (Plotly Cloud) URL
-    const DIALOG_MESSAGE_CLOUD = _(gd, 'This chart will be uploaded to {Plotly Cloud} to create a sharing link. Only you can see it until you change its visibility.');
-    const DIALOG_MESSAGE_CLOUD_ACCOUNT = _(gd, "If you don't have a Plotly Cloud account yet, you'll have a chance to create one.");
-
-    // Message to be shown when serverUrl is not the default URL
-    const DIALOG_MESSAGE_OTHER = _(gd, 'This chart will be sent to {serverUrl}.');
-
-    // Labels for buttons
-    const DIALOG_CANCEL = _(gd, 'Cancel');
-    const DIALOG_CONFIRM = _(gd, 'Share');
+    const strings = getDialogStrings(gd);
 
     const dialog = overlay.append('div')
         .classed('plotly-cloud-dialog-box', true);
 
     dialog.append('div')
         .classed('plotly-cloud-dialog-title', true)
-        .text(DIALOG_TITLE);
+        .text(strings.DIALOG_TITLE);
 
     if (serverUrl === dfltConfig.plotlyServerURL) {
         // If serverUrl matches the default Plotly Cloud URL,
@@ -39,7 +40,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
         const serverUrlHref = new URL(serverUrl).origin;
 
         // Split description into three parts: Before {, between, and after }
-        const descriptionParts = DIALOG_MESSAGE_CLOUD.split(/(\{|\})/);
+        const descriptionParts = strings.DIALOG_MESSAGE_CLOUD.split(/(\{|\})/);
         const beforePart = descriptionParts[0];
         const betweenPart = descriptionParts[2];
         const afterPart = descriptionParts[4];
@@ -55,7 +56,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
 
         description.append('div')
             .classed('plotly-cloud-dialog-message--account', true)
-            .text(DIALOG_MESSAGE_CLOUD_ACCOUNT);
+            .text(strings.DIALOG_MESSAGE_CLOUD_ACCOUNT);
     } else {
         // Otherwise, show a generic message with the server URL
         // We can trust that serverUrl is a valid URL because it was validated in buttons.js
@@ -63,7 +64,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
         const serverUrlHostname = serverUrlObj.hostname;
         // Link to the base domain only, leaving off any endpoint path
         const serverUrlHref = serverUrlObj.origin;
-        const descriptionParts = DIALOG_MESSAGE_OTHER.split(/(\{|\})/);
+        const descriptionParts = strings.DIALOG_MESSAGE_OTHER.split(/(\{|\})/);
         const beforePart = descriptionParts[0];
         const afterPart = descriptionParts[4];
 
@@ -85,13 +86,13 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
     buttons.append('button')
         .classed('plotly-cloud-dialog-btn', true)
         .classed('plotly-cloud-dialog-btn--cancel', true)
-        .text(DIALOG_CANCEL)
+        .text(strings.DIALOG_CANCEL)
         .on('click', onClickCancel);
 
     buttons.append('button')
         .classed('plotly-cloud-dialog-btn', true)
         .classed('plotly-cloud-dialog-btn--confirm', true)
-        .text(DIALOG_CONFIRM)
+        .text(strings.DIALOG_CONFIRM)
         .on('click', onClickConfirm);
 };
 

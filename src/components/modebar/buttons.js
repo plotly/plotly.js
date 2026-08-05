@@ -5,7 +5,7 @@ var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
-var confirmCloudDialog = require('./cloud_confirm');
+var confirmCloudDialog = require('./share_chart/dialog');
 var Lib = require('../../lib');
 var _ = Lib._;
 
