@@ -569,7 +569,7 @@ describe('config argument', function() {
             .then(function() {
                 modeBarButtons.sendChartToCloud.click(gd);
                 expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'confirmation dialog should not be shown');
-                expect(errorSpy).toHaveBeenCalledWith('Invalid protocol for plotlyServerURL: ftp://example.plotly.com');
+                expect(errorSpy).toHaveBeenCalledWith("Invalid protocol 'ftp:' in plotlyServerURL 'ftp://example.plotly.com'. Must be one of: http:, https:");
             })
             .then(done, done.fail);
         });

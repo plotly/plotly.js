@@ -91,8 +91,9 @@ modeBarButtons.sendChartToCloud = {
             console.error('Invalid plotlyServerURL: ' + baseUrl);
             return;
         }
-        if (baseUrlObj.protocol !== 'https:' && baseUrlObj.protocol !== 'http:') {
-            console.error('Invalid protocol for plotlyServerURL: ' + baseUrl);
+        const supportedProtocols = ['http:', 'https:'];
+        if (!supportedProtocols.includes(baseUrlObj.protocol)) {
+            console.error(`Invalid protocol '${baseUrlObj.protocol}' in plotlyServerURL '${baseUrl}'. Must be one of: ${supportedProtocols.join(', ')}`);
             return;
         }
 
