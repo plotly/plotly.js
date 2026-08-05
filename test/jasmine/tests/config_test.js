@@ -2,6 +2,7 @@ var Plotly = require('../../../lib/index');
 var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var modeBarButtons = require('../../../src/components/modebar/buttons');
+var dfltConfig = require('../../../src/plot_api/plot_config').dfltConfig;
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -509,12 +510,43 @@ describe('config argument', function() {
                 modeBarButtons.sendChartToCloud.click(gd);
                 var msg = document.querySelector('.plotly-cloud-dialog-message');
                 expect(msg).not.toBe(null, 'confirmation dialog should be shown');
-                expect(msg.textContent).toContain('example.plotly.com');
+                expect(msg.textContent).toBe('This chart will be sent to example.plotly.com.');
+
+                // The host name is shown as a link to the server's origin,
+                // leaving off the endpoint path
+                var link = msg.querySelector('.plotly-cloud-dialog-message--hostname');
+                expect(link).not.toBe(null, 'host name should be shown as a link');
+                expect(link.textContent).toBe('example.plotly.com');
+                expect(link.getAttribute('href')).toBe('https://example.plotly.com');
             })
             .then(done, done.fail);
         });
 
-        it('should NOT open confirmation dialog when set to an invalid URL', function(done) {
+        it('should show Plotly Cloud wording when left at the default URL', function(done) {
+            Plotly.newPlot(gd, [], {}, {})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe(dfltConfig.plotlyServerURL);
+                modeBarButtons.sendChartToCloud.click(gd);
+
+                var msg = document.querySelector('.plotly-cloud-dialog-message');
+                expect(msg).not.toBe(null, 'confirmation dialog should be shown');
+                expect(msg.textContent).toContain('This chart will be uploaded to Plotly Cloud to create a sharing link.');
+
+                var link = msg.querySelector('.plotly-cloud-dialog-message--hostname');
+                expect(link).not.toBe(null, 'Plotly Cloud should be shown as a link');
+                expect(link.textContent).toBe('Plotly Cloud');
+                expect(link.getAttribute('href')).toBe(new URL(dfltConfig.plotlyServerURL).origin);
+
+                var account = msg.querySelector('.plotly-cloud-dialog-message--account');
+                expect(account).not.toBe(null, 'account note should be shown');
+                expect(account.textContent).toContain('Plotly Cloud account');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should NOT open confirmation dialog when set to an unparseable URL', function(done) {
+            var errorSpy = spyOn(console, 'error');
+
             Plotly.newPlot(gd, [], {}, {
                 plotlyServerURL: 'dummy'
             })
@@ -523,6 +555,21 @@ describe('config argument', function() {
                 modeBarButtons.sendChartToCloud.click(gd);
                 var msg = document.querySelector('.plotly-cloud-dialog-message');
                 expect(msg).toBe(null, 'confirmation dialog should not be shown');
+                expect(errorSpy).toHaveBeenCalledWith('Invalid plotlyServerURL: dummy');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should NOT open confirmation dialog when set to a non-http(s) URL', function(done) {
+            var errorSpy = spyOn(console, 'error');
+
+            Plotly.newPlot(gd, [], {}, {
+                plotlyServerURL: 'ftp://example.plotly.com'
+            })
+            .then(function() {
+                modeBarButtons.sendChartToCloud.click(gd);
+                expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'confirmation dialog should not be shown');
+                expect(errorSpy).toHaveBeenCalledWith("Invalid protocol 'ftp:' in plotlyServerURL 'ftp://example.plotly.com'. Must be one of: http:, https:");
             })
             .then(done, done.fail);
         });
@@ -543,8 +590,44 @@ describe('config argument', function() {
                 // Should open the provided URL's origin in a new tab,
                 // adding the current page's origin as a query parameter
                 expect(openSpy).toHaveBeenCalledWith('https://example.plotly.com/endpoint?origin=http%3A%2F%2Flocalhost%3A9876', '_blank');
+
+                // Confirming should also dismiss the dialog
+                expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'dialog should be closed');
             })
             .then(done, done.fail);
+        });
+
+        [{
+            name: 'clicking cancel button',
+            dismiss: function() {
+                mouseEvent('click', 0, 0, {element: document.querySelector('.plotly-cloud-dialog-btn--cancel')});
+            }
+        }, {
+            name: 'clicking the backdrop',
+            dismiss: function() {
+                mouseEvent('click', 0, 0, {element: document.querySelector('.plotly-cloud-dialog')});
+            }
+        }, {
+            name: 'pressing Escape',
+            dismiss: function() {
+                document.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Escape'}));
+            }
+        }].forEach(function(spec) {
+            it('should close dialog without uploading when ' + spec.name, function(done) {
+                Plotly.newPlot(gd, [], {}, {
+                    plotlyServerURL: 'https://example.plotly.com/endpoint'
+                })
+                .then(function() {
+                    modeBarButtons.sendChartToCloud.click(gd);
+                    expect(document.querySelector('.plotly-cloud-dialog')).not.toBe(null, 'dialog should be shown');
+
+                    spec.dismiss();
+
+                    expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'dialog should be closed');
+                    expect(openSpy).not.toHaveBeenCalled();
+                })
+                .then(done, done.fail);
+            });
         });
 
         it('has lesser priority than window env', function(done) {
