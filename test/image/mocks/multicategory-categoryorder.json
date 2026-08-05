@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "type": "bar",
+      "x": [
+        ["2023", "2023", "2024", "2024", "2024", "2024"],
+        ["Q4", "Q3", "Q2", "Q1", "Q4", "Q3"]
+      ],
+      "y": [4, 3, 2, 1, 4, 3],
+      "marker": { "color": "#636efa" }
+    },
+
+    {
+      "type": "bar",
+      "x": [
+        ["2023", "2023", "2024", "2024", "2024", "2024"],
+        ["Q4", "Q3", "Q2", "Q1", "Q4", "Q3"]
+      ],
+      "y": [4, 3, 2, 1, 4, 3],
+      "marker": { "color": "#ef553b" },
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+
+    {
+      "type": "bar",
+      "x": [
+        ["2023", "2023", "2024", "2024", "2024", "2024"],
+        ["Q4", "Q3", "Q2", "Q1", "Q4", "Q3"]
+      ],
+      "y": [4, 3, 2, 1, 4, 3],
+      "marker": { "color": "#00cc96" },
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+
+    {
+      "type": "bar",
+      "x": [
+        ["2023", "2023", "2024", "2024", "2024", "2024"],
+        ["Q4", "Q3", "Q2", "Q1", "Q4", "Q3"]
+      ],
+      "y": [4, 3, 2, 1, 4, 3],
+      "marker": { "color": "#ab63fa" },
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "title": { "text": "multicategory categoryorder" },
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "pattern": "independent",
+      "xgap": 0.15,
+      "ygap": 0.4
+    },
+    "xaxis": { "title": { "text": "trace (default)" } },
+    "xaxis2": {
+      "title": { "text": "array" },
+      "categoryorder": "array",
+      "categoryarray": [
+        ["2024", "Q1"],
+        ["2024", "Q2"],
+        ["2024", "Q3"],
+        ["2024", "Q4"],
+        ["2023", "Q3"],
+        ["2023", "Q4"]
+      ]
+    },
+    "xaxis3": {
+      "title": { "text": "category ascending" },
+      "categoryorder": "category ascending"
+    },
+    "xaxis4": {
+      "title": { "text": "category descending" },
+      "categoryorder": "category descending"
+    },
+    "width": 700,
+    "height": 500,
+    "margin": { "l": 40, "b": 60, "t": 40, "r": 20 },
+    "showlegend": false
+  }
+}
