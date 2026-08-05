@@ -716,6 +716,13 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // ensure identical tick0
         mockAx.tick0 = ax.tick0;
     }
+    if (ax._useTicklabelIndex) {
+        // this could always be done but the additional information on the minor
+        // axis is just necessary when using ticklabelindex.
+        autoTickRound(mockAx);
+        delete mockAx.minor; // prevent self-reference
+        Lib.extendFlat(ax.minor, mockAx);
+    }
 };
 
 function isMultiple(bigger, smaller) {
@@ -1926,9 +1933,8 @@ function tickTextObj(ax, x, text) {
 }
 
 function formatDate(ax, out, hover, extraPrecision) {
-    var tr = ax._tickround;
-    var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
-
+    var tr = ax._useTicklabelIndex ? ax.minor._tickround : ax._tickround;
+    var fmt = ax._useTicklabelIndex ? "" : (hover && ax.hoverformat) || axes.getTickFormat(ax);
     // Only apply extra precision if no explicit format was provided.
     extraPrecision = !fmt && extraPrecision;
 
