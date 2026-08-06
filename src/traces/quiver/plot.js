@@ -103,13 +103,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     // Use maxNorm precomputed in calc
     const maxNorm = trace._maxNorm || 0;
-    const anglemode = trace.anglemode;
-    const sizemode = trace.sizemode;
-    const sizeref = trace.sizeref;
+    const uvref = trace.uvref;
     const anchor = trace.anchor;
 
-    // Adjust scale factor if anglemode is 'paper'
-    const scaleFactor = (anglemode === 'paper') ? trace._scaleFactor * Math.sqrt(Math.abs(xa._m * ya._m)) : trace._scaleFactor;
+    // Adjust scale factor if uvref is 'paper'
+    const scaleFactor = (uvref === 'paper') ? trace._scaleFactor * Math.sqrt(Math.abs(xa._m * ya._m)) : trace._scaleFactor;
     const markerArrowsize = trace.marker.arrowsize;
 
     // Update line segments
@@ -123,12 +121,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         // Compute pixel location of vector tip, *relative to* vector base (before scaling).
-        // If anglemode is 'paper', then u/v are interpreted in pixel coordinates, so we can use them directly.
-        // If anglemode is 'data', then u/v are interpreted in data coordinates, so we need to convert them to pixel coordinates.
+        // If uvref is 'paper', then u/v are interpreted in pixel coordinates, so we can use them directly.
+        // If uvref is 'data', then u/v are interpreted in data coordinates, so we need to convert them to pixel coordinates.
         // TODO: This probably doesn't work for log axes, but let's ignore log axes for now
         // since I'm not sure they make sense for quiver plots anyway
-        const pu = ((anglemode === 'paper') ? cdi._u * Math.sign(xa._m) : d3.round(xa._m * cdi._u)) * scaleFactor;
-        const pv = ((anglemode === 'paper') ? cdi._v * Math.sign(ya._m) : d3.round(ya._m * cdi._v)) * scaleFactor;
+        const pu = ((uvref === 'paper') ? cdi._u * Math.sign(xa._m) : d3.round(xa._m * cdi._u)) * scaleFactor;
+        const pv = ((uvref === 'paper') ? cdi._v * Math.sign(ya._m) : d3.round(ya._m * cdi._v)) * scaleFactor;
 
         // Compute arrow in data space
         // Check whether arrowsize was set explicitly in the input trace
