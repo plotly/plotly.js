@@ -1,0 +1,1 @@
+- Rename `quiver` trace attributes for clarity and consistency: `sizeref` -> `lengthfactor`, `sizemode` -> `lengthmode`, `anglemode` -> `uvref` [[#7945](https://github.com/plotly/plotly.js/issues/7945)]
