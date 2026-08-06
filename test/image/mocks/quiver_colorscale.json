@@ -6,9 +6,9 @@
       "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
       "u": [1, 2, 3, 1, 2, 3, 1, 2, 3],
       "v": [1, 1, 1, 2, 2, 2, 3, 3, 3],
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "tail",
-      "anglemode": "paper",
+      "uvref": "paper",
       "marker": {
         "showscale": true,
         "colorbar": {
