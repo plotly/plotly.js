@@ -40,43 +40,60 @@ export type AxisName = XAxisName | YAxisName;
  * and `config.modeBarButtonsToRemove` to reference Plotly's defaults.
  */
 export type ModeBarDefaultButtons =
-    | 'lasso2d'
-    | 'select2d'
-    | 'sendDataToCloud'
+    // Cartesian
     | 'zoom2d'
     | 'pan2d'
+    | 'select2d'
+    | 'lasso2d'
     | 'zoomIn2d'
     | 'zoomOut2d'
     | 'autoScale2d'
     | 'resetScale2d'
-    | 'hoverClosestCartesian'
-    | 'hoverCompareCartesian'
+    // 3D
     | 'zoom3d'
     | 'pan3d'
     | 'orbitRotation'
     | 'tableRotation'
-    | 'handleDrag3d'
     | 'resetCameraDefault3d'
     | 'resetCameraLastSave3d'
-    | 'hoverClosest3d'
+    // Geo
     | 'zoomInGeo'
     | 'zoomOutGeo'
     | 'resetGeo'
-    | 'hoverClosestGeo'
-    | 'hoverClosestGl2d'
-    | 'hoverClosestPie'
-    | 'toggleHover'
-    | 'toImage'
-    | 'resetViews'
-    | 'toggleSpikelines'
+    // Map
     | 'zoomInMap'
     | 'zoomOutMap'
     | 'resetViewMap'
-    | 'togglespikelines'
-    | 'togglehover'
-    | 'hovercompare'
+    // Sankey
+    | 'resetViewSankey'
+    // Hover
+    | 'hoverClosestCartesian'
+    | 'hoverCompareCartesian'
+    | 'hoverClosest3d'
+    | 'hoverClosestGeo'
+    | 'hoverClosestPie'
+    | 'toggleHover'
+    | 'toggleSpikelines'
+    // Shape drawing
+    | 'drawline'
+    | 'drawopenpath'
+    | 'drawclosedpath'
+    | 'drawcircle'
+    | 'drawrect'
+    | 'eraseshape'
+    // Other
+    | 'toImage'
+    | 'sendChartToCloud'
+    | 'resetViews'
+    // Category aliases. `modeBarButtonsToRemove` matches case-insensitively against a
+    // button's `name` and its category, and `modeBarButtonsToAdd` accepts these strings
+    // to re-enable the corresponding hover buttons.
+    | 'v1hovermode'
     | 'hoverclosest'
-    | 'v1hovermode';
+    | 'hovercompare'
+    | 'togglehover'
+    | 'togglespikelines'
+    | 'resetSankeyGroup';
 
 /** Click handler signature for custom mode-bar buttons. */
 export type ButtonClickEvent = (gd: PlotlyHTMLElement, ev: MouseEvent) => void;
