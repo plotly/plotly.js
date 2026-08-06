@@ -36,47 +36,74 @@ export type AxisName = XAxisName | YAxisName;
 // ---------------------------------------------------------------------------
 
 /**
- * Names of built-in mode-bar buttons. Used by `config.modeBarButtonsToAdd`
- * and `config.modeBarButtonsToRemove` to reference Plotly's defaults.
+ * Identifiers for Plotly's built-in mode-bar buttons. Which of these a config
+ * option accepts differs:
+ *
+ * - `config.modeBarButtonsToRemove` — any identifier below. Removal matches
+ *   case-insensitively against each default button's `name` and its category.
+ * - `config.modeBarButtons` — the button's registry key, resolved against
+ *   Plotly's button table; an unknown key throws.
+ * - `config.modeBarButtonsToAdd` — as a *string*, only the shape-drawing
+ *   buttons (`drawline` … `eraseshape`) and the category aliases at the end of
+ *   this union. Any other button has to be added as a `ModeBarButton` object;
+ *   passing its name as a string does not resolve to the built-in button.
  */
 export type ModeBarDefaultButtons =
-    | 'lasso2d'
-    | 'select2d'
-    | 'sendDataToCloud'
+    // Cartesian
     | 'zoom2d'
     | 'pan2d'
+    | 'select2d'
+    | 'lasso2d'
     | 'zoomIn2d'
     | 'zoomOut2d'
     | 'autoScale2d'
     | 'resetScale2d'
-    | 'hoverClosestCartesian'
-    | 'hoverCompareCartesian'
+    // 3D
     | 'zoom3d'
     | 'pan3d'
     | 'orbitRotation'
     | 'tableRotation'
-    | 'handleDrag3d'
     | 'resetCameraDefault3d'
     | 'resetCameraLastSave3d'
-    | 'hoverClosest3d'
+    // Geo
     | 'zoomInGeo'
     | 'zoomOutGeo'
     | 'resetGeo'
-    | 'hoverClosestGeo'
-    | 'hoverClosestGl2d'
-    | 'hoverClosestPie'
-    | 'toggleHover'
-    | 'toImage'
-    | 'resetViews'
-    | 'toggleSpikelines'
+    // Map
     | 'zoomInMap'
     | 'zoomOutMap'
     | 'resetViewMap'
-    | 'togglespikelines'
-    | 'togglehover'
-    | 'hovercompare'
+    // Sankey. `resetViewSankey` is the button's object key (for `config.modeBarButtons`
+    // custom groups); `resetSankeyGroup` is its `name` (for `modeBarButtonsToRemove`).
+    | 'resetViewSankey'
+    | 'resetSankeyGroup'
+    // Hover
+    | 'hoverClosestCartesian'
+    | 'hoverCompareCartesian'
+    | 'hoverClosest3d'
+    | 'hoverClosestGeo'
+    | 'hoverClosestPie'
+    | 'toggleHover'
+    | 'toggleSpikelines'
+    // Shape drawing
+    | 'drawline'
+    | 'drawopenpath'
+    | 'drawclosedpath'
+    | 'drawcircle'
+    | 'drawrect'
+    | 'eraseshape'
+    // Other
+    | 'toImage'
+    | 'sendChartToCloud'
+    | 'resetViews'
+    // Category aliases. `modeBarButtonsToRemove` matches case-insensitively against a
+    // button's `name` and its category, and `modeBarButtonsToAdd` accepts these strings
+    // to re-enable the corresponding hover buttons.
+    | 'v1hovermode'
     | 'hoverclosest'
-    | 'v1hovermode';
+    | 'hovercompare'
+    | 'togglehover'
+    | 'togglespikelines';
 
 /** Click handler signature for custom mode-bar buttons. */
 export type ButtonClickEvent = (gd: PlotlyHTMLElement, ev: MouseEvent) => void;
