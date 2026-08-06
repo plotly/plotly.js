@@ -36,8 +36,17 @@ export type AxisName = XAxisName | YAxisName;
 // ---------------------------------------------------------------------------
 
 /**
- * Names of built-in mode-bar buttons. Used by `config.modeBarButtonsToAdd`
- * and `config.modeBarButtonsToRemove` to reference Plotly's defaults.
+ * Identifiers for Plotly's built-in mode-bar buttons. Which of these a config
+ * option accepts differs:
+ *
+ * - `config.modeBarButtonsToRemove` — any identifier below. Removal matches
+ *   case-insensitively against each default button's `name` and its category.
+ * - `config.modeBarButtons` — the button's registry key, resolved against
+ *   Plotly's button table; an unknown key throws.
+ * - `config.modeBarButtonsToAdd` — as a *string*, only the shape-drawing
+ *   buttons (`drawline` … `eraseshape`) and the category aliases at the end of
+ *   this union. Any other button has to be added as a `ModeBarButton` object;
+ *   passing its name as a string does not resolve to the built-in button.
  */
 export type ModeBarDefaultButtons =
     // Cartesian
@@ -64,8 +73,10 @@ export type ModeBarDefaultButtons =
     | 'zoomInMap'
     | 'zoomOutMap'
     | 'resetViewMap'
-    // Sankey
+    // Sankey. `resetViewSankey` is the button's object key (for `config.modeBarButtons`
+    // custom groups); `resetSankeyGroup` is its `name` (for `modeBarButtonsToRemove`).
     | 'resetViewSankey'
+    | 'resetSankeyGroup'
     // Hover
     | 'hoverClosestCartesian'
     | 'hoverCompareCartesian'
@@ -92,8 +103,7 @@ export type ModeBarDefaultButtons =
     | 'hoverclosest'
     | 'hovercompare'
     | 'togglehover'
-    | 'togglespikelines'
-    | 'resetSankeyGroup';
+    | 'togglespikelines';
 
 /** Click handler signature for custom mode-bar buttons. */
 export type ButtonClickEvent = (gd: PlotlyHTMLElement, ev: MouseEvent) => void;
