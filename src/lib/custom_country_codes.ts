@@ -36,6 +36,13 @@ export const COUNTRIES_X: ReadonlyArray<CountryRecord> = [
         aliases: []
     },
     {
+        iso3: 'XIT',
+        iso2: '',
+        m49: '',
+        name: 'Ilemi Triangle',
+        aliases: []
+    },
+    {
         iso3: 'XJK',
         iso2: '',
         m49: '',
