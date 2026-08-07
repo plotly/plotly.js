@@ -100,11 +100,10 @@ function calcGeoJSON(calcTrace, fullLayout) {
     var opts = { padded: true };
     var lonArray;
     var latArray;
-
-    const bboxGeojson =
-        geoLayout.fitbounds === 'geojson' && trace.locationmode === 'geojson-id'
-            ? geoUtils.computeBbox(geoUtils.getTraceGeojson(trace))
-            : null;
+    
+    // A falsy result (another fitbounds mode, or a Sphere/malformed/empty geojson)
+    // falls back to the plotted points, similar to `fitbounds === 'locations'`.
+    const bboxGeojson = geoUtils.fitGeojsonBbox(trace, geoLayout);
 
     if (bboxGeojson) {
         const [west, south, east, north] = bboxGeojson;
@@ -126,7 +125,29 @@ function calcGeoJSON(calcTrace, fullLayout) {
     trace._extremes.lat = findExtremes(geoLayout.lataxis._ax, latArray, opts);
 }
 
+/**
+ * Append the coordinates this trace contributes to a subplot-wide `fitbounds`
+ * bounding box. Keeping it all together allows for proper auto-fitting of
+ * geometry that crosses the antimeridian.
+ *
+ * @param {Array} calcTrace - calcdata for this trace
+ * @param {object} geoLayout - The subplot's `fullLayout` entry
+ * @return {Array} `[lon, lat]` pairs
+ */
+function fitCoords(calcTrace, geoLayout) {
+    const geojsonCoords = geoUtils.fitGeojsonCoords(calcTrace[0].trace, geoLayout);
+    if (geojsonCoords.length) return geojsonCoords;
+
+    const coords = [];
+    for (const calcPt of calcTrace) {
+        if (calcPt.lonlat && isFinite(calcPt.lonlat[0])) coords.push(calcPt.lonlat);
+    }
+
+    return coords;
+}
+
 module.exports = {
-    calcGeoJSON: calcGeoJSON,
-    plot: plot
+    calcGeoJSON,
+    fitCoords,
+    plot
 };

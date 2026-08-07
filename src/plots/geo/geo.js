@@ -16,7 +16,7 @@ var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
-var getAutoRange = require('../cartesian/autorange').getAutoRange;
+const { concatExtremes, getAutoRange, makePadFn } = require('../cartesian/autorange');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../../components/selections').prepSelect;
 var clearOutline = require('../../components/selections').clearOutline;
@@ -26,7 +26,7 @@ var createGeoZoom = require('./zoom');
 var constants = require('./constants');
 
 var geoUtils = require('../../lib/geo_location_utils');
-const { getFitboundsLonRange, unwrapLonRange } = geoUtils;
+const { unwrapLonRange } = geoUtils;
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
 
@@ -237,51 +237,40 @@ proto.updateProjection = function (geoCalcData, fullLayout) {
         axLon.range = getAutoRange(gd, axLon);
         axLat.range = getAutoRange(gd, axLat);
 
-        // For point data straddling the antimeridian (±180°), the naive [min, max]
-        // longitude range above can include a large empty span; prefer the compact
-        // crossing range instead. Restricted to fitbounds='locations' with no
-        // region-bearing traces: choropleth, scattergeo `locations`, and the
-        // geojson-bbox path used by fitbounds='geojson' + locationmode='geojson-id'
-        // all carry region extents that per-point lonlat centroids don't capture.
-        if (!this.hasChoropleth && geoLayout.fitbounds === 'locations') {
-            var lons = [];
-            var hasLocationData = false;
+        // Min/maxing the per-trace ranges above breaks when data crosses the
+        // antimeridian, since `computeBbox` unwraps an east edge past 180°. Bounding
+        // every coordinate at once lets `geoBounds` pick the compact range instead.
+        const fitCoordParts = [];
 
-            for (var i = 0; i < geoCalcData.length; i++) {
-                var calcTrace = geoCalcData[i];
-                var fitTrace = calcTrace[0].trace;
+        for (const calcTrace of geoCalcData) {
+            const fitTrace = calcTrace[0].trace;
+            if (fitTrace.visible !== true) continue;
 
-                // only visible traces contribute to the autorange above
-                if (fitTrace.visible !== true) continue;
-                if (fitTrace.locations?.length) {
-                    hasLocationData = true;
-                    break;
-                }
-                for (var j = 0; j < calcTrace.length; j++) {
-                    var lonlat = calcTrace[j].lonlat;
-                    if (lonlat) lons.push(lonlat[0]);
-                }
-            }
+            if (fitTrace._module.fitCoords) fitCoordParts.push(fitTrace._module.fitCoords(calcTrace, geoLayout));
+        }
 
-            if (!hasLocationData) {
-                var fitLonRange = getFitboundsLonRange(lons);
-                if (fitLonRange) {
-                    // getFitboundsLonRange returns a tight [min, max]. getAutoRange
-                    // pads the naive range (for marker size and the standard
-                    // margin), so scale that padding to the narrower crossing range
-                    // and apply it, keeping markers off the frame edge as on any
-                    // other fitbounds map. The padding is symmetric, so the
-                    // mid-longitude the projection centers on is unchanged.
-                    var lonDataSpan = Lib.aggNums(Math.max, null, lons) - Lib.aggNums(Math.min, null, lons);
-                    var lonPad =
-                        lonDataSpan > 0
-                            ? (((axLon.range[1] - axLon.range[0] - lonDataSpan) / 2) *
-                                  (fitLonRange[1] - fitLonRange[0])) /
-                              lonDataSpan
-                            : 0;
-                    axLon.range = [fitLonRange[0] - lonPad, fitLonRange[1] + lonPad];
-                }
-            }
+        // Get the extents in the same manner as getAutoRange
+        const lonExtremes = concatExtremes(gd, axLon);
+        const lonDataMin = lonExtremes.min.reduce((min, { val }) => Math.min(min, val), Infinity);
+        const lonDataMax = lonExtremes.max.reduce((max, { val }) => Math.max(max, val), -Infinity);
+        const lonDataSpan = lonDataMax - lonDataMin;
+        const fitBbox = geoUtils.boundsOfCoords(fitCoordParts.flat());
+        const [fitWest, , fitEast] = fitBbox || [];
+        const fitSpan = fitEast - fitWest;
+        const useFit = Boolean(fitBbox) && (lonDataSpan > 360 || (lonDataSpan < 360 && fitSpan < lonDataSpan));
+
+        // Add padding in the same manner as getAutoRange. Ideally this could use an
+        // underlying helper function, but that doesn't exist yet so we handle it like this.
+        if (useFit) {
+            const getPadMin = makePadFn(fullLayout, axLon, 0);
+            const getPadMax = makePadFn(fullLayout, axLon, 1);
+            const padMin = lonExtremes.min.reduce((max, pt) => Math.max(max, getPadMin(pt)), 0);
+            const padMax = lonExtremes.max.reduce((max, pt) => Math.max(max, getPadMax(pt)), 0);
+            const usable = axLon._length - padMin - padMax;
+            const paddedSpan = usable > axLon._length / 10 ? (fitSpan * axLon._length) / usable : fitSpan;
+            const fitMid = (fitWest + fitEast) / 2;
+
+            axLon.range = [fitMid - paddedSpan / 2, fitMid + paddedSpan / 2];
         }
 
         var midLon = (axLon.range[0] + axLon.range[1]) / 2;

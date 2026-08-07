@@ -142,7 +142,7 @@ exports.lataxisSpan = {
 };
 
 // Projections whose math doesn't play well with fitbounds
-exports.fitboundsIncompatible = new Set(['albers usa', 'craig', 'satellite']);
+exports.fitboundsIncompatible = new Set(['albers usa', 'craig', 'peirce quincuncial', 'satellite']);
 
 // defaults for each scope
 exports.scopeDefaults = {
