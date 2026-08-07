@@ -464,7 +464,7 @@ const fitGeojsonCoords = (trace, geoLayout) =>
  * @param {object} trace - a `fullData` trace
  * @param {object} geoLayout - the subplot's `fullLayout` entry
  * @return {Array|null} `[west, south, east, north]`, or null whenever
- *   `fitGeojsonCoords` is empty — in which case the caller falls back to the data.
+ *   `fitGeojsonCoords` is empty.
  */
 const fitGeojsonBbox = (trace, geoLayout) => boundsOfCoords(fitGeojsonCoords(trace, geoLayout));
 
