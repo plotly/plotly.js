@@ -401,16 +401,33 @@ function fetchTraceGeoData(calcData) {
  *   Returns `null` for input with no extractable coordinates (e.g. `Sphere`,
  *   empty FeatureCollection).
  */
-function computeBbox(d) {
-    // Extract an array containing all points contained in the GeoJSON object.
-    // coordAll throws an error on Sphere, malformed inputs, and nullish values.
-    // Treat any failure as "no bounds" so callers can null-guard uniformly.
-    let points;
+const computeBbox = (d) => boundsOfCoords(coordsOf(d));
+
+/**
+ * Return every coordinate contained in a GeoJSON object.
+ *
+ * @param {object} d - a GeoJSON Feature, Geometry, FeatureCollection, or
+ *   GeometryCollection.
+ * @return {Array} `[lon, lat]` pairs. Empty for input with nothing extractable:
+ *   coordAll throws on a Sphere, on malformed input and on nullish values, and
+ *   returns nothing for an empty collection.
+ */
+function coordsOf(d) {
     try {
-        points = coordAll(d);
+        return coordAll(d);
     } catch (_) {
-        return null;
+        return [];
     }
+}
+
+/**
+ * Bounding box of a list of coordinates, as `computeBbox` describes.
+ *
+ * @param {Array} points - `[lon, lat]` pairs
+ * @return {[number, number, number, number]|null} `[west, south, east, north]`,
+ *   or null when there are no points.
+ */
+function boundsOfCoords(points) {
     if (points.length === 0) return null;
     if (points.length === 1) {
         const [lon, lat] = points[0];
@@ -428,53 +445,28 @@ function computeBbox(d) {
     ];
 }
 
+const usesFitGeojson = (trace, geoLayout) => geoLayout.fitbounds === 'geojson' && trace.locationmode === 'geojson-id';
+
 /**
- * Pick a compact longitude range for `fitbounds`-style auto-framing when the
- * data straddles the antimeridian (±180°).
+ * Coordinates of a trace's whole geojson, for the `fitbounds: 'geojson'` mode.
  *
- * Longitude is cyclic, so the naive [min, max] range used by the autorange
- * machinery can include a large empty span when points sit on both sides of
- * ±180° (e.g. lon = [131.8855, -179] spans ~311° the long way round, when the
- * compact view spans ~49° across the antimeridian). This finds the largest gap
- * between consecutive longitudes and, when that gap is wider than the gap across
- * the antimeridian, returns the complementary range so the map shows the dense
- * cluster of points rather than the empty ocean between them.
- *
- * The returned upper bound may exceed 180°; downstream `makeRangeBox` (and
- * MapLibre's `LngLatBounds`) handle ranges that cross the antimeridian without
- * ambiguity.
- *
- * @param {Array} lons - longitude values (may contain non-finite entries)
- * @return {Array|null} [lonStart, lonEnd] when an antimeridian-crossing range is
- *   more compact, otherwise null (caller keeps the autorange result).
+ * @param {object} trace - a `fullData` trace
+ * @param {object} geoLayout - the subplot's `fullLayout` entry
+ * @return {Array} `[lon, lat]` pairs. Empty when the trace is in another mode, or
+ *   when the geojson has nothing extractable.
  */
-function getFitboundsLonRange(lons) {
-    const sorted = lons.filter(isFinite).sort((a, b) => a - b);
-    if (sorted.length < 2) return null;
+const fitGeojsonCoords = (trace, geoLayout) =>
+    usesFitGeojson(trace, geoLayout) ? coordsOf(getTraceGeojson(trace)) : [];
 
-    const n = sorted.length;
-    const naiveSpan = sorted[n - 1] - sorted[0];
-    // Data already wraps the whole globe; there is nothing to compact.
-    if (naiveSpan >= 360) return null;
-
-    // Widest gap between consecutive longitudes.
-    let maxGap = -Infinity;
-    let gapStart = -1;
-    for (let i = 0; i < n - 1; i++) {
-        const gap = sorted[i + 1] - sorted[i];
-        if (gap > maxGap) {
-            maxGap = gap;
-            gapStart = i;
-        }
-    }
-
-    // Only worth wrapping when an interior gap is wider than the gap that the
-    // naive [min, max] range already leaves open across the antimeridian.
-    const antimeridianGap = 360 - naiveSpan;
-    if (maxGap <= antimeridianGap) return null;
-
-    return [sorted[gapStart + 1], sorted[gapStart] + ANTIMERIDIAN_LON_SHIFT];
-}
+/**
+ * Bounding box of a trace's whole geojson, for the `fitbounds: 'geojson'` mode.
+ *
+ * @param {object} trace - a `fullData` trace
+ * @param {object} geoLayout - the subplot's `fullLayout` entry
+ * @return {Array|null} `[west, south, east, north]`, or null whenever
+ *   `fitGeojsonCoords` is empty — in which case the caller falls back to the data.
+ */
+const fitGeojsonBbox = (trace, geoLayout) => boundsOfCoords(fitGeojsonCoords(trace, geoLayout));
 
 /**
  * Return an unwrapped version of a `[lon0, lon1]` longitude range.
@@ -502,9 +494,12 @@ module.exports = {
     getTraceGeojson,
     extractTraceFeature,
     fetchTraceGeoData,
+    boundsOfCoords,
     computeBbox,
+    coordsOf,
     doesCrossAntiMeridian,
-    getFitboundsLonRange,
+    fitGeojsonBbox,
+    fitGeojsonCoords,
     unwrapLonRange,
     ANTIMERIDIAN_LON_SHIFT
 };
