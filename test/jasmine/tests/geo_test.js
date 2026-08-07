@@ -101,6 +101,118 @@ describe('Test geo fitbounds with antimeridian-straddling points', function () {
     });
 });
 
+describe('Test geo fitbounds with antimeridian-straddling locations', () => {
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    const _plot = (traces) =>
+        Plotly.newPlot(gd, traces, {
+            geo: { fitbounds: 'locations', projection: { type: 'equirectangular' } },
+            width: 700,
+            height: 500
+        });
+
+    const _choropleth = (locations) => ({
+        type: 'choropleth',
+        locationmode: 'ISO-3',
+        locations,
+        z: locations.map((_, i) => i),
+        showscale: false
+    });
+
+    const _lonRange = () => gd._fullLayout.geo.lonaxis._ax.range;
+
+    // 110m world bboxes, in the [west, east] form computeBbox returns:
+    // USA [172.63, 293.03] (Aleutians unwrapped past 180), CAN [-141.00, -52.64],
+    // MEX [-117.12, -86.75]. Bounding every coordinate together gives [172.63, 307.36],
+    // a 134.7deg span; min/maxing those endpoints gives 434deg and a world view.
+    const _assertNorthAmericaAcrossThePacific = (msg) => {
+        const lonRange = _lonRange();
+        const lonSpan = lonRange[1] - lonRange[0];
+
+        expect(lonRange[0]).toBeLessThan(172.63, msg + ': west edge');
+        expect(lonRange[1]).toBeGreaterThan(307.35, msg + ': east edge (past 180)');
+        expect(lonSpan).toBeGreaterThan(134.7, msg + ': span covers the bounds');
+        expect(lonSpan).toBeLessThan(160, msg + ': span stays near the bounds');
+        // rotated to the mid-longitude of those bounds (~240deg, i.e. the US west
+        // coast), not to the naive mid (~76deg, in the Indian Ocean)
+        expect(gd._fullLayout.geo._subplot.projection.rotate()[0]).toBeCloseTo(-239.99, 1, msg + ': rotation');
+    };
+
+    it('frames locations mixing an antimeridian-crossing feature with normal ones', (done) => {
+        _plot([_choropleth(['CAN', 'USA', 'MEX'])])
+            .then(() => {
+                // updateProjection reaches this through the registered trace module,
+                // not through ./plot, so index.js has to re-export it
+                expect(typeof gd._fullData[0]._module.fitCoords).toBe('function');
+
+                _assertNorthAmericaAcrossThePacific('choropleth');
+                // North America top to bottom: MEX south (14.5) to CAN north (83.1)
+                const latRange = gd._fullLayout.geo.lataxis._ax.range;
+                expect(latRange[0]).toBeLessThan(14.6);
+                expect(latRange[1]).toBeGreaterThan(83.1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('combines locations across traces on the same subplot', (done) => {
+        _plot([_choropleth(['USA']), _choropleth(['CAN', 'MEX'])])
+            .then(() => {
+                _assertNorthAmericaAcrossThePacific('two choropleth traces');
+            })
+            .then(done, done.fail);
+    });
+
+    it('leaves a lone antimeridian-crossing location framed from its west edge', (done) => {
+        _plot([_choropleth(['USA'])])
+            .then(() => {
+                const lonRange = _lonRange();
+                // USA alone legitimately spans [172.63, 293.03], Aleutians included
+                expect(lonRange[0]).toBeLessThan(172.63);
+                expect(lonRange[1]).toBeGreaterThan(293.03);
+                expect(lonRange[1] - lonRange[0]).toBeLessThan(145);
+            })
+            .then(done, done.fail);
+    });
+
+    it('keeps the naive framing for locations that do not cross the antimeridian', (done) => {
+        _plot([_choropleth(['CAN', 'MEX'])])
+            .then(() => {
+                const lonRange = _lonRange();
+                // CAN [-141.00, -52.64] and MEX both sit west of the antimeridian
+                expect(lonRange[0]).toBeLessThan(-141);
+                expect(lonRange[1]).toBeGreaterThan(-52.64);
+                expect(lonRange[1] - lonRange[0]).toBeLessThan(110);
+            })
+            .then(done, done.fail);
+    });
+
+    it('compacts scattergeo *locations* centroids that straddle the antimeridian', (done) => {
+        // centroids: FJI [177.95, -17.84], USA [-99.11, 39.52] - 277deg apart the
+        // naive way, 83deg across the Pacific
+        _plot([
+            {
+                type: 'scattergeo',
+                mode: 'markers',
+                locationmode: 'ISO-3',
+                locations: ['FJI', 'USA']
+            }
+        ])
+            .then(() => {
+                const lonRange = _lonRange();
+                expect(lonRange[0]).toBeLessThan(177.95);
+                expect(lonRange[1]).toBeGreaterThan(260.89);
+                expect(lonRange[1] - lonRange[0]).toBeLessThan(110);
+            })
+            .then(done, done.fail);
+    });
+});
+
 describe('Test Geo layout defaults', function () {
     var layoutAttributes = Geo.layoutAttributes;
     // Tests here were written against `fitbounds` defaulting to `false`. Shim
@@ -2670,9 +2782,13 @@ describe('Test geo zoom/pan/drag interactions:', function () {
             delete fig.layout.geo.projection.rotation;
             fig.layout.geo.fitbounds = 'locations';
 
+            // The mock's USA bbox is unwrapped past 180 for the Aleutians, so the fit
+            // bounds every coordinate together: [-4.77, 307.36] (a 312deg span centered
+            // on 151.29), not the 434deg endpoint min/max it would get
+            // from mixing the wrapped and unwrapped bboxes.
             newPlot(fig)
                 .then(function () {
-                    _assert('base', [[null, null], null], [[-76.014, -19.735], 160], undefined);
+                    _assert('base', [[null, null], null], [[-151.292, -19.735], 160], undefined);
                     return drag({
                         path: [
                             [250, 250],
@@ -2684,8 +2800,8 @@ describe('Test geo zoom/pan/drag interactions:', function () {
                 .then(function () {
                     _assert(
                         'after east-west drag',
-                        [[55.99, 21.103], 1],
-                        [[-55.99, -21.103], 160],
+                        [[131.268, 21.103], 1],
+                        [[-131.268, -21.103], 160],
                         [
                             'geo.projection.rotation.lon',
                             'geo.projection.rotation.lat',
@@ -2698,8 +2814,8 @@ describe('Test geo zoom/pan/drag interactions:', function () {
                 .then(function () {
                     _assert(
                         'after scroll',
-                        [[58.694, 18.759], 1.1488],
-                        [[-58.694, -18.759], 183.818],
+                        [[133.972, 18.759], 1.1488],
+                        [[-133.972, -18.759], 183.818],
                         ['geo.projection.rotation.lon', 'geo.projection.rotation.lat', 'geo.projection.scale']
                     );
                     return Plotly.relayout(gd, 'geo.showocean', false);
@@ -2707,14 +2823,14 @@ describe('Test geo zoom/pan/drag interactions:', function () {
                 .then(function () {
                     _assert(
                         'after some relayout call that causes a replot',
-                        [[58.694, 18.759], 1.1488],
-                        [[-58.694, -18.759], 183.818],
+                        [[133.972, 18.759], 1.1488],
+                        [[-133.972, -18.759], 183.818],
                         ['geo.showocean']
                     );
                     return dblClick([350, 250]);
                 })
                 .then(function () {
-                    _assert('after double click', [[null, null], null], [[-76.014, -19.8], 160], 'dblclick');
+                    _assert('after double click', [[null, null], null], [[-151.292, -19.8], 160], 'dblclick');
                 })
                 .then(done, done.fail);
         });
