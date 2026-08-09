@@ -32,6 +32,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     var tex = (!_context.attr('data-notex')) &&
         gd && gd._context.typesetMath &&
         (typeof MathJax !== 'undefined') &&
+        isMathJaxVersionSupported() &&
         matchTex(str);
 
     var parent = d3.select(_context.node().parentNode);
@@ -204,18 +205,25 @@ function cleanEscapesForTex(s) {
 // and reused for subsequent calls.
 var mathjaxSVGDocument = null;
 
-function texToSVG(_texString, _config, _callback) {
-    const MathJaxVersion = parseInt(
-        (MathJax.version || '').split('.')[0]
-    );
+// plotly.js is only compatible with MathJax v3 and v4.
+const mathJaxMajorVersion = () => parseInt((MathJax.version || '').split('.')[0]);
 
-    if(
-        MathJaxVersion !== 3 &&
-        MathJaxVersion !== 4
-    ) {
+// Only warn once per page
+var warnedUnsupportedMathJax = false;
+
+function isMathJaxVersionSupported() {
+    const version = mathJaxMajorVersion();
+    if(version === 3 || version === 4) return true;
+
+    if(!warnedUnsupportedMathJax) {
+        warnedUnsupportedMathJax = true;
         Lib.warn('Unsupported MathJax version:', MathJax.version);
-        return;
     }
+    return false;
+}
+
+function texToSVG(_texString, _config, _callback) {
+    const MathJaxVersion = mathJaxMajorVersion();
 
     var tmpDiv;
 
