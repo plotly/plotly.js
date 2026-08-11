@@ -288,8 +288,11 @@ function _doPlot(gd, data, layout, config) {
         Plots.clearAutoMarginIds(gd);
 
         subroutines.drawMarginPushers(gd);
+        var title = gd._fullLayout.title;
+        var titlePushesMargin = title.text && title.automargin;
+        if (titlePushesMargin) subroutines.drawMainTitle(gd);
         Axes.allowAutoMargin(gd);
-        if (gd._fullLayout.title.text && gd._fullLayout.title.automargin) Plots.allowAutoMargin(gd, 'title.automargin');
+        if (titlePushesMargin) Plots.allowAutoMargin(gd, 'title.automargin');
 
         // TODO can this be moved elsewhere?
         if (fullLayout._has('pie')) {
