@@ -303,9 +303,22 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
 
     // set 'pre-fit' projection
     projection
-        .center([center.lon - rotation.lon, center.lat - rotation.lat])
-        .rotate([-rotation.lon, -rotation.lat, rotation.roll])
-        .parallels(projLayout.parallels);
+        .center([center.lon - rotation.lon, center.lat - rotation.lat]);
+
+    // Only override the projection's built-in rotation when the user
+    // explicitly set it (or when fitbounds derived one). Otherwise
+    // preserve the D3 projection's default rotation so that projections
+    // with a non-identity default (e.g. peirce quincuncial, wiechel)
+    // render in their canonical orientation.
+    if (fullLayout._input && fullLayout._input[this.id] &&
+        fullLayout._input[this.id].projection &&
+        fullLayout._input[this.id].projection.rotation) {
+        projection.rotate([-rotation.lon, -rotation.lat, rotation.roll]);
+    } else if (geoLayout.fitbounds) {
+        projection.rotate([-rotation.lon, -rotation.lat, rotation.roll]);
+    }
+
+    projection.parallels(projLayout.parallels);
 
     // fit projection 'scale' and 'translate' to set lon/lat ranges
     var rangeBox = makeRangeBox(lonaxisRange, lataxisRange);
