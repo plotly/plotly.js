@@ -370,6 +370,18 @@ function compareRawColor(a, b) {
     }
 }
 
+function compareArrays(a, b) {
+    for(var i = 0; i < Math.min(a.length, b.length); i++) {
+        if(a[i] < b[i]) {
+            return -1;
+        } else if(a[i] > b[i]) {
+            return 1;
+        }
+    }
+
+    return a.length - b.length;
+}
+
 /**
  * Handle path mouseover
  * @param {PathViewModel} d
@@ -1734,15 +1746,8 @@ function updatePathViewModels(parcatsViewModel) {
             sortArray2.unshift(v2.rawColor);
         }
 
-        // colors equal, sort by display categories
-        if(sortArray1 < sortArray2) {
-            return -1;
-        }
-        if(sortArray1 > sortArray2) {
-            return 1;
-        }
-
-        return 0;
+        // Sort by color, then display categories
+        return compareArrays(sortArray1, sortArray2);
     });
 
     // Create path models
