@@ -36,10 +36,19 @@ describe('Test gl_format_color:', () => {
             });
         });
 
-        it('should write usable channels for every point of an array color', () => {
-            const out = formatColor({ color: ['red', 'notacolor', '#0f0', 'rgba(0,0,255,0.5)'] }, 1, 4);
+        // A per-point color may be a color string, raw channels as a plain array
+        // or a typed array, or something unparseable
+        it('should resolve every element of an array color', () => {
+            const orange = new Uint8Array([255, 127, 0]);
+            const dflt = Color.normalize(Color.defaultLine);
+            const out = formatColor({ color: ['red', [0, 255, 0], 'rgba(0,0,255,0.5)', orange, 'notacolor'] }, 1, 5);
 
-            expect(out.length).toBe(4);
+            expect(out.length).toBe(5);
+            expect(out[0]).toEqual([1, 0, 0, 1], 'red');
+            expect(out[1]).toEqual([0, 1, 0, 1], '[0, 255, 0]');
+            expect(out[2]).toEqual([0, 0, 1, 0.5], 'rgba(0,0,255,0.5)');
+            expect(out[3]).toEqual([1, 127 / 255, 0, 1], 'Uint8Array orange');
+            expect(out[4]).toEqual(dflt, 'notacolor');
             out.forEach((rgba, i) => expectUsableChannels(rgba, `point ${i}`));
         });
 

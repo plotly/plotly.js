@@ -16,7 +16,11 @@ function calculateColor(colorIn, opacityIn) {
 }
 
 function validateColor(colorIn) {
-    if (isNumeric(colorIn) || !Color.isValid(colorIn)) return colorDfltRgba;
+    if (isNumeric(colorIn)) return colorDfltRgba;
+
+    // A per-point color may be raw channels rather than a color string, which
+    // `Color.isValid` rejects but `Color.normalize` handles.
+    if (!isArrayOrTypedArray(colorIn) && !Color.isValid(colorIn)) return colorDfltRgba;
 
     return Color.normalize(colorIn);
 }

@@ -96,7 +96,7 @@ describe('Test color:', function () {
     });
 
     describe('invalid input', () => {
-        const BAD = [undefined, null, 42, [255, 0, 0], { r: 255, g: 0, b: 0 }, 'notacolor', '', '#gg0000'];
+        const BAD = [undefined, null, 42, { r: 255, g: 0, b: 0 }, 'notacolor', '', '#gg0000'];
 
         it('falls back to opaque black instead of throwing', () => {
             BAD.forEach((v) => expect(Color.rgbaString(v)).toBe('rgb(0, 0, 0)'));
@@ -109,6 +109,44 @@ describe('Test color:', function () {
         // Null channels used to reach the WebGL buffers through this path.
         it('normalizes to four numeric channels', () => {
             BAD.forEach((v) => expect(Color.normalize(v)).toEqual([0, 0, 0, 1]));
+        });
+    });
+
+    // Per-point colors in the WebGL paths may be raw channels rather than a
+    // color string
+    describe('channel arrays', () => {
+        it('reads a 0-255 array', () => {
+            expect(Color.normalize([0, 255, 0])).toEqual([0, 1, 0, 1]);
+            expect(Color.normalize([128, 0, 0])).toEqual([128 / 255, 0, 0, 1]);
+        });
+
+        it('reads a typed array', () => {
+            expect(Color.normalize(new Uint8Array([255, 127, 0]))).toEqual([1, 127 / 255, 0, 1]);
+        });
+
+        it('leaves an already normalized array alone', () => {
+            expect(Color.normalize([1, 0, 0])).toEqual([1, 0, 0, 1]);
+            expect(Color.normalize([0.25, 0.75, 0.25, 1])).toEqual([0.25, 0.75, 0.25, 1]);
+        });
+
+        it('scales a 0-255 array that carries an alpha', () => {
+            expect(Color.normalize([64, 128, 192, 0.5])).toEqual([64 / 255, 128 / 255, 192 / 255, 0.5]);
+            expect(Color.normalize([255, 0, 0, 0.5])).toEqual([1, 0, 0, 0.5]);
+        });
+
+        it('reads alpha on whichever scale it arrives in', () => {
+            expect(Color.normalize(new Uint8Array([255, 127, 0, 128]))).toEqual([1, 127 / 255, 0, 128 / 255]);
+            expect(Color.normalize([255, 127, 0, 255])).toEqual([1, 127 / 255, 0, 1]);
+            expect(Color.normalize([255, 127, 0, 0.25])).toEqual([1, 127 / 255, 0, 0.25]);
+        });
+
+        it('keeps a fully transparent color transparent', () => {
+            expect(Color.normalize([1, 0, 0, 0])).toEqual([1, 0, 0, 0]);
+            expect(Color.normalize([255, 0, 0, 0])).toEqual([1, 0, 0, 0]);
+        });
+
+        it('honors the requested output type', () => {
+            expect(Color.normalize([0, 255, 0], 'uint8')).toEqual(Uint8Array.from([0, 255, 0, 255]));
         });
     });
 

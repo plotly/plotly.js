@@ -8,6 +8,7 @@ const {
     wcagContrast: culoriWcagContrast,
     wcagLuminance
 } = require('culori');
+const { isArrayOrTypedArray } = require('../../lib/array');
 const { warn } = require('../../lib/loggers');
 const { background, defaultLine, defaults, lightLine } = require('./attributes');
 
@@ -68,6 +69,28 @@ const rgb = (cstr) => formatRgb({ ...parseColor(cstr), alpha: 1 });
  */
 const opacity = (cstr) => (cstr ? parseColor(cstr).alpha : 0);
 
+// A per-point color in the WebGL paths can arrive as raw channels rather than as
+// a color specifier, either as a plain array or as a typed array.
+const isChannelArray = (v) => {
+    return (
+        isArrayOrTypedArray(v) &&
+        v.length > 2 &&
+        Number.isFinite(v[0]) &&
+        Number.isFinite(v[1]) &&
+        Number.isFinite(v[2])
+    );
+};
+
+// A channel above 1 means the array holds 0-255 values, otherwise it already
+// holds 0-1 values. Alpha gets its own test because the two scales could be mixed.
+const channelsToRgb = (v) => {
+    const [r, g, b, alpha] = v;
+    const scale = Math.max(r, g, b) > 1 ? 1 / 255 : 1;
+    const a = alpha ?? 1;
+
+    return { mode: 'rgb', r: r * scale, g: g * scale, b: b * scale, alpha: a > 1 ? a / 255 : a };
+};
+
 /**
  * Convert a color specifier to a 4-element `[r, g, b, a]` representation.
  * Falls back to opaque black rather than null: WebGL paths index the result.
@@ -79,7 +102,7 @@ const opacity = (cstr) => (cstr ? parseColor(cstr).alpha : 0);
  * @return {Number[]|Uint8Array}
  */
 const normalize = (input, type) => {
-    const c = parseColor(input, true);
+    const c = isChannelArray(input) ? channelsToRgb(input) : parseColor(input, true);
     const v = [clip01(c.r), clip01(c.g), clip01(c.b), clip01(c.alpha)];
     if (type === 'uint8' || type === 'uint8_clamped') return Uint8Array.from(v, (x) => Math.round(x * 255));
     if (type === 'float32') return Float32Array.from(v);
@@ -340,14 +363,13 @@ const rgbaArray = (cstr) => {
 };
 
 /**
- * Build an `rgb()` / `rgba()` string from `[r, g, b, a]` channels, the inverse of
+ * Build an `rgb()` / `rgba()` string from `[r, g, b, alpha]` channels, the inverse of
  * `rgbaArray`. `r`/`g`/`b` in [0, 255], `a` in [0, 1].
  *
- * @param {Number[]} arr - `[r, g, b, a]`
+ * @param {Number[]} arr - `[r, g, b, alpha]`
  * @return {String}
  */
-const rgbaArrayToString = ([r, g, b, a]) =>
-    formatRgb({ mode: 'rgb', r: r / 255, g: g / 255, b: b / 255, alpha: a });
+const rgbaArrayToString = ([r, g, b, alpha]) => formatRgb({ mode: 'rgb', r: r / 255, g: g / 255, b: b / 255, alpha });
 
 /**
  * WCAG relative luminance of a color, in [0, 1].
