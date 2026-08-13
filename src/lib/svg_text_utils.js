@@ -31,9 +31,10 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
         gd && gd._context.typesetMath &&
-        (typeof MathJax !== 'undefined') &&
-        isMathJaxVersionSupported() &&
         matchTex(str);
+
+    // Only complain about MathJax version once we know there's actually math to render
+    if(tex && !isMathJaxVersionSupported()) tex = null;
 
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
@@ -205,17 +206,25 @@ function cleanEscapesForTex(s) {
 // and reused for subsequent calls.
 var mathjaxSVGDocument = null;
 
-// plotly.js is only compatible with MathJax v3 and v4.
-const mathJaxMajorVersion = () => parseInt((MathJax.version || '').split('.')[0]);
+// Function which returns the major version of MathJax as an integer,
+// or null if MathJax is undefined or MathJax.version is falsy.
+const mathJaxMajorVersion = () => (typeof MathJax !== 'undefined' && MathJax.version) ? parseInt(MathJax.version.split('.')[0]) : null;
 
-// Only warn once per page
+// Only warn once per page about each of these conditions
+var warnedMissingMathJax = false;
 var warnedUnsupportedMathJax = false;
 
+// plotly.js is only compatible with MathJax v3 and v4.
 function isMathJaxVersionSupported() {
     const version = mathJaxMajorVersion();
     if(version === 3 || version === 4) return true;
 
-    if(!warnedUnsupportedMathJax) {
+    if(version === null) {
+        if(!warnedMissingMathJax) {
+            warnedMissingMathJax = true;
+            Lib.warn('MathJax is not loaded. Math equations will not be rendered.');
+        }
+    } else if(!warnedUnsupportedMathJax) {
         warnedUnsupportedMathJax = true;
         Lib.warn('Unsupported MathJax version:', MathJax.version);
     }
