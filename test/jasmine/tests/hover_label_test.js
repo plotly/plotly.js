@@ -7436,6 +7436,38 @@ describe('hovermode: (x|y)unified', function () {
             })
             .then(done, done.fail);
     });
+
+    fit('hover label should only show values of hovered category', function (done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {   name: 'bar',
+                    x: ['A', 'B'],
+                    y: [1, 2],
+                    type: 'bar'
+                },
+                {
+                    name: 'scatter',
+                    x: ['A', 'B'],
+                    y: [10, null],
+                    type: 'scatter'
+                }
+            ],
+            layout: {
+                width: 400,
+                hovermode: 'x unified',
+                hoverdistance: 110
+            }
+        })
+        .then(function () {
+            _hover(gd, { xval: 1.1 });
+            assertLabel({ title: 'B', items: ['bar : 2'] });
+        })
+        .then(function () {
+            _hover(gd, { xval: 0 });
+            assertLabel({ title: 'A', items: ['bar : 1', 'scatter : 10'] });
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('hover on traces with (x|y)hoverformat', function () {
