@@ -50,6 +50,7 @@ const parseColor = (cstr, silent) => {
     return c;
 };
 
+// TODO: rename to `rgbString` to better describe return value
 /**
  * Convert any color specifier to a normalized `rgb(r, g, b)` string.
  * Force alpha to 1 so that it gets dropped in the result.
@@ -86,6 +87,7 @@ const normalize = (input, type) => {
     return v;
 };
 
+// TODO: rename to `setOpacity`, since it replaces the alpha rather than adding to it
 /**
  * Replace a color's alpha channel with `op`.
  *
