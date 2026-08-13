@@ -166,8 +166,7 @@ function makeColorScaleFunc(specs, opts) {
     var _range = new Array(N);
 
     for(var i = 0; i < N; i++) {
-        const { r, g, b, alpha = 1 } = Color.color(range[i]).rgb().object();
-        _range[i] = [r, g, b, alpha];
+        _range[i] = Color.rgbaArray(range[i]);
     }
 
     var _sclFunc = d3.scale.linear()
@@ -183,7 +182,7 @@ function makeColorScaleFunc(specs, opts) {
         sclFunc = _sclFunc;
     } else if(noNumericCheck) {
         sclFunc = function(v) {
-            return colorArray2rbga(_sclFunc(v));
+            return Color.rgbaArrayToString(_sclFunc(v));
         };
     } else if(returnArray) {
         sclFunc = function(v) {
@@ -193,7 +192,7 @@ function makeColorScaleFunc(specs, opts) {
         };
     } else {
         sclFunc = function(v) {
-            if(isNumeric(v)) return colorArray2rbga(_sclFunc(v));
+            if(isNumeric(v)) return Color.rgbaArrayToString(_sclFunc(v));
             if(Color.isValid(v)) return v;
             return Color.defaultLine;
         };
@@ -208,17 +207,6 @@ function makeColorScaleFunc(specs, opts) {
 
 function makeColorScaleFuncFromTrace(trace, opts) {
     return makeColorScaleFunc(extractScale(trace), opts);
-}
-
-function colorArray2rbga(colorArray) {
-    var colorObj = {
-        r: colorArray[0],
-        g: colorArray[1],
-        b: colorArray[2],
-        alpha: colorArray[3]
-    };
-
-    return Color.color(colorObj).rgb().string();
 }
 
 module.exports = {

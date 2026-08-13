@@ -351,7 +351,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
             const cstr = `rgb(${rcount}, ${gcount}, ${bcount})`;
 
             gd._hmpixcount = (gd._hmpixcount || 0) + pixcount;
-            gd._hmlumcount = (gd._hmlumcount || 0) + pixcount * Color.color(cstr).luminosity();
+            gd._hmlumcount = (gd._hmlumcount || 0) + pixcount * Color.luminosity(cstr);
         }
 
         var image3 = plotGroup.selectAll('image').data(cd);

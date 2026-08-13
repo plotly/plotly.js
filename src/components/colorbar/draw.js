@@ -549,7 +549,7 @@ function drawColorBar(g, opts, gd) {
             } else {
                 // The color library can't handle exponents and at this scale, removing it makes no difference.
                 var colorString = fillColormap(d).replace('e-', '');
-                fillEl.attr('fill', Color.color(colorString).hex());
+                fillEl.attr('fill', Color.hexString(colorString));
             }
         });
 
