@@ -6,16 +6,19 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 
-function makePlot(gd, layoutExtras = {}, configExtras) {
+function makePlot(gd, layoutExtras = {}, traceExtras = {}, configExtras) {
     return Plotly.newPlot(
         gd,
         [
-            {
-                x: [1, 2, 3],
-                y: [1, 3, 2],
-                type: 'scatter',
-                mode: 'markers'
-            }
+            Lib.extendFlat(
+                {
+                    x: [1, 2, 3],
+                    y: [1, 3, 2],
+                    type: 'scatter',
+                    mode: 'markers'
+                },
+                traceExtras
+            )
         ],
         Lib.extendFlat(
             {
@@ -30,6 +33,20 @@ function makePlot(gd, layoutExtras = {}, configExtras) {
         ),
         configExtras
     );
+}
+
+// local midnight, as in https://github.com/plotly/plotly.js/issues/7816
+var dayStart = new Date(2026, 4, 31);
+var dayNoon = new Date(2026, 4, 31, 12);
+var dayEnd = new Date(2026, 5, 1);
+
+// the 300px-wide plot area spans exactly one day, so 0px is local midnight
+// and 150px is local noon, in any timezone
+function makeDatePlot(gd, layoutExtras) {
+    return makePlot(gd, Lib.extendFlat({ xaxis: { type: 'date', range: [dayStart, dayEnd] } }, layoutExtras), {
+        x: [dayStart, dayNoon],
+        y: [1, 3]
+    });
 }
 
 describe('hoveranywhere', () => {
@@ -205,6 +222,7 @@ describe('hoveranywhere', () => {
                     }
                 ]
             },
+            {},
             { edits: { shapePosition: true } }
         )
             .then(() => {
@@ -228,6 +246,55 @@ describe('hoveranywhere', () => {
                 expect(hoverData.points).toEqual([]);
                 expect(hoverData.xvals[0]).toBeCloseTo(7.5, 1);
                 expect(hoverData.yvals[0]).toBeCloseTo(7.5, 1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('reports date axis positions as date strings', (done) => {
+        var hoverData;
+
+        makeDatePlot(gd, { hoveranywhere: true })
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
+
+                _hover(0, 60);
+                expect(hoverData.points).toEqual([]);
+                expect(hoverData.xvals[0]).toBe('2026-05-31');
+                expect(hoverData.yvals[0]).toBeCloseTo(10 - 60 / 30, 2);
+
+                _hover(150, 60);
+                expect(hoverData.xvals[0]).toBe('2026-05-31 12:00');
+
+                // the point at (dayStart, 1) reports that same value
+                _hover(0, gd._fullLayout.yaxis.c2p(1));
+                expect(hoverData.points[0].x).toBe('2026-05-31');
+                expect(hoverData.xvals[0]).toBe('2026-05-31');
+            })
+            .then(done, done.fail);
+    });
+
+    it('reports category names and log axis data values', (done) => {
+        var hoverData;
+
+        makePlot(
+            gd,
+            { xaxis: { type: 'category' }, yaxis: { type: 'log', range: [1, 3] }, hoveranywhere: true },
+            { x: ['a', 'b', 'c'], y: [10, 20, 30] }
+        )
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
+
+                var xa = gd._fullLayout.xaxis;
+
+                // empty space above the middle category, halfway up 10 -> 1000
+                _hover(xa.c2p(1), 150);
+                expect(hoverData.points).toEqual([]);
+                expect(hoverData.xvals[0]).toBe('b');
+                expect(hoverData.yvals[0]).toBeCloseTo(100, 6);
+
+                _hover(xa.c2p(1), gd._fullLayout.yaxis.c2p(20));
+                expect(hoverData.points[0].x).toBe('b');
+                expect(hoverData.xvals[0]).toBe('b');
             })
             .then(done, done.fail);
     });
@@ -342,6 +409,7 @@ describe('clickanywhere', () => {
                     }
                 ]
             },
+            {},
             { edits: { shapePosition: true } }
         )
             .then(() => {
@@ -364,6 +432,23 @@ describe('clickanywhere', () => {
                 expect(clickData.points).toEqual([]);
                 expect(clickData.xvals[0]).toBeCloseTo(7.5, 1);
                 expect(clickData.yvals[0]).toBeCloseTo(7.5, 1);
+            })
+            .then(done, done.fail);
+    });
+    it('reports date axis positions as date strings', (done) => {
+        var clickData;
+
+        makeDatePlot(gd, { clickanywhere: true })
+            .then(() => {
+                gd.on('plotly_click', (d) => (clickData = d));
+
+                var bb = gd.getBoundingClientRect();
+                var s = gd._fullLayout._size;
+                click(bb.left + s.l, bb.top + s.t + 60);
+
+                expect(clickData.points).toEqual([]);
+                expect(clickData.xvals[0]).toBe('2026-05-31');
+                expect(clickData.yvals[0]).toBeCloseTo(10 - 60 / 30, 2);
             })
             .then(done, done.fail);
     });
