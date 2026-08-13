@@ -159,4 +159,48 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             .then(done, done.fail);
         });
     });
+
+    describe('Test tex rendering:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should hand tex titles and tick labels off to MathJax', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: ['$\\phi$', '$\\nabla \\cdot \\vec{F}$'],
+                    y: [1, 2]
+                }],
+                layout: {
+                    title: { text: '$E = mc^2$' }
+                }
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+
+                // '.gtitle-math-group' is only added once MathJax has typeset the
+                // string, so its presence is what tells us the tex was rendered
+                expect(gd3.selectAll('.gtitle-math-group').size()).toBe(1, 'title math group');
+
+                // tick label math groups carry the default 'text-math-group' class
+                expect(gd3.selectAll('.text-math-group').size()).toBe(2, 'tick label math groups');
+
+                var rendered = [];
+                gd3.selectAll('[class*=-math-group]').each(function() {
+                    expect(this.getAttribute('data-math')).toBe('Y');
+                    rendered.push(this.getAttribute('data-unformatted'));
+                });
+                expect(rendered.sort()).toEqual([
+                    '$E = mc^2$',
+                    '$\\nabla \\cdot \\vec{F}$',
+                    '$\\phi$'
+                ]);
+            })
+            .then(done, done.fail);
+        });
+    });
 });
