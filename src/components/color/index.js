@@ -223,21 +223,29 @@ const contrast = (cstr, lightAmount, darkAmount) => {
 /**
  * Apply `stroke` and `stroke-opacity` styles to a D3 selection.
  *
+ * A missing color paints opaque black. Shapes and annotations leave
+ * `line.color` unset when the user gives none, and the outline still has to
+ * show. Use `opacity` instead when a missing color means "nothing to paint".
+ *
  * @param {Selection} s - D3 selection
  * @param {*} cstr - color specifier
  */
 const stroke = (s, cstr) => {
-    s.style({ stroke: rgb(cstr), 'stroke-opacity': opacity(cstr) });
+    const c = cstr == null ? BLACK : parseColor(cstr);
+    s.style({ stroke: formatRgb({ ...c, alpha: 1 }), 'stroke-opacity': c.alpha });
 };
 
 /**
  * Apply `fill` and `fill-opacity` styles to a D3 selection.
  *
+ * A missing color paints opaque black, the same as `stroke`.
+ *
  * @param {Selection} s - D3 selection
  * @param {*} cstr - color specifier
  */
 const fill = (s, cstr) => {
-    s.style({ fill: rgb(cstr), 'fill-opacity': opacity(cstr) });
+    const c = cstr == null ? BLACK : parseColor(cstr);
+    s.style({ fill: formatRgb({ ...c, alpha: 1 }), 'fill-opacity': c.alpha });
 };
 
 /**

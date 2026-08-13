@@ -14,6 +14,15 @@ describe('Test color:', function () {
 
             Color.fill(mockElement, 'rgba(255,255,0,0.5)');
         });
+
+        // Shapes and annotations leave the color unset when the user gives
+        // none, and the mark still has to show.
+        it('should paint opaque black when the color is missing', () => {
+            const seen = [];
+            Color.fill({ style: (o) => seen.push(o) }, undefined); // Mock the selection to track it's call
+
+            expect(seen[0]).toEqual({ fill: 'rgb(0, 0, 0)', 'fill-opacity': 1 });
+        });
     });
 
     describe('stroke', function () {
@@ -26,6 +35,13 @@ describe('Test color:', function () {
             };
 
             Color.stroke(mockElement, 'rgba(255,255,0,0.5)');
+        });
+
+        it('should paint opaque black when the color is missing', () => {
+            const seen = [];
+            Color.stroke({ style: (o) => seen.push(o) }, undefined); // Mock the selection to track it's call
+
+            expect(seen[0]).toEqual({ stroke: 'rgb(0, 0, 0)', 'stroke-opacity': 1 });
         });
     });
 
