@@ -1054,6 +1054,27 @@ describe('ModeBar', function() {
             });
         });
 
+        describe('downloadJson handler', function() {
+            beforeEach(function() {
+                spyOn(Registry, 'call').and.callFake(function() {
+                    return Promise.resolve();
+                });
+                gd = createGraphDiv();
+            });
+
+            it('should request a full JSON download', function(done) {
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'full-json'});
+                })
+                .then(done, done.fail);
+            });
+        });
+
         describe('cartesian handlers', function() {
             beforeEach(function(done) {
                 var mockData = [{

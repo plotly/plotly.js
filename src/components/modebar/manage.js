@@ -246,6 +246,8 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosestGeo');
                     enableHover('hoverClosest3d');
                     enableHover('hoverClosestPie');
+                } else if(b === 'downloadjson') {
+                    newList.push(modeBarButtons.downloadJson);
                 }
             } else newList.push(b);
         }

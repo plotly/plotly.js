@@ -69,6 +69,18 @@ modeBarButtons.toImage = {
     }
 };
 
+modeBarButtons.downloadJson = {
+    name: 'downloadJson',
+    title: function(gd) { return _(gd, 'Download plot as JSON'); },
+    icon: Icons.disk,
+    click: function(gd) {
+        Registry.call('downloadImage', gd, {format: 'full-json'})
+            .catch(function() {
+                Lib.notifier(_(gd, 'Sorry, there was a problem downloading your JSON file!'), 'long', gd);
+            });
+    }
+};
+
 modeBarButtons.sendChartToCloud = {
     name: 'sendChartToCloud',
     title: function (gd) {
