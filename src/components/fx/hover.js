@@ -977,8 +977,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             points: points,
             xaxes: xaArray,
             yaxes: yaArray,
-            xvals: xvalArray,
-            yvals: yvalArray
+            xvals: helpers.c2dApply(xaArray, xvalArray),
+            yvals: helpers.c2dApply(yaArray, yvalArray)
         });
     }
 }
