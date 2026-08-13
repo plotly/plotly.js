@@ -1,0 +1,1 @@
+- Return actual data values (rather than calcdata values) for `xvals` / `yvals` in `hoveranywhere` and `clickanywhere` events [[#7964](https://github.com/plotly/plotly.js/pull/7964)]
