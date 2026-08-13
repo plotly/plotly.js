@@ -56,6 +56,37 @@
             }
         }
 
+        .plotly-cloud-dialog-label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .plotly-cloud-dialog-input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 7px 10px;
+
+            font-family: inherit;
+            font-size: 13px;
+            color: #2a3f5f;
+
+            background-color: vars.$color-bg-light;
+            border: 1px solid vars.$color-bg-darker;
+            border-radius: 3px;
+
+            &:focus {
+                outline: none;
+                border-color: vars.$color-brand-primary;
+            }
+        }
+
+        .plotly-cloud-dialog-error {
+            margin-top: 6px;
+            color: vars.$color-inline-code;
+        }
+
         .plotly-cloud-dialog-buttons {
             display: flex;
             justify-content: flex-end;
@@ -66,11 +97,16 @@
             font-family: inherit;
             font-size: 13px;
             padding: 7px 16px;
-            margin-left: 8px;
 
             border-radius: 3px;
             border: 1px solid transparent;
             cursor: pointer;
+
+            // This selector applies any button that comes directly after another button
+            // So this block applies a left margin between buttons, but not before the first button
+            & + .plotly-cloud-dialog-btn {
+                margin-left: 8px;
+            }
 
             &:focus-visible {
                 outline: 2px solid vars.$color-brand-primary;
@@ -79,7 +115,6 @@
 
             &--cancel {
                 background-color: vars.$color-bg-base;
-                margin-left: auto;
                 color: vars.$color-muted-text;
 
                 &:hover {
@@ -94,6 +129,27 @@
                 &:hover {
                     background-color: vars.$color-brand-accent;
                 }
+            }
+        }
+
+        .plotly-cloud-dialog-link {
+            font-family: inherit;
+            font-size: 12px;
+            padding: 7px 0;
+            margin-right: auto;
+
+            background-color: transparent;
+            border: none;
+            color: vars.$color-muted-text;
+            cursor: pointer;
+
+            &:focus-visible {
+                outline: 2px solid vars.$color-brand-primary;
+                outline-offset: 1px;
+            }
+
+            &:hover {
+                text-decoration: underline;
             }
         }
     }

@@ -6,6 +6,7 @@ var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
 var confirmCloudDialog = require('./share_chart/dialog');
+var SUPPORTED_PROTOCOLS = require('./share_chart/constants').SUPPORTED_PROTOCOLS;
 var Lib = require('../../lib');
 var _ = Lib._;
 
@@ -91,14 +92,13 @@ modeBarButtons.sendChartToCloud = {
             console.error('Invalid plotlyServerURL: ' + baseUrl);
             return;
         }
-        const supportedProtocols = ['http:', 'https:'];
-        if (!supportedProtocols.includes(baseUrlObj.protocol)) {
-            console.error(`Invalid protocol '${baseUrlObj.protocol}' in plotlyServerURL '${baseUrl}'. Must be one of: ${supportedProtocols.join(', ')}`);
+        if (!SUPPORTED_PROTOCOLS.includes(baseUrlObj.protocol)) {
+            console.error(`Invalid protocol '${baseUrlObj.protocol}' in plotlyServerURL '${baseUrl}'. Must be one of: ${SUPPORTED_PROTOCOLS.join(', ')}`);
             return;
         }
 
-        confirmCloudDialog(gd, baseUrl, function () {
-            Plots.sendDataToCloud(gd, baseUrl);
+        confirmCloudDialog(gd, baseUrl, function (chosenUrl) {
+            Plots.sendDataToCloud(gd, chosenUrl);
         });
     }
 };
