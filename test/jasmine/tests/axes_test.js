@@ -463,11 +463,11 @@ describe('Test axes', function() {
                 yaxis: {}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            var lightLine = Color.color(Color.lightLine).rgb().string();
+            var lightLine = Color.rgbaString(Color.lightLine);
             expect(layoutOut.xaxis.gridwidth).toBe(1);
-            expect(Color.color(layoutOut.xaxis.gridcolor).rgb().string()).toBe(lightLine);
+            expect(Color.rgbaString(layoutOut.xaxis.gridcolor)).toBe(lightLine);
             expect(layoutOut.yaxis.gridwidth).toBe(1);
-            expect(Color.color(layoutOut.yaxis.gridcolor).rgb().string()).toBe(lightLine);
+            expect(Color.rgbaString(layoutOut.yaxis.gridcolor)).toBe(lightLine);
         });
 
         it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
@@ -565,6 +565,20 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis.gridcolor).toEqual(Color.mix('red', bgColor, frac));
             expect(layoutOut.yaxis.gridcolor).toEqual('blue');
             expect(layoutOut.yaxis2.gridcolor).toEqual(Color.mix('#444', bgColor, frac));
+        });
+
+        // A translucent axis color is what exercises the rule: the channel weight
+        // scales by the alpha difference, so mixing toward an opaque background
+        // moves the channels less than a plain interpolation would.
+        it("should weight 'axis.gridcolor' channels by the alpha difference", () => {
+            layoutIn = {
+                paper_bgcolor: 'green',
+                plot_bgcolor: 'yellow',
+                xaxis: { showgrid: true, color: 'rgba(255, 0, 0, 0.5)' }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.gridcolor).toEqual('rgba(255, 247, 0, 0.95)');
         });
 
         it('should default to a dark color for tickfont when plotting background is light', function() {

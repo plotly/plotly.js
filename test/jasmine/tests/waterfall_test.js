@@ -23,6 +23,7 @@ var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
 var WATERFALL_TEXT_SELECTOR = '.bars .bartext';
+const checkContrastingText = require('../assets/check_contrasting_text');
 
 describe('Waterfall.supplyDefaults', function() {
     'use strict';
@@ -1079,7 +1080,7 @@ describe('A waterfall plot', function() {
             insidetextfont: {
                 family: ['"comic sans"', 'arial', 'arial'],
                 // NOTE: 'color' does NOT inherit from 'textfont.color' since 'color' should be contrasting to bar's fill by default.
-                color: ['black', 'green', Color.contrast('white')],
+                color: ['black', 'green', 'white'],
                 size: [8, 12, 16]
             },
             outsidetextfont: {
@@ -1184,7 +1185,7 @@ describe('A waterfall plot', function() {
             text: ['A', 'B', 'C'],
             textposition: 'inside'
         }])
-        .then(assertTextFontColors(['rgb(68, 68, 68)', 'rgb(68, 68, 68)', 'rgb(68, 68, 68)']))
+        .then(assertTextFontColors(['rgb(255, 255, 255)', 'rgb(255, 255, 255)', 'rgb(255, 255, 255)']))
         .then(function() {
             gd.data[0].insidetextfont = {color: 'red'};
             return Plotly.react(gd, gd.data);
@@ -1921,3 +1922,17 @@ describe('waterfall uniformtext', function() {
         .then(done, done.fail);
     });
 });
+
+checkContrastingText(
+    'waterfall',
+    {
+        y: [3, 2, 1],
+        text: ['A', 'B', 'C'],
+        textposition: 'inside',
+        increasing: { marker: { color: '#3D9970' } },
+        decreasing: { marker: { color: '#3D9970' } },
+        totals: { marker: { color: '#3D9970' } }
+    },
+    WATERFALL_TEXT_SELECTOR,
+    '#3D9970'
+);
