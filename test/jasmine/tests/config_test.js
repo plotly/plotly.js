@@ -597,6 +597,143 @@ describe('config argument', function() {
             .then(done, done.fail);
         });
 
+        describe('custom server URL:', function() {
+            var ORIGIN_QUERY = '?origin=' + encodeURIComponent(window.location.origin);
+
+            // Opt into naming a server, which reveals the URL field.
+            function chooseCustomServer() {
+                var customBtn = document.querySelector('.plotly-cloud-dialog-link');
+                expect(customBtn).not.toBe(null, 'custom server button should be shown');
+                mouseEvent('click', 0, 0, {element: customBtn});
+                return document.querySelector('.plotly-cloud-dialog-input');
+            }
+
+            function typeUrl(input, value) {
+                input.value = value;
+                input.dispatchEvent(new window.Event('input'));
+            }
+
+            function clickConfirm() {
+                mouseEvent('click', 0, 0, {element: document.querySelector('.plotly-cloud-dialog-btn--confirm')});
+            }
+
+            function errorText() {
+                var error = document.querySelector('.plotly-cloud-dialog-error');
+                return error && error.style.display !== 'none' ? error.textContent : '';
+            }
+
+            function openDialog() {
+                return Plotly.newPlot(gd, [], {}, {
+                    plotlyServerURL: 'https://example.plotly.com/endpoint'
+                })
+                .then(function() {
+                    modeBarButtons.sendChartToCloud.click(gd);
+                });
+            }
+
+            it('should reveal the URL field and swap the message', function(done) {
+                openDialog()
+                .then(function() {
+                    var field = document.querySelector('.plotly-cloud-dialog-url-field');
+                    expect(field.style.display).toBe('none', 'URL field should be hidden by default');
+                    expect(document.querySelector('.plotly-cloud-dialog-message').textContent)
+                        .toBe('This chart will be sent to example.plotly.com.');
+
+                    var input = chooseCustomServer();
+                    expect(field.style.display).not.toBe('none', 'URL field should be revealed');
+                    expect(input).not.toBe(null, 'URL input should be shown');
+                    expect(document.querySelector('.plotly-cloud-dialog-link').style.display)
+                        .toBe('none', 'custom server button should be hidden once used');
+
+                    // The default destination is no longer the one we would use,
+                    // so its message gives way to the custom-server wording.
+                    var messages = document.querySelectorAll('.plotly-cloud-dialog-message');
+                    expect(messages[0].style.display).toBe('none', 'default message should be hidden');
+                    expect(messages[1].textContent).toContain('Enter the URL of your Dash Enterprise chart server');
+                })
+                .then(done, done.fail);
+            });
+
+            it('should upload to the URL entered in the field', function(done) {
+                openDialog()
+                .then(function() {
+                    typeUrl(chooseCustomServer(), 'https://custom.example.com/endpoint');
+                    clickConfirm();
+
+                    expect(openSpy).toHaveBeenCalledWith('https://custom.example.com/endpoint' + ORIGIN_QUERY, '_blank');
+                    expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'dialog should be closed');
+                })
+                .then(done, done.fail);
+            });
+
+            it('should upload to the URL entered when pressing Enter in the field', function(done) {
+                openDialog()
+                .then(function() {
+                    var input = chooseCustomServer();
+                    typeUrl(input, 'https://custom.example.com/endpoint');
+                    input.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Enter'}));
+
+                    expect(openSpy).toHaveBeenCalledWith('https://custom.example.com/endpoint' + ORIGIN_QUERY, '_blank');
+                    expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'dialog should be closed');
+                })
+                .then(done, done.fail);
+            });
+
+            it('should add a protocol to a URL entered without one', function(done) {
+                openDialog()
+                .then(function() {
+                    typeUrl(chooseCustomServer(), 'custom.example.com');
+                    clickConfirm();
+
+                    expect(openSpy).toHaveBeenCalledWith('https://custom.example.com/' + ORIGIN_QUERY, '_blank');
+                })
+                .then(done, done.fail);
+            });
+
+            it('should treat host:port entries as host names rather than protocols', function(done) {
+                openDialog()
+                .then(function() {
+                    typeUrl(chooseCustomServer(), 'localhost:8050');
+                    clickConfirm();
+
+                    expect(openSpy).toHaveBeenCalledWith('https://localhost:8050/' + ORIGIN_QUERY, '_blank');
+                })
+                .then(done, done.fail);
+            });
+
+            [{
+                name: 'left empty',
+                url: '   ',
+                error: 'Please enter a server URL.'
+            }, {
+                name: 'unparseable',
+                url: 'https://',
+                error: 'Please enter a valid server URL.'
+            }, {
+                name: 'not http(s)',
+                url: 'ftp://custom.example.com',
+                error: 'Please enter a valid server URL.'
+            }].forEach(function(spec) {
+                it('should report a URL that is ' + spec.name + ' without uploading', function(done) {
+                    openDialog()
+                    .then(function() {
+                        var input = chooseCustomServer();
+                        typeUrl(input, spec.url);
+                        clickConfirm();
+
+                        expect(errorText()).toBe(spec.error);
+                        expect(openSpy).not.toHaveBeenCalled();
+                        expect(document.querySelector('.plotly-cloud-dialog')).not.toBe(null, 'dialog should stay open');
+
+                        // Editing the field clears the complaint about it.
+                        typeUrl(input, 'https://custom.example.com');
+                        expect(errorText()).toBe('');
+                    })
+                    .then(done, done.fail);
+                });
+            });
+        });
+
         [{
             name: 'clicking cancel button',
             dismiss: function() {
