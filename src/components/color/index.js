@@ -1,37 +1,63 @@
 'use strict';
 
-const _color = require('color').default;
-const colorNormalize = require('color-normalize');
+// TODO: Import functions from `culori/fn` when converting to ESM to allow for tree-shaking
+const {
+    converter,
+    formatHex: culoriFormatHex,
+    formatRgb: culoriFormatRgb,
+    wcagContrast: culoriWcagContrast,
+    wcagLuminance
+} = require('culori');
 const { warn } = require('../../lib/loggers');
 const { background, defaultLine, defaults, lightLine } = require('./attributes');
 
+const toRgb = converter('rgb');
+const toHsl = converter('hsl');
+
+// Clip a 0-1 channel to gamut. culori returns out-of-range values for wide-gamut
+// inputs. Also maps undefined/NaN to 0 and Infinity to 1, matching the browser.
+const clip01 = (v) => (v > 0 ? (v > 1 ? 1 : v) : 0);
+
+const BLACK = { mode: 'rgb', r: 0, g: 0, b: 0, alpha: 1 };
+
+// Arithmetic on channels lands on values such as 0.8333333333333333, which is
+// 212.49999999999997 in 8 bits. The culori formatters round that down to 212,
+// one less than the intended 213. Round each channel to six decimals of an
+// 8-bit step first. Six decimals absorb the float error and still leave a
+// genuine value such as 122.45 alone.
+const snap01 = (v) => Math.round(v * 255e6) / 255e6;
+const snap = (c) => ({ ...c, r: snap01(c.r), g: snap01(c.g), b: snap01(c.b) });
+
+const formatRgb = (c) => culoriFormatRgb(snap(c));
+const formatHex = (c) => culoriFormatHex(snap(c));
+
 /**
- * Safe wrapper around the `color` library: trims string input and falls back
- * to black (with a warning) instead of throwing on invalid input.
+ * Parse a color specifier, falling back to black with a warning
  *
  * @param {*} cstr - color specifier
- * @return {Color} color object
+ * @param {Boolean} [silent] - skip the warning, for callers that run per data point
+ * @return {Object} culori rgb color
  */
-const color = (cstr) => {
-    if (typeof cstr === 'string') cstr = cstr.trim();
-    try {
-        return _color(cstr);
-    } catch (e) {
-        warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
-        return _color('#000');
+const parseColor = (cstr, silent) => {
+    const c = typeof cstr === 'string' ? toRgb(cstr.trim()) : undefined;
+    if (!c) {
+        if (!silent) warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
+        return BLACK;
     }
+    // `toRgb` omits alpha when it's 1; make sure it's added since we expect it
+    c.alpha ??= 1;
+
+    return c;
 };
 
 /**
  * Convert any color specifier to a normalized `rgb(r, g, b)` string.
+ * Force alpha to 1 so that it gets dropped in the result.
  *
  * @param {*} cstr - color specifier
  * @return {String}
  */
-const rgb = (cstr) => {
-    const { r, g, b } = color(cstr).rgb().object();
-    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-};
+const rgb = (cstr) => formatRgb({ ...parseColor(cstr), alpha: 1 });
 
 /**
  * Return the alpha channel of a color (0 if falsy).
@@ -39,63 +65,57 @@ const rgb = (cstr) => {
  * @param {*} cstr - color specifier
  * @return {Number}
  */
-const opacity = (cstr) => (cstr ? color(cstr).alpha() : 0);
+const opacity = (cstr) => (cstr ? parseColor(cstr).alpha : 0);
 
 /**
  * Convert a color specifier to a 4-element `[r, g, b, a]` representation.
- * Accepts strings, numeric float arrays (`[0, 1]`), or uint8 arrays (`[0, 255]`).
+ * Falls back to opaque black rather than null: WebGL paths index the result.
  *
- * @param {*} input - color specifier or numeric array
- * @param {'float'|'uint8'} [type='float'] - `'float'` returns `[r, g, b, a]` in `[0, 1]`;
- *   `'uint8'` returns a `Uint8Array` in `[0, 255]`.
+ * @param {*} input - color specifier
+ * @param {'uint8'|'uint8_clamped'|'float32'|'float64'} [type] - omit for a plain
+ *   array in [0, 1]. `'uint8'` and `'uint8_clamped'` return a `Uint8Array` in
+ *   [0, 255]. `'float32'` and `'float64'` return a typed array in [0, 1].
  * @return {Number[]|Uint8Array}
  */
-const normalize = (input, type) => colorNormalize(input, type);
+const normalize = (input, type) => {
+    const c = parseColor(input, true);
+    const v = [clip01(c.r), clip01(c.g), clip01(c.b), clip01(c.alpha)];
+    if (type === 'uint8' || type === 'uint8_clamped') return Uint8Array.from(v, (x) => Math.round(x * 255));
+    if (type === 'float32') return Float32Array.from(v);
+    if (type === 'float64') return Float64Array.from(v);
+    return v;
+};
 
 /**
- * Build an `rgba(...)` string from a color and an explicit opacity value.
+ * Replace a color's alpha channel with `op`.
  *
  * @param {*} cstr - color specifier
- * @param {Number} op - opacity in [0, 1]
- * @return {String}
+ * @param {Number} op - opacity in [0, 1], clipped to that range
+ * @return {String} `rgb(...)` when the result is opaque, `rgba(...)` otherwise
  */
-const addOpacity = (cstr, op) => {
-    const c = color(cstr).rgb().object();
-    return `rgba(${Math.round(c.r)}, ${Math.round(c.g)}, ${Math.round(c.b)}, ${op})`;
-};
+const addOpacity = (cstr, op) => formatRgb({ ...parseColor(cstr), alpha: clip01(op) });
 
 /**
  * Combine two colors into one apparent color by compositing `front` over `back`.
  * If `back` is missing or transparent, the module `background` is assumed behind it.
+ *
+ * A translucent `back` is flattened against white, so a transparent
+ * paper_bgcolor is treated as a white page. Opaque backs are exact.
  *
  * @param {*} front - foreground color specifier
  * @param {*} back - background color specifier
  * @return {String} resulting `rgb(...)` string
  */
 const combine = (front, back) => {
-    back ||= background;
-    const fc = color(front).rgb().object();
-    fc.alpha ??= 1;
-    if (fc.alpha === 1) return color(front).rgb().string();
+    const fc = parseColor(front);
+    const fa = fc.alpha;
+    if (fa === 1) return formatRgb(fc);
 
-    const bc = color(back).rgb().object();
-    bc.alpha ??= 1;
-    const bcflat =
-        bc.alpha === 1
-            ? bc
-            : {
-                  r: 255 * (1 - bc.alpha) + bc.r * bc.alpha,
-                  g: 255 * (1 - bc.alpha) + bc.g * bc.alpha,
-                  b: 255 * (1 - bc.alpha) + bc.b * bc.alpha
-              };
+    const bc = parseColor(back || background);
+    const ba = bc.alpha;
+    const over = (f, b) => (ba === 1 ? b : 1 - ba + b * ba) * (1 - fa) + f * fa;
 
-    const fcflat = {
-        r: bcflat.r * (1 - fc.alpha) + fc.r * fc.alpha,
-        g: bcflat.g * (1 - fc.alpha) + fc.g * fc.alpha,
-        b: bcflat.b * (1 - fc.alpha) + fc.b * fc.alpha
-    };
-
-    return color(fcflat).rgb().string();
+    return formatRgb({ mode: 'rgb', r: over(fc.r, bc.r), g: over(fc.g, bc.g), b: over(fc.b, bc.b) });
 };
 
 /**
@@ -108,31 +128,48 @@ const combine = (front, back) => {
  * @return {String} resulting `rgb(...)` string
  */
 const interpolate = (first, second, factor) => {
-    const fc = color(first).rgb().object();
-    const sc = color(second).rgb().object();
+    const fc = parseColor(first);
+    const sc = parseColor(second);
+    const lerp = (a, b) => factor * a + (1 - factor) * b;
 
-    const ic = {
-        r: factor * fc.r + (1 - factor) * sc.r,
-        g: factor * fc.g + (1 - factor) * sc.g,
-        b: factor * fc.b + (1 - factor) * sc.b
-    };
-
-    return color(ic).rgb().string();
+    return formatRgb({ mode: 'rgb', r: lerp(fc.r, sc.r), g: lerp(fc.g, sc.g), b: lerp(fc.b, sc.b) });
 };
 
 /**
  * Shift a color's HSL lightness additively by `delta` percentage points.
- * Positive delta = lighter, negative = darker. Use this instead of the
- * underlying library's `lighten`/`darken`, which scale L multiplicatively.
+ * Positive delta = lighter, negative = darker. Alpha is preserved.
  *
  * @param {*} cstr - color specifier
  * @param {Number} delta - lightness shift in HSL percentage points
- * @return {Color} adjusted color object
+ * @return {String} resulting color string
  */
 const adjustLightness = (cstr, delta) => {
-    const c = color(cstr);
-    return c.lightness(c.lightness() + delta);
+    const c = parseColor(cstr);
+    const h = toHsl(c) || { mode: 'hsl', h: 0, s: 0, l: 0 };
+    return formatRgb(toRgb({ ...h, l: clip01((h.l * 100 + delta) / 100), alpha: c.alpha }));
 };
+
+/**
+ * WCAG contrast ratio between two colors, in [1, 21].
+ *
+ * @param {*} cstr1 - color specifier
+ * @param {*} cstr2 - color specifier
+ * @return {Number}
+ */
+const wcagContrast = (cstr1, cstr2) => culoriWcagContrast(parseColor(cstr1), parseColor(cstr2));
+
+/**
+ * Test whether a color reads as dark.
+ *
+ * Compares the contrast ratio against `background` with the contrast ratio
+ * against `defaultLine`. A dark color contrasts better with `background`, so
+ * `contrast` returns the more legible of the two whenever the caller supplies
+ * no lighten or darken amount.
+ *
+ * @param {*} cstr - color specifier
+ * @return {Boolean}
+ */
+const isDark = (cstr) => wcagContrast(cstr, background) > wcagContrast(cstr, defaultLine);
 
 /**
  * Create a color that contrasts with `cstr`: dark colors are lightened,
@@ -145,18 +182,17 @@ const adjustLightness = (cstr, delta) => {
  * @return {String} resulting `rgb(...)` string
  */
 const contrast = (cstr, lightAmount, darkAmount) => {
-    let c = color(cstr);
+    if (opacity(cstr) !== 1) cstr = combine(cstr, background);
 
-    if (c.alpha() !== 1) c = color(combine(cstr, background));
-    const newColor = c.isDark()
+    const newColor = isDark(cstr)
         ? lightAmount
-            ? adjustLightness(c, lightAmount)
-            : color(background)
+            ? adjustLightness(cstr, lightAmount)
+            : background
         : darkAmount
-          ? adjustLightness(c, -darkAmount)
-          : color(defaultLine);
+          ? adjustLightness(cstr, -darkAmount)
+          : defaultLine;
 
-    return newColor.rgb().string();
+    return formatRgb(parseColor(newColor));
 };
 
 /**
@@ -166,8 +202,7 @@ const contrast = (cstr, lightAmount, darkAmount) => {
  * @param {*} cstr - color specifier
  */
 const stroke = (s, cstr) => {
-    const c = color(cstr);
-    s.style({ stroke: rgb(cstr), 'stroke-opacity': c.alpha() });
+    s.style({ stroke: rgb(cstr), 'stroke-opacity': opacity(cstr) });
 };
 
 /**
@@ -177,8 +212,7 @@ const stroke = (s, cstr) => {
  * @param {*} cstr - color specifier
  */
 const fill = (s, cstr) => {
-    const c = color(cstr);
-    s.style({ fill: rgb(cstr), 'fill-opacity': c.alpha() });
+    s.style({ fill: rgb(cstr), 'fill-opacity': opacity(cstr) });
 };
 
 /**
@@ -188,7 +222,7 @@ const fill = (s, cstr) => {
  * @param {*} cstr2 - color specifier
  * @return {Boolean}
  */
-const equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && color(cstr1).rgb().string() === color(cstr2).rgb().string());
+const equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && rgb(cstr1) === rgb(cstr2));
 
 /**
  * Test whether a string is a valid color specifier (does not throw).
@@ -196,18 +230,11 @@ const equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && color(cstr1).rgb().string(
  * @param {*} cstr
  * @return {Boolean}
  */
-const isValid = (cstr) => {
-    if (typeof cstr !== 'string') return false;
-    try {
-        return !!_color(cstr.trim());
-    } catch {
-        return false;
-    }
-};
+const isValid = (cstr) => typeof cstr === 'string' && toRgb(cstr.trim()) !== undefined;
 
 /**
  * Brighten a color by adding a fixed amount to each RGB channel.
- * Unlike `lighten`, this works in RGB space, not HSL. Alpha is preserved.
+ * Unlike `adjustLightness`, this works in RGB space, not HSL. Alpha is preserved.
  *
  * @param {*} cstr - color specifier
  * @param {Number} [amount=10] - percent in [-100, 100]
@@ -215,16 +242,15 @@ const isValid = (cstr) => {
  */
 const brighten = (cstr, amount) => {
     amount = amount === 0 ? 0 : amount || 10;
-    const c = color(cstr).rgb().object();
-    const adj = Math.round(255 * (amount / 100));
-    return color({
-        r: Math.max(0, Math.min(255, c.r + adj)),
-        g: Math.max(0, Math.min(255, c.g + adj)),
-        b: Math.max(0, Math.min(255, c.b + adj))
-    })
-        .alpha(c.alpha ?? 1)
-        .rgb()
-        .string();
+    const c = parseColor(cstr);
+    const adj = amount / 100;
+
+    return formatRgb({
+        ...c,
+        r: clip01(c.r + adj),
+        g: clip01(c.g + adj),
+        b: clip01(c.b + adj)
+    });
 };
 
 /**
@@ -235,11 +261,28 @@ const brighten = (cstr, amount) => {
  * @param {Number} weight - percent in [0, 100]
  * @return {String} resulting `rgb(...)` string
  */
-const mix = (cstr1, cstr2, weight) =>
-    color(cstr1)
-        .mix(color(cstr2), weight / 100)
-        .rgb()
-        .string();
+const mix = (cstr1, cstr2, weight) => {
+    const c1 = parseColor(cstr1);
+    const c2 = parseColor(cstr2);
+    const p = weight / 100;
+
+    // Scale the channel weight by the alpha difference, the same way Sass does.
+    // A mix toward a transparent color then shifts the alpha without dragging
+    // the channels toward that color's meaningless rgb.
+    const d = c2.alpha - c1.alpha;
+    const w = 2 * p - 1;
+    const w2 = ((w * d === -1 ? w : (w + d) / (1 + w * d)) + 1) / 2;
+    const w1 = 1 - w2;
+    const blend = (x, y) => w1 * x + w2 * y;
+
+    return formatRgb({
+        mode: 'rgb',
+        r: blend(c1.r, c2.r),
+        g: blend(c1.g, c2.g),
+        b: blend(c1.b, c2.b),
+        alpha: c1.alpha * (1 - p) + c2.alpha * p
+    });
+};
 
 /**
  * Pick the color from `colorList` with the highest contrast ratio against
@@ -254,14 +297,65 @@ const mostReadable = (baseColor, colorList = ['#000', '#fff']) => {
     let bestContrast = -Infinity;
 
     for (const cstr of colorList) {
-        const contrastRatio = color(baseColor).contrast(color(cstr));
-        if (contrastRatio > bestContrast) {
-            bestContrast = contrastRatio;
-            bestColor = color(cstr).rgb().string();
+        const ratio = wcagContrast(baseColor, cstr);
+        if (ratio > bestContrast) {
+            bestContrast = ratio;
+            bestColor = formatRgb(parseColor(cstr));
         }
     }
 
     return bestColor;
+};
+
+/**
+ * Convert any color specifier to an `rgb(...)` or `rgba(...)` string,
+ * preserving alpha. Use `rgb()` instead when alpha must be dropped.
+ *
+ * @param {*} cstr - color specifier
+ * @return {String}
+ */
+const rgbaString = (cstr) => formatRgb(parseColor(cstr));
+
+/**
+ * Convert any color specifier to an uppercase `#RRGGBB` string. Alpha is dropped.
+ *
+ * @param {*} cstr - color specifier
+ * @return {String}
+ */
+const hexString = (cstr) => formatHex(parseColor(cstr)).toUpperCase();
+
+/**
+ * Channels as `[r, g, b, a]`, with `r`/`g`/`b` in [0, 255] and `a` in [0, 1].
+ * An array rather than an object so callers cannot depend on the color library's
+ * shape. Unrounded, since callers do further arithmetic.
+ *
+ * @param {*} cstr - color specifier
+ * @return {Number[]} `[r, g, b, a]`
+ */
+const rgbaArray = (cstr) => {
+    const c = parseColor(cstr);
+    return [clip01(c.r) * 255, clip01(c.g) * 255, clip01(c.b) * 255, clip01(c.alpha)];
+};
+
+/**
+ * Build an `rgb()` / `rgba()` string from `[r, g, b, a]` channels, the inverse of
+ * `rgbaArray`. `r`/`g`/`b` in [0, 255], `a` in [0, 1].
+ *
+ * @param {Number[]} arr - `[r, g, b, a]`
+ * @return {String}
+ */
+const rgbaArrayToString = ([r, g, b, a]) =>
+    formatRgb({ mode: 'rgb', r: r / 255, g: g / 255, b: b / 255, alpha: a });
+
+/**
+ * WCAG relative luminance of a color, in [0, 1].
+ *
+ * @param {*} cstr - color specifier
+ * @return {Number}
+ */
+const luminosity = (cstr) => {
+    const c = parseColor(cstr);
+    return wcagLuminance({ mode: 'rgb', r: clip01(c.r), g: clip01(c.g), b: clip01(c.b) });
 };
 
 module.exports = {
@@ -269,20 +363,26 @@ module.exports = {
     adjustLightness,
     background,
     brighten,
-    color,
     combine,
     contrast,
     defaultLine,
     defaults,
     equals,
     fill,
+    hexString,
     interpolate,
+    isDark,
     isValid,
     lightLine,
+    luminosity,
     mix,
     mostReadable,
     normalize,
     opacity,
     rgb,
-    stroke
+    rgbaArray,
+    rgbaArrayToString,
+    rgbaString,
+    stroke,
+    wcagContrast
 };
