@@ -624,12 +624,32 @@ describe('config argument', function() {
 
             function openDialog() {
                 return Plotly.newPlot(gd, [], {}, {
-                    plotlyServerURL: 'https://example.plotly.com/endpoint'
+                    plotlyServerURL: 'https://example.plotly.com/endpoint',
+                    _enableShareToDE: true
                 })
                 .then(function() {
                     modeBarButtons.sendChartToCloud.click(gd);
                 });
             }
+
+            it('should not be offered unless _enableShareToDE is set', function(done) {
+                Plotly.newPlot(gd, [], {}, {
+                    plotlyServerURL: 'https://example.plotly.com/endpoint'
+                })
+                .then(function() {
+                    expect(gd._context._enableShareToDE).toBe(false, 'should default to false');
+                    modeBarButtons.sendChartToCloud.click(gd);
+
+                    expect(document.querySelector('.plotly-cloud-dialog')).not.toBe(null, 'dialog should be shown');
+                    expect(document.querySelector('.plotly-cloud-dialog-link')).toBe(null, 'link should not be shown');
+                    expect(document.querySelector('.plotly-cloud-dialog-url-field')).toBe(null, 'URL field should not be built');
+
+                    // Sharing still goes ahead, to the configured server
+                    clickConfirm();
+                    expect(openSpy).toHaveBeenCalledWith('https://example.plotly.com/endpoint' + ORIGIN_QUERY, '_blank');
+                })
+                .then(done, done.fail);
+            });
 
             it('should reveal the URL field and swap the message', function(done) {
                 openDialog()

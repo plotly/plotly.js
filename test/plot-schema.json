@@ -104,6 +104,11 @@
     }
   },
   "config": {
+    "_enableShareToDE": {
+      "description": "Internal use only. Determines whether the confirmation dialog of the `sendChartToCloud` modebar button offers the option of sharing the chart with a Dash Enterprise server.",
+      "dflt": false,
+      "valType": "boolean"
+    },
     "autosizable": {
       "description": "Determines whether the graphs are plotted with respect to layout.autosize:true and infer its container size.",
       "dflt": false,

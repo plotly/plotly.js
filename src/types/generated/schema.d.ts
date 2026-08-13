@@ -16450,6 +16450,11 @@ export interface Edits {
 
 export interface ConfigBase {
     /**
+     * Internal use only. Determines whether the confirmation dialog of the `sendChartToCloud` modebar button offers the option of sharing the chart with a Dash Enterprise server.
+     * @default false
+     */
+    _enableShareToDE?: boolean;
+    /**
      * Determines whether the graphs are plotted with respect to layout.autosize:true and infer its container size.
      * @default false
      */

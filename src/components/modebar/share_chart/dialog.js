@@ -156,14 +156,13 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
 
     const description = buildDescription(dialog, strings, serverUrl);
 
-    // Replaces the description above once the user opts to name their own server.
-    const customDescription = dialog.append('div')
-        .classed('plotly-cloud-dialog-message', true)
-        .style('display', 'none')
-        .text(strings.DIALOG_MESSAGE_CUSTOM);
+    // Read config flag _enableShareToDE to determine whether
+    // to show the "Share to Dash Enterprise" link and the custom URL field
+    const enableShareToDE = gd._context._enableShareToDE;
 
-    const field = buildUrlField(dialog, strings);
-    const input = field.input;
+    // Replaces the description above once the user opts to name their own server.
+    let customDescription = null;
+    let field = null;
 
     // Whether the user has opted to name their own server, in which case the
     // URL field is showing and its contents decide where the chart goes.
@@ -171,7 +170,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
 
     const showError = (message) => {
         field.error.text(message).style('display', '');
-        input.node().focus();
+        field.input.node().focus();
     };
 
     const confirm = () => {
@@ -180,7 +179,7 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
             return;
         }
 
-        const entered = (input.property('value') || '').trim();
+        const entered = (field.input.property('value') || '').trim();
         if (!entered) {
             showError(strings.DIALOG_URL_ERROR_EMPTY);
             return;
@@ -195,32 +194,43 @@ const buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) =
         onClickConfirm(customUrl);
     };
 
-    input.on('input', () => {
-        field.error.style('display', 'none');
-    });
+    if (enableShareToDE) {
+        customDescription = dialog.append('div')
+            .classed('plotly-cloud-dialog-message', true)
+            .style('display', 'none')
+            .text(strings.DIALOG_MESSAGE_CUSTOM);
 
-    input.on('keydown', () => {
-        if (d3.event.key === 'Enter' || d3.event.keyCode === 13) confirm();
-    });
+        field = buildUrlField(dialog, strings);
+
+        field.input.on('input', () => {
+            field.error.style('display', 'none');
+        });
+
+        field.input.on('keydown', () => {
+            if (d3.event.key === 'Enter' || d3.event.keyCode === 13) confirm();
+        });
+    }
 
     const buttons = dialog.append('div')
         .classed('plotly-cloud-dialog-buttons', true);
 
-    const customBtn = buttons.append('button')
-        .classed('plotly-cloud-dialog-link', true)
-        .attr('type', 'button')
-        .text(strings.DIALOG_CUSTOM_URL);
+    if (enableShareToDE) {
+        const customBtn = buttons.append('button')
+            .classed('plotly-cloud-dialog-link', true)
+            .attr('type', 'button')
+            .text(strings.DIALOG_CUSTOM_URL);
 
-    // If user clicks the "Share to Dash Enterprise" link,
-    // change dialog wording and display text field for entering another server URL
-    customBtn.on('click', () => {
-        useCustomUrl = true;
-        customBtn.style('display', 'none');
-        description.style('display', 'none');
-        customDescription.style('display', '');
-        field.urlField.style('display', '');
-        input.node().focus();
-    });
+        // If user clicks the "Share to Dash Enterprise" link,
+        // change dialog wording and display text field for entering another server URL
+        customBtn.on('click', () => {
+            useCustomUrl = true;
+            customBtn.style('display', 'none');
+            description.style('display', 'none');
+            customDescription.style('display', '');
+            field.urlField.style('display', '');
+            field.input.node().focus();
+        });
+    }
 
     buttons.append('button')
         .classed('plotly-cloud-dialog-btn', true)

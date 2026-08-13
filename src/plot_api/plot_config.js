@@ -40,6 +40,17 @@ var configAttributes = {
         ].join(' ')
     },
 
+    _enableShareToDE: {
+        valType: 'boolean',
+        dflt: false,
+        description: [
+            'Internal use only.',
+            'Determines whether the confirmation dialog of the `sendChartToCloud`',
+            'modebar button offers the option of sharing the chart with a Dash',
+            'Enterprise server.',
+        ].join(' ')
+    },
+
     editable: {
         valType: 'boolean',
         dflt: false,
