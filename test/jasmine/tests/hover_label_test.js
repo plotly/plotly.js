@@ -7437,7 +7437,7 @@ describe('hovermode: (x|y)unified', function () {
             .then(done, done.fail);
     });
 
-    fit('hover label should only show values of hovered category', function (done) {
+    it('hover label should only show values of hovered category', function (done) {
         Plotly.newPlot(gd, {
             data: [
                 {   name: 'bar',
