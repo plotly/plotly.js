@@ -93,6 +93,8 @@ describe('hoveranywhere', () => {
                 expect(hoverData.yvals.length).toBe(1);
                 expect(hoverData.xvals[0]).toBeCloseTo(250 / 30, 2);
                 expect(hoverData.yvals[0]).toBeCloseTo(10 - 50 / 30, 2);
+                expect(hoverData.xPixel).toBeCloseTo(300, 1);  // hover x-position (250) + left margin (50)
+                expect(hoverData.yPixel).toBeCloseTo(100, 1);  // hover y-position (50) + top margin (50)
             })
             .then(done, done.fail);
     });
@@ -147,6 +149,27 @@ describe('hoveranywhere', () => {
             .then(done, done.fail);
     });
 
+    it('reports cursor position in top-level xPixel/yPixel, and point position in point-level xPixel/yPixel', (done) => {
+        var hoverData;
+
+        makePlot(gd, { hoveranywhere: true })
+            .then(() => {
+                gd.on('plotly_hover', (d) => (hoverData = d));
+
+                // hover near, but not exactly on, the point (2, 3), which is at px (60, 210)
+                _hover(65, 205);
+
+                expect(hoverData.points.length).toBe(1);
+                // top-level: cursor position
+                expect(hoverData.xPixel).toBeCloseTo(115, 1);  // hover x-position (65) + left margin (50)
+                expect(hoverData.yPixel).toBeCloseTo(255, 1);  // hover y-position (205) + top margin (50)
+                // point-level: position of the point itself
+                expect(hoverData.points[0].xPixel).toBeCloseTo(110, 1);  // point x-position in plot area (60) + left margin (50)
+                expect(hoverData.points[0].yPixel).toBeCloseTo(260, 1);  // point y-position in plot area (210) + top margin (50)
+            })
+            .then(done, done.fail);
+    });
+
     it('respects hovermode:false', (done) => {
         var hoverData;
 
@@ -188,11 +211,13 @@ describe('hoveranywhere', () => {
                 const bb = gd.getBoundingClientRect();
                 const s = gd._fullLayout._size;
                 // center of shape at data (7.5, 7.5) = plot-area px (225, 75)
+                const mouseX = bb.left + s.l + 225;
+                const mouseY = bb.top + s.t + 75;
                 shapePath.dispatchEvent(
                     new MouseEvent('mousemove', {
                         bubbles: true,
-                        clientX: bb.left + s.l + 225,
-                        clientY: bb.top + s.t + 75
+                        clientX: mouseX,
+                        clientY: mouseY
                     })
                 );
                 Lib.clearThrottle();
@@ -201,6 +226,10 @@ describe('hoveranywhere', () => {
                 expect(hoverData.points).toEqual([]);
                 expect(hoverData.xvals[0]).toBeCloseTo(7.5, 1);
                 expect(hoverData.yvals[0]).toBeCloseTo(7.5, 1);
+                // mouseX and mouseY are relative to the full page, so subtract the bounding box
+                // to get pixel coordinates relative to the graph div, which should match hoverData.xPixel/yPixel
+                expect(hoverData.xPixel).toBeCloseTo(mouseX - bb.left, 1);
+                expect(hoverData.yPixel).toBeCloseTo(mouseY - bb.top, 1);
             })
             .then(done, done.fail);
     });
@@ -316,9 +345,12 @@ describe('clickanywhere', () => {
             .then(() => {
                 gd.on('plotly_click', (d) => (clickData = d));
 
-                var bb = gd.getBoundingClientRect();
-                var s = gd._fullLayout._size;
-                click(bb.left + s.l + 250, bb.top + s.t + 50);
+                const bb = gd.getBoundingClientRect();
+                const s = gd._fullLayout._size;
+                const clickX = bb.left + s.l + 250;
+                const clickY = bb.top + s.t + 50;
+
+                click(clickX, clickY);
 
                 expect(clickData).toBeDefined();
                 expect(clickData.points).toEqual([]);
@@ -330,6 +362,10 @@ describe('clickanywhere', () => {
                 expect(clickData.xvals[0]).toBeCloseTo(250 / 30, 2);
                 // click at 50px into 300px plot area, yrange [0,10]: 10 - 50/300*10 = 8.33
                 expect(clickData.yvals[0]).toBeCloseTo(10 - 50 / 30, 2);
+                // click pixels: clickX and clickY are relative to full page, so subtract the graph div bounding box
+                // to get pixel coordinates relative to the graph div, which should match clickData.xPixel/yPixel
+                expect(clickData.xPixel).toBeCloseTo(clickX - bb.left, 1);
+                expect(clickData.yPixel).toBeCloseTo(clickY - bb.top, 1);
             })
             .then(done, done.fail);
     });
