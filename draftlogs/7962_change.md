@@ -1,0 +1,5 @@
+- **Breaking**: Switch color processing library from [color](https://github.com/Qix-/color) to [culori](https://culorijs.org) [[#7962](https://github.com/plotly/plotly.js/pull/7962)]
+  - Additional CSS Color 4 formats are now supported: `lab()`, `lch()`, `oklab()`, `oklch()`, `color()`, `hsl(0.5turn 60% 40%)`, `hsl(none 60% 40%)`
+  - `rgb()` now accepts an optional alpha, so `rgb(255, 0, 0, 0.5)` is no longer opaque (`rgb` and `rgba` are aliases per [spec](https://www.w3.org/TR/css-color-4/#changes-from-3))
+  - Color strings that are not valid CSS are now rejected, including `hwb(200, 10%, 20%)` and `hsl(120, 50% 50%)`
+  - Contrasting text and border colors are picked by WCAG contrast ratio, so labels on saturated mid-tone fills may switch from dark to white
