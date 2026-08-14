@@ -111,6 +111,30 @@ describe('Test color:', function () {
         });
     });
 
+    describe('parse', () => {
+        // Drawing code needs the alpha of a color it is about to paint, which is
+        // not the same question `opacity` answers. A color that is simply unset
+        // still gets painted, so it resolves to opaque black.
+        it('treats a missing color as opaque black, without warning', () => {
+            [undefined, null].forEach((v) => expect(Color.parse(v).alpha).toBe(1, String(v)));
+        });
+
+        it('treats an unparseable color as opaque black', () => {
+            ['', 'notacolor'].forEach((v) => expect(Color.parse(v).alpha).toBe(1, String(v)));
+        });
+
+        it('reads a real alpha channel', () => {
+            expect(Color.parse('rgba(255, 0, 0, 0.5)').alpha).toBe(0.5);
+            expect(Color.parse('transparent').alpha).toBe(0);
+        });
+
+        // `opacity` answers "is there a color here", so it keeps its own guard.
+        it('differs from opacity only for a missing color', () => {
+            [undefined, null, ''].forEach((v) => expect(Color.opacity(v)).toBe(0, String(v)));
+            expect(Color.opacity('notacolor')).toBe(1);
+        });
+    });
+
     describe('invalid input', () => {
         const BAD = [undefined, null, 42, { r: 255, g: 0, b: 0 }, 'notacolor', '', '#gg0000'];
 
