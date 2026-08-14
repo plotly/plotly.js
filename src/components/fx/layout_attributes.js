@@ -114,7 +114,8 @@ module.exports = {
             'When the cursor is not over a trace, the event will have an empty `points` array',
             'but will include `xvals` and `yvals` with cursor coordinates in data space,',
             'and `xPixel` and `yPixel` with cursor coordinates in pixels,',
-            'relative to the top-left corner of the graph div.'
+            'relative to the top-left corner of the graph div.',
+            'A `plotly_unhover` event fires when the cursor leaves the plot area.'
         ].join(' ')
     },
     clickanywhere: {

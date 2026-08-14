@@ -820,6 +820,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 gd._hoverdata = [];
             }
             emitHover([]);
+
+            // Set a flag to note that an empty-space hover event is being emitted,
+            // so that we know to emit an unhover event when the mouse leaves the plot area.
+            // See dragelement/unhover.js.
+            gd._hoverAnywhereActive = true;
         }
         return result;
     }

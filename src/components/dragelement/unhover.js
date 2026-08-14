@@ -16,7 +16,23 @@ unhover.wrapped = function(gd, evt, subplot) {
         throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
     }
 
+    var oldhoverdata = gd._hoverdata;
+
     unhover.raw(gd, evt, subplot);
+
+    // Special handling for `hoveranywhere`, to ensure we emit exactly one unhover event
+    // when the cursor leaves the plot area.
+    // gd._hoverAnywhereActive is set in fx/hover.js when we emit an empty-space hover event.
+    if(gd._hoverAnywhereActive) {
+        gd._hoverAnywhereActive = false;
+
+        if(evt && evt.target && !oldhoverdata) {
+            gd.emit('plotly_unhover', {
+                event: evt,
+                points: []
+            });
+        }
+    }
 };
 
 
