@@ -618,6 +618,12 @@ module.exports = function setConvert(ax, fullLayout) {
         }
 
         ax._length = bandLength - padStart - padEnd;
+        // the resolved padding, for the few places that build the plot rect from
+        // `domain` themselves and would otherwise miss it. They add these instead of
+        // rebuilding from _offset and _length, which would round trip through pixel
+        // space and lose a bit or two even when there is no padding at all.
+        ax._padStart = padStart;
+        ax._padEnd = padEnd;
 
         if(isY) {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h + padStart;

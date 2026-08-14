@@ -8903,6 +8903,43 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
+    it('should leave every number exactly as it was when no padding is set', function(done) {
+        // The pad has to be a true no-op at its default. Rebuilding the plot rect
+        // from _offset and _length instead of adding the pad to `domain` shifted
+        // webgl output by a fraction of a pixel on unpadded plots, which is enough
+        // to move rasterised markers and fail an image baseline. Compare with ===,
+        // not toBeCloseTo, because that is the size of the mistake being guarded.
+        Plotly.newPlot(gd, [
+            {y: [1, 2, 3]},
+            {y: [2, 1, 3], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            width: 600, height: 500, margin: {l: 80, r: 80, t: 100, b: 80},
+            xaxis: {domain: [0, 0.3103448275862069], anchor: 'y'},
+            yaxis: {domain: [0.6896551724137931, 1], anchor: 'x'},
+            xaxis2: {domain: [0.3448275862068966, 0.6551724137931034], anchor: 'y2'},
+            yaxis2: {domain: [0, 0.3103448275862069], anchor: 'x2'}
+        })
+        .then(function() {
+            var fl = gd._fullLayout;
+            var gs = fl._size;
+
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(name) {
+                var ax = fl[name];
+                var isY = name.charAt(0) === 'y';
+                var wantOffset = isY ?
+                    gs.t + (1 - ax.domain[1]) * gs.h :
+                    gs.l + ax.domain[0] * gs.w;
+                var wantLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+
+                expect(ax._offset).withContext(name + ' offset').toBe(wantOffset);
+                expect(ax._length).withContext(name + ' length').toBe(wantLength);
+                expect(ax._padStart).withContext(name + ' padStart').toBe(0);
+                expect(ax._padEnd).withContext(name + ' padEnd').toBe(0);
+            });
+        })
+        .then(done, done.fail);
+    });
+
     it('should not drift when the axis gets rescaled again and again', function(done) {
         // setScale runs several times per draw, so the padding has to be read
         // fresh each time rather than piled onto the previous result

@@ -17,22 +17,31 @@ var styleTextSelection = require('./edit_style').styleTextSelection;
 var reglPrecompiled = {};
 
 function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
-    // This is the same rectangle the svg side draws into, only measured up from the
-    // bottom of the figure instead of down from the top. Read it off _offset and
-    // _length rather than working it out from `domain` again, so that anything which
-    // moves the plot area by a pixel amount - `domainpad`, say - lands here as well.
-    var height = fullLayout.height;
+    var gs = fullLayout._size;
+    var width = fullLayout.width * plotGlPixelRatio;
+    var height = fullLayout.height * plotGlPixelRatio;
 
-    var left = xaxis._offset;
-    var right = xaxis._offset + xaxis._length;
-    var bottom = height - (yaxis._offset + yaxis._length);
-    var top = height - yaxis._offset;
+    var l = gs.l * plotGlPixelRatio;
+    var b = gs.b * plotGlPixelRatio;
+    var r = gs.r * plotGlPixelRatio;
+    var t = gs.t * plotGlPixelRatio;
+    var w = gs.w * plotGlPixelRatio;
+    var h = gs.h * plotGlPixelRatio;
+
+    // `domainpad` takes pixels off the plot area that `domain` knows nothing about.
+    // Add it to the expressions below rather than rebuilding the rect from _offset
+    // and _length: that would round trip through pixel space and shift this rect by
+    // a fraction of a pixel even on plots with no padding at all.
+    var padL = (xaxis._padStart || 0) * plotGlPixelRatio;
+    var padR = (xaxis._padEnd || 0) * plotGlPixelRatio;
+    var padT = (yaxis._padStart || 0) * plotGlPixelRatio;
+    var padB = (yaxis._padEnd || 0) * plotGlPixelRatio;
 
     return [
-        left * plotGlPixelRatio,
-        bottom * plotGlPixelRatio,
-        right * plotGlPixelRatio,
-        top * plotGlPixelRatio
+        l + xaxis.domain[0] * w + padL,
+        b + yaxis.domain[0] * h + padB,
+        (width - r) - (1 - xaxis.domain[1]) * w - padR,
+        (height - t) - (1 - yaxis.domain[1]) * h - padT
     ];
 }
 
