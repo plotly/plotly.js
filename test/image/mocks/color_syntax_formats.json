@@ -219,7 +219,7 @@
     "barmode": "group",
     "bargap": 0.1,
     "width": 1400,
-    "height": 600,
+    "height": 630,
     "paper_bgcolor": "rgb(250 250 250)",
     "plot_bgcolor": "hsl(0, 0%, 98%)",
     "xaxis": {
