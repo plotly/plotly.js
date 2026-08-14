@@ -593,7 +593,6 @@ function nodeModel(d, n) {
         forceLayouts: d.forceLayouts,
         horizontal: d.horizontal,
         reversed: d.reversed,
-        darkBackground: Color.isDark(n.color),
         rgb: Color.rgb(n.color),
         alpha: Color.parse(n.color).alpha,
         valueFormat: d.valueFormat,
