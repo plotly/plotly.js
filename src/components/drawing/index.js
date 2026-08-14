@@ -517,7 +517,7 @@ function gradientWithBounds(sel, gd, gradientID, type, colorscale, prop, start, 
                 d3.select(this).attr({
                     offset: d[0] + '%',
                     'stop-color': Color.rgb(d[1]),
-                    'stop-opacity': Color.opacity(d[1])
+                    'stop-opacity': Color.parse(d[1]).alpha
                 });
             });
         });
@@ -584,7 +584,7 @@ drawing.pattern = function (
     var patternAttrs = {};
 
     var fgRGB = Color.rgb(fgcolor);
-    var fgAlpha = Color.opacity(fgcolor);
+    var fgAlpha = Color.parse(fgcolor).alpha;
     var opacity = fgopacity * fgAlpha;
 
     switch (shape) {
@@ -818,7 +818,7 @@ drawing.pattern = function (
 
             if (bgcolor) {
                 var bgRGB = Color.rgb(bgcolor);
-                var bgAlpha = Color.opacity(bgcolor);
+                var bgAlpha = Color.parse(bgcolor).alpha;
 
                 var rects = el.selectAll('rect').data([0]);
                 rects.exit().remove();

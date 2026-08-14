@@ -33,16 +33,20 @@ const formatRgb = (c) => culoriFormatRgb(snap(c));
 const formatHex = (c) => culoriFormatHex(snap(c));
 
 /**
- * Parse a color specifier, falling back to black with a warning
+ * Parse a color specifier, falling back to opaque black.
+ *
+ * A missing color falls back quietly, because it means the caller left the
+ * attribute unset rather than gave a bad value. Callers that treat a missing
+ * color as nothing to paint test for it themselves, as `opacity` does.
  *
  * @param {*} cstr - color specifier
  * @param {Boolean} [silent] - skip the warning, for callers that run per data point
  * @return {Object} culori rgb color
  */
-const parseColor = (cstr, silent) => {
+const parse = (cstr, silent) => {
     const c = typeof cstr === 'string' ? toRgb(cstr.trim()) : undefined;
     if (!c) {
-        if (!silent) warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
+        if (!silent && cstr != null) warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
         return BLACK;
     }
     // `toRgb` omits alpha when it's 1; make sure it's added since we expect it
@@ -59,7 +63,7 @@ const parseColor = (cstr, silent) => {
  * @param {*} cstr - color specifier
  * @return {String}
  */
-const rgb = (cstr) => formatRgb({ ...parseColor(cstr), alpha: 1 });
+const rgb = (cstr) => formatRgb({ ...parse(cstr), alpha: 1 });
 
 /**
  * Return the alpha channel of a color (0 if falsy).
@@ -67,7 +71,7 @@ const rgb = (cstr) => formatRgb({ ...parseColor(cstr), alpha: 1 });
  * @param {*} cstr - color specifier
  * @return {Number}
  */
-const opacity = (cstr) => (cstr ? parseColor(cstr).alpha : 0);
+const opacity = (cstr) => (cstr ? parse(cstr).alpha : 0);
 
 // A per-point color in the WebGL paths can arrive as raw channels rather than as
 // a color specifier, either as a plain array or as a typed array.
@@ -102,7 +106,7 @@ const channelsToRgb = (v) => {
  * @return {Number[]|Uint8Array}
  */
 const normalize = (input, type) => {
-    const c = isChannelArray(input) ? channelsToRgb(input) : parseColor(input, true);
+    const c = isChannelArray(input) ? channelsToRgb(input) : parse(input, true);
     const v = [clip01(c.r), clip01(c.g), clip01(c.b), clip01(c.alpha)];
     if (type === 'uint8' || type === 'uint8_clamped') return Uint8Array.from(v, (x) => Math.round(x * 255));
     if (type === 'float32') return Float32Array.from(v);
@@ -118,7 +122,7 @@ const normalize = (input, type) => {
  * @param {Number} op - opacity in [0, 1], clipped to that range
  * @return {String} `rgb(...)` when the result is opaque, `rgba(...)` otherwise
  */
-const addOpacity = (cstr, op) => formatRgb({ ...parseColor(cstr), alpha: clip01(op) });
+const addOpacity = (cstr, op) => formatRgb({ ...parse(cstr), alpha: clip01(op) });
 
 /**
  * Combine two colors into one apparent color by compositing `front` over `back`.
@@ -132,11 +136,11 @@ const addOpacity = (cstr, op) => formatRgb({ ...parseColor(cstr), alpha: clip01(
  * @return {String} resulting `rgb(...)` string
  */
 const combine = (front, back) => {
-    const fc = parseColor(front);
+    const fc = parse(front);
     const fa = fc.alpha;
     if (fa === 1) return formatRgb(fc);
 
-    const bc = parseColor(back || background);
+    const bc = parse(back || background);
     const ba = bc.alpha;
     const over = (f, b) => (ba === 1 ? b : 1 - ba + b * ba) * (1 - fa) + f * fa;
 
@@ -153,8 +157,8 @@ const combine = (front, back) => {
  * @return {String} resulting `rgb(...)` string
  */
 const interpolate = (first, second, factor) => {
-    const fc = parseColor(first);
-    const sc = parseColor(second);
+    const fc = parse(first);
+    const sc = parse(second);
     const lerp = (a, b) => factor * a + (1 - factor) * b;
 
     return formatRgb({ mode: 'rgb', r: lerp(fc.r, sc.r), g: lerp(fc.g, sc.g), b: lerp(fc.b, sc.b) });
@@ -169,7 +173,7 @@ const interpolate = (first, second, factor) => {
  * @return {String} resulting color string
  */
 const adjustLightness = (cstr, delta) => {
-    const c = parseColor(cstr);
+    const c = parse(cstr);
     const h = toHsl(c) || { mode: 'hsl', h: 0, s: 0, l: 0 };
     return formatRgb(toRgb({ ...h, l: clip01((h.l * 100 + delta) / 100), alpha: c.alpha }));
 };
@@ -181,7 +185,7 @@ const adjustLightness = (cstr, delta) => {
  * @param {*} cstr2 - color specifier
  * @return {Number}
  */
-const wcagContrast = (cstr1, cstr2) => culoriWcagContrast(parseColor(cstr1), parseColor(cstr2));
+const wcagContrast = (cstr1, cstr2) => culoriWcagContrast(parse(cstr1), parse(cstr2));
 
 /**
  * Test whether a color reads as dark.
@@ -207,7 +211,7 @@ const isDark = (cstr) => wcagContrast(cstr, background) > wcagContrast(cstr, def
  * @return {String} resulting `rgb(...)` string
  */
 const contrast = (cstr, lightAmount, darkAmount) => {
-    if (opacity(cstr) !== 1) cstr = combine(cstr, background);
+    if (parse(cstr).alpha !== 1) cstr = combine(cstr, background);
 
     const newColor = isDark(cstr)
         ? lightAmount
@@ -217,7 +221,7 @@ const contrast = (cstr, lightAmount, darkAmount) => {
           ? adjustLightness(cstr, -darkAmount)
           : defaultLine;
 
-    return formatRgb(parseColor(newColor));
+    return formatRgb(parse(newColor));
 };
 
 /**
@@ -231,8 +235,7 @@ const contrast = (cstr, lightAmount, darkAmount) => {
  * @param {*} cstr - color specifier
  */
 const stroke = (s, cstr) => {
-    const c = cstr == null ? BLACK : parseColor(cstr);
-    s.style({ stroke: formatRgb({ ...c, alpha: 1 }), 'stroke-opacity': c.alpha });
+    s.style({ stroke: rgb(cstr), 'stroke-opacity': parse(cstr).alpha });
 };
 
 /**
@@ -244,8 +247,7 @@ const stroke = (s, cstr) => {
  * @param {*} cstr - color specifier
  */
 const fill = (s, cstr) => {
-    const c = cstr == null ? BLACK : parseColor(cstr);
-    s.style({ fill: formatRgb({ ...c, alpha: 1 }), 'fill-opacity': c.alpha });
+    s.style({ fill: rgb(cstr), 'fill-opacity': parse(cstr).alpha });
 };
 
 /**
@@ -275,7 +277,7 @@ const isValid = (cstr) => typeof cstr === 'string' && toRgb(cstr.trim()) !== und
  */
 const brighten = (cstr, amount) => {
     amount = amount === 0 ? 0 : amount || 10;
-    const c = parseColor(cstr);
+    const c = parse(cstr);
     const adj = amount / 100;
 
     return formatRgb({
@@ -295,8 +297,8 @@ const brighten = (cstr, amount) => {
  * @return {String} resulting `rgb(...)` string
  */
 const mix = (cstr1, cstr2, weight) => {
-    const c1 = parseColor(cstr1);
-    const c2 = parseColor(cstr2);
+    const c1 = parse(cstr1);
+    const c2 = parse(cstr2);
     const p = weight / 100;
 
     // Scale the channel weight by the alpha difference, the same way Sass does.
@@ -333,7 +335,7 @@ const mostReadable = (baseColor, colorList = ['#000', '#fff']) => {
         const ratio = wcagContrast(baseColor, cstr);
         if (ratio > bestContrast) {
             bestContrast = ratio;
-            bestColor = formatRgb(parseColor(cstr));
+            bestColor = formatRgb(parse(cstr));
         }
     }
 
@@ -347,7 +349,7 @@ const mostReadable = (baseColor, colorList = ['#000', '#fff']) => {
  * @param {*} cstr - color specifier
  * @return {String}
  */
-const rgbaString = (cstr) => formatRgb(parseColor(cstr));
+const rgbaString = (cstr) => formatRgb(parse(cstr));
 
 /**
  * Convert any color specifier to an uppercase `#RRGGBB` string. Alpha is dropped.
@@ -355,7 +357,7 @@ const rgbaString = (cstr) => formatRgb(parseColor(cstr));
  * @param {*} cstr - color specifier
  * @return {String}
  */
-const hexString = (cstr) => formatHex(parseColor(cstr)).toUpperCase();
+const hexString = (cstr) => formatHex(parse(cstr)).toUpperCase();
 
 /**
  * Channels as `[r, g, b, a]`, with `r`/`g`/`b` in [0, 255] and `a` in [0, 1].
@@ -366,7 +368,7 @@ const hexString = (cstr) => formatHex(parseColor(cstr)).toUpperCase();
  * @return {Number[]} `[r, g, b, a]`
  */
 const rgbaArray = (cstr) => {
-    const c = parseColor(cstr);
+    const c = parse(cstr);
     return [clip01(c.r) * 255, clip01(c.g) * 255, clip01(c.b) * 255, clip01(c.alpha)];
 };
 
@@ -386,7 +388,7 @@ const rgbaArrayToString = ([r, g, b, alpha]) => formatRgb({ mode: 'rgb', r: r / 
  * @return {Number}
  */
 const luminosity = (cstr) => {
-    const c = parseColor(cstr);
+    const c = parse(cstr);
     return wcagLuminance({ mode: 'rgb', r: clip01(c.r), g: clip01(c.g), b: clip01(c.b) });
 };
 
@@ -411,6 +413,7 @@ module.exports = {
     mostReadable,
     normalize,
     opacity,
+    parse,
     rgb,
     rgbaArray,
     rgbaArrayToString,
