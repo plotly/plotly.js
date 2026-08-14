@@ -17,21 +17,22 @@ var styleTextSelection = require('./edit_style').styleTextSelection;
 var reglPrecompiled = {};
 
 function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
-    var gs = fullLayout._size;
-    var width = fullLayout.width * plotGlPixelRatio;
-    var height = fullLayout.height * plotGlPixelRatio;
+    // This is the same rectangle the svg side draws into, only measured up from the
+    // bottom of the figure instead of down from the top. Read it off _offset and
+    // _length rather than working it out from `domain` again, so that anything which
+    // moves the plot area by a pixel amount - `domainpad`, say - lands here as well.
+    var height = fullLayout.height;
 
-    var l = gs.l * plotGlPixelRatio;
-    var b = gs.b * plotGlPixelRatio;
-    var r = gs.r * plotGlPixelRatio;
-    var t = gs.t * plotGlPixelRatio;
-    var w = gs.w * plotGlPixelRatio;
-    var h = gs.h * plotGlPixelRatio;
+    var left = xaxis._offset;
+    var right = xaxis._offset + xaxis._length;
+    var bottom = height - (yaxis._offset + yaxis._length);
+    var top = height - yaxis._offset;
+
     return [
-        l + xaxis.domain[0] * w,
-        b + yaxis.domain[0] * h,
-        (width - r) - (1 - xaxis.domain[1]) * w,
-        (height - t) - (1 - yaxis.domain[1]) * h
+        left * plotGlPixelRatio,
+        bottom * plotGlPixelRatio,
+        right * plotGlPixelRatio,
+        top * plotGlPixelRatio
     ];
 }
 

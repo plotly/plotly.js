@@ -41,6 +41,14 @@ function plotOne(gd, cd0) {
     viewOpts.ranges = new Array(visibleLength);
     viewOpts.domains = new Array(visibleLength);
 
+    // regl-splom places each cell as a fraction of the viewport below, which is the
+    // whole plot area. Derive those fractions from where the axes actually ended up
+    // rather than from `domain`, otherwise anything that shifts the plot area in
+    // pixels - `domainpad` - would move the axes but leave the points behind.
+    // regl counts y up from the bottom, so the y pair comes back reversed.
+    function xFraction(px) { return (px - gs.l) / gs.w; }
+    function yFraction(px) { return (fullLayout.height - px - gs.b) / gs.h; }
+
     for(k = 0; k < visibleDims.length; k++) {
         i = visibleDims[k];
 
@@ -51,16 +59,16 @@ function plotOne(gd, cd0) {
         if(xa) {
             rng[0] = xa._rl[0];
             rng[2] = xa._rl[1];
-            dmn[0] = xa.domain[0];
-            dmn[2] = xa.domain[1];
+            dmn[0] = xFraction(xa._offset);
+            dmn[2] = xFraction(xa._offset + xa._length);
         }
 
         ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
         if(ya) {
             rng[1] = ya._rl[0];
             rng[3] = ya._rl[1];
-            dmn[1] = ya.domain[0];
-            dmn[3] = ya.domain[1];
+            dmn[1] = yFraction(ya._offset + ya._length);
+            dmn[3] = yFraction(ya._offset);
         }
     }
 

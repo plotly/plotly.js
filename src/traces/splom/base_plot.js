@@ -90,7 +90,6 @@ function updateGrid(gd) {
 function makeGridData(gd) {
     var plotGlPixelRatio = gd._context.plotGlPixelRatio;
     var fullLayout = gd._fullLayout;
-    var gs = fullLayout._size;
     var fullView = [
         0, 0,
         fullLayout.width * plotGlPixelRatio,
@@ -135,8 +134,10 @@ function makeGridData(gd) {
         var yLength = ya._length;
 
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
-        // we need to compute bottom-to-top offsets and slopes:
-        var yOffset = gs.b + ya.domain[0] * gs.h;
+        // we need to compute bottom-to-top offsets and slopes.
+        // Flip the axis' own bottom edge rather than rebuilding it from `domain`,
+        // so pixel adjustments to the plot area such as `domainpad` come along:
+        var yOffset = fullLayout.height - (ya._offset + ya._length);
         var ym = -ya._m;
         var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
         var x, y;

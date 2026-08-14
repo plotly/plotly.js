@@ -35,6 +35,27 @@ function isValidCategory(v) {
     return v !== null && v !== undefined;
 }
 
+// Smallest plot area `domainpad` may leave behind, matching the floor
+// `doAutoMargin` keeps for margins. Zero would not do: the guard at the end of
+// setScale only rejects lengths below zero, so an exactly-zero length slips
+// through with a slope of 0 and the subplot collapses without saying why.
+var MIN_PADDED_LENGTH = 2;
+
+/*
+ * What fraction of the requested `domainpad` actually fits.
+ *
+ * `domain` is a plot fraction, so the band it covers shrinks with the figure while
+ * the padding does not. Make the figure small enough and the two pads together ask
+ * for more room than the band has. Back both off by the same factor rather than
+ * hand setScale a negative length, which throws - the same way `doAutoMargin`
+ * shrinks margins that no longer fit.
+ */
+function padFactor(wanted, bandLength) {
+    if(wanted <= 0) return 0;
+    var room = Math.max(0, bandLength - MIN_PADDED_LENGTH);
+    return wanted > room ? room / wanted : 1;
+}
+
 /**
  * Define the conversion functions for an axis data is used in 5 ways:
  *
@@ -562,6 +583,9 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax.overlaying) {
             var ax2 = axisIds.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
+            // an overlaying axis has to sit on exactly the same plot area as the axis
+            // underneath it, so it takes that axis' padding along with its domain
+            ax.domainpad = ax2.domainpad;
         }
 
         // While transitions are occurring, we get a double-transform
@@ -576,14 +600,31 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
         var isY = axLetter === 'y';
+        // the band `domain` covers, before domainpad takes its share of it
+        var bandLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+        var pad = ax.domainpad;
+        // padStart is the edge _offset is measured from, the top for y and the left
+        // for x, so it is the one that pushes the plot area inwards
+        var padStart = 0;
+        var padEnd = 0;
+
+        if(pad) {
+            padStart = (isY ? pad.top : pad.left) || 0;
+            padEnd = (isY ? pad.bottom : pad.right) || 0;
+
+            var fits = padFactor(padStart + padEnd, bandLength);
+            padStart *= fits;
+            padEnd *= fits;
+        }
+
+        ax._length = bandLength - padStart - padEnd;
+
         if(isY) {
-            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
-            ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h + padStart;
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
         } else {
-            ax._offset = gs.l + ax.domain[0] * gs.w;
-            ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.l + ax.domain[0] * gs.w + padStart;
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
         }
