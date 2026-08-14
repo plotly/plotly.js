@@ -24,6 +24,8 @@ module.exports = function click(gd, evt, subplot) {
         clickData.yaxes ??= gd._hoverYAxes;
         clickData.xvals ??= gd._hoverXVals && helpers.c2dApply(gd._hoverXAxes, gd._hoverXVals);
         clickData.yvals ??= gd._hoverYVals && helpers.c2dApply(gd._hoverYAxes, gd._hoverYVals);
+        clickData.xPixel ??= gd._hoverPointerX;
+        clickData.yPixel ??= gd._hoverPointerY;
 
         gd.emit('plotly_click', clickData);
     }
