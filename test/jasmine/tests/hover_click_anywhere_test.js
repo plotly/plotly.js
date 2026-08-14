@@ -5,6 +5,7 @@ var Lib = require('../../../src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
+var mouseEvent = require('../assets/mouse_event');
 
 function makePlot(gd, traceExtras = {}, layoutExtras = {}, configExtras) {
     return Plotly.newPlot(
@@ -70,6 +71,15 @@ describe('hoveranywhere', () => {
             },
             'xy'
         );
+        Lib.clearThrottle();
+    }
+
+    // leave the plot area, as the maindrag sees it
+    function _leavePlotArea() {
+        var bb = gd.getBoundingClientRect();
+        mouseEvent('mouseout', bb.left - 50, bb.top - 50, {
+            element: gd.querySelector('.nsewdrag')
+        });
         Lib.clearThrottle();
     }
 
@@ -178,6 +188,102 @@ describe('hoveranywhere', () => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
                 _hover(250, 50);
                 expect(hoverData).toBeUndefined();
+            })
+            .then(done, done.fail);
+    });
+
+    it('emits plotly_unhover when the cursor leaves the plot area after hovering empty space', (done) => {
+        var events = [];
+        var unhoverData;
+
+        makePlot(gd, { hoveranywhere: true })
+            .then(() => {
+                gd.on('plotly_hover', () => events.push('hover'));
+                gd.on('plotly_unhover', (d) => {
+                    events.push('unhover');
+                    unhoverData = d;
+                });
+
+                _hover(250, 50);
+                expect(events).toEqual(['hover']);
+
+                _leavePlotArea();
+
+                expect(events).toEqual(['hover', 'unhover']);
+                expect(unhoverData.points).toEqual([]);
+            })
+            .then(done, done.fail);
+    });
+
+    it('emits only one unhover per departure from the plot area', (done) => {
+        var events = [];
+
+        makePlot(gd, { hoveranywhere: true })
+            .then(() => {
+                gd.on('plotly_unhover', () => events.push('unhover'));
+
+                _hover(250, 50);
+                _leavePlotArea();
+                _leavePlotArea();
+
+                expect(events).toEqual(['unhover']);
+            })
+            .then(done, done.fail);
+    });
+
+    it('does not emit unhover while moving within empty space', (done) => {
+        var events = [];
+
+        makePlot(gd, { hoveranywhere: true })
+            .then(() => {
+                gd.on('plotly_hover', () => events.push('hover'));
+                gd.on('plotly_unhover', () => events.push('unhover'));
+
+                _hover(250, 50);
+                _hover(255, 55);
+                _hover(260, 60);
+
+                expect(events).toEqual(['hover', 'hover', 'hover']);
+            })
+            .then(done, done.fail);
+    });
+
+    it('emits unhover with point data, not empty points, when leaving from a point', (done) => {
+        var events = [];
+        var unhoverData;
+
+        makePlot(gd, { hoveranywhere: true })
+            .then(() => {
+                gd.on('plotly_unhover', (d) => {
+                    events.push('unhover');
+                    unhoverData = d;
+                });
+
+                // hover empty space, then the point (2, 3), then leave
+                _hover(250, 50);
+                _hover(60, 210);
+                _leavePlotArea();
+
+                expect(events).toEqual(['unhover']);
+                expect(unhoverData.points.length).toBe(1);
+                expect(unhoverData.points[0].x).toBe(2);
+                expect(unhoverData.points[0].y).toBe(3);
+            })
+            .then(done, done.fail);
+    });
+
+    it('does not emit unhover on leaving empty space when hoveranywhere is false', (done) => {
+        var events = [];
+
+        makePlot(gd)
+            .then(() => {
+                gd.on('plotly_hover', () => events.push('hover'));
+                gd.on('plotly_unhover', () => events.push('unhover'));
+
+                _hover(250, 50);
+                _leavePlotArea();
+
+                expect(events).toEqual([]);
             })
             .then(done, done.fail);
     });
