@@ -400,6 +400,7 @@ function doAutoRange(gd, ax, presetRange) {
         if(axeRangeOpts) {
             if(axeRangeOpts.rangemode === 'auto' || axeRangeOpts._rangeDfltFromAutorangedAx) {
                 axeRangeOpts.range = getAutoRange(gd, ax);
+                delete axeRangeOpts._rangeDfltFromAutorangedAx;
             }
         }
         anchorAx._input.rangeslider[ax._name] = Lib.extendFlat({}, axeRangeOpts);
