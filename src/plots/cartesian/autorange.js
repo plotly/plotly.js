@@ -398,7 +398,7 @@ function doAutoRange(gd, ax, presetRange) {
     if(anchorAx && anchorAx.rangeslider) {
         var axeRangeOpts = anchorAx.rangeslider[ax._name];
         if(axeRangeOpts) {
-            if(axeRangeOpts.rangemode === 'auto') {
+            if(axeRangeOpts.rangemode === 'auto' || axeRangeOpts._rangeDfltFromAutorangedAx) {
                 axeRangeOpts.range = getAutoRange(gd, ax);
             }
         }
