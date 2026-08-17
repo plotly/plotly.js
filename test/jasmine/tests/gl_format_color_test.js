@@ -52,6 +52,18 @@ describe('Test gl_format_color:', () => {
             out.forEach((rgba, i) => expectUsableChannels(rgba, `point ${i}`));
         });
 
+        // An array-shaped value that is not channels used to slip past the check
+        // and resolve to black instead of the default line color.
+        it('should fall back to the default line color for a malformed array', () => {
+            const dflt = Color.normalize(Color.defaultLine);
+            const out = formatColor({ color: [['red', 'blue'], [1, 2], [], [0, 255, 0]] }, 1, 4);
+
+            expect(out[0]).toEqual(dflt, "['red', 'blue']");
+            expect(out[1]).toEqual(dflt, '[1, 2]');
+            expect(out[2]).toEqual(dflt, '[]');
+            expect(out[3]).toEqual([0, 1, 0, 1], '[0, 255, 0] is real channels');
+        });
+
         it('should write usable channels for a per-point colorscale', () => {
             const out = formatColor(
                 {

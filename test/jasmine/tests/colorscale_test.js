@@ -754,24 +754,28 @@ describe('Test colorscale restyle calls:', function() {
     // string. When that array fails to parse, every point falls back to the same
     // black, which still renders and still passes the per-call unit tests.
     it('should render a colorscale as distinct, non-black colors', (done) => {
-        Plotly.newPlot(gd, [{
-            mode: 'markers',
-            y: [1, 2, 3, 4, 5],
-            marker: { color: [1, 2, 3, 4, 5], colorscale: 'Viridis' }
-        }])
-        .then(() => {
-            const fills = [];
-            // d3 binds `this` to the node, so this callback stays a function.
-            d3SelectAll('path.point').each(function() {
-                fills.push(getFill(this));
-            });
+        Plotly.newPlot(gd, [
+            {
+                mode: 'markers',
+                y: [1, 2, 3, 4, 5],
+                marker: { color: [1, 2, 3, 4, 5], colorscale: 'Viridis' }
+            }
+        ])
+            .then(() => {
+                const fills = [];
+                d3SelectAll('path.point').each(function () {
+                    fills.push(getFill(this));
+                });
 
-            expect(fills.length).toBe(5);
-            expect(fills.every((f) => f === 'rgb(0, 0, 0)')).toBe(false, 'all points black');
-            expect(new Set(fills).size).toBeGreaterThan(1, 'every point the same color');
-            fills.forEach((f) => expect(f).toMatch(/^rgba?\(/, `not a usable color: ${f}`));
-        })
-        .then(done, done.fail);
+                expect(fills).toEqual([
+                    'rgb(68, 1, 84)',
+                    'rgb(59, 82, 139)',
+                    'rgb(33, 145, 140)',
+                    'rgb(93, 200, 99)',
+                    'rgb(253, 231, 37)'
+                ]);
+            })
+            .then(done, done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (contour case)', function(done) {

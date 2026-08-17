@@ -25,10 +25,10 @@ const destroyGraphDiv = require('../assets/destroy_graph_div');
  * Hierarchy roots draw outside text, which does not contrast against the slice.
  * Give `tracePatch` a shape with no root when the trace type has a hierarchy.
  *
- * @param {String} traceType - trace type to plot
- * @param {Object} tracePatch - trace attributes that produce inside text
- * @param {String} textSelector - selector matching the drawn text nodes
- * @param {String} fillColor - opaque color painted behind the text
+ * @param {String} traceType - Trace type to plot
+ * @param {Object} tracePatch - Trace attributes that produce inside text
+ * @param {String} textSelector - Selector matching the drawn text nodes
+ * @param {String} fillColor - Opaque color painted behind the text
  */
 module.exports = function checkContrastingText(traceType, tracePatch, textSelector, fillColor) {
     describe(`${traceType} default inside text color`, () => {
@@ -51,8 +51,15 @@ module.exports = function checkContrastingText(traceType, tracePatch, textSelect
 
                     nodes.each(function (_, i) {
                         const { fill } = this.style;
-                        const other = Color.equals(fill, Color.background) ? Color.defaultLine : Color.background;
 
+                        const isBackground = Color.equals(fill, Color.background);
+                        const isDefaultLine = Color.equals(fill, Color.defaultLine);
+                        expect(isBackground || isDefaultLine).toBe(
+                            true,
+                            `${traceType} element ${i}: ${fill} is not a default label color`
+                        );
+
+                        const other = isBackground ? Color.defaultLine : Color.background;
                         expect(Color.wcagContrast(fillColor, fill)).not.toBeLessThan(
                             Color.wcagContrast(fillColor, other),
                             `${traceType} element ${i}: ${fill} on ${fillColor}`

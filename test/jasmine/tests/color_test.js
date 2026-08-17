@@ -92,8 +92,12 @@ describe('Test color:', function () {
         it('picks the more legible label for near-threshold colors', () => {
             ['rgb(0, 200, 0)', '#3D9970', '#FF4136', '#808080', '#4499FF', 'gray'].forEach((c) => {
                 const picked = Color.contrast(c);
-                const other = Color.equals(picked, Color.background) ? Color.defaultLine : Color.background;
 
+                const isBackground = Color.equals(picked, Color.background);
+                const isDefaultLine = Color.equals(picked, Color.defaultLine);
+                expect(isBackground || isDefaultLine).toBe(true, picked);
+
+                const other = isBackground ? Color.defaultLine : Color.background;
                 expect(Color.wcagContrast(c, picked)).not.toBeLessThan(Color.wcagContrast(c, other), c);
             });
         });
@@ -112,20 +116,35 @@ describe('Test color:', function () {
     });
 
     describe('parse', () => {
-        // Drawing code needs the alpha of a color it is about to paint, which is
-        // not the same question `opacity` answers. A color that is simply unset
-        // still gets painted, so it resolves to opaque black.
-        it('treats a missing color as opaque black, without warning', () => {
-            [undefined, null].forEach((v) => expect(Color.parse(v).alpha).toBe(1, String(v)));
+        const black = { mode: 'rgb', r: 0, g: 0, b: 0, alpha: 1 };
+
+        it('treats a missing or unparseable color as opaque black', () => {
+            [undefined, null, '', 'notacolor', 'hwb(200, 10%, 20%)', 42, {}, []].forEach((v) =>
+                expect(Color.parse(v)).toEqual(black, String(v))
+            );
         });
 
-        it('treats an unparseable color as opaque black', () => {
-            ['', 'notacolor'].forEach((v) => expect(Color.parse(v).alpha).toBe(1, String(v)));
+        it('returns each channel on a 0-1 scale', () => {
+            expect(Color.parse('#4080c0')).toEqual({
+                mode: 'rgb',
+                r: 64 / 255,
+                g: 128 / 255,
+                b: 192 / 255,
+                alpha: 1
+            });
+        });
+
+        it('adds the alpha culori omits for an opaque color', () => {
+            expect(Color.parse('red')).toEqual({ mode: 'rgb', r: 1, g: 0, b: 0, alpha: 1 });
+        });
+
+        it('trims surrounding whitespace', () => {
+            expect(Color.parse('  red  ')).toEqual({ mode: 'rgb', r: 1, g: 0, b: 0, alpha: 1 });
         });
 
         it('reads a real alpha channel', () => {
-            expect(Color.parse('rgba(255, 0, 0, 0.5)').alpha).toBe(0.5);
-            expect(Color.parse('transparent').alpha).toBe(0);
+            expect(Color.parse('rgba(255, 0, 0, 0.5)')).toEqual({ mode: 'rgb', r: 1, g: 0, b: 0, alpha: 0.5 });
+            expect(Color.parse('transparent')).toEqual({ mode: 'rgb', r: 0, g: 0, b: 0, alpha: 0 });
         });
 
         // `opacity` answers "is there a color here", so it keeps its own guard.
@@ -146,7 +165,6 @@ describe('Test color:', function () {
             BAD.forEach((v) => expect(Color.isValid(v)).toBe(false));
         });
 
-        // Null channels used to reach the WebGL buffers through this path.
         it('normalizes to four numeric channels', () => {
             BAD.forEach((v) => expect(Color.normalize(v)).toEqual([0, 0, 0, 1]));
         });

@@ -567,9 +567,9 @@ describe('Test axes', function() {
             expect(layoutOut.yaxis2.gridcolor).toEqual(Color.mix('#444', bgColor, frac));
         });
 
-        // A translucent axis color is what exercises the rule: the channel weight
-        // scales by the alpha difference, so mixing toward an opaque background
-        // moves the channels less than a plain interpolation would.
+        // axis.gridcolor is determined by mixing the axis color with the paper and plot background colors.
+        // If the two colors differ in alpha, the channel weight scales by that difference, so that
+        // the more-transparent color is weighted less.
         it("should weight 'axis.gridcolor' channels by the alpha difference", () => {
             layoutIn = {
                 paper_bgcolor: 'green',
@@ -578,6 +578,9 @@ describe('Test axes', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            // A plain interpolation gives 'rgba(255, 232, 0, 0.95)'. The half-transparent
+            // red then pulls green down almost three times as far.
             expect(layoutOut.xaxis.gridcolor).toEqual('rgba(255, 247, 0, 0.95)');
         });
 

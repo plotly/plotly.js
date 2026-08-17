@@ -1,5 +1,14 @@
 'use strict';
 
+/**
+ * Color specifier handling for the whole library.
+ *
+ * Every function here that returns a color resolves a specifier it cannot parse
+ * to opaque black, and warns. That includes a specifier that is missing, isn't
+ * a string, or is not valid CSS. No function throws, and none returns null, so
+ * callers never have to guard before drawing.
+ */
+
 // TODO: Import functions from `culori/fn` when converting to ESM to allow for tree-shaking
 const {
     converter,
@@ -15,9 +24,15 @@ const { background, defaultLine, defaults, lightLine } = require('./attributes')
 const toRgb = converter('rgb');
 const toHsl = converter('hsl');
 
-// Clip a 0-1 channel to gamut. culori returns out-of-range values for wide-gamut
+// `toRgb` for callers that may hand over something other than a color string.
+// Returns undefined for anything it cannot parse (the same as the converters).
+const toColor = (cstr) => (typeof cstr === 'string' ? toRgb(cstr.trim()) : undefined);
+
+// Clamp a 0-1 channel to gamut. culori returns out-of-range values for wide-gamut
 // inputs. Also maps undefined/NaN to 0 and Infinity to 1, matching the browser.
-const clip01 = (v) => (v > 0 ? (v > 1 ? 1 : v) : 0);
+// `Lib.constrain` does not substitute here: it is Math.max/Math.min, so a NaN
+// stays a NaN and reaches the WebGL buffers.
+const clamp01 = (v) => (v > 0 ? (v > 1 ? 1 : v) : 0);
 
 const BLACK = { mode: 'rgb', r: 0, g: 0, b: 0, alpha: 1 };
 
@@ -33,18 +48,14 @@ const formatRgb = (c) => culoriFormatRgb(snap(c));
 const formatHex = (c) => culoriFormatHex(snap(c));
 
 /**
- * Parse a color specifier, falling back to opaque black.
+ * Parse a color specifier string and return it as a culori rgb color object.
  *
- * A missing color falls back quietly, because it means the caller left the
- * attribute unset rather than gave a bad value. Callers that treat a missing
- * color as nothing to paint test for it themselves, as `opacity` does.
- *
- * @param {*} cstr - color specifier
- * @param {Boolean} [silent] - skip the warning, for callers that run per data point
- * @return {Object} culori rgb color
+ * @param {*} cstr - Color specifier
+ * @param {Boolean} [silent] - Skip the warning, for callers that run per data point
+ * @return {Object} A culori rgb color ({ mode: 'rgb', r: _, g: _, b: _, alpha: _ })
  */
 const parse = (cstr, silent) => {
-    const c = typeof cstr === 'string' ? toRgb(cstr.trim()) : undefined;
+    const c = toColor(cstr);
     if (!c) {
         if (!silent && cstr != null) warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
         return BLACK;
@@ -60,7 +71,7 @@ const parse = (cstr, silent) => {
  * Convert any color specifier to a normalized `rgb(r, g, b)` string.
  * Force alpha to 1 so that it gets dropped in the result.
  *
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  * @return {String}
  */
 const rgb = (cstr) => formatRgb({ ...parse(cstr), alpha: 1 });
@@ -68,13 +79,21 @@ const rgb = (cstr) => formatRgb({ ...parse(cstr), alpha: 1 });
 /**
  * Return the alpha channel of a color (0 if falsy).
  *
- * @param {*} cstr - color specifier
- * @return {Number}
+ * @param {*} cstr - Color specifier
+ * @return {Number} Alpha value in the range [0, 1]
  */
 const opacity = (cstr) => (cstr ? parse(cstr).alpha : 0);
 
-// A per-point color in the WebGL paths can arrive as raw channels rather than as
-// a color specifier, either as a plain array or as a typed array.
+/**
+ * Test whether a value holds raw color channels rather than a color specifier.
+ *
+ * Per-point colors in the WebGL paths arrive either way, as a plain array or as
+ * a typed array. `normalize` accepts both; `isValid` accepts neither, since a
+ * channel array is not a parseable string.
+ *
+ * @param {*} v - Value to test, of any type
+ * @return {Boolean} `true` for 3 or more finite numbers
+ */
 const isChannelArray = (v) => {
     return (
         isArrayOrTypedArray(v) &&
@@ -97,17 +116,20 @@ const channelsToRgb = (v) => {
 
 /**
  * Convert a color specifier to a 4-element `[r, g, b, a]` representation.
- * Falls back to opaque black rather than null: WebGL paths index the result.
  *
- * @param {*} input - color specifier
- * @param {'uint8'|'uint8_clamped'|'float32'|'float64'} [type] - omit for a plain
+ * `input` can also be a channel array, which the WebGL paths pass per data
+ * point. An `r`, `g`, or `b` above 1 puts those three on a 0-255 scale. Alpha
+ * scales on its own. Unlike the rest of this module, `normalize` never warns.
+ *
+ * @param {*} input - Color specifier, or an `[r, g, b]` / `[r, g, b, a]` channel array
+ * @param {'uint8'|'uint8_clamped'|'float32'|'float64'} [type] - Omit for a plain
  *   array in [0, 1]. `'uint8'` and `'uint8_clamped'` return a `Uint8Array` in
  *   [0, 255]. `'float32'` and `'float64'` return a typed array in [0, 1].
  * @return {Number[]|Uint8Array}
  */
 const normalize = (input, type) => {
     const c = isChannelArray(input) ? channelsToRgb(input) : parse(input, true);
-    const v = [clip01(c.r), clip01(c.g), clip01(c.b), clip01(c.alpha)];
+    const v = [clamp01(c.r), clamp01(c.g), clamp01(c.b), clamp01(c.alpha)];
     if (type === 'uint8' || type === 'uint8_clamped') return Uint8Array.from(v, (x) => Math.round(x * 255));
     if (type === 'float32') return Float32Array.from(v);
     if (type === 'float64') return Float64Array.from(v);
@@ -118,22 +140,22 @@ const normalize = (input, type) => {
 /**
  * Replace a color's alpha channel with `op`.
  *
- * @param {*} cstr - color specifier
- * @param {Number} op - opacity in [0, 1], clipped to that range
+ * @param {*} cstr - Color specifier
+ * @param {Number} op - Opacity. Will be clamped to the range [0, 1].
  * @return {String} `rgb(...)` when the result is opaque, `rgba(...)` otherwise
  */
-const addOpacity = (cstr, op) => formatRgb({ ...parse(cstr), alpha: clip01(op) });
+const addOpacity = (cstr, op) => formatRgb({ ...parse(cstr), alpha: clamp01(op) });
 
 /**
  * Combine two colors into one apparent color by compositing `front` over `back`.
- * If `back` is missing or transparent, the module `background` is assumed behind it.
+ * If `back` is missing, the module `background` is assumed behind it.
  *
- * A translucent `back` is flattened against white, so a transparent
+ * A translucent or transparent `back` is flattened against white, so a transparent
  * paper_bgcolor is treated as a white page. Opaque backs are exact.
  *
- * @param {*} front - foreground color specifier
- * @param {*} back - background color specifier
- * @return {String} resulting `rgb(...)` string
+ * @param {*} front - Foreground color specifier
+ * @param {*} back - Background color specifier
+ * @return {String} Resulting `rgb(...)` string
  */
 const combine = (front, back) => {
     const fc = parse(front);
@@ -151,10 +173,10 @@ const combine = (front, back) => {
  * Linearly interpolate between two colors at a normalized position (0 to 1).
  * Ignores alpha; result is `factor * first + (1 - factor) * second`.
  *
- * @param {*} first - color specifier
- * @param {*} second - color specifier
- * @param {Number} factor - interpolation position in [0, 1]
- * @return {String} resulting `rgb(...)` string
+ * @param {*} first - Color specifier
+ * @param {*} second - Color specifier
+ * @param {Number} factor - Interpolation position in [0, 1]
+ * @return {String} Resulting `rgb(...)` string
  */
 const interpolate = (first, second, factor) => {
     const fc = parse(first);
@@ -168,21 +190,21 @@ const interpolate = (first, second, factor) => {
  * Shift a color's HSL lightness additively by `delta` percentage points.
  * Positive delta = lighter, negative = darker. Alpha is preserved.
  *
- * @param {*} cstr - color specifier
- * @param {Number} delta - lightness shift in HSL percentage points
- * @return {String} resulting color string
+ * @param {*} cstr - Color specifier
+ * @param {Number} delta - Lightness shift in HSL percentage points
+ * @return {String} Resulting `rgb(...)` string
  */
 const adjustLightness = (cstr, delta) => {
     const c = parse(cstr);
     const h = toHsl(c) || { mode: 'hsl', h: 0, s: 0, l: 0 };
-    return formatRgb(toRgb({ ...h, l: clip01((h.l * 100 + delta) / 100), alpha: c.alpha }));
+    return formatRgb(toRgb({ ...h, l: clamp01((h.l * 100 + delta) / 100), alpha: c.alpha }));
 };
 
 /**
  * WCAG contrast ratio between two colors, in [1, 21].
  *
- * @param {*} cstr1 - color specifier
- * @param {*} cstr2 - color specifier
+ * @param {*} cstr1 - Color specifier
+ * @param {*} cstr2 - Color specifier
  * @return {Number}
  */
 const wcagContrast = (cstr1, cstr2) => culoriWcagContrast(parse(cstr1), parse(cstr2));
@@ -195,44 +217,41 @@ const wcagContrast = (cstr1, cstr2) => culoriWcagContrast(parse(cstr1), parse(cs
  * `contrast` returns the more legible of the two whenever the caller supplies
  * no lighten or darken amount.
  *
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  * @return {Boolean}
  */
 const isDark = (cstr) => wcagContrast(cstr, background) > wcagContrast(cstr, defaultLine);
+
+// The two colors `contrast` falls back to, as rgb strings. This is needed because the
+// attributes could be hex and callers expect `rgb(...)`.
+const backgroundRgb = formatRgb(parse(background));
+const defaultLineRgb = formatRgb(parse(defaultLine));
 
 /**
  * Create a color that contrasts with `cstr`: dark colors are lightened,
  * light colors are darkened. Without `lightAmount` / `darkAmount` the
  * result goes all the way to the background or defaultLine.
  *
- * @param {*} cstr - color specifier
- * @param {Number} [lightAmount] - lighten percentage when cstr is dark
- * @param {Number} [darkAmount] - darken percentage when cstr is light
- * @return {String} resulting `rgb(...)` string
+ * @param {*} cstr - Color specifier
+ * @param {Number} [lightAmount] - Lighten percentage when cstr is dark
+ * @param {Number} [darkAmount] - Darken percentage when cstr is light
+ * @return {String} Resulting `rgb(...)` string
  */
 const contrast = (cstr, lightAmount, darkAmount) => {
     if (parse(cstr).alpha !== 1) cstr = combine(cstr, background);
 
-    const newColor = isDark(cstr)
-        ? lightAmount
-            ? adjustLightness(cstr, lightAmount)
-            : background
-        : darkAmount
-          ? adjustLightness(cstr, -darkAmount)
-          : defaultLine;
-
-    return formatRgb(parse(newColor));
+    if (isDark(cstr)) {
+        return lightAmount ? adjustLightness(cstr, lightAmount) : backgroundRgb;
+    } else {
+        return darkAmount ? adjustLightness(cstr, -darkAmount) : defaultLineRgb;
+    }
 };
 
 /**
  * Apply `stroke` and `stroke-opacity` styles to a D3 selection.
  *
- * A missing color paints opaque black. Shapes and annotations leave
- * `line.color` unset when the user gives none, and the outline still has to
- * show. Use `opacity` instead when a missing color means "nothing to paint".
- *
  * @param {Selection} s - D3 selection
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  */
 const stroke = (s, cstr) => {
     s.style({ stroke: rgb(cstr), 'stroke-opacity': parse(cstr).alpha });
@@ -241,10 +260,8 @@ const stroke = (s, cstr) => {
 /**
  * Apply `fill` and `fill-opacity` styles to a D3 selection.
  *
- * A missing color paints opaque black, the same as `stroke`.
- *
  * @param {Selection} s - D3 selection
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  */
 const fill = (s, cstr) => {
     s.style({ fill: rgb(cstr), 'fill-opacity': parse(cstr).alpha });
@@ -253,8 +270,8 @@ const fill = (s, cstr) => {
 /**
  * Test whether two color specifiers resolve to the same `rgb(...)` string.
  *
- * @param {*} cstr1 - color specifier
- * @param {*} cstr2 - color specifier
+ * @param {*} cstr1 - Color specifier
+ * @param {*} cstr2 - Color specifier
  * @return {Boolean}
  */
 const equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && rgb(cstr1) === rgb(cstr2));
@@ -262,18 +279,21 @@ const equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && rgb(cstr1) === rgb(cstr2))
 /**
  * Test whether a string is a valid color specifier (does not throw).
  *
- * @param {*} cstr
- * @return {Boolean}
+ * This is the only way to tell a color the module could not parse from one that
+ * is genuinely black, since every other function resolves both the same way.
+ *
+ * @param {*} cstr - Color specifier
+ * @return {Boolean} `false` for anything that is not a parseable color string
  */
-const isValid = (cstr) => typeof cstr === 'string' && toRgb(cstr.trim()) !== undefined;
+const isValid = (cstr) => toColor(cstr) !== undefined;
 
 /**
  * Brighten a color by adding a fixed amount to each RGB channel.
  * Unlike `adjustLightness`, this works in RGB space, not HSL. Alpha is preserved.
  *
- * @param {*} cstr - color specifier
- * @param {Number} [amount=10] - percent in [-100, 100]
- * @return {String} resulting `rgb(...)` / `rgba(...)` string
+ * @param {*} cstr - Color specifier
+ * @param {Number} [amount=10] - Percent in [-100, 100]
+ * @return {String} Resulting `rgb(...)` / `rgba(...)` string
  */
 const brighten = (cstr, amount) => {
     amount = amount === 0 ? 0 : amount || 10;
@@ -282,19 +302,19 @@ const brighten = (cstr, amount) => {
 
     return formatRgb({
         ...c,
-        r: clip01(c.r + adj),
-        g: clip01(c.g + adj),
-        b: clip01(c.b + adj)
+        r: clamp01(c.r + adj),
+        g: clamp01(c.g + adj),
+        b: clamp01(c.b + adj)
     });
 };
 
 /**
  * Mix two colors by `weight` percent (0 = all `cstr1`, 100 = all `cstr2`).
  *
- * @param {*} cstr1 - color specifier
- * @param {*} cstr2 - color specifier
- * @param {Number} weight - percent in [0, 100]
- * @return {String} resulting `rgb(...)` string
+ * @param {*} cstr1 - Color specifier
+ * @param {*} cstr2 - Color specifier
+ * @param {Number} weight - Percent in [0, 100]
+ * @return {String} Resulting `rgb(...)` string
  */
 const mix = (cstr1, cstr2, weight) => {
     const c1 = parse(cstr1);
@@ -303,9 +323,14 @@ const mix = (cstr1, cstr2, weight) => {
 
     // Scale the channel weight by the alpha difference, the same way Sass does.
     // A mix toward a transparent color then shifts the alpha without dragging
-    // the channels toward that color's meaningless rgb.
+    // the channels toward that color's meaningless rgb. Ported from libsass
+    // (via Qix-/color).
+    // https://sass-lang.com/documentation/modules/color/#mix
+    // https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
     const d = c2.alpha - c1.alpha;
     const w = 2 * p - 1;
+    // `1 + w * d` is zero only at the endpoints, where one color is fully opaque
+    // and the other fully transparent.
     const w2 = ((w * d === -1 ? w : (w + d) / (1 + w * d)) + 1) / 2;
     const w1 = 1 - w2;
     const blend = (x, y) => w1 * x + w2 * y;
@@ -323,9 +348,9 @@ const mix = (cstr1, cstr2, weight) => {
  * Pick the color from `colorList` with the highest contrast ratio against
  * `baseColor`. Defaults to choosing between black and white.
  *
- * @param {*} baseColor - color specifier to contrast against
- * @param {Array} [colorList=['#000', '#fff']] - candidate color specifiers
- * @return {String} resulting `rgb(...)` string
+ * @param {*} baseColor - Color specifier to contrast against
+ * @param {Array} [colorList=['#000', '#fff']] - Candidate color specifiers
+ * @return {String} Resulting `rgb(...)` string
  */
 const mostReadable = (baseColor, colorList = ['#000', '#fff']) => {
     let bestColor;
@@ -346,7 +371,7 @@ const mostReadable = (baseColor, colorList = ['#000', '#fff']) => {
  * Convert any color specifier to an `rgb(...)` or `rgba(...)` string,
  * preserving alpha. Use `rgb()` instead when alpha must be dropped.
  *
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  * @return {String}
  */
 const rgbaString = (cstr) => formatRgb(parse(cstr));
@@ -354,22 +379,21 @@ const rgbaString = (cstr) => formatRgb(parse(cstr));
 /**
  * Convert any color specifier to an uppercase `#RRGGBB` string. Alpha is dropped.
  *
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  * @return {String}
  */
 const hexString = (cstr) => formatHex(parse(cstr)).toUpperCase();
 
 /**
- * Channels as `[r, g, b, a]`, with `r`/`g`/`b` in [0, 255] and `a` in [0, 1].
- * An array rather than an object so callers cannot depend on the color library's
- * shape. Unrounded, since callers do further arithmetic.
+ * Returns the given color specifier as an `[r, g, b, a]` array, with `r`/`g`/`b`
+ * in [0, 255] and `a` in [0, 1]. Unrounded, since callers do further arithmetic.
  *
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  * @return {Number[]} `[r, g, b, a]`
  */
 const rgbaArray = (cstr) => {
     const c = parse(cstr);
-    return [clip01(c.r) * 255, clip01(c.g) * 255, clip01(c.b) * 255, clip01(c.alpha)];
+    return [clamp01(c.r) * 255, clamp01(c.g) * 255, clamp01(c.b) * 255, clamp01(c.alpha)];
 };
 
 /**
@@ -384,12 +408,12 @@ const rgbaArrayToString = ([r, g, b, alpha]) => formatRgb({ mode: 'rgb', r: r / 
 /**
  * WCAG relative luminance of a color, in [0, 1].
  *
- * @param {*} cstr - color specifier
+ * @param {*} cstr - Color specifier
  * @return {Number}
  */
 const luminosity = (cstr) => {
     const c = parse(cstr);
-    return wcagLuminance({ mode: 'rgb', r: clip01(c.r), g: clip01(c.g), b: clip01(c.b) });
+    return wcagLuminance({ mode: 'rgb', r: clamp01(c.r), g: clamp01(c.g), b: clamp01(c.b) });
 };
 
 module.exports = {
@@ -405,6 +429,7 @@ module.exports = {
     fill,
     hexString,
     interpolate,
+    isChannelArray,
     isDark,
     isValid,
     lightLine,
