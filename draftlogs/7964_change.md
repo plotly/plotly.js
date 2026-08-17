@@ -1,1 +1,1 @@
-- Return actual data values (rather than calcdata values) for `xvals` / `yvals` in `hoveranywhere` and `clickanywhere` events [[#7964](https://github.com/plotly/plotly.js/pull/7964)]
+- **Breaking**: Return actual data values (rather than calcdata values) for `xvals` / `yvals` in `hoveranywhere` and `clickanywhere` events. Date and category axes will now return strings rather than numeric values. Linear and log axis values remain unchanged. [[#7964](https://github.com/plotly/plotly.js/pull/7964)]
