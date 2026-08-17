@@ -155,12 +155,12 @@ exports.valObjectMeta = {
             'A string describing color.',
             'Supported formats:',
             "- hex (e.g. '#d3d3d3', '#d3d3d3aa')",
-            "- rgb (e.g. 'rgb(255, 0, 0)', 'rgb(255 0 0)')",
-            "- rgba (e.g. 'rgba(255, 0, 0, 0.5)', 'rgba(255 0 0 / 0.5)')",
-            "- hsl (e.g. 'hsl(0, 100%, 50%)')",
-            "- hsla (e.g. 'hsla(0, 100%, 50%, 0.5)')",
-            "- hwb (e.g. 'hwb(0, 0%, 0%)')",
-            '- named colors (full list: http://www.w3.org/TR/css3-color/#svg-color)'
+            "- rgb/rgba (e.g. 'rgb(255, 0, 0)', 'rgba(255 0 0 / 0.5)')",
+            "- hsl/hsla (e.g. 'hsl(0, 100%, 50%)', 'hsla(0 100% 50% / 0.5)')",
+            "- hwb (e.g. 'hwb(0 0% 0%)')",
+            "- lab/lch/oklab/oklch (e.g. 'oklch(0.7 0.15 180)')",
+            "- color (e.g. 'color(display-p3 1 0 0)')",
+            '- named colors (full list: https://www.w3.org/TR/css-color-4/#named-colors)'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt', 'arrayOk'],

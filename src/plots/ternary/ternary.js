@@ -592,7 +592,7 @@ proto.initInteractions = function() {
         };
         mins = mins0;
         span0 = _this.aaxis.range[1] - mins0.a;
-        lum = Color.color(_this.graphDiv._fullLayout[_this.id].bgcolor).luminosity();
+        lum = Color.luminosity(_this.graphDiv._fullLayout[_this.id].bgcolor);
         path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) + ', 0L' + _this.w + ',' + _this.h + 'Z';
         dimmed = false;
 

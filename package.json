@@ -74,9 +74,8 @@
     "@turf/centroid": "^7.3.5",
     "@turf/meta": "^7.3.5",
     "base64-arraybuffer": "^1.0.2",
-    "color": "^5.0.3",
-    "color-normalize": "^1.5.2",
     "country-iso-search": "^0.1.1",
+    "culori": "^4.0.2",
     "d3-force": "^1.2.1",
     "d3-format": "^1.4.5",
     "d3-geo": "^1.12.1",
@@ -158,9 +157,6 @@
     "virtual-webgl": "^1.0.7"
   },
   "overrides": {
-    "color": {
-      "color-string": "^2.1.4"
-    },
     "falafel": {
       "acorn": "^8.1.1"
     },

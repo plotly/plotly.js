@@ -19,6 +19,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
 var SLICES_TEXT_SELECTOR = '.sunburstlayer text.slicetext';
+const checkContrastingText = require('../assets/check_contrasting_text');
 
 function _mouseEvent(type, gd, v) {
     return function () {
@@ -3022,3 +3023,15 @@ describe('sunburst uniformtext', function () {
             .then(done, done.fail);
     });
 });
+
+checkContrastingText(
+    'sunburst',
+    {
+        labels: ['A', 'B', 'C'],
+        parents: ['', '', ''],
+        values: [3, 2, 1],
+        marker: { colors: ['#3D9970', '#3D9970', '#3D9970'] }
+    },
+    SLICES_TEXT_SELECTOR,
+    '#3D9970'
+);

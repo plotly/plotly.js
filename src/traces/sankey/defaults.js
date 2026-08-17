@@ -65,7 +65,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerceLink('hovertemplate');
     coerceLink('sort');
 
-    var darkBG = Color.color(layout.paper_bgcolor).luminosity() < 0.333;
+    var darkBG = Color.luminosity(layout.paper_bgcolor) < 0.333;
     var defaultLinkColor = darkBG ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)';
     var linkColor = coerceLink('color', defaultLinkColor);
 
@@ -73,16 +73,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         // hopefully the user-specified color is valid, but if not that can be caught elsewhere
         if (!Color.isValid(_linkColor)) return _linkColor;
 
-        const c = Color.color(_linkColor);
-        const alpha = c.alpha();
+        const alpha = Color.opacity(_linkColor);
 
         if (alpha <= 0.8) {
-            return c
-                .alpha(alpha + 0.2)
-                .rgb()
-                .string();
+            return Color.addOpacity(_linkColor, alpha + 0.2);
         } else {
-            return darkBG ? Color.brighten(c, 10) : Color.adjustLightness(c, -10).rgb().string();
+            return darkBG ? Color.brighten(_linkColor, 10) : Color.adjustLightness(_linkColor, -10);
         }
     }
 

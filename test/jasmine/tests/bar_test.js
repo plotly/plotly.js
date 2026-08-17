@@ -33,6 +33,7 @@ var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
 var BAR_TEXT_SELECTOR = '.bars .bartext';
+const checkContrastingText = require('../assets/check_contrasting_text');
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -3353,3 +3354,15 @@ describe('bar uniformtext', function() {
         .then(done, done.fail);
     });
 });
+
+checkContrastingText(
+    'bar',
+    {
+        y: [3, 2, 1],
+        text: ['A', 'B', 'C'],
+        textposition: 'inside',
+        marker: { color: '#3D9970' }
+    },
+    BAR_TEXT_SELECTOR,
+    '#3D9970'
+);
