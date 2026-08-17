@@ -168,6 +168,43 @@ describe('Test color:', function () {
         it('normalizes to four numeric channels', () => {
             BAD.forEach((v) => expect(Color.normalize(v)).toEqual([0, 0, 0, 1]));
         });
+
+        it('falls back rather than throwing on an unknown unit', () => {
+            ['rgb(0px 1 2)', 'hsl(0px 1% 2%)', 'oklch(0.7 0.15 180q)', 'lab(50% 40 59.5x)'].forEach((v) => {
+                expect(() => Color.rgbaString(v)).not.toThrow();
+                expect(Color.rgbaString(v)).toBe('rgb(0, 0, 0)', v);
+            });
+        });
+
+        it('rejects hex without a leading #', () => {
+            ['abc', 'abcd', 'abcdef', 'abcdefab', 'face', '012345'].forEach((v) =>
+                expect(Color.isValid(v)).toBe(false, v)
+            );
+        });
+
+        it('still accepts hex with a leading #', () => {
+            ['#abc', '#abcd', '#abcdef', '#abcdefab'].forEach((v) => expect(Color.isValid(v)).toBe(true, v));
+        });
+    });
+
+    describe('case insensitivity', () => {
+        it('accepts uppercase function names', () => {
+            expect(Color.rgbaString('RGB(255, 0, 0)')).toBe('rgb(255, 0, 0)');
+            expect(Color.rgbaString('RGBA(255, 0, 0, 0.5)')).toBe('rgba(255, 0, 0, 0.5)');
+            expect(Color.rgbaString('HSL(0, 100%, 50%)')).toBe('rgb(255, 0, 0)');
+            expect(Color.rgbaString('OKLCH(0.7 0.15 180)')).toBe('rgb(0, 188, 162)');
+        });
+
+        it('accepts uppercase angle units', () => {
+            expect(Color.rgbaString('hsl(0DEG 100% 50%)')).toBe('rgb(255, 0, 0)');
+            expect(Color.rgbaString('hsl(0.5TURN 100% 50%)')).toBe('rgb(0, 255, 255)');
+        });
+
+        it('accepts uppercase named colors and hex', () => {
+            expect(Color.rgbaString('RED')).toBe('rgb(255, 0, 0)');
+            expect(Color.rgbaString('TRANSPARENT')).toBe('rgba(0, 0, 0, 0)');
+            expect(Color.rgbaString('#ABCDEF')).toBe('rgb(171, 205, 239)');
+        });
     });
 
     // Per-point colors in the WebGL paths may be raw channels rather than a

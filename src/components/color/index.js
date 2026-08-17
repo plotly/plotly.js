@@ -26,7 +26,24 @@ const toHsl = converter('hsl');
 
 // `toRgb` for callers that may hand over something other than a color string.
 // Returns undefined for anything it cannot parse (the same as the converters).
-const toColor = (cstr) => (typeof cstr === 'string' ? toRgb(cstr.trim()) : undefined);
+const toColor = (cstr) => {
+    if (typeof cstr !== 'string') return undefined;
+
+    // Switch to lowercase because culori has a bug where it can't handle uppercase
+    // for some valid values (`RGB(1,2,3)`, `hsl(0DEG 100% 50%)`, etc.)
+    const s = cstr.trim().toLowerCase();
+
+    // Disallow hex colors without # to match CSS color spec (culori allows them)
+    // No CSS named color is spelled only in hex digits.
+    if (/^[0-9a-f]+$/.test(s)) return undefined;
+
+    // An unknown unit throws rather than returning undefined, as in `rgb(0px 1 2)`
+    try {
+        return toRgb(s);
+    } catch (e) {
+        return undefined;
+    }
+};
 
 // Clamp a 0-1 channel to gamut. culori returns out-of-range values for wide-gamut
 // inputs. Also maps undefined/NaN to 0 and Infinity to 1, matching the browser.
