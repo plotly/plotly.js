@@ -21,20 +21,37 @@ env:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    # Only run on manual dispatch, 
-    # OR if the parent run succeeded and was triggered by a PR from
-    # a branch in the main repo (not a fork)
+    permissions:
+      statuses: write
+    # Only run on manual dispatch,
+    # OR if the parent run succeeded and was triggered by a PR.
+    # Fork PRs run through so we can post a "skipped" commit status to the PR
+    # head and log why; the actual upload steps are guarded by fork-check so no
+    # dev build is published for fork PRs (they lack DEV_DEPLOY_APP access).
     if: |
           github.event_name == 'workflow_dispatch' ||
           (
-            github.event_name == 'workflow_run' && 
+            github.event_name == 'workflow_run' &&
             github.event.workflow_run.event == 'pull_request' &&
-            github.event.workflow_run.conclusion == 'success' &&
-            github.event.workflow_run.head_repository.full_name == github.repository
+            github.event.workflow_run.conclusion == 'success'
           )
     steps:
+      - name: Check if PR is from a fork
+        id: fork-check
+        env:
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -n "${HEAD_REPO}" ] && [ "${HEAD_REPO}" != "${REPO}" ]; then
+            echo "::notice::Dev-build upload skipped: PR is from a fork (${HEAD_REPO}). Dev builds are only uploaded for PRs from branches within ${REPO}. A maintainer can trigger a build manually via workflow_dispatch with the PR number as input."
+            echo "is_fork=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_fork=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Get required metadata (PR number, commit SHA, workflow run ID containing artifacts)
         id: get-metadata
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_EVENT_NAME: ${{ github.event_name }}
@@ -91,6 +108,7 @@ jobs:
 
       - name: Download build artifact
         id: download-artifact
+        if: steps.fork-check.outputs.is_fork == 'false'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: dist  # uploaded by publish-dist.yml > publish-dist
@@ -100,6 +118,7 @@ jobs:
 
       - name: Prepare folders
         id: setup-metadata
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
@@ -124,6 +143,7 @@ jobs:
 
       - name: Generate GitHub App token
         id: generate-token
+        if: steps.fork-check.outputs.is_fork == 'false'
         uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3  #v3.1.1
         with:
           client-id: ${{ vars.DEV_DEPLOY_APP_ID }}
@@ -132,6 +152,7 @@ jobs:
           repositories: plotly.js-dev-builds
 
       - name: Check out plotly.js-dev-builds repo
+        if: steps.fork-check.outputs.is_fork == 'false'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           repository: plotly/plotly.js-dev-builds
@@ -140,6 +161,7 @@ jobs:
 
       - name: Commit and push files
         id: commit-and-push
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
           SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
@@ -172,6 +194,7 @@ jobs:
           fi
 
       - name: Generate summary
+        if: steps.fork-check.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
           SHORT_SHA: ${{ steps.get-metadata.outputs.SHORT_SHA }}
@@ -182,3 +205,46 @@ jobs:
           echo "- Latest build for this PR: [${BASE_URL}/latest/plotly.min.js](${BASE_URL}/latest/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "- Build for this commit: [${BASE_URL}/${SHORT_SHA}/plotly.min.js](${BASE_URL}/${SHORT_SHA}/plotly.min.js)" >> $GITHUB_STEP_SUMMARY
           echo "The above links should start working a minute or two after this job completes." >> $GITHUB_STEP_SUMMARY
+
+      - name: Report dev-build outcome to PR head
+        # Post a commit status on the PR head SHA so a row appears in the PR
+        # merge-box widget. Statuses are keyed by (sha, context) with
+        # last-write-wins semantics, so a maintainer-triggered dispatch that
+        # follows an earlier "Skipped" status updates the same row in place.
+        if: |
+          always() && (
+            (github.event_name == 'workflow_run' && github.event.workflow_run.head_sha != '') ||
+            (github.event_name == 'workflow_dispatch' && steps.get-metadata.outputs.SHA != '')
+          )
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha || steps.get-metadata.outputs.SHA }}
+          IS_FORK: ${{ steps.fork-check.outputs.is_fork }}
+          PR_NUM: ${{ steps.get-metadata.outputs.PR_NUM }}
+          UPLOAD_OUTCOME: ${{ steps.commit-and-push.outcome }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          RUN_URL="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+          CONTRIBUTING_URL="https://github.com/${REPO}/blob/master/CONTRIBUTING.md#live-links-to-dev-builds"
+
+          if [ "${IS_FORK}" == "true" ]; then
+            STATE="success"
+            DESCRIPTION="Skipped — PR is from a fork. Ask a maintainer to trigger a build."
+            TARGET_URL="${CONTRIBUTING_URL}"
+          elif [ "${UPLOAD_OUTCOME}" == "success" ]; then
+            STATE="success"
+            DESCRIPTION="Latest dev builds for PR #${PR_NUM}"
+            TARGET_URL="https://plotly.github.io/plotly.js-dev-builds/${UPLOAD_DIR_NAME}/pr-${PR_NUM}/latest"
+          else
+            STATE="failure"
+            DESCRIPTION="Upload failed — see workflow run for details."
+            TARGET_URL="${RUN_URL}"
+          fi
+
+          jq -n \
+            --arg state "${STATE}" \
+            --arg description "${DESCRIPTION}" \
+            --arg target_url "${TARGET_URL}" \
+            '{state: $state, target_url: $target_url, description: $description, context: "Upload Dev Build"}' \
+            | gh api --method POST --input - "repos/${REPO}/statuses/${SHA}"

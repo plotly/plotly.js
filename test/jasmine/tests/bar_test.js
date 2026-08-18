@@ -1412,6 +1412,34 @@ describe('A bar plot', function() {
         .then(done, done.fail);
     });
 
+    it('should keep zero-value outside labels on the same side as negative bars', function(done) {
+        var data = [{
+            y: [-10, 0, -30],
+            type: 'bar',
+            text: ['a', 'zero', 'c'],
+            textposition: 'outside'
+        }];
+
+        Plotly.newPlot(gd, data).then(function() {
+            var traceNodes = getAllTraceNodes(gd);
+            var barNodes = getAllBarNodes(traceNodes[0]);
+            var foundTextNodes;
+
+            for(var i = 0; i < barNodes.length; i++) {
+                var barNode = barNodes[i];
+                var pathNode = barNode.querySelector('path');
+                var textNode = barNode.querySelector('text');
+                if(textNode) {
+                    foundTextNodes = true;
+                    assertTextIsBelowPath(textNode, pathNode);
+                }
+            }
+
+            expect(foundTextNodes).toBe(true);
+        })
+        .then(done, done.fail);
+    });
+
     it('should show bar texts (horizontal case)', function(done) {
         var data = [{
             x: [10, -20, 30],

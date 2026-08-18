@@ -554,6 +554,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     // get trace attributes
     var trace = cd[0].trace;
     var isHorizontal = trace.orientation === 'h';
+    var zeroBarDir = getZeroBarDir(cd, isHorizontal, xa, ya);
 
     var text = getText(fullLayout, cd, i, xa, ya);
 
@@ -707,7 +708,8 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
         transform = toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal: isHorizontal,
             constrained: constrained,
-            angle: angle
+            angle: angle,
+            zeroBarDir: zeroBarDir
         });
     } else {
         constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
@@ -957,7 +959,12 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
     var anchorX = 0;
     var anchorY = 0;
 
-    var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+    var dir;
+    if ((isHorizontal ? x0 === x1 : y0 === y1) && opts.zeroBarDir) {
+        dir = opts.zeroBarDir;
+    } else {
+        dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+    }
     if (isHorizontal) {
         targetX = x1 - dir * textpad;
         anchorX = dir * extrapad;
@@ -997,6 +1004,38 @@ function getText(fullLayout, cd, index, xa, ya) {
 function getTextPosition(trace, index) {
     var value = helpers.getValue(trace.textposition, index);
     return helpers.coerceEnumerated(attributeTextPosition, value);
+}
+
+function getZeroBarDir(cd, isHorizontal, xa, ya) {
+    var hasPositive = false;
+    var hasNegative = false;
+
+    for (var i = 0; i < cd.length; i++) {
+        var s = cd[i].s;
+
+        if (s > 0) {
+            hasPositive = true;
+        } else if (s < 0) {
+            hasNegative = true;
+        }
+
+        if (hasPositive && hasNegative) {
+            return 0;
+        }
+    }
+
+    var axis = isHorizontal ? xa : ya;
+    var positiveDir = -dirSign(axis.range[0], axis.range[1]);
+
+    if (!hasNegative) {
+        return positiveDir;
+    }
+
+    if (!hasPositive) {
+        return -positiveDir;
+    }
+
+    return 0;
 }
 
 function calcTexttemplate(fullLayout, cd, index, xa, ya) {

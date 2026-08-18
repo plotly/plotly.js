@@ -53,6 +53,17 @@ describe('number format', function() {
         { format: '0f', number: float, exp: '12345.678901'},
         { format: '1f', number: float, exp: '12345.678901'},
 
+        // sign flag with an explicit precision must not be dropped (was silently
+        // ignored because adjustFormat produced the invalid spec "~+.2f")
+        { format: '+.2f', number: float, exp: '+12345.68'},
+        { format: '+.0f', number: float, exp: '+12346'},
+        { format: '-.4f', number: float, exp: '12345.6789'},
+
+        // symbol-led specs ($, #) are left untrimmed
+        { format: '$f', number: 1.5, exp: '$1.500000'},
+        { format: '#f', number: 1.5, exp: '1.500000'},
+        { format: '$s', number: 1500, exp: '$1.50000k'},
+
         // space-filled and default sign
         { format: '-13', number: float, exp: '-12345.678901'},
         { format: '-14', number: float, exp: ' -12345.678901'},

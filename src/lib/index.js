@@ -19,8 +19,16 @@ lib.adjustFormat = function adjustFormat(formatStr) {
     if (/^\d%/.test(formatStr)) return '~%';
     if (/^\ds/.test(formatStr)) return '~s';
 
-    // try adding tilde to the start of format in order to trim
-    if (!/^[~,.0$]/.test(formatStr) && /[&fps]/.test(formatStr)) return '~' + formatStr;
+    // A d3-format spec may begin with a sign flag (+, -, (, space). Look past
+    // that prefix before deciding whether to trim, and reattach it: prepending
+    // the tilde to the whole string (e.g. "~+.2f") is an invalid spec that
+    // d3Format rejects, so "+.2f" used to be silently dropped.
+    var prefix = (formatStr.match(/^[+\-( ]?/) || [''])[0];
+    var rest = formatStr.slice(prefix.length);
+
+    // try adding tilde to trim trailing zeros; leave symbol-led specs ($, #)
+    // untrimmed, since the symbol isn't part of the prefix we stripped above
+    if (!/^[~,.0$#]/.test(rest) && /[&fps]/.test(rest)) return prefix + '~' + rest;
 
     return formatStr;
 };
