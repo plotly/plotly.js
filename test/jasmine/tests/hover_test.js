@@ -1827,6 +1827,42 @@ describe('hover info', function () {
                 })
                 .then(done, done.fail);
         });
+
+        it('should emit event data with the expected keys and values', function (done) {
+            var hoverData;
+            gd.on('plotly_hover', function (d) {
+                hoverData = d;
+            });
+
+            Promise.resolve()
+                .then(function () {
+                    _hoverNatural(gd, 250, 200);
+                })
+                .then(function () {
+                    expect(Object.keys(hoverData).sort()).toEqual(
+                        ['event', 'points', 'xaxes', 'yaxes', 'xvals', 'yvals', 'xPixel', 'yPixel'].sort()
+                    );
+
+                    expect(hoverData.event).not.toBe(null);
+                    var pt = hoverData.points[0];
+                    expect(Object.keys(pt).sort()).toEqual([
+                        'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                        'bbox', 'label', 'value',
+                        'x', 'y', 'xaxis', 'yaxis', 'xPixel', 'yPixel'
+                    ].sort());
+                    expect(pt.curveNumber).toEqual(0);
+                    expect(pt.pointNumber).toEqual(1);
+                    expect(pt.x).toEqual(2);
+                    expect(pt.y).toEqual(3);
+                    expect(hoverData.xvals).toEqual([2.2045454545454546]);
+                    expect(hoverData.yvals).toEqual([0.28708133971291905]);
+                    expect(hoverData.xaxes).toEqual([gd._fullLayout.xaxis]);
+                    expect(hoverData.yaxes).toEqual([gd._fullLayout.yaxis]);
+                    expect(hoverData.xPixel).toEqual(330);
+                    expect(hoverData.yPixel).toEqual(300);
+                })
+                .then(done, done.fail);
+        });
     });
 
     describe('overflowing hover labels', function () {
