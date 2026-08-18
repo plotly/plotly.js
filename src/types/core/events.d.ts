@@ -104,6 +104,9 @@ export interface PlotMouseEvent {
     points: PlotDatum[];
     /** The original DOM mouse event. */
     event: MouseEvent;
+    /** x and y pixel position of the mouse */
+    xPixel: number;
+    yPixel: number;
 }
 
 /** Payload for `plotly_hover` — augments `PlotMouseEvent` with axis values. */
