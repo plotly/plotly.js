@@ -487,6 +487,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
+        // Keep automargin from changing plot size while wheel zoom is still
+        // debouncing. The final dragTail relayout will release this guard.
+        gd._fullLayout._replotting = true;
+
         var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200);
         var gbb = mainplot.draglayer.select('.nsewdrag').node().getBoundingClientRect();
         var xfrac = (e.clientX - gbb.left) / gbb.width;
