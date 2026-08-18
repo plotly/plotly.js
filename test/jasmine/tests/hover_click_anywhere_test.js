@@ -6,7 +6,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 
-function makePlot(gd, layoutExtras = {}, traceExtras = {}, configExtras) {
+function makePlot(gd, traceExtras = {}, layoutExtras = {}, configExtras) {
     return Plotly.newPlot(
         gd,
         [
@@ -42,11 +42,12 @@ var dayEnd = new Date(2026, 5, 1);
 
 // the 300px-wide plot area spans exactly one day, so 0px is local midnight
 // and 150px is local noon, in any timezone
-function makeDatePlot(gd, layoutExtras) {
-    return makePlot(gd, Lib.extendFlat({ xaxis: { type: 'date', range: [dayStart, dayEnd] } }, layoutExtras), {
-        x: [dayStart, dayNoon],
-        y: [1, 3]
-    });
+function makeDatePlot(gd, traceExtras, layoutExtras) {
+    return makePlot(
+        gd,
+        Lib.extendFlat({ x: [dayStart, dayNoon], y: [1, 3] }, traceExtras),
+        Lib.extendFlat({ xaxis: { type: 'date', range: [dayStart, dayEnd] } }, layoutExtras)
+    );
 }
 
 describe('hoveranywhere', () => {
@@ -75,7 +76,7 @@ describe('hoveranywhere', () => {
     it('emits plotly_hover with coordinate data on empty space', (done) => {
         var hoverData;
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
 
@@ -111,7 +112,7 @@ describe('hoveranywhere', () => {
     it('still returns normal point data on traces', (done) => {
         var hoverData;
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
 
@@ -149,7 +150,7 @@ describe('hoveranywhere', () => {
     it('respects hovermode:false', (done) => {
         var hoverData;
 
-        makePlot(gd, { hoveranywhere: true, hovermode: false })
+        makePlot(gd, {}, { hoveranywhere: true, hovermode: false })
             .then(() => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
                 _hover(250, 50);
@@ -161,7 +162,7 @@ describe('hoveranywhere', () => {
     it('emits plotly_hover over an editable shape', (done) => {
         let hoverData;
 
-        makePlot(gd, {
+        makePlot(gd, {}, {
             hoveranywhere: true,
             shapes: [
                 {
@@ -209,6 +210,7 @@ describe('hoveranywhere', () => {
 
         makePlot(
             gd,
+            {},
             {
                 hoveranywhere: true,
                 shapes: [
@@ -222,7 +224,6 @@ describe('hoveranywhere', () => {
                     }
                 ]
             },
-            {},
             { edits: { shapePosition: true } }
         )
             .then(() => {
@@ -253,7 +254,7 @@ describe('hoveranywhere', () => {
     it('reports date axis positions as date strings', (done) => {
         var hoverData;
 
-        makeDatePlot(gd, { hoveranywhere: true })
+        makeDatePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
 
@@ -278,8 +279,8 @@ describe('hoveranywhere', () => {
 
         makePlot(
             gd,
-            { xaxis: { type: 'category' }, yaxis: { type: 'log', range: [1, 3] }, hoveranywhere: true },
-            { x: ['a', 'b', 'c'], y: [10, 20, 30] }
+            { x: ['a', 'b', 'c'], y: [10, 20, 30] },
+            { xaxis: { type: 'category' }, yaxis: { type: 'log', range: [1, 3] }, hoveranywhere: true }
         )
             .then(() => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
@@ -311,7 +312,7 @@ describe('clickanywhere', () => {
     it('emits plotly_click with empty points on empty space', (done) => {
         var clickData;
 
-        makePlot(gd, { clickanywhere: true })
+        makePlot(gd, {}, { clickanywhere: true })
             .then(() => {
                 gd.on('plotly_click', (d) => (clickData = d));
 
@@ -352,7 +353,7 @@ describe('clickanywhere', () => {
     it('emits plotly_click over an editable shape', (done) => {
         let clickData;
 
-        makePlot(gd, {
+        makePlot(gd, {}, {
             clickanywhere: true,
             shapes: [
                 {
@@ -396,6 +397,7 @@ describe('clickanywhere', () => {
 
         makePlot(
             gd,
+            {},
             {
                 clickanywhere: true,
                 shapes: [
@@ -409,7 +411,6 @@ describe('clickanywhere', () => {
                     }
                 ]
             },
-            {},
             { edits: { shapePosition: true } }
         )
             .then(() => {
@@ -438,7 +439,7 @@ describe('clickanywhere', () => {
     it('reports date axis positions as date strings', (done) => {
         var clickData;
 
-        makeDatePlot(gd, { clickanywhere: true })
+        makeDatePlot(gd, {}, { clickanywhere: true })
             .then(() => {
                 gd.on('plotly_click', (d) => (clickData = d));
 
