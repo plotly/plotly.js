@@ -26,7 +26,8 @@ unhover.wrapped = function(gd, evt, subplot) {
     if(gd._hoverAnywhereActive) {
         gd._hoverAnywhereActive = false;
 
-        if(evt && evt.target && !oldhoverdata) {
+        // Make sure hoveranywhere is still enabled
+        if(gd._fullLayout?.hoveranywhere && evt?.target && !oldhoverdata) {
             gd.emit('plotly_unhover', {
                 event: evt,
                 points: []
