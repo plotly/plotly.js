@@ -471,6 +471,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         if ('yval' in evt) yvalArray = helpers.flat(subplots, evt.yval);
         else yvalArray = helpers.p2c(yaArray, ypx);
 
+        // Save pointer position to gd so that it can be included in all hover/click event data,
+        // even when hoveranywhere and clickanywhere are not enabled
+        gd._hoverPointerX = evt.pointerX;
+        gd._hoverPointerY = evt.pointerY;
+
         if (!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             Lib.warn('Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
@@ -483,8 +488,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         gd._hoverYVals = yvalArray;
         gd._hoverXAxes = xaArray;
         gd._hoverYAxes = yaArray;
-        gd._hoverPointerX = evt.pointerX;
-        gd._hoverPointerY = evt.pointerY;
     }
 
     // the pixel distance to beat as a matching point
