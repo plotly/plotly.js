@@ -987,7 +987,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             xaxes: xaArray,
             yaxes: yaArray,
             xvals: helpers.c2dApply(xaArray, xvalArray),
-            yvals: helpers.c2dApply(yaArray, yvalArray)
+            yvals: helpers.c2dApply(yaArray, yvalArray),
             // Note: top-level xPixel/yPixel correspond to the pixel position of the cursor.
             // Inside `points` array, points[i].xPixel/yPixel correspond to the pixel position of the point itself.
             xPixel: evt.pointerX,
