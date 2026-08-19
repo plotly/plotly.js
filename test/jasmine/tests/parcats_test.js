@@ -307,7 +307,7 @@ describe('Basic parcats trace', function() {
             .then(done, done.fail);
     });
 
-    fit('should sort NaN color values after orderable values', function(done) {
+    it('should sort NaN color values after orderable values', function(done) {
         var trace = {
             type: 'parcats',
             dimensions: [
