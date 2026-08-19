@@ -162,7 +162,7 @@ describe('hoveranywhere', () => {
     it('reports cursor position in top-level xPixel/yPixel, and point position in point-level xPixel/yPixel', (done) => {
         var hoverData;
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_hover', (d) => (hoverData = d));
 
@@ -181,13 +181,24 @@ describe('hoveranywhere', () => {
     });
 
     it('respects hovermode:false', (done) => {
-        var hoverData;
+        var events = [];
+        var hoverData, unhoverData;
 
         makePlot(gd, {}, { hoveranywhere: true, hovermode: false })
             .then(() => {
-                gd.on('plotly_hover', (d) => (hoverData = d));
+                gd.on('plotly_hover', (d) => {
+                    events.push('hover');
+                    hoverData = d;
+                });
+                gd.on('plotly_unhover', (d) => {
+                    events.push('unhover');
+                    unhoverData = d;
+                });
                 _hover(250, 50);
+                _leavePlotArea();
                 expect(hoverData).toBeUndefined();
+                expect(unhoverData).toBeUndefined();
+                expect(events).toEqual([]);
             })
             .then(done, done.fail);
     });
@@ -196,7 +207,7 @@ describe('hoveranywhere', () => {
         var events = [];
         var unhoverData;
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_hover', () => events.push('hover'));
                 gd.on('plotly_unhover', (d) => {
@@ -218,7 +229,7 @@ describe('hoveranywhere', () => {
     it('emits only one unhover per departure from the plot area', (done) => {
         var events = [];
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_unhover', () => events.push('unhover'));
 
@@ -234,7 +245,7 @@ describe('hoveranywhere', () => {
     it('does not emit unhover while moving within empty space', (done) => {
         var events = [];
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_hover', () => events.push('hover'));
                 gd.on('plotly_unhover', () => events.push('unhover'));
@@ -252,7 +263,7 @@ describe('hoveranywhere', () => {
         var events = [];
         var unhoverData;
 
-        makePlot(gd, { hoveranywhere: true })
+        makePlot(gd, {}, { hoveranywhere: true })
             .then(() => {
                 gd.on('plotly_unhover', (d) => {
                     events.push('unhover');
