@@ -923,6 +923,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Leaf attribute
         if (val.valType) {
             const tsType = valTypeToTS(val, key);
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${tsType};`);
             continue;
         }
@@ -930,6 +931,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Subplot container — reference the named interface
         if (subplotKeyToName.has(key)) {
             const typeName = subplotKeyToName.get(key);
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${typeName};`);
             subplotEntries.push({ key, typeName });
             continue;
@@ -938,6 +940,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Linked-to-array container — reference as array
         if (arrayKeyToName.has(key)) {
             const typeName = arrayKeyToName.get(key);
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${typeName}[];`);
             continue;
         }
@@ -946,6 +949,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         const fp = containerFingerprint(val);
         const sharedName = sharedTypes.get(fp);
         if (sharedName) {
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${refName(sharedName, false)};`);
             continue;
         }
@@ -953,6 +957,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Inline container
         const nested = attrsToProperties(val, '        ', key, sharedTypes);
         if (nested.length > 0) {
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: {`);
             lines.push(...nested);
             lines.push(`    };`);
@@ -1163,8 +1168,8 @@ export function generateSchemaTypes(schema, outputPath) {
     chunks.push(' * narrow with the `type` discriminator before accessing trace-specific');
     chunks.push(' * attributes:');
     chunks.push(' *');
-    chunks.push(' *     if (trace.type === \'bar\') { trace.marker?.cornerradius }');
-    chunks.push(' *     if (trace.type === \'pie\') { trace.marker?.colors }');
+    chunks.push(" *     if (trace.type === 'bar') { trace.marker?.cornerradius }");
+    chunks.push(" *     if (trace.type === 'pie') { trace.marker?.colors }");
     chunks.push(' */');
     chunks.push('export type Data =');
     traceNames.forEach((traceName, i) => {
