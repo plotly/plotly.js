@@ -346,6 +346,17 @@ function linkModel(d, l, i) {
     };
 }
 
+// The link paths and their permanent labels are two joins over the same links,
+// so the models are built once per draw and shared between both selections.
+function linkModels(d) {
+    if(!d._linkModels) {
+        d._linkModels = d.graph.links
+            .filter(function(l) {return l.value;})
+            .map(linkModel.bind(null, d));
+    }
+    return d._linkModels;
+}
+
 function createCircularClosedPathString(link, arrowLen) {
     // Using coordinates computed by d3-sankey-circular
     var pathString = '';
@@ -550,6 +561,90 @@ function linkPath() {
     return path;
 }
 
+// Builds the permanent-label string for a link from textinfo / texttemplate.
+// Returns null when the feature is opted out, so that traces which do not use it
+// do no per-link work at all.
+function linkTextGetter(gd, trace) {
+    var linkAttr = trace.link;
+    var textinfo = linkAttr.textinfo;
+    var texttemplate = linkAttr.texttemplate;
+    var flags = (textinfo && textinfo !== 'none') ? textinfo.split('+') : [];
+    var hasTemplate = Array.isArray(texttemplate) ? texttemplate.length > 0 : !!texttemplate;
+    if(!flags.length && !hasTemplate) return null;
+
+    // the formatter depends on the trace only, so build it once per draw
+    var formatValue = Lib.numberFormat(linkAttr.valueformat);
+    var vSuf = linkAttr.valuesuffix;
+    var locale = gd._fullLayout._d3locale;
+
+    return function(l, i) {
+        var valueLabel = formatValue(l.value) + vSuf;
+
+        var tt = Array.isArray(texttemplate) ? texttemplate[i] : texttemplate;
+        if(tt) {
+            return Lib.texttemplateString({
+                template: tt,
+                labels: {valueLabel: valueLabel},
+                data: [{
+                    label: l.label,
+                    value: l.value,
+                    valueLabel: valueLabel,
+                    source: l.source.label,
+                    target: l.target.label,
+                    customdata: l.customdata
+                }, trace._meta],
+                locale: locale,
+                fallback: linkAttr.texttemplatefallback
+            });
+        }
+
+        if(!flags.length) return '';
+        var parts = [];
+        if(flags.indexOf('label') !== -1 && l.label) parts.push(l.label);
+        if(flags.indexOf('value') !== -1) parts.push(valueLabel);
+        return parts.join('<br>');
+    };
+}
+
+// Counter-transform that cancels the group matrix applied in sankeyTransform, so
+// the label glyphs always read left-to-right and upright. For every combination
+// the product (group matrix x this) is the identity:
+//   h + forward : matrix( 1  0 0 1) -> ''
+//   h + reversed: matrix(-1  0 0 1) -> scale(-1,1)
+//   v + forward : matrix( 0  1 1 0) -> scale(-1,1) rotate(90)
+//   v + reversed: matrix( 0 -1 1 0) -> rotate(90)
+// Shared by the node labels and the permanent link labels.
+function uprightTransform(d) {
+    if(d.horizontal) return d.reversed ? 'scale(-1,1)' : '';
+    return d.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
+}
+
+// Positions a permanent link label at the link midpoint (layout frame) and keeps
+// the glyphs upright. The midpoint stays in the layout frame: the enclosing
+// `.sankey` group already carries the orientation/direction transform, so the
+// coordinates themselves must not be mirrored here. The trailing translate runs
+// in the already uprighted frame and is therefore a plain screen-space shift: it
+// centres the whole text block on the anchor instead of its first baseline,
+// using the same block metric as the node labels.
+function linkLabelTransform(d) {
+    var l = d.link;
+    var midX, midY;
+    if(l.circular) {
+        // same anchor as the hover label (see hoverCenterPosition in plot.js)
+        midX = (l.circularPathData.leftInnerExtent + l.circularPathData.rightInnerExtent) / 2;
+        midY = l.circularPathData.verticalFullExtent;
+    } else {
+        midX = (l.source.x1 + l.target.x0) / 2;
+        midY = (l.y0 + l.y1) / 2;
+    }
+    var blockShift = l.trace.link.textfont.size *
+        (CAP_SHIFT - ((d.linkLabelLines || 1) - 1) * LINE_SPACING) / 2;
+
+    return strTranslate(midX, midY) +
+        uprightTransform(d.parent) +
+        strTranslate(0, blockShift);
+}
+
 function nodeModel(d, n) {
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
@@ -619,9 +714,11 @@ function updateNodeShapes(sankeyNode) {
     sankeyNode.call(updateNodePositions);
 }
 
-function updateShapes(sankeyNode, sankeyLink) {
+function updateShapes(sankeyNode, sankeyLink, sankeyLinkLabel) {
     sankeyNode.call(updateNodeShapes);
     sankeyLink.attr('d', linkPath());
+    // empty selection when the permanent labels are not opted in
+    sankeyLinkLabel.attr('transform', linkLabelTransform);
 }
 
 function sizeNode(rect) {
@@ -684,7 +781,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
         });
 }
 
-function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
+function attachDragHandler(sankeyNode, sankeyLink, sankeyLinkLabel, callbacks, gd) {
     var dragBehavior = d3.behavior.drag()
         .origin(function(d) {
             return {
@@ -713,7 +810,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
                 } else { // make a forceLayout if needed
                     attachForce(sankeyNode, forceKey, d, gd);
                 }
-                startForce(sankeyNode, sankeyLink, d, forceKey, gd);
+                startForce(sankeyNode, sankeyLink, sankeyLinkLabel, d, forceKey, gd);
             }
         })
 
@@ -739,7 +836,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
             saveCurrentDragPosition(d.node);
             if(d.arrangement !== 'snap') {
                 d.sankey.update(d.graph);
-                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+                updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink, sankeyLinkLabel);
             }
         })
 
@@ -775,7 +872,7 @@ function attachForce(sankeyNode, forceKey, d, gd) {
         .stop();
 }
 
-function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
+function startForce(sankeyNode, sankeyLink, sankeyLinkLabel, d, forceKey, gd) {
     window.requestAnimationFrame(function faster() {
         var i;
         for(i = 0; i < c.forceTicksPerFrame; i++) {
@@ -786,7 +883,7 @@ function startForce(sankeyNode, sankeyLink, d, forceKey, gd) {
         switchToSankeyFormat(nodes);
 
         d.sankey.update(d.graph);
-        updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink);
+        updateShapes(sankeyNode.filter(sameLayer(d)), sankeyLink, sankeyLinkLabel);
 
         if(d.forceLayouts[forceKey].alpha() > 0) {
             window.requestAnimationFrame(faster);
@@ -952,12 +1049,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.' + c.cn.sankeyLink)
-          .data(function(d) {
-              var links = d.graph.links;
-              return links
-                .filter(function(l) {return l.value;})
-                .map(linkModel.bind(null, d));
-          }, keyFun);
+          .data(linkModels, keyFun);
 
     sankeyLink
           .enter().append('path')
@@ -983,6 +1075,52 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .style('opacity', 0)
         .remove();
+
+    // Own group, appended between the links and the nodes: entering link paths
+    // of a later draw must not end up on top of already rendered labels.
+    var sankeyLinkLabelSet = sankey.selectAll('.' + c.cn.sankeyLinkLabelSet)
+        .data(repeat, keyFun);
+
+    sankeyLinkLabelSet.enter()
+        .append('g')
+        .classed(c.cn.sankeyLinkLabelSet, true)
+        .style('pointer-events', 'none');
+
+    var sankeyLinkLabel = sankeyLinkLabelSet.selectAll('.' + c.cn.sankeyLinkLabel)
+        .data(function(d) {
+            var getText = linkTextGetter(gd, d.trace);
+            if(!getText) return [];
+            var out = [];
+            linkModels(d).forEach(function(m) {
+                // pointNumber indexes the input arrays, so it is the one an
+                // arrayOk texttemplate has to be looked up with
+                var txt = getText(m.link, m.pointNumber);
+                if(!txt) return;
+                m.linkLabelText = txt;
+                out.push(m);
+            });
+            return out;
+        }, keyFun);
+
+    sankeyLinkLabel.enter()
+        .append('text')
+        .classed(c.cn.sankeyLinkLabel, true)
+        .attr('text-anchor', 'middle');
+
+    sankeyLinkLabel
+        .attr('data-notex', 1)
+        .text(function(d) { return d.linkLabelText; })
+        .each(function(d) {
+            var e = d3.select(this);
+            Drawing.font(e, d.link.trace.link.textfont);
+            svgTextUtils.convertToTspans(e, gd);
+            // cached for linkLabelTransform, which is re-applied on every drag
+            // frame and must not query the DOM there
+            d.linkLabelLines = svgTextUtils.lineCount(e);
+        })
+        .attr('transform', linkLabelTransform);
+
+    sankeyLinkLabel.exit().remove();
 
     var sankeyNodeSet = sankey.selectAll('.' + c.cn.sankeyNodeSet)
         .data(repeat, keyFun);
@@ -1016,7 +1154,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankeyNode
         .call(attachPointerEvents, sankey, callbacks.nodeEvents)
-        .call(attachDragHandler, sankeyLink, callbacks, gd); // has to be here as it binds sankeyLink
+        .call(attachDragHandler, sankeyLink, sankeyLinkLabel, callbacks, gd); // has to be here as it binds sankeyLink
 
     sankeyNode
         .transition()
@@ -1092,8 +1230,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
                 var posY = d.reversed
                     ? (d.visibleWidth + blockHeight) / 2
                     : (d.visibleWidth - blockHeight) / 2;
-                var flipV = d.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
-                return strTranslate(posY, pad) + flipV;
+                return strTranslate(posY, pad) + uprightTransform(d);
             }
 
             // horizontal: center along the node length, place just past the thickness edge.
@@ -1104,7 +1241,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             } else {
                 posX += d.visibleWidth;
             }
-            return strTranslate(posX, posY) + (d.reversed ? 'scale(-1,1)' : '');
+            return strTranslate(posX, posY) + uprightTransform(d);
         });
 
     nodeLabel

@@ -158,6 +158,72 @@ describe('sankey tests', function () {
                 .toBe(attributes.direction.dflt, 'invalid direction falls back to default');
         });
 
+        it('coerces the permanent link label values', function() {
+            var off = _supply({});
+
+            expect(off.link.textinfo)
+                .toBe(attributes.link.textinfo.dflt, 'link labels are off by default');
+            expect(off.link.texttemplate)
+                .toBe(attributes.link.texttemplate.dflt, 'empty texttemplate by default');
+
+            // The feature is opt-in: while it is off nothing downstream of it is
+            // coerced, so an untouched trace keeps exactly the fullData it had before.
+            expect(off.link.textfont).toBe(undefined, 'textfont not coerced while off');
+            expect(off.link.valueformat).toBe(undefined, 'valueformat not coerced while off');
+            expect(off.link.valuesuffix).toBe(undefined, 'valuesuffix not coerced while off');
+            expect(off.link.texttemplatefallback)
+                .toBe(undefined, 'texttemplatefallback not coerced while off');
+
+            ['label', 'value', 'label+value'].forEach(function(ti) {
+                expect(_supply({link: {textinfo: ti}}).link.textinfo)
+                    .toBe(ti, ti + ' is a valid textinfo');
+            });
+            expect(_supply({link: {textinfo: 'source+target'}}).link.textinfo)
+                .toBe(attributes.link.textinfo.dflt, 'invalid textinfo falls back to default');
+
+            expect(_supply({link: {texttemplate: '%{valueLabel}'}}).link.valueformat)
+                .not.toBe(undefined, 'texttemplate alone also opts in');
+
+            // texttemplatefallback only matters once a template can actually
+            // reference a missing variable, so textinfo alone must not pull it
+            // in - only texttemplate does, and an explicit value wins over the
+            // attribute default.
+            expect(_supply({link: {textinfo: 'value'}}).link.texttemplatefallback)
+                .toBe(undefined, 'textinfo alone does not coerce texttemplatefallback');
+            expect(_supply({link: {texttemplate: '%{valueLabel}'}}).link.texttemplatefallback)
+                .toBe(attributes.link.texttemplatefallback.dflt, 'texttemplate opts texttemplatefallback in');
+            expect(_supply({link: {texttemplate: '%{nope}', texttemplatefallback: 'n/a'}}).link.texttemplatefallback)
+                .toBe('n/a', 'an explicit texttemplatefallback wins');
+        });
+
+        it('falls back to the trace level formatting for permanent link labels', function() {
+            var layout = {font: {family: 'Arial', size: 11}};
+            var traceIn = {
+                valueformat: '.0f',
+                valuesuffix: 'TWh',
+                link: {textinfo: 'value'}
+            };
+
+            var inherited = _supplyWithLayout(traceIn, layout);
+            expect(inherited.link.valueformat).toBe('.0f', 'inherits trace valueformat');
+            expect(inherited.link.valuesuffix).toBe('TWh', 'inherits trace valuesuffix');
+            expect(inherited.link.textfont.family).toBe('Arial', 'inherits trace textfont');
+
+            var explicit = _supplyWithLayout(
+                Lib.extendDeep({}, traceIn, {
+                    link: {
+                        valueformat: '.2f',
+                        valuesuffix: ' GW',
+                        textfont: {family: 'Georgia'}
+                    }
+                }),
+                layout
+            );
+            expect(explicit.link.valueformat).toBe('.2f', 'link valueformat wins');
+            expect(explicit.link.valuesuffix).toBe(' GW', 'link valuesuffix wins');
+            expect(explicit.link.textfont.family).toBe('Georgia', 'link textfont wins');
+        });
+
         it("'Sankey' layout dependent specification should have proper types", function () {
             var fullTrace = _supplyWithLayout(
                 {},
@@ -1694,6 +1760,256 @@ describe('sankey tests', function () {
                     return Plotly.restyle(gd, 'node.hoverinfo', 'skip');
                 })
                 .then(assertNoHoverEvents('node'))
+                .then(done, done.fail);
+        });
+    });
+
+    describe('permanent link labels', function() {
+        var gd;
+
+        // A link that exists in every variant of the energy mock and is neither
+        // circular nor the first one in the list.
+        var SOURCE = 'Thermal generation';
+        var TARGET = 'Losses';
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(function() {
+            Plotly.purge(gd);
+            destroyGraphDiv();
+        });
+
+        // Screen-space bounding rect for a link, identified by its source and
+        // target labels (same idea as the helper in the hover label suite).
+        function rectForLink(sourceLabel, targetLabel) {
+            var rect;
+            d3SelectAll('.sankey-link').each(function(d) {
+                if(d.link.source.label === sourceLabel && d.link.target.label === targetLabel) {
+                    rect = this.getBoundingClientRect();
+                }
+            });
+            if(!rect) throw new Error('link not found: ' + sourceLabel + ' -> ' + targetLabel);
+
+            return rect;
+        }
+
+        function rectForLinkLabel(sourceLabel, targetLabel) {
+            var rect;
+            d3SelectAll('.sankey-link-label').each(function(d) {
+                if(d.link.source.label === sourceLabel && d.link.target.label === targetLabel) {
+                    rect = this.getBoundingClientRect();
+                }
+            });
+            if(!rect) throw new Error('link label not found: ' + sourceLabel + ' -> ' + targetLabel);
+
+            return rect;
+        }
+
+        function plotWith(patch) {
+            var fig = Lib.extendDeep({}, mock);
+            Lib.extendDeep(fig.data[0], patch);
+            return Plotly.newPlot(gd, fig);
+        }
+
+        it('only renders link labels when they are opted in', function(done) {
+            plotWith({})
+                .then(function() {
+                    expect(d3SelectAll('.sankey-link-label').size())
+                        .toBe(0, 'no labels by default');
+
+                    return Plotly.restyle(gd, 'link.textinfo', 'value');
+                })
+                .then(function() {
+                    // Labels and link paths are built from the same filtered
+                    // `graph.links` list, so the counts have to agree.
+                    expect(d3SelectAll('.sankey-link-label').size())
+                        .toBe(d3SelectAll('.sankey-link').size(), 'one label per drawn link');
+
+                    return Plotly.restyle(gd, 'link.textinfo', 'none');
+                })
+                .then(function() {
+                    // No leftover empty <text> nodes - they would still show up
+                    // in the SVG/PNG export.
+                    expect(d3SelectAll('.sankey-link-label').size())
+                        .toBe(0, 'labels removed again');
+                })
+                .then(done, done.fail);
+        });
+
+        it('formats the label text from textinfo and texttemplate', function(done) {
+            function textFor(sourceLabel, targetLabel) {
+                var txt;
+                d3SelectAll('.sankey-link-label').each(function(d) {
+                    if(d.link.source.label === sourceLabel && d.link.target.label === targetLabel) {
+                        txt = d3Select(this).text();
+                    }
+                });
+                return txt;
+            }
+
+            plotWith({valueformat: '.0f', valuesuffix: 'TWh', link: {textinfo: 'value'}})
+                .then(function() {
+                    expect(textFor(SOURCE, TARGET))
+                        .toBe('787TWh', 'value formatted with the trace level format');
+
+                    return Plotly.restyle(gd, 'link.texttemplate', '%{source}/%{target}: %{valueLabel}');
+                })
+                .then(function() {
+                    expect(textFor(SOURCE, TARGET))
+                        .toBe(SOURCE + '/' + TARGET + ': 787TWh', 'texttemplate overrides textinfo');
+
+                    // An empty entry in an arrayOk texttemplate falls back to
+                    // textinfo for that link alone - it does not hide the label.
+                    // Leaving a single link unlabeled is only possible with
+                    // textinfo 'none'. Pure string logic, so it is asserted here
+                    // rather than in an image baseline.
+                    var fd = gd._fullData[0];
+                    var srcIdx = fd.node.label.indexOf(SOURCE);
+                    var tgtIdx = fd.node.label.indexOf(TARGET);
+                    var perLink = fd.link.value.map(function(_, i) {
+                        return (fd.link.source[i] === srcIdx && fd.link.target[i] === tgtIdx) ?
+                            '' : 'templated';
+                    });
+
+                    return Plotly.restyle(gd, {'link.texttemplate': [perLink]});
+                })
+                .then(function() {
+                    expect(textFor(SOURCE, TARGET))
+                        .toBe('787TWh', 'empty template entry falls back to textinfo');
+                    expect(textFor('Solid', 'Industry'))
+                        .toBe('templated', 'other links still use the template');
+                })
+                .then(done, done.fail);
+        });
+
+        it('formats with the layout locale and resolves meta and the fallback', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+            fig.layout.separators = ',.';
+            Lib.extendDeep(fig.data[0], {
+                meta: ['GWh'],
+                link: {
+                    texttemplate: '%{value:,.2f} %{meta[0]} %{notAVariable}',
+                    texttemplatefallback: 'n/a'
+                }
+            });
+
+            Plotly.newPlot(gd, fig)
+                .then(function() {
+                    var texts = [];
+                    d3SelectAll('.sankey-link-label').each(function() {
+                        texts.push(d3Select(this).text());
+                    });
+
+                    expect(texts.length).toBeGreaterThan(0, 'labels were drawn');
+                    texts.forEach(function(t) {
+                        // ',.' swaps the decimal and thousands separators, which
+                        // only reaches d3-format if _d3locale is handed to
+                        // Lib.texttemplateString. %{meta[0]} likewise only
+                        // resolves if trace._meta is part of its data array, and
+                        // an unknown variable has to hit the fallback rather than
+                        // rendering the string 'undefined'.
+                        expect(t).toMatch(/^[\d.]+,\d{2} GWh n\/a$/);
+                    });
+                })
+                .then(done, done.fail);
+        });
+
+        it('keeps link labels upright and centred per orientation and direction', function(done) {
+            function assertUprightAndCentred(msg) {
+                // The labels live inside the .sankey group and therefore inherit the
+                // matrix from sankeyTransform. uprightTransform has to cancel it exactly,
+                // so the glyphs' own screen matrix is the identity - without that the
+                // text renders mirrored (reversed) or rotated (vertical).
+                var ctm = d3Select('.sankey-link-label').node().getScreenCTM();
+                expect(ctm.a).toBeCloseTo(1, 3, msg + ': no x mirroring');
+                expect(ctm.b).toBeCloseTo(0, 3, msg + ': no rotation/skew');
+                expect(ctm.c).toBeCloseTo(0, 3, msg + ': no rotation/skew');
+                expect(ctm.d).toBeCloseTo(1, 3, msg + ': no y mirroring');
+
+                // ... while the anchor still sits on the midpoint of its own link.
+                // linkLabelTransform deliberately does *not* mirror the coordinates
+                // (the group transform already does); a label that stayed glued to
+                // the un-mirrored anchor would break this invariant.
+                var link = rectForLink(SOURCE, TARGET);
+                var label = rectForLinkLabel(SOURCE, TARGET);
+                expect(label.left + label.width / 2)
+                    .toBeCloseTo(link.left + link.width / 2, -1, msg + ': centred in x');
+                expect(label.top + label.height / 2)
+                    .toBeCloseTo(link.top + link.height / 2, -1, msg + ': centred in y');
+            }
+
+            function plotOriented(orientation, direction) {
+                return plotWith({
+                    orientation: orientation,
+                    direction: direction,
+                    link: {textinfo: 'value'}
+                }).then(function() {
+                    // Guard against a vacuously passing test: the assertions above are
+                    // only meaningful if the group transform really was applied.
+                    expect(d3Select('.sankey').attr('transform'))
+                        .toContain(expectedMatrix[orientation + '-' + direction]);
+                    assertUprightAndCentred(orientation + ' + ' + direction);
+                });
+            }
+
+            var expectedMatrix = {
+                'h-forward': 'matrix(1 0 0 1 0 0)',
+                'h-reversed': 'matrix(-1 0 0 1 0 0)',
+                'v-forward': 'matrix(0 1 1 0 0 0)',
+                'v-reversed': 'matrix(0 -1 1 0 0 0)'
+            };
+
+            plotOriented('h', 'forward')
+                .then(function() { return plotOriented('h', 'reversed'); })
+                .then(function() { return plotOriented('v', 'forward'); })
+                .then(function() { return plotOriented('v', 'reversed'); })
+                .then(done, done.fail);
+        });
+
+        it('moves the link labels along when a node is dragged', function(done) {
+            var nodeId = 4; // node with label 'Solid'
+            var before;
+
+            plotWith({arrangement: 'freeform', link: {textinfo: 'value'}})
+                .then(function() {
+                    before = rectForLinkLabel('Solid', 'Industry');
+
+                    var node = document.getElementsByClassName('sankey-node').item(nodeId);
+                    return drag({node: node, dpos: [0, 100], nsteps: 10, timeDelay: 0});
+                })
+                .then(function() {
+                    // updateShapes re-applies linkLabelTransform on every drag frame,
+                    // so the label has to travel with the link it belongs to.
+                    var after = rectForLinkLabel('Solid', 'Industry');
+                    expect(after.top).toBeGreaterThan(before.top + 20, 'label followed the drag');
+
+                    var link = rectForLink('Solid', 'Industry');
+                    expect(after.top + after.height / 2)
+                        .toBeCloseTo(link.top + link.height / 2, -1, 'still centred on its link');
+                })
+                .then(done, done.fail);
+        });
+
+        it('keeps the link labels on their links while a snap layout settles', function(done) {
+            var nodeId = 4; // node with label 'Solid'
+
+            // Unlike freeform, snap keeps ticking a force simulation after the
+            // drop; startForce calls updateShapes on every tick, so the labels
+            // have to stay glued to their links through that as well, not just
+            // through the drag itself.
+            plotWith({arrangement: 'snap', link: {textinfo: 'value'}})
+                .then(function() {
+                    var node = document.getElementsByClassName('sankey-node').item(nodeId);
+                    return drag({node: node, dpos: [0, 100], nsteps: 10, timeDelay: 2000});
+                })
+                .then(function() {
+                    var link = rectForLink('Solid', 'Industry');
+                    var label = rectForLinkLabel('Solid', 'Industry');
+                    expect(label.top + label.height / 2)
+                        .toBeCloseTo(link.top + link.height / 2, -1, 'still centred on its link once settled');
+                })
                 .then(done, done.fail);
         });
     });

@@ -1,0 +1,43 @@
+{
+  "data": [
+    {
+      "domain": { "x": [0, 0.45] },
+      "type": "sankey",
+      "node": {
+        "label": ["0", "1", "2", "3", "4", "5"],
+        "color": "gray"
+      },
+      "link": {
+        "source": [0, 1, 4, 2, 1, 0],
+        "target": [1, 4, 5, 4, 3, 5],
+        "value": [4, 2, 3, 1, 2, 0],
+        "label": ["a", "b", "", "d", "e", "zero"],
+        "textinfo": "label"
+      }
+    },
+    {
+      "domain": { "x": [0.55, 1] },
+      "type": "sankey",
+      "valueformat": ".0f",
+      "valuesuffix": " TWh",
+      "node": {
+        "label": ["0", "1", "2", "3", "4", "5"],
+        "color": "gray"
+      },
+      "link": {
+        "source": [0, 1, 4, 2, 1],
+        "target": [1, 4, 5, 4, 3],
+        "value": [4, 2, 3, 1, 2],
+        "label": ["a", "b", "c", "d", "e"],
+        "textinfo": "label+value",
+        "texttemplate": "%{label} = %{valueLabel}"
+      }
+    }
+  ],
+  "layout": {
+    "title": { "text": "Permanent link labels: textinfo label only (left) vs texttemplate overriding textinfo (right)" },
+    "width": 1000,
+    "height": 600,
+    "showlegend": false
+  }
+}
