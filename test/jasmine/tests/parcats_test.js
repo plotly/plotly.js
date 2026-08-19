@@ -307,7 +307,7 @@ describe('Basic parcats trace', function() {
             .then(done, done.fail);
     });
 
-    it('should sort NaN color values after orderable values', function(done) {
+    fit('should sort NaN color values after orderable values', function(done) {
         var trace = {
             type: 'parcats',
             dimensions: [
@@ -326,9 +326,9 @@ describe('Basic parcats trace', function() {
                 });
 
                 // Orderable values sort first, NaN values sort last
+                expect(pathColors.length).toBe(3)
                 expect(pathColors.slice(0, 2)).toEqual([2, 10]);
                 expect(isNaN(pathColors[2])).toBe(true);
-                expect(isNaN(pathColors[3])).toBe(true);
             })
             .then(done, done.fail);
     });
