@@ -15929,10 +15929,30 @@ export interface Layout {
         opacity?: number;
     };
     annotations?: Annotation[];
+    /**
+     * Determines whether or not a layout width or height that has been left undefined by the user is initialized on each relayout. Note that, regardless of this attribute, an undefined layout width or height is always initialized on the first call to plot.
+     * @default false
+     */
     autosize?: boolean;
+    /**
+     * Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. This is the default value; however it could be overridden for individual axes.
+     * @default 'convert types'
+     */
     autotypenumbers?: 'convert types' | 'strict';
+    /**
+     * Sets the default calendar system to use for interpreting and displaying dates throughout the plot.
+     * @default 'gregorian'
+     */
     calendar?: Calendar;
+    /**
+     * If true, `plotly_click` events will fire for any click position within the plot area, not just over traces. When clicking where there is no trace data, the event will have an empty `points` array but will include `xvals` and `yvals` with click coordinates in data space.
+     * @default false
+     */
     clickanywhere?: boolean;
+    /**
+     * Determines the mode of single click interactions. *event* is the default value and emits the `plotly_click` event. In addition this mode emits the `plotly_selected` event in drag modes *lasso* and *select*, but with no event data attached (kept for compatibility reasons). The *select* flag enables selecting single data points via click. This mode also supports persistent selections, meaning that pressing Shift while clicking, adds to / subtracts from an existing selection. *select* with `hovermode`: *x* can be confusing, consider explicitly setting `hovermode`: *closest* when using this feature. Selection events are sent accordingly as long as *event* flag is set as well. When the *event* flag is missing, `plotly_click` and `plotly_selected` events are not fired.
+     * @default 'event'
+     */
     clickmode?: 'event' | 'select' | 'none' | (string & {});
     coloraxis?: ColorAxis;
     colorscale?: {
@@ -15952,11 +15972,23 @@ export interface Layout {
          */
         sequentialminus?: ColorScale;
     };
+    /**
+     * Sets the default trace colors.
+     * @default ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]
+     */
     colorway?: Color[];
+    /** Placeholder for exporting automargin-impacting values namely `margin.t`, `margin.b`, `margin.l` and `margin.r` in *full-json* mode. */
     computed?: any;
+    /** If provided, a changed value tells `Plotly.react` that one or more data arrays has changed. This way you can modify arrays in-place rather than making a complete new copy for an incremental change. If NOT provided, `Plotly.react` assumes that data arrays are being treated as immutable, thus any data array with a different identity from its predecessor contains new data. */
     datarevision?: any;
+    /**
+     * Determines the mode of drag interactions. *select* and *lasso* apply only to scatter traces with markers or text. *orbit* and *turntable* apply only to 3D scenes.
+     * @default 'zoom'
+     */
     dragmode?: 'zoom' | 'pan' | 'select' | 'lasso' | 'drawclosedpath' | 'drawopenpath' | 'drawline' | 'drawrect' | 'drawcircle' | 'orbit' | 'turntable' | false;
+    /** Controls persistence of user-driven changes in `editable: true` configuration, other than trace names and axis titles. Defaults to `layout.uirevision`. */
     editrevision?: any;
+    /** Sets the global font. Note that fonts used in traces and other layout components inherit from the global font. */
     font?: Font;
     geo?: GeoLayout;
     grid?: {
@@ -16019,8 +16051,22 @@ export interface Layout {
          */
         yside?: 'left' | 'left plot' | 'right plot' | 'right';
     };
+    /**
+     * Sets the plot's height (in px).
+     * @default 450
+     * Minimum: 10
+     */
     height?: number;
+    /**
+     * If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space.
+     * @default false
+     */
     hoveranywhere?: boolean;
+    /**
+     * Sets the default distance (in pixels) to look for data to add hover labels (-1 means no cutoff, 0 means no looking for data). This is only a real distance for hovering on point-like objects, like scatter points. For area-like objects (bars, scatter fills, etc) hovering is on inside the area and off outside, but these objects will not supersede hover on point-like objects in case of conflict.
+     * @default 20
+     * Minimum: -1
+     */
     hoverdistance?: number;
     hoverlabel?: {
         /**
@@ -16048,8 +16094,20 @@ export interface Layout {
          */
         showarrow?: boolean;
     };
+    /**
+     * Determines the mode of hover interactions. If *closest*, a single hoverlabel will appear for the *closest* point within the `hoverdistance`. If *x* (or *y*), multiple hoverlabels will appear for multiple points at the *closest* x- (or y-) coordinate within the `hoverdistance`, with the caveat that no more than one hoverlabel will appear per trace. If *x unified* (or *y unified*), a single hoverlabel will appear multiple points at the closest x- (or y-) coordinate within the `hoverdistance` with the caveat that no more than one hoverlabel will appear per trace. In this mode, spikelines are enabled by default perpendicular to the specified axis. If false, hover interactions are disabled.
+     * @default 'closest'
+     */
     hovermode?: 'x' | 'y' | 'closest' | false | 'x unified' | 'y unified';
+    /**
+     * Determines the order of items shown in unified hover labels. If *trace*, items are sorted by trace index. If *value descending*, items are sorted by value from largest to smallest. If *value ascending*, items are sorted by value from smallest to largest. Only applies when `hovermode` is *x unified* or *y unified*.
+     * @default 'trace'
+     */
     hoversort?: 'trace' | 'value descending' | 'value ascending';
+    /**
+     * Determines expansion of hover effects to other subplots If *single* just the axis pair of the primary point is included without overlaying subplots. If *overlaying* all subplots using the main axis and occupying the same space are included. If *axis*, also include stacked subplots using the same axis when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.
+     * @default 'overlaying'
+     */
     hoversubplots?: 'single' | 'overlaying' | 'axis';
     images?: LayoutImage[];
     legend?: Legend;
@@ -16091,8 +16149,19 @@ export interface Layout {
          */
         t?: number;
     };
+    /** Assigns extra meta information that can be used in various `text` attributes. Attributes such as the graph, axis and colorbar `title.text`, annotation `text` `trace.name` in legend items, `rangeselector`, `updatemenus` and `sliders` `label` text all support `meta`. One can access `meta` fields using template strings: `%{meta[i]}` where `i` is the index of the `meta` item in question. `meta` can also be an object for example `{key: value}` which can be accessed %{meta[key]}. */
     meta?: any;
+    /**
+     * Minimum height of the plot with margin.automargin applied (in px)
+     * @default 64
+     * Minimum: 2
+     */
     minreducedheight?: number;
+    /**
+     * Minimum width of the plot with margin.automargin applied (in px)
+     * @default 64
+     * Minimum: 2
+     */
     minreducedwidth?: number;
     modebar?: {
         /** Sets the color of the active or hovered on icons in the modebar. */
@@ -16241,19 +16310,40 @@ export interface Layout {
          */
         visible?: true | false | 'legendonly';
     };
+    /**
+     * Sets the background color of the paper where the graph is drawn.
+     * @default '#fff'
+     */
     paper_bgcolor?: Color;
+    /**
+     * Sets the background color of the plotting area in-between x and y axes.
+     * @default '#fff'
+     */
     plot_bgcolor?: Color;
     polar?: PolarLayout;
     scene?: Scene;
+    /**
+     * When `dragmode` is set to *select*, this limits the selection of the drag to horizontal, vertical or diagonal. *h* only allows horizontal selection, *v* only vertical, *d* only diagonal and *any* sets no limit.
+     * @default 'any'
+     */
     selectdirection?: 'h' | 'v' | 'd' | 'any';
+    /** Controls persistence of user-driven changes in selected points from all traces. */
     selectionrevision?: any;
     selections?: LayoutSelection[];
+    /** Sets the decimal and thousand separators. For example, *. * puts a '.' before decimals and a space between thousands. In English locales, dflt is *.,* but other locales may alter this default. */
     separators?: string;
     shapes?: Shape[];
+    /** Determines whether or not a legend is drawn. Default is `true` if there is a trace to show and any of these: a) Two or more traces would by default be shown in the legend. b) One pie trace is shown in the legend. c) One trace is explicitly given with `showlegend: true`. */
     showlegend?: boolean;
     sliders?: Slider[];
     smith?: SmithLayout;
+    /**
+     * Sets the default distance (in pixels) to look for data to draw spikelines to (-1 means no cutoff, 0 means no looking for data). As with hoverdistance, distance does not apply to area-like objects. In addition, some objects can be hovered on but will not generate spikelines, such as scatter fills.
+     * @default -1
+     * Minimum: -1
+     */
     spikedistance?: number;
+    /** Default attributes to be applied to the plot. Templates can be created from existing plots using `Plotly.makeTemplate`, or created manually. They should be objects with format: `{layout: layoutTemplate, data: {[type]: [traceTemplate, ...]}, ...}` `layoutTemplate` and `traceTemplate` are objects matching the attribute structure of `layout` and a data trace.  Trace templates are applied cyclically to traces of each type. Container arrays (eg `annotations`) have special handling: An object ending in `defaults` (eg `annotationdefaults`) is applied to each array item. But if an item has a `templateitemname` key we look in the template array for an item with matching `name` and apply that instead. If no matching `name` is found we mark the item invisible. Any named template item not referenced is appended to the end of the array, so you can use this for a watermark annotation or a logo image, for example. To omit one of these items on the plot, make an item with matching `templateitemname` and `visible: false`. */
     template?: any;
     ternary?: TernaryLayout;
     title?: {
@@ -16323,7 +16413,9 @@ export interface Layout {
          */
         yref?: YRef;
     };
+    /** Sets transition options used during Plotly.react updates. */
     transition?: Transition;
+    /** Used to allow user interactions with the plot to persist after `Plotly.react` calls that are unaware of these interactions. If `uirevision` is omitted, or if it is given and it changed from the previous `Plotly.react` call, the exact new figure is used. If `uirevision` is truthy and did NOT change, any attribute that has been affected by user interactions and did not receive a different value in the new figure will keep the interaction value. `layout.uirevision` attribute serves as the default for `uirevision` attributes in various sub-containers. For finer control you can set these sub-attributes directly. For example, if your app separately controls the data on the x and y axes you might set `xaxis.uirevision=*time*` and `yaxis.uirevision=*cost*`. Then if only the y data is changed, you can update `yaxis.uirevision=*quantity*` and the y axis range will reset but the x axis range will retain any user-driven zoom. */
     uirevision?: any;
     uniformtext?: {
         /**
@@ -16339,6 +16431,11 @@ export interface Layout {
         mode?: false | 'hide' | 'show';
     };
     updatemenus?: UpdateMenu[];
+    /**
+     * Sets the plot's width (in px).
+     * @default 700
+     * Minimum: 10
+     */
     width?: number;
     xaxis?: LayoutAxis;
     yaxis?: LayoutAxis;
