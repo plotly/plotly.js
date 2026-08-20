@@ -55,7 +55,7 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     const { _fitView: { center: fitCenter, zoom: fitZoom } = {}, center, zoom } = containerIn;
     const isFitView = center?.lon === fitCenter?.lon && center?.lat === fitCenter?.lat && zoom === fitZoom;
     if (fitbounds && isFitView) {
-        const fitBounds = getMapFitBounds(opts.fullData, opts.id);
+        const fitBounds = getMapFitBounds(opts.fullData, opts.id, fitbounds);
         if (fitBounds) containerOut._fitBounds = fitBounds;
     }
 

@@ -12851,10 +12851,10 @@ export interface MapLayout {
     };
     domain?: Domain;
     /**
-     * Determines if this subplot's view settings are auto-computed to fit trace data. If *locations* (default), the view is auto-fit to the lon/lat coordinates of the visible trace data. If *false*, the view settings are used as-is; set this to opt out of auto-fitting. If `fitbounds` is enabled but a user provides `center` or `zoom`, auto-fit will be skipped.
+     * Determines if this subplot's view settings are auto-computed to fit trace data. If *locations* (default), the view is auto-fit to the lon/lat coordinates of the visible trace data; for `choroplethmap` traces this is the bounding box of the geometries matched by `locations`. If *geojson*, `choroplethmap` traces are fit to the bounding box of their entire input `geojson` instead of only the matched locations (point traces still fit to their lon/lat data). If *false*, the view settings are used as-is; set this to opt out of auto-fitting. If `fitbounds` is enabled but a user provides `center` or `zoom`, auto-fit will be skipped.
      * @default 'locations'
      */
-    fitbounds?: false | 'locations';
+    fitbounds?: false | 'locations' | 'geojson';
     layers?: Array<{
         /** Determines if the layer will be inserted before the layer with the specified ID. If omitted or set to '', the layer will be inserted above every existing layer. */
         below?: string;
