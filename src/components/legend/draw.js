@@ -826,7 +826,7 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         legendObj._titleHeight = height;
     } else { // legend item
         legendItem.lineHeight = lineHeight;
-        legendItem.height = Math.max(height, 16) + 3;
+        legendItem.height = Math.max(height, 16, legendObj.itemheight + 10) + 3;
         legendItem.width = width;
     }
 }

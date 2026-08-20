@@ -26,6 +26,7 @@ module.exports = function style(s, gd, legend) {
     if (!legend) legend = fullLayout.legend;
     var constantItemSizing = legend.itemsizing === 'constant';
     var itemWidth = legend.itemwidth;
+    var itemHeight = legend.itemheight;
     var centerPos = (itemWidth + constants.itemGap * 2) / 2;
     var centerTransform = strTranslate(centerPos, 0);
 
@@ -139,7 +140,7 @@ module.exports = function style(s, gd, legend) {
             .data(showFill || showGradientFill ? [d] : []);
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
-        fill.attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z').call(fillStyle);
+        fill.attr('d', pathStart + 'h' + itemWidth + 'v' + itemHeight + 'h-' + itemWidth + 'z').call(fillStyle);
 
         if (showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);

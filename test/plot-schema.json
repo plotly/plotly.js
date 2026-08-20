@@ -3464,6 +3464,13 @@
             false
           ]
         },
+        "itemheight": {
+          "description": "Sets the height (in px) of the legend item fill swatch. Increasing it reveals more of a trace *fill* or *fillpattern* in the legend, and grows the legend item to fit.",
+          "dflt": 6,
+          "editType": "legend",
+          "min": 6,
+          "valType": "number"
+        },
         "itemsizing": {
           "description": "Determines if the legend items symbols scale with their corresponding *trace* attributes or remain *constant* independent of the symbol size on the graph.",
           "dflt": "trace",
