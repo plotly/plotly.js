@@ -565,7 +565,7 @@ exports.enforce = function enforce(gd) {
                         var getPadMin = autorange.makePadFn(fullLayout, ax, 0);
                         var getPadMax = autorange.makePadFn(fullLayout, ax, 1);
 
-                        updateDomain(ax, factor);
+                        updateDomain(ax, factor, fullLayout);
                         var m = Math.abs(ax._m);
                         var extremes = autorange.concatExtremes(gd, ax);
                         var minArray = extremes.min;
@@ -596,7 +596,7 @@ exports.enforce = function enforce(gd) {
                             [rangeMin, rangeMax] : [rangeMax, rangeMin];
                     }
 
-                    updateDomain(ax, factor);
+                    updateDomain(ax, factor, fullLayout);
                 }
             }
         }
@@ -633,14 +633,41 @@ exports.clean = function clean(gd, ax) {
     }
 };
 
-function updateDomain(ax, factor) {
+// `domainpad` in domain fractions rather than pixels, which is the unit
+// everything around the constraint solve is expressed in.
+function domainPadFraction(ax, fullLayout) {
+    var pad = ax.domainpad;
+    if(!pad) return 0;
+
+    var gs = fullLayout._size;
+    return ax._id.charAt(0) === 'y' ?
+        ((pad.top || 0) + (pad.bottom || 0)) / gs.h :
+        ((pad.left || 0) + (pad.right || 0)) / gs.w;
+}
+
+function updateDomain(ax, factor, fullLayout) {
     var inputDomain = ax._inputDomain;
-    var centerFraction = FROM_BL[ax.constraintoward];
-    var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
+    var inputSpan = inputDomain[1] - inputDomain[0];
+    var center = inputDomain[0] + inputSpan * FROM_BL[ax.constraintoward];
+
+    // We have to divide the axis' drawn length by `factor`. With no padding that
+    // length is the domain span, so dividing the span does it. `domainpad` breaks
+    // the equivalence by taking a fixed number of pixels off the ends: the drawn
+    // length is (span - padding), and only that part scales. Divide it and add the
+    // padding back. If the padding covers the whole domain there is nothing left to
+    // scale, so fall through to the plain behaviour and let setScale clamp it.
+    var padFraction = domainPadFraction(ax, fullLayout);
+    var drawnSpan = inputSpan - padFraction;
+    var newSpan = drawnSpan > 0 ?
+        drawnSpan / factor + padFraction :
+        inputSpan / factor;
+
+    // grow or shrink about whichever edge or centre `constraintoward` asked for
+    var scale = newSpan / inputSpan;
 
     ax.domain = ax._input.domain = [
-        center + (inputDomain[0] - center) / factor,
-        center + (inputDomain[1] - center) / factor
+        center + (inputDomain[0] - center) * scale,
+        center + (inputDomain[1] - center) * scale
     ];
     ax.setScale();
 }

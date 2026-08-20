@@ -41,6 +41,13 @@ function plotOne(gd, cd0) {
     viewOpts.ranges = new Array(visibleLength);
     viewOpts.domains = new Array(visibleLength);
 
+    // regl-splom places each cell as a fraction of the viewport below, which is the
+    // whole plot area, so `domainpad` has to be folded in as a fraction too or the
+    // cells keep their unpadded size while the axes move. Added to `domain` rather
+    // than recovered from _offset and _length, which would round trip through pixel
+    // space and nudge every cell a little even with no padding set.
+    function padFrac(px, total) { return (px || 0) / total; }
+
     for(k = 0; k < visibleDims.length; k++) {
         i = visibleDims[k];
 
@@ -51,16 +58,16 @@ function plotOne(gd, cd0) {
         if(xa) {
             rng[0] = xa._rl[0];
             rng[2] = xa._rl[1];
-            dmn[0] = xa.domain[0];
-            dmn[2] = xa.domain[1];
+            dmn[0] = xa.domain[0] + padFrac(xa._padStart, gs.w);
+            dmn[2] = xa.domain[1] - padFrac(xa._padEnd, gs.w);
         }
 
         ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
         if(ya) {
             rng[1] = ya._rl[0];
             rng[3] = ya._rl[1];
-            dmn[1] = ya.domain[0];
-            dmn[3] = ya.domain[1];
+            dmn[1] = ya.domain[0] + padFrac(ya._padEnd, gs.h);
+            dmn[3] = ya.domain[1] - padFrac(ya._padStart, gs.h);
         }
     }
 
