@@ -467,10 +467,28 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         evt.pointerY = ypx + yaArray[0]._offset;
 
         if ('xval' in evt) xvalArray = helpers.flat(subplots, evt.xval);
-        else xvalArray = helpers.p2c(xaArray, xpx);
+        else {
+            xvalArray = helpers.p2c(xaArray, xpx);
+            // p2c on date axes returns a display-time value (local-time components
+            // encoded as UTC ms), which differs from the true UTC coordinate used
+            // by data points. Correct back to true UTC so event consumers receive
+            // values consistent with trace data and axis range. See #7816.
+            for(var i = 0; i < xaArray.length; i++) {
+                if(xaArray[i].type === 'date' && isNumeric(xvalArray[i])) {
+                    xvalArray[i] = xvalArray[i] + new Date(xvalArray[i]).getTimezoneOffset() * 60000;
+                }
+            }
+        }
 
         if ('yval' in evt) yvalArray = helpers.flat(subplots, evt.yval);
-        else yvalArray = helpers.p2c(yaArray, ypx);
+        else {
+            yvalArray = helpers.p2c(yaArray, ypx);
+            for(var i = 0; i < yaArray.length; i++) {
+                if(yaArray[i].type === 'date' && isNumeric(yvalArray[i])) {
+                    yvalArray[i] = yvalArray[i] + new Date(yvalArray[i]).getTimezoneOffset() * 60000;
+                }
+            }
+        }
 
         if (!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             Lib.warn('Fx.hover failed', evt, gd);
