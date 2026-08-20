@@ -65,10 +65,14 @@ export interface PlotDatum {
     x: Datum;
     /** Axis the point's x is plotted against. */
     xaxis: LayoutAxis;
+    /** Point center x position in pixels from the graph div's top-left corner */
+    xPixel?: number;
     /** y coordinate of the point. */
     y: Datum;
     /** Axis the point's y is plotted against. */
     yaxis: LayoutAxis;
+    /** Point center y position in pixels from the graph div's top-left corner */
+    yPixel?: number;
     /** Resolved hover/display text for the point. */
     text: string;
 }
@@ -104,6 +108,10 @@ export interface PlotMouseEvent {
     points: PlotDatum[];
     /** The original DOM mouse event. */
     event: MouseEvent;
+    /** Cursor x position in pixels from the graph div's top-left corner */
+    xPixel?: number;
+    /** Cursor y position in pixels from the graph div's top-left corner */
+    yPixel?: number;
 }
 
 /** Payload for `plotly_hover` — augments `PlotMouseEvent` with axis values. */

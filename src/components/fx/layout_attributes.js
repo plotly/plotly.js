@@ -112,7 +112,10 @@ module.exports = {
             'If true, `plotly_hover` events will fire for any cursor position',
             'within the plot area, not just over traces.',
             'When the cursor is not over a trace, the event will have an empty `points` array',
-            'but will include `xvals` and `yvals` with cursor coordinates in data space.'
+            'but will include `xvals` and `yvals` with cursor coordinates in data space,',
+            'and `xPixel` and `yPixel` with cursor coordinates in pixels,',
+            'relative to the top-left corner of the graph div.',
+            'A `plotly_unhover` event fires when the cursor leaves the plot area.'
         ].join(' ')
     },
     clickanywhere: {
@@ -123,7 +126,9 @@ module.exports = {
             'If true, `plotly_click` events will fire for any click position',
             'within the plot area, not just over traces.',
             'When clicking where there is no trace data, the event will have an empty `points` array',
-            'but will include `xvals` and `yvals` with click coordinates in data space.'
+            'but will include `xvals` and `yvals` with click coordinates in data space,',
+            'and `xPixel` and `yPixel` with click coordinates in pixels,',
+            'relative to the top-left corner of the graph div.'
         ].join(' ')
     },
     hoverdistance: {

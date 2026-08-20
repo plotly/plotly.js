@@ -471,6 +471,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         if ('yval' in evt) yvalArray = helpers.flat(subplots, evt.yval);
         else yvalArray = helpers.p2c(yaArray, ypx);
 
+        // Save pointer position to gd so that it can be included in all hover/click event data,
+        // even when hoveranywhere and clickanywhere are not enabled
+        gd._hoverPointerX = evt.pointerX;
+        gd._hoverPointerY = evt.pointerY;
+
         if (!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             Lib.warn('Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
@@ -818,6 +823,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 gd._hoverdata = [];
             }
             emitHover([]);
+
+            // Set a flag to note that an empty-space hover event is being emitted,
+            // so that we know to emit an unhover event when the mouse leaves the plot area.
+            // See dragelement/unhover.js.
+            gd._hoverAnywhereActive = true;
         }
         return result;
     }
@@ -977,7 +987,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             xaxes: xaArray,
             yaxes: yaArray,
             xvals: helpers.c2dApply(xaArray, xvalArray),
-            yvals: helpers.c2dApply(yaArray, yvalArray)
+            yvals: helpers.c2dApply(yaArray, yvalArray),
+            // Note: top-level xPixel/yPixel correspond to the pixel position of the cursor.
+            // Inside `points` array, points[i].xPixel/yPixel correspond to the pixel position of the point itself.
+            xPixel: evt.pointerX,
+            yPixel: evt.pointerY
         });
     }
 }

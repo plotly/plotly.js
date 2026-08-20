@@ -91,33 +91,33 @@ jobs:
       - uses: ./.github/actions/setup-workspace
       - uses: ./.github/actions/setup-chrome
 
-      - name: Run hover_label test in UTC timezone
+      - name: Run hover test in UTC timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'UTC'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
-      - name: Run hover_label test in Europe/Berlin timezone
+      - name: Run hover test in Europe/Berlin timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'Europe/Berlin'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
-      - name: Run hover_label test in Asia/Tokyo timezone
+      - name: Run hover test in Asia/Tokyo timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'Asia/Tokyo'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
-      - name: Run hover_label test in America/Toronto timezone
+      - name: Run hover test in America/Toronto timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'America/Toronto'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
   no-gl-jasmine:
     needs: install-and-cibuild
