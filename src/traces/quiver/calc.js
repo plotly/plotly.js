@@ -33,9 +33,7 @@ module.exports = function calc(gd, trace) {
     const uArr = trace.u || [];
     const vArr = trace.v || [];
 
-    const uvref = trace.uvref;
-    const lengthmode = trace.lengthmode;
-    const anchor = trace.anchor;
+    const { anchor, lengthmode, uvref } = trace;
     const isTip = anchor === 'tip';
     const isCenter = anchor === 'center';
 
@@ -121,7 +119,7 @@ module.exports = function calc(gd, trace) {
         // but that's not a great solution
         const boxArea = (xMax - xMin) * (yMax - yMin);
         const pointDensity = boxArea / len;
-        // Now, compute the scale factor for scaled length mode
+        // Now, compute the scale factor for scaled lengthmode
         // The scale factor should be such that
         // _maxNorm * _scaleFactor = Math.sqrt(_pointDensity)
         // Therefore: _scaleFactor = Math.sqrt(_pointDensity) / _maxNorm
@@ -133,8 +131,8 @@ module.exports = function calc(gd, trace) {
         // Note: If uvref === 'paper', this scale factor must be
         // multiplied by Math.sqrt(xa._m * ya._m), but we can't do that quite yet
         // since the axis scales are not fully determined. Do it in plot step instead.
-    } else {  // lengthmode === 'raw'
-        // For raw lengthmode, scale factor is always 1
+    } else {
+        // lengthmode === 'raw'
         trace._scaleFactor = 1;
     }
 

@@ -102,9 +102,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     lineSegments.exit().remove();
 
     // Use maxNorm precomputed in calc
-    const maxNorm = trace._maxNorm || 0;
-    const uvref = trace.uvref;
-    const anchor = trace.anchor;
+    const { anchor, maxNorm = 0, uvref } = trace;
 
     // Adjust scale factor if uvref is 'paper'
     const scaleFactor = (uvref === 'paper') ? trace._scaleFactor * Math.sqrt(Math.abs(xa._m * ya._m)) : trace._scaleFactor;
