@@ -38,7 +38,7 @@ var attrs = {
         anim: true,
         description: 'Sets the y components of the vector arrows.'
     },
-    uvref: {
+    arrowref: {
         valType: 'enumerated',
         values: ['paper', 'data'],
         dflt: 'data',
@@ -58,7 +58,7 @@ var attrs = {
         dflt: 'scaled',
         description: [
             'Determines whether vector arrows are drawn according to their raw lengths,',
-            'or scaled based on the maximum vector length and point density. Note: When `uvref` is *paper*',
+            'or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper*',
             'vectors are always scaled and `lengthmode` *raw* is ignored.'
         ].join(' ')
     },

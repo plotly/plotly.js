@@ -6684,6 +6684,11 @@ export interface QuiverData {
      * @default 'tail'
      */
     anchor?: 'tip' | 'tail' | 'center';
+    /**
+     * Determines how the u/v vector components are interpreted. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axis scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis
+     * @default 'data'
+     */
+    arrowref?: 'paper' | 'data';
     /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
     customdata?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -6731,7 +6736,7 @@ export interface QuiverData {
      */
     lengthfactor?: number;
     /**
-     * Determines whether vector arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `uvref` is *paper* vectors are always scaled and `lengthmode` *raw* is ignored.
+     * Determines whether vector arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper* vectors are always scaled and `lengthmode` *raw* is ignored.
      * @default 'scaled'
      */
     lengthmode?: 'scaled' | 'raw';
@@ -6849,11 +6854,6 @@ export interface QuiverData {
         };
         textfont?: Font;
     };
-    /**
-     * Determines how the u/v vector components are interpreted. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axis scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis
-     * @default 'data'
-     */
-    uvref?: 'paper' | 'data';
     /** Sets the y components of the vector arrows. */
     v?: Datum[] | Datum[][] | TypedArray;
     /** Sets the hover text formatting rule for `v` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format.By default the values are formatted using generic number format. */
