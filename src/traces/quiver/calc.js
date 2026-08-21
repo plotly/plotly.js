@@ -33,9 +33,7 @@ module.exports = function calc(gd, trace) {
     const uArr = trace.u || [];
     const vArr = trace.v || [];
 
-    const anglemode = trace.anglemode;
-    const sizemode = trace.sizemode;
-    const anchor = trace.anchor;
+    const { anchor, lengthmode, arrowref } = trace;
     const isTip = anchor === 'tip';
     const isCenter = anchor === 'center';
 
@@ -54,7 +52,7 @@ module.exports = function calc(gd, trace) {
     var nValid = 0;
 
     // First pass: build calcdata, and keep track of the maximum and minimum vector norm in the trace,
-    // to be used for sizemode 'scaled' (max norm only) and for magnitude-based colorscale range
+    // to be used for lengthmode 'scaled' (max norm only) and for magnitude-based colorscale range
     for(var i = 0; i < len; i++) {
         var cdi = cd[i] = { i: i };
         var xValid = isNumeric(xVals[i]);
@@ -109,19 +107,19 @@ module.exports = function calc(gd, trace) {
     // Store maxNorm for use by plot step
     trace._maxNorm = normMax;
 
-    if (sizemode === 'scaled' || anglemode === 'paper') {
-        // Ignore sizemode 'raw' if anglemode is set to 'paper': always scale
+    if (lengthmode === 'scaled' || arrowref === 'paper') {
+        // Ignore lengthmode 'raw' if arrowref is set to 'paper': always scale
 
         // Compute point density of the entire trace: Area of bounding box
         // divided by number of points. This is used to scale arrows in
-        // 'scaled' sizemode.
+        // 'scaled' lengthmode.
         // TODO: How to handle the case where there is just one point in a trace,
         // or all points have the same x or y value? This will give a boxArea of 0.
         // For now I'm going to just normalize to a vector of unit length (1) in that case,
         // but that's not a great solution
         const boxArea = (xMax - xMin) * (yMax - yMin);
         const pointDensity = boxArea / len;
-        // Now, compute the scale factor for scaled size mode
+        // Now, compute the scale factor for scaled lengthmode
         // The scale factor should be such that
         // _maxNorm * _scaleFactor = Math.sqrt(_pointDensity)
         // Therefore: _scaleFactor = Math.sqrt(_pointDensity) / _maxNorm
@@ -130,16 +128,16 @@ module.exports = function calc(gd, trace) {
         } else {
             trace._scaleFactor = Math.sqrt(pointDensity) / trace._maxNorm;
         }
-        // Note: If anglemode === 'paper', this scale factor must be
+        // Note: If arrowref === 'paper', this scale factor must be
         // multiplied by Math.sqrt(xa._m * ya._m), but we can't do that quite yet
         // since the axis scales are not fully determined. Do it in plot step instead.
-    } else {  // sizemode === 'raw'
-        // For raw sizemode, scale factor is always 1
+    } else {
+        // lengthmode === 'raw'
         trace._scaleFactor = 1;
     }
 
-    // Multiply scale factor by sizeref
-    trace._scaleFactor *= trace.sizeref;
+    // Multiply computed scale factor by lengthfactor attr
+    trace._scaleFactor *= trace.lengthfactor;
 
     // Now we need to compute the arrow geometry for axis autorange
     const xTipPositions = new Array(len);
@@ -148,7 +146,7 @@ module.exports = function calc(gd, trace) {
     const yTailPositions = new Array(len);
     var arrowLenX, arrowLenY;
     // Compute the x- and y-positions of the tip of each arrow,
-    // assuming anglemode === 'data' (i.e. u/v are in data coordinates)
+    // assuming arrowref === 'data' (i.e. u/v are in data coordinates)
     for(var i = 0; i < len; i++) {
         var cdi = cd[i];
         arrowLenX = cdi._u * trace._scaleFactor;
@@ -171,12 +169,12 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    if (anglemode === 'data') {
-        // If anglemode is 'data', we can use the arrow tip positions directly to expand the axes ranges
+    if (arrowref === 'data') {
+        // If arrowref is 'data', we can use the arrow tip positions directly to expand the axes ranges
         trace._extremes[xa._id] = Axes.findExtremes(xa, xTipPositions.concat(xTailPositions), {padded: true});
         trace._extremes[ya._id] = Axes.findExtremes(ya, yTipPositions.concat(yTailPositions), {padded: true});
-    } else {  // anglemode === 'paper'
-        // TODO: For now, just do the same thing as for anglemode === 'data', but this is not correct. 
+    } else {  // arrowref === 'paper'
+        // TODO: For now, just do the same thing as for arrowref === 'data', but this is not correct.
         // We actually need more sophisticated logic here, since this will give a bad result
         // if the data aspect ratio is very different from the plot aspect ratio.
         trace._extremes[xa._id] = Axes.findExtremes(xa, xTipPositions.concat(xTailPositions), {padded: true});

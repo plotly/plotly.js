@@ -7,7 +7,7 @@
       "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
       "u": [1, 1, 1, 1, 1, 1, 1, 1, 1],
       "v": [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "tail",
       "marker": {
         "color": "#4466ee",
@@ -23,7 +23,7 @@
       "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
       "u": [1, 1, 1, 1, 1, 1, 1, 1, 1],
       "v": [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "tip",
       "marker": {
         "color": "#ee3344",
@@ -39,7 +39,7 @@
       "y": [0, 0, 0, 1, 1, 1, 2, 2, 2],
       "u": [1, 1, 1, 1, 1, 1, 1, 1, 1],
       "v": [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "center",
       "marker": {
         "color": "#8811cc",
