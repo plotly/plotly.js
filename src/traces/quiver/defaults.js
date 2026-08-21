@@ -30,7 +30,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         for(var j = 0; j < len; j++) traceOut.v[j] = 0;
     }
 
-    coerce('uvref');
+    coerce('arrowref');
 
     // Sizing API inspired by cone, but not identical
     coerce('lengthmode');

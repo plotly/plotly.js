@@ -8,7 +8,7 @@
       "v": [1, 1, 1, 2, 2, 2, 3, 3, 3],
       "lengthmode": "scaled",
       "anchor": "tail",
-      "uvref": "paper",
+      "arrowref": "paper",
       "marker": {
         "showscale": true,
         "colorbar": {

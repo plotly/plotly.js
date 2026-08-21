@@ -102,10 +102,10 @@ describe('Test quiver defaults', function() {
         expect(gd._fullData[0].lengthfactor).toBe(1);
     });
 
-    it('should set uvref default to data', function() {
+    it('should set arrowref default to data', function() {
         gd = makeGD();
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].uvref).toBe('data');
+        expect(gd._fullData[0].arrowref).toBe('data');
     });
 
     it('should set anchor default to tail', function() {

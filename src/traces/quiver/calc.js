@@ -33,7 +33,7 @@ module.exports = function calc(gd, trace) {
     const uArr = trace.u || [];
     const vArr = trace.v || [];
 
-    const { anchor, lengthmode, uvref } = trace;
+    const { anchor, lengthmode, arrowref } = trace;
     const isTip = anchor === 'tip';
     const isCenter = anchor === 'center';
 
@@ -107,8 +107,8 @@ module.exports = function calc(gd, trace) {
     // Store maxNorm for use by plot step
     trace._maxNorm = normMax;
 
-    if (lengthmode === 'scaled' || uvref === 'paper') {
-        // Ignore lengthmode 'raw' if uvref is set to 'paper': always scale
+    if (lengthmode === 'scaled' || arrowref === 'paper') {
+        // Ignore lengthmode 'raw' if arrowref is set to 'paper': always scale
 
         // Compute point density of the entire trace: Area of bounding box
         // divided by number of points. This is used to scale arrows in
@@ -128,7 +128,7 @@ module.exports = function calc(gd, trace) {
         } else {
             trace._scaleFactor = Math.sqrt(pointDensity) / trace._maxNorm;
         }
-        // Note: If uvref === 'paper', this scale factor must be
+        // Note: If arrowref === 'paper', this scale factor must be
         // multiplied by Math.sqrt(xa._m * ya._m), but we can't do that quite yet
         // since the axis scales are not fully determined. Do it in plot step instead.
     } else {
@@ -146,7 +146,7 @@ module.exports = function calc(gd, trace) {
     const yTailPositions = new Array(len);
     var arrowLenX, arrowLenY;
     // Compute the x- and y-positions of the tip of each arrow,
-    // assuming uvref === 'data' (i.e. u/v are in data coordinates)
+    // assuming arrowref === 'data' (i.e. u/v are in data coordinates)
     for(var i = 0; i < len; i++) {
         var cdi = cd[i];
         arrowLenX = cdi._u * trace._scaleFactor;
@@ -169,12 +169,12 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    if (uvref === 'data') {
-        // If uvref is 'data', we can use the arrow tip positions directly to expand the axes ranges
+    if (arrowref === 'data') {
+        // If arrowref is 'data', we can use the arrow tip positions directly to expand the axes ranges
         trace._extremes[xa._id] = Axes.findExtremes(xa, xTipPositions.concat(xTailPositions), {padded: true});
         trace._extremes[ya._id] = Axes.findExtremes(ya, yTipPositions.concat(yTailPositions), {padded: true});
-    } else {  // uvref === 'paper'
-        // TODO: For now, just do the same thing as for uvref === 'data', but this is not correct.
+    } else {  // arrowref === 'paper'
+        // TODO: For now, just do the same thing as for arrowref === 'data', but this is not correct.
         // We actually need more sophisticated logic here, since this will give a bad result
         // if the data aspect ratio is very different from the plot aspect ratio.
         trace._extremes[xa._id] = Axes.findExtremes(xa, xTipPositions.concat(xTailPositions), {padded: true});
