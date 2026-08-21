@@ -578,6 +578,77 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
+        // Measure node rects against the plot area from _fullLayout._size, which
+        // is what plot.js passes to the renderer as its `height`. Do NOT measure
+        // against the '.sankey' layer's bounding box: node rects are descendants
+        // of it, and an SVG group's box is the union of its children, so it grows
+        // to contain any overflow and the assertion can never fail.
+        function expectNodesWithinPlotArea(gd, msg) {
+            var gs = gd._fullLayout._size;
+            var gdTop = gd.getBoundingClientRect().top;
+            var plotTop = gdTop + gs.t;
+            var plotBottom = plotTop + gs.h;
+            var nodeRects = gd.querySelectorAll('.sankey-node .node-rect');
+
+            expect(nodeRects.length).toBeGreaterThan(0, msg + ': found no node rects');
+
+            for(var i = 0; i < nodeRects.length; i++) {
+                var rect = nodeRects[i].getBoundingClientRect();
+                expect(rect.bottom).toBeLessThan(plotBottom + 1,
+                    msg + ': node ' + i + ' extends ' + (rect.bottom - plotBottom).toFixed(1) +
+                    'px past the bottom of the plot area');
+                expect(rect.top).toBeGreaterThan(plotTop - 1,
+                    msg + ': node ' + i + ' extends ' + (plotTop - rect.top).toFixed(1) +
+                    'px past the top of the plot area');
+            }
+        }
+
+        it('keeps an explicitly positioned node inside the plot area', function(done) {
+            // arrangement 'fixed' skips collision resolution, so this covers the
+            // node.y centring path on its own. Node B is requested at y = 0.98;
+            // unclamped it overflows by nodeHeight/2 - (1 - 0.98) * height.
+            Plotly.newPlot(gd, [{
+                type: 'sankey',
+                arrangement: 'fixed',
+                node: {
+                    label: ['A', 'B', 'C'],
+                    x: [0.1, 0.1, 0.9],
+                    y: [0.3, 0.98, 0.5],
+                    pad: 10
+                },
+                link: {source: [0, 1], target: [2, 2], value: [10, 10]}
+            }], {width: 600, height: 300, margin: {l: 10, r: 10, t: 10, b: 10}})
+            .then(function() {
+                expectNodesWithinPlotArea(gd, 'fixed arrangement');
+            })
+            .then(done, done.fail);
+        });
+
+        it('keeps a snapped column inside the plot area when collisions cascade', function(done) {
+            // Every y is <= 0.92, so the centring clamp alone would not prevent
+            // clipping here: B, C and D share a column and overlap, and resolving
+            // those collisions downward walks the column off the bottom edge.
+            Plotly.newPlot(gd, [{
+                type: 'sankey',
+                arrangement: 'snap',
+                node: {
+                    label: ['A', 'B', 'C', 'D', 'E'],
+                    x: [0.1, 0.5, 0.5, 0.5, 0.9],
+                    y: [0.5, 0.80, 0.86, 0.92, 0.5],
+                    pad: 10
+                },
+                link: {
+                    source: [0, 0, 0, 1, 2, 3],
+                    target: [1, 2, 3, 4, 4, 4],
+                    value: [8, 8, 8, 8, 8, 8]
+                }
+            }], {width: 600, height: 400, margin: {l: 10, r: 10, t: 10, b: 10}})
+            .then(function() {
+                expectNodesWithinPlotArea(gd, 'snap arrangement');
+            })
+            .then(done, done.fail);
+        });
+
         it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function(done) {
             var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 
