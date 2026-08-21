@@ -246,7 +246,9 @@ function sankeyModel(layout, d, traceIndex) {
     if(trace.node.x.length && trace.node.y.length) {
         for(i = 0; i < Math.min(trace.node.x.length, trace.node.y.length, graph.nodes.length); i++) {
             if(trace.node.x[i] && trace.node.y[i]) {
-                var pos = [trace.node.x[i] * width, trace.node.y[i] * height];
+                var pos = horizontal
+                    ? [trace.node.x[i] * width, trace.node.y[i] * height]
+                    : [trace.node.x[i] * height, trace.node.y[i] * width];
                 graph.nodes[i].x0 = pos[0] - nodeThickness / 2;
                 graph.nodes[i].x1 = pos[0] + nodeThickness / 2;
 
@@ -802,9 +804,13 @@ function persistFinalNodePositions(d, gd) {
     for(var i = 0; i < d.graph.nodes.length; i++) {
         var nodeX = (d.graph.nodes[i].x0 + d.graph.nodes[i].x1) / 2;
         var nodeY = (d.graph.nodes[i].y0 + d.graph.nodes[i].y1) / 2;
-        x.push(nodeX / d.figure.width);
-        y.push(nodeY / d.figure.height);
-    }
+        if(d.trace.orientation === 'h') {
+            x.push(nodeX / d.figure.width);
+            y.push(nodeY / d.figure.height);
+        } else {
+            x.push(nodeX / d.figure.height);
+            y.push(nodeY / d.figure.width);
+        }
     Registry.call('_guiRestyle', gd, {
         'node.x': [x],
         'node.y': [y]
