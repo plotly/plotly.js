@@ -7,10 +7,12 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 var colorscaleCalc = require('../../components/colorscale/calc');
 var calcSelection = require('../scatter/calc_selection');
 
-/**
- * Main calculation function for quiver trace
- * Creates calcdata with arrow path data for each vector
- */
+// For scaled lengthmode: Constant to multiply by the computed distance between
+// neighboring points, such that the arrows are _just slightly shorter_ than
+// that distance
+const SHRINK_FACTOR = 0.97;
+// const SHRINK_FACTOR = 1;
+
 module.exports = function calc(gd, trace) {
     // Map x/y through axes so category/date values become numeric calcdata
     const xa = trace._xA = Axes.getFromId(gd, trace.xaxis || 'x', 'x');
@@ -107,27 +109,49 @@ module.exports = function calc(gd, trace) {
     // Store maxNorm for use by plot step
     trace._maxNorm = normMax;
 
+    // Ignore lengthmode 'raw' if arrowref is set to 'paper': always scale
     if (lengthmode === 'scaled' || arrowref === 'paper') {
-        // Ignore lengthmode 'raw' if arrowref is set to 'paper': always scale
+        /**
+         * Compute the maximum arrow length we should allow, using a heuristic
+         * to estimate the distance between neighboring points.
+         *
+         * Let:
+         *  - D be the distance between neighboring points (the value we want to compute)
+         *  - N be the number of points in the trace
+         *  - dX be the x-width of the bounding box of all the points
+         *  - dY be the y-width of the bounding box
+         *
+         * We want to satisfy this equation: D = sqrt((dX + D) * (dY + D) / N)
+         *
+         * This is basically the square root of the point density, with an additional
+         * adjustment to account for the points on the edges (we add D to each dimension
+         * of the bounding box). This equation gives us the _exact_ correct distance when
+         * the points are arranged in a perfect grid; otherwise, it's just an estimate.
+         *
+         * Solving for D gives us:
+         *  D = (dX + dY + sqrt((dX - dY)^2 + 4N * dX * dY)) / (2 * (N - 1))
+         * which is the forumla we'll use below.
+         *
+         * Note: this formula was derived and documented by a human ;)
+         */
 
-        // Compute point density of the entire trace: Area of bounding box
-        // divided by number of points. This is used to scale arrows in
-        // 'scaled' lengthmode.
-        // TODO: How to handle the case where there is just one point in a trace,
-        // or all points have the same x or y value? This will give a boxArea of 0.
-        // For now I'm going to just normalize to a vector of unit length (1) in that case,
-        // but that's not a great solution
-        const boxArea = (xMax - xMin) * (yMax - yMin);
-        const pointDensity = boxArea / len;
-        // Now, compute the scale factor for scaled lengthmode
-        // The scale factor should be such that
-        // _maxNorm * _scaleFactor = Math.sqrt(_pointDensity)
-        // Therefore: _scaleFactor = Math.sqrt(_pointDensity) / _maxNorm
-        if (pointDensity === 0) {
-            trace._scaleFactor = 1 / trace._maxNorm
+        const dX = xMax - xMin;
+        const dY = yMax - yMin;
+        var pointDist;
+        if (dX === 0 && dY === 0) {
+            // If all points share the same x and y value, we can't estimate pointDist.
+            // Default to an arbitrary value of 1.
+            pointDist = 1;
         } else {
-            trace._scaleFactor = Math.sqrt(pointDensity) / trace._maxNorm;
+            // Use the formula derived above
+            pointDist = (dX + dY + Math.sqrt((dX - dY) * (dX - dY) + 4 * nValid * dX * dY)) / (2 * (nValid - 1));
         }
+        pointDist *= SHRINK_FACTOR;  // Adjust to slightly less than the computed distance
+
+        // Set the trace scale factor such that the longest vector will have
+        // a length equal to the computed pointDist
+        trace._scaleFactor = pointDist / trace._maxNorm;
+
         // Note: If arrowref === 'paper', this scale factor must be
         // multiplied by Math.sqrt(xa._m * ya._m), but we can't do that quite yet
         // since the axis scales are not fully determined. Do it in plot step instead.
