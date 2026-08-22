@@ -1675,6 +1675,7 @@ plots.purge = function(gd) {
     delete gd._editing;
     delete gd._mouseDownTime;
     delete gd._legendMouseDownTime;
+    delete gd._currentScrollingSubplot;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
