@@ -2876,3 +2876,37 @@ describe('plotly_relayouting', function() {
         });
     });
 });
+
+describe('Test geo projection D3 default rotation (#7949)', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+
+    function subplot() { return gd._fullLayout.geo._subplot; }
+
+    it('preserves the projection factory rotation at default projection.rotation', function(done) {
+        Plotly.newPlot(gd, [{ type: 'scattergeo', lon: [], lat: [] }], {
+            geo: { projection: { type: 'albers' } }
+        }).then(function() {
+            // d3-geo albers ships with rotation [96, 0, 0]; plotly's default
+            // projection.rotation attributes must not discard it
+            expect(subplot().projection.defaultRotation).toEqual([96, 0, 0]);
+            expect(subplot().projection.rotate()).toEqual([96, 0, 0]);
+        }).then(function() {
+            return Plotly.relayout(gd, { 'geo.projection.rotation.lon': 10 });
+        }).then(function() {
+            // user rotation composes on top of the factory rotation
+            expect(subplot().projection.rotate()[0]).toBe(96 - 10);
+        }).then(done, done.fail);
+    });
+
+    it('keeps identity-rotation projections exactly as before', function(done) {
+        Plotly.newPlot(gd, [{ type: 'scattergeo', lon: [], lat: [] }], {
+            geo: { projection: { type: 'mercator' } }
+        }).then(function() {
+            expect(subplot().projection.defaultRotation).toEqual([0, 0, 0]);
+            expect(subplot().projection.rotate()).toEqual([0, 0, 0]);
+        }).then(done, done.fail);
+    });
+});

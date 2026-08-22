@@ -304,7 +304,11 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
     // set 'pre-fit' projection
     projection
         .center([center.lon - rotation.lon, center.lat - rotation.lat])
-        .rotate([-rotation.lon, -rotation.lat, rotation.roll])
+        .rotate([
+            -rotation.lon + projection.defaultRotation[0],
+            -rotation.lat + projection.defaultRotation[1],
+            rotation.roll + projection.defaultRotation[2]
+        ])
         .parallels(projLayout.parallels);
 
     // fit projection 'scale' and 'translate' to set lon/lat ranges
@@ -716,6 +720,12 @@ function getProjection(geoLayout) {
     projName = 'geo' + Lib.titleCase(projName);
     var projFn = geo[projName] || geoProjection[projName];
     var projection = projFn();
+    // Capture the rotation the projection factory ships with (identity for
+    // most projections, but e.g. albers defaults to [96, 0, 0]) so that the
+    // default projection.rotation attributes do not discard the canonical
+    // orientation. See #7949.
+    var projDefaultRotation = typeof projection.rotate === 'function' ?
+        projection.rotate() : [0, 0, 0];
 
     var clipAngle =
         geoLayout._isSatellite ? Math.acos(1 / projLayout.distance) * 180 / Math.PI :
@@ -753,6 +763,8 @@ function getProjection(geoLayout) {
     projection.getBounds = function(object) {
         return projection.getPath().bounds(object);
     };
+
+    projection.defaultRotation = projDefaultRotation;
 
     projection.precision(constants.precision);
 
