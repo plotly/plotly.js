@@ -2890,14 +2890,19 @@ describe('Test geo projection D3 default rotation (#7949)', function() {
             geo: { projection: { type: 'albers' } }
         }).then(function() {
             // d3-geo albers ships with rotation [96, 0, 0]; plotly's default
-            // projection.rotation attributes must not discard it
-            expect(subplot().projection.defaultRotation).toEqual([96, 0, 0]);
-            expect(subplot().projection.rotate()).toEqual([96, 0, 0]);
+            // projection.rotation attributes must not discard it.
+            // Compare with a tight numeric tolerance: the composed factory +
+            // user rotation can pick up float64 dust (e.g. 96.00000000000001
+            // on linux runners), so exact equality is environment-dependent.
+            [0, 1, 2].forEach(function(axis) {
+                expect(subplot().projection.defaultRotation[axis]).toBeCloseTo([96, 0, 0][axis], 9);
+                expect(subplot().projection.rotate()[axis]).toBeCloseTo([96, 0, 0][axis], 9);
+            });
         }).then(function() {
             return Plotly.relayout(gd, { 'geo.projection.rotation.lon': 10 });
         }).then(function() {
             // user rotation composes on top of the factory rotation
-            expect(subplot().projection.rotate()[0]).toBe(96 - 10);
+            expect(subplot().projection.rotate()[0]).toBeCloseTo(86, 9);
         }).then(done, done.fail);
     });
 
