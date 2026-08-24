@@ -44,11 +44,17 @@ The Plotly.js community, construed fairly broadly, includes the maintainers and 
 
 ## Opening issues
 
-Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
+Please read the [issue guidelines](./.github/ISSUE_TEMPLATE/) in the appropriate template.
 
 ## Making pull requests
 
 Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
+
+## Using a coding agent
+
+If you prepare a contribution with a coding agent, point it at [AGENTS.md](AGENTS.md).
+That file and the [.agents](.agents/) folder state the rules an agent follows in this
+repository, including the steps it must leave to a human.
 
 ## GitHub labels
 
@@ -216,8 +222,6 @@ files.
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script must be run manually when updating the css and svg source files.
-- `npm run watch`: starts a watchify file watcher just like the test dashboard but
-  without booting up a server.
 
 ## Testing
 
@@ -312,9 +316,9 @@ npm run baseline mock_*
 ```
 
 **IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before
-running the image tests. We recommend running `npm run watch` or `npm start` in
+running the image tests. We recommend running `npm start` in
 a separate tab to ensure that the most up-to-date code is used.
-Also if you are adding a new mock, you may need to re-run `npm start` or `npm run watch`
+Also if you are adding a new mock, you may need to re-run `npm start`
 to be able to find the new mock in the browser.
 To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock`
 or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
