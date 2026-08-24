@@ -242,6 +242,34 @@ function sankeyModel(layout, d, traceIndex) {
         });
     }
 
+    // Push any nodes that overflow the bottom edge back up so the whole
+    // column stays inside the plot area. Counterpart to
+    // resolveCollisionsTopToBottom: with `arrangement: "snap"` a downward
+    // cascade can walk the last node(s) straight past `height`, even when
+    // there is empty space above to absorb the correction.
+    function resolveCollisionsBottomToTop(columns) {
+        columns.forEach(function(nodes) {
+            var node;
+            var dy;
+            var y = height;
+            var n = nodes.length;
+            var i;
+            nodes.sort(function(a, b) {
+                return b.y0 - a.y0;
+            });
+            for(i = 0; i < n; ++i) {
+                node = nodes[i];
+                if(node.y1 <= y) {
+                    // No overflow at the bottom edge
+                } else {
+                    dy = (node.y1 - y);
+                    if(dy > 1e-6) node.y0 -= dy, node.y1 -= dy;
+                }
+                y = node.y0 - nodePad;
+            }
+        });
+    }
+
     // Group nodes into columns based on their x position
     function snapToColumns(nodes) {
         // Sort nodes by x position
@@ -290,14 +318,27 @@ function sankeyModel(layout, d, traceIndex) {
                 graph.nodes[i].x1 = pos[0] + nodeThickness / 2;
 
                 var nodeHeight = graph.nodes[i].y1 - graph.nodes[i].y0;
-                graph.nodes[i].y0 = pos[1] - nodeHeight / 2;
-                graph.nodes[i].y1 = pos[1] + nodeHeight / 2;
+                var y0 = pos[1] - nodeHeight / 2;
+                var y1 = pos[1] + nodeHeight / 2;
+                // Keep the node fully inside the plot area: a node centered
+                // exactly on the top/bottom edge (y = 0 / y = 1) would
+                // otherwise render half outside it.
+                if(y0 < 0) {
+                    y0 = 0;
+                    y1 = nodeHeight;
+                } else if(y1 > height) {
+                    y1 = height;
+                    y0 = height - nodeHeight;
+                }
+                graph.nodes[i].y0 = y0;
+                graph.nodes[i].y1 = y1;
             }
         }
         if(trace.arrangement === 'snap') {
             nodes = graph.nodes;
             var columns = snapToColumns(nodes);
             resolveCollisionsTopToBottom(columns);
+            resolveCollisionsBottomToTop(columns);
         }
         // Update links
         sankey.update(graph);

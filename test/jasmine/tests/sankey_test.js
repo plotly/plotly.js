@@ -2359,5 +2359,88 @@ describe('sankey layout generators', function () {
                 expect(circularLinks.length).toEqual(89, 'right number of circular links');
             });
         });
+
+        describe('keeps explicitly-positioned / snapped nodes inside the plot area (plotly.js #7946)', function() {
+            function plotArea(gd) {
+                var fl = gd._fullLayout;
+                var rect = gd.getBoundingClientRect();
+                return {
+                    left: rect.left + fl.margin.l,
+                    top: rect.top + fl.margin.t,
+                    right: rect.left + fl.width - fl.margin.r,
+                    bottom: rect.top + fl.height - fl.margin.b
+                };
+            }
+
+            function assertNodesInside(gd, msg) {
+                var pa = plotArea(gd);
+                var eps = 1.5;
+                d3SelectAll('.sankey .node-rect').each(function() {
+                    var r = this.getBoundingClientRect();
+                    expect(r.top).toBeGreaterThan(pa.top - eps);
+                    expect(r.bottom).toBeLessThan(pa.bottom + eps);
+                    expect(r.left).toBeGreaterThan(pa.left - eps);
+                    expect(r.right).toBeLessThan(pa.right + eps);
+                });
+            }
+
+            it('does not clip an explicitly-positioned node near the bottom edge', function(done) {
+                var gd = createGraphDiv();
+                var fig = {
+                    data: [{
+                        type: 'sankey',
+                        arrangement: 'fixed',
+                        node: {
+                            label: ['A', 'B at y=0.98', 'C'],
+                            x: [0.1, 0.1, 0.9],
+                            y: [0.3, 0.98, 0.5],
+                            pad: 10
+                        },
+                        link: {
+                            source: [0, 1],
+                            target: [2, 2],
+                            value: [10, 10]
+                        }
+                    }],
+                    layout: {
+                        width: 600,
+                        height: 300,
+                        margin: {l: 10, r: 10, t: 10, b: 10}
+                    }
+                };
+                Plotly.newPlot(gd, fig)
+                    .then(function() { assertNodesInside(gd, 'repro1'); })
+                    .then(done, done.fail);
+            });
+
+            it('does not cascade snapped nodes past the bottom edge', function(done) {
+                var gd = createGraphDiv();
+                var fig = {
+                    data: [{
+                        type: 'sankey',
+                        arrangement: 'snap',
+                        node: {
+                            label: ['A', 'B', 'C', 'D', 'E'],
+                            x: [0.1, 0.5, 0.5, 0.5, 0.9],
+                            y: [0.5, 0.80, 0.86, 0.92, 0.5],
+                            pad: 10
+                        },
+                        link: {
+                            source: [0, 0, 0, 1, 2, 3],
+                            target: [1, 2, 3, 4, 4, 4],
+                            value: [8, 8, 8, 8, 8, 8]
+                        }
+                    }],
+                    layout: {
+                        width: 600,
+                        height: 400,
+                        margin: {l: 10, r: 10, t: 10, b: 10}
+                    }
+                };
+                Plotly.newPlot(gd, fig)
+                    .then(function() { assertNodesInside(gd, 'repro2'); })
+                    .then(done, done.fail);
+            });
+        });
     });
 });
