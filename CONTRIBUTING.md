@@ -97,7 +97,7 @@ cd plotly.js
 #### Step 2: Switch to a dev branch
 
 ```bash
-# please do not use master or main for your dev branch
+# please do not use main for your dev branch
 git checkout dev-branch-name
 ```
 
@@ -138,7 +138,7 @@ comes bundled with some useful tools while developing - all bundled under the
 | `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
 | `Tabs.purge()` | Destroys all plots. |
 
-View [the source](https://github.com/plotly/plotly.js/blob/master/devtools/test_dashboard/devtools.js) for more info.
+View [the source](https://github.com/plotly/plotly.js/blob/HEAD/devtools/test_dashboard/devtools.js) for more info.
 
 Three additional helpers exist that are refreshed every second:
 
@@ -205,7 +205,7 @@ previous changes. `npm run regl-codegen` will prompt you to open
 a browser window, run through the mocks for each regl-using trace
 (`parcoords`, `scattergl`, `scatterpolargl`, `splom`), and store the captured
 shader code into
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen).
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/HEAD/src/generated/regl-codegen).
 The four `src/traces/{parcoords,scattergl,scatterpolargl,splom}/regl_precompiled.js`
 files are rewritten in the same pass so their imports point at the freshly
 generated shader files. Commit any changes that result — both the
@@ -241,7 +241,7 @@ npm run test-jasmine -- <suite>
 ```
 
 where the `<suite>` corresponds to the suite's file name as found in
-[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/HEAD/test/jasmine/tests).
 
 You can also test multiple suites at a time, for example:
 
@@ -288,7 +288,7 @@ bash .github/scripts/env_image.sh
 #### Without Docker:
 Ensure you have Python 3.12+ and [`uv`](https://docs.astral.sh/uv/) installed.
 
-To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/master/.github/scripts/env_image.sh):
+To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/HEAD/.github/scripts/env_image.sh):
 ```sh
 bash .github/scripts/env_image.sh
 ```
@@ -386,10 +386,10 @@ If you would like a link to the dev build for your PR but don't have permission 
 
 ## Trace module design
 
-The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/master/src/traces))
+The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/HEAD/src/traces))
 are defined as plain objects with functions and constants attached to them in an index file
 (e.g. `src/traces/scatter/index.js`). The trace modules are "registered" under the `Registry` object
-(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/master/src/registry.js)) using
+(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/HEAD/src/registry.js)) using
 `Plotly.register` (as done in the index files in `dist/`).
 
 The trace module methods are meant to be called as part of loops during subplot-specific

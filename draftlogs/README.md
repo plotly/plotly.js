@@ -1,4 +1,4 @@
-## Directory of draft logs to help prepare the upcoming [CHANGELOG](https://github.com/plotly/plotly.js/blob/master/CHANGELOG.md)
+## Directory of draft logs to help prepare the upcoming [CHANGELOG](https://github.com/plotly/plotly.js/blob/HEAD/CHANGELOG.md)
 
 Every pull request should add at least one markdown file to this directory.
 The filename must start with the PR number, followed by one of these:

@@ -1,8 +1,8 @@
 <a href="https://plotly.com/javascript/"><img src="https://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
-[![CI](https://github.com/plotly/plotly.js/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/plotly/plotly.js/actions/workflows/ci.yml)
-[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
+[![CI](https://github.com/plotly/plotly.js/actions/workflows/ci.yml/badge.svg)](https://github.com/plotly/plotly.js/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/HEAD/LICENSE)
 
 [Plotly.js](https://plotly.com/javascript) is a standalone JavaScript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
 
@@ -38,7 +38,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ---
 ## Load as a node module
-Install [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/master/dist/README.md)
+Install [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/HEAD/dist/README.md)
 ```sh
 npm i --save plotly.js-dist-min
 ```
@@ -121,12 +121,12 @@ You may simply load the [virtual-webgl](https://github.com/greggman/virtual-webg
 
 ## Bundles
 There are two kinds of plotly.js bundles:
-1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-2. Custom bundles you can create yourself to optimize the size of the bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/master/CUSTOM_BUNDLE.md) for more information.
+1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/HEAD/dist/README.md).
+2. Custom bundles you can create yourself to optimize the size of the bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/HEAD/CUSTOM_BUNDLE.md) for more information.
 
 ---
 ## Alternative ways to load and build plotly.js
-If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations, then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
+If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/HEAD/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/HEAD/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations, then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/HEAD/BUILDING.md).
 
 ---
 ## Documentation
@@ -139,12 +139,12 @@ For more info about contributing to Plotly documentation, please read through [c
 ---
 ## Bugs and feature requests
 
-Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md).
+Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/HEAD/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/HEAD/CONTRIBUTING.md).
 
 ---
 ## Contributing
 
-Please read through our [contributing guidelines](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md). Included are directions for opening issues, using plotly.js in your project and notes on development.
+Please read through our [contributing guidelines](https://github.com/plotly/plotly.js/blob/HEAD/CONTRIBUTING.md). Included are directions for opening issues, using plotly.js in your project and notes on development.
 
 ---
 ## Notable contributors
@@ -182,7 +182,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 
 Code and documentation copyright 2025 Plotly, Inc.
 
-Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
+Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/HEAD/LICENSE).
 
 ### Versioning
 

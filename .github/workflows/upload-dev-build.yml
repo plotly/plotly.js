@@ -1,6 +1,6 @@
 name: Upload dev build from PR
 
-# See https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#live-links-to-dev-builds
+# See https://github.com/plotly/plotly.js/blob/HEAD/CONTRIBUTING.md#live-links-to-dev-builds
 # for documentation on the usage of this workflow.
 
 on:
@@ -226,7 +226,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           RUN_URL="https://github.com/${REPO}/actions/runs/${RUN_ID}"
-          CONTRIBUTING_URL="https://github.com/${REPO}/blob/master/CONTRIBUTING.md#live-links-to-dev-builds"
+          CONTRIBUTING_URL="https://github.com/${REPO}/blob/HEAD/CONTRIBUTING.md#live-links-to-dev-builds"
 
           if [ "${IS_FORK}" == "true" ]; then
             STATE="success"

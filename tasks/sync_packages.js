@@ -17,7 +17,7 @@ var copyrightAndLicense = [
     '',
     'Code and documentation copyright ' + year + ' Plotly, Inc.',
     '',
-    'Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).',
+    'Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/HEAD/LICENSE).',
     '',
     'Docs released under the [Creative Commons license](https://github.com/plotly/documentation/blob/source/LICENSE).',
     ''

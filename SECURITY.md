@@ -1,7 +1,7 @@
 # plotly.js Security Policy
 
 The open source plotly.js library is provided "AS IS", with no security guarantees.  Please see our
-[license](https://raw.githubusercontent.com/plotly/plotly.js/master/LICENSE) for more information.
+[license](https://raw.githubusercontent.com/plotly/plotly.js/HEAD/LICENSE) for more information.
 
 In the 1.x releases of plotly.js, we attempt to protect against XSS attacks (and similar issues) resulting from
 untrusted data being graphed by plotly.js.  However, XSS or other issues may still exist.
