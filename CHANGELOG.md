@@ -12,7 +12,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [X.Y.Z] -- UNRELEASED
 
 
-## [v4.0.0] -- 2026-08-24
+## [4.0.0] -- 2026-08-24
 
 ### Added
 - Add `minscale`, `maxscale` geo plot attributes [[#7371](https://github.com/plotly/plotly.js/pull/7371)], with thanks to @mojoaxel for the contribution!
