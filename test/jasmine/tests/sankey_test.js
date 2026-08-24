@@ -105,21 +105,27 @@ describe('sankey tests', function () {
         // not by reading `sankey.nodePadding()` back, which since
         // @plotly/d3-sankey@0.12.x returns the configured value instead of
         // the clamped one - see #7832.
-        var padMock = [{
-            type: 'sankey',
-            layoutversion: 2,
-            domain: {x: [0, 1], y: [0, 1]},
-            node: {
-                label: Array.from({length: 24}, function(_, i) { return 'n' + i; }),
-                pad: 30,
-                thickness: 10
-            },
-            link: {
-                source: Array.from({length: 23}, function(_, i) { return i; }),
-                target: Array.from({length: 23}, function(_, i) { return i + 1; }),
-                value: Array.from({length: 23}, function() { return 1; })
+        var padMock = {
+            data: [{
+                type: 'sankey',
+                layoutversion: 2,
+                node: {
+                    label: Array.from({length: 24}, function(_, i) { return 'n' + i; }),
+                    pad: 30,
+                    thickness: 10
+                },
+                link: {
+                    source: Array.from({length: 23}, function(_, i) { return i; }),
+                    target: Array.from({length: 23}, function(_, i) { return i + 1; }),
+                    value: Array.from({length: 23}, function() { return 1; })
+                }
+            }],
+            layout: {
+                width: 500,
+                height: 500,
+                margin: {l: 10, r: 10, t: 10, b: 10}
             }
-        }];
+        };
 
         it('warns when the figure is too small for node.pad', function(done) {
             var warnings = [];
@@ -127,8 +133,11 @@ describe('sankey tests', function () {
                 warnings.push(msg);
             });
 
-            var gd = createGraphDiv('pad-warn-small', 300, 100);
-            Plotly.newPlot(gd, Lib.extendDeep([], padMock))
+            var fig = Lib.extendDeep({}, padMock);
+            fig.layout.width = 200;
+            fig.layout.height = 100;
+            var gd = createGraphDiv();
+            Plotly.newPlot(gd, fig)
                 .then(function() {
                     expect(warnings.length).toEqual(1);
                     expect(warnings[0][0]).toBe('node.pad was reduced to ');
@@ -145,8 +154,11 @@ describe('sankey tests', function () {
                 warnings.push(msg);
             });
 
-            var gd = createGraphDiv('pad-warn-large', 700, 900);
-            Plotly.newPlot(gd, Lib.extendDeep([], padMock))
+            var fig = Lib.extendDeep({}, padMock);
+            fig.layout.width = 700;
+            fig.layout.height = 900;
+            var gd = createGraphDiv();
+            Plotly.newPlot(gd, fig)
                 .then(function() {
                     expect(warnings.length).toEqual(0);
                     return Plotly.purge(gd);
