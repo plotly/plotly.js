@@ -371,6 +371,33 @@ function compareRawColor(a, b) {
 }
 
 /**
+ * Compare two sort arrays element by element in ascending order.
+ * Values that do not order against each other, for example NaN, sort last.
+ * The shorter array sorts first when one array is a prefix of the other.
+ *
+ * @param {Array} a
+ * @param {Array} b
+ */
+function compareArrays(a, b) {
+    for(var i = 0; i < Math.min(a.length, b.length); i++) {
+        var valA = a[i];
+        var valB = b[i];
+
+        if(valA < valB) return -1;
+        if(valA > valB) return 1;
+        // Handle values that do not order against each other (NaN, undefined, etc.)
+        if(valA !== valB) {
+            // Sort these after every orderable value.
+            var badA = isNaN(valA);
+            var badB = isNaN(valB);
+            if(badA !== badB) return badA ? 1 : -1;
+        }
+    }
+
+    return a.length - b.length;
+}
+
+/**
  * Handle path mouseover
  * @param {PathViewModel} d
  */
@@ -1732,15 +1759,8 @@ function updatePathViewModels(parcatsViewModel) {
             sortArray2.unshift(v2.rawColor);
         }
 
-        // colors equal, sort by display categories
-        if(sortArray1 < sortArray2) {
-            return -1;
-        }
-        if(sortArray1 > sortArray2) {
-            return 1;
-        }
-
-        return 0;
+        // Sort by color, then display categories
+        return compareArrays(sortArray1, sortArray2);
     });
 
     // Create path models
