@@ -1,1 +1,0 @@
-- Change signature of `plots.graphJson()` function to remove `mode` argument [[#7829](https://github.com/plotly/plotly.js/pull/7829)]

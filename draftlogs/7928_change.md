@@ -1,1 +1,0 @@
-- Update "Share chart" dialog with more informative wording [[#7928](https://github.com/plotly/plotly.js/pull/7928)]
