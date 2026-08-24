@@ -389,6 +389,71 @@ describe('sankey tests', function () {
         });
     });
 
+    describe('node.pad clamp warning (issue 7832)', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function padWarnings() {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+            return warnings;
+        }
+
+        it('fires when node.pad is clamped to fit the figure', function(done) {
+            var warnings = padWarnings();
+            var labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+            // 8 sibling nodes cannot fit in a ~300px-high domain with
+            // node.pad: 40 -> d3-sankey clamps the padding
+            Plotly.newPlot(gd, [{
+                type: 'sankey',
+                domain: { x: [0, 1], y: [0, 0.5] },
+                node: {
+                    label: labels,
+                    pad: 40,
+                    thickness: 15
+                },
+                link: {
+                    source: [0, 0, 0, 0, 0, 0, 0, 0],
+                    target: [1, 2, 3, 4, 5, 6, 7, 8],
+                    value: [1, 1, 1, 1, 1, 1, 1, 1]
+                }
+            }])
+                .then(function() {
+                    expect(warnings.length).toBe(1);
+                    expect(warnings[0]).toContain('node.pad was reduced');
+                })
+                .then(done, done.fail);
+        });
+
+        it('does not fire when node.pad fits', function(done) {
+            var warnings = padWarnings();
+
+            Plotly.newPlot(gd, [{
+                type: 'sankey',
+                domain: { x: [0, 1], y: [0, 1] },
+                node: {
+                    label: ['a', 'b', 'c', 'd'],
+                    pad: 20,
+                    thickness: 10
+                },
+                link: {
+                    source: [0, 0, 0],
+                    target: [1, 2, 3],
+                    value: [1, 1, 1]
+                }
+            }])
+                .then(function() {
+                    expect(warnings.length).toBe(0);
+                })
+                .then(done, done.fail);
+        });
+    });
+
     describe('lifecycle methods', function () {
         var gd;
         beforeEach(function () {
