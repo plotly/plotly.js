@@ -9,6 +9,72 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [X.Y.Z] -- UNRELEASED
+
+### Added
+- Add `minscale`, `maxscale` geo plot attributes [[#7371](https://github.com/plotly/plotly.js/pull/7371)], with thanks to @mojoaxel for the contribution!
+- Enable TypeScript compatibility within the library and start exporting types [[#7680](https://github.com/plotly/plotly.js/pull/7680)]
+- Add `quiver` trace type to visualize vector fields using arrows [[#7710](https://github.com/plotly/plotly.js/pull/7710), [#7945](https://github.com/plotly/plotly.js/issues/7945)], with thanks to @degzhaus for the contribution!
+- Use dashed markers in legend for shape traces with dash configured [[#7845](https://github.com/plotly/plotly.js/pull/7845)]
+- Add `direction` attribute to the Sankey trace, controlling the flow direction along the `orientation` axis [[#7870](https://github.com/plotly/plotly.js/pull/7870)], with thanks to @wf-r for the contribution!
+  - `forward` keeps sources on the left (horizontal) or top (vertical)
+  - `reversed` moves them to the right or bottom
+- Add `sort` option to Sankey links and nodes [[#7873](https://github.com/plotly/plotly.js/pull/7873)], with thanks to @adamreeve for the contribution!
+- Add support for MathJax v4 [[#7898](https://github.com/plotly/plotly.js/pull/7898)]
+- Add top-level `xPixel` and `yPixel` keys to hover and click event data, corresponding to the pixel position of the cursor relative to the top-left corner of the graph div [[#7966](https://github.com/plotly/plotly.js/pull/7966)]
+- When `hoveranywhere` is enabled, emit a `plotly_unhover` event when the cursor leaves the plot area [[#7966](https://github.com/plotly/plotly.js/pull/7966)]
+
+### Removed
+- **Breaking**: Remove `scattermapbox`, `choroplethmapbox`, `densitymapbox` trace types, the `mapbox` subplot, and the `mapboxAccessToken` config option [[#7860](https://github.com/plotly/plotly.js/pull/7860)]
+  - These traces have been deprecated since v3. Use the equivalent `*map` traces going forward.
+- **Breaking**: Drop support for MathJax v2 [[#7898](https://github.com/plotly/plotly.js/pull/7898)]
+  - MathJax v3 and v4 are now supported in plotly.js
+- Remove config attributes `showLink`, `linkText`, `sendData`, `showSources`, and `showEditInChartStudio`, as well as trace attribute `stream`, since all of these were associated with Chart Studio and are no longer needed [[#7812](https://github.com/plotly/plotly.js/pull/7812)]
+- Remove all `*src` attributes, as well as `layout.hidesources` attribute, from the schema [[#7829](https://github.com/plotly/plotly.js/pull/7829)]
+- Remove internal `trace._fullInput` property and other dead code related to the removed `transforms` feature. No user-facing changes expected [[#7834](https://github.com/plotly/plotly.js/pull/7834)]
+
+### Changed
+- **Breaking**: Switch color processing library from [TinyColor](https://github.com/bgrins/TinyColor) to [culori](https://culorijs.org) [[#7536](https://github.com/plotly/plotly.js/pull/7536)], [#7962](https://github.com/plotly/plotly.js/pull/7962)]
+  - `rgb()`/`rgba()` strings with decimal 0–1 fractions are no longer interpreted as percentage values (relative to 255)
+  - `hsv()` color strings are no longer permitted
+  - New color formats are now supported: `#ff0000aa`, `#f00a`, `rgb(255 0 0)`, `rgba(255 0 0 / 0.5)`, `hsl(0 100% 50% / 0.5)`, `hsla(0, 100%, 50%, 0.5)`, `lab()`, `lch()`, `oklab()`, `oklch()`, `color()`, `hsl(0.5turn 60% 40%)`, `hsl(none 60% 40%)`
+  - `rgb()` now accepts an optional alpha, so `rgb(255, 0, 0, 0.5)` is no longer opaque (`rgb` and `rgba` are aliases per [spec](https://www.w3.org/TR/css-color-4/#changes-from-3))
+  - Color strings that are not valid CSS are now rejected, such as `hsl(120, 50% 50%)`
+  - Contrasting text and border colors are picked by WCAG contrast ratio, so labels on saturated mid-tone fills may switch from dark to white
+ - **Breaking**: Set default `layout.axis.tickmode` to `'sync'` when axis is overlaying [[#7684](https://github.com/plotly/plotly.js/pull/7684)]
+- **Breaking**: Change `splom.axis.matches` default from `false` to `true` [[#7843](https://github.com/plotly/plotly.js/pull/7843)]
+- **Breaking**: Replace `country-regex` with `country-iso-search` to search for country names in choropleth, scattergeo traces [[#7856](https://github.com/plotly/plotly.js/pull/7856)]
+  - The vast majority of country names are handled exactly the same with the new library; a small number of legacy entries have been removed
+- **Breaking**: Update minimum required Node version to 22 [[#7861](https://github.com/plotly/plotly.js/pull/7861)]
+- **Breaking:** Change `layout.geo.fitbounds` default from `false` to `'locations'` [[#7895](https://github.com/plotly/plotly.js/pull/7895)]
+  - `geo` subplots will now auto-fit the initial view to the trace data 
+  - Set `fitbounds: false` explicitly to opt out
+- **Breaking**: Return actual data values (rather than calcdata values) for `xvals` / `yvals` in `hoveranywhere` and `clickanywhere` events. Date and category axes will now return strings rather than numeric values. Linear and log axis values remain unchanged. [[#7964](https://github.com/plotly/plotly.js/pull/7964)]
+- Enable `scattermap` icons to render in color, upgrade Maki icons version to 8.2, and standardize scattermap legend icons to circles [[#7825](https://github.com/plotly/plotly.js/pull/7825)]
+- Use plot title as default filename for "Download plot" button [[#7828](https://github.com/plotly/plotly.js/pull/7828)]
+- Change signature of `plots.graphJson()` function to remove `mode` argument [[#7829](https://github.com/plotly/plotly.js/pull/7829)]
+- Upgrade `plotly/d3-sankey` to 0.12.3. [[#7830](https://github.com/plotly/plotly.js/pull/7830)], with thanks to @adamreeve for the contribution!
+- Update `plot_config` to show the "Upload to Cloud" button by default, and set the default server URL to cloud.plotly.com via [[#7909](https://github.com/plotly/plotly.js/pull/7909)]
+- Update "Share chart" dialog with more informative wording [[#7928](https://github.com/plotly/plotly.js/pull/7928)]
+
+### Fixed
+- Fix `histogram` autobin size for single-point traces in `overlay` mode on data updates via `Plotly.react` [[#7507](https://github.com/plotly/plotly.js/pull/7507)], with thanks to @Lexachoc for the contribution!
+ - Format tick labels correctly for small numbers in exponential notation [[#7768](https://github.com/plotly/plotly.js/pull/7768)], with thanks to @Hasnaathussain for the contribution!
+- Defer automargin during scroll-wheel zoom, to prevent erratic jittering while zooming [[#7815](https://github.com/plotly/plotly.js/pull/7815)], with thanks to @keilogic for the contribution!
+- Fix crash when ordering categories by value (e.g. `sum descending`) with `null` coordinates [[#7855](https://github.com/plotly/plotly.js/pull/7855)]
+- Prevent outside bar text for zero-length bars from overlapping axis tick labels [[#7872](https://github.com/plotly/plotly.js/pull/7872)], with thanks to @vizansh for the contribution!
+ - Fix `scattermap`, `densitymap` traces not showing all points by dynamically computing `center`, `zoom` values [[#7884](https://github.com/plotly/plotly.js/pull/7884), [#7913](https://github.com/plotly/plotly.js/pull/7913)], with thanks to @palmerusaf and @DhruvGarg111 for the contributions!
+ - Fix GeoJSON bounding-box computation for `choropleth` and `scattergeo` traces whose geometry crosses the antimeridian [[#7891](https://github.com/plotly/plotly.js/pull/7891)]
+- Fix `hovertemplate`/`texttemplate`/`tickformat`/`hoverformat` improperly handling d3-format specs that start with a sign flag such as `+.2f` [[#7900](https://github.com/plotly/plotly.js/pull/7900)], with thanks to @TemRevil for the contribution!
+- Snap cartesian axis tick values to multiple of delta so custom `tickformat` (e.g. `"~r"`) no longer shows floating-point artifacts [[#7901](https://github.com/plotly/plotly.js/pull/7901)], with thanks to @arieleli01212 and @kirthi-b for the contribution!
+- Fix `scattermap` box and lasso selection across the antimeridian [[#7905](https://github.com/plotly/plotly.js/pull/7905)], with thanks to @coyaSONG for the contribution!
+ - Fix crash ("Something went wrong with axis scaling") when a colorbar's title or padding leaves it with a negative domain length [[#7908](https://github.com/plotly/plotly.js/pull/7908)], with thanks to @zeehio for the contribution!
+- Prevent MultiPolygon features with no positive-area polygon from aborting choropleth rendering [[#7921](https://github.com/plotly/plotly.js/pull/7921)], with thanks to @swjturay for the contribution!
+- Fix `geo.fitbounds: 'locations'` when mixing antimeridian-crossing territories with normal ones [[#7948](https://github.com/plotly/plotly.js/pull/7948)]
+- Fix issue where plot fails to render if unsupported MathJax version is present on page [[#7951](https://github.com/plotly/plotly.js/pull/7951)]
+- Fix numeric color sorting for bundled parallel-categories (parcats) paths [[#7959](https://github.com/plotly/plotly.js/pull/7959)], with thanks to @CAOShurong for the contribution!
+
+
 ## [4.0.0-rc.0] -- 2026-07-21
 
 ### Added
