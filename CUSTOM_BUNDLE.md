@@ -1,5 +1,5 @@
 # Custom bundle
-You can easily make custom bundles yourself if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/HEAD/dist/README.md) meet your needs, or if you want to make a more optimized bundle file with/without specific traces.
+You can easily make custom bundles yourself if none of the [distributed packages](https://github.com/plotly/plotly.js/blob/main/dist/README.md) meet your needs, or if you want to make a more optimized bundle file with/without specific traces.
 
 Make sure you have the versions of node/npm that's recommended:
 - plotly.js before 2.5: Node 12/npm 6

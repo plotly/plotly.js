@@ -1,5 +1,5 @@
 # Alternative ways to require or build plotly.js
-Depending on your needs you may require/import one of [the distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/HEAD/dist/README.md) or [a plotly.js/lib index file](https://github.com/plotly/plotly.js/tree/HEAD/lib) and integrate it into your application.
+Depending on your needs you may require/import one of [the distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/main/dist/README.md) or [a plotly.js/lib index file](https://github.com/plotly/plotly.js/tree/main/lib) and integrate it into your application.
 
 The sections below provide additional info in respect to alternative building frameworks.
 
