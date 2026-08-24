@@ -115,9 +115,12 @@ describe('sankey tests', function () {
                     thickness: 10
                 },
                 link: {
-                    source: Array.from({length: 23}, function(_, i) { return i; }),
-                    target: Array.from({length: 23}, function(_, i) { return i + 1; }),
-                    value: Array.from({length: 23}, function() { return 1; })
+                    // star topology: one source feeding 24 sinks puts all 24
+                    // sink nodes in a single column, so a small figure must
+                    // clamp the padding
+                    source: Array.from({length: 24}, function() { return 0; }),
+                    target: Array.from({length: 24}, function(_, i) { return i + 1; }),
+                    value: Array.from({length: 24}, function() { return 1; })
                 }
             }],
             layout: {
