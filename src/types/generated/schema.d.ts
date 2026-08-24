@@ -6680,15 +6680,15 @@ export interface PieData {
 
 export interface QuiverData {
     /**
-     * Sets the arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the arrow on (x,y).
+     * Sets the vector arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the vector arrow on (x,y).
      * @default 'tail'
      */
     anchor?: 'tip' | 'tail' | 'center';
     /**
-     * Sets the mode used to determine the angle of the arrow vectors. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axes scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis
-     * @default 'axis'
+     * Determines how the u/v vector components are interpreted. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axis scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis
+     * @default 'data'
      */
-    anglemode?: 'paper' | 'data';
+    arrowref?: 'paper' | 'data';
     /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
     customdata?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -6729,9 +6729,20 @@ export interface QuiverData {
      * Minimum: 0
      */
     legendwidth?: number;
+    /**
+     * Adjusts the drawn length of the vector arrows. The arrow length is determined by the values of u and v, then optionally rescaled when `lengthmode` is *scaled*, then multiplied by `lengthfactor`.
+     * @default 1
+     * Minimum: 0
+     */
+    lengthfactor?: number;
+    /**
+     * Determines whether vector arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper* vectors are always scaled and `lengthmode` *raw* is ignored.
+     * @default 'scaled'
+     */
+    lengthmode?: 'scaled' | 'raw';
     marker?: {
         /**
-         * Sets the size of the arrow head relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.
+         * Sets the size of the vector arrowhead relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.
          * @default 1
          * Minimum: 0.3
          */
@@ -6775,7 +6786,7 @@ export interface QuiverData {
              */
             dash?: Dash;
             /**
-             * Sets the width (in px) of the arrow lines.
+             * Sets the width (in px) of the vector arrow lines.
              * @default 2
              * Minimum: 0
              */
@@ -6817,17 +6828,6 @@ export interface QuiverData {
      * @default true
      */
     showlegend?: boolean;
-    /**
-     * Determines whether arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `anglemode` is *data* arrows are alwyas scaled and `sizemode` *raw* is ignored.
-     * @default 'scaled'
-     */
-    sizemode?: 'scaled' | 'raw';
-    /**
-     * Adjusts the arrow size scaling. The arrow length is determined by the vector norm multiplied by `sizeref`, optionally normalized when `sizemode` is *scaled* (`sizeref` is applied after scaling).
-     * @default 1
-     * Minimum: 0
-     */
-    sizeref?: number;
     /** Sets text elements associated with each (x,y) pair. If a single string, the same string appears over all the data points. If an array of string, the items are mapped in order to the this trace's (x,y) coordinates. If trace `hoverinfo` contains a *text* flag and *hovertext* is not set, these elements will be seen in the hover labels. */
     text?: string | string[];
     /** Sets the text font. */
@@ -6838,7 +6838,7 @@ export interface QuiverData {
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
     type?: 'quiver';
-    /** Sets the x components of the arrow vectors. */
+    /** Sets the x components of the vector arrows. */
     u?: Datum[] | Datum[][] | TypedArray;
     /** Sets the hover text formatting rule for `u` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format.By default the values are formatted using generic number format. */
     uhoverformat?: string;
@@ -6854,7 +6854,7 @@ export interface QuiverData {
         };
         textfont?: Font;
     };
-    /** Sets the y components of the arrow vectors. */
+    /** Sets the y components of the vector arrows. */
     v?: Datum[] | Datum[][] | TypedArray;
     /** Sets the hover text formatting rule for `v` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format.By default the values are formatted using generic number format. */
     vhoverformat?: string;
@@ -6863,7 +6863,7 @@ export interface QuiverData {
      * @default true
      */
     visible?: true | false | 'legendonly';
-    /** Sets the x coordinates of the arrow locations. */
+    /** Sets the x coordinates of the vector arrow locations. */
     x?: Datum[] | Datum[][] | TypedArray;
     /**
      * Alternate to `x`. Builds a linear space of x coordinates. Use with `dx` where `x0` is the starting coordinate and `dx` the step.
@@ -6877,7 +6877,7 @@ export interface QuiverData {
     xaxis?: string;
     /** Sets the hover text formatting rule for `x` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. And for dates see: https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format. We add two items to d3's date formatter: *%h* for half of the year as a decimal number as well as *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*By default the values are formatted using `xaxis.hoverformat`. */
     xhoverformat?: string;
-    /** Sets the y coordinates of the arrow locations. */
+    /** Sets the y coordinates of the vector arrow locations. */
     y?: Datum[] | Datum[][] | TypedArray;
     /**
      * Alternate to `y`. Builds a linear space of y coordinates. Use with `dy` where `y0` is the starting coordinate and `dy` the step.

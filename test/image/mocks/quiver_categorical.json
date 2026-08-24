@@ -9,7 +9,7 @@
       "text": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
       "textposition": "top center",
       "textfont": { "size": 12 },
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "tail",
       "marker": {
         "line": {"width": 2}

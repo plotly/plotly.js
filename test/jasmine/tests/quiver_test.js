@@ -95,11 +95,17 @@ describe('Test quiver defaults', function() {
         expect(gd._fullData[0].v).toEqual([0, 0, 0]);
     });
 
-    it('should set sizemode and sizeref defaults correctly', function() {
+    it('should set lengthmode and lengthfactor defaults correctly', function() {
         gd = makeGD();
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].sizemode).toBe('scaled');
-        expect(gd._fullData[0].sizeref).toBe(1);
+        expect(gd._fullData[0].lengthmode).toBe('scaled');
+        expect(gd._fullData[0].lengthfactor).toBe(1);
+    });
+
+    it('should set arrowref default to data', function() {
+        gd = makeGD();
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].arrowref).toBe('data');
     });
 
     it('should set anchor default to tail', function() {
@@ -220,13 +226,13 @@ describe('Test quiver interactions', function() {
             y: [1, 2],
             u: [1, 0],
             v: [0, 1],
-            sizeref: 0.5
+            lengthfactor: 0.5
         }]).then(function() {
-            expect(gd._fullData[0].sizeref).toBe(0.5);
-            return Plotly.restyle(gd, 'sizeref', 1.5);
+            expect(gd._fullData[0].lengthfactor).toBe(0.5);
+            return Plotly.restyle(gd, 'lengthfactor', 1.5);
         })
         .then(function() {
-            expect(gd._fullData[0].sizeref).toBe(1.5);
+            expect(gd._fullData[0].lengthfactor).toBe(1.5);
             return Plotly.restyle(gd, 'anchor', 'tip');
         })
         .then(function() {
@@ -293,25 +299,25 @@ describe('Test quiver interactions', function() {
         .then(done, done.fail);
     });
 
-    it('should handle sizemode changes', function(done) {
+    it('should handle lengthmode changes', function(done) {
         Plotly.newPlot(gd, [{
             type: 'quiver',
             x: [0, 1, 2],
             y: [0, 1, 2],
             u: [1, 2, 3],
             v: [1, 2, 3],
-            sizemode: 'scaled',
-            sizeref: 0.5
+            lengthmode: 'scaled',
+            lengthfactor: 0.5
         }]).then(function() {
-            expect(gd._fullData[0].sizemode).toBe('scaled');
-            return Plotly.restyle(gd, 'sizemode', 'raw');
+            expect(gd._fullData[0].lengthmode).toBe('scaled');
+            return Plotly.restyle(gd, 'lengthmode', 'raw');
         })
         .then(function() {
-            expect(gd._fullData[0].sizemode).toBe('raw');
-            return Plotly.restyle(gd, 'sizemode', 'scaled');
+            expect(gd._fullData[0].lengthmode).toBe('raw');
+            return Plotly.restyle(gd, 'lengthmode', 'scaled');
         })
         .then(function() {
-            expect(gd._fullData[0].sizemode).toBe('scaled');
+            expect(gd._fullData[0].lengthmode).toBe('scaled');
         })
         .then(done, done.fail);
     });
