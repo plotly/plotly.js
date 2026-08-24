@@ -8,7 +8,7 @@ Walk this list before you hand the work back. Answer each item with evidence, no
 - [ ] A human asked for the pull request. If nobody asked, you open the issue and stop.
 - [ ] A human reviewed the code
 - [ ] You saw the rendered plot, for any change that moves pixels
-- [ ] You read the last few merged pull requests and matched their shape
+- [ ] You read the last few merged pull requests by library maintainers and matched their shape
 
 ## The change
 
@@ -26,7 +26,7 @@ Walk this list before you hand the work back. Answer each item with evidence, no
 ## Generated output
 
 - [ ] `npm run schema` ran after any attribute or description edit
-- [ ] `test/plot-schema.json` and `src/types/generated/schema.d.ts` are staged
+- [ ] `test/plot-schema.json` and `src/types/generated/schema.d.ts` are committed if they changed
 - [ ] `npm run schema-typegen-diff-check` reports no drift
 - [ ] The hand-written declarations under `src/types/core/` and `src/types/lib/` match the new API surface
 - [ ] Regl shaders regenerated, if the diff touches a regl path

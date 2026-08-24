@@ -50,13 +50,13 @@ npm run test-jasmine -- axes --nowatch
 
 `--nowatch` turns off the watch mode, so the run exits after one pass instead of waiting for the next file change. Pass the exact file basename without the `_test.js` suffix, which the karma config appends for you. The name is not a substring: `-- bar` runs `bar_test.js` alone, and a partial name such as `hover_lab` matches no file, so the run finds nothing to do. Several names in one command run several suites.
 
-Write a test for every behavior change. A bug fix needs a test that fails before the fix.
+Write or modify a test for every behavior change. A bug fix needs a test that fails before the fix.
 
 For an interaction test, fix the width, height, margins, and both axis ranges. Interaction coordinates count from the top-left corner of the plot, including the margin. A test without fixed geometry turns flaky.
 
 ## Image tests
 
-An image test is a mock plus a baseline PNG.
+An image test is a JSON mock file plus a baseline PNG image.
 
 - The mock is figure JSON at `test/image/mocks/<name>.json`
 - The baseline is `test/image/baselines/<name>.png`

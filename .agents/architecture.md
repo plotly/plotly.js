@@ -6,7 +6,7 @@ Trace modules, the schema, and where a change lands. [CONTRIBUTING.md](../CONTRI
 
 A trace module is a plain object with functions attached, exported from `src/traces/<name>/index.js` and registered through the registry. The figure-wide subroutines call the methods in a loop, so the subroutines work with whatever set of trace modules a bundle registers.
 
-The methods you touch most:
+The methods/properties you touch most:
 
 - `attributes` - the JSON-serializable attribute declarations that feed the schema
 - `supplyDefaults` - input settings to `gd._fullData`. Cheap. No data loops.
@@ -18,7 +18,7 @@ Read the "Trace module design" section of [CONTRIBUTING.md](../CONTRIBUTING.md) 
 
 ## The schema
 
-`test/plot-schema.json` is generated output that records the proposed API. Any change to an attribute or an attribute description changes this file.
+`test/plot-schema.json` is generated output that captures the full plotly.js API. Any change to an attribute or an attribute description changes this file.
 
 ```bash
 npm run schema

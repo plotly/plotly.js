@@ -4,7 +4,7 @@
 
 ## Formatting
 
-Biome owns formatting. The JavaScript rules live in `biome.json`: single quotes, a four-space indent, no trailing commas, and a 120 column line width.
+Biome owns formatting. The JavaScript rules live in `biome.json`.
 
 Run the formatter on every file you add:
 
@@ -14,7 +14,7 @@ npx @biomejs/biome format --write <path>
 
 Format only files you created. Never pass a directory, and never format a file that already existed. The CLI formats a whole file at a time, and this repository is not formatted from end to end, so either one rewrites lines your change never touched and buries the real diff.
 
-In an existing file, write the lines you add by hand, to the settings above. That means single quotes, a four-space indent, no trailing comma, and no line past 120 columns. The settings are the house style, so follow them even when the lines around yours predate them. If you formatted such a file by accident, undo your changes and redo the edit.
+In an existing file, write the lines you add by hand, to follow the rules outlined in `biome.json`. The settings are the house style, so follow them even when the lines around yours predate them. If you formatted such a file by accident, undo your changes and redo the edit.
 
 `npm run lint-fix` also writes. It formats `test/image/mocks` and applies the safe lint fixes across every included path, so run it only when you want both.
 
