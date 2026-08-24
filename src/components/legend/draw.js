@@ -111,7 +111,6 @@ function drawOne(gd, opts) {
 
             var shapeLegend = {
                 _isShape: true,
-                _fullInput: shape,
                 index: shape._index,
                 name: shape.name || shape.label.text || ('shape ' + shape._index),
                 legend: shape.legend,
@@ -599,12 +598,11 @@ function drawTexts(g, gd, legendObj) {
                 this.text(ensureLength(newName, maxNameLength))
                     .call(textLayout, g, gd, legendObj);
 
-                var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
 
                 update.name = newName;
 
-                if(fullInput._isShape) {
+                if(legendItem.trace._isShape) {
                     return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
                 } else {
                     return Registry.call('_guiRestyle', gd, update, trace.index);

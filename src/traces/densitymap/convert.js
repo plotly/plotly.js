@@ -64,7 +64,7 @@ module.exports = function convert(calcTrace) {
 
     // Add alpha channel to first colorscale step.
     // If not, we would essentially color the entire map.
-    // See https://maplibre.org/maplibre-gl-js/docs/examples/heatmap-layer/
+    // See https://maplibre.org/maplibre-gl-js/docs/examples/create-a-heatmap-layer/
     var scl01 = scl[0][1];
     var color0 = Color.opacity(scl01) < 1 ? scl01 : Color.addOpacity(scl01, 0);
 

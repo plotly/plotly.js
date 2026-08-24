@@ -37,7 +37,6 @@ var __webpack_unused_export__;
 
 
 
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var base64 = __webpack_require__(7507);
 var ieee754 = __webpack_require__(3778);
 var customInspectSymbol = typeof Symbol === 'function' && typeof Symbol['for'] === 'function' // eslint-disable-line dot-notation
@@ -72,7 +71,7 @@ function typedArraySupport() {
   try {
     var arr = new Uint8Array(1);
     var proto = {
-      foo: function foo() {
+      foo: function () {
         return 42;
       }
     };
@@ -85,14 +84,14 @@ function typedArraySupport() {
 }
 Object.defineProperty(Buffer.prototype, 'parent', {
   enumerable: true,
-  get: function get() {
+  get: function () {
     if (!Buffer.isBuffer(this)) return undefined;
     return this.buffer;
   }
 });
 Object.defineProperty(Buffer.prototype, 'offset', {
   enumerable: true,
-  get: function get() {
+  get: function () {
     if (!Buffer.isBuffer(this)) return undefined;
     return this.byteOffset;
   }
@@ -137,7 +136,7 @@ function from(value, encodingOrOffset, length) {
     return fromArrayView(value);
   }
   if (value == null) {
-    throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + _typeof(value));
+    throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + typeof value);
   }
   if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) {
     return fromArrayBuffer(value, encodingOrOffset, length);
@@ -157,7 +156,7 @@ function from(value, encodingOrOffset, length) {
   if (typeof Symbol !== 'undefined' && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === 'function') {
     return Buffer.from(value[Symbol.toPrimitive]('string'), encodingOrOffset, length);
   }
-  throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + _typeof(value));
+  throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' + 'or Array-like Object. Received type ' + typeof value);
 }
 
 /**
@@ -391,7 +390,7 @@ function byteLength(string, encoding) {
     return string.byteLength;
   }
   if (typeof string !== 'string') {
-    throw new TypeError('The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' + 'Received type ' + _typeof(string));
+    throw new TypeError('The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' + 'Received type ' + typeof string);
   }
   var len = string.length;
   var mustMatch = arguments.length > 2 && arguments[2] === true;
@@ -559,7 +558,7 @@ Buffer.prototype.compare = function compare(target, start, end, thisStart, thisE
     target = Buffer.from(target, target.offset, target.byteLength);
   }
   if (!Buffer.isBuffer(target)) {
-    throw new TypeError('The "target" argument must be one of type Buffer or Uint8Array. ' + 'Received type ' + _typeof(target));
+    throw new TypeError('The "target" argument must be one of type Buffer or Uint8Array. ' + 'Received type ' + typeof target);
   }
   if (start === undefined) {
     start = 0;
@@ -1547,18 +1546,18 @@ var hexSliceLookupTable = function () {
 module.exports = isMobile;
 module.exports.isMobile = isMobile;
 module.exports["default"] = isMobile;
-var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
-var notMobileRE = /CrOS/;
-var tabletRE = /android|ipad|playbook|silk/i;
+const mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+const notMobileRE = /CrOS/;
+const tabletRE = /android|ipad|playbook|silk/i;
 function isMobile(opts) {
   if (!opts) opts = {};
-  var ua = opts.ua;
+  let ua = opts.ua;
   if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
   if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
     ua = ua.headers['user-agent'];
   }
   if (typeof ua !== 'string') return false;
-  var result = mobileRE.test(ua) && !notMobileRE.test(ua) || !!opts.tablet && tabletRE.test(ua);
+  let result = mobileRE.test(ua) && !notMobileRE.test(ua) || !!opts.tablet && tabletRE.test(ua);
   if (!result && opts.tablet && opts.featureDetect && navigator && navigator.maxTouchPoints > 1 && ua.indexOf('Macintosh') !== -1 && ua.indexOf('Safari') !== -1) {
     result = true;
   }

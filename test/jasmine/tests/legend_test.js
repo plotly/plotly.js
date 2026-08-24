@@ -3200,8 +3200,7 @@ describe('legend with custom legendwidth', function () {
             .then(done, done.fail);
     });
 
-    // TODO: Update this test when releasing next major version which will remove the exception for shape traces
-    it('should apply marker.line.dash to scatter traces but use solid for shape traces', (done) => {
+    it('should apply marker.line.dash to scatter traces and shape traces', (done) => {
         const data = [
             {
                 type: 'scatter',
@@ -3247,7 +3246,7 @@ describe('legend with custom legendwidth', function () {
 
                 expect(legendItems.length).toBe(2);
                 expect(legendItems[0].style.strokeDasharray).not.toBe('');
-                expect(legendItems[1].style.strokeDasharray).toBe('');
+                expect(legendItems[1].style.strokeDasharray).not.toBe('');
             })
             .then(done, done.fail);
     });

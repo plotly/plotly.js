@@ -1,10 +1,11 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var countryRegex = require('country-regex');
+const { COUNTRIES, createLookup } = require('country-iso-search');
 var { area: turfArea } = require('@turf/area');
 var { centroid: turfCentroid } = require('@turf/centroid');
-var { bbox: turfBbox } = require('@turf/bbox');
+const { coordAll } = require('@turf/meta');
+const { geoBounds } = require('d3-geo');
 
 var identity = require('./identity');
 var loggers = require('./loggers');
@@ -12,9 +13,9 @@ var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
 const { usaLocationAbbreviations, usaLocationList } = require('./usa_location_names');
+const { COUNTRIES_X } = require('./custom_country_codes');
 
-// make list of all country iso3 ids from at runtime
-var countryIds = Object.keys(countryRegex);
+const { lookupAlpha3 } = createLookup([...COUNTRIES, ...COUNTRIES_X]);
 
 var locationmodeToIdFinder = {
     'ISO-3': identity,
@@ -23,13 +24,8 @@ var locationmodeToIdFinder = {
 };
 
 function countryNameToISO3(countryName) {
-    for (var i = 0; i < countryIds.length; i++) {
-        var iso3 = countryIds[i];
-        var regex = new RegExp(countryRegex[iso3]);
-
-        if (regex.test(countryName.trim().toLowerCase())) return iso3;
-    }
-
+    const iso3 = lookupAlpha3(countryName);
+    if (iso3) return iso3;
     loggers.log('Unrecognized country name: ' + countryName + '.');
 
     return false;
@@ -402,63 +398,91 @@ function fetchTraceGeoData(calcData) {
     return promises;
 }
 
-// TODO `turf/bbox` gives wrong result when the input feature/geometry
-// crosses the anti-meridian. We should try to implement our own bbox logic.
-function computeBbox(d) {
-    return turfBbox(d);
+/**
+ * Compute a `[west, south, east, north]` bounding box for a GeoJSON object
+ * (Feature, Geometry, FeatureCollection, or GeometryCollection). This function
+ * handles geometry that crosses the antimeridian. `north`/`south` will be in the
+ * range `[-90, 90]`; `west` will typically be in the range `[-180, 180]`; `east`
+ * will typically be in the range `[-180, 180]`, but when the input crosses the
+ * antimeridian, it will be shifted by +360° so the range will be `[180, west + 360)`.
+ *
+ * @param {object} d - a GeoJSON Feature, Geometry, FeatureCollection, or
+ *   GeometryCollection.
+ * @return {[number, number, number, number]|null} `[west, south, east, north]`
+ *   in degrees; `east` may exceed 180° when the input crosses ±180°.
+ *   Returns `null` for input with no extractable coordinates (e.g. `Sphere`,
+ *   empty FeatureCollection).
+ */
+const computeBbox = (d) => boundsOfCoords(coordsOf(d));
+
+/**
+ * Return every coordinate contained in a GeoJSON object.
+ *
+ * @param {object} d - a GeoJSON Feature, Geometry, FeatureCollection, or
+ *   GeometryCollection.
+ * @return {Array} `[lon, lat]` pairs. Empty for input with nothing extractable:
+ *   coordAll throws on a Sphere, on malformed input and on nullish values, and
+ *   returns nothing for an empty collection.
+ */
+function coordsOf(d) {
+    try {
+        return coordAll(d);
+    } catch (_) {
+        return [];
+    }
 }
 
 /**
- * Pick a compact longitude range for `fitbounds`-style auto-framing when the
- * data straddles the antimeridian (±180°).
+ * Bounding box of a list of coordinates, as `computeBbox` describes.
  *
- * Longitude is cyclic, so the naive [min, max] range used by the autorange
- * machinery can include a large empty span when points sit on both sides of
- * ±180° (e.g. lon = [131.8855, -179] spans ~311° the long way round, when the
- * compact view spans ~49° across the antimeridian). This finds the largest gap
- * between consecutive longitudes and, when that gap is wider than the gap across
- * the antimeridian, returns the complementary range so the map shows the dense
- * cluster of points rather than the empty ocean between them.
- *
- * The returned upper bound may exceed 180°; downstream `makeRangeBox` (and
- * MapLibre's `LngLatBounds`) handle ranges that cross the antimeridian without
- * ambiguity.
- *
- * @param {Array} lons - longitude values (may contain non-finite entries)
- * @return {Array|null} [lonStart, lonEnd] when an antimeridian-crossing range is
- *   more compact, otherwise null (caller keeps the autorange result).
+ * @param {Array} points - `[lon, lat]` pairs
+ * @return {[number, number, number, number]|null} `[west, south, east, north]`,
+ *   or null when there are no points.
  */
-function getFitboundsLonRange(lons) {
-    const sorted = lons.filter(isFinite).sort((a, b) => a - b);
-    if (sorted.length < 2) return null;
-
-    const n = sorted.length;
-    const naiveSpan = sorted[n - 1] - sorted[0];
-    // Data already wraps the whole globe; there is nothing to compact.
-    if (naiveSpan >= 360) return null;
-
-    // Widest gap between consecutive longitudes.
-    let maxGap = -Infinity;
-    let gapStart = -1;
-    for (let i = 0; i < n - 1; i++) {
-        const gap = sorted[i + 1] - sorted[i];
-        if (gap > maxGap) {
-            maxGap = gap;
-            gapStart = i;
-        }
+function boundsOfCoords(points) {
+    if (points.length === 0) return null;
+    if (points.length === 1) {
+        const [lon, lat] = points[0];
+        return [lon, lat, lon, lat];
     }
+    // Pass as MultiPoint (just a bunch of vertices) to avoid
+    // geobounds treating collection as polygons
+    const [[west, south], [east, north]] = geoBounds({ type: 'MultiPoint', coordinates: points });
 
-    // Only worth wrapping when an interior gap is wider than the gap that the
-    // naive [min, max] range already leaves open across the antimeridian.
-    const antimeridianGap = 360 - naiveSpan;
-    if (maxGap <= antimeridianGap) return null;
-
-    return [sorted[gapStart + 1], sorted[gapStart] + ANTIMERIDIAN_LON_SHIFT];
+    return [
+        west,
+        south,
+        unwrapLonRange([west, east])[1], // Unwrap antimeridian crossing; east may exceed 180°
+        north
+    ];
 }
+
+const usesFitGeojson = (trace, geoLayout) => geoLayout.fitbounds === 'geojson' && trace.locationmode === 'geojson-id';
+
+/**
+ * Coordinates of a trace's whole geojson, for the `fitbounds: 'geojson'` mode.
+ *
+ * @param {object} trace - a `fullData` trace
+ * @param {object} geoLayout - the subplot's `fullLayout` entry
+ * @return {Array} `[lon, lat]` pairs. Empty when the trace is in another mode, or
+ *   when the geojson has nothing extractable.
+ */
+const fitGeojsonCoords = (trace, geoLayout) =>
+    usesFitGeojson(trace, geoLayout) ? coordsOf(getTraceGeojson(trace)) : [];
+
+/**
+ * Bounding box of a trace's whole geojson, for the `fitbounds: 'geojson'` mode.
+ *
+ * @param {object} trace - a `fullData` trace
+ * @param {object} geoLayout - the subplot's `fullLayout` entry
+ * @return {Array|null} `[west, south, east, north]`, or null whenever
+ *   `fitGeojsonCoords` is empty.
+ */
+const fitGeojsonBbox = (trace, geoLayout) => boundsOfCoords(fitGeojsonCoords(trace, geoLayout));
 
 /**
  * Return an unwrapped version of a `[lon0, lon1]` longitude range.
- * When the range crosses the antimeridian (`lon0 > 0`, `lon1 < 0`),
+ * When the range crosses the antimeridian (`lon0 > lon1`),
  * 360 is added to `lon1` to produce a continuous range;
  * otherwise the input pair is returned unchanged. Function assumes
  * `lon0` is west of `lon1`.
@@ -466,13 +490,14 @@ function getFitboundsLonRange(lons) {
  * @example
  *   unwrapLonRange([170, -170]) // → [170, 190]  (span = 20°, midpoint = 180°)
  *   unwrapLonRange([-10, 20])   // → [-10, 20]   (no crossing, passthrough)
+ *   unwrapLonRange([-5, -170])  // → [-5, 190]   (mixed-sign crossing, e.g. from geoBounds)
  *
  * @param {[number, number]} lonRange - `[lon0, lon1]`, each in the range [-180, 180]
  * @return {[number, number]} The unwrapped range; when the input contract is
  *   respected, `lon1` falls in the range `[lon0, lon0 + 360)`.
  */
 function unwrapLonRange([lon0, lon1]) {
-    return [lon0, lon0 > 0 && lon1 < 0 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
+    return [lon0, lon0 > lon1 ? lon1 + ANTIMERIDIAN_LON_SHIFT : lon1];
 }
 
 module.exports = {
@@ -481,9 +506,12 @@ module.exports = {
     getTraceGeojson,
     extractTraceFeature,
     fetchTraceGeoData,
+    boundsOfCoords,
     computeBbox,
+    coordsOf,
     doesCrossAntiMeridian,
-    getFitboundsLonRange,
+    fitGeojsonBbox,
+    fitGeojsonCoords,
     unwrapLonRange,
     ANTIMERIDIAN_LON_SHIFT
 };

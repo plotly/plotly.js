@@ -64,11 +64,11 @@ function nodeNonHoveredStyle(sankeyNode, d, sankey) {
 function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     sankeyLink.style('fill', function(l) {
         if(!l.link.concentrationscale) {
-            return l.tinyColorHoverHue;
+            return l.hoverRgb;
         }
     }).style('fill-opacity', function(l) {
         if(!l.link.concentrationscale) {
-            return l.tinyColorHoverAlpha;
+            return l.hoverAlpha;
         }
     });
 
@@ -80,11 +80,11 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
                 .filter(function(l) {return l.link.label === label;})
                 .style('fill', function(l) {
                     if(!l.link.concentrationscale) {
-                        return l.tinyColorHoverHue;
+                        return l.hoverRgb;
                     }
                 }).style('fill-opacity', function(l) {
                     if(!l.link.concentrationscale) {
-                        return l.tinyColorHoverAlpha;
+                        return l.hoverAlpha;
                     }
                 });
         }
@@ -100,9 +100,9 @@ function linkHoveredStyle(d, sankey, visitNodes, sankeyLink) {
 
 function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
     sankeyLink.style('fill', function(l) {
-        return l.tinyColorHue;
+        return l.rgb;
     }).style('fill-opacity', function(l) {
-        return l.tinyColorAlpha;
+        return l.alpha;
     });
 
     sankeyLink.each(function(curLink) {
@@ -111,8 +111,8 @@ function linkNonHoveredStyle(d, sankey, visitNodes, sankeyLink) {
             ownTrace(sankey, d)
                 .selectAll('.' + cn.sankeyLink)
                 .filter(function(l) {return l.link.label === label;})
-                .style('fill', function(l) {return l.tinyColorHue;})
-                .style('fill-opacity', function(l) {return l.tinyColorAlpha;});
+                .style('fill', l => l.rgb)
+                .style('fill-opacity', l => l.alpha);
         }
     });
 
@@ -193,8 +193,14 @@ module.exports = function plot(gd, calcData) {
                 hoverCenterX = (link.source.x1 + link.target.x0) / 2;
                 hoverCenterY = (link.y0 + link.y1) / 2;
             }
+            var vertical = link.trace.orientation === 'v';
+            var reversed = link.trace.direction === 'reversed';
             var center = [hoverCenterX, hoverCenterY];
-            if(link.trace.orientation === 'v') center.reverse();
+            // Vertical orientation transposes x/y to match the group transform.
+            if(vertical) center.reverse();
+            // reversed direction additionally mirrors the flow axis (matching the translate).
+            if(vertical && reversed) center[1] = d.parent.height - center[1];
+            if(!vertical && reversed) center[0] = d.parent.width - center[0];
             center[0] += d.parent.translateX;
             center[1] += d.parent.translateY;
             return center;
@@ -321,7 +327,7 @@ module.exports = function plot(gd, calcData) {
                 incomingLabel + d.node.targetLinks.length,
                 outgoingLabel + d.node.sourceLinks.length
             ].filter(renderableValuePresent).join('<br>'),
-            color: castHoverOption(obj, 'bgcolor') || d.tinyColorHue,
+            color: castHoverOption(obj, 'bgcolor') || d.rgb,
             borderColor: castHoverOption(obj, 'bordercolor'),
             fontFamily: castHoverOption(obj, 'font.family'),
             fontSize: castHoverOption(obj, 'font.size'),

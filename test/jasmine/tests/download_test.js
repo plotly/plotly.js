@@ -86,6 +86,96 @@ describe('Plotly.downloadImage', function() {
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
+
+    describe('default filename (derived from the plot title)', function() {
+        // download with no explicit `filename`, so the name is derived from the title
+        function downloadDefault(layout) {
+            return Plotly.newPlot(gd, [{y: [1, 2, 1]}], layout).then(function() {
+                return Plotly.downloadImage(gd, {format: 'png', height: 300, width: 300});
+            });
+        }
+
+        it('slugifies the plot title into the filename', function(done) {
+            downloadDefault({title: {text: 'My Awesome Plot'}})
+            .then(function(filename) {
+                expect(filename).toBe('my-awesome-plot.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('uses a title supplied via layout.template', function(done) {
+            // the template title only appears in _fullLayout, not the input layout
+            downloadDefault({template: {layout: {title: {text: 'Title From Template'}}}})
+            .then(function(filename) {
+                expect(filename).toBe('title-from-template.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('strips forbidden characters from the title', function(done) {
+            downloadDefault({title: {text: 'Revenue, Costs & "Profit" (2024)'}})
+            .then(function(filename) {
+                expect(filename).toBe('revenue-costs-profit-2024.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('caps the title-derived name at 40 code points', function(done) {
+            downloadDefault({title: {text: 'A Very Long Plot Title That Exceeds The Forty Character Maximum Limit'}})
+            .then(function(filename) {
+                expect(filename).toBe('a-very-long-plot-title-that-exceeds-the.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('falls back to subtitle when title contains MathJax', function(done) {
+            downloadDefault({
+                title: {
+                    text: '$Ax^2 + bx + c$',
+                    subtitle: {text: 'Quadratic Equation'}
+                },
+            })
+            .then(function(filename) {
+                expect(filename).toBe('quadratic-equation.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('falls back to plot-image as filename when title contains MathJax and there is no subtitle', function(done) {
+            downloadDefault({title: {text: '$Ax^2 + bx + c$'}})
+            .then(function(filename) {
+                expect(filename).toBe('plot-image.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('falls back to plot-image as filename when there is no title or subtitle', function(done) {
+            downloadDefault({})
+            .then(function(filename) {
+                expect(filename).toBe('plot-image.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('does not use the editable-mode placeholder as the filename', function(done) {
+            // _fullLayout.title.text defaults to the "Click to enter Plot title"
+            // placeholder; the filename must come from the input layout instead
+            downloadDefault({})
+            .then(function(filename) {
+                expect(gd._fullLayout.title.text).toBe('Click to enter Plot title');
+                expect(filename).toBe('plot-image.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+
+        it('ignores title if it contains LaTeX markup', function(done) {
+            downloadDefault({title: {text: '$\\alpha$ + $\\beta$'}})
+            .then(function(filename) {
+                expect(filename).toBe('plot-image.png');
+            })
+            .then(done, done.fail);
+        }, LONG_TIMEOUT_INTERVAL);
+    });
 });
 
 function downloadTest(gd, format) {

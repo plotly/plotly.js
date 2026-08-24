@@ -9,6 +9,54 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [4.0.0-rc.0] -- 2026-07-21
+
+### Added
+- Add `minscale`, `maxscale` geo plot attributes [[#7371](https://github.com/plotly/plotly.js/pull/7371)], with thanks to @mojoaxel for the contribution!
+- Enable TypeScript compatibility within the library and start exporting types [[#7680](https://github.com/plotly/plotly.js/pull/7680)]
+- Add `quiver` trace type to visualize vector fields using arrows [[#7710](https://github.com/plotly/plotly.js/pull/7710)], with thanks to @degzhaus for the contribution!
+- Use dashed markers in legend for shape traces with dash configured [[#7845](https://github.com/plotly/plotly.js/pull/7845)]
+- Add `sort` option to Sankey links and nodes [[#7873](https://github.com/plotly/plotly.js/pull/7873)], with thanks to @adamreeve for the contribution!
+- Add support for MathJax v4 [[#7898](https://github.com/plotly/plotly.js/pull/7898)]
+
+### Removed
+- **Breaking**: Remove `scattermapbox`, `choroplethmapbox`, `densitymapbox` trace types, the `mapbox` subplot, and the `mapboxAccessToken` config option [[#7860](https://github.com/plotly/plotly.js/pull/7860)]
+  - These traces have been deprecated since v3. Use the equivalent `*map` traces going forward.
+- **Breaking**: Drop support for MathJax v2 [[#7898](https://github.com/plotly/plotly.js/pull/7898)]
+  - MathJax v3 and v4 are now supported in plotly.js
+- Remove config attributes `showLink`, `linkText`, `sendData`, `showSources`, and `showEditInChartStudio`, as well as trace attribute `stream`, since all of these were associated with Chart Studio and are no longer needed [[#7812](https://github.com/plotly/plotly.js/pull/7812)]
+- Remove all `*src` attributes, as well as `layout.hidesources` attribute, from the schema [[#7829](https://github.com/plotly/plotly.js/pull/7829)]
+- Remove internal `trace._fullInput` property and other dead code related to the removed `transforms` feature. No user-facing changes expected [[#7834](https://github.com/plotly/plotly.js/pull/7834)]
+
+### Changed
+- **Breaking**: Switch color processing library from [TinyColor](https://github.com/bgrins/TinyColor) to [color](https://github.com/Qix-/color) [[#7536](https://github.com/plotly/plotly.js/pull/7536)]
+  - `rgb()`/`rgba()` strings with decimal 0–1 fractions are no longer supported
+  - `hsv()` color strings are no longer permitted
+  - Color calculations may differ slightly (by a few RGB units)
+  - New color formats are now supported: '#ff0000aa', '#f00a', 'rgb(255 0 0)', 'rgba(255 0 0 / 0.5)', 'hsl(0 100% 50% / 0.5)', 'hsla(0, 100%, 50%, 0.5)', 'hwb(0, 0%, 0%)' 
+ - **Breaking**: Set default `layout.axis.tickmode` to `'sync'` when axis is overlaying [[#7684](https://github.com/plotly/plotly.js/pull/7684)]
+- **Breaking**: Change `splom.axis.matches` default from `false` to `true` [[#7843](https://github.com/plotly/plotly.js/pull/7843)]
+- **Breaking**: Replace `country-regex` with `country-iso-search` to search for country names in choropleth, scattergeo traces [[#7856](https://github.com/plotly/plotly.js/pull/7856)]
+  - The vast majority of country names are handled exactly the same with the new library; a small number of legacy entries have been removed
+- **Breaking**: Update minimum required Node version to 22 [[#7861](https://github.com/plotly/plotly.js/pull/7861)]
+- **Breaking:** Change `layout.geo.fitbounds` default from `false` to `'locations'` [[#7895](https://github.com/plotly/plotly.js/pull/7895)]
+  - `geo` subplots will now auto-fit the initial view to the trace data 
+  - Set `fitbounds: false` explicitly to opt out
+- Enable `scattermap` icons to render in color, upgrade Maki icons version to 8.2, and standardize scattermap legend icons to circles [[#7825](https://github.com/plotly/plotly.js/pull/7825)]
+- Use plot title as default filename for "Download plot" button [[#7828](https://github.com/plotly/plotly.js/pull/7828)]
+- Change signature of `plots.graphJson()` function to remove `mode` argument [[#7829](https://github.com/plotly/plotly.js/pull/7829)]
+- Upgrade `plotly/d3-sankey` to 0.12.3. [[#7830](https://github.com/plotly/plotly.js/pull/7830)], with thanks to @adamreeve for the contribution!
+- Update `plot_config` to show the "Upload to Cloud" button by default, and set the default server URL to cloud.plotly.com via [[#7909](https://github.com/plotly/plotly.js/pull/7909)]
+
+### Fixed
+- Fix `histogram` autobin size for single-point traces in `overlay` mode on data updates via `Plotly.react` [[#7507](https://github.com/plotly/plotly.js/pull/7507)], with thanks to @Lexachoc for the contribution!
+ - Format tick labels correctly for small numbers in exponential notation [[#7768](https://github.com/plotly/plotly.js/pull/7768)], with thanks to @Hasnaathussain for the contribution!
+- Fix crash when ordering categories by value (e.g. `sum descending`) with `null` coordinates [[#7855](https://github.com/plotly/plotly.js/pull/7855)]
+ - Fix `scattermap`, `densitymap` traces not showing all points by dynamically computing `center`, `zoom` values [[#7884](https://github.com/plotly/plotly.js/pull/7884), [#7913](https://github.com/plotly/plotly.js/pull/7913)], with thanks to @palmerusaf and @DhruvGarg111 for the contributions!
+ - Fix GeoJSON bounding-box computation for `choropleth` and `scattergeo` traces whose geometry crosses the antimeridian [[#7891](https://github.com/plotly/plotly.js/pull/7891)]
+- Snap cartesian axis tick values to multiple of delta so custom `tickformat` (e.g. `"~r"`) no longer shows floating-point artifacts [[#7901](https://github.com/plotly/plotly.js/pull/7901)], with thanks to @arieleli01212 and @kirthi-b for the contribution!
+
+
 ## [3.7.0] -- 2026-07-03
 
 ### Changed

@@ -1,0 +1,1 @@
+- **Breaking**: Change `splom.axis.matches` default from `false` to `true` [[#7843](https://github.com/plotly/plotly.js/pull/7843)]

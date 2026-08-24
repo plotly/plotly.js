@@ -95,17 +95,23 @@ While non-minified source files may contain characters outside UTF-8, it is reco
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
 
 ### MathJax
-You can load either version two or version three of MathJax files. For example:
+plotly.js supports using MathJax v3 or v4 to render mathematical expressions within plots.
+
+MathJax is not included in the plotly.js bundle, so it must be loaded separately as a script on the webpage.
+
+For MathJax v4:
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-svg.js"></script>
 ```
 
+For MathJax v3:
 ```html
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 ```
 
-> When using MathJax version 3, it is also possible to use `chtml` output on the other parts of the page in addition to `svg` output for the plotly graph.
-Please refer to `devtools/test_dashboard/index-mathjax3chtml.html` to see an example.
+When MathJax is available, any string contained within `$..$` signs will be rendered using the MathJax engine. This applies to plot titles, axis labels, tick label text, and annotations.
+
+plotly.js's use of the MathJax `svg` renderer should not prevent using other MathJax renderers elsewhere on the page, nor will it affect the global MathJax config. See `devtools/test_dashboard/index-mathjax3chtml.html` for an example of a webpage which uses the MathJax `chtml` renderer in the main page, and also displays Plotly charts containing MathJax equations rendered as `svg`.
 
 ### Need to have several WebGL graphs on a page?
 You may simply load the [virtual-webgl](https://github.com/greggman/virtual-webgl) script for WebGL 1 (not WebGL 2) before loading other scripts.

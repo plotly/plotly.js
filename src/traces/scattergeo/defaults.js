@@ -10,12 +10,6 @@ var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 
 var attributes = require('./attributes');
 
-const locationmodeBreakingChangeWarning = [
-    'The library used by the *country names* `locationmode` option is changing in the next major version.',
-    'Some country names in existing plots may not work in the new version.',
-    'To ensure consistent behavior, consider setting `locationmode` to *ISO-3*.'
-].join(' ');
-
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -32,10 +26,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         var locationMode = coerce('locationmode', locationmodeDflt);
-
-        if (locationMode === 'country names') {
-            Lib.warn(locationmodeBreakingChangeWarning);
-        }
 
         if (locationMode === 'geojson-id') {
             coerce('featureidkey');

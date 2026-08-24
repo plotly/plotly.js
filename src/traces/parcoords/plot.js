@@ -32,17 +32,15 @@ var exports = module.exports = function plot(gd, cdModule) {
 
     var currentDims = {};
     var initialDims = {};
-    var fullIndices = {};
-    var inputIndices = {};
+    var traceIndices = {};
 
     var size = fullLayout._size;
 
     cdModule.forEach(function(d, i) {
         var trace = d[0].trace;
-        fullIndices[i] = trace.index;
-        var iIn = inputIndices[i] = trace.index;
-        currentDims[i] = gd.data[iIn].dimensions;
-        initialDims[i] = gd.data[iIn].dimensions.slice();
+        var ind = traceIndices[i] = trace.index;
+        currentDims[i] = gd.data[ind].dimensions;
+        initialDims[i] = gd.data[ind].dimensions.slice();
     });
 
     var filterChanged = function(i, initialDimIndex, newRanges) {
@@ -57,13 +55,13 @@ var exports = module.exports = function plot(gd, cdModule) {
         // because it's an array of variable dimensionality. So store the whole
         // thing at once manually.
         var aStr = 'dimensions[' + initialDimIndex + '].constraintrange';
-        var preGUI = fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid];
+        var preGUI = fullLayout._tracePreGUI[gd._fullData[traceIndices[i]].uid];
         if(preGUI[aStr] === undefined) {
             var initialVal = dim.constraintrange;
             preGUI[aStr] = initialVal || null;
         }
 
-        var fullDimension = gd._fullData[fullIndices[i]].dimensions[initialDimIndex];
+        var fullDimension = gd._fullData[traceIndices[i]].dimensions[initialDimIndex];
 
         if(!newConstraints.length) {
             delete dim.constraintrange;
@@ -79,7 +77,7 @@ var exports = module.exports = function plot(gd, cdModule) {
 
         var restyleData = {};
         restyleData[aStr] = newConstraints;
-        gd.emit('plotly_restyle', [restyleData, [inputIndices[i]]]);
+        gd.emit('plotly_restyle', [restyleData, [traceIndices[i]]]);
     };
 
     var hover = function(eventData) {
@@ -115,12 +113,12 @@ var exports = module.exports = function plot(gd, cdModule) {
         // persist column order we may have to do something special for this
         // case to just store the order itself.
         // Registry.call('_storeDirectGUIEdit',
-        //     gd.data[inputIndices[i]],
-        //     fullLayout._tracePreGUI[gd._fullData[fullIndices[i]]._fullInput.uid],
+        //     gd.data[traceIndices[i]],
+        //     fullLayout._tracePreGUI[gd._fullData[traceIndices[i]].uid],
         //     {dimensions: currentDims[i]}
         // );
 
-        gd.emit('plotly_restyle', [{dimensions: [currentDims[i]]}, [inputIndices[i]]]);
+        gd.emit('plotly_restyle', [{dimensions: [currentDims[i]]}, [traceIndices[i]]]);
     };
 
     parcoords(

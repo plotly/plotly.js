@@ -133,7 +133,8 @@
       "showframe": false,
       "bgcolor": "rgba(255, 255, 255, 0.0)",
       "showcountries": false,
-      "scope": "africa"
+      "scope": "africa",
+      "fitbounds": false
     },
     "geo": {
       "showland": true,

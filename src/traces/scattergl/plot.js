@@ -280,7 +280,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                var selPts = scene.selectBatch[index] = Lib.selIndices2selPoints(trace);
+                var selPts = scene.selectBatch[index] = trace.selectedpoints;
 
                 var selDict = {};
                 for(j = 0; j < selPts.length; j++) {

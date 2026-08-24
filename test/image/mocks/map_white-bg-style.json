@@ -12,7 +12,8 @@
     "height": 200,
     "margin": { "t": 0, "b": 0, "l": 0, "r": 0 },
     "map": {
-      "style": "white-bg"
+      "style": "white-bg",
+      "zoom": 1
     }
   }
 }

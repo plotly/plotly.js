@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plotly.js Devtools - MathJax v4 loaded with chtml output</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT"/>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+  <header>
+    <img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" onClick="Tabs.reload();" />
+    <span id="reload-time"></span>
+
+    <input id="mocks-search" type="text" placeholder="mocks search" />
+    <input id="css-transform" type="text" placeholder="css transform" />
+  </header>
+
+  <section id="mocks-list"></section>
+
+  <p>MathJax \(V^4\) with \(chtml\) output on the page and <b>svg</b> output on the plotly graphs</p>
+  <div id="plots">
+    <div id="graph"></div>
+  </div>
+  <div id="snapshot"></div>
+
+  <script>
+    window.MathJax = {
+      // It's possible for MathJax CHTML output to coexist on the same page with
+      // a plotly chart with renders MathJax as SVG; *however*, the loader must be
+      // configured to load the SVG output module so that it's available for plotly
+      // (in addition to the CHTML output module, which is implicitly loaded by
+      // tex-chtml.js below).
+      loader: {load: ['output/svg']},
+    };
+  </script>
+  <script src="../../node_modules/@plotly/mathjax-v4/tex-chtml.js"></script>
+  <script charset="utf-8" id="source" src="../../build/plotly.js"></script>
+  <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
+</body>
+</html>

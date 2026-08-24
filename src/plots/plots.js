@@ -114,93 +114,6 @@ plots.previousPromises = function(gd) {
     }
 };
 
-/**
- * Adds the 'Edit chart' link.
- * Note that now _doPlot calls this so it can regenerate whenever it replots
- *
- * Add source links to your graph inside the 'showSources' config argument.
- */
-plots.addLinks = function(gd) {
-    // Do not do anything if showLink and showSources are not set to true in config
-    if(!gd._context.showLink && !gd._context.showSources) return;
-
-    var fullLayout = gd._fullLayout;
-
-    var linkContainer = Lib.ensureSingle(fullLayout._paper, 'text', 'js-plot-link-container', function(s) {
-        s.style({
-            'font-family': '"Open Sans", Arial, sans-serif',
-            'font-size': '12px',
-            fill: Color.defaultLine,
-            'pointer-events': 'all'
-        })
-        .each(function() {
-            var links = d3.select(this);
-            links.append('tspan').classed('js-link-to-tool', true);
-            links.append('tspan').classed('js-link-spacer', true);
-            links.append('tspan').classed('js-sourcelinks', true);
-        });
-    });
-
-    // The text node inside svg
-    var text = linkContainer.node();
-    var attrs = {y: fullLayout._paper.attr('height') - 9};
-
-    // If text's width is bigger than the layout
-    // Check that text is a child node or document.body
-    // because otherwise Edge might throw an exception
-    // when calling getComputedTextLength().
-    // Apparently offsetParent is null for invisibles.
-    if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {
-        // Align the text at the left
-        attrs['text-anchor'] = 'start';
-        attrs.x = 5;
-    } else {
-        // Align the text at the right
-        attrs['text-anchor'] = 'end';
-        attrs.x = fullLayout._paper.attr('width') - 7;
-    }
-
-    linkContainer.attr(attrs);
-
-    var toolspan = linkContainer.select('.js-link-to-tool');
-    var spacespan = linkContainer.select('.js-link-spacer');
-    var sourcespan = linkContainer.select('.js-sourcelinks');
-
-    if(gd._context.showSources) gd._context.showSources(gd);
-
-    // 'view in plotly' link for embedded plots
-    if(gd._context.showLink) positionPlayWithData(gd, toolspan);
-
-    // separator if we have both sources and tool link
-    spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
-};
-
-// note that now this function is only adding the brand in
-// iframes and 3rd-party apps
-function positionPlayWithData(gd, container) {
-    container.text('');
-    var link = container.append('a')
-        .attr({
-            'xlink:xlink:href': '#',
-            class: 'link--impt link--embedview',
-            'font-weight': 'bold'
-        })
-        .text(gd._context.linkText + ' ' + String.fromCharCode(187));
-
-    if(gd._context.sendData) {
-        link.on('click', function() {
-            plots.sendDataToCloud(gd);
-        });
-    } else {
-        var path = window.location.pathname.split('/');
-        var query = window.location.search;
-        link.attr({
-            'xlink:xlink:show': 'new',
-            'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1] + query
-        });
-    }
-}
-
 plots.sendDataToCloud = function(gd, serverURL) {
     gd.emit('plotly_beforeexport');
 
@@ -208,7 +121,7 @@ plots.sendDataToCloud = function(gd, serverURL) {
 
     // Build the request body: the chart JSON plus the plotly.js version used to
     // generate it, so Cloud can host the chart with a compatible plotly.js version.
-    var chart = plots.graphJson(gd, false, 'keepdata', 'object');
+    var chart = plots.graphJson(gd, false, 'object');
     chart.version = version;
 
     // Open the Cloud login page in a new tab. We keep a reference so we can post
@@ -280,9 +193,6 @@ var extraFormatKeys = [
  * gd._fullLayout._basePlotModules
  *   is a list of all the plot modules required to draw the plot.
  *
- * gd._fullLayout._transformModules
- *   is a list of all the transform modules invoked.
- *
  */
 plots.supplyDefaults = function(gd, opts) {
     var skipUpdateCalc = opts && opts.skipUpdateCalc;
@@ -331,9 +241,6 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._traceWord = _(gd, 'trace');
 
     var formatObj = getFormatObj(gd, d3FormatKeys);
-
-    // stash the token from context so mapbox subplots can use it as default
-    newFullLayout._mapboxAccessToken = context.mapboxAccessToken;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
@@ -509,7 +416,7 @@ plots.supplyDefaults = function(gd, opts) {
     var uid;
     for(uid in tracePreGUI) uids[uid] = 'old';
     for(i = 0; i < newFullData.length; i++) {
-        uid = newFullData[i]._fullInput.uid;
+        uid = newFullData[i].uid;
         if(!uids[uid]) tracePreGUI[uid] = {};
         uids[uid] = 'new';
     }
@@ -534,17 +441,6 @@ plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
         var newTrace = newFullData[i];
         var cd0 = (oldCalcdata[i] || [])[0];
         if(cd0 && cd0.trace) {
-            var oldTrace = cd0.trace;
-            if(oldTrace._hasCalcTransform) {
-                var arrayAttrs = oldTrace._arrayAttrs;
-                var j, astr, oldArrayVal;
-
-                for(j = 0; j < arrayAttrs.length; j++) {
-                    astr = arrayAttrs[j];
-                    oldArrayVal = Lib.nestedProperty(oldTrace, astr).get().slice();
-                    Lib.nestedProperty(newTrace, astr).set(oldArrayVal);
-                }
-            }
             cd0.trace = newTrace;
         }
     }
@@ -558,14 +454,8 @@ plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
  */
 function getTraceUids(oldFullData, newData) {
     var len = newData.length;
-    var oldFullInput = [];
-    var i, prevFullInput;
-    for(i = 0; i < oldFullData.length; i++) {
-        var thisFullInput = oldFullData[i]._fullInput;
-        if(thisFullInput !== prevFullInput) oldFullInput.push(thisFullInput);
-        prevFullInput = thisFullInput;
-    }
-    var oldLen = oldFullInput.length;
+    var i;
+    var oldLen = oldFullData.length;
     var out = new Array(len);
     var seenUids = {};
 
@@ -586,7 +476,7 @@ function getTraceUids(oldFullData, newData) {
         if(typeof newUid === 'number') newUid = String(newUid);
 
         if(tryUid(newUid, i)) continue;
-        if(i < oldLen && tryUid(oldFullInput[i].uid, i)) continue;
+        if(i < oldLen && tryUid(oldFullData[i].uid, i)) continue;
         setUid(Lib.randstr(seenUids), i);
     }
 
@@ -1005,51 +895,6 @@ function findMainSubplot(ax, fullLayout) {
     return mainSubplotID || nextBestMainSubplotID;
 }
 
-// This function clears any trace attributes with valType: color and
-// no set dflt filed in the plot schema. This is needed because groupby (which
-// is the only transform for which this currently applies) supplies parent
-// trace defaults, then expanded trace defaults. The result is that `null`
-// colors are default-supplied and inherited as a color instead of a null.
-// The result is that expanded trace default colors have no effect, with
-// the final result that groups are indistinguishable. This function clears
-// those colors so that individual groupby groups get unique colors.
-plots.clearExpandedTraceDefaultColors = function(trace) {
-    var colorAttrs, path, i;
-
-    // This uses weird closure state in order to satisfy the linter rule
-    // that we can't create functions in a loop.
-    function locateColorAttrs(attr, attrName, attrs, level) {
-        path[level] = attrName;
-        path.length = level + 1;
-        if(attr.valType === 'color' && attr.dflt === undefined) {
-            colorAttrs.push(path.join('.'));
-        }
-    }
-
-    path = [];
-
-    // Get the cached colorAttrs:
-    colorAttrs = trace._module._colorAttrs;
-
-    // Or else compute and cache the colorAttrs on the module:
-    if(!colorAttrs) {
-        trace._module._colorAttrs = colorAttrs = [];
-        PlotSchema.crawl(
-            trace._module.attributes,
-            locateColorAttrs
-        );
-    }
-
-    for(i = 0; i < colorAttrs.length; i++) {
-        var origprop = Lib.nestedProperty(trace, '_input.' + colorAttrs[i]);
-
-        if(!origprop.get()) {
-            Lib.nestedProperty(trace, colorAttrs[i]).set(null);
-        }
-    }
-};
-
-
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
     var visibleModules = fullLayout._visibleModules;
@@ -1058,8 +903,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var colorCnt = 0;
 
     var i, fullTrace, trace;
-
-    fullLayout._transformModules = [];
 
     function pushModule(fullTrace) {
         dataOut.push(fullTrace);
@@ -1098,7 +941,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         fullTrace.index = i;
         fullTrace._input = trace;
-        fullTrace._fullInput = fullTrace;
 
         pushModule(fullTrace);
 
@@ -1415,7 +1257,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('paper_bgcolor');
 
     coerce('separators', formatObj.decimal + formatObj.thousands);
-    coerce('hidesources');
 
     coerce('colorway');
 
@@ -1583,16 +1424,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        }
-    }
-
-    // transform module layout defaults
-    var transformModules = layoutOut._transformModules;
-    for(i = 0; i < transformModules.length; i++) {
-        _module = transformModules[i];
-
-        if(_module.supplyLayoutDefaults) {
-            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData, transitionData);
         }
     }
 
@@ -2061,7 +1892,7 @@ plots.didMarginChange = function(margin0, margin1) {
 /**
  * JSONify the graph data and layout
  *
- * This function needs to recurse because some src can be inside
+ * This function needs to recurse because some objects can be inside
  * sub-objects.
  *
  * It also strips out functions and private (starts with _) elements.
@@ -2069,19 +1900,13 @@ plots.didMarginChange = function(margin0, margin1) {
  * get saved.
  *
  * @param gd The graphDiv
- * @param {Boolean} dataonly If true, don't return layout.
- * @param {'keepref'|'keepdata'|'keepall'} [mode='keepref'] Filter what's kept
- *      keepref: remove data for which there's a src present
- *          eg if there's xsrc present (and xsrc is well-formed,
- *          ie has : and some chars before it), strip out x
- *      keepdata: remove all src tags, don't remove the data itself
- *      keepall: keep data and src
- * @param {String} output If you specify 'object', the result will not be stringified
- * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
- * @param {Boolean} includeConfig If truthy, include _context
+ * @param {Boolean} [dataonly=false] If true, don't return layout.
+ * @param {String} [output='json'] If set to 'object', return result as a JS Object, otherwise return as a JSON string
+ * @param {Boolean} [useDefaults=false] If truthy, use _fullLayout and _fullData (after supplyDefaults step)
+ * @param {Boolean} [includeConfig=false] If truthy, include _context
  * @returns {Object|String}
  */
-plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfig) {
+plots.graphJson = function(gd, dataonly = false, output = 'json', useDefaults = false, includeConfig = false) {
     // if the defaults aren't supplied yet, we need to do that...
     if((useDefaults && dataonly && !gd._fullData) ||
             (useDefaults && !dataonly && !gd._fullLayout)) {
@@ -2098,7 +1923,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         }
         if(Lib.isPlainObject(d)) {
             var o = {};
-            var src;
             Object.keys(d).sort().forEach(function(v) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
@@ -2108,31 +1932,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
                 if(typeof d[v] === 'function') {
                     if(keepFunction) o[v] = '_function';
                     return;
-                }
-
-                // look for src/data matches and remove the appropriate one
-                if(mode === 'keepdata') {
-                    // keepdata: remove all ...src tags
-                    if(v.slice(-3) === 'src') {
-                        return;
-                    }
-                } else if(mode === 'keepstream') {
-                    // keep sourced data if it's being streamed.
-                    // similar to keepref, but if the 'stream' object exists
-                    // in a trace, we will keep the data array.
-                    src = d[v + 'src'];
-                    if(typeof src === 'string' && src.indexOf(':') > 0) {
-                        if(!Lib.isPlainObject(d.stream)) {
-                            return;
-                        }
-                    }
-                } else if(mode !== 'keepall') {
-                    // keepref: remove sourced data but only
-                    // if the source tag is well-formed
-                    src = d[v + 'src'];
-                    if(typeof src === 'string' && src.indexOf(':') > 0) {
-                        return;
-                    }
                 }
 
                 // OK, we're including this... recurse into it
@@ -2433,14 +2232,14 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
     return dest;
 };
 
-plots.dataArrayContainers = ['transforms', 'dimensions'];
+plots.dataArrayContainers = ['dimensions'];
 plots.layoutArrayContainers = Registry.layoutArrayContainers;
 
 /*
  * Extend a trace definition. This method:
  *
  *  1. directly transfers any array references
- *  2. manually recurses into container arrays like transforms
+ *  2. manually recurses into container arrays like dimensions
  *
  * The result is the original object reference with the new contents merged in.
  */
@@ -2876,7 +2675,7 @@ plots.doCalcdata = function(gd, traces) {
     var fullData = gd._fullData;
     var fullLayout = gd._fullLayout;
 
-    var trace, _module, i, j;
+    var trace, _module, i;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -2940,39 +2739,6 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    var hasCalcTransform = false;
-
-    function transformCalci(i) {
-        trace = fullData[i];
-        _module = trace._module;
-
-        if(trace.visible === true && trace.transforms) {
-            // we need one round of trace module calc before
-            // the calc transform to 'fill in' the categories list
-            // used for example in the data-to-coordinate method
-            if(_module && _module.calc) {
-                var cdi = _module.calc(gd, trace);
-
-                // must clear scene 'batches', so that 2nd
-                // _module.calc call starts from scratch
-                if(cdi[0] && cdi[0].t && cdi[0].t._scene) {
-                    delete cdi[0].t._scene.dirty;
-                }
-            }
-
-            for(j = 0; j < trace.transforms.length; j++) {
-                var transform = trace.transforms[j];
-
-                _module = transformsRegistry[transform.type];
-                if(_module && _module.calcTransform) {
-                    trace._hasCalcTransform = true;
-                    hasCalcTransform = true;
-                    _module.calcTransform(gd, trace, transform);
-                }
-            }
-        }
-    }
-
     function calci(i, isContainer) {
         trace = fullData[i];
         _module = trace._module;
@@ -2982,19 +2748,6 @@ plots.doCalcdata = function(gd, traces) {
         var cd = [];
 
         if(trace.visible === true && trace._length !== 0) {
-            // clear existing ref in case it got relinked
-            delete trace._indexToPoints;
-            // keep ref of index-to-points map object of the *last* enabled transform,
-            // this index-to-points map object is required to determine the calcdata indices
-            // that correspond to input indices (e.g. from 'selectedpoints')
-            var transforms = trace.transforms || [];
-            for(j = transforms.length - 1; j >= 0; j--) {
-                if(transforms[j].enabled) {
-                    trace._indexToPoints = transforms[j]._indexToPoints;
-                    break;
-                }
-            }
-
             if(_module && _module.calc) {
                 cd = _module.calc(gd, trace);
             }
@@ -3019,15 +2772,7 @@ plots.doCalcdata = function(gd, traces) {
 
     setupAxisCategories(axList, fullData, fullLayout);
 
-    // 'transform' loop - must calc container traces first
-    // so that if their dependent traces can get transform properly
-    for(i = 0; i < fullData.length; i++) calci(i, true);
-    for(i = 0; i < fullData.length; i++) transformCalci(i);
-
-    // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) setupAxisCategories(axList, fullData, fullLayout);
-
-    // 'regular' loop - make sure container traces (eg carpet) calc before
+    // make sure container traces (eg carpet) calc before
     // contained traces (eg contourcarpet)
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);

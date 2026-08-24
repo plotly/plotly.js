@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    // Target and module - optimized for CommonJS codebase
+    "target": "ES2016",
+    "module": "preserve",
+    "lib": ["ES2016", "DOM"],
+
+    // Module resolution
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "noEmit": true,
+    "strict": true,
+
+    // Linting
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": true,
+
+    // Advanced options
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "checkJs": false,
+    "maxNodeModuleJsDepth": 1,
+    "isolatedModules": true
+  },
+  "include": [
+    "src/**/*",
+    "lib/**/*",
+    "tasks/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "test",
+    "stackgl_modules",
+    "topojson",
+    "devtools",
+    "**/*.spec.js",
+    "**/*.test.js"
+  ]
+}

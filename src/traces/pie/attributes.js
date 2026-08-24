@@ -133,10 +133,21 @@ module.exports = {
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         editType: 'calc',
-        description: ['Determines which trace information appear on the graph.'].join(' ')
+        description: [
+            'Determines what trace information appears on the graph.',
+            'Flags are rendered in a fixed order; use `texttemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     },
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name']
+        flags: ['label', 'text', 'value', 'percent', 'name'],
+        description: [
+            'Determines what trace information appears on hover.',
+            'Flags are rendered in a fixed order; use `hovertemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     }),
     hovertemplate: hovertemplateAttrs({}, { keys: ['label', 'color', 'value', 'percent', 'text'] }),
     hovertemplatefallback: templatefallbackAttrs(),

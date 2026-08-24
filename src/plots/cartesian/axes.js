@@ -1136,6 +1136,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
             var obj = { value: snapToGrid(x, tick0l, dtick) };
 
             if(major) {
+                // mark first major tick, for showexponent/showtickprefix/showticksuffix 'first'
+                if(x === x0) obj.first = true;
+
                 if(isDLog && (x !== (x | 0))) {
                     obj.simpleLabel = true;
                 }
@@ -1278,9 +1281,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         tickVals.pop();
     }
 
-    // save the last tick as well as first, so we can
-    // show the exponent only on the last one
+    // save the last tick as well as first
     ax._tmax = (tickVals[tickVals.length - 1] || {}).value;
+    // mark the last major tick, for showexponent/showtickprefix/showticksuffix 'last'
+    if(tickVals.length) tickVals[tickVals.length - 1].last = true;
 
     // for showing the rest of a date when the main tick label is only the
     // latter part: ax._prevDateHead holds what we showed most recently.
@@ -1302,7 +1306,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ax,
             tickVal.value,
             false, // hover
-            tickVal.simpleLabel // noSuffixPrefix
+            tickVal.simpleLabel, // noSuffixPrefix
+            {first: tickVal.first, last: tickVal.last} // positionFlags
         );
         var p = tickVal.periodX;
         if(p !== undefined) {
@@ -1374,6 +1379,16 @@ function syncTicks(ax) {
 
     var ticksOut = [];
     if(baseAxis._vals) {
+        // find the indices of the first and last labelled (major, non-noTick) base ticks,
+        // for showexponent/showtickprefix/showticksuffix 'first'/'last'
+        var firstMajorIdx = -1;
+        var lastMajorIdx = -1;
+        for(var j = 0; j < baseAxis._vals.length; j++) {
+            if(baseAxis._vals[j].noTick || baseAxis._vals[j].minor) continue;
+            if(firstMajorIdx === -1) firstMajorIdx = j;
+            lastMajorIdx = j;
+        }
+
         for(var i = 0; i < baseAxis._vals.length; i++) {
             // filter vals with noTick flag
             if(baseAxis._vals[i].noTick) {
@@ -1385,7 +1400,10 @@ function syncTicks(ax) {
 
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
-            var obj = axes.tickText(ax, vali);
+            var obj = axes.tickText(ax, vali, false, undefined, {
+                first: i === firstMajorIdx,
+                last: i === lastMajorIdx,
+            });
 
             // assign minor ticks
             if(baseAxis._vals[i].minor) {
@@ -1431,10 +1449,27 @@ function arrayTicks(ax, majorOnly) {
         // except with more precision to the numbers
         if(!Lib.isArrayOrTypedArray(text)) text = [];
 
+        // indices of the first and last in-range major ticks,
+        // showexponent/showtickprefix/showticksuffix 'first'/'last'
+        var firstIdx = -1;
+        var lastIdx = -1;
+        if(!isMinor) {
+            for(var k = 0; k < vals.length; k++) {
+                var valk = tickVal2l(vals[k]);
+                if(valk > tickMin && valk < tickMax) {
+                    if(firstIdx === -1) firstIdx = k;
+                    lastIdx = k;
+                }
+            }
+        }
+
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = axes.tickText(ax, vali, false, String(text[i]));
+                var obj = axes.tickText(ax, vali, false, String(text[i]), {
+                    first: i === firstIdx,
+                    last: i === lastIdx,
+                });
                 if(isMinor) {
                     obj.minor = true;
                     obj.text = '';
@@ -1748,13 +1783,23 @@ axes.tickFirst = function(ax, opts) {
     } else throw 'unrecognized dtick ' + String(dtick);
 };
 
-// draw the text for one tick.
-// px,py are the location on gd.paper
-// prefix is there so the x axis ticks can be dropped a line
-// ax is the axis layout, x is the tick value
-// hover is a (truthy) flag for whether to show numbers with a bit
-// more precision for hovertext
-axes.tickText = function(ax, x, hover, noSuffixPrefix) {
+/**
+ * Compute the text and metadata for one tick.
+ *
+ * @param {object} ax: the axis layout object
+ * @param {number} x: the tick value
+ * @param {boolean} hover: whether tick being computed for hovertext (as opposed to axis)
+ * @param {boolean} noSuffixPrefix: whether to skip adding tickprefix and ticksuffix
+ * @param {object} positionFlags: optional flags describing where this tick sits on the
+ *     axis, used by the showexponent/showtickprefix/showticksuffix 'first'/'last' options:
+ *       - first (boolean): whether this is the first (labelled, major) tick on the axis
+ *       - last (boolean): whether this is the last (labelled, major) tick on the axis
+ * @return {object} the tick object, including its formatted `text`
+ */
+axes.tickText = function(ax, x, hover, noSuffixPrefix, positionFlags) {
+    var first = !!positionFlags?.first;
+    var last = !!positionFlags?.last;
+
     var out = tickTextObj(ax, x);
     var arrayMode = ax.tickmode === 'array';
     var extraPrecision = hover || arrayMode;
@@ -1788,13 +1833,10 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     function isHidden(showAttr) {
         if(showAttr === undefined) return true;
         if(hover) return showAttr === 'none';
-
-        var firstOrLast = {
-            first: ax._tmin,
-            last: ax._tmax
-        }[showAttr];
-
-        return showAttr !== 'all' && x !== firstOrLast;
+        if(showAttr === 'all') return false;
+        if(showAttr === 'first') return !first;
+        if(showAttr === 'last') return !last;
+        return true; // fallback for the hover is false and showAttr==='none' or another value
     }
 
     var hideexp = hover ?

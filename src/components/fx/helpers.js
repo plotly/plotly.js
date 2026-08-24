@@ -44,6 +44,39 @@ exports.p2c = function (axArray, v) {
     return out;
 };
 
+/*
+ * Given an array of calcdata values and an array of axes corresponding to each value,
+ * convert the calcdata values to data values by calling the `c2d` method of each axis.
+ *
+ * This function is intended to be used in constructing hover and click events,
+ * for converting x/y values from calc space to data space. axArray and valArray are arrays
+ * rather than single values because in the case of stacked subplots, there may be multiple axes
+ * (and therefore multiple data values) corresponding to a single hover or click event.
+ *
+ * For linear and log axes, this conversion has no effect beyond validating the inputs.
+ * However, for some axes types, the converted values may be of a different type than the
+ * inputs:
+ *  - For category axes, `c2d` converts calcdata values (numeric) into category labels (strings)
+ *  - For date axes, `c2d` converts calcdata values (numeric values in ms) into date strings
+ *
+ * For axes which don't define `c2d` (e.g. geo, map), the inputs are passed through untouched.
+ *
+ * @param {Array} axArray : axes corresponding to each value in valArray
+ * @param {Array} valArray : calcdata values
+ * @return {Array} : data values, computed by calling `ax.c2d` (if defined) on each input value
+ */
+exports.c2dApply = function (axArray, valArray) {
+    if(axArray.length !== valArray.length) {
+        Lib.warn('c2dApply: axArray and valArray must be the same length');
+    }
+    var out = new Array(valArray.length);
+    for (var i = 0; i < valArray.length; i++) {
+        var ax = axArray && axArray[i];
+        out[i] = ax && ax.c2d ? ax.c2d(valArray[i]) : valArray[i];
+    }
+    return out;
+};
+
 exports.getDistanceFunction = function (mode, dx, dy, dxy) {
     if (mode === 'closest') return dxy || exports.quadrature(dx, dy);
     return mode.charAt(0) === 'x' ? dx : dy;
@@ -122,17 +155,7 @@ exports.makeEventData = function (pt, trace, cd) {
         pointNumber: pointNumber
     };
 
-    if (trace._indexToPoints) {
-        var pointIndices = trace._indexToPoints[pointNumber];
-
-        if (pointIndices.length === 1) {
-            out.pointIndex = pointIndices[0];
-        } else {
-            out.pointIndices = pointIndices;
-        }
-    } else {
-        out.pointIndex = pointNumber;
-    }
+    out.pointIndex = pointNumber;
 
     if (trace._module.eventData) {
         out = trace._module.eventData(out, pt, trace, cd, pointNumber);

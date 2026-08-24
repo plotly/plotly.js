@@ -1,8 +1,8 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var svgSdf = require('svg-path-sdf');
-var rgba = require('color-normalize');
+const svgSdf = require('svg-path-sdf').default;
+const { normalize: rgba } = require('../../components/color');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');

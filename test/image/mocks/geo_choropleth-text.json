@@ -323,7 +323,8 @@
   ],
   "layout": {
     "geo": {
-      "showframe": false
+      "showframe": false,
+      "fitbounds": false
     },
     "annotations": [
       {

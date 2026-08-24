@@ -108,7 +108,6 @@ function getButtonGroups(gd) {
     var hasPie = fullLayout._has('pie');
     var hasFunnelarea = fullLayout._has('funnelarea');
     var hasTernary = fullLayout._has('ternary');
-    var hasMapbox = fullLayout._has('mapbox');
     var hasMap = fullLayout._has('map');
     var hasPolar = fullLayout._has('polar');
     var hasSmith = fullLayout._has('smith');
@@ -146,13 +145,6 @@ function getButtonGroups(gd) {
     // buttons common to all plot types
     var commonGroup = ['toImage'];
     if(context.showSendToCloud) commonGroup.push('sendChartToCloud');
-    else if(context.showEditInChartStudio) {
-        console.warn([
-            '*showEditInChartStudio* is deprecated.',
-            'Use *showSendToCloud* instead.'
-        ].join(' '));
-        commonGroup.push('sendChartToCloud');
-    }
     addGroup(commonGroup);
 
     var zoomGroup = [];
@@ -160,7 +152,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasMap + hasPolar + hasSmith > 1) {
+    if((hasCartesian || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMap + hasPolar + hasSmith > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -172,10 +164,6 @@ function getButtonGroups(gd) {
     } else if(hasGL3D) {
         hoverGroup = ['hoverClosest3d'];
         resetGroup = ['resetCameraDefault3d', 'resetCameraLastSave3d'];
-    } else if(hasMapbox) {
-        zoomGroup = ['zoomInMapbox', 'zoomOutMapbox'];
-        hoverGroup = ['toggleHover'];
-        resetGroup = ['resetViewMapbox'];
     } else if(hasMap) {
         zoomGroup = ['zoomInMap', 'zoomOutMap'];
         hoverGroup = ['toggleHover'];
@@ -208,7 +196,7 @@ function getButtonGroups(gd) {
         dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
     } else if((hasCartesian && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
-    } else if(hasMapbox || hasMap || hasGeo) {
+    } else if(hasMap || hasGeo) {
         dragModeGroup = ['pan2d'];
     } else if(hasPolar) {
         dragModeGroup = ['zoom2d'];
@@ -236,7 +224,7 @@ function getButtonGroups(gd) {
                 if(DRAW_MODES.indexOf(b) !== -1) {
                     // accept pre-defined drag modes i.e. shape drawing features as string
                     if(
-                        fullLayout._has('mapbox') || fullLayout._has('map') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
+                        fullLayout._has('map') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
                         fullLayout._has('cartesian') // draw shapes in data coordinate
                     ) {
                         dragModeGroup.push(b);
@@ -296,7 +284,7 @@ function isSelectable(fullData) {
 
         if(!trace._module || !trace._module.selectPoints) continue;
 
-        if(Registry.traceIs(trace, 'scatter-like')) {
+        if(Registry.traceIs(trace, 'scatter-like') && trace.type !== 'quiver') {
             if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
                 selectable = true;
             }

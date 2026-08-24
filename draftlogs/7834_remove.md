@@ -1,0 +1,1 @@
+- Remove internal `trace._fullInput` property and other dead code related to the removed `transforms` feature. No user-facing changes expected [[#7834](https://github.com/plotly/plotly.js/pull/7834)]

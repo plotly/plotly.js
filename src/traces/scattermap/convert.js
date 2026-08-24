@@ -116,7 +116,7 @@ module.exports = function convert(gd, calcTrace) {
 
         Lib.extendFlat(symbol.layout, {
             visibility: 'visible',
-            'icon-image': '{symbol}-15',
+            'icon-image': '{symbol}',
             'text-field': '{text}'
         });
 
@@ -141,9 +141,11 @@ module.exports = function convert(gd, calcTrace) {
 
             Lib.extendFlat(symbol.paint, {
                 'icon-opacity': trace.opacity * trace.marker.opacity,
-
-                // TODO does not work ??
-                'icon-color': trace.marker.color
+                'icon-color': trace.marker.color,
+                // Set a tiny blur to make the edges look nicer
+                'icon-halo-color': trace.marker.color,
+                'icon-halo-width': 2,
+                'icon-halo-blur': 1.5,
             });
         }
 

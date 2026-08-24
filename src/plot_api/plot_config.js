@@ -27,13 +27,13 @@ var configAttributes = {
         dflt: true,
         description: [
             'Determines whether math should be typeset or not,',
-            'when MathJax (either v2 or v3) is present on the page.'
+            'when MathJax (either v3 or v4) is present on the page.'
         ].join(' ')
     },
 
     plotlyServerURL: {
         valType: 'string',
-        dflt: '',
+        dflt: 'https://cloud.plotly.com/newchart',
         description: [
             'Sets the URL for the `sendChartToCloud` modebar button.',
             'When clicked, the button will send the chart data to this URL.',
@@ -153,12 +153,12 @@ var configAttributes = {
 
     scrollZoom: {
         valType: 'flaglist',
-        flags: ['cartesian', 'gl3d', 'geo', 'mapbox', 'map'],
+        flags: ['cartesian', 'gl3d', 'geo', 'map'],
         extras: [true, false],
         dflt: 'gl3d+geo+map',
         description: [
             'Determines whether mouse wheel or two-finger scroll zooms is enable.',
-            'Turned on by default for gl3d, geo, mapbox and map subplots',
+            'Turned on by default for gl3d, geo and map subplots',
             '(as these subplot types do not have zoombox via pan),',
             'but turned off by default for cartesian subplots.',
             'Set `scrollZoom` to *false* to disable scrolling for all subplots.'
@@ -188,7 +188,7 @@ var configAttributes = {
             'This is the time interval (in ms) between first mousedown and',
             '2nd mouseup to constitute a double-click.',
             'This setting propagates to all on-subplot double clicks',
-            '(except for geo, mapbox and map) and on-legend double clicks.'
+            '(except for geo and map) and on-legend double clicks.'
         ].join(' ')
     },
 
@@ -223,40 +223,6 @@ var configAttributes = {
         description: 'Determines whether or not notifier is displayed.'
     },
 
-    showLink: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Determines whether a link to Chart Studio Cloud is displayed',
-            'at the bottom right corner of resulting graphs.',
-            'Use with `sendData` and `linkText`.'
-        ].join(' ')
-    },
-    linkText: {
-        valType: 'string',
-        dflt: 'Edit chart',
-        noBlank: true,
-        description: [
-            'Sets the text appearing in the `showLink` link.'
-        ].join(' ')
-    },
-    sendData: {
-        valType: 'boolean',
-        dflt: true,
-        description: [
-            'If *showLink* is true, does it contain data',
-            'just link to a Chart Studio Cloud file?'
-        ].join(' ')
-    },
-    showSources: {
-        valType: 'any',
-        dflt: false,
-        description: [
-            'Adds a source-displaying function to show sources on',
-            'the resulting graphs.'
-        ].join(' ')
-    },
-
     displayModeBar: {
         valType: 'enumerated',
         values: ['hover', true, false],
@@ -271,19 +237,12 @@ var configAttributes = {
     },
     showSendToCloud: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         description: [
             'Should we include a modebar button that sends this chart to a URL',
             'specified by `plotlyServerURL`, for sharing the chart with others?',
             'Note that this button will (after a confirmation step)',
             'send chart data to an external server.'
-        ].join(' ')
-    },
-    showEditInChartStudio: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Deprecated. Use `showSendToCloud` instead.'
         ].join(' ')
     },
     modeBarButtonsToRemove: {
@@ -375,16 +334,6 @@ var configAttributes = {
             '<path-to-plotly.js>/dist/topojson/',
             'to render geographical feature using the topojson files',
             'that ship with the plotly.js module.'
-        ].join(' ')
-    },
-
-    mapboxAccessToken: {
-        valType: 'string',
-        dflt: null,
-        description: [
-            'Mapbox access token (required to plot mapbox trace types)',
-            'If using an Mapbox Atlas server, set this option to \'\'',
-            'so that plotly.js won\'t attempt to authenticate to the public Mapbox server.'
         ].join(' ')
     },
 

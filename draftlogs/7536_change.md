@@ -1,0 +1,5 @@
+- **Breaking**: Switch color processing library from [TinyColor](https://github.com/bgrins/TinyColor) to [color](https://github.com/Qix-/color) [[#7536](https://github.com/plotly/plotly.js/pull/7536)]
+  - `rgb()`/`rgba()` strings with decimal 0–1 fractions are no longer supported
+  - `hsv()` color strings are no longer permitted
+  - Color calculations may differ slightly (by a few RGB units)
+  - New color formats are now supported: '#ff0000aa', '#f00a', 'rgb(255 0 0)', 'rgba(255 0 0 / 0.5)', 'hsl(0 100% 50% / 0.5)', 'hsla(0, 100%, 50%, 0.5)', 'hwb(0, 0%, 0%)' 
