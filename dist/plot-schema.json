@@ -427,7 +427,7 @@
         "requiredOpts": []
       },
       "color": {
-        "description": "A string describing color. Supported formats: - hex (e.g. '#d3d3d3', '#d3d3d3aa') - rgb (e.g. 'rgb(255, 0, 0)', 'rgb(255 0 0)') - rgba (e.g. 'rgba(255, 0, 0, 0.5)', 'rgba(255 0 0 / 0.5)') - hsl (e.g. 'hsl(0, 100%, 50%)') - hsla (e.g. 'hsla(0, 100%, 50%, 0.5)') - hwb (e.g. 'hwb(0, 0%, 0%)') - named colors (full list: http://www.w3.org/TR/css3-color/#svg-color)",
+        "description": "A string describing color. Supported formats: - hex (e.g. '#d3d3d3', '#d3d3d3aa') - rgb/rgba (e.g. 'rgb(255, 0, 0)', 'rgba(255 0 0 / 0.5)') - hsl/hsla (e.g. 'hsl(0, 100%, 50%)', 'hsla(0 100% 50% / 0.5)') - hwb (e.g. 'hwb(0 0% 0%)') - lab/lch/oklab/oklch (e.g. 'oklch(0.7 0.15 180)') - color (e.g. 'color(display-p3 1 0 0)') - named colors (full list: https://www.w3.org/TR/css-color-4/#named-colors)",
         "otherOpts": [
           "dflt",
           "arrayOk"
@@ -1140,7 +1140,7 @@
         ]
       },
       "clickanywhere": {
-        "description": "If true, `plotly_click` events will fire for any click position within the plot area, not just over traces. When clicking where there is no trace data, the event will have an empty `points` array but will include `xvals` and `yvals` with click coordinates in data space.",
+        "description": "If true, `plotly_click` events will fire for any click position within the plot area, not just over traces. When clicking where there is no trace data, the event will have an empty `points` array but will include `xvals` and `yvals` with click coordinates in data space, and `xPixel` and `yPixel` with click coordinates in pixels, relative to the top-left corner of the graph div.",
         "dflt": false,
         "editType": "none",
         "valType": "boolean"
@@ -2785,7 +2785,7 @@
         "valType": "number"
       },
       "hoveranywhere": {
-        "description": "If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space.",
+        "description": "If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space, and `xPixel` and `yPixel` with cursor coordinates in pixels, relative to the top-left corner of the graph div. A `plotly_unhover` event fires when the cursor leaves the plot area.",
         "dflt": false,
         "editType": "none",
         "valType": "boolean"
@@ -49859,7 +49859,7 @@
       "animatable": true,
       "attributes": {
         "anchor": {
-          "description": "Sets the arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the arrow on (x,y).",
+          "description": "Sets the vector arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the vector arrow on (x,y).",
           "dflt": "tail",
           "editType": "calc",
           "valType": "enumerated",
@@ -49869,9 +49869,9 @@
             "center"
           ]
         },
-        "anglemode": {
-          "description": "Sets the mode used to determine the angle of the arrow vectors. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axes scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis",
-          "dflt": "axis",
+        "arrowref": {
+          "description": "Determines how the u/v vector components are interpreted. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axis scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis",
+          "dflt": "data",
           "editType": "calc",
           "valType": "enumerated",
           "values": [
@@ -50194,9 +50194,26 @@
           "min": 0,
           "valType": "number"
         },
+        "lengthfactor": {
+          "description": "Adjusts the drawn length of the vector arrows. The arrow length is determined by the values of u and v, then optionally rescaled when `lengthmode` is *scaled*, then multiplied by `lengthfactor`.",
+          "dflt": 1,
+          "editType": "calc",
+          "min": 0,
+          "valType": "number"
+        },
+        "lengthmode": {
+          "description": "Determines whether vector arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper* vectors are always scaled and `lengthmode` *raw* is ignored.",
+          "dflt": "scaled",
+          "editType": "calc",
+          "valType": "enumerated",
+          "values": [
+            "scaled",
+            "raw"
+          ]
+        },
         "marker": {
           "arrowsize": {
-            "description": "Sets the size of the arrow head relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.",
+            "description": "Sets the size of the vector arrowhead relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.",
             "dflt": 1,
             "editType": "calc",
             "min": 0.3,
@@ -50879,7 +50896,7 @@
             "editType": "style",
             "role": "object",
             "width": {
-              "description": "Sets the width (in px) of the arrow lines.",
+              "description": "Sets the width (in px) of the vector arrow lines.",
               "dflt": 2,
               "editType": "style",
               "min": 0,
@@ -50961,23 +50978,6 @@
           "dflt": true,
           "editType": "style",
           "valType": "boolean"
-        },
-        "sizemode": {
-          "description": "Determines whether arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `anglemode` is *data* arrows are alwyas scaled and `sizemode` *raw* is ignored.",
-          "dflt": "scaled",
-          "editType": "calc",
-          "valType": "enumerated",
-          "values": [
-            "scaled",
-            "raw"
-          ]
-        },
-        "sizeref": {
-          "description": "Adjusts the arrow size scaling. The arrow length is determined by the vector norm multiplied by `sizeref`, optionally normalized when `sizemode` is *scaled* (`sizeref` is applied after scaling).",
-          "dflt": 1,
-          "editType": "calc",
-          "min": 0,
-          "valType": "number"
         },
         "text": {
           "arrayOk": true,
@@ -51105,7 +51105,7 @@
         "type": "quiver",
         "u": {
           "anim": true,
-          "description": "Sets the x components of the arrow vectors.",
+          "description": "Sets the x components of the vector arrows.",
           "editType": "calc",
           "valType": "data_array"
         },
@@ -51160,7 +51160,7 @@
         },
         "v": {
           "anim": true,
-          "description": "Sets the y components of the arrow vectors.",
+          "description": "Sets the y components of the vector arrows.",
           "editType": "calc",
           "valType": "data_array"
         },
@@ -51183,7 +51183,7 @@
         },
         "x": {
           "anim": true,
-          "description": "Sets the x coordinates of the arrow locations.",
+          "description": "Sets the x coordinates of the vector arrow locations.",
           "editType": "calc+clearAxisTypes",
           "valType": "data_array"
         },
@@ -51208,7 +51208,7 @@
         },
         "y": {
           "anim": true,
-          "description": "Sets the y coordinates of the arrow locations.",
+          "description": "Sets the y coordinates of the vector arrow locations.",
           "editType": "calc+clearAxisTypes",
           "valType": "data_array"
         },
@@ -51263,6 +51263,16 @@
           "description": "Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements",
           "editType": "calc",
           "valType": "data_array"
+        },
+        "direction": {
+          "description": "Sets the direction of the flow along the `orientation` axis. With `forward` (the default), sources are on the left (horizontal) or top (vertical). With `reversed`, sources are on the right (horizontal) or bottom (vertical).",
+          "dflt": "forward",
+          "editType": "calc",
+          "valType": "enumerated",
+          "values": [
+            "forward",
+            "reversed"
+          ]
         },
         "domain": {
           "column": {
@@ -52187,7 +52197,7 @@
           }
         },
         "orientation": {
-          "description": "Sets the orientation of the Sankey diagram.",
+          "description": "Sets the orientation of the Sankey diagram. With `h` (the default), the flow runs horizontally. With `v`, the flow runs vertically. Use `direction` to control which side the sources are placed on.",
           "dflt": "h",
           "editType": "calc",
           "valType": "enumerated",

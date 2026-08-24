@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v4.0.0-rc.0
+* plotly.js (finance) v4.0.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -78,7 +78,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "4.0.0-rc.0";
+      exports.version = "4.0.0";
     }
   });
 
@@ -3956,8 +3956,8 @@ var Plotly = (() => {
             return paths;
           };
         };
-        function d3_layout_bundlePath(link2) {
-          var start = link2.source, end = link2.target, lca = d3_layout_bundleLeastCommonAncestor(start, end), points = [start];
+        function d3_layout_bundlePath(link) {
+          var start = link.source, end = link.target, lca = d3_layout_bundleLeastCommonAncestor(start, end), points = [start];
           while (start !== lca) {
             start = start.parent;
             points.push(start);
@@ -5393,10 +5393,10 @@ var Plotly = (() => {
         d3.scale.linear = function() {
           return d3_scale_linear([0, 1], [0, 1], d3_interpolate, false);
         };
-        function d3_scale_linear(domain, range, interpolate, clamp2) {
+        function d3_scale_linear(domain, range, interpolate, clamp) {
           var output, input;
           function rescale() {
-            var linear2 = Math.min(domain.length, range.length) > 2 ? d3_scale_polylinear : d3_scale_bilinear, uninterpolate = clamp2 ? d3_uninterpolateClamp : d3_uninterpolateNumber;
+            var linear2 = Math.min(domain.length, range.length) > 2 ? d3_scale_polylinear : d3_scale_bilinear, uninterpolate = clamp ? d3_uninterpolateClamp : d3_uninterpolateNumber;
             output = linear2(domain, range, uninterpolate, interpolate);
             input = linear2(range, domain, uninterpolate, d3_interpolate);
             return scale;
@@ -5421,8 +5421,8 @@ var Plotly = (() => {
             return scale.range(x).interpolate(d3_interpolateRound);
           };
           scale.clamp = function(x) {
-            if (!arguments.length) return clamp2;
-            clamp2 = x;
+            if (!arguments.length) return clamp;
+            clamp = x;
             return rescale();
           };
           scale.interpolate = function(x) {
@@ -5441,7 +5441,7 @@ var Plotly = (() => {
             return rescale();
           };
           scale.copy = function() {
-            return d3_scale_linear(domain, range, interpolate, clamp2);
+            return d3_scale_linear(domain, range, interpolate, clamp);
           };
           return rescale();
         }
@@ -7647,6 +7647,8 @@ var Plotly = (() => {
             "d": formatDayOfMonth,
             "e": formatDayOfMonth,
             "f": formatMicroseconds,
+            "g": formatYearISO,
+            "G": formatFullYearISO,
             "H": formatHour24,
             "I": formatHour12,
             "j": formatDayOfYear,
@@ -7679,6 +7681,8 @@ var Plotly = (() => {
             "d": formatUTCDayOfMonth,
             "e": formatUTCDayOfMonth,
             "f": formatUTCMicroseconds,
+            "g": formatUTCYearISO,
+            "G": formatUTCFullYearISO,
             "H": formatUTCHour24,
             "I": formatUTCHour12,
             "j": formatUTCDayOfYear,
@@ -7711,6 +7715,8 @@ var Plotly = (() => {
             "d": parseDayOfMonth,
             "e": parseDayOfMonth,
             "f": parseMicroseconds,
+            "g": parseYear,
+            "G": parseFullYear,
             "H": parseHour24,
             "I": parseHour24,
             "j": parseDayOfYear,
@@ -8040,9 +8046,12 @@ var Plotly = (() => {
         function formatWeekNumberSunday(d, p) {
           return pad(d3Time.timeSunday.count(d3Time.timeYear(d) - 1, d), p, 2);
         }
-        function formatWeekNumberISO(d, p) {
+        function dISO(d) {
           var day = d.getDay();
-          d = day >= 4 || day === 0 ? d3Time.timeThursday(d) : d3Time.timeThursday.ceil(d);
+          return day >= 4 || day === 0 ? d3Time.timeThursday(d) : d3Time.timeThursday.ceil(d);
+        }
+        function formatWeekNumberISO(d, p) {
+          d = dISO(d);
           return pad(d3Time.timeThursday.count(d3Time.timeYear(d), d) + (d3Time.timeYear(d).getDay() === 4), p, 2);
         }
         function formatWeekdayNumberSunday(d) {
@@ -8054,7 +8063,16 @@ var Plotly = (() => {
         function formatYear(d, p) {
           return pad(d.getFullYear() % 100, p, 2);
         }
+        function formatYearISO(d, p) {
+          d = dISO(d);
+          return pad(d.getFullYear() % 100, p, 2);
+        }
         function formatFullYear(d, p) {
+          return pad(d.getFullYear() % 1e4, p, 4);
+        }
+        function formatFullYearISO(d, p) {
+          var day = d.getDay();
+          d = day >= 4 || day === 0 ? d3Time.timeThursday(d) : d3Time.timeThursday.ceil(d);
           return pad(d.getFullYear() % 1e4, p, 4);
         }
         function formatZone(d) {
@@ -8095,9 +8113,12 @@ var Plotly = (() => {
         function formatUTCWeekNumberSunday(d, p) {
           return pad(d3Time.utcSunday.count(d3Time.utcYear(d) - 1, d), p, 2);
         }
-        function formatUTCWeekNumberISO(d, p) {
+        function UTCdISO(d) {
           var day = d.getUTCDay();
-          d = day >= 4 || day === 0 ? d3Time.utcThursday(d) : d3Time.utcThursday.ceil(d);
+          return day >= 4 || day === 0 ? d3Time.utcThursday(d) : d3Time.utcThursday.ceil(d);
+        }
+        function formatUTCWeekNumberISO(d, p) {
+          d = UTCdISO(d);
           return pad(d3Time.utcThursday.count(d3Time.utcYear(d), d) + (d3Time.utcYear(d).getUTCDay() === 4), p, 2);
         }
         function formatUTCWeekdayNumberSunday(d) {
@@ -8109,7 +8130,16 @@ var Plotly = (() => {
         function formatUTCYear(d, p) {
           return pad(d.getUTCFullYear() % 100, p, 2);
         }
+        function formatUTCYearISO(d, p) {
+          d = UTCdISO(d);
+          return pad(d.getUTCFullYear() % 100, p, 2);
+        }
         function formatUTCFullYear(d, p) {
+          return pad(d.getUTCFullYear() % 1e4, p, 4);
+        }
+        function formatUTCFullYearISO(d, p) {
+          var day = d.getUTCDay();
+          d = day >= 4 || day === 0 ? d3Time.utcThursday(d) : d3Time.utcThursday.ceil(d);
           return pad(d.getUTCFullYear() % 1e4, p, 4);
         }
         function formatUTCZone() {
@@ -9191,17 +9221,17 @@ var Plotly = (() => {
         }
         return true;
       }
-      exports.extendFlat = function() {
-        return _extend(arguments, false, false, false);
+      exports.extendFlat = function(...args) {
+        return _extend(args, false, false, false);
       };
-      exports.extendDeep = function() {
-        return _extend(arguments, true, false, false);
+      exports.extendDeep = function(...args) {
+        return _extend(args, true, false, false);
       };
-      exports.extendDeepAll = function() {
-        return _extend(arguments, true, true, false);
+      exports.extendDeepAll = function(...args) {
+        return _extend(args, true, true, false);
       };
-      exports.extendDeepNoArrays = function() {
-        return _extend(arguments, true, false, true);
+      exports.extendDeepNoArrays = function(...args) {
+        return _extend(args, true, false, true);
       };
       function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
         var target = inputs[0];
@@ -9633,1771 +9663,4714 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/color-string/node_modules/color-name/index.js
-  var color_name_default;
-  var init_color_name = __esm({
-    "node_modules/color-string/node_modules/color-name/index.js"() {
-      color_name_default = {
-        aliceblue: [240, 248, 255],
-        antiquewhite: [250, 235, 215],
-        aqua: [0, 255, 255],
-        aquamarine: [127, 255, 212],
-        azure: [240, 255, 255],
-        beige: [245, 245, 220],
-        bisque: [255, 228, 196],
-        black: [0, 0, 0],
-        blanchedalmond: [255, 235, 205],
-        blue: [0, 0, 255],
-        blueviolet: [138, 43, 226],
-        brown: [165, 42, 42],
-        burlywood: [222, 184, 135],
-        cadetblue: [95, 158, 160],
-        chartreuse: [127, 255, 0],
-        chocolate: [210, 105, 30],
-        coral: [255, 127, 80],
-        cornflowerblue: [100, 149, 237],
-        cornsilk: [255, 248, 220],
-        crimson: [220, 20, 60],
-        cyan: [0, 255, 255],
-        darkblue: [0, 0, 139],
-        darkcyan: [0, 139, 139],
-        darkgoldenrod: [184, 134, 11],
-        darkgray: [169, 169, 169],
-        darkgreen: [0, 100, 0],
-        darkgrey: [169, 169, 169],
-        darkkhaki: [189, 183, 107],
-        darkmagenta: [139, 0, 139],
-        darkolivegreen: [85, 107, 47],
-        darkorange: [255, 140, 0],
-        darkorchid: [153, 50, 204],
-        darkred: [139, 0, 0],
-        darksalmon: [233, 150, 122],
-        darkseagreen: [143, 188, 143],
-        darkslateblue: [72, 61, 139],
-        darkslategray: [47, 79, 79],
-        darkslategrey: [47, 79, 79],
-        darkturquoise: [0, 206, 209],
-        darkviolet: [148, 0, 211],
-        deeppink: [255, 20, 147],
-        deepskyblue: [0, 191, 255],
-        dimgray: [105, 105, 105],
-        dimgrey: [105, 105, 105],
-        dodgerblue: [30, 144, 255],
-        firebrick: [178, 34, 34],
-        floralwhite: [255, 250, 240],
-        forestgreen: [34, 139, 34],
-        fuchsia: [255, 0, 255],
-        gainsboro: [220, 220, 220],
-        ghostwhite: [248, 248, 255],
-        gold: [255, 215, 0],
-        goldenrod: [218, 165, 32],
-        gray: [128, 128, 128],
-        green: [0, 128, 0],
-        greenyellow: [173, 255, 47],
-        grey: [128, 128, 128],
-        honeydew: [240, 255, 240],
-        hotpink: [255, 105, 180],
-        indianred: [205, 92, 92],
-        indigo: [75, 0, 130],
-        ivory: [255, 255, 240],
-        khaki: [240, 230, 140],
-        lavender: [230, 230, 250],
-        lavenderblush: [255, 240, 245],
-        lawngreen: [124, 252, 0],
-        lemonchiffon: [255, 250, 205],
-        lightblue: [173, 216, 230],
-        lightcoral: [240, 128, 128],
-        lightcyan: [224, 255, 255],
-        lightgoldenrodyellow: [250, 250, 210],
-        lightgray: [211, 211, 211],
-        lightgreen: [144, 238, 144],
-        lightgrey: [211, 211, 211],
-        lightpink: [255, 182, 193],
-        lightsalmon: [255, 160, 122],
-        lightseagreen: [32, 178, 170],
-        lightskyblue: [135, 206, 250],
-        lightslategray: [119, 136, 153],
-        lightslategrey: [119, 136, 153],
-        lightsteelblue: [176, 196, 222],
-        lightyellow: [255, 255, 224],
-        lime: [0, 255, 0],
-        limegreen: [50, 205, 50],
-        linen: [250, 240, 230],
-        magenta: [255, 0, 255],
-        maroon: [128, 0, 0],
-        mediumaquamarine: [102, 205, 170],
-        mediumblue: [0, 0, 205],
-        mediumorchid: [186, 85, 211],
-        mediumpurple: [147, 112, 219],
-        mediumseagreen: [60, 179, 113],
-        mediumslateblue: [123, 104, 238],
-        mediumspringgreen: [0, 250, 154],
-        mediumturquoise: [72, 209, 204],
-        mediumvioletred: [199, 21, 133],
-        midnightblue: [25, 25, 112],
-        mintcream: [245, 255, 250],
-        mistyrose: [255, 228, 225],
-        moccasin: [255, 228, 181],
-        navajowhite: [255, 222, 173],
-        navy: [0, 0, 128],
-        oldlace: [253, 245, 230],
-        olive: [128, 128, 0],
-        olivedrab: [107, 142, 35],
-        orange: [255, 165, 0],
-        orangered: [255, 69, 0],
-        orchid: [218, 112, 214],
-        palegoldenrod: [238, 232, 170],
-        palegreen: [152, 251, 152],
-        paleturquoise: [175, 238, 238],
-        palevioletred: [219, 112, 147],
-        papayawhip: [255, 239, 213],
-        peachpuff: [255, 218, 185],
-        peru: [205, 133, 63],
-        pink: [255, 192, 203],
-        plum: [221, 160, 221],
-        powderblue: [176, 224, 230],
-        purple: [128, 0, 128],
-        rebeccapurple: [102, 51, 153],
-        red: [255, 0, 0],
-        rosybrown: [188, 143, 143],
-        royalblue: [65, 105, 225],
-        saddlebrown: [139, 69, 19],
-        salmon: [250, 128, 114],
-        sandybrown: [244, 164, 96],
-        seagreen: [46, 139, 87],
-        seashell: [255, 245, 238],
-        sienna: [160, 82, 45],
-        silver: [192, 192, 192],
-        skyblue: [135, 206, 235],
-        slateblue: [106, 90, 205],
-        slategray: [112, 128, 144],
-        slategrey: [112, 128, 144],
-        snow: [255, 250, 250],
-        springgreen: [0, 255, 127],
-        steelblue: [70, 130, 180],
-        tan: [210, 180, 140],
-        teal: [0, 128, 128],
-        thistle: [216, 191, 216],
-        tomato: [255, 99, 71],
-        turquoise: [64, 224, 208],
-        violet: [238, 130, 238],
-        wheat: [245, 222, 179],
-        white: [255, 255, 255],
-        whitesmoke: [245, 245, 245],
-        yellow: [255, 255, 0],
-        yellowgreen: [154, 205, 50]
+  // node_modules/culori/bundled/culori.cjs
+  var require_culori = __commonJS({
+    "node_modules/culori/bundled/culori.cjs"(exports, module) {
+      var __defProp2 = Object.defineProperty;
+      var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+      var __getOwnPropNames2 = Object.getOwnPropertyNames;
+      var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+      var __export2 = (target, all) => {
+        for (var name in all)
+          __defProp2(target, name, { get: all[name], enumerable: true });
       };
-    }
-  });
-
-  // node_modules/color-string/index.js
-  function clamp(number_, min, max) {
-    return Math.min(Math.max(min, number_), max);
-  }
-  function hexDouble(number_) {
-    const string_ = Math.round(number_).toString(16).toUpperCase();
-    return string_.length < 2 ? "0" + string_ : string_;
-  }
-  var reverseNames, cs, color_string_default;
-  var init_color_string = __esm({
-    "node_modules/color-string/index.js"() {
-      init_color_name();
-      reverseNames = /* @__PURE__ */ Object.create(null);
-      for (const name in color_name_default) {
-        if (Object.hasOwn(color_name_default, name)) {
-          reverseNames[color_name_default[name]] = name;
+      var __copyProps2 = (to, from, except, desc) => {
+        if (from && typeof from === "object" || typeof from === "function") {
+          for (let key of __getOwnPropNames2(from))
+            if (!__hasOwnProp2.call(to, key) && key !== except)
+              __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
         }
-      }
-      cs = {
-        to: {},
-        get: {}
+        return to;
       };
-      cs.get = function(string) {
-        const prefix = string.slice(0, 3).toLowerCase();
-        let value;
-        let model;
-        switch (prefix) {
-          case "hsl": {
-            value = cs.get.hsl(string);
-            model = "hsl";
-            break;
-          }
-          case "hwb": {
-            value = cs.get.hwb(string);
-            model = "hwb";
-            break;
-          }
-          default: {
-            value = cs.get.rgb(string);
-            model = "rgb";
-            break;
-          }
+      var __toCommonJS2 = (mod22) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod22);
+      var src_exports2 = {};
+      __export2(src_exports2, {
+        a98: () => a98,
+        average: () => average,
+        averageAngle: () => averageAngle,
+        averageNumber: () => averageNumber,
+        blend: () => blend_default,
+        blerp: () => blerp,
+        clampChroma: () => clampChroma,
+        clampGamut: () => clampGamut,
+        clampRgb: () => clampRgb,
+        colorsNamed: () => named_default,
+        convertA98ToXyz65: () => convertA98ToXyz65_default,
+        convertCubehelixToRgb: () => convertCubehelixToRgb_default,
+        convertDlchToLab65: () => convertDlchToLab65_default,
+        convertHsiToRgb: () => convertHsiToRgb,
+        convertHslToRgb: () => convertHslToRgb,
+        convertHsvToRgb: () => convertHsvToRgb,
+        convertHwbToRgb: () => convertHwbToRgb,
+        convertItpToXyz65: () => convertItpToXyz65_default,
+        convertJabToJch: () => convertJabToJch_default,
+        convertJabToRgb: () => convertJabToRgb_default,
+        convertJabToXyz65: () => convertJabToXyz65_default,
+        convertJchToJab: () => convertJchToJab_default,
+        convertLab65ToDlch: () => convertLab65ToDlch_default,
+        convertLab65ToRgb: () => convertLab65ToRgb_default,
+        convertLab65ToXyz65: () => convertLab65ToXyz65_default,
+        convertLabToLch: () => convertLabToLch_default,
+        convertLabToRgb: () => convertLabToRgb_default,
+        convertLabToXyz50: () => convertLabToXyz50_default,
+        convertLchToLab: () => convertLchToLab_default,
+        convertLchuvToLuv: () => convertLchuvToLuv_default,
+        convertLrgbToOklab: () => convertLrgbToOklab_default,
+        convertLrgbToRgb: () => convertLrgbToRgb_default,
+        convertLuvToLchuv: () => convertLuvToLchuv_default,
+        convertLuvToXyz50: () => convertLuvToXyz50_default,
+        convertOkhslToOklab: () => convertOkhslToOklab,
+        convertOkhsvToOklab: () => convertOkhsvToOklab,
+        convertOklabToLrgb: () => convertOklabToLrgb_default,
+        convertOklabToOkhsl: () => convertOklabToOkhsl,
+        convertOklabToOkhsv: () => convertOklabToOkhsv,
+        convertOklabToRgb: () => convertOklabToRgb_default,
+        convertP3ToXyz65: () => convertP3ToXyz65_default,
+        convertProphotoToXyz50: () => convertProphotoToXyz50_default,
+        convertRec2020ToXyz65: () => convertRec2020ToXyz65_default,
+        convertRgbToCubehelix: () => convertRgbToCubehelix_default,
+        convertRgbToHsi: () => convertRgbToHsi,
+        convertRgbToHsl: () => convertRgbToHsl,
+        convertRgbToHsv: () => convertRgbToHsv,
+        convertRgbToHwb: () => convertRgbToHwb,
+        convertRgbToJab: () => convertRgbToJab_default,
+        convertRgbToLab: () => convertRgbToLab_default,
+        convertRgbToLab65: () => convertRgbToLab65_default,
+        convertRgbToLrgb: () => convertRgbToLrgb_default,
+        convertRgbToOklab: () => convertRgbToOklab_default,
+        convertRgbToXyb: () => convertRgbToXyb_default,
+        convertRgbToXyz50: () => convertRgbToXyz50_default,
+        convertRgbToXyz65: () => convertRgbToXyz65_default,
+        convertRgbToYiq: () => convertRgbToYiq_default,
+        convertXybToRgb: () => convertXybToRgb_default,
+        convertXyz50ToLab: () => convertXyz50ToLab_default,
+        convertXyz50ToLuv: () => convertXyz50ToLuv_default,
+        convertXyz50ToProphoto: () => convertXyz50ToProphoto_default,
+        convertXyz50ToRgb: () => convertXyz50ToRgb_default,
+        convertXyz50ToXyz65: () => convertXyz50ToXyz65_default,
+        convertXyz65ToA98: () => convertXyz65ToA98_default,
+        convertXyz65ToItp: () => convertXyz65ToItp_default,
+        convertXyz65ToJab: () => convertXyz65ToJab_default,
+        convertXyz65ToLab65: () => convertXyz65ToLab65_default,
+        convertXyz65ToP3: () => convertXyz65ToP3_default,
+        convertXyz65ToRec2020: () => convertXyz65ToRec2020_default,
+        convertXyz65ToRgb: () => convertXyz65ToRgb_default,
+        convertXyz65ToXyz50: () => convertXyz65ToXyz50_default,
+        convertYiqToRgb: () => convertYiqToRgb_default,
+        converter: () => converter_default,
+        cubehelix: () => cubehelix3,
+        differenceCie76: () => differenceCie76,
+        differenceCie94: () => differenceCie94,
+        differenceCiede2000: () => differenceCiede2000,
+        differenceCmc: () => differenceCmc,
+        differenceEuclidean: () => differenceEuclidean,
+        differenceHueChroma: () => differenceHueChroma,
+        differenceHueNaive: () => differenceHueNaive,
+        differenceHueSaturation: () => differenceHueSaturation,
+        differenceHyab: () => differenceHyab,
+        differenceItp: () => differenceItp,
+        differenceKotsarenkoRamos: () => differenceKotsarenkoRamos,
+        displayable: () => displayable,
+        dlab: () => dlab,
+        dlch: () => dlch,
+        easingGamma: () => gamma_default,
+        easingInOutSine: () => inOutSine_default,
+        easingMidpoint: () => midpoint_default,
+        easingSmootherstep: () => smootherstep_default,
+        easingSmoothstep: () => easingSmoothstep,
+        easingSmoothstepInverse: () => easingSmoothstepInverse,
+        filterBrightness: () => filterBrightness,
+        filterContrast: () => filterContrast,
+        filterDeficiencyDeuter: () => filterDeficiencyDeuter,
+        filterDeficiencyProt: () => filterDeficiencyProt,
+        filterDeficiencyTrit: () => filterDeficiencyTrit,
+        filterGrayscale: () => filterGrayscale,
+        filterHueRotate: () => filterHueRotate,
+        filterInvert: () => filterInvert,
+        filterSaturate: () => filterSaturate,
+        filterSepia: () => filterSepia,
+        fixupAlpha: () => fixupAlpha,
+        fixupHueDecreasing: () => fixupHueDecreasing,
+        fixupHueIncreasing: () => fixupHueIncreasing,
+        fixupHueLonger: () => fixupHueLonger,
+        fixupHueShorter: () => fixupHueShorter,
+        formatCss: () => formatCss,
+        formatHex: () => formatHex,
+        formatHex8: () => formatHex8,
+        formatHsl: () => formatHsl,
+        formatRgb: () => formatRgb,
+        getMode: () => getMode,
+        hsi: () => hsi,
+        hsl: () => hsl22,
+        hsv: () => hsv,
+        hwb: () => hwb,
+        inGamut: () => inGamut,
+        interpolate: () => interpolate,
+        interpolateWith: () => interpolateWith,
+        interpolateWithPremultipliedAlpha: () => interpolateWithPremultipliedAlpha,
+        interpolatorLinear: () => interpolatorLinear,
+        interpolatorPiecewise: () => interpolatorPiecewise,
+        interpolatorSplineBasis: () => interpolatorSplineBasis,
+        interpolatorSplineBasisClosed: () => interpolatorSplineBasisClosed,
+        interpolatorSplineMonotone: () => interpolatorSplineMonotone,
+        interpolatorSplineMonotone2: () => interpolatorSplineMonotone2,
+        interpolatorSplineMonotoneClosed: () => interpolatorSplineMonotoneClosed,
+        interpolatorSplineNatural: () => interpolatorSplineNatural,
+        interpolatorSplineNaturalClosed: () => interpolatorSplineNaturalClosed,
+        itp: () => itp,
+        jab: () => jab,
+        jch: () => jch,
+        lab: () => lab3,
+        lab65: () => lab65,
+        lch: () => lch2,
+        lch65: () => lch65,
+        lchuv: () => lchuv,
+        lerp: () => lerp,
+        lrgb: () => lrgb,
+        luv: () => luv,
+        mapAlphaDivide: () => mapAlphaDivide,
+        mapAlphaMultiply: () => mapAlphaMultiply,
+        mapTransferGamma: () => mapTransferGamma,
+        mapTransferLinear: () => mapTransferLinear,
+        mapper: () => mapper,
+        modeA98: () => definition_default2,
+        modeCubehelix: () => definition_default3,
+        modeDlab: () => definition_default4,
+        modeDlch: () => definition_default5,
+        modeHsi: () => definition_default6,
+        modeHsl: () => definition_default7,
+        modeHsv: () => definition_default8,
+        modeHwb: () => definition_default9,
+        modeItp: () => definition_default10,
+        modeJab: () => definition_default11,
+        modeJch: () => definition_default12,
+        modeLab: () => definition_default13,
+        modeLab65: () => definition_default14,
+        modeLch: () => definition_default15,
+        modeLch65: () => definition_default16,
+        modeLchuv: () => definition_default17,
+        modeLrgb: () => definition_default18,
+        modeLuv: () => definition_default19,
+        modeOkhsl: () => modeOkhsl_default,
+        modeOkhsv: () => modeOkhsv_default,
+        modeOklab: () => definition_default20,
+        modeOklch: () => definition_default21,
+        modeP3: () => definition_default22,
+        modeProphoto: () => definition_default23,
+        modeRec2020: () => definition_default24,
+        modeRgb: () => definition_default,
+        modeXyb: () => definition_default25,
+        modeXyz50: () => definition_default26,
+        modeXyz65: () => definition_default27,
+        modeYiq: () => definition_default28,
+        nearest: () => nearest_default,
+        okhsl: () => okhsl,
+        okhsv: () => okhsv,
+        oklab: () => oklab,
+        oklch: () => oklch,
+        p3: () => p3,
+        parse: () => parse_default,
+        parseHex: () => parseHex_default,
+        parseHsl: () => parseHsl_default,
+        parseHslLegacy: () => parseHslLegacy_default,
+        parseHwb: () => parseHwb_default,
+        parseLab: () => parseLab_default,
+        parseLch: () => parseLch_default,
+        parseNamed: () => parseNamed_default,
+        parseOklab: () => parseOklab_default,
+        parseOklch: () => parseOklch_default,
+        parseRgb: () => parseRgb_default,
+        parseRgbLegacy: () => parseRgbLegacy_default,
+        parseTransparent: () => parseTransparent_default,
+        prophoto: () => prophoto,
+        random: () => random_default,
+        rec2020: () => rec2020,
+        removeParser: () => removeParser,
+        rgb: () => rgb4,
+        round: () => round_default2,
+        samples: () => samples_default,
+        serializeHex: () => serializeHex,
+        serializeHex8: () => serializeHex8,
+        serializeHsl: () => serializeHsl,
+        serializeRgb: () => serializeRgb,
+        toGamut: () => toGamut,
+        trilerp: () => trilerp,
+        unlerp: () => unlerp,
+        useMode: () => useMode,
+        useParser: () => useParser,
+        wcagContrast: () => contrast,
+        wcagLuminance: () => luminance,
+        xyb: () => xyb,
+        xyz50: () => xyz50,
+        xyz65: () => xyz65,
+        yiq: () => yiq
+      });
+      module.exports = __toCommonJS2(src_exports2);
+      var parseNumber = (color2, len) => {
+        if (typeof color2 !== "number") return;
+        if (len === 3) {
+          return {
+            mode: "rgb",
+            r: (color2 >> 8 & 15 | color2 >> 4 & 240) / 255,
+            g: (color2 >> 4 & 15 | color2 & 240) / 255,
+            b: (color2 & 15 | color2 << 4 & 240) / 255
+          };
         }
-        if (!value) {
-          return null;
+        if (len === 4) {
+          return {
+            mode: "rgb",
+            r: (color2 >> 12 & 15 | color2 >> 8 & 240) / 255,
+            g: (color2 >> 8 & 15 | color2 >> 4 & 240) / 255,
+            b: (color2 >> 4 & 15 | color2 & 240) / 255,
+            alpha: (color2 & 15 | color2 << 4 & 240) / 255
+          };
         }
-        return { model, value };
+        if (len === 6) {
+          return {
+            mode: "rgb",
+            r: (color2 >> 16 & 255) / 255,
+            g: (color2 >> 8 & 255) / 255,
+            b: (color2 & 255) / 255
+          };
+        }
+        if (len === 8) {
+          return {
+            mode: "rgb",
+            r: (color2 >> 24 & 255) / 255,
+            g: (color2 >> 16 & 255) / 255,
+            b: (color2 >> 8 & 255) / 255,
+            alpha: (color2 & 255) / 255
+          };
+        }
       };
-      cs.get.rgb = function(string) {
-        if (!string) {
-          return null;
-        }
-        const abbr = /^#([a-f\d]{3,4})$/i;
-        const hex2 = /^#([a-f\d]{6})([a-f\d]{2})?$/i;
-        const rgba2 = /^rgba?\(\s*([+-]?(?:\d*\.)?\d+(?:e\d+)?)(?=[\s,])\s*(?:,\s*)?([+-]?(?:\d*\.)?\d+(?:e\d+)?)(?=[\s,])\s*(?:,\s*)?([+-]?(?:\d*\.)?\d+(?:e\d+)?)\s*(?:[\s,|/]\s*([+-]?(?:\d*\.)?\d+(?:e\d+)?)(%?)\s*)?\)$/i;
-        const per = /^rgba?\(\s*([+-]?[\d.]+)%\s*,?\s*([+-]?[\d.]+)%\s*,?\s*([+-]?[\d.]+)%\s*(?:[\s,|/]\s*([+-]?[\d.]+)(%?)\s*)?\)$/i;
-        const keyword = /^(\w+)$/;
-        let rgb2 = [0, 0, 0, 1];
+      var parseNumber_default = parseNumber;
+      var named2 = {
+        aliceblue: 15792383,
+        antiquewhite: 16444375,
+        aqua: 65535,
+        aquamarine: 8388564,
+        azure: 15794175,
+        beige: 16119260,
+        bisque: 16770244,
+        black: 0,
+        blanchedalmond: 16772045,
+        blue: 255,
+        blueviolet: 9055202,
+        brown: 10824234,
+        burlywood: 14596231,
+        cadetblue: 6266528,
+        chartreuse: 8388352,
+        chocolate: 13789470,
+        coral: 16744272,
+        cornflowerblue: 6591981,
+        cornsilk: 16775388,
+        crimson: 14423100,
+        cyan: 65535,
+        darkblue: 139,
+        darkcyan: 35723,
+        darkgoldenrod: 12092939,
+        darkgray: 11119017,
+        darkgreen: 25600,
+        darkgrey: 11119017,
+        darkkhaki: 12433259,
+        darkmagenta: 9109643,
+        darkolivegreen: 5597999,
+        darkorange: 16747520,
+        darkorchid: 10040012,
+        darkred: 9109504,
+        darksalmon: 15308410,
+        darkseagreen: 9419919,
+        darkslateblue: 4734347,
+        darkslategray: 3100495,
+        darkslategrey: 3100495,
+        darkturquoise: 52945,
+        darkviolet: 9699539,
+        deeppink: 16716947,
+        deepskyblue: 49151,
+        dimgray: 6908265,
+        dimgrey: 6908265,
+        dodgerblue: 2003199,
+        firebrick: 11674146,
+        floralwhite: 16775920,
+        forestgreen: 2263842,
+        fuchsia: 16711935,
+        gainsboro: 14474460,
+        ghostwhite: 16316671,
+        gold: 16766720,
+        goldenrod: 14329120,
+        gray: 8421504,
+        green: 32768,
+        greenyellow: 11403055,
+        grey: 8421504,
+        honeydew: 15794160,
+        hotpink: 16738740,
+        indianred: 13458524,
+        indigo: 4915330,
+        ivory: 16777200,
+        khaki: 15787660,
+        lavender: 15132410,
+        lavenderblush: 16773365,
+        lawngreen: 8190976,
+        lemonchiffon: 16775885,
+        lightblue: 11393254,
+        lightcoral: 15761536,
+        lightcyan: 14745599,
+        lightgoldenrodyellow: 16448210,
+        lightgray: 13882323,
+        lightgreen: 9498256,
+        lightgrey: 13882323,
+        lightpink: 16758465,
+        lightsalmon: 16752762,
+        lightseagreen: 2142890,
+        lightskyblue: 8900346,
+        lightslategray: 7833753,
+        lightslategrey: 7833753,
+        lightsteelblue: 11584734,
+        lightyellow: 16777184,
+        lime: 65280,
+        limegreen: 3329330,
+        linen: 16445670,
+        magenta: 16711935,
+        maroon: 8388608,
+        mediumaquamarine: 6737322,
+        mediumblue: 205,
+        mediumorchid: 12211667,
+        mediumpurple: 9662683,
+        mediumseagreen: 3978097,
+        mediumslateblue: 8087790,
+        mediumspringgreen: 64154,
+        mediumturquoise: 4772300,
+        mediumvioletred: 13047173,
+        midnightblue: 1644912,
+        mintcream: 16121850,
+        mistyrose: 16770273,
+        moccasin: 16770229,
+        navajowhite: 16768685,
+        navy: 128,
+        oldlace: 16643558,
+        olive: 8421376,
+        olivedrab: 7048739,
+        orange: 16753920,
+        orangered: 16729344,
+        orchid: 14315734,
+        palegoldenrod: 15657130,
+        palegreen: 10025880,
+        paleturquoise: 11529966,
+        palevioletred: 14381203,
+        papayawhip: 16773077,
+        peachpuff: 16767673,
+        peru: 13468991,
+        pink: 16761035,
+        plum: 14524637,
+        powderblue: 11591910,
+        purple: 8388736,
+        // Added in CSS Colors Level 4:
+        // https://drafts.csswg.org/css-color/#changes-from-3
+        rebeccapurple: 6697881,
+        red: 16711680,
+        rosybrown: 12357519,
+        royalblue: 4286945,
+        saddlebrown: 9127187,
+        salmon: 16416882,
+        sandybrown: 16032864,
+        seagreen: 3050327,
+        seashell: 16774638,
+        sienna: 10506797,
+        silver: 12632256,
+        skyblue: 8900331,
+        slateblue: 6970061,
+        slategray: 7372944,
+        slategrey: 7372944,
+        snow: 16775930,
+        springgreen: 65407,
+        steelblue: 4620980,
+        tan: 13808780,
+        teal: 32896,
+        thistle: 14204888,
+        tomato: 16737095,
+        turquoise: 4251856,
+        violet: 15631086,
+        wheat: 16113331,
+        white: 16777215,
+        whitesmoke: 16119285,
+        yellow: 16776960,
+        yellowgreen: 10145074
+      };
+      var named_default = named2;
+      var parseNamed = (color2) => {
+        return parseNumber_default(named_default[color2.toLowerCase()], 6);
+      };
+      var parseNamed_default = parseNamed;
+      var hex2 = /^#?([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})$/i;
+      var parseHex = (color2) => {
         let match;
-        let i;
-        let hexAlpha;
-        if (match = string.match(hex2)) {
-          hexAlpha = match[2];
-          match = match[1];
-          for (i = 0; i < 3; i++) {
-            const i2 = i * 2;
-            rgb2[i] = Number.parseInt(match.slice(i2, i2 + 2), 16);
+        return (match = color2.match(hex2)) ? parseNumber_default(parseInt(match[1], 16), match[1].length) : void 0;
+      };
+      var parseHex_default = parseHex;
+      var num = "([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)";
+      var num_none = `(?:${num}|none)`;
+      var per = `${num}%`;
+      var per_none = `(?:${num}%|none)`;
+      var num_per = `(?:${num}%|${num})`;
+      var num_per_none = `(?:${num}%|${num}|none)`;
+      var hue2 = `(?:${num}(deg|grad|rad|turn)|${num})`;
+      var hue_none = `(?:${num}(deg|grad|rad|turn)|${num}|none)`;
+      var c = `\\s*,\\s*`;
+      var rx_num_per_none = new RegExp("^" + num_per_none + "$");
+      var rgb_num_old = new RegExp(
+        `^rgba?\\(\\s*${num}${c}${num}${c}${num}\\s*(?:,\\s*${num_per}\\s*)?\\)$`
+      );
+      var rgb_per_old = new RegExp(
+        `^rgba?\\(\\s*${per}${c}${per}${c}${per}\\s*(?:,\\s*${num_per}\\s*)?\\)$`
+      );
+      var parseRgbLegacy = (color2) => {
+        let res = { mode: "rgb" };
+        let match;
+        if (match = color2.match(rgb_num_old)) {
+          if (match[1] !== void 0) {
+            res.r = match[1] / 255;
           }
-          if (hexAlpha) {
-            rgb2[3] = Number.parseInt(hexAlpha, 16) / 255;
+          if (match[2] !== void 0) {
+            res.g = match[2] / 255;
           }
-        } else if (match = string.match(abbr)) {
-          match = match[1];
-          hexAlpha = match[3];
-          for (i = 0; i < 3; i++) {
-            rgb2[i] = Number.parseInt(match[i] + match[i], 16);
+          if (match[3] !== void 0) {
+            res.b = match[3] / 255;
           }
-          if (hexAlpha) {
-            rgb2[3] = Number.parseInt(hexAlpha + hexAlpha, 16) / 255;
+        } else if (match = color2.match(rgb_per_old)) {
+          if (match[1] !== void 0) {
+            res.r = match[1] / 100;
           }
-        } else if (match = string.match(rgba2)) {
-          for (i = 0; i < 3; i++) {
-            rgb2[i] = Number.parseFloat(match[i + 1]);
+          if (match[2] !== void 0) {
+            res.g = match[2] / 100;
           }
-          if (match[4]) {
-            rgb2[3] = match[5] ? Number.parseFloat(match[4]) * 0.01 : Number.parseFloat(match[4]);
+          if (match[3] !== void 0) {
+            res.b = match[3] / 100;
           }
-        } else if (match = string.match(per)) {
-          for (i = 0; i < 3; i++) {
-            rgb2[i] = Math.round(Number.parseFloat(match[i + 1]) * 2.55);
-          }
-          if (match[4]) {
-            rgb2[3] = match[5] ? Number.parseFloat(match[4]) * 0.01 : Number.parseFloat(match[4]);
-          }
-        } else if (match = string.toLowerCase().match(keyword)) {
-          if (match[1] === "transparent") {
-            return [0, 0, 0, 0];
-          }
-          if (!Object.hasOwn(color_name_default, match[1])) {
-            return null;
-          }
-          rgb2 = color_name_default[match[1]].slice();
-          rgb2[3] = 1;
-          return rgb2;
         } else {
-          return null;
+          return void 0;
         }
-        for (i = 0; i < 3; i++) {
-          rgb2[i] = clamp(rgb2[i], 0, 255);
+        if (match[4] !== void 0) {
+          res.alpha = Math.max(0, Math.min(1, match[4] / 100));
+        } else if (match[5] !== void 0) {
+          res.alpha = Math.max(0, Math.min(1, +match[5]));
         }
-        rgb2[3] = clamp(rgb2[3], 0, 1);
-        return rgb2;
+        return res;
       };
-      cs.get.hsl = function(string) {
-        if (!string) {
-          return null;
+      var parseRgbLegacy_default = parseRgbLegacy;
+      var prepare = (color2, mode) => color2 === void 0 ? void 0 : typeof color2 !== "object" ? parse_default(color2) : color2.mode !== void 0 ? color2 : mode ? __spreadProps(__spreadValues({}, color2), { mode }) : void 0;
+      var prepare_default = prepare;
+      var converter = (target_mode = "rgb") => (color2) => (color2 = prepare_default(color2, target_mode)) !== void 0 ? (
+        // if the color's mode corresponds to our target mode
+        color2.mode === target_mode ? (
+          // then just return the color
+          color2
+        ) : (
+          // otherwise check to see if we have a dedicated
+          // converter for the target mode
+          converters[color2.mode][target_mode] ? (
+            // and return its result...
+            converters[color2.mode][target_mode](color2)
+          ) : (
+            // ...otherwise pass through RGB as an intermediary step.
+            // if the target mode is RGB...
+            target_mode === "rgb" ? (
+              // just return the RGB
+              converters[color2.mode].rgb(color2)
+            ) : (
+              // otherwise convert color.mode -> RGB -> target_mode
+              converters.rgb[target_mode](converters[color2.mode].rgb(color2))
+            )
+          )
+        )
+      ) : void 0;
+      var converter_default = converter;
+      var converters = {};
+      var modes = {};
+      var parsers = [];
+      var colorProfiles = {};
+      var identity2 = (v) => v;
+      var useMode = (definition29) => {
+        converters[definition29.mode] = __spreadValues(__spreadValues({}, converters[definition29.mode]), definition29.toMode);
+        Object.keys(definition29.fromMode || {}).forEach((k4) => {
+          if (!converters[k4]) {
+            converters[k4] = {};
+          }
+          converters[k4][definition29.mode] = definition29.fromMode[k4];
+        });
+        if (!definition29.ranges) {
+          definition29.ranges = {};
         }
-        const hsl3 = /^hsla?\(\s*([+-]?(?:\d{0,3}\.)?\d+)(?:deg)?\s*,?\s*([+-]?[\d.]+)%\s*,?\s*([+-]?[\d.]+)%\s*(?:[,|/]\s*([+-]?(?=\.\d|\d)(?:0|[1-9]\d*)?(?:\.\d*)?(?:e[+-]?\d+)?)\s*)?\)$/i;
-        const match = string.match(hsl3);
-        if (match) {
-          const alpha = Number.parseFloat(match[4]);
-          const h = (Number.parseFloat(match[1]) % 360 + 360) % 360;
-          const s = clamp(Number.parseFloat(match[2]), 0, 100);
-          const l = clamp(Number.parseFloat(match[3]), 0, 100);
-          const a = clamp(Number.isNaN(alpha) ? 1 : alpha, 0, 1);
-          return [h, s, l, a];
+        if (!definition29.difference) {
+          definition29.difference = {};
         }
-        return null;
+        definition29.channels.forEach((channel) => {
+          if (definition29.ranges[channel] === void 0) {
+            definition29.ranges[channel] = [0, 1];
+          }
+          if (!definition29.interpolate[channel]) {
+            throw new Error(`Missing interpolator for: ${channel}`);
+          }
+          if (typeof definition29.interpolate[channel] === "function") {
+            definition29.interpolate[channel] = {
+              use: definition29.interpolate[channel]
+            };
+          }
+          if (!definition29.interpolate[channel].fixup) {
+            definition29.interpolate[channel].fixup = identity2;
+          }
+        });
+        modes[definition29.mode] = definition29;
+        (definition29.parse || []).forEach((parser) => {
+          useParser(parser, definition29.mode);
+        });
+        return converter_default(definition29.mode);
       };
-      cs.get.hwb = function(string) {
-        if (!string) {
-          return null;
+      var getMode = (mode) => modes[mode];
+      var useParser = (parser, mode) => {
+        if (typeof parser === "string") {
+          if (!mode) {
+            throw new Error(`'mode' required when 'parser' is a string`);
+          }
+          colorProfiles[parser] = mode;
+        } else if (typeof parser === "function") {
+          if (parsers.indexOf(parser) < 0) {
+            parsers.push(parser);
+          }
         }
-        const hwb = /^hwb\(\s*([+-]?\d{0,3}(?:\.\d+)?)(?:deg)?\s*[\s,]\s*([+-]?[\d.]+)%\s*[\s,]\s*([+-]?[\d.]+)%\s*(?:[\s,]\s*([+-]?(?=\.\d|\d)(?:0|[1-9]\d*)?(?:\.\d*)?(?:e[+-]?\d+)?)\s*)?\)$/i;
-        const match = string.match(hwb);
-        if (match) {
-          const alpha = Number.parseFloat(match[4]);
-          const h = (Number.parseFloat(match[1]) % 360 + 360) % 360;
-          const w = clamp(Number.parseFloat(match[2]), 0, 100);
-          const b = clamp(Number.parseFloat(match[3]), 0, 100);
-          const a = clamp(Number.isNaN(alpha) ? 1 : alpha, 0, 1);
-          return [h, w, b, a];
+      };
+      var removeParser = (parser) => {
+        if (typeof parser === "string") {
+          delete colorProfiles[parser];
+        } else if (typeof parser === "function") {
+          const idx = parsers.indexOf(parser);
+          if (idx > 0) {
+            parsers.splice(idx, 1);
+          }
         }
-        return null;
       };
-      cs.to.hex = function(...rgba2) {
-        return "#" + hexDouble(rgba2[0]) + hexDouble(rgba2[1]) + hexDouble(rgba2[2]) + (rgba2[3] < 1 ? hexDouble(Math.round(rgba2[3] * 255)) : "");
+      var IdentStartCodePoint = /[^\x00-\x7F]|[a-zA-Z_]/;
+      var IdentCodePoint = /[^\x00-\x7F]|[-\w]/;
+      var Tok = {
+        Function: "function",
+        Ident: "ident",
+        Number: "number",
+        Percentage: "percentage",
+        ParenClose: ")",
+        None: "none",
+        Hue: "hue",
+        Alpha: "alpha"
       };
-      cs.to.rgb = function(...rgba2) {
-        return rgba2.length < 4 || rgba2[3] === 1 ? "rgb(" + Math.round(rgba2[0]) + ", " + Math.round(rgba2[1]) + ", " + Math.round(rgba2[2]) + ")" : "rgba(" + Math.round(rgba2[0]) + ", " + Math.round(rgba2[1]) + ", " + Math.round(rgba2[2]) + ", " + rgba2[3] + ")";
-      };
-      cs.to.rgb.percent = function(...rgba2) {
-        const r = Math.round(rgba2[0] / 255 * 100);
-        const g = Math.round(rgba2[1] / 255 * 100);
-        const b = Math.round(rgba2[2] / 255 * 100);
-        return rgba2.length < 4 || rgba2[3] === 1 ? "rgb(" + r + "%, " + g + "%, " + b + "%)" : "rgba(" + r + "%, " + g + "%, " + b + "%, " + rgba2[3] + ")";
-      };
-      cs.to.hsl = function(...hsla2) {
-        return hsla2.length < 4 || hsla2[3] === 1 ? "hsl(" + hsla2[0] + ", " + hsla2[1] + "%, " + hsla2[2] + "%)" : "hsla(" + hsla2[0] + ", " + hsla2[1] + "%, " + hsla2[2] + "%, " + hsla2[3] + ")";
-      };
-      cs.to.hwb = function(...hwba) {
-        let a = "";
-        if (hwba.length >= 4 && hwba[3] !== 1) {
-          a = ", " + hwba[3];
+      var _i = 0;
+      function is_num(chars) {
+        let ch = chars[_i];
+        let ch1 = chars[_i + 1];
+        if (ch === "-" || ch === "+") {
+          return /\d/.test(ch1) || ch1 === "." && /\d/.test(chars[_i + 2]);
         }
-        return "hwb(" + hwba[0] + ", " + hwba[1] + "%, " + hwba[2] + "%" + a + ")";
-      };
-      cs.to.keyword = function(...rgb2) {
-        return reverseNames[rgb2.slice(0, 3)];
-      };
-      color_string_default = cs;
-    }
-  });
-
-  // node_modules/color/node_modules/color-name/index.js
-  var color_name_default2;
-  var init_color_name2 = __esm({
-    "node_modules/color/node_modules/color-name/index.js"() {
-      color_name_default2 = {
-        aliceblue: [240, 248, 255],
-        antiquewhite: [250, 235, 215],
-        aqua: [0, 255, 255],
-        aquamarine: [127, 255, 212],
-        azure: [240, 255, 255],
-        beige: [245, 245, 220],
-        bisque: [255, 228, 196],
-        black: [0, 0, 0],
-        blanchedalmond: [255, 235, 205],
-        blue: [0, 0, 255],
-        blueviolet: [138, 43, 226],
-        brown: [165, 42, 42],
-        burlywood: [222, 184, 135],
-        cadetblue: [95, 158, 160],
-        chartreuse: [127, 255, 0],
-        chocolate: [210, 105, 30],
-        coral: [255, 127, 80],
-        cornflowerblue: [100, 149, 237],
-        cornsilk: [255, 248, 220],
-        crimson: [220, 20, 60],
-        cyan: [0, 255, 255],
-        darkblue: [0, 0, 139],
-        darkcyan: [0, 139, 139],
-        darkgoldenrod: [184, 134, 11],
-        darkgray: [169, 169, 169],
-        darkgreen: [0, 100, 0],
-        darkgrey: [169, 169, 169],
-        darkkhaki: [189, 183, 107],
-        darkmagenta: [139, 0, 139],
-        darkolivegreen: [85, 107, 47],
-        darkorange: [255, 140, 0],
-        darkorchid: [153, 50, 204],
-        darkred: [139, 0, 0],
-        darksalmon: [233, 150, 122],
-        darkseagreen: [143, 188, 143],
-        darkslateblue: [72, 61, 139],
-        darkslategray: [47, 79, 79],
-        darkslategrey: [47, 79, 79],
-        darkturquoise: [0, 206, 209],
-        darkviolet: [148, 0, 211],
-        deeppink: [255, 20, 147],
-        deepskyblue: [0, 191, 255],
-        dimgray: [105, 105, 105],
-        dimgrey: [105, 105, 105],
-        dodgerblue: [30, 144, 255],
-        firebrick: [178, 34, 34],
-        floralwhite: [255, 250, 240],
-        forestgreen: [34, 139, 34],
-        fuchsia: [255, 0, 255],
-        gainsboro: [220, 220, 220],
-        ghostwhite: [248, 248, 255],
-        gold: [255, 215, 0],
-        goldenrod: [218, 165, 32],
-        gray: [128, 128, 128],
-        green: [0, 128, 0],
-        greenyellow: [173, 255, 47],
-        grey: [128, 128, 128],
-        honeydew: [240, 255, 240],
-        hotpink: [255, 105, 180],
-        indianred: [205, 92, 92],
-        indigo: [75, 0, 130],
-        ivory: [255, 255, 240],
-        khaki: [240, 230, 140],
-        lavender: [230, 230, 250],
-        lavenderblush: [255, 240, 245],
-        lawngreen: [124, 252, 0],
-        lemonchiffon: [255, 250, 205],
-        lightblue: [173, 216, 230],
-        lightcoral: [240, 128, 128],
-        lightcyan: [224, 255, 255],
-        lightgoldenrodyellow: [250, 250, 210],
-        lightgray: [211, 211, 211],
-        lightgreen: [144, 238, 144],
-        lightgrey: [211, 211, 211],
-        lightpink: [255, 182, 193],
-        lightsalmon: [255, 160, 122],
-        lightseagreen: [32, 178, 170],
-        lightskyblue: [135, 206, 250],
-        lightslategray: [119, 136, 153],
-        lightslategrey: [119, 136, 153],
-        lightsteelblue: [176, 196, 222],
-        lightyellow: [255, 255, 224],
-        lime: [0, 255, 0],
-        limegreen: [50, 205, 50],
-        linen: [250, 240, 230],
-        magenta: [255, 0, 255],
-        maroon: [128, 0, 0],
-        mediumaquamarine: [102, 205, 170],
-        mediumblue: [0, 0, 205],
-        mediumorchid: [186, 85, 211],
-        mediumpurple: [147, 112, 219],
-        mediumseagreen: [60, 179, 113],
-        mediumslateblue: [123, 104, 238],
-        mediumspringgreen: [0, 250, 154],
-        mediumturquoise: [72, 209, 204],
-        mediumvioletred: [199, 21, 133],
-        midnightblue: [25, 25, 112],
-        mintcream: [245, 255, 250],
-        mistyrose: [255, 228, 225],
-        moccasin: [255, 228, 181],
-        navajowhite: [255, 222, 173],
-        navy: [0, 0, 128],
-        oldlace: [253, 245, 230],
-        olive: [128, 128, 0],
-        olivedrab: [107, 142, 35],
-        orange: [255, 165, 0],
-        orangered: [255, 69, 0],
-        orchid: [218, 112, 214],
-        palegoldenrod: [238, 232, 170],
-        palegreen: [152, 251, 152],
-        paleturquoise: [175, 238, 238],
-        palevioletred: [219, 112, 147],
-        papayawhip: [255, 239, 213],
-        peachpuff: [255, 218, 185],
-        peru: [205, 133, 63],
-        pink: [255, 192, 203],
-        plum: [221, 160, 221],
-        powderblue: [176, 224, 230],
-        purple: [128, 0, 128],
-        rebeccapurple: [102, 51, 153],
-        red: [255, 0, 0],
-        rosybrown: [188, 143, 143],
-        royalblue: [65, 105, 225],
-        saddlebrown: [139, 69, 19],
-        salmon: [250, 128, 114],
-        sandybrown: [244, 164, 96],
-        seagreen: [46, 139, 87],
-        seashell: [255, 245, 238],
-        sienna: [160, 82, 45],
-        silver: [192, 192, 192],
-        skyblue: [135, 206, 235],
-        slateblue: [106, 90, 205],
-        slategray: [112, 128, 144],
-        slategrey: [112, 128, 144],
-        snow: [255, 250, 250],
-        springgreen: [0, 255, 127],
-        steelblue: [70, 130, 180],
-        tan: [210, 180, 140],
-        teal: [0, 128, 128],
-        thistle: [216, 191, 216],
-        tomato: [255, 99, 71],
-        turquoise: [64, 224, 208],
-        violet: [238, 130, 238],
-        wheat: [245, 222, 179],
-        white: [255, 255, 255],
-        whitesmoke: [245, 245, 245],
-        yellow: [255, 255, 0],
-        yellowgreen: [154, 205, 50]
-      };
-    }
-  });
-
-  // node_modules/color/node_modules/color-convert/conversions.js
-  function srgbNonlinearTransform(c) {
-    const cc = c > 31308e-7 ? 1.055 * c ** (1 / 2.4) - 0.055 : c * 12.92;
-    return Math.min(Math.max(0, cc), 1);
-  }
-  function srgbNonlinearTransformInv(c) {
-    return c > 0.04045 ? ((c + 0.055) / 1.055) ** 2.4 : c / 12.92;
-  }
-  function comparativeDistance(x, y) {
-    return (x[0] - y[0]) ** 2 + (x[1] - y[1]) ** 2 + (x[2] - y[2]) ** 2;
-  }
-  var reverseKeywords, convert, conversions_default, LAB_FT;
-  var init_conversions = __esm({
-    "node_modules/color/node_modules/color-convert/conversions.js"() {
-      init_color_name2();
-      reverseKeywords = {};
-      for (const key of Object.keys(color_name_default2)) {
-        reverseKeywords[color_name_default2[key]] = key;
+        if (ch === ".") {
+          return /\d/.test(ch1);
+        }
+        return /\d/.test(ch);
       }
-      convert = {
-        rgb: { channels: 3, labels: "rgb" },
-        hsl: { channels: 3, labels: "hsl" },
-        hsv: { channels: 3, labels: "hsv" },
-        hwb: { channels: 3, labels: "hwb" },
-        cmyk: { channels: 4, labels: "cmyk" },
-        xyz: { channels: 3, labels: "xyz" },
-        lab: { channels: 3, labels: "lab" },
-        oklab: { channels: 3, labels: ["okl", "oka", "okb"] },
-        lch: { channels: 3, labels: "lch" },
-        oklch: { channels: 3, labels: ["okl", "okc", "okh"] },
-        hex: { channels: 1, labels: ["hex"] },
-        keyword: { channels: 1, labels: ["keyword"] },
-        ansi16: { channels: 1, labels: ["ansi16"] },
-        ansi256: { channels: 1, labels: ["ansi256"] },
-        hcg: { channels: 3, labels: ["h", "c", "g"] },
-        apple: { channels: 3, labels: ["r16", "g16", "b16"] },
-        gray: { channels: 1, labels: ["gray"] }
-      };
-      conversions_default = convert;
-      LAB_FT = (6 / 29) ** 3;
-      for (const model of Object.keys(convert)) {
-        if (!("channels" in convert[model])) {
-          throw new Error("missing channels property: " + model);
+      function is_ident(chars) {
+        if (_i >= chars.length) {
+          return false;
         }
-        if (!("labels" in convert[model])) {
-          throw new Error("missing channel labels property: " + model);
+        let ch = chars[_i];
+        if (IdentStartCodePoint.test(ch)) {
+          return true;
         }
-        if (convert[model].labels.length !== convert[model].channels) {
-          throw new Error("channel and label counts mismatch: " + model);
+        if (ch === "-") {
+          if (chars.length - _i < 2) {
+            return false;
+          }
+          let ch1 = chars[_i + 1];
+          if (ch1 === "-" || IdentStartCodePoint.test(ch1)) {
+            return true;
+          }
+          return false;
         }
-        const { channels, labels } = convert[model];
-        delete convert[model].channels;
-        delete convert[model].labels;
-        Object.defineProperty(convert[model], "channels", { value: channels });
-        Object.defineProperty(convert[model], "labels", { value: labels });
+        return false;
       }
-      convert.rgb.hsl = function(rgb2) {
-        const r = rgb2[0] / 255;
-        const g = rgb2[1] / 255;
-        const b = rgb2[2] / 255;
-        const min = Math.min(r, g, b);
-        const max = Math.max(r, g, b);
-        const delta = max - min;
-        let h;
-        let s;
-        switch (max) {
-          case min: {
-            h = 0;
-            break;
-          }
-          case r: {
-            h = (g - b) / delta;
-            break;
-          }
-          case g: {
-            h = 2 + (b - r) / delta;
-            break;
-          }
-          case b: {
-            h = 4 + (r - g) / delta;
-            break;
-          }
-        }
-        h = Math.min(h * 60, 360);
-        if (h < 0) {
-          h += 360;
-        }
-        const l = (min + max) / 2;
-        if (max === min) {
-          s = 0;
-        } else if (l <= 0.5) {
-          s = delta / (max + min);
-        } else {
-          s = delta / (2 - max - min);
-        }
-        return [h, s * 100, l * 100];
+      var huenits = {
+        deg: 1,
+        rad: 180 / Math.PI,
+        grad: 9 / 10,
+        turn: 360
       };
-      convert.rgb.hsv = function(rgb2) {
-        let rdif;
-        let gdif;
-        let bdif;
-        let h;
-        let s;
-        const r = rgb2[0] / 255;
-        const g = rgb2[1] / 255;
-        const b = rgb2[2] / 255;
-        const v = Math.max(r, g, b);
-        const diff = v - Math.min(r, g, b);
-        const diffc = function(c) {
-          return (v - c) / 6 / diff + 1 / 2;
-        };
-        if (diff === 0) {
-          h = 0;
-          s = 0;
-        } else {
-          s = diff / v;
-          rdif = diffc(r);
-          gdif = diffc(g);
-          bdif = diffc(b);
-          switch (v) {
-            case r: {
-              h = bdif - gdif;
-              break;
+      function num2(chars) {
+        let value = "";
+        if (chars[_i] === "-" || chars[_i] === "+") {
+          value += chars[_i++];
+        }
+        value += digits(chars);
+        if (chars[_i] === "." && /\d/.test(chars[_i + 1])) {
+          value += chars[_i++] + digits(chars);
+        }
+        if (chars[_i] === "e" || chars[_i] === "E") {
+          if ((chars[_i + 1] === "-" || chars[_i + 1] === "+") && /\d/.test(chars[_i + 2])) {
+            value += chars[_i++] + chars[_i++] + digits(chars);
+          } else if (/\d/.test(chars[_i + 1])) {
+            value += chars[_i++] + digits(chars);
+          }
+        }
+        if (is_ident(chars)) {
+          let id = ident(chars);
+          if (id === "deg" || id === "rad" || id === "turn" || id === "grad") {
+            return { type: Tok.Hue, value: value * huenits[id] };
+          }
+          return void 0;
+        }
+        if (chars[_i] === "%") {
+          _i++;
+          return { type: Tok.Percentage, value: +value };
+        }
+        return { type: Tok.Number, value: +value };
+      }
+      function digits(chars) {
+        let v = "";
+        while (/\d/.test(chars[_i])) {
+          v += chars[_i++];
+        }
+        return v;
+      }
+      function ident(chars) {
+        let v = "";
+        while (_i < chars.length && IdentCodePoint.test(chars[_i])) {
+          v += chars[_i++];
+        }
+        return v;
+      }
+      function identlike(chars) {
+        let v = ident(chars);
+        if (chars[_i] === "(") {
+          _i++;
+          return { type: Tok.Function, value: v };
+        }
+        if (v === "none") {
+          return { type: Tok.None, value: void 0 };
+        }
+        return { type: Tok.Ident, value: v };
+      }
+      function tokenize(str = "") {
+        let chars = str.trim();
+        let tokens = [];
+        let ch;
+        _i = 0;
+        while (_i < chars.length) {
+          ch = chars[_i++];
+          if (ch === "\n" || ch === "	" || ch === " ") {
+            while (_i < chars.length && (chars[_i] === "\n" || chars[_i] === "	" || chars[_i] === " ")) {
+              _i++;
             }
-            case g: {
-              h = 1 / 3 + rdif - bdif;
-              break;
+            continue;
+          }
+          if (ch === ",") {
+            return void 0;
+          }
+          if (ch === ")") {
+            tokens.push({ type: Tok.ParenClose });
+            continue;
+          }
+          if (ch === "+") {
+            _i--;
+            if (is_num(chars)) {
+              tokens.push(num2(chars));
+              continue;
             }
-            case b: {
-              h = 2 / 3 + gdif - rdif;
-              break;
+            return void 0;
+          }
+          if (ch === "-") {
+            _i--;
+            if (is_num(chars)) {
+              tokens.push(num2(chars));
+              continue;
+            }
+            if (is_ident(chars)) {
+              tokens.push({ type: Tok.Ident, value: ident(chars) });
+              continue;
+            }
+            return void 0;
+          }
+          if (ch === ".") {
+            _i--;
+            if (is_num(chars)) {
+              tokens.push(num2(chars));
+              continue;
+            }
+            return void 0;
+          }
+          if (ch === "/") {
+            while (_i < chars.length && (chars[_i] === "\n" || chars[_i] === "	" || chars[_i] === " ")) {
+              _i++;
+            }
+            let alpha;
+            if (is_num(chars)) {
+              alpha = num2(chars);
+              if (alpha.type !== Tok.Hue) {
+                tokens.push({ type: Tok.Alpha, value: alpha });
+                continue;
+              }
+            }
+            if (is_ident(chars)) {
+              if (ident(chars) === "none") {
+                tokens.push({
+                  type: Tok.Alpha,
+                  value: { type: Tok.None, value: void 0 }
+                });
+                continue;
+              }
+            }
+            return void 0;
+          }
+          if (/\d/.test(ch)) {
+            _i--;
+            tokens.push(num2(chars));
+            continue;
+          }
+          if (IdentStartCodePoint.test(ch)) {
+            _i--;
+            tokens.push(identlike(chars));
+            continue;
+          }
+          return void 0;
+        }
+        return tokens;
+      }
+      function parseColorSyntax(tokens) {
+        tokens._i = 0;
+        let token = tokens[tokens._i++];
+        if (!token || token.type !== Tok.Function || token.value !== "color") {
+          return void 0;
+        }
+        token = tokens[tokens._i++];
+        if (token.type !== Tok.Ident) {
+          return void 0;
+        }
+        const mode = colorProfiles[token.value];
+        if (!mode) {
+          return void 0;
+        }
+        const res = { mode };
+        const coords = consumeCoords(tokens, false);
+        if (!coords) {
+          return void 0;
+        }
+        const channels = getMode(mode).channels;
+        for (let ii = 0, c2, ch; ii < channels.length; ii++) {
+          c2 = coords[ii];
+          ch = channels[ii];
+          if (c2.type !== Tok.None) {
+            res[ch] = c2.type === Tok.Number ? c2.value : c2.value / 100;
+            if (ch === "alpha") {
+              res[ch] = Math.max(0, Math.min(1, res[ch]));
             }
           }
-          if (h < 0) {
-            h += 1;
-          } else if (h > 1) {
-            h -= 1;
-          }
         }
-        return [
-          h * 360,
-          s * 100,
-          v * 100
-        ];
-      };
-      convert.rgb.hwb = function(rgb2) {
-        const r = rgb2[0];
-        const g = rgb2[1];
-        let b = rgb2[2];
-        const h = convert.rgb.hsl(rgb2)[0];
-        const w = 1 / 255 * Math.min(r, Math.min(g, b));
-        b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
-        return [h, w * 100, b * 100];
-      };
-      convert.rgb.oklab = function(rgb2) {
-        const r = srgbNonlinearTransformInv(rgb2[0] / 255);
-        const g = srgbNonlinearTransformInv(rgb2[1] / 255);
-        const b = srgbNonlinearTransformInv(rgb2[2] / 255);
-        const lp = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-        const mp = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-        const sp = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-        const l = 0.2104542553 * lp + 0.793617785 * mp - 0.0040720468 * sp;
-        const aa = 1.9779984951 * lp - 2.428592205 * mp + 0.4505937099 * sp;
-        const bb = 0.0259040371 * lp + 0.7827717662 * mp - 0.808675766 * sp;
-        return [l * 100, aa * 100, bb * 100];
-      };
-      convert.rgb.cmyk = function(rgb2) {
-        const r = rgb2[0] / 255;
-        const g = rgb2[1] / 255;
-        const b = rgb2[2] / 255;
-        const k = Math.min(1 - r, 1 - g, 1 - b);
-        const c = (1 - r - k) / (1 - k) || 0;
-        const m = (1 - g - k) / (1 - k) || 0;
-        const y = (1 - b - k) / (1 - k) || 0;
-        return [c * 100, m * 100, y * 100, k * 100];
-      };
-      convert.rgb.keyword = function(rgb2) {
-        const reversed = reverseKeywords[rgb2];
-        if (reversed) {
-          return reversed;
-        }
-        let currentClosestDistance = Number.POSITIVE_INFINITY;
-        let currentClosestKeyword;
-        for (const keyword of Object.keys(color_name_default2)) {
-          const value = color_name_default2[keyword];
-          const distance = comparativeDistance(rgb2, value);
-          if (distance < currentClosestDistance) {
-            currentClosestDistance = distance;
-            currentClosestKeyword = keyword;
-          }
-        }
-        return currentClosestKeyword;
-      };
-      convert.keyword.rgb = function(keyword) {
-        return color_name_default2[keyword];
-      };
-      convert.rgb.xyz = function(rgb2) {
-        const r = srgbNonlinearTransformInv(rgb2[0] / 255);
-        const g = srgbNonlinearTransformInv(rgb2[1] / 255);
-        const b = srgbNonlinearTransformInv(rgb2[2] / 255);
-        const x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
-        const y = r * 0.2126729 + g * 0.7151522 + b * 0.072175;
-        const z = r * 0.0193339 + g * 0.119192 + b * 0.9503041;
-        return [x * 100, y * 100, z * 100];
-      };
-      convert.rgb.lab = function(rgb2) {
-        const xyz = convert.rgb.xyz(rgb2);
-        let x = xyz[0];
-        let y = xyz[1];
-        let z = xyz[2];
-        x /= 95.047;
-        y /= 100;
-        z /= 108.883;
-        x = x > LAB_FT ? x ** (1 / 3) : 7.787 * x + 16 / 116;
-        y = y > LAB_FT ? y ** (1 / 3) : 7.787 * y + 16 / 116;
-        z = z > LAB_FT ? z ** (1 / 3) : 7.787 * z + 16 / 116;
-        const l = 116 * y - 16;
-        const a = 500 * (x - y);
-        const b = 200 * (y - z);
-        return [l, a, b];
-      };
-      convert.hsl.rgb = function(hsl3) {
-        const h = hsl3[0] / 360;
-        const s = hsl3[1] / 100;
-        const l = hsl3[2] / 100;
-        let t32;
-        let value;
-        if (s === 0) {
-          value = l * 255;
-          return [value, value, value];
-        }
-        const t22 = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const t12 = 2 * l - t22;
-        const rgb2 = [0, 0, 0];
-        for (let i = 0; i < 3; i++) {
-          t32 = h + 1 / 3 * -(i - 1);
-          if (t32 < 0) {
-            t32++;
-          }
-          if (t32 > 1) {
-            t32--;
-          }
-          if (6 * t32 < 1) {
-            value = t12 + (t22 - t12) * 6 * t32;
-          } else if (2 * t32 < 1) {
-            value = t22;
-          } else if (3 * t32 < 2) {
-            value = t12 + (t22 - t12) * (2 / 3 - t32) * 6;
-          } else {
-            value = t12;
-          }
-          rgb2[i] = value * 255;
-        }
-        return rgb2;
-      };
-      convert.hsl.hsv = function(hsl3) {
-        const h = hsl3[0];
-        let s = hsl3[1] / 100;
-        let l = hsl3[2] / 100;
-        let smin = s;
-        const lmin = Math.max(l, 0.01);
-        l *= 2;
-        s *= l <= 1 ? l : 2 - l;
-        smin *= lmin <= 1 ? lmin : 2 - lmin;
-        const v = (l + s) / 2;
-        const sv = l === 0 ? 2 * smin / (lmin + smin) : 2 * s / (l + s);
-        return [h, sv * 100, v * 100];
-      };
-      convert.hsv.rgb = function(hsv) {
-        const h = hsv[0] / 60;
-        const s = hsv[1] / 100;
-        let v = hsv[2] / 100;
-        const hi = Math.floor(h) % 6;
-        const f = h - Math.floor(h);
-        const p = 255 * v * (1 - s);
-        const q = 255 * v * (1 - s * f);
-        const t = 255 * v * (1 - s * (1 - f));
-        v *= 255;
-        switch (hi) {
-          case 0: {
-            return [v, t, p];
-          }
-          case 1: {
-            return [q, v, p];
-          }
-          case 2: {
-            return [p, v, t];
-          }
-          case 3: {
-            return [p, q, v];
-          }
-          case 4: {
-            return [t, p, v];
-          }
-          case 5: {
-            return [v, p, q];
-          }
-        }
-      };
-      convert.hsv.hsl = function(hsv) {
-        const h = hsv[0];
-        const s = hsv[1] / 100;
-        const v = hsv[2] / 100;
-        const vmin = Math.max(v, 0.01);
-        let sl;
-        let l;
-        l = (2 - s) * v;
-        const lmin = (2 - s) * vmin;
-        sl = s * vmin;
-        sl /= lmin <= 1 ? lmin : 2 - lmin;
-        sl = sl || 0;
-        l /= 2;
-        return [h, sl * 100, l * 100];
-      };
-      convert.hwb.rgb = function(hwb) {
-        const h = hwb[0] / 360;
-        let wh = hwb[1] / 100;
-        let bl = hwb[2] / 100;
-        const ratio = wh + bl;
-        let f;
-        if (ratio > 1) {
-          wh /= ratio;
-          bl /= ratio;
-        }
-        const i = Math.floor(6 * h);
-        const v = 1 - bl;
-        f = 6 * h - i;
-        if ((i & 1) !== 0) {
-          f = 1 - f;
-        }
-        const n = wh + f * (v - wh);
-        let r;
-        let g;
-        let b;
-        switch (i) {
-          default:
-          case 6:
-          case 0: {
-            r = v;
-            g = n;
-            b = wh;
-            break;
-          }
-          case 1: {
-            r = n;
-            g = v;
-            b = wh;
-            break;
-          }
-          case 2: {
-            r = wh;
-            g = v;
-            b = n;
-            break;
-          }
-          case 3: {
-            r = wh;
-            g = n;
-            b = v;
-            break;
-          }
-          case 4: {
-            r = n;
-            g = wh;
-            b = v;
-            break;
-          }
-          case 5: {
-            r = v;
-            g = wh;
-            b = n;
-            break;
-          }
-        }
-        return [r * 255, g * 255, b * 255];
-      };
-      convert.cmyk.rgb = function(cmyk) {
-        const c = cmyk[0] / 100;
-        const m = cmyk[1] / 100;
-        const y = cmyk[2] / 100;
-        const k = cmyk[3] / 100;
-        const r = 1 - Math.min(1, c * (1 - k) + k);
-        const g = 1 - Math.min(1, m * (1 - k) + k);
-        const b = 1 - Math.min(1, y * (1 - k) + k);
-        return [r * 255, g * 255, b * 255];
-      };
-      convert.xyz.rgb = function(xyz) {
-        const x = xyz[0] / 100;
-        const y = xyz[1] / 100;
-        const z = xyz[2] / 100;
-        let r;
-        let g;
-        let b;
-        r = x * 3.2404542 + y * -1.5371385 + z * -0.4985314;
-        g = x * -0.969266 + y * 1.8760108 + z * 0.041556;
-        b = x * 0.0556434 + y * -0.2040259 + z * 1.0572252;
-        r = srgbNonlinearTransform(r);
-        g = srgbNonlinearTransform(g);
-        b = srgbNonlinearTransform(b);
-        return [r * 255, g * 255, b * 255];
-      };
-      convert.xyz.lab = function(xyz) {
-        let x = xyz[0];
-        let y = xyz[1];
-        let z = xyz[2];
-        x /= 95.047;
-        y /= 100;
-        z /= 108.883;
-        x = x > LAB_FT ? x ** (1 / 3) : 7.787 * x + 16 / 116;
-        y = y > LAB_FT ? y ** (1 / 3) : 7.787 * y + 16 / 116;
-        z = z > LAB_FT ? z ** (1 / 3) : 7.787 * z + 16 / 116;
-        const l = 116 * y - 16;
-        const a = 500 * (x - y);
-        const b = 200 * (y - z);
-        return [l, a, b];
-      };
-      convert.xyz.oklab = function(xyz) {
-        const x = xyz[0] / 100;
-        const y = xyz[1] / 100;
-        const z = xyz[2] / 100;
-        const lp = Math.cbrt(0.8189330101 * x + 0.3618667424 * y - 0.1288597137 * z);
-        const mp = Math.cbrt(0.0329845436 * x + 0.9293118715 * y + 0.0361456387 * z);
-        const sp = Math.cbrt(0.0482003018 * x + 0.2643662691 * y + 0.633851707 * z);
-        const l = 0.2104542553 * lp + 0.793617785 * mp - 0.0040720468 * sp;
-        const a = 1.9779984951 * lp - 2.428592205 * mp + 0.4505937099 * sp;
-        const b = 0.0259040371 * lp + 0.7827717662 * mp - 0.808675766 * sp;
-        return [l * 100, a * 100, b * 100];
-      };
-      convert.oklab.oklch = function(oklab) {
-        return convert.lab.lch(oklab);
-      };
-      convert.oklab.xyz = function(oklab) {
-        const ll = oklab[0] / 100;
-        const a = oklab[1] / 100;
-        const b = oklab[2] / 100;
-        const l = (0.999999998 * ll + 0.396337792 * a + 0.215803758 * b) ** 3;
-        const m = (1.000000008 * ll - 0.105561342 * a - 0.063854175 * b) ** 3;
-        const s = (1.000000055 * ll - 0.089484182 * a - 1.291485538 * b) ** 3;
-        const x = 1.227013851 * l - 0.55779998 * m + 0.281256149 * s;
-        const y = -0.040580178 * l + 1.11225687 * m - 0.071676679 * s;
-        const z = -0.076381285 * l - 0.421481978 * m + 1.58616322 * s;
-        return [x * 100, y * 100, z * 100];
-      };
-      convert.oklab.rgb = function(oklab) {
-        const ll = oklab[0] / 100;
-        const aa = oklab[1] / 100;
-        const bb = oklab[2] / 100;
-        const l = (ll + 0.3963377774 * aa + 0.2158037573 * bb) ** 3;
-        const m = (ll - 0.1055613458 * aa - 0.0638541728 * bb) ** 3;
-        const s = (ll - 0.0894841775 * aa - 1.291485548 * bb) ** 3;
-        const r = srgbNonlinearTransform(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
-        const g = srgbNonlinearTransform(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
-        const b = srgbNonlinearTransform(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s);
-        return [r * 255, g * 255, b * 255];
-      };
-      convert.oklch.oklab = function(oklch) {
-        return convert.lch.lab(oklch);
-      };
-      convert.lab.xyz = function(lab3) {
-        const l = lab3[0];
-        const a = lab3[1];
-        const b = lab3[2];
-        let x;
-        let y;
-        let z;
-        y = (l + 16) / 116;
-        x = a / 500 + y;
-        z = y - b / 200;
-        const y2 = y ** 3;
-        const x2 = x ** 3;
-        const z2 = z ** 3;
-        y = y2 > LAB_FT ? y2 : (y - 16 / 116) / 7.787;
-        x = x2 > LAB_FT ? x2 : (x - 16 / 116) / 7.787;
-        z = z2 > LAB_FT ? z2 : (z - 16 / 116) / 7.787;
-        x *= 95.047;
-        y *= 100;
-        z *= 108.883;
-        return [x, y, z];
-      };
-      convert.lab.lch = function(lab3) {
-        const l = lab3[0];
-        const a = lab3[1];
-        const b = lab3[2];
-        let h;
-        const hr = Math.atan2(b, a);
-        h = hr * 360 / 2 / Math.PI;
-        if (h < 0) {
-          h += 360;
-        }
-        const c = Math.sqrt(a * a + b * b);
-        return [l, c, h];
-      };
-      convert.lch.lab = function(lch2) {
-        const l = lch2[0];
-        const c = lch2[1];
-        const h = lch2[2];
-        const hr = h / 360 * 2 * Math.PI;
-        const a = c * Math.cos(hr);
-        const b = c * Math.sin(hr);
-        return [l, a, b];
-      };
-      convert.rgb.ansi16 = function(args, saturation = null) {
-        const [r, g, b] = args;
-        let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation;
-        value = Math.round(value / 50);
-        if (value === 0) {
-          return 30;
-        }
-        let ansi = 30 + (Math.round(b / 255) << 2 | Math.round(g / 255) << 1 | Math.round(r / 255));
-        if (value === 2) {
-          ansi += 60;
-        }
-        return ansi;
-      };
-      convert.hsv.ansi16 = function(args) {
-        return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
-      };
-      convert.rgb.ansi256 = function(args) {
-        const r = args[0];
-        const g = args[1];
-        const b = args[2];
-        if (r >> 4 === g >> 4 && g >> 4 === b >> 4) {
-          if (r < 8) {
-            return 16;
-          }
-          if (r > 248) {
-            return 231;
-          }
-          return Math.round((r - 8) / 247 * 24) + 232;
-        }
-        const ansi = 16 + 36 * Math.round(r / 255 * 5) + 6 * Math.round(g / 255 * 5) + Math.round(b / 255 * 5);
-        return ansi;
-      };
-      convert.ansi16.rgb = function(args) {
-        args = args[0];
-        let color2 = args % 10;
-        if (color2 === 0 || color2 === 7) {
-          if (args > 50) {
-            color2 += 3.5;
-          }
-          color2 = color2 / 10.5 * 255;
-          return [color2, color2, color2];
-        }
-        const mult = (Math.trunc(args > 50) + 1) * 0.5;
-        const r = (color2 & 1) * mult * 255;
-        const g = (color2 >> 1 & 1) * mult * 255;
-        const b = (color2 >> 2 & 1) * mult * 255;
-        return [r, g, b];
-      };
-      convert.ansi256.rgb = function(args) {
-        args = args[0];
-        if (args >= 232) {
-          const c = (args - 232) * 10 + 8;
-          return [c, c, c];
-        }
-        args -= 16;
-        let rem;
-        const r = Math.floor(args / 36) / 5 * 255;
-        const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
-        const b = rem % 6 / 5 * 255;
-        return [r, g, b];
-      };
-      convert.rgb.hex = function(args) {
-        const integer = ((Math.round(args[0]) & 255) << 16) + ((Math.round(args[1]) & 255) << 8) + (Math.round(args[2]) & 255);
-        const string = integer.toString(16).toUpperCase();
-        return "000000".slice(string.length) + string;
-      };
-      convert.hex.rgb = function(args) {
-        const match = args.toString(16).match(/[a-f\d]{6}|[a-f\d]{3}/i);
-        if (!match) {
-          return [0, 0, 0];
-        }
-        let colorString = match[0];
-        if (match[0].length === 3) {
-          colorString = [...colorString].map((char) => char + char).join("");
-        }
-        const integer = Number.parseInt(colorString, 16);
-        const r = integer >> 16 & 255;
-        const g = integer >> 8 & 255;
-        const b = integer & 255;
-        return [r, g, b];
-      };
-      convert.rgb.hcg = function(rgb2) {
-        const r = rgb2[0] / 255;
-        const g = rgb2[1] / 255;
-        const b = rgb2[2] / 255;
-        const max = Math.max(Math.max(r, g), b);
-        const min = Math.min(Math.min(r, g), b);
-        const chroma = max - min;
-        let hue2;
-        const grayscale = chroma < 1 ? min / (1 - chroma) : 0;
-        if (chroma <= 0) {
-          hue2 = 0;
-        } else if (max === r) {
-          hue2 = (g - b) / chroma % 6;
-        } else if (max === g) {
-          hue2 = 2 + (b - r) / chroma;
-        } else {
-          hue2 = 4 + (r - g) / chroma;
-        }
-        hue2 /= 6;
-        hue2 %= 1;
-        return [hue2 * 360, chroma * 100, grayscale * 100];
-      };
-      convert.hsl.hcg = function(hsl3) {
-        const s = hsl3[1] / 100;
-        const l = hsl3[2] / 100;
-        const c = l < 0.5 ? 2 * s * l : 2 * s * (1 - l);
-        let f = 0;
-        if (c < 1) {
-          f = (l - 0.5 * c) / (1 - c);
-        }
-        return [hsl3[0], c * 100, f * 100];
-      };
-      convert.hsv.hcg = function(hsv) {
-        const s = hsv[1] / 100;
-        const v = hsv[2] / 100;
-        const c = s * v;
-        let f = 0;
-        if (c < 1) {
-          f = (v - c) / (1 - c);
-        }
-        return [hsv[0], c * 100, f * 100];
-      };
-      convert.hcg.rgb = function(hcg) {
-        const h = hcg[0] / 360;
-        const c = hcg[1] / 100;
-        const g = hcg[2] / 100;
-        if (c === 0) {
-          return [g * 255, g * 255, g * 255];
-        }
-        const pure = [0, 0, 0];
-        const hi = h % 1 * 6;
-        const v = hi % 1;
-        const w = 1 - v;
-        let mg = 0;
-        switch (Math.floor(hi)) {
-          case 0: {
-            pure[0] = 1;
-            pure[1] = v;
-            pure[2] = 0;
-            break;
-          }
-          case 1: {
-            pure[0] = w;
-            pure[1] = 1;
-            pure[2] = 0;
-            break;
-          }
-          case 2: {
-            pure[0] = 0;
-            pure[1] = 1;
-            pure[2] = v;
-            break;
-          }
-          case 3: {
-            pure[0] = 0;
-            pure[1] = w;
-            pure[2] = 1;
-            break;
-          }
-          case 4: {
-            pure[0] = v;
-            pure[1] = 0;
-            pure[2] = 1;
-            break;
-          }
-          default: {
-            pure[0] = 1;
-            pure[1] = 0;
-            pure[2] = w;
-          }
-        }
-        mg = (1 - c) * g;
-        return [
-          (c * pure[0] + mg) * 255,
-          (c * pure[1] + mg) * 255,
-          (c * pure[2] + mg) * 255
-        ];
-      };
-      convert.hcg.hsv = function(hcg) {
-        const c = hcg[1] / 100;
-        const g = hcg[2] / 100;
-        const v = c + g * (1 - c);
-        let f = 0;
-        if (v > 0) {
-          f = c / v;
-        }
-        return [hcg[0], f * 100, v * 100];
-      };
-      convert.hcg.hsl = function(hcg) {
-        const c = hcg[1] / 100;
-        const g = hcg[2] / 100;
-        const l = g * (1 - c) + 0.5 * c;
-        let s = 0;
-        if (l > 0 && l < 0.5) {
-          s = c / (2 * l);
-        } else if (l >= 0.5 && l < 1) {
-          s = c / (2 * (1 - l));
-        }
-        return [hcg[0], s * 100, l * 100];
-      };
-      convert.hcg.hwb = function(hcg) {
-        const c = hcg[1] / 100;
-        const g = hcg[2] / 100;
-        const v = c + g * (1 - c);
-        return [hcg[0], (v - c) * 100, (1 - v) * 100];
-      };
-      convert.hwb.hcg = function(hwb) {
-        const w = hwb[1] / 100;
-        const b = hwb[2] / 100;
-        const v = 1 - b;
-        const c = v - w;
-        let g = 0;
-        if (c < 1) {
-          g = (v - c) / (1 - c);
-        }
-        return [hwb[0], c * 100, g * 100];
-      };
-      convert.apple.rgb = function(apple) {
-        return [apple[0] / 65535 * 255, apple[1] / 65535 * 255, apple[2] / 65535 * 255];
-      };
-      convert.rgb.apple = function(rgb2) {
-        return [rgb2[0] / 255 * 65535, rgb2[1] / 255 * 65535, rgb2[2] / 255 * 65535];
-      };
-      convert.gray.rgb = function(args) {
-        return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
-      };
-      convert.gray.hsl = function(args) {
-        return [0, 0, args[0]];
-      };
-      convert.gray.hsv = convert.gray.hsl;
-      convert.gray.hwb = function(gray2) {
-        return [0, 100, gray2[0]];
-      };
-      convert.gray.cmyk = function(gray2) {
-        return [0, 0, 0, gray2[0]];
-      };
-      convert.gray.lab = function(gray2) {
-        return [gray2[0], 0, 0];
-      };
-      convert.gray.hex = function(gray2) {
-        const value = Math.round(gray2[0] / 100 * 255) & 255;
-        const integer = (value << 16) + (value << 8) + value;
-        const string = integer.toString(16).toUpperCase();
-        return "000000".slice(string.length) + string;
-      };
-      convert.rgb.gray = function(rgb2) {
-        const value = (rgb2[0] + rgb2[1] + rgb2[2]) / 3;
-        return [value / 255 * 100];
-      };
-    }
-  });
-
-  // node_modules/color/node_modules/color-convert/route.js
-  function buildGraph() {
-    const graph = {};
-    const models2 = Object.keys(conversions_default);
-    for (let { length } = models2, i = 0; i < length; i++) {
-      graph[models2[i]] = {
-        // http://jsperf.com/1-vs-infinity
-        // micro-opt, but this is simple.
-        distance: -1,
-        parent: null
-      };
-    }
-    return graph;
-  }
-  function deriveBFS(fromModel) {
-    const graph = buildGraph();
-    const queue = [fromModel];
-    graph[fromModel].distance = 0;
-    while (queue.length > 0) {
-      const current = queue.pop();
-      const adjacents = Object.keys(conversions_default[current]);
-      for (let { length } = adjacents, i = 0; i < length; i++) {
-        const adjacent = adjacents[i];
-        const node = graph[adjacent];
-        if (node.distance === -1) {
-          node.distance = graph[current].distance + 1;
-          node.parent = current;
-          queue.unshift(adjacent);
-        }
+        return res;
       }
-    }
-    return graph;
-  }
-  function link(from, to) {
-    return function(args) {
-      return to(from(args));
-    };
-  }
-  function wrapConversion(toModel, graph) {
-    const path = [graph[toModel].parent, toModel];
-    let fn = conversions_default[graph[toModel].parent][toModel];
-    let cur = graph[toModel].parent;
-    while (graph[cur].parent) {
-      path.unshift(graph[cur].parent);
-      fn = link(conversions_default[graph[cur].parent][cur], fn);
-      cur = graph[cur].parent;
-    }
-    fn.conversion = path;
-    return fn;
-  }
-  function route(fromModel) {
-    const graph = deriveBFS(fromModel);
-    const conversion = {};
-    const models2 = Object.keys(graph);
-    for (let { length } = models2, i = 0; i < length; i++) {
-      const toModel = models2[i];
-      const node = graph[toModel];
-      if (node.parent === null) {
-        continue;
-      }
-      conversion[toModel] = wrapConversion(toModel, graph);
-    }
-    return conversion;
-  }
-  var route_default;
-  var init_route = __esm({
-    "node_modules/color/node_modules/color-convert/route.js"() {
-      init_conversions();
-      route_default = route;
-    }
-  });
-
-  // node_modules/color/node_modules/color-convert/index.js
-  function wrapRaw(fn) {
-    const wrappedFn = function(...args) {
-      const arg0 = args[0];
-      if (arg0 === void 0 || arg0 === null) {
-        return arg0;
-      }
-      if (arg0.length > 1) {
-        args = arg0;
-      }
-      return fn(args);
-    };
-    if ("conversion" in fn) {
-      wrappedFn.conversion = fn.conversion;
-    }
-    return wrappedFn;
-  }
-  function wrapRounded(fn) {
-    const wrappedFn = function(...args) {
-      const arg0 = args[0];
-      if (arg0 === void 0 || arg0 === null) {
-        return arg0;
-      }
-      if (arg0.length > 1) {
-        args = arg0;
-      }
-      const result = fn(args);
-      if (typeof result === "object") {
-        for (let { length } = result, i = 0; i < length; i++) {
-          result[i] = Math.round(result[i]);
+      function consumeCoords(tokens, includeHue) {
+        const coords = [];
+        let token;
+        while (tokens._i < tokens.length) {
+          token = tokens[tokens._i++];
+          if (token.type === Tok.None || token.type === Tok.Number || token.type === Tok.Alpha || token.type === Tok.Percentage || includeHue && token.type === Tok.Hue) {
+            coords.push(token);
+            continue;
+          }
+          if (token.type === Tok.ParenClose) {
+            if (tokens._i < tokens.length) {
+              return void 0;
+            }
+            continue;
+          }
+          return void 0;
         }
-      }
-      return result;
-    };
-    if ("conversion" in fn) {
-      wrappedFn.conversion = fn.conversion;
-    }
-    return wrappedFn;
-  }
-  var convert2, models, color_convert_default;
-  var init_color_convert = __esm({
-    "node_modules/color/node_modules/color-convert/index.js"() {
-      init_conversions();
-      init_route();
-      convert2 = {};
-      models = Object.keys(conversions_default);
-      for (const fromModel of models) {
-        convert2[fromModel] = {};
-        Object.defineProperty(convert2[fromModel], "channels", { value: conversions_default[fromModel].channels });
-        Object.defineProperty(convert2[fromModel], "labels", { value: conversions_default[fromModel].labels });
-        const routes = route_default(fromModel);
-        const routeModels = Object.keys(routes);
-        for (const toModel of routeModels) {
-          const fn = routes[toModel];
-          convert2[fromModel][toModel] = wrapRounded(fn);
-          convert2[fromModel][toModel].raw = wrapRaw(fn);
+        if (coords.length < 3 || coords.length > 4) {
+          return void 0;
         }
-      }
-      color_convert_default = convert2;
-    }
-  });
-
-  // node_modules/color/index.js
-  var color_exports = {};
-  __export(color_exports, {
-    default: () => color_default
-  });
-  function Color(object, model) {
-    if (!(this instanceof Color)) {
-      return new Color(object, model);
-    }
-    if (model && model in skippedModels) {
-      model = null;
-    }
-    if (model && !(model in color_convert_default)) {
-      throw new Error("Unknown model: " + model);
-    }
-    let i;
-    let channels;
-    if (object == null) {
-      this.model = "rgb";
-      this.color = [0, 0, 0];
-      this.valpha = 1;
-    } else if (object instanceof Color) {
-      this.model = object.model;
-      this.color = [...object.color];
-      this.valpha = object.valpha;
-    } else if (typeof object === "string") {
-      const result = color_string_default.get(object);
-      if (result === null) {
-        throw new Error("Unable to parse color from string: " + object);
-      }
-      this.model = result.model;
-      channels = color_convert_default[this.model].channels;
-      this.color = result.value.slice(0, channels);
-      this.valpha = typeof result.value[channels] === "number" ? result.value[channels] : 1;
-    } else if (object.length > 0) {
-      this.model = model || "rgb";
-      channels = color_convert_default[this.model].channels;
-      const newArray = Array.prototype.slice.call(object, 0, channels);
-      this.color = zeroArray(newArray, channels);
-      this.valpha = typeof object[channels] === "number" ? object[channels] : 1;
-    } else if (typeof object === "number") {
-      this.model = "rgb";
-      this.color = [
-        object >> 16 & 255,
-        object >> 8 & 255,
-        object & 255
-      ];
-      this.valpha = 1;
-    } else {
-      this.valpha = 1;
-      const keys = Object.keys(object);
-      if ("alpha" in object) {
-        keys.splice(keys.indexOf("alpha"), 1);
-        this.valpha = typeof object.alpha === "number" ? object.alpha : 0;
-      }
-      const hashedKeys = keys.sort().join("");
-      if (!(hashedKeys in hashedModelKeys)) {
-        throw new Error("Unable to parse color from object: " + JSON.stringify(object));
-      }
-      this.model = hashedModelKeys[hashedKeys];
-      const { labels } = color_convert_default[this.model];
-      const color2 = [];
-      for (i = 0; i < labels.length; i++) {
-        color2.push(object[labels[i]]);
-      }
-      this.color = zeroArray(color2);
-    }
-    if (limiters[this.model]) {
-      channels = color_convert_default[this.model].channels;
-      for (i = 0; i < channels; i++) {
-        const limit = limiters[this.model][i];
-        if (limit) {
-          this.color[i] = limit(this.color[i]);
+        if (coords.length === 4) {
+          if (coords[3].type !== Tok.Alpha) {
+            return void 0;
+          }
+          coords[3] = coords[3].value;
         }
-      }
-    }
-    this.valpha = Math.max(0, Math.min(1, this.valpha));
-    if (Object.freeze) {
-      Object.freeze(this);
-    }
-  }
-  function roundTo(number, places) {
-    return Number(number.toFixed(places));
-  }
-  function roundToPlace(places) {
-    return function(number) {
-      return roundTo(number, places);
-    };
-  }
-  function getset(model, channel, modifier) {
-    model = Array.isArray(model) ? model : [model];
-    for (const m of model) {
-      (limiters[m] || (limiters[m] = []))[channel] = modifier;
-    }
-    model = model[0];
-    return function(value) {
-      let result;
-      if (value !== void 0) {
-        if (modifier) {
-          value = modifier(value);
+        if (coords.length === 3) {
+          coords.push({ type: Tok.None, value: void 0 });
         }
-        result = this[model]();
-        result.color[channel] = value;
-        return result;
+        return coords.every((c2) => c2.type !== Tok.Alpha) ? coords : void 0;
       }
-      result = this[model]().color[channel];
-      if (modifier) {
-        result = modifier(result);
+      function parseModernSyntax(tokens, includeHue) {
+        tokens._i = 0;
+        let token = tokens[tokens._i++];
+        if (!token || token.type !== Tok.Function) {
+          return void 0;
+        }
+        let coords = consumeCoords(tokens, includeHue);
+        if (!coords) {
+          return void 0;
+        }
+        coords.unshift(token.value);
+        return coords;
       }
-      return result;
-    };
-  }
-  function maxfn(max) {
-    return function(v) {
-      return Math.max(0, Math.min(max, v));
-    };
-  }
-  function assertArray(value) {
-    return Array.isArray(value) ? value : [value];
-  }
-  function zeroArray(array, length) {
-    for (let i = 0; i < length; i++) {
-      if (typeof array[i] !== "number") {
-        array[i] = 0;
-      }
-    }
-    return array;
-  }
-  var skippedModels, hashedModelKeys, limiters, color_default;
-  var init_color = __esm({
-    "node_modules/color/index.js"() {
-      init_color_string();
-      init_color_convert();
-      skippedModels = [
-        // To be honest, I don't really feel like keyword belongs in color convert, but eh.
-        "keyword",
-        // Gray conflicts with some method names, and has its own method defined.
-        "gray",
-        // Shouldn't really be in color-convert either...
-        "hex"
-      ];
-      hashedModelKeys = {};
-      for (const model of Object.keys(color_convert_default)) {
-        hashedModelKeys[[...color_convert_default[model].labels].sort().join("")] = model;
-      }
-      limiters = {};
-      Color.prototype = {
-        toString() {
-          return this.string();
-        },
-        toJSON() {
-          return this[this.model]();
-        },
-        string(places) {
-          let self2 = this.model in color_string_default.to ? this : this.rgb();
-          self2 = self2.round(typeof places === "number" ? places : 1);
-          const arguments_ = self2.valpha === 1 ? self2.color : [...self2.color, this.valpha];
-          return color_string_default.to[self2.model](...arguments_);
-        },
-        percentString(places) {
-          const self2 = this.rgb().round(typeof places === "number" ? places : 1);
-          const arguments_ = self2.valpha === 1 ? self2.color : [...self2.color, this.valpha];
-          return color_string_default.to.rgb.percent(...arguments_);
-        },
-        array() {
-          return this.valpha === 1 ? [...this.color] : [...this.color, this.valpha];
-        },
-        object() {
-          const result = {};
-          const { channels } = color_convert_default[this.model];
-          const { labels } = color_convert_default[this.model];
-          for (let i = 0; i < channels; i++) {
-            result[labels[i]] = this.color[i];
+      var parse = (color2) => {
+        if (typeof color2 !== "string") {
+          return void 0;
+        }
+        const tokens = tokenize(color2);
+        const parsed = tokens ? parseModernSyntax(tokens, true) : void 0;
+        let result = void 0;
+        let i = 0;
+        let len = parsers.length;
+        while (i < len) {
+          if ((result = parsers[i++](color2, parsed)) !== void 0) {
+            return result;
           }
-          if (this.valpha !== 1) {
-            result.alpha = this.valpha;
-          }
-          return result;
-        },
-        unitArray() {
-          const rgb2 = this.rgb().color;
-          rgb2[0] /= 255;
-          rgb2[1] /= 255;
-          rgb2[2] /= 255;
-          if (this.valpha !== 1) {
-            rgb2.push(this.valpha);
-          }
-          return rgb2;
-        },
-        unitObject() {
-          const rgb2 = this.rgb().object();
-          rgb2.r /= 255;
-          rgb2.g /= 255;
-          rgb2.b /= 255;
-          if (this.valpha !== 1) {
-            rgb2.alpha = this.valpha;
-          }
-          return rgb2;
-        },
-        round(places) {
-          places = Math.max(places || 0, 0);
-          return new Color([...this.color.map(roundToPlace(places)), this.valpha], this.model);
-        },
-        alpha(value) {
-          if (value !== void 0) {
-            return new Color([...this.color, Math.max(0, Math.min(1, value))], this.model);
-          }
-          return this.valpha;
-        },
-        // Rgb
-        red: getset("rgb", 0, maxfn(255)),
-        green: getset("rgb", 1, maxfn(255)),
-        blue: getset("rgb", 2, maxfn(255)),
-        hue: getset(["hsl", "hsv", "hsl", "hwb", "hcg"], 0, (value) => (value % 360 + 360) % 360),
-        saturationl: getset("hsl", 1, maxfn(100)),
-        lightness: getset("hsl", 2, maxfn(100)),
-        saturationv: getset("hsv", 1, maxfn(100)),
-        value: getset("hsv", 2, maxfn(100)),
-        chroma: getset("hcg", 1, maxfn(100)),
-        gray: getset("hcg", 2, maxfn(100)),
-        white: getset("hwb", 1, maxfn(100)),
-        wblack: getset("hwb", 2, maxfn(100)),
-        cyan: getset("cmyk", 0, maxfn(100)),
-        magenta: getset("cmyk", 1, maxfn(100)),
-        yellow: getset("cmyk", 2, maxfn(100)),
-        black: getset("cmyk", 3, maxfn(100)),
-        x: getset("xyz", 0, maxfn(95.047)),
-        y: getset("xyz", 1, maxfn(100)),
-        z: getset("xyz", 2, maxfn(108.833)),
-        l: getset("lab", 0, maxfn(100)),
-        a: getset("lab", 1),
-        b: getset("lab", 2),
-        keyword(value) {
-          if (value !== void 0) {
-            return new Color(value);
-          }
-          return color_convert_default[this.model].keyword(this.color);
-        },
-        hex(value) {
-          if (value !== void 0) {
-            return new Color(value);
-          }
-          return color_string_default.to.hex(...this.rgb().round().color);
-        },
-        hexa(value) {
-          if (value !== void 0) {
-            return new Color(value);
-          }
-          const rgbArray = this.rgb().round().color;
-          let alphaHex = Math.round(this.valpha * 255).toString(16).toUpperCase();
-          if (alphaHex.length === 1) {
-            alphaHex = "0" + alphaHex;
-          }
-          return color_string_default.to.hex(...rgbArray) + alphaHex;
-        },
-        rgbNumber() {
-          const rgb2 = this.rgb().color;
-          return (rgb2[0] & 255) << 16 | (rgb2[1] & 255) << 8 | rgb2[2] & 255;
-        },
-        luminosity() {
-          const rgb2 = this.rgb().color;
-          const lum = [];
-          for (const [i, element] of rgb2.entries()) {
-            const chan = element / 255;
-            lum[i] = chan <= 0.04045 ? chan / 12.92 : ((chan + 0.055) / 1.055) ** 2.4;
-          }
-          return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
-        },
-        contrast(color2) {
-          const lum1 = this.luminosity();
-          const lum2 = color2.luminosity();
-          if (lum1 > lum2) {
-            return (lum1 + 0.05) / (lum2 + 0.05);
-          }
-          return (lum2 + 0.05) / (lum1 + 0.05);
-        },
-        level(color2) {
-          const contrastRatio = this.contrast(color2);
-          if (contrastRatio >= 7) {
-            return "AAA";
-          }
-          return contrastRatio >= 4.5 ? "AA" : "";
-        },
-        isDark() {
-          const rgb2 = this.rgb().color;
-          const yiq = (rgb2[0] * 2126 + rgb2[1] * 7152 + rgb2[2] * 722) / 1e4;
-          return yiq < 128;
-        },
-        isLight() {
-          return !this.isDark();
-        },
-        negate() {
-          const rgb2 = this.rgb();
-          for (let i = 0; i < 3; i++) {
-            rgb2.color[i] = 255 - rgb2.color[i];
-          }
-          return rgb2;
-        },
-        lighten(ratio) {
-          const hsl3 = this.hsl();
-          hsl3.color[2] += hsl3.color[2] * ratio;
-          return hsl3;
-        },
-        darken(ratio) {
-          const hsl3 = this.hsl();
-          hsl3.color[2] -= hsl3.color[2] * ratio;
-          return hsl3;
-        },
-        saturate(ratio) {
-          const hsl3 = this.hsl();
-          hsl3.color[1] += hsl3.color[1] * ratio;
-          return hsl3;
-        },
-        desaturate(ratio) {
-          const hsl3 = this.hsl();
-          hsl3.color[1] -= hsl3.color[1] * ratio;
-          return hsl3;
-        },
-        whiten(ratio) {
-          const hwb = this.hwb();
-          hwb.color[1] += hwb.color[1] * ratio;
-          return hwb;
-        },
-        blacken(ratio) {
-          const hwb = this.hwb();
-          hwb.color[2] += hwb.color[2] * ratio;
-          return hwb;
-        },
-        grayscale() {
-          const rgb2 = this.rgb().color;
-          const value = rgb2[0] * 0.3 + rgb2[1] * 0.59 + rgb2[2] * 0.11;
-          return Color.rgb(value, value, value);
-        },
-        fade(ratio) {
-          return this.alpha(this.valpha - this.valpha * ratio);
-        },
-        opaquer(ratio) {
-          return this.alpha(this.valpha + this.valpha * ratio);
-        },
-        rotate(degrees3) {
-          const hsl3 = this.hsl();
-          let hue2 = hsl3.color[0];
-          hue2 = (hue2 + degrees3) % 360;
-          hue2 = hue2 < 0 ? 360 + hue2 : hue2;
-          hsl3.color[0] = hue2;
-          return hsl3;
-        },
-        mix(mixinColor, weight) {
-          if (!mixinColor || !mixinColor.rgb) {
-            throw new Error('Argument to "mix" was not a Color instance, but rather an instance of ' + typeof mixinColor);
-          }
-          const color1 = mixinColor.rgb();
-          const color2 = this.rgb();
-          const p = weight === void 0 ? 0.5 : weight;
-          const w = 2 * p - 1;
-          const a = color1.alpha() - color2.alpha();
-          const w1 = ((w * a === -1 ? w : (w + a) / (1 + w * a)) + 1) / 2;
-          const w2 = 1 - w1;
-          return Color.rgb(
-            w1 * color1.red() + w2 * color2.red(),
-            w1 * color1.green() + w2 * color2.green(),
-            w1 * color1.blue() + w2 * color2.blue(),
-            color1.alpha() * p + color2.alpha() * (1 - p)
+        }
+        return tokens ? parseColorSyntax(tokens) : void 0;
+      };
+      var parse_default = parse;
+      function parseRgb(color2, parsed) {
+        if (!parsed || parsed[0] !== "rgb" && parsed[0] !== "rgba") {
+          return void 0;
+        }
+        const res = { mode: "rgb" };
+        const [, r2, g, b, alpha] = parsed;
+        if (r2.type === Tok.Hue || g.type === Tok.Hue || b.type === Tok.Hue) {
+          return void 0;
+        }
+        if (r2.type !== Tok.None) {
+          res.r = r2.type === Tok.Number ? r2.value / 255 : r2.value / 100;
+        }
+        if (g.type !== Tok.None) {
+          res.g = g.type === Tok.Number ? g.value / 255 : g.value / 100;
+        }
+        if (b.type !== Tok.None) {
+          res.b = b.type === Tok.Number ? b.value / 255 : b.value / 100;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
           );
         }
+        return res;
+      }
+      var parseRgb_default = parseRgb;
+      var parseTransparent = (c2) => c2 === "transparent" ? { mode: "rgb", r: 0, g: 0, b: 0, alpha: 0 } : void 0;
+      var parseTransparent_default = parseTransparent;
+      var lerp = (a, b, t) => a + t * (b - a);
+      var unlerp = (a, b, v) => (v - a) / (b - a);
+      var blerp = (a00, a01, a10, a11, tx, ty) => {
+        return lerp(lerp(a00, a01, tx), lerp(a10, a11, tx), ty);
       };
-      for (const model of Object.keys(color_convert_default)) {
-        if (skippedModels.includes(model)) {
-          continue;
+      var trilerp = (a000, a010, a100, a110, a001, a011, a101, a111, tx, ty, tz) => {
+        return lerp(
+          blerp(a000, a010, a100, a110, tx, ty),
+          blerp(a001, a011, a101, a111, tx, ty),
+          tz
+        );
+      };
+      var get_classes = (arr) => {
+        let classes = [];
+        for (let i = 0; i < arr.length - 1; i++) {
+          let a = arr[i];
+          let b = arr[i + 1];
+          if (a === void 0 && b === void 0) {
+            classes.push(void 0);
+          } else if (a !== void 0 && b !== void 0) {
+            classes.push([a, b]);
+          } else {
+            classes.push(a !== void 0 ? [a, a] : [b, b]);
+          }
         }
-        const { channels } = color_convert_default[model];
-        Color.prototype[model] = function(...arguments_) {
-          if (this.model === model) {
-            return new Color(this);
-          }
-          if (arguments_.length > 0) {
-            return new Color(arguments_, model);
-          }
-          return new Color([...assertArray(color_convert_default[this.model][model].raw(this.color)), this.valpha], model);
+        return classes;
+      };
+      var interpolatorPiecewise = (interpolator2) => (arr) => {
+        let classes = get_classes(arr);
+        return (t) => {
+          let cls = t * classes.length;
+          let idx = t >= 1 ? classes.length - 1 : Math.max(Math.floor(cls), 0);
+          let pair = classes[idx];
+          return pair === void 0 ? void 0 : interpolator2(pair[0], pair[1], cls - idx);
         };
-        Color[model] = function(...arguments_) {
-          let color2 = arguments_[0];
-          if (typeof color2 === "number") {
-            color2 = zeroArray(arguments_, channels);
+      };
+      var interpolatorLinear = interpolatorPiecewise(lerp);
+      var fixupAlpha = (arr) => {
+        let some_defined = false;
+        let res = arr.map((v) => {
+          if (v !== void 0) {
+            some_defined = true;
+            return v;
           }
-          return new Color(color2, model);
+          return 1;
+        });
+        return some_defined ? res : arr;
+      };
+      var definition = {
+        mode: "rgb",
+        channels: ["r", "g", "b", "alpha"],
+        parse: [
+          parseRgb_default,
+          parseHex_default,
+          parseRgbLegacy_default,
+          parseNamed_default,
+          parseTransparent_default,
+          "srgb"
+        ],
+        serialize: "srgb",
+        interpolate: {
+          r: interpolatorLinear,
+          g: interpolatorLinear,
+          b: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        gamut: true,
+        white: { r: 1, g: 1, b: 1 },
+        black: { r: 0, g: 0, b: 0 }
+      };
+      var definition_default = definition;
+      var linearize = (v = 0) => Math.pow(Math.abs(v), 563 / 256) * Math.sign(v);
+      var convertA98ToXyz65 = (a982) => {
+        let r2 = linearize(a982.r);
+        let g = linearize(a982.g);
+        let b = linearize(a982.b);
+        let res = {
+          mode: "xyz65",
+          x: 0.5766690429101305 * r2 + 0.1855582379065463 * g + 0.1882286462349947 * b,
+          y: 0.297344975250536 * r2 + 0.6273635662554661 * g + 0.0752914584939979 * b,
+          z: 0.0270313613864123 * r2 + 0.0706888525358272 * g + 0.9913375368376386 * b
+        };
+        if (a982.alpha !== void 0) {
+          res.alpha = a982.alpha;
+        }
+        return res;
+      };
+      var convertA98ToXyz65_default = convertA98ToXyz65;
+      var gamma2 = (v) => Math.pow(Math.abs(v), 256 / 563) * Math.sign(v);
+      var convertXyz65ToA98 = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = {
+          mode: "a98",
+          r: gamma2(
+            x * 2.0415879038107465 - y * 0.5650069742788597 - 0.3447313507783297 * z
+          ),
+          g: gamma2(
+            x * -0.9692436362808798 + y * 1.8759675015077206 + 0.0415550574071756 * z
+          ),
+          b: gamma2(
+            x * 0.0134442806320312 - y * 0.1183623922310184 + 1.0151749943912058 * z
+          )
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToA98_default = convertXyz65ToA98;
+      var fn = (c2 = 0) => {
+        const abs3 = Math.abs(c2);
+        if (abs3 <= 0.04045) {
+          return c2 / 12.92;
+        }
+        return (Math.sign(c2) || 1) * Math.pow((abs3 + 0.055) / 1.055, 2.4);
+      };
+      var convertRgbToLrgb = ({ r: r2, g, b, alpha }) => {
+        let res = {
+          mode: "lrgb",
+          r: fn(r2),
+          g: fn(g),
+          b: fn(b)
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertRgbToLrgb_default = convertRgbToLrgb;
+      var convertRgbToXyz65 = (rgb5) => {
+        let { r: r2, g, b, alpha } = convertRgbToLrgb_default(rgb5);
+        let res = {
+          mode: "xyz65",
+          x: 0.4123907992659593 * r2 + 0.357584339383878 * g + 0.1804807884018343 * b,
+          y: 0.2126390058715102 * r2 + 0.715168678767756 * g + 0.0721923153607337 * b,
+          z: 0.0193308187155918 * r2 + 0.119194779794626 * g + 0.9505321522496607 * b
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertRgbToXyz65_default = convertRgbToXyz65;
+      var fn2 = (c2 = 0) => {
+        const abs3 = Math.abs(c2);
+        if (abs3 > 31308e-7) {
+          return (Math.sign(c2) || 1) * (1.055 * Math.pow(abs3, 1 / 2.4) - 0.055);
+        }
+        return c2 * 12.92;
+      };
+      var convertLrgbToRgb = ({ r: r2, g, b, alpha }, mode = "rgb") => {
+        let res = {
+          mode,
+          r: fn2(r2),
+          g: fn2(g),
+          b: fn2(b)
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertLrgbToRgb_default = convertLrgbToRgb;
+      var convertXyz65ToRgb = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = convertLrgbToRgb_default({
+          r: x * 3.2409699419045226 - y * 1.537383177570094 - 0.4986107602930034 * z,
+          g: x * -0.9692436362808796 + y * 1.8759675015077204 + 0.0415550574071756 * z,
+          b: x * 0.0556300796969936 - y * 0.2039769588889765 + 1.0569715142428784 * z
+        });
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToRgb_default = convertXyz65ToRgb;
+      var definition2 = __spreadProps(__spreadValues({}, definition_default), {
+        mode: "a98",
+        parse: ["a98-rgb"],
+        serialize: "a98-rgb",
+        fromMode: {
+          rgb: (color2) => convertXyz65ToA98_default(convertRgbToXyz65_default(color2)),
+          xyz65: convertXyz65ToA98_default
+        },
+        toMode: {
+          rgb: (color2) => convertXyz65ToRgb_default(convertA98ToXyz65_default(color2)),
+          xyz65: convertA98ToXyz65_default
+        }
+      });
+      var definition_default2 = definition2;
+      var normalizeHue = (hue3) => (hue3 = hue3 % 360) < 0 ? hue3 + 360 : hue3;
+      var normalizeHue_default = normalizeHue;
+      var hue22 = (hues, fn5) => {
+        return hues.map((hue3, idx, arr) => {
+          if (hue3 === void 0) {
+            return hue3;
+          }
+          let normalized = normalizeHue_default(hue3);
+          if (idx === 0 || hues[idx - 1] === void 0) {
+            return normalized;
+          }
+          return fn5(normalized - normalizeHue_default(arr[idx - 1]));
+        }).reduce((acc, curr) => {
+          if (!acc.length || curr === void 0 || acc[acc.length - 1] === void 0) {
+            acc.push(curr);
+            return acc;
+          }
+          acc.push(curr + acc[acc.length - 1]);
+          return acc;
+        }, []);
+      };
+      var fixupHueShorter = (arr) => hue22(arr, (d) => Math.abs(d) <= 180 ? d : d - 360 * Math.sign(d));
+      var fixupHueLonger = (arr) => hue22(arr, (d) => Math.abs(d) >= 180 || d === 0 ? d : d - 360 * Math.sign(d));
+      var fixupHueIncreasing = (arr) => hue22(arr, (d) => d >= 0 ? d : d + 360);
+      var fixupHueDecreasing = (arr) => hue22(arr, (d) => d <= 0 ? d : d - 360);
+      var M = [-0.14861, 1.78277, -0.29227, -0.90649, 1.97294, 0];
+      var degToRad = Math.PI / 180;
+      var radToDeg = 180 / Math.PI;
+      var DE = M[3] * M[4];
+      var BE = M[1] * M[4];
+      var BCAD = M[1] * M[2] - M[0] * M[3];
+      var convertRgbToCubehelix = ({ r: r2, g, b, alpha }) => {
+        if (r2 === void 0) r2 = 0;
+        if (g === void 0) g = 0;
+        if (b === void 0) b = 0;
+        let l = (BCAD * b + r2 * DE - g * BE) / (BCAD + DE - BE);
+        let x = b - l;
+        let y = (M[4] * (g - l) - M[2] * x) / M[3];
+        let res = {
+          mode: "cubehelix",
+          l,
+          s: l === 0 || l === 1 ? void 0 : Math.sqrt(x * x + y * y) / (M[4] * l * (1 - l))
+        };
+        if (res.s) res.h = Math.atan2(y, x) * radToDeg - 120;
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertRgbToCubehelix_default = convertRgbToCubehelix;
+      var convertCubehelixToRgb = ({ h, s, l, alpha }) => {
+        let res = { mode: "rgb" };
+        h = (h === void 0 ? 0 : h + 120) * degToRad;
+        if (l === void 0) l = 0;
+        let amp = s === void 0 ? 0 : s * l * (1 - l);
+        let cosh2 = Math.cos(h);
+        let sinh2 = Math.sin(h);
+        res.r = l + amp * (M[0] * cosh2 + M[1] * sinh2);
+        res.g = l + amp * (M[2] * cosh2 + M[3] * sinh2);
+        res.b = l + amp * (M[4] * cosh2 + M[5] * sinh2);
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertCubehelixToRgb_default = convertCubehelixToRgb;
+      var differenceHueSaturation = (std, smp) => {
+        if (std.h === void 0 || smp.h === void 0 || !std.s || !smp.s) {
+          return 0;
+        }
+        let std_h = normalizeHue_default(std.h);
+        let smp_h = normalizeHue_default(smp.h);
+        let dH = Math.sin((smp_h - std_h + 360) / 2 * Math.PI / 180);
+        return 2 * Math.sqrt(std.s * smp.s) * dH;
+      };
+      var differenceHueNaive = (std, smp) => {
+        if (std.h === void 0 || smp.h === void 0) {
+          return 0;
+        }
+        let std_h = normalizeHue_default(std.h);
+        let smp_h = normalizeHue_default(smp.h);
+        if (Math.abs(smp_h - std_h) > 180) {
+          return std_h - (smp_h - 360 * Math.sign(smp_h - std_h));
+        }
+        return smp_h - std_h;
+      };
+      var differenceHueChroma = (std, smp) => {
+        if (std.h === void 0 || smp.h === void 0 || !std.c || !smp.c) {
+          return 0;
+        }
+        let std_h = normalizeHue_default(std.h);
+        let smp_h = normalizeHue_default(smp.h);
+        let dH = Math.sin((smp_h - std_h + 360) / 2 * Math.PI / 180);
+        return 2 * Math.sqrt(std.c * smp.c) * dH;
+      };
+      var differenceEuclidean = (mode = "rgb", weights = [1, 1, 1, 0]) => {
+        let def = getMode(mode);
+        let channels = def.channels;
+        let diffs = def.difference;
+        let conv = converter_default(mode);
+        return (std, smp) => {
+          let ConvStd = conv(std);
+          let ConvSmp = conv(smp);
+          return Math.sqrt(
+            channels.reduce((sum, k4, idx) => {
+              let delta = diffs[k4] ? diffs[k4](ConvStd, ConvSmp) : ConvStd[k4] - ConvSmp[k4];
+              return sum + (weights[idx] || 0) * Math.pow(isNaN(delta) ? 0 : delta, 2);
+            }, 0)
+          );
+        };
+      };
+      var differenceCie76 = () => differenceEuclidean("lab65");
+      var differenceCie94 = (kL = 1, K1 = 0.045, K2 = 0.015) => {
+        let lab22 = converter_default("lab65");
+        return (std, smp) => {
+          let LabStd = lab22(std);
+          let LabSmp = lab22(smp);
+          let lStd = LabStd.l;
+          let aStd = LabStd.a;
+          let bStd = LabStd.b;
+          let cStd = Math.sqrt(aStd * aStd + bStd * bStd);
+          let lSmp = LabSmp.l;
+          let aSmp = LabSmp.a;
+          let bSmp = LabSmp.b;
+          let cSmp = Math.sqrt(aSmp * aSmp + bSmp * bSmp);
+          let dL2 = Math.pow(lStd - lSmp, 2);
+          let dC2 = Math.pow(cStd - cSmp, 2);
+          let dH2 = Math.pow(aStd - aSmp, 2) + Math.pow(bStd - bSmp, 2) - dC2;
+          return Math.sqrt(
+            dL2 / Math.pow(kL, 2) + dC2 / Math.pow(1 + K1 * cStd, 2) + dH2 / Math.pow(1 + K2 * cStd, 2)
+          );
+        };
+      };
+      var differenceCiede2000 = (Kl = 1, Kc = 1, Kh = 1) => {
+        let lab22 = converter_default("lab65");
+        return (std, smp) => {
+          let LabStd = lab22(std);
+          let LabSmp = lab22(smp);
+          let lStd = LabStd.l;
+          let aStd = LabStd.a;
+          let bStd = LabStd.b;
+          let cStd = Math.sqrt(aStd * aStd + bStd * bStd);
+          let lSmp = LabSmp.l;
+          let aSmp = LabSmp.a;
+          let bSmp = LabSmp.b;
+          let cSmp = Math.sqrt(aSmp * aSmp + bSmp * bSmp);
+          let cAvg = (cStd + cSmp) / 2;
+          let G = 0.5 * (1 - Math.sqrt(
+            Math.pow(cAvg, 7) / (Math.pow(cAvg, 7) + Math.pow(25, 7))
+          ));
+          let apStd = aStd * (1 + G);
+          let apSmp = aSmp * (1 + G);
+          let cpStd = Math.sqrt(apStd * apStd + bStd * bStd);
+          let cpSmp = Math.sqrt(apSmp * apSmp + bSmp * bSmp);
+          let hpStd = Math.abs(apStd) + Math.abs(bStd) === 0 ? 0 : Math.atan2(bStd, apStd);
+          hpStd += (hpStd < 0) * 2 * Math.PI;
+          let hpSmp = Math.abs(apSmp) + Math.abs(bSmp) === 0 ? 0 : Math.atan2(bSmp, apSmp);
+          hpSmp += (hpSmp < 0) * 2 * Math.PI;
+          let dL = lSmp - lStd;
+          let dC = cpSmp - cpStd;
+          let dhp = cpStd * cpSmp === 0 ? 0 : hpSmp - hpStd;
+          dhp -= (dhp > Math.PI) * 2 * Math.PI;
+          dhp += (dhp < -Math.PI) * 2 * Math.PI;
+          let dH = 2 * Math.sqrt(cpStd * cpSmp) * Math.sin(dhp / 2);
+          let Lp = (lStd + lSmp) / 2;
+          let Cp = (cpStd + cpSmp) / 2;
+          let hp;
+          if (cpStd * cpSmp === 0) {
+            hp = hpStd + hpSmp;
+          } else {
+            hp = (hpStd + hpSmp) / 2;
+            hp -= (Math.abs(hpStd - hpSmp) > Math.PI) * Math.PI;
+            hp += (hp < 0) * 2 * Math.PI;
+          }
+          let Lpm50 = Math.pow(Lp - 50, 2);
+          let T = 1 - 0.17 * Math.cos(hp - Math.PI / 6) + 0.24 * Math.cos(2 * hp) + 0.32 * Math.cos(3 * hp + Math.PI / 30) - 0.2 * Math.cos(4 * hp - 63 * Math.PI / 180);
+          let Sl = 1 + 0.015 * Lpm50 / Math.sqrt(20 + Lpm50);
+          let Sc = 1 + 0.045 * Cp;
+          let Sh = 1 + 0.015 * Cp * T;
+          let deltaTheta = 30 * Math.PI / 180 * Math.exp(-1 * Math.pow((180 / Math.PI * hp - 275) / 25, 2));
+          let Rc = 2 * Math.sqrt(Math.pow(Cp, 7) / (Math.pow(Cp, 7) + Math.pow(25, 7)));
+          let Rt = -1 * Math.sin(2 * deltaTheta) * Rc;
+          return Math.sqrt(
+            Math.pow(dL / (Kl * Sl), 2) + Math.pow(dC / (Kc * Sc), 2) + Math.pow(dH / (Kh * Sh), 2) + Rt * dC / (Kc * Sc) * dH / (Kh * Sh)
+          );
+        };
+      };
+      var differenceCmc = (l = 1, c2 = 1) => {
+        let lab22 = converter_default("lab65");
+        return (std, smp) => {
+          let LabStd = lab22(std);
+          let lStd = LabStd.l;
+          let aStd = LabStd.a;
+          let bStd = LabStd.b;
+          let cStd = Math.sqrt(aStd * aStd + bStd * bStd);
+          let hStd = Math.atan2(bStd, aStd);
+          hStd = hStd + 2 * Math.PI * (hStd < 0);
+          let LabSmp = lab22(smp);
+          let lSmp = LabSmp.l;
+          let aSmp = LabSmp.a;
+          let bSmp = LabSmp.b;
+          let cSmp = Math.sqrt(aSmp * aSmp + bSmp * bSmp);
+          let dL2 = Math.pow(lStd - lSmp, 2);
+          let dC2 = Math.pow(cStd - cSmp, 2);
+          let dH2 = Math.pow(aStd - aSmp, 2) + Math.pow(bStd - bSmp, 2) - dC2;
+          let F = Math.sqrt(Math.pow(cStd, 4) / (Math.pow(cStd, 4) + 1900));
+          let T = hStd >= 164 / 180 * Math.PI && hStd <= 345 / 180 * Math.PI ? 0.56 + Math.abs(0.2 * Math.cos(hStd + 168 / 180 * Math.PI)) : 0.36 + Math.abs(0.4 * Math.cos(hStd + 35 / 180 * Math.PI));
+          let Sl = lStd < 16 ? 0.511 : 0.040975 * lStd / (1 + 0.01765 * lStd);
+          let Sc = 0.0638 * cStd / (1 + 0.0131 * cStd) + 0.638;
+          let Sh = Sc * (F * T + 1 - F);
+          return Math.sqrt(
+            dL2 / Math.pow(l * Sl, 2) + dC2 / Math.pow(c2 * Sc, 2) + dH2 / Math.pow(Sh, 2)
+          );
+        };
+      };
+      var differenceHyab = () => {
+        let lab22 = converter_default("lab65");
+        return (std, smp) => {
+          let LabStd = lab22(std);
+          let LabSmp = lab22(smp);
+          let dL = LabStd.l - LabSmp.l;
+          let dA = LabStd.a - LabSmp.a;
+          let dB = LabStd.b - LabSmp.b;
+          return Math.abs(dL) + Math.sqrt(dA * dA + dB * dB);
+        };
+      };
+      var differenceKotsarenkoRamos = () => differenceEuclidean("yiq", [0.5053, 0.299, 0.1957]);
+      var differenceItp = () => differenceEuclidean("itp", [518400, 129600, 518400]);
+      var averageAngle = (val) => {
+        let sum = val.reduce(
+          (sum2, val2) => {
+            if (val2 !== void 0) {
+              let rad = val2 * Math.PI / 180;
+              sum2.sin += Math.sin(rad);
+              sum2.cos += Math.cos(rad);
+            }
+            return sum2;
+          },
+          { sin: 0, cos: 0 }
+        );
+        let angle = Math.atan2(sum.sin, sum.cos) * 180 / Math.PI;
+        return angle < 0 ? 360 + angle : angle;
+      };
+      var averageNumber = (val) => {
+        let a = val.filter((v) => v !== void 0);
+        return a.length ? a.reduce((sum, v) => sum + v, 0) / a.length : void 0;
+      };
+      var isfn = (o) => typeof o === "function";
+      function average(colors, mode = "rgb", overrides) {
+        let def = getMode(mode);
+        let cc = colors.map(converter_default(mode));
+        return def.channels.reduce(
+          (res, ch) => {
+            let arr = cc.map((c2) => c2[ch]).filter((val) => val !== void 0);
+            if (arr.length) {
+              let fn5;
+              if (isfn(overrides)) {
+                fn5 = overrides;
+              } else if (overrides && isfn(overrides[ch])) {
+                fn5 = overrides[ch];
+              } else if (def.average && isfn(def.average[ch])) {
+                fn5 = def.average[ch];
+              } else {
+                fn5 = averageNumber;
+              }
+              res[ch] = fn5(arr, ch);
+            }
+            return res;
+          },
+          { mode }
+        );
+      }
+      var definition3 = {
+        mode: "cubehelix",
+        channels: ["h", "s", "l", "alpha"],
+        parse: ["--cubehelix"],
+        serialize: "--cubehelix",
+        ranges: {
+          h: [0, 360],
+          s: [0, 4.614],
+          l: [0, 1]
+        },
+        fromMode: {
+          rgb: convertRgbToCubehelix_default
+        },
+        toMode: {
+          rgb: convertCubehelixToRgb_default
+        },
+        interpolate: {
+          h: {
+            use: interpolatorLinear,
+            fixup: fixupHueShorter
+          },
+          s: interpolatorLinear,
+          l: interpolatorLinear,
+          alpha: {
+            use: interpolatorLinear,
+            fixup: fixupAlpha
+          }
+        },
+        difference: {
+          h: differenceHueSaturation
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default3 = definition3;
+      var convertLabToLch = ({ l, a, b, alpha }, mode = "lch") => {
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let c2 = Math.sqrt(a * a + b * b);
+        let res = { mode, l, c: c2 };
+        if (c2) res.h = normalizeHue_default(Math.atan2(b, a) * 180 / Math.PI);
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertLabToLch_default = convertLabToLch;
+      var convertLchToLab = ({ l, c: c2, h, alpha }, mode = "lab") => {
+        if (h === void 0) h = 0;
+        let res = {
+          mode,
+          l,
+          a: c2 ? c2 * Math.cos(h / 180 * Math.PI) : 0,
+          b: c2 ? c2 * Math.sin(h / 180 * Math.PI) : 0
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertLchToLab_default = convertLchToLab;
+      var k = Math.pow(29, 3) / Math.pow(3, 3);
+      var e = Math.pow(6, 3) / Math.pow(29, 3);
+      var D50 = {
+        X: 0.3457 / 0.3585,
+        Y: 1,
+        Z: (1 - 0.3457 - 0.3585) / 0.3585
+      };
+      var D65 = {
+        X: 0.3127 / 0.329,
+        Y: 1,
+        Z: (1 - 0.3127 - 0.329) / 0.329
+      };
+      var k2 = Math.pow(29, 3) / Math.pow(3, 3);
+      var e2 = Math.pow(6, 3) / Math.pow(29, 3);
+      var fn3 = (v) => Math.pow(v, 3) > e ? Math.pow(v, 3) : (116 * v - 16) / k;
+      var convertLab65ToXyz65 = ({ l, a, b, alpha }) => {
+        if (l === void 0) l = 0;
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let fy = (l + 16) / 116;
+        let fx = a / 500 + fy;
+        let fz = fy - b / 200;
+        let res = {
+          mode: "xyz65",
+          x: fn3(fx) * D65.X,
+          y: fn3(fy) * D65.Y,
+          z: fn3(fz) * D65.Z
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertLab65ToXyz65_default = convertLab65ToXyz65;
+      var convertLab65ToRgb = (lab22) => convertXyz65ToRgb_default(convertLab65ToXyz65_default(lab22));
+      var convertLab65ToRgb_default = convertLab65ToRgb;
+      var f = (value) => value > e ? Math.cbrt(value) : (k * value + 16) / 116;
+      var convertXyz65ToLab65 = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let f0 = f(x / D65.X);
+        let f1 = f(y / D65.Y);
+        let f22 = f(z / D65.Z);
+        let res = {
+          mode: "lab65",
+          l: 116 * f1 - 16,
+          a: 500 * (f0 - f1),
+          b: 200 * (f1 - f22)
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToLab65_default = convertXyz65ToLab65;
+      var convertRgbToLab65 = (rgb5) => {
+        let res = convertXyz65ToLab65_default(convertRgbToXyz65_default(rgb5));
+        if (rgb5.r === rgb5.b && rgb5.b === rgb5.g) {
+          res.a = res.b = 0;
+        }
+        return res;
+      };
+      var convertRgbToLab65_default = convertRgbToLab65;
+      var kE = 1;
+      var kCH = 1;
+      var \u03B8 = 26 / 180 * Math.PI;
+      var cos\u03B8 = Math.cos(\u03B8);
+      var sin\u03B8 = Math.sin(\u03B8);
+      var factor = 100 / Math.log(139 / 100);
+      var convertDlchToLab65 = ({ l, c: c2, h, alpha }) => {
+        if (l === void 0) l = 0;
+        if (c2 === void 0) c2 = 0;
+        if (h === void 0) h = 0;
+        let res = {
+          mode: "lab65",
+          l: (Math.exp(l * kE / factor) - 1) / 39e-4
+        };
+        let G = (Math.exp(0.0435 * c2 * kCH * kE) - 1) / 0.075;
+        let e4 = G * Math.cos(h / 180 * Math.PI - \u03B8);
+        let f3 = G * Math.sin(h / 180 * Math.PI - \u03B8);
+        res.a = e4 * cos\u03B8 - f3 / 0.83 * sin\u03B8;
+        res.b = e4 * sin\u03B8 + f3 / 0.83 * cos\u03B8;
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertDlchToLab65_default = convertDlchToLab65;
+      var convertLab65ToDlch = ({ l, a, b, alpha }) => {
+        if (l === void 0) l = 0;
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let e4 = a * cos\u03B8 + b * sin\u03B8;
+        let f3 = 0.83 * (b * cos\u03B8 - a * sin\u03B8);
+        let G = Math.sqrt(e4 * e4 + f3 * f3);
+        let res = {
+          mode: "dlch",
+          l: factor / kE * Math.log(1 + 39e-4 * l),
+          c: Math.log(1 + 0.075 * G) / (0.0435 * kCH * kE)
+        };
+        if (res.c) {
+          res.h = normalizeHue_default((Math.atan2(f3, e4) + \u03B8) / Math.PI * 180);
+        }
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertLab65ToDlch_default = convertLab65ToDlch;
+      var convertDlabToLab65 = (c2) => convertDlchToLab65_default(convertLabToLch_default(c2, "dlch"));
+      var convertLab65ToDlab = (c2) => convertLchToLab_default(convertLab65ToDlch_default(c2), "dlab");
+      var definition4 = {
+        mode: "dlab",
+        parse: ["--din99o-lab"],
+        serialize: "--din99o-lab",
+        toMode: {
+          lab65: convertDlabToLab65,
+          rgb: (c2) => convertLab65ToRgb_default(convertDlabToLab65(c2))
+        },
+        fromMode: {
+          lab65: convertLab65ToDlab,
+          rgb: (c2) => convertLab65ToDlab(convertRgbToLab65_default(c2))
+        },
+        channels: ["l", "a", "b", "alpha"],
+        ranges: {
+          l: [0, 100],
+          a: [-40.09, 45.501],
+          b: [-40.469, 44.344]
+        },
+        interpolate: {
+          l: interpolatorLinear,
+          a: interpolatorLinear,
+          b: interpolatorLinear,
+          alpha: {
+            use: interpolatorLinear,
+            fixup: fixupAlpha
+          }
+        }
+      };
+      var definition_default4 = definition4;
+      var definition5 = {
+        mode: "dlch",
+        parse: ["--din99o-lch"],
+        serialize: "--din99o-lch",
+        toMode: {
+          lab65: convertDlchToLab65_default,
+          dlab: (c2) => convertLchToLab_default(c2, "dlab"),
+          rgb: (c2) => convertLab65ToRgb_default(convertDlchToLab65_default(c2))
+        },
+        fromMode: {
+          lab65: convertLab65ToDlch_default,
+          dlab: (c2) => convertLabToLch_default(c2, "dlch"),
+          rgb: (c2) => convertLab65ToDlch_default(convertRgbToLab65_default(c2))
+        },
+        channels: ["l", "c", "h", "alpha"],
+        ranges: {
+          l: [0, 100],
+          c: [0, 51.484],
+          h: [0, 360]
+        },
+        interpolate: {
+          l: interpolatorLinear,
+          c: interpolatorLinear,
+          h: {
+            use: interpolatorLinear,
+            fixup: fixupHueShorter
+          },
+          alpha: {
+            use: interpolatorLinear,
+            fixup: fixupAlpha
+          }
+        },
+        difference: {
+          h: differenceHueChroma
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default5 = definition5;
+      function convertHsiToRgb({ h, s, i, alpha }) {
+        h = normalizeHue_default(h !== void 0 ? h : 0);
+        if (s === void 0) s = 0;
+        if (i === void 0) i = 0;
+        let f3 = Math.abs(h / 60 % 2 - 1);
+        let res;
+        switch (Math.floor(h / 60)) {
+          case 0:
+            res = {
+              r: i * (1 + s * (3 / (2 - f3) - 1)),
+              g: i * (1 + s * (3 * (1 - f3) / (2 - f3) - 1)),
+              b: i * (1 - s)
+            };
+            break;
+          case 1:
+            res = {
+              r: i * (1 + s * (3 * (1 - f3) / (2 - f3) - 1)),
+              g: i * (1 + s * (3 / (2 - f3) - 1)),
+              b: i * (1 - s)
+            };
+            break;
+          case 2:
+            res = {
+              r: i * (1 - s),
+              g: i * (1 + s * (3 / (2 - f3) - 1)),
+              b: i * (1 + s * (3 * (1 - f3) / (2 - f3) - 1))
+            };
+            break;
+          case 3:
+            res = {
+              r: i * (1 - s),
+              g: i * (1 + s * (3 * (1 - f3) / (2 - f3) - 1)),
+              b: i * (1 + s * (3 / (2 - f3) - 1))
+            };
+            break;
+          case 4:
+            res = {
+              r: i * (1 + s * (3 * (1 - f3) / (2 - f3) - 1)),
+              g: i * (1 - s),
+              b: i * (1 + s * (3 / (2 - f3) - 1))
+            };
+            break;
+          case 5:
+            res = {
+              r: i * (1 + s * (3 / (2 - f3) - 1)),
+              g: i * (1 - s),
+              b: i * (1 + s * (3 * (1 - f3) / (2 - f3) - 1))
+            };
+            break;
+          default:
+            res = { r: i * (1 - s), g: i * (1 - s), b: i * (1 - s) };
+        }
+        res.mode = "rgb";
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      }
+      function convertRgbToHsi({ r: r2, g, b, alpha }) {
+        if (r2 === void 0) r2 = 0;
+        if (g === void 0) g = 0;
+        if (b === void 0) b = 0;
+        let M3 = Math.max(r2, g, b), m = Math.min(r2, g, b);
+        let res = {
+          mode: "hsi",
+          s: r2 + g + b === 0 ? 0 : 1 - 3 * m / (r2 + g + b),
+          i: (r2 + g + b) / 3
+        };
+        if (M3 - m !== 0)
+          res.h = (M3 === r2 ? (g - b) / (M3 - m) + (g < b) * 6 : M3 === g ? (b - r2) / (M3 - m) + 2 : (r2 - g) / (M3 - m) + 4) * 60;
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      }
+      var definition6 = {
+        mode: "hsi",
+        toMode: {
+          rgb: convertHsiToRgb
+        },
+        parse: ["--hsi"],
+        serialize: "--hsi",
+        fromMode: {
+          rgb: convertRgbToHsi
+        },
+        channels: ["h", "s", "i", "alpha"],
+        ranges: {
+          h: [0, 360]
+        },
+        gamut: "rgb",
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          s: interpolatorLinear,
+          i: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueSaturation
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default6 = definition6;
+      function convertHslToRgb({ h, s, l, alpha }) {
+        h = normalizeHue_default(h !== void 0 ? h : 0);
+        if (s === void 0) s = 0;
+        if (l === void 0) l = 0;
+        let m1 = l + s * (l < 0.5 ? l : 1 - l);
+        let m2 = m1 - (m1 - l) * 2 * Math.abs(h / 60 % 2 - 1);
+        let res;
+        switch (Math.floor(h / 60)) {
+          case 0:
+            res = { r: m1, g: m2, b: 2 * l - m1 };
+            break;
+          case 1:
+            res = { r: m2, g: m1, b: 2 * l - m1 };
+            break;
+          case 2:
+            res = { r: 2 * l - m1, g: m1, b: m2 };
+            break;
+          case 3:
+            res = { r: 2 * l - m1, g: m2, b: m1 };
+            break;
+          case 4:
+            res = { r: m2, g: 2 * l - m1, b: m1 };
+            break;
+          case 5:
+            res = { r: m1, g: 2 * l - m1, b: m2 };
+            break;
+          default:
+            res = { r: 2 * l - m1, g: 2 * l - m1, b: 2 * l - m1 };
+        }
+        res.mode = "rgb";
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      }
+      function convertRgbToHsl({ r: r2, g, b, alpha }) {
+        if (r2 === void 0) r2 = 0;
+        if (g === void 0) g = 0;
+        if (b === void 0) b = 0;
+        let M3 = Math.max(r2, g, b), m = Math.min(r2, g, b);
+        let res = {
+          mode: "hsl",
+          s: M3 === m ? 0 : (M3 - m) / (1 - Math.abs(M3 + m - 1)),
+          l: 0.5 * (M3 + m)
+        };
+        if (M3 - m !== 0)
+          res.h = (M3 === r2 ? (g - b) / (M3 - m) + (g < b) * 6 : M3 === g ? (b - r2) / (M3 - m) + 2 : (r2 - g) / (M3 - m) + 4) * 60;
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      }
+      var hueToDeg = (val, unit) => {
+        switch (unit) {
+          case "deg":
+            return +val;
+          case "rad":
+            return val / Math.PI * 180;
+          case "grad":
+            return val / 10 * 9;
+          case "turn":
+            return val * 360;
+        }
+      };
+      var hue_default2 = hueToDeg;
+      var hsl_old = new RegExp(
+        `^hsla?\\(\\s*${hue2}${c}${per}${c}${per}\\s*(?:,\\s*${num_per}\\s*)?\\)$`
+      );
+      var parseHslLegacy = (color2) => {
+        let match = color2.match(hsl_old);
+        if (!match) return;
+        let res = { mode: "hsl" };
+        if (match[3] !== void 0) {
+          res.h = +match[3];
+        } else if (match[1] !== void 0 && match[2] !== void 0) {
+          res.h = hue_default2(match[1], match[2]);
+        }
+        if (match[4] !== void 0) {
+          res.s = Math.min(Math.max(0, match[4] / 100), 1);
+        }
+        if (match[5] !== void 0) {
+          res.l = Math.min(Math.max(0, match[5] / 100), 1);
+        }
+        if (match[6] !== void 0) {
+          res.alpha = Math.max(0, Math.min(1, match[6] / 100));
+        } else if (match[7] !== void 0) {
+          res.alpha = Math.max(0, Math.min(1, +match[7]));
+        }
+        return res;
+      };
+      var parseHslLegacy_default = parseHslLegacy;
+      function parseHsl(color2, parsed) {
+        if (!parsed || parsed[0] !== "hsl" && parsed[0] !== "hsla") {
+          return void 0;
+        }
+        const res = { mode: "hsl" };
+        const [, h, s, l, alpha] = parsed;
+        if (h.type !== Tok.None) {
+          if (h.type === Tok.Percentage) {
+            return void 0;
+          }
+          res.h = h.value;
+        }
+        if (s.type !== Tok.None) {
+          if (s.type === Tok.Hue) {
+            return void 0;
+          }
+          res.s = s.value / 100;
+        }
+        if (l.type !== Tok.None) {
+          if (l.type === Tok.Hue) {
+            return void 0;
+          }
+          res.l = l.value / 100;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
+          );
+        }
+        return res;
+      }
+      var parseHsl_default = parseHsl;
+      var definition7 = {
+        mode: "hsl",
+        toMode: {
+          rgb: convertHslToRgb
+        },
+        fromMode: {
+          rgb: convertRgbToHsl
+        },
+        channels: ["h", "s", "l", "alpha"],
+        ranges: {
+          h: [0, 360]
+        },
+        gamut: "rgb",
+        parse: [parseHsl_default, parseHslLegacy_default],
+        serialize: (c2) => `hsl(${c2.h !== void 0 ? c2.h : "none"} ${c2.s !== void 0 ? c2.s * 100 + "%" : "none"} ${c2.l !== void 0 ? c2.l * 100 + "%" : "none"}${c2.alpha < 1 ? ` / ${c2.alpha}` : ""})`,
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          s: interpolatorLinear,
+          l: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueSaturation
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default7 = definition7;
+      function convertHsvToRgb({ h, s, v, alpha }) {
+        h = normalizeHue_default(h !== void 0 ? h : 0);
+        if (s === void 0) s = 0;
+        if (v === void 0) v = 0;
+        let f3 = Math.abs(h / 60 % 2 - 1);
+        let res;
+        switch (Math.floor(h / 60)) {
+          case 0:
+            res = { r: v, g: v * (1 - s * f3), b: v * (1 - s) };
+            break;
+          case 1:
+            res = { r: v * (1 - s * f3), g: v, b: v * (1 - s) };
+            break;
+          case 2:
+            res = { r: v * (1 - s), g: v, b: v * (1 - s * f3) };
+            break;
+          case 3:
+            res = { r: v * (1 - s), g: v * (1 - s * f3), b: v };
+            break;
+          case 4:
+            res = { r: v * (1 - s * f3), g: v * (1 - s), b: v };
+            break;
+          case 5:
+            res = { r: v, g: v * (1 - s), b: v * (1 - s * f3) };
+            break;
+          default:
+            res = { r: v * (1 - s), g: v * (1 - s), b: v * (1 - s) };
+        }
+        res.mode = "rgb";
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      }
+      function convertRgbToHsv({ r: r2, g, b, alpha }) {
+        if (r2 === void 0) r2 = 0;
+        if (g === void 0) g = 0;
+        if (b === void 0) b = 0;
+        let M3 = Math.max(r2, g, b), m = Math.min(r2, g, b);
+        let res = {
+          mode: "hsv",
+          s: M3 === 0 ? 0 : 1 - m / M3,
+          v: M3
+        };
+        if (M3 - m !== 0)
+          res.h = (M3 === r2 ? (g - b) / (M3 - m) + (g < b) * 6 : M3 === g ? (b - r2) / (M3 - m) + 2 : (r2 - g) / (M3 - m) + 4) * 60;
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      }
+      var definition8 = {
+        mode: "hsv",
+        toMode: {
+          rgb: convertHsvToRgb
+        },
+        parse: ["--hsv"],
+        serialize: "--hsv",
+        fromMode: {
+          rgb: convertRgbToHsv
+        },
+        channels: ["h", "s", "v", "alpha"],
+        ranges: {
+          h: [0, 360]
+        },
+        gamut: "rgb",
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          s: interpolatorLinear,
+          v: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueSaturation
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default8 = definition8;
+      function convertHwbToRgb({ h, w, b, alpha }) {
+        if (w === void 0) w = 0;
+        if (b === void 0) b = 0;
+        if (w + b > 1) {
+          let s = w + b;
+          w /= s;
+          b /= s;
+        }
+        return convertHsvToRgb({
+          h,
+          s: b === 1 ? 1 : 1 - w / (1 - b),
+          v: 1 - b,
+          alpha
+        });
+      }
+      function convertRgbToHwb(rgba2) {
+        let hsv2 = convertRgbToHsv(rgba2);
+        if (hsv2 === void 0) return void 0;
+        let s = hsv2.s !== void 0 ? hsv2.s : 0;
+        let v = hsv2.v !== void 0 ? hsv2.v : 0;
+        let res = {
+          mode: "hwb",
+          w: (1 - s) * v,
+          b: 1 - v
+        };
+        if (hsv2.h !== void 0) res.h = hsv2.h;
+        if (hsv2.alpha !== void 0) res.alpha = hsv2.alpha;
+        return res;
+      }
+      function ParseHwb(color2, parsed) {
+        if (!parsed || parsed[0] !== "hwb") {
+          return void 0;
+        }
+        const res = { mode: "hwb" };
+        const [, h, w, b, alpha] = parsed;
+        if (h.type !== Tok.None) {
+          if (h.type === Tok.Percentage) {
+            return void 0;
+          }
+          res.h = h.value;
+        }
+        if (w.type !== Tok.None) {
+          if (w.type === Tok.Hue) {
+            return void 0;
+          }
+          res.w = w.value / 100;
+        }
+        if (b.type !== Tok.None) {
+          if (b.type === Tok.Hue) {
+            return void 0;
+          }
+          res.b = b.value / 100;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
+          );
+        }
+        return res;
+      }
+      var parseHwb_default = ParseHwb;
+      var definition9 = {
+        mode: "hwb",
+        toMode: {
+          rgb: convertHwbToRgb
+        },
+        fromMode: {
+          rgb: convertRgbToHwb
+        },
+        channels: ["h", "w", "b", "alpha"],
+        ranges: {
+          h: [0, 360]
+        },
+        gamut: "rgb",
+        parse: [parseHwb_default],
+        serialize: (c2) => `hwb(${c2.h !== void 0 ? c2.h : "none"} ${c2.w !== void 0 ? c2.w * 100 + "%" : "none"} ${c2.b !== void 0 ? c2.b * 100 + "%" : "none"}${c2.alpha < 1 ? ` / ${c2.alpha}` : ""})`,
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          w: interpolatorLinear,
+          b: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueNaive
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default9 = definition9;
+      var YW = 203;
+      var M1 = 0.1593017578125;
+      var M2 = 78.84375;
+      var C1 = 0.8359375;
+      var C2 = 18.8515625;
+      var C3 = 18.6875;
+      function transferPqDecode(v) {
+        if (v < 0) return 0;
+        const c2 = Math.pow(v, 1 / M2);
+        return 1e4 * Math.pow(Math.max(0, c2 - C1) / (C2 - C3 * c2), 1 / M1);
+      }
+      function transferPqEncode(v) {
+        if (v < 0) return 0;
+        const c2 = Math.pow(v / 1e4, M1);
+        return Math.pow((C1 + C2 * c2) / (1 + C3 * c2), M2);
+      }
+      var toRel = (c2) => Math.max(c2 / YW, 0);
+      var convertItpToXyz65 = ({ i, t, p: p4, alpha }) => {
+        if (i === void 0) i = 0;
+        if (t === void 0) t = 0;
+        if (p4 === void 0) p4 = 0;
+        const l = transferPqDecode(
+          i + 0.008609037037932761 * t + 0.11102962500302593 * p4
+        );
+        const m = transferPqDecode(
+          i - 0.00860903703793275 * t - 0.11102962500302599 * p4
+        );
+        const s = transferPqDecode(
+          i + 0.5600313357106791 * t - 0.32062717498731885 * p4
+        );
+        const res = {
+          mode: "xyz65",
+          x: toRel(
+            2.070152218389422 * l - 1.3263473389671556 * m + 0.2066510476294051 * s
+          ),
+          y: toRel(
+            0.3647385209748074 * l + 0.680566024947227 * m - 0.0453045459220346 * s
+          ),
+          z: toRel(
+            -0.049747207535812 * l - 0.0492609666966138 * m + 1.1880659249923042 * s
+          )
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertItpToXyz65_default = convertItpToXyz65;
+      var toAbs = (c2 = 0) => Math.max(c2 * YW, 0);
+      var convertXyz65ToItp = ({ x, y, z, alpha }) => {
+        const absX = toAbs(x);
+        const absY = toAbs(y);
+        const absZ = toAbs(z);
+        const l = transferPqEncode(
+          0.3592832590121217 * absX + 0.6976051147779502 * absY - 0.0358915932320289 * absZ
+        );
+        const m = transferPqEncode(
+          -0.1920808463704995 * absX + 1.1004767970374323 * absY + 0.0753748658519118 * absZ
+        );
+        const s = transferPqEncode(
+          0.0070797844607477 * absX + 0.0748396662186366 * absY + 0.8433265453898765 * absZ
+        );
+        const i = 0.5 * l + 0.5 * m;
+        const t = 1.61376953125 * l - 3.323486328125 * m + 1.709716796875 * s;
+        const p4 = 4.378173828125 * l - 4.24560546875 * m - 0.132568359375 * s;
+        const res = { mode: "itp", i, t, p: p4 };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToItp_default = convertXyz65ToItp;
+      var definition10 = {
+        mode: "itp",
+        channels: ["i", "t", "p", "alpha"],
+        parse: ["--ictcp"],
+        serialize: "--ictcp",
+        toMode: {
+          xyz65: convertItpToXyz65_default,
+          rgb: (color2) => convertXyz65ToRgb_default(convertItpToXyz65_default(color2))
+        },
+        fromMode: {
+          xyz65: convertXyz65ToItp_default,
+          rgb: (color2) => convertXyz65ToItp_default(convertRgbToXyz65_default(color2))
+        },
+        ranges: {
+          i: [0, 0.581],
+          t: [-0.369, 0.272],
+          p: [-0.164, 0.331]
+        },
+        interpolate: {
+          i: interpolatorLinear,
+          t: interpolatorLinear,
+          p: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default10 = definition10;
+      var p = 134.03437499999998;
+      var d0 = 16295499532821565e-27;
+      var jabPqEncode = (v) => {
+        if (v < 0) return 0;
+        let vn3 = Math.pow(v / 1e4, M1);
+        return Math.pow((C1 + C2 * vn3) / (1 + C3 * vn3), p);
+      };
+      var abs = (v = 0) => Math.max(v * 203, 0);
+      var convertXyz65ToJab = ({ x, y, z, alpha }) => {
+        x = abs(x);
+        y = abs(y);
+        z = abs(z);
+        let xp = 1.15 * x - 0.15 * z;
+        let yp = 0.66 * y + 0.34 * x;
+        let l = jabPqEncode(0.41478972 * xp + 0.579999 * yp + 0.014648 * z);
+        let m = jabPqEncode(-0.20151 * xp + 1.120649 * yp + 0.0531008 * z);
+        let s = jabPqEncode(-0.0166008 * xp + 0.2648 * yp + 0.6684799 * z);
+        let i = (l + m) / 2;
+        let res = {
+          mode: "jab",
+          j: 0.44 * i / (1 - 0.56 * i) - d0,
+          a: 3.524 * l - 4.066708 * m + 0.542708 * s,
+          b: 0.199076 * l + 1.096799 * m - 1.295875 * s
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToJab_default = convertXyz65ToJab;
+      var p2 = 134.03437499999998;
+      var d02 = 16295499532821565e-27;
+      var jabPqDecode = (v) => {
+        if (v < 0) return 0;
+        let vp = Math.pow(v, 1 / p2);
+        return 1e4 * Math.pow((C1 - vp) / (C3 * vp - C2), 1 / M1);
+      };
+      var rel = (v) => v / 203;
+      var convertJabToXyz65 = ({ j, a, b, alpha }) => {
+        if (j === void 0) j = 0;
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let i = (j + d02) / (0.44 + 0.56 * (j + d02));
+        let l = jabPqDecode(i + 0.13860504 * a + 0.058047316 * b);
+        let m = jabPqDecode(i - 0.13860504 * a - 0.058047316 * b);
+        let s = jabPqDecode(i - 0.096019242 * a - 0.8118919 * b);
+        let res = {
+          mode: "xyz65",
+          x: rel(
+            1.661373024652174 * l - 0.914523081304348 * m + 0.23136208173913045 * s
+          ),
+          y: rel(
+            -0.3250758611844533 * l + 1.571847026732543 * m - 0.21825383453227928 * s
+          ),
+          z: rel(-0.090982811 * l - 0.31272829 * m + 1.5227666 * s)
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertJabToXyz65_default = convertJabToXyz65;
+      var convertRgbToJab = (rgb5) => {
+        let res = convertXyz65ToJab_default(convertRgbToXyz65_default(rgb5));
+        if (rgb5.r === rgb5.b && rgb5.b === rgb5.g) {
+          res.a = res.b = 0;
+        }
+        return res;
+      };
+      var convertRgbToJab_default = convertRgbToJab;
+      var convertJabToRgb = (color2) => convertXyz65ToRgb_default(convertJabToXyz65_default(color2));
+      var convertJabToRgb_default = convertJabToRgb;
+      var definition11 = {
+        mode: "jab",
+        channels: ["j", "a", "b", "alpha"],
+        parse: ["--jzazbz"],
+        serialize: "--jzazbz",
+        fromMode: {
+          rgb: convertRgbToJab_default,
+          xyz65: convertXyz65ToJab_default
+        },
+        toMode: {
+          rgb: convertJabToRgb_default,
+          xyz65: convertJabToXyz65_default
+        },
+        ranges: {
+          j: [0, 0.222],
+          a: [-0.109, 0.129],
+          b: [-0.185, 0.134]
+        },
+        interpolate: {
+          j: interpolatorLinear,
+          a: interpolatorLinear,
+          b: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default11 = definition11;
+      var convertJabToJch = ({ j, a, b, alpha }) => {
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let c2 = Math.sqrt(a * a + b * b);
+        let res = {
+          mode: "jch",
+          j,
+          c: c2
+        };
+        if (c2) {
+          res.h = normalizeHue_default(Math.atan2(b, a) * 180 / Math.PI);
+        }
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertJabToJch_default = convertJabToJch;
+      var convertJchToJab = ({ j, c: c2, h, alpha }) => {
+        if (h === void 0) h = 0;
+        let res = {
+          mode: "jab",
+          j,
+          a: c2 ? c2 * Math.cos(h / 180 * Math.PI) : 0,
+          b: c2 ? c2 * Math.sin(h / 180 * Math.PI) : 0
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertJchToJab_default = convertJchToJab;
+      var definition12 = {
+        mode: "jch",
+        parse: ["--jzczhz"],
+        serialize: "--jzczhz",
+        toMode: {
+          jab: convertJchToJab_default,
+          rgb: (c2) => convertJabToRgb_default(convertJchToJab_default(c2))
+        },
+        fromMode: {
+          rgb: (c2) => convertJabToJch_default(convertRgbToJab_default(c2)),
+          jab: convertJabToJch_default
+        },
+        channels: ["j", "c", "h", "alpha"],
+        ranges: {
+          j: [0, 0.221],
+          c: [0, 0.19],
+          h: [0, 360]
+        },
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          c: interpolatorLinear,
+          j: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueChroma
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default12 = definition12;
+      var k3 = Math.pow(29, 3) / Math.pow(3, 3);
+      var e3 = Math.pow(6, 3) / Math.pow(29, 3);
+      var fn4 = (v) => Math.pow(v, 3) > e3 ? Math.pow(v, 3) : (116 * v - 16) / k3;
+      var convertLabToXyz50 = ({ l, a, b, alpha }) => {
+        if (l === void 0) l = 0;
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let fy = (l + 16) / 116;
+        let fx = a / 500 + fy;
+        let fz = fy - b / 200;
+        let res = {
+          mode: "xyz50",
+          x: fn4(fx) * D50.X,
+          y: fn4(fy) * D50.Y,
+          z: fn4(fz) * D50.Z
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertLabToXyz50_default = convertLabToXyz50;
+      var convertXyz50ToRgb = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = convertLrgbToRgb_default({
+          r: x * 3.1341359569958707 - y * 1.6173863321612538 - 0.4906619460083532 * z,
+          g: x * -0.978795502912089 + y * 1.916254567259524 + 0.03344273116131949 * z,
+          b: x * 0.07195537988411677 - y * 0.2289768264158322 + 1.405386058324125 * z
+        });
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz50ToRgb_default = convertXyz50ToRgb;
+      var convertLabToRgb = (lab22) => convertXyz50ToRgb_default(convertLabToXyz50_default(lab22));
+      var convertLabToRgb_default = convertLabToRgb;
+      var convertRgbToXyz50 = (rgb5) => {
+        let { r: r2, g, b, alpha } = convertRgbToLrgb_default(rgb5);
+        let res = {
+          mode: "xyz50",
+          x: 0.436065742824811 * r2 + 0.3851514688337912 * g + 0.14307845442264197 * b,
+          y: 0.22249319175623702 * r2 + 0.7168870538238823 * g + 0.06061979053616537 * b,
+          z: 0.013923904500943465 * r2 + 0.09708128566574634 * g + 0.7140993584005155 * b
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertRgbToXyz50_default = convertRgbToXyz50;
+      var f2 = (value) => value > e3 ? Math.cbrt(value) : (k3 * value + 16) / 116;
+      var convertXyz50ToLab = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let f0 = f2(x / D50.X);
+        let f1 = f2(y / D50.Y);
+        let f22 = f2(z / D50.Z);
+        let res = {
+          mode: "lab",
+          l: 116 * f1 - 16,
+          a: 500 * (f0 - f1),
+          b: 200 * (f1 - f22)
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz50ToLab_default = convertXyz50ToLab;
+      var convertRgbToLab = (rgb5) => {
+        let res = convertXyz50ToLab_default(convertRgbToXyz50_default(rgb5));
+        if (rgb5.r === rgb5.b && rgb5.b === rgb5.g) {
+          res.a = res.b = 0;
+        }
+        return res;
+      };
+      var convertRgbToLab_default = convertRgbToLab;
+      function parseLab(color2, parsed) {
+        if (!parsed || parsed[0] !== "lab") {
+          return void 0;
+        }
+        const res = { mode: "lab" };
+        const [, l, a, b, alpha] = parsed;
+        if (l.type === Tok.Hue || a.type === Tok.Hue || b.type === Tok.Hue) {
+          return void 0;
+        }
+        if (l.type !== Tok.None) {
+          res.l = Math.min(Math.max(0, l.value), 100);
+        }
+        if (a.type !== Tok.None) {
+          res.a = a.type === Tok.Number ? a.value : a.value * 125 / 100;
+        }
+        if (b.type !== Tok.None) {
+          res.b = b.type === Tok.Number ? b.value : b.value * 125 / 100;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
+          );
+        }
+        return res;
+      }
+      var parseLab_default = parseLab;
+      var definition13 = {
+        mode: "lab",
+        toMode: {
+          xyz50: convertLabToXyz50_default,
+          rgb: convertLabToRgb_default
+        },
+        fromMode: {
+          xyz50: convertXyz50ToLab_default,
+          rgb: convertRgbToLab_default
+        },
+        channels: ["l", "a", "b", "alpha"],
+        ranges: {
+          l: [0, 100],
+          a: [-125, 125],
+          b: [-125, 125]
+        },
+        parse: [parseLab_default],
+        serialize: (c2) => `lab(${c2.l !== void 0 ? c2.l : "none"} ${c2.a !== void 0 ? c2.a : "none"} ${c2.b !== void 0 ? c2.b : "none"}${c2.alpha < 1 ? ` / ${c2.alpha}` : ""})`,
+        interpolate: {
+          l: interpolatorLinear,
+          a: interpolatorLinear,
+          b: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default13 = definition13;
+      var definition14 = __spreadProps(__spreadValues({}, definition_default13), {
+        mode: "lab65",
+        parse: ["--lab-d65"],
+        serialize: "--lab-d65",
+        toMode: {
+          xyz65: convertLab65ToXyz65_default,
+          rgb: convertLab65ToRgb_default
+        },
+        fromMode: {
+          xyz65: convertXyz65ToLab65_default,
+          rgb: convertRgbToLab65_default
+        },
+        ranges: {
+          l: [0, 100],
+          a: [-125, 125],
+          b: [-125, 125]
+        }
+      });
+      var definition_default14 = definition14;
+      function parseLch(color2, parsed) {
+        if (!parsed || parsed[0] !== "lch") {
+          return void 0;
+        }
+        const res = { mode: "lch" };
+        const [, l, c2, h, alpha] = parsed;
+        if (l.type !== Tok.None) {
+          if (l.type === Tok.Hue) {
+            return void 0;
+          }
+          res.l = Math.min(Math.max(0, l.value), 100);
+        }
+        if (c2.type !== Tok.None) {
+          res.c = Math.max(
+            0,
+            c2.type === Tok.Number ? c2.value : c2.value * 150 / 100
+          );
+        }
+        if (h.type !== Tok.None) {
+          if (h.type === Tok.Percentage) {
+            return void 0;
+          }
+          res.h = h.value;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
+          );
+        }
+        return res;
+      }
+      var parseLch_default = parseLch;
+      var definition15 = {
+        mode: "lch",
+        toMode: {
+          lab: convertLchToLab_default,
+          rgb: (c2) => convertLabToRgb_default(convertLchToLab_default(c2))
+        },
+        fromMode: {
+          rgb: (c2) => convertLabToLch_default(convertRgbToLab_default(c2)),
+          lab: convertLabToLch_default
+        },
+        channels: ["l", "c", "h", "alpha"],
+        ranges: {
+          l: [0, 100],
+          c: [0, 150],
+          h: [0, 360]
+        },
+        parse: [parseLch_default],
+        serialize: (c2) => `lch(${c2.l !== void 0 ? c2.l : "none"} ${c2.c !== void 0 ? c2.c : "none"} ${c2.h !== void 0 ? c2.h : "none"}${c2.alpha < 1 ? ` / ${c2.alpha}` : ""})`,
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          c: interpolatorLinear,
+          l: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueChroma
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default15 = definition15;
+      var definition16 = __spreadProps(__spreadValues({}, definition_default15), {
+        mode: "lch65",
+        parse: ["--lch-d65"],
+        serialize: "--lch-d65",
+        toMode: {
+          lab65: (c2) => convertLchToLab_default(c2, "lab65"),
+          rgb: (c2) => convertLab65ToRgb_default(convertLchToLab_default(c2, "lab65"))
+        },
+        fromMode: {
+          rgb: (c2) => convertLabToLch_default(convertRgbToLab65_default(c2), "lch65"),
+          lab65: (c2) => convertLabToLch_default(c2, "lch65")
+        },
+        ranges: {
+          l: [0, 100],
+          c: [0, 150],
+          h: [0, 360]
+        }
+      });
+      var definition_default16 = definition16;
+      var convertLuvToLchuv = ({ l, u, v, alpha }) => {
+        if (u === void 0) u = 0;
+        if (v === void 0) v = 0;
+        let c2 = Math.sqrt(u * u + v * v);
+        let res = {
+          mode: "lchuv",
+          l,
+          c: c2
+        };
+        if (c2) {
+          res.h = normalizeHue_default(Math.atan2(v, u) * 180 / Math.PI);
+        }
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertLuvToLchuv_default = convertLuvToLchuv;
+      var convertLchuvToLuv = ({ l, c: c2, h, alpha }) => {
+        if (h === void 0) h = 0;
+        let res = {
+          mode: "luv",
+          l,
+          u: c2 ? c2 * Math.cos(h / 180 * Math.PI) : 0,
+          v: c2 ? c2 * Math.sin(h / 180 * Math.PI) : 0
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertLchuvToLuv_default = convertLchuvToLuv;
+      var u_fn = (x, y, z) => 4 * x / (x + 15 * y + 3 * z);
+      var v_fn = (x, y, z) => 9 * y / (x + 15 * y + 3 * z);
+      var un = u_fn(D50.X, D50.Y, D50.Z);
+      var vn = v_fn(D50.X, D50.Y, D50.Z);
+      var l_fn = (value) => value <= e3 ? k3 * value : 116 * Math.cbrt(value) - 16;
+      var convertXyz50ToLuv = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let l = l_fn(y / D50.Y);
+        let u = u_fn(x, y, z);
+        let v = v_fn(x, y, z);
+        if (!isFinite(u) || !isFinite(v)) {
+          l = u = v = 0;
+        } else {
+          u = 13 * l * (u - un);
+          v = 13 * l * (v - vn);
+        }
+        let res = {
+          mode: "luv",
+          l,
+          u,
+          v
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz50ToLuv_default = convertXyz50ToLuv;
+      var u_fn2 = (x, y, z) => 4 * x / (x + 15 * y + 3 * z);
+      var v_fn2 = (x, y, z) => 9 * y / (x + 15 * y + 3 * z);
+      var un2 = u_fn2(D50.X, D50.Y, D50.Z);
+      var vn2 = v_fn2(D50.X, D50.Y, D50.Z);
+      var convertLuvToXyz50 = ({ l, u, v, alpha }) => {
+        if (l === void 0) l = 0;
+        if (l === 0) {
+          return { mode: "xyz50", x: 0, y: 0, z: 0 };
+        }
+        if (u === void 0) u = 0;
+        if (v === void 0) v = 0;
+        let up = u / (13 * l) + un2;
+        let vp = v / (13 * l) + vn2;
+        let y = D50.Y * (l <= 8 ? l / k3 : Math.pow((l + 16) / 116, 3));
+        let x = y * (9 * up) / (4 * vp);
+        let z = y * (12 - 3 * up - 20 * vp) / (4 * vp);
+        let res = { mode: "xyz50", x, y, z };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertLuvToXyz50_default = convertLuvToXyz50;
+      var convertRgbToLchuv = (rgb5) => convertLuvToLchuv_default(convertXyz50ToLuv_default(convertRgbToXyz50_default(rgb5)));
+      var convertLchuvToRgb = (lchuv2) => convertXyz50ToRgb_default(convertLuvToXyz50_default(convertLchuvToLuv_default(lchuv2)));
+      var definition17 = {
+        mode: "lchuv",
+        toMode: {
+          luv: convertLchuvToLuv_default,
+          rgb: convertLchuvToRgb
+        },
+        fromMode: {
+          rgb: convertRgbToLchuv,
+          luv: convertLuvToLchuv_default
+        },
+        channels: ["l", "c", "h", "alpha"],
+        parse: ["--lchuv"],
+        serialize: "--lchuv",
+        ranges: {
+          l: [0, 100],
+          c: [0, 176.956],
+          h: [0, 360]
+        },
+        interpolate: {
+          h: { use: interpolatorLinear, fixup: fixupHueShorter },
+          c: interpolatorLinear,
+          l: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        },
+        difference: {
+          h: differenceHueChroma
+        },
+        average: {
+          h: averageAngle
+        }
+      };
+      var definition_default17 = definition17;
+      var definition18 = __spreadProps(__spreadValues({}, definition_default), {
+        mode: "lrgb",
+        toMode: {
+          rgb: convertLrgbToRgb_default
+        },
+        fromMode: {
+          rgb: convertRgbToLrgb_default
+        },
+        parse: ["srgb-linear"],
+        serialize: "srgb-linear"
+      });
+      var definition_default18 = definition18;
+      var definition19 = {
+        mode: "luv",
+        toMode: {
+          xyz50: convertLuvToXyz50_default,
+          rgb: (luv2) => convertXyz50ToRgb_default(convertLuvToXyz50_default(luv2))
+        },
+        fromMode: {
+          xyz50: convertXyz50ToLuv_default,
+          rgb: (rgb5) => convertXyz50ToLuv_default(convertRgbToXyz50_default(rgb5))
+        },
+        channels: ["l", "u", "v", "alpha"],
+        parse: ["--luv"],
+        serialize: "--luv",
+        ranges: {
+          l: [0, 100],
+          u: [-84.936, 175.042],
+          v: [-125.882, 87.243]
+        },
+        interpolate: {
+          l: interpolatorLinear,
+          u: interpolatorLinear,
+          v: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default19 = definition19;
+      var convertLrgbToOklab = ({ r: r2, g, b, alpha }) => {
+        if (r2 === void 0) r2 = 0;
+        if (g === void 0) g = 0;
+        if (b === void 0) b = 0;
+        let L = Math.cbrt(
+          0.412221469470763 * r2 + 0.5363325372617348 * g + 0.0514459932675022 * b
+        );
+        let M3 = Math.cbrt(
+          0.2119034958178252 * r2 + 0.6806995506452344 * g + 0.1073969535369406 * b
+        );
+        let S = Math.cbrt(
+          0.0883024591900564 * r2 + 0.2817188391361215 * g + 0.6299787016738222 * b
+        );
+        let res = {
+          mode: "oklab",
+          l: 0.210454268309314 * L + 0.7936177747023054 * M3 - 0.0040720430116193 * S,
+          a: 1.9779985324311684 * L - 2.42859224204858 * M3 + 0.450593709617411 * S,
+          b: 0.0259040424655478 * L + 0.7827717124575296 * M3 - 0.8086757549230774 * S
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertLrgbToOklab_default = convertLrgbToOklab;
+      var convertRgbToOklab = (rgb5) => {
+        let res = convertLrgbToOklab_default(convertRgbToLrgb_default(rgb5));
+        if (rgb5.r === rgb5.b && rgb5.b === rgb5.g) {
+          res.a = res.b = 0;
+        }
+        return res;
+      };
+      var convertRgbToOklab_default = convertRgbToOklab;
+      var convertOklabToLrgb = ({ l, a, b, alpha }) => {
+        if (l === void 0) l = 0;
+        if (a === void 0) a = 0;
+        if (b === void 0) b = 0;
+        let L = Math.pow(l + 0.3963377773761749 * a + 0.2158037573099136 * b, 3);
+        let M3 = Math.pow(l - 0.1055613458156586 * a - 0.0638541728258133 * b, 3);
+        let S = Math.pow(l - 0.0894841775298119 * a - 1.2914855480194092 * b, 3);
+        let res = {
+          mode: "lrgb",
+          r: 4.076741636075957 * L - 3.3077115392580616 * M3 + 0.2309699031821044 * S,
+          g: -1.2684379732850317 * L + 2.6097573492876887 * M3 - 0.3413193760026573 * S,
+          b: -0.0041960761386756 * L - 0.7034186179359362 * M3 + 1.7076146940746117 * S
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertOklabToLrgb_default = convertOklabToLrgb;
+      var convertOklabToRgb = (c2) => convertLrgbToRgb_default(convertOklabToLrgb_default(c2));
+      var convertOklabToRgb_default = convertOklabToRgb;
+      function toe(x) {
+        const k_1 = 0.206;
+        const k_2 = 0.03;
+        const k_3 = (1 + k_1) / (1 + k_2);
+        return 0.5 * (k_3 * x - k_1 + Math.sqrt((k_3 * x - k_1) * (k_3 * x - k_1) + 4 * k_2 * k_3 * x));
+      }
+      function toe_inv(x) {
+        const k_1 = 0.206;
+        const k_2 = 0.03;
+        const k_3 = (1 + k_1) / (1 + k_2);
+        return (x * x + k_1 * x) / (k_3 * (x + k_2));
+      }
+      function compute_max_saturation(a, b) {
+        let k0, k1, k22, k32, k4, wl, wm, ws;
+        if (-1.88170328 * a - 0.80936493 * b > 1) {
+          k0 = 1.19086277;
+          k1 = 1.76576728;
+          k22 = 0.59662641;
+          k32 = 0.75515197;
+          k4 = 0.56771245;
+          wl = 4.0767416621;
+          wm = -3.3077115913;
+          ws = 0.2309699292;
+        } else if (1.81444104 * a - 1.19445276 * b > 1) {
+          k0 = 0.73956515;
+          k1 = -0.45954404;
+          k22 = 0.08285427;
+          k32 = 0.1254107;
+          k4 = 0.14503204;
+          wl = -1.2684380046;
+          wm = 2.6097574011;
+          ws = -0.3413193965;
+        } else {
+          k0 = 1.35733652;
+          k1 = -915799e-8;
+          k22 = -1.1513021;
+          k32 = -0.50559606;
+          k4 = 692167e-8;
+          wl = -0.0041960863;
+          wm = -0.7034186147;
+          ws = 1.707614701;
+        }
+        let S = k0 + k1 * a + k22 * b + k32 * a * a + k4 * a * b;
+        let k_l = 0.3963377774 * a + 0.2158037573 * b;
+        let k_m = -0.1055613458 * a - 0.0638541728 * b;
+        let k_s = -0.0894841775 * a - 1.291485548 * b;
+        {
+          let l_ = 1 + S * k_l;
+          let m_ = 1 + S * k_m;
+          let s_ = 1 + S * k_s;
+          let l = l_ * l_ * l_;
+          let m = m_ * m_ * m_;
+          let s = s_ * s_ * s_;
+          let l_dS = 3 * k_l * l_ * l_;
+          let m_dS = 3 * k_m * m_ * m_;
+          let s_dS = 3 * k_s * s_ * s_;
+          let l_dS2 = 6 * k_l * k_l * l_;
+          let m_dS2 = 6 * k_m * k_m * m_;
+          let s_dS2 = 6 * k_s * k_s * s_;
+          let f3 = wl * l + wm * m + ws * s;
+          let f1 = wl * l_dS + wm * m_dS + ws * s_dS;
+          let f22 = wl * l_dS2 + wm * m_dS2 + ws * s_dS2;
+          S = S - f3 * f1 / (f1 * f1 - 0.5 * f3 * f22);
+        }
+        return S;
+      }
+      function find_cusp(a, b) {
+        let S_cusp = compute_max_saturation(a, b);
+        let rgb5 = convertOklabToLrgb_default({ l: 1, a: S_cusp * a, b: S_cusp * b });
+        let L_cusp = Math.cbrt(1 / Math.max(rgb5.r, rgb5.g, rgb5.b));
+        let C_cusp = L_cusp * S_cusp;
+        return [L_cusp, C_cusp];
+      }
+      function find_gamut_intersection(a, b, L1, C12, L0, cusp = null) {
+        if (!cusp) {
+          cusp = find_cusp(a, b);
+        }
+        let t;
+        if ((L1 - L0) * cusp[1] - (cusp[0] - L0) * C12 <= 0) {
+          t = cusp[1] * L0 / (C12 * cusp[0] + cusp[1] * (L0 - L1));
+        } else {
+          t = cusp[1] * (L0 - 1) / (C12 * (cusp[0] - 1) + cusp[1] * (L0 - L1));
+          {
+            let dL = L1 - L0;
+            let dC = C12;
+            let k_l = 0.3963377774 * a + 0.2158037573 * b;
+            let k_m = -0.1055613458 * a - 0.0638541728 * b;
+            let k_s = -0.0894841775 * a - 1.291485548 * b;
+            let l_dt = dL + dC * k_l;
+            let m_dt = dL + dC * k_m;
+            let s_dt = dL + dC * k_s;
+            {
+              let L = L0 * (1 - t) + t * L1;
+              let C4 = t * C12;
+              let l_ = L + C4 * k_l;
+              let m_ = L + C4 * k_m;
+              let s_ = L + C4 * k_s;
+              let l = l_ * l_ * l_;
+              let m = m_ * m_ * m_;
+              let s = s_ * s_ * s_;
+              let ldt = 3 * l_dt * l_ * l_;
+              let mdt = 3 * m_dt * m_ * m_;
+              let sdt = 3 * s_dt * s_ * s_;
+              let ldt2 = 6 * l_dt * l_dt * l_;
+              let mdt2 = 6 * m_dt * m_dt * m_;
+              let sdt2 = 6 * s_dt * s_dt * s_;
+              let r2 = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s - 1;
+              let r1 = 4.0767416621 * ldt - 3.3077115913 * mdt + 0.2309699292 * sdt;
+              let r22 = 4.0767416621 * ldt2 - 3.3077115913 * mdt2 + 0.2309699292 * sdt2;
+              let u_r = r1 / (r1 * r1 - 0.5 * r2 * r22);
+              let t_r = -r2 * u_r;
+              let g = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s - 1;
+              let g1 = -1.2684380046 * ldt + 2.6097574011 * mdt - 0.3413193965 * sdt;
+              let g2 = -1.2684380046 * ldt2 + 2.6097574011 * mdt2 - 0.3413193965 * sdt2;
+              let u_g = g1 / (g1 * g1 - 0.5 * g * g2);
+              let t_g = -g * u_g;
+              let b2 = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s - 1;
+              let b1 = -0.0041960863 * ldt - 0.7034186147 * mdt + 1.707614701 * sdt;
+              let b22 = -0.0041960863 * ldt2 - 0.7034186147 * mdt2 + 1.707614701 * sdt2;
+              let u_b = b1 / (b1 * b1 - 0.5 * b2 * b22);
+              let t_b = -b2 * u_b;
+              t_r = u_r >= 0 ? t_r : 1e6;
+              t_g = u_g >= 0 ? t_g : 1e6;
+              t_b = u_b >= 0 ? t_b : 1e6;
+              t += Math.min(t_r, Math.min(t_g, t_b));
+            }
+          }
+        }
+        return t;
+      }
+      function get_ST_max(a_, b_, cusp = null) {
+        if (!cusp) {
+          cusp = find_cusp(a_, b_);
+        }
+        let L = cusp[0];
+        let C4 = cusp[1];
+        return [C4 / L, C4 / (1 - L)];
+      }
+      function get_Cs(L, a_, b_) {
+        let cusp = find_cusp(a_, b_);
+        let C_max = find_gamut_intersection(a_, b_, L, 1, L, cusp);
+        let ST_max = get_ST_max(a_, b_, cusp);
+        let S_mid = 0.11516993 + 1 / (7.4477897 + 4.1590124 * b_ + a_ * (-2.19557347 + 1.75198401 * b_ + a_ * (-2.13704948 - 10.02301043 * b_ + a_ * (-4.24894561 + 5.38770819 * b_ + 4.69891013 * a_))));
+        let T_mid = 0.11239642 + 1 / (1.6132032 - 0.68124379 * b_ + a_ * (0.40370612 + 0.90148123 * b_ + a_ * (-0.27087943 + 0.6122399 * b_ + a_ * (299215e-8 - 0.45399568 * b_ - 0.14661872 * a_))));
+        let k4 = C_max / Math.min(L * ST_max[0], (1 - L) * ST_max[1]);
+        let C_a = L * S_mid;
+        let C_b = (1 - L) * T_mid;
+        let C_mid = 0.9 * k4 * Math.sqrt(
+          Math.sqrt(
+            1 / (1 / (C_a * C_a * C_a * C_a) + 1 / (C_b * C_b * C_b * C_b))
+          )
+        );
+        C_a = L * 0.4;
+        C_b = (1 - L) * 0.8;
+        let C_0 = Math.sqrt(1 / (1 / (C_a * C_a) + 1 / (C_b * C_b)));
+        return [C_0, C_mid, C_max];
+      }
+      function convertOklabToOkhsl(lab22) {
+        const l = lab22.l !== void 0 ? lab22.l : 0;
+        const a = lab22.a !== void 0 ? lab22.a : 0;
+        const b = lab22.b !== void 0 ? lab22.b : 0;
+        const ret = { mode: "okhsl", l: toe(l) };
+        if (lab22.alpha !== void 0) {
+          ret.alpha = lab22.alpha;
+        }
+        let c2 = Math.sqrt(a * a + b * b);
+        if (!c2) {
+          ret.s = 0;
+          return ret;
+        }
+        let [C_0, C_mid, C_max] = get_Cs(l, a / c2, b / c2);
+        let s;
+        if (c2 < C_mid) {
+          let k_0 = 0;
+          let k_1 = 0.8 * C_0;
+          let k_2 = 1 - k_1 / C_mid;
+          let t = (c2 - k_0) / (k_1 + k_2 * (c2 - k_0));
+          s = t * 0.8;
+        } else {
+          let k_0 = C_mid;
+          let k_1 = 0.2 * C_mid * C_mid * 1.25 * 1.25 / C_0;
+          let k_2 = 1 - k_1 / (C_max - C_mid);
+          let t = (c2 - k_0) / (k_1 + k_2 * (c2 - k_0));
+          s = 0.8 + 0.2 * t;
+        }
+        if (s) {
+          ret.s = s;
+          ret.h = normalizeHue_default(Math.atan2(b, a) * 180 / Math.PI);
+        }
+        return ret;
+      }
+      function convertOkhslToOklab(hsl32) {
+        let h = hsl32.h !== void 0 ? hsl32.h : 0;
+        let s = hsl32.s !== void 0 ? hsl32.s : 0;
+        let l = hsl32.l !== void 0 ? hsl32.l : 0;
+        const ret = { mode: "oklab", l: toe_inv(l) };
+        if (hsl32.alpha !== void 0) {
+          ret.alpha = hsl32.alpha;
+        }
+        if (!s || l === 1) {
+          ret.a = ret.b = 0;
+          return ret;
+        }
+        let a_ = Math.cos(h / 180 * Math.PI);
+        let b_ = Math.sin(h / 180 * Math.PI);
+        let [C_0, C_mid, C_max] = get_Cs(ret.l, a_, b_);
+        let t, k_0, k_1, k_2;
+        if (s < 0.8) {
+          t = 1.25 * s;
+          k_0 = 0;
+          k_1 = 0.8 * C_0;
+          k_2 = 1 - k_1 / C_mid;
+        } else {
+          t = 5 * (s - 0.8);
+          k_0 = C_mid;
+          k_1 = 0.2 * C_mid * C_mid * 1.25 * 1.25 / C_0;
+          k_2 = 1 - k_1 / (C_max - C_mid);
+        }
+        let C4 = k_0 + t * k_1 / (1 - k_2 * t);
+        ret.a = C4 * a_;
+        ret.b = C4 * b_;
+        return ret;
+      }
+      var modeOkhsl = __spreadProps(__spreadValues({}, definition_default7), {
+        mode: "okhsl",
+        channels: ["h", "s", "l", "alpha"],
+        parse: ["--okhsl"],
+        serialize: "--okhsl",
+        fromMode: {
+          oklab: convertOklabToOkhsl,
+          rgb: (c2) => convertOklabToOkhsl(convertRgbToOklab_default(c2))
+        },
+        toMode: {
+          oklab: convertOkhslToOklab,
+          rgb: (c2) => convertOklabToRgb_default(convertOkhslToOklab(c2))
+        }
+      });
+      var modeOkhsl_default = modeOkhsl;
+      function convertOklabToOkhsv(lab22) {
+        let l = lab22.l !== void 0 ? lab22.l : 0;
+        let a = lab22.a !== void 0 ? lab22.a : 0;
+        let b = lab22.b !== void 0 ? lab22.b : 0;
+        let c2 = Math.sqrt(a * a + b * b);
+        let a_ = c2 ? a / c2 : 1;
+        let b_ = c2 ? b / c2 : 1;
+        let [S_max, T] = get_ST_max(a_, b_);
+        let S_0 = 0.5;
+        let k4 = 1 - S_0 / S_max;
+        let t = T / (c2 + l * T);
+        let L_v = t * l;
+        let C_v = t * c2;
+        let L_vt = toe_inv(L_v);
+        let C_vt = C_v * L_vt / L_v;
+        let rgb_scale = convertOklabToLrgb_default({ l: L_vt, a: a_ * C_vt, b: b_ * C_vt });
+        let scale_L = Math.cbrt(
+          1 / Math.max(rgb_scale.r, rgb_scale.g, rgb_scale.b, 0)
+        );
+        l = l / scale_L;
+        c2 = c2 / scale_L * toe(l) / l;
+        l = toe(l);
+        const ret = {
+          mode: "okhsv",
+          s: c2 ? (S_0 + T) * C_v / (T * S_0 + T * k4 * C_v) : 0,
+          v: l ? l / L_v : 0
+        };
+        if (ret.s) {
+          ret.h = normalizeHue_default(Math.atan2(b, a) * 180 / Math.PI);
+        }
+        if (lab22.alpha !== void 0) {
+          ret.alpha = lab22.alpha;
+        }
+        return ret;
+      }
+      function convertOkhsvToOklab(hsv2) {
+        const ret = { mode: "oklab" };
+        if (hsv2.alpha !== void 0) {
+          ret.alpha = hsv2.alpha;
+        }
+        const h = hsv2.h !== void 0 ? hsv2.h : 0;
+        const s = hsv2.s !== void 0 ? hsv2.s : 0;
+        const v = hsv2.v !== void 0 ? hsv2.v : 0;
+        const a_ = Math.cos(h / 180 * Math.PI);
+        const b_ = Math.sin(h / 180 * Math.PI);
+        const [S_max, T] = get_ST_max(a_, b_);
+        const S_0 = 0.5;
+        const k4 = 1 - S_0 / S_max;
+        const L_v = 1 - s * S_0 / (S_0 + T - T * k4 * s);
+        const C_v = s * T * S_0 / (S_0 + T - T * k4 * s);
+        const L_vt = toe_inv(L_v);
+        const C_vt = C_v * L_vt / L_v;
+        const rgb_scale = convertOklabToLrgb_default({
+          l: L_vt,
+          a: a_ * C_vt,
+          b: b_ * C_vt
+        });
+        const scale_L = Math.cbrt(
+          1 / Math.max(rgb_scale.r, rgb_scale.g, rgb_scale.b, 0)
+        );
+        const L_new = toe_inv(v * L_v);
+        const C4 = C_v * L_new / L_v;
+        ret.l = L_new * scale_L;
+        ret.a = C4 * a_ * scale_L;
+        ret.b = C4 * b_ * scale_L;
+        return ret;
+      }
+      var modeOkhsv = __spreadProps(__spreadValues({}, definition_default8), {
+        mode: "okhsv",
+        channels: ["h", "s", "v", "alpha"],
+        parse: ["--okhsv"],
+        serialize: "--okhsv",
+        fromMode: {
+          oklab: convertOklabToOkhsv,
+          rgb: (c2) => convertOklabToOkhsv(convertRgbToOklab_default(c2))
+        },
+        toMode: {
+          oklab: convertOkhsvToOklab,
+          rgb: (c2) => convertOklabToRgb_default(convertOkhsvToOklab(c2))
+        }
+      });
+      var modeOkhsv_default = modeOkhsv;
+      function parseOklab(color2, parsed) {
+        if (!parsed || parsed[0] !== "oklab") {
+          return void 0;
+        }
+        const res = { mode: "oklab" };
+        const [, l, a, b, alpha] = parsed;
+        if (l.type === Tok.Hue || a.type === Tok.Hue || b.type === Tok.Hue) {
+          return void 0;
+        }
+        if (l.type !== Tok.None) {
+          res.l = Math.min(
+            Math.max(0, l.type === Tok.Number ? l.value : l.value / 100),
+            1
+          );
+        }
+        if (a.type !== Tok.None) {
+          res.a = a.type === Tok.Number ? a.value : a.value * 0.4 / 100;
+        }
+        if (b.type !== Tok.None) {
+          res.b = b.type === Tok.Number ? b.value : b.value * 0.4 / 100;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
+          );
+        }
+        return res;
+      }
+      var parseOklab_default = parseOklab;
+      var definition20 = __spreadProps(__spreadValues({}, definition_default13), {
+        mode: "oklab",
+        toMode: {
+          lrgb: convertOklabToLrgb_default,
+          rgb: convertOklabToRgb_default
+        },
+        fromMode: {
+          lrgb: convertLrgbToOklab_default,
+          rgb: convertRgbToOklab_default
+        },
+        ranges: {
+          l: [0, 1],
+          a: [-0.4, 0.4],
+          b: [-0.4, 0.4]
+        },
+        parse: [parseOklab_default],
+        serialize: (c2) => `oklab(${c2.l !== void 0 ? c2.l : "none"} ${c2.a !== void 0 ? c2.a : "none"} ${c2.b !== void 0 ? c2.b : "none"}${c2.alpha < 1 ? ` / ${c2.alpha}` : ""})`
+      });
+      var definition_default20 = definition20;
+      function parseOklch(color2, parsed) {
+        if (!parsed || parsed[0] !== "oklch") {
+          return void 0;
+        }
+        const res = { mode: "oklch" };
+        const [, l, c2, h, alpha] = parsed;
+        if (l.type !== Tok.None) {
+          if (l.type === Tok.Hue) {
+            return void 0;
+          }
+          res.l = Math.min(
+            Math.max(0, l.type === Tok.Number ? l.value : l.value / 100),
+            1
+          );
+        }
+        if (c2.type !== Tok.None) {
+          res.c = Math.max(
+            0,
+            c2.type === Tok.Number ? c2.value : c2.value * 0.4 / 100
+          );
+        }
+        if (h.type !== Tok.None) {
+          if (h.type === Tok.Percentage) {
+            return void 0;
+          }
+          res.h = h.value;
+        }
+        if (alpha.type !== Tok.None) {
+          res.alpha = Math.min(
+            1,
+            Math.max(
+              0,
+              alpha.type === Tok.Number ? alpha.value : alpha.value / 100
+            )
+          );
+        }
+        return res;
+      }
+      var parseOklch_default = parseOklch;
+      var definition21 = __spreadProps(__spreadValues({}, definition_default15), {
+        mode: "oklch",
+        toMode: {
+          oklab: (c2) => convertLchToLab_default(c2, "oklab"),
+          rgb: (c2) => convertOklabToRgb_default(convertLchToLab_default(c2, "oklab"))
+        },
+        fromMode: {
+          rgb: (c2) => convertLabToLch_default(convertRgbToOklab_default(c2), "oklch"),
+          oklab: (c2) => convertLabToLch_default(c2, "oklch")
+        },
+        parse: [parseOklch_default],
+        serialize: (c2) => `oklch(${c2.l !== void 0 ? c2.l : "none"} ${c2.c !== void 0 ? c2.c : "none"} ${c2.h !== void 0 ? c2.h : "none"}${c2.alpha < 1 ? ` / ${c2.alpha}` : ""})`,
+        ranges: {
+          l: [0, 1],
+          c: [0, 0.4],
+          h: [0, 360]
+        }
+      });
+      var definition_default21 = definition21;
+      var convertP3ToXyz65 = (rgb5) => {
+        let { r: r2, g, b, alpha } = convertRgbToLrgb_default(rgb5);
+        let res = {
+          mode: "xyz65",
+          x: 0.486570948648216 * r2 + 0.265667693169093 * g + 0.1982172852343625 * b,
+          y: 0.2289745640697487 * r2 + 0.6917385218365062 * g + 0.079286914093745 * b,
+          z: 0 * r2 + 0.0451133818589026 * g + 1.043944368900976 * b
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertP3ToXyz65_default = convertP3ToXyz65;
+      var convertXyz65ToP3 = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = convertLrgbToRgb_default(
+          {
+            r: x * 2.4934969119414263 - y * 0.9313836179191242 - 0.402710784450717 * z,
+            g: x * -0.8294889695615749 + y * 1.7626640603183465 + 0.0236246858419436 * z,
+            b: x * 0.0358458302437845 - y * 0.0761723892680418 + 0.9568845240076871 * z
+          },
+          "p3"
+        );
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToP3_default = convertXyz65ToP3;
+      var definition22 = __spreadProps(__spreadValues({}, definition_default), {
+        mode: "p3",
+        parse: ["display-p3"],
+        serialize: "display-p3",
+        fromMode: {
+          rgb: (color2) => convertXyz65ToP3_default(convertRgbToXyz65_default(color2)),
+          xyz65: convertXyz65ToP3_default
+        },
+        toMode: {
+          rgb: (color2) => convertXyz65ToRgb_default(convertP3ToXyz65_default(color2)),
+          xyz65: convertP3ToXyz65_default
+        }
+      });
+      var definition_default22 = definition22;
+      var gamma22 = (v) => {
+        let abs3 = Math.abs(v);
+        if (abs3 >= 1 / 512) {
+          return Math.sign(v) * Math.pow(abs3, 1 / 1.8);
+        }
+        return 16 * v;
+      };
+      var convertXyz50ToProphoto = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = {
+          mode: "prophoto",
+          r: gamma22(
+            x * 1.3457868816471585 - y * 0.2555720873797946 - 0.0511018649755453 * z
+          ),
+          g: gamma22(
+            x * -0.5446307051249019 + y * 1.5082477428451466 + 0.0205274474364214 * z
+          ),
+          b: gamma22(x * 0 + y * 0 + 1.2119675456389452 * z)
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz50ToProphoto_default = convertXyz50ToProphoto;
+      var linearize2 = (v = 0) => {
+        let abs3 = Math.abs(v);
+        if (abs3 >= 16 / 512) {
+          return Math.sign(v) * Math.pow(abs3, 1.8);
+        }
+        return v / 16;
+      };
+      var convertProphotoToXyz50 = (prophoto2) => {
+        let r2 = linearize2(prophoto2.r);
+        let g = linearize2(prophoto2.g);
+        let b = linearize2(prophoto2.b);
+        let res = {
+          mode: "xyz50",
+          x: 0.7977666449006423 * r2 + 0.1351812974005331 * g + 0.0313477341283922 * b,
+          y: 0.2880748288194013 * r2 + 0.7118352342418731 * g + 899369387256e-16 * b,
+          z: 0 * r2 + 0 * g + 0.8251046025104602 * b
+        };
+        if (prophoto2.alpha !== void 0) {
+          res.alpha = prophoto2.alpha;
+        }
+        return res;
+      };
+      var convertProphotoToXyz50_default = convertProphotoToXyz50;
+      var definition23 = __spreadProps(__spreadValues({}, definition_default), {
+        mode: "prophoto",
+        parse: ["prophoto-rgb"],
+        serialize: "prophoto-rgb",
+        fromMode: {
+          xyz50: convertXyz50ToProphoto_default,
+          rgb: (color2) => convertXyz50ToProphoto_default(convertRgbToXyz50_default(color2))
+        },
+        toMode: {
+          xyz50: convertProphotoToXyz50_default,
+          rgb: (color2) => convertXyz50ToRgb_default(convertProphotoToXyz50_default(color2))
+        }
+      });
+      var definition_default23 = definition23;
+      var \u03B1 = 1.09929682680944;
+      var \u03B2 = 0.018053968510807;
+      var gamma3 = (v) => {
+        const abs3 = Math.abs(v);
+        if (abs3 > \u03B2) {
+          return (Math.sign(v) || 1) * (\u03B1 * Math.pow(abs3, 0.45) - (\u03B1 - 1));
+        }
+        return 4.5 * v;
+      };
+      var convertXyz65ToRec2020 = ({ x, y, z, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = {
+          mode: "rec2020",
+          r: gamma3(
+            x * 1.7166511879712683 - y * 0.3556707837763925 - 0.2533662813736599 * z
+          ),
+          g: gamma3(
+            x * -0.6666843518324893 + y * 1.6164812366349395 + 0.0157685458139111 * z
+          ),
+          b: gamma3(
+            x * 0.0176398574453108 - y * 0.0427706132578085 + 0.9421031212354739 * z
+          )
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToRec2020_default = convertXyz65ToRec2020;
+      var \u03B12 = 1.09929682680944;
+      var \u03B22 = 0.018053968510807;
+      var linearize3 = (v = 0) => {
+        let abs3 = Math.abs(v);
+        if (abs3 < \u03B22 * 4.5) {
+          return v / 4.5;
+        }
+        return (Math.sign(v) || 1) * Math.pow((abs3 + \u03B12 - 1) / \u03B12, 1 / 0.45);
+      };
+      var convertRec2020ToXyz65 = (rec20202) => {
+        let r2 = linearize3(rec20202.r);
+        let g = linearize3(rec20202.g);
+        let b = linearize3(rec20202.b);
+        let res = {
+          mode: "xyz65",
+          x: 0.6369580483012911 * r2 + 0.1446169035862083 * g + 0.1688809751641721 * b,
+          y: 0.262700212011267 * r2 + 0.6779980715188708 * g + 0.059301716469862 * b,
+          z: 0 * r2 + 0.0280726930490874 * g + 1.0609850577107909 * b
+        };
+        if (rec20202.alpha !== void 0) {
+          res.alpha = rec20202.alpha;
+        }
+        return res;
+      };
+      var convertRec2020ToXyz65_default = convertRec2020ToXyz65;
+      var definition24 = __spreadProps(__spreadValues({}, definition_default), {
+        mode: "rec2020",
+        fromMode: {
+          xyz65: convertXyz65ToRec2020_default,
+          rgb: (color2) => convertXyz65ToRec2020_default(convertRgbToXyz65_default(color2))
+        },
+        toMode: {
+          xyz65: convertRec2020ToXyz65_default,
+          rgb: (color2) => convertXyz65ToRgb_default(convertRec2020ToXyz65_default(color2))
+        },
+        parse: ["rec2020"],
+        serialize: "rec2020"
+      });
+      var definition_default24 = definition24;
+      var bias = 0.0037930732552754493;
+      var bias_cbrt = Math.cbrt(bias);
+      var transfer = (v) => Math.cbrt(v) - bias_cbrt;
+      var convertRgbToXyb = (color2) => {
+        const { r: r2, g, b, alpha } = convertRgbToLrgb_default(color2);
+        const l = transfer(0.3 * r2 + 0.622 * g + 0.078 * b + bias);
+        const m = transfer(0.23 * r2 + 0.692 * g + 0.078 * b + bias);
+        const s = transfer(
+          0.2434226892454782 * r2 + 0.2047674442449682 * g + 0.5518098665095535 * b + bias
+        );
+        const res = {
+          mode: "xyb",
+          x: (l - m) / 2,
+          y: (l + m) / 2,
+          /* Apply default chroma from luma (subtract Y from B) */
+          b: s - (l + m) / 2
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertRgbToXyb_default = convertRgbToXyb;
+      var transfer2 = (v) => Math.pow(v + bias_cbrt, 3);
+      var convertXybToRgb = ({ x, y, b, alpha }) => {
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (b === void 0) b = 0;
+        const l = transfer2(x + y) - bias;
+        const m = transfer2(y - x) - bias;
+        const s = transfer2(b + y) - bias;
+        const res = convertLrgbToRgb_default({
+          r: 11.031566904639861 * l - 9.866943908131562 * m - 0.16462299650829934 * s,
+          g: -3.2541473810744237 * l + 4.418770377582723 * m - 0.16462299650829934 * s,
+          b: -3.6588512867136815 * l + 2.7129230459360922 * m + 1.9459282407775895 * s
+        });
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertXybToRgb_default = convertXybToRgb;
+      var definition25 = {
+        mode: "xyb",
+        channels: ["x", "y", "b", "alpha"],
+        parse: ["--xyb"],
+        serialize: "--xyb",
+        toMode: {
+          rgb: convertXybToRgb_default
+        },
+        fromMode: {
+          rgb: convertRgbToXyb_default
+        },
+        ranges: {
+          x: [-0.0154, 0.0281],
+          y: [0, 0.8453],
+          b: [-0.2778, 0.388]
+        },
+        interpolate: {
+          x: interpolatorLinear,
+          y: interpolatorLinear,
+          b: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default25 = definition25;
+      var definition26 = {
+        mode: "xyz50",
+        parse: ["xyz-d50"],
+        serialize: "xyz-d50",
+        toMode: {
+          rgb: convertXyz50ToRgb_default,
+          lab: convertXyz50ToLab_default
+        },
+        fromMode: {
+          rgb: convertRgbToXyz50_default,
+          lab: convertLabToXyz50_default
+        },
+        channels: ["x", "y", "z", "alpha"],
+        ranges: {
+          x: [0, 0.964],
+          y: [0, 0.999],
+          z: [0, 0.825]
+        },
+        interpolate: {
+          x: interpolatorLinear,
+          y: interpolatorLinear,
+          z: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default26 = definition26;
+      var convertXyz65ToXyz50 = (xyz652) => {
+        let { x, y, z, alpha } = xyz652;
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = {
+          mode: "xyz50",
+          x: 1.0479298208405488 * x + 0.0229467933410191 * y - 0.0501922295431356 * z,
+          y: 0.0296278156881593 * x + 0.990434484573249 * y - 0.0170738250293851 * z,
+          z: -0.0092430581525912 * x + 0.0150551448965779 * y + 0.7518742899580008 * z
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz65ToXyz50_default = convertXyz65ToXyz50;
+      var convertXyz50ToXyz65 = (xyz502) => {
+        let { x, y, z, alpha } = xyz502;
+        if (x === void 0) x = 0;
+        if (y === void 0) y = 0;
+        if (z === void 0) z = 0;
+        let res = {
+          mode: "xyz65",
+          x: 0.9554734527042182 * x - 0.0230985368742614 * y + 0.0632593086610217 * z,
+          y: -0.0283697069632081 * x + 1.0099954580058226 * y + 0.021041398966943 * z,
+          z: 0.0123140016883199 * x - 0.0205076964334779 * y + 1.3303659366080753 * z
+        };
+        if (alpha !== void 0) {
+          res.alpha = alpha;
+        }
+        return res;
+      };
+      var convertXyz50ToXyz65_default = convertXyz50ToXyz65;
+      var definition27 = {
+        mode: "xyz65",
+        toMode: {
+          rgb: convertXyz65ToRgb_default,
+          xyz50: convertXyz65ToXyz50_default
+        },
+        fromMode: {
+          rgb: convertRgbToXyz65_default,
+          xyz50: convertXyz50ToXyz65_default
+        },
+        ranges: {
+          x: [0, 0.95],
+          y: [0, 1],
+          z: [0, 1.088]
+        },
+        channels: ["x", "y", "z", "alpha"],
+        parse: ["xyz", "xyz-d65"],
+        serialize: "xyz-d65",
+        interpolate: {
+          x: interpolatorLinear,
+          y: interpolatorLinear,
+          z: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default27 = definition27;
+      var convertRgbToYiq = ({ r: r2, g, b, alpha }) => {
+        if (r2 === void 0) r2 = 0;
+        if (g === void 0) g = 0;
+        if (b === void 0) b = 0;
+        const res = {
+          mode: "yiq",
+          y: 0.29889531 * r2 + 0.58662247 * g + 0.11448223 * b,
+          i: 0.59597799 * r2 - 0.2741761 * g - 0.32180189 * b,
+          q: 0.21147017 * r2 - 0.52261711 * g + 0.31114694 * b
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertRgbToYiq_default = convertRgbToYiq;
+      var convertYiqToRgb = ({ y, i, q, alpha }) => {
+        if (y === void 0) y = 0;
+        if (i === void 0) i = 0;
+        if (q === void 0) q = 0;
+        const res = {
+          mode: "rgb",
+          r: y + 0.95608445 * i + 0.6208885 * q,
+          g: y - 0.27137664 * i - 0.6486059 * q,
+          b: y - 1.10561724 * i + 1.70250126 * q
+        };
+        if (alpha !== void 0) res.alpha = alpha;
+        return res;
+      };
+      var convertYiqToRgb_default = convertYiqToRgb;
+      var definition28 = {
+        mode: "yiq",
+        toMode: {
+          rgb: convertYiqToRgb_default
+        },
+        fromMode: {
+          rgb: convertRgbToYiq_default
+        },
+        channels: ["y", "i", "q", "alpha"],
+        parse: ["--yiq"],
+        serialize: "--yiq",
+        ranges: {
+          i: [-0.595, 0.595],
+          q: [-0.522, 0.522]
+        },
+        interpolate: {
+          y: interpolatorLinear,
+          i: interpolatorLinear,
+          q: interpolatorLinear,
+          alpha: { use: interpolatorLinear, fixup: fixupAlpha }
+        }
+      };
+      var definition_default28 = definition28;
+      var r = (value, precision) => Math.round(value * (precision = Math.pow(10, precision))) / precision;
+      var round = (precision = 4) => (value) => typeof value === "number" ? r(value, precision) : value;
+      var round_default2 = round;
+      var twoDecimals = round_default2(2);
+      var clamp = (value) => Math.max(0, Math.min(1, value || 0));
+      var fixup = (value) => Math.round(clamp(value) * 255);
+      var rgb2 = converter_default("rgb");
+      var hsl3 = converter_default("hsl");
+      var serializeHex = (color2) => {
+        if (color2 === void 0) {
+          return void 0;
+        }
+        let r2 = fixup(color2.r);
+        let g = fixup(color2.g);
+        let b = fixup(color2.b);
+        return "#" + (1 << 24 | r2 << 16 | g << 8 | b).toString(16).slice(1);
+      };
+      var serializeHex8 = (color2) => {
+        if (color2 === void 0) {
+          return void 0;
+        }
+        let a = fixup(color2.alpha !== void 0 ? color2.alpha : 1);
+        return serializeHex(color2) + (1 << 8 | a).toString(16).slice(1);
+      };
+      var serializeRgb = (color2) => {
+        if (color2 === void 0) {
+          return void 0;
+        }
+        let r2 = fixup(color2.r);
+        let g = fixup(color2.g);
+        let b = fixup(color2.b);
+        if (color2.alpha === void 0 || color2.alpha === 1) {
+          return `rgb(${r2}, ${g}, ${b})`;
+        } else {
+          return `rgba(${r2}, ${g}, ${b}, ${twoDecimals(clamp(color2.alpha))})`;
+        }
+      };
+      var serializeHsl = (color2) => {
+        if (color2 === void 0) {
+          return void 0;
+        }
+        const h = twoDecimals(color2.h || 0);
+        const s = twoDecimals(clamp(color2.s) * 100) + "%";
+        const l = twoDecimals(clamp(color2.l) * 100) + "%";
+        if (color2.alpha === void 0 || color2.alpha === 1) {
+          return `hsl(${h}, ${s}, ${l})`;
+        } else {
+          return `hsla(${h}, ${s}, ${l}, ${twoDecimals(clamp(color2.alpha))})`;
+        }
+      };
+      var formatCss = (c2) => {
+        const color2 = prepare_default(c2);
+        if (!color2) {
+          return void 0;
+        }
+        const def = getMode(color2.mode);
+        if (!def.serialize || typeof def.serialize === "string") {
+          let res = `color(${def.serialize || `--${color2.mode}`} `;
+          def.channels.forEach((ch, i) => {
+            if (ch !== "alpha") {
+              res += (i ? " " : "") + (color2[ch] !== void 0 ? color2[ch] : "none");
+            }
+          });
+          if (color2.alpha !== void 0 && color2.alpha < 1) {
+            res += ` / ${color2.alpha}`;
+          }
+          return res + ")";
+        }
+        if (typeof def.serialize === "function") {
+          return def.serialize(color2);
+        }
+        return void 0;
+      };
+      var formatHex = (c2) => serializeHex(rgb2(c2));
+      var formatHex8 = (c2) => serializeHex8(rgb2(c2));
+      var formatRgb = (c2) => serializeRgb(rgb2(c2));
+      var formatHsl = (c2) => serializeHsl(hsl3(c2));
+      var BLENDS = {
+        normal: (b, s) => s,
+        multiply: (b, s) => b * s,
+        screen: (b, s) => b + s - b * s,
+        "hard-light": (b, s) => s < 0.5 ? b * 2 * s : 2 * s * (1 - b) - 1,
+        overlay: (b, s) => b < 0.5 ? s * 2 * b : 2 * b * (1 - s) - 1,
+        darken: (b, s) => Math.min(b, s),
+        lighten: (b, s) => Math.max(b, s),
+        "color-dodge": (b, s) => b === 0 ? 0 : s === 1 ? 1 : Math.min(1, b / (1 - s)),
+        "color-burn": (b, s) => b === 1 ? 1 : s === 0 ? 0 : 1 - Math.min(1, (1 - b) / s),
+        "soft-light": (b, s) => s < 0.5 ? b - (1 - 2 * s) * b * (1 - b) : b + (2 * s - 1) * ((b < 0.25 ? ((16 * b - 12) * b + 4) * b : Math.sqrt(b)) - b),
+        difference: (b, s) => Math.abs(b - s),
+        exclusion: (b, s) => b + s - 2 * b * s
+      };
+      var blend = (colors, type = "normal", mode = "rgb") => {
+        let fn5 = typeof type === "function" ? type : BLENDS[type];
+        let conv = converter_default(mode);
+        let channels = getMode(mode).channels;
+        let converted = colors.map((c2) => {
+          let cc = conv(c2);
+          if (cc.alpha === void 0) {
+            cc.alpha = 1;
+          }
+          return cc;
+        });
+        return converted.reduce((b, s) => {
+          if (b === void 0) return s;
+          let alpha = s.alpha + b.alpha * (1 - s.alpha);
+          return channels.reduce(
+            (res, ch) => {
+              if (ch !== "alpha") {
+                if (alpha === 0) {
+                  res[ch] = 0;
+                } else {
+                  res[ch] = s.alpha * (1 - b.alpha) * s[ch] + s.alpha * b.alpha * fn5(b[ch], s[ch]) + (1 - s.alpha) * b.alpha * b[ch];
+                  res[ch] = Math.max(0, Math.min(1, res[ch] / alpha));
+                }
+              }
+              return res;
+            },
+            { mode, alpha }
+          );
+        });
+      };
+      var blend_default = blend;
+      var rand = ([min2, max]) => min2 + Math.random() * (max - min2);
+      var to_intervals = (constraints) => Object.keys(constraints).reduce((o, k4) => {
+        let v = constraints[k4];
+        o[k4] = Array.isArray(v) ? v : [v, v];
+        return o;
+      }, {});
+      var random = (mode = "rgb", constraints = {}) => {
+        let def = getMode(mode);
+        let limits = to_intervals(constraints);
+        return def.channels.reduce(
+          (res, ch) => {
+            if (limits.alpha || ch !== "alpha") {
+              res[ch] = rand(limits[ch] || def.ranges[ch]);
+            }
+            return res;
+          },
+          { mode }
+        );
+      };
+      var random_default = random;
+      var mapper = (fn5, mode = "rgb", preserve_mode = false) => {
+        let channels = mode ? getMode(mode).channels : null;
+        let conv = mode ? converter_default(mode) : prepare_default;
+        return (color2) => {
+          let conv_color = conv(color2);
+          if (!conv_color) {
+            return void 0;
+          }
+          let res = (channels || getMode(conv_color.mode).channels).reduce(
+            (res2, ch) => {
+              let v = fn5(conv_color[ch], ch, conv_color, mode);
+              if (v !== void 0 && !isNaN(v)) {
+                res2[ch] = v;
+              }
+              return res2;
+            },
+            { mode: conv_color.mode }
+          );
+          if (!preserve_mode) {
+            return res;
+          }
+          let prep = prepare_default(color2);
+          if (prep && prep.mode !== res.mode) {
+            return converter_default(prep.mode)(res);
+          }
+          return res;
+        };
+      };
+      var mapAlphaMultiply = (v, ch, c2) => {
+        if (ch !== "alpha") {
+          return (v || 0) * (c2.alpha !== void 0 ? c2.alpha : 1);
+        }
+        return v;
+      };
+      var mapAlphaDivide = (v, ch, c2) => {
+        if (ch !== "alpha" && c2.alpha !== 0) {
+          return (v || 0) / (c2.alpha !== void 0 ? c2.alpha : 1);
+        }
+        return v;
+      };
+      var mapTransferLinear = (slope = 1, intercept = 0) => (v, ch) => {
+        if (ch !== "alpha") {
+          return v * slope + intercept;
+        }
+        return v;
+      };
+      var mapTransferGamma = (amplitude = 1, exponent = 1, offset = 0) => (v, ch) => {
+        if (ch !== "alpha") {
+          return amplitude * Math.pow(v, exponent) + offset;
+        }
+        return v;
+      };
+      var normalizePositions = (arr) => {
+        if (arr[0] === void 0) {
+          arr[0] = 0;
+        }
+        if (arr[arr.length - 1] === void 0) {
+          arr[arr.length - 1] = 1;
+        }
+        let i = 1;
+        let j;
+        let from_idx;
+        let from_pos;
+        let inc;
+        while (i < arr.length) {
+          if (arr[i] === void 0) {
+            from_idx = i;
+            from_pos = arr[i - 1];
+            j = i;
+            while (arr[j] === void 0) j++;
+            inc = (arr[j] - from_pos) / (j - i + 1);
+            while (i < j) {
+              arr[i] = from_pos + (i + 1 - from_idx) * inc;
+              i++;
+            }
+          } else if (arr[i] < arr[i - 1]) {
+            arr[i] = arr[i - 1];
+          }
+          i++;
+        }
+        return arr;
+      };
+      var normalizePositions_default = normalizePositions;
+      var midpoint = (H = 0.5) => (t) => H <= 0 ? 1 : H >= 1 ? 0 : Math.pow(t, Math.log(0.5) / Math.log(H));
+      var midpoint_default = midpoint;
+      var isfn2 = (o) => typeof o === "function";
+      var isobj = (o) => o && typeof o === "object";
+      var isnum = (o) => typeof o === "number";
+      var interpolate_fn = (colors, mode = "rgb", overrides, premap) => {
+        let def = getMode(mode);
+        let conv = converter_default(mode);
+        let conv_colors = [];
+        let positions = [];
+        let fns = {};
+        colors.forEach((val) => {
+          if (Array.isArray(val)) {
+            conv_colors.push(conv(val[0]));
+            positions.push(val[1]);
+          } else if (isnum(val) || isfn2(val)) {
+            fns[positions.length] = val;
+          } else {
+            conv_colors.push(conv(val));
+            positions.push(void 0);
+          }
+        });
+        normalizePositions_default(positions);
+        let fixed = def.channels.reduce((res, ch) => {
+          let ffn;
+          if (isobj(overrides) && isobj(overrides[ch]) && overrides[ch].fixup) {
+            ffn = overrides[ch].fixup;
+          } else if (isobj(def.interpolate[ch]) && def.interpolate[ch].fixup) {
+            ffn = def.interpolate[ch].fixup;
+          } else {
+            ffn = (v) => v;
+          }
+          res[ch] = ffn(conv_colors.map((color2) => color2[ch]));
+          return res;
+        }, {});
+        if (premap) {
+          let ccolors = conv_colors.map((color2, idx) => {
+            return def.channels.reduce(
+              (c2, ch) => {
+                c2[ch] = fixed[ch][idx];
+                return c2;
+              },
+              { mode }
+            );
+          });
+          fixed = def.channels.reduce((res, ch) => {
+            res[ch] = ccolors.map((c2) => {
+              let v = premap(c2[ch], ch, c2, mode);
+              return isNaN(v) ? void 0 : v;
+            });
+            return res;
+          }, {});
+        }
+        let interpolators = def.channels.reduce((res, ch) => {
+          let ifn;
+          if (isfn2(overrides)) {
+            ifn = overrides;
+          } else if (isobj(overrides) && isfn2(overrides[ch])) {
+            ifn = overrides[ch];
+          } else if (isobj(overrides) && isobj(overrides[ch]) && overrides[ch].use) {
+            ifn = overrides[ch].use;
+          } else if (isfn2(def.interpolate[ch])) {
+            ifn = def.interpolate[ch];
+          } else if (isobj(def.interpolate[ch])) {
+            ifn = def.interpolate[ch].use;
+          }
+          res[ch] = ifn(fixed[ch]);
+          return res;
+        }, {});
+        let n = conv_colors.length - 1;
+        return (t) => {
+          t = Math.min(Math.max(0, t), 1);
+          if (t <= positions[0]) {
+            return conv_colors[0];
+          }
+          if (t > positions[n]) {
+            return conv_colors[n];
+          }
+          let idx = 0;
+          while (positions[idx] < t) idx++;
+          let start = positions[idx - 1];
+          let delta = positions[idx] - start;
+          let P = (t - start) / delta;
+          let fn5 = fns[idx] || fns[0];
+          if (fn5 !== void 0) {
+            if (isnum(fn5)) {
+              fn5 = midpoint_default((fn5 - start) / delta);
+            }
+            P = fn5(P);
+          }
+          let t02 = (idx - 1 + P) / n;
+          return def.channels.reduce(
+            (res, channel) => {
+              let val = interpolators[channel](t02);
+              if (val !== void 0) {
+                res[channel] = val;
+              }
+              return res;
+            },
+            { mode }
+          );
+        };
+      };
+      var interpolate = (colors, mode = "rgb", overrides) => interpolate_fn(colors, mode, overrides);
+      var interpolateWith = (premap, postmap) => (colors, mode = "rgb", overrides) => {
+        let post = postmap ? mapper(postmap, mode) : void 0;
+        let it = interpolate_fn(colors, mode, overrides, premap);
+        return post ? (t) => post(it(t)) : it;
+      };
+      var interpolateWithPremultipliedAlpha = interpolateWith(
+        mapAlphaMultiply,
+        mapAlphaDivide
+      );
+      var mod2 = (v, l) => (v + l) % l;
+      var bspline = (Vim2, Vim1, Vi, Vip1, t) => {
+        let t22 = t * t;
+        let t32 = t22 * t;
+        return ((1 - 3 * t + 3 * t22 - t32) * Vim2 + (4 - 6 * t22 + 3 * t32) * Vim1 + (1 + 3 * t + 3 * t22 - 3 * t32) * Vi + t32 * Vip1) / 6;
+      };
+      var interpolatorSplineBasis = (arr) => (t) => {
+        let classes = arr.length - 1;
+        let i = t >= 1 ? classes - 1 : Math.max(0, Math.floor(t * classes));
+        return bspline(
+          i > 0 ? arr[i - 1] : 2 * arr[i] - arr[i + 1],
+          arr[i],
+          arr[i + 1],
+          i < classes - 1 ? arr[i + 2] : 2 * arr[i + 1] - arr[i],
+          (t - i / classes) * classes
+        );
+      };
+      var interpolatorSplineBasisClosed = (arr) => (t) => {
+        const classes = arr.length - 1;
+        const i = Math.floor(t * classes);
+        return bspline(
+          arr[mod2(i - 1, arr.length)],
+          arr[mod2(i, arr.length)],
+          arr[mod2(i + 1, arr.length)],
+          arr[mod2(i + 2, arr.length)],
+          (t - i / classes) * classes
+        );
+      };
+      var solve = (v) => {
+        let i;
+        let n = v.length - 1;
+        let c2 = new Array(n);
+        let _v = new Array(n);
+        let sol = new Array(n);
+        c2[1] = 1 / 4;
+        _v[1] = (6 * v[1] - v[0]) / 4;
+        for (i = 2; i < n; ++i) {
+          c2[i] = 1 / (4 - c2[i - 1]);
+          _v[i] = (6 * v[i] - (i == n - 1 ? v[n] : 0) - _v[i - 1]) * c2[i];
+        }
+        sol[0] = v[0];
+        sol[n] = v[n];
+        if (n - 1 > 0) {
+          sol[n - 1] = _v[n - 1];
+        }
+        for (i = n - 2; i > 0; --i) {
+          sol[i] = _v[i] - c2[i] * sol[i + 1];
+        }
+        return sol;
+      };
+      var interpolatorSplineNatural = (arr) => interpolatorSplineBasis(solve(arr));
+      var interpolatorSplineNaturalClosed = (arr) => interpolatorSplineBasisClosed(solve(arr));
+      var sgn = Math.sign;
+      var min = Math.min;
+      var abs2 = Math.abs;
+      var mono = (arr) => {
+        let n = arr.length - 1;
+        let s = [];
+        let p4 = [];
+        let yp = [];
+        for (let i = 0; i < n; i++) {
+          s.push((arr[i + 1] - arr[i]) * n);
+          p4.push(i > 0 ? 0.5 * (arr[i + 1] - arr[i - 1]) * n : void 0);
+          yp.push(
+            i > 0 ? (sgn(s[i - 1]) + sgn(s[i])) * min(abs2(s[i - 1]), abs2(s[i]), 0.5 * abs2(p4[i])) : void 0
+          );
+        }
+        return [s, p4, yp];
+      };
+      var interpolator = (arr, yp, s) => {
+        let n = arr.length - 1;
+        let n2 = n * n;
+        return (t) => {
+          let i;
+          if (t >= 1) {
+            i = n - 1;
+          } else {
+            i = Math.max(0, Math.floor(t * n));
+          }
+          let t12 = t - i / n;
+          let t22 = t12 * t12;
+          let t32 = t22 * t12;
+          return (yp[i] + yp[i + 1] - 2 * s[i]) * n2 * t32 + (3 * s[i] - 2 * yp[i] - yp[i + 1]) * n * t22 + yp[i] * t12 + arr[i];
+        };
+      };
+      var interpolatorSplineMonotone = (arr) => {
+        if (arr.length < 3) {
+          return interpolatorLinear(arr);
+        }
+        let n = arr.length - 1;
+        let [s, , yp] = mono(arr);
+        yp[0] = s[0];
+        yp[n] = s[n - 1];
+        return interpolator(arr, yp, s);
+      };
+      var interpolatorSplineMonotone2 = (arr) => {
+        if (arr.length < 3) {
+          return interpolatorLinear(arr);
+        }
+        let n = arr.length - 1;
+        let [s, p4, yp] = mono(arr);
+        p4[0] = (arr[1] * 2 - arr[0] * 1.5 - arr[2] * 0.5) * n;
+        p4[n] = (arr[n] * 1.5 - arr[n - 1] * 2 + arr[n - 2] * 0.5) * n;
+        yp[0] = p4[0] * s[0] <= 0 ? 0 : abs2(p4[0]) > 2 * abs2(s[0]) ? 2 * s[0] : p4[0];
+        yp[n] = p4[n] * s[n - 1] <= 0 ? 0 : abs2(p4[n]) > 2 * abs2(s[n - 1]) ? 2 * s[n - 1] : p4[n];
+        return interpolator(arr, yp, s);
+      };
+      var interpolatorSplineMonotoneClosed = (arr) => {
+        let n = arr.length - 1;
+        let [s, p4, yp] = mono(arr);
+        p4[0] = 0.5 * (arr[1] - arr[n]) * n;
+        p4[n] = 0.5 * (arr[0] - arr[n - 1]) * n;
+        let s_m1 = (arr[0] - arr[n]) * n;
+        let s_n = s_m1;
+        yp[0] = (sgn(s_m1) + sgn(s[0])) * min(abs2(s_m1), abs2(s[0]), 0.5 * abs2(p4[0]));
+        yp[n] = (sgn(s[n - 1]) + sgn(s_n)) * min(abs2(s[n - 1]), abs2(s_n), 0.5 * abs2(p4[n]));
+        return interpolator(arr, yp, s);
+      };
+      var gamma4 = (\u03B3 = 1) => \u03B3 === 1 ? (t) => t : (t) => Math.pow(t, \u03B3);
+      var gamma_default = gamma4;
+      var samples = (n = 2, \u03B3 = 1) => {
+        let ease = gamma_default(\u03B3);
+        if (n < 2) {
+          return n < 1 ? [] : [ease(0.5)];
+        }
+        let res = [];
+        for (let i = 0; i < n; i++) {
+          res.push(ease(i / (n - 1)));
+        }
+        return res;
+      };
+      var samples_default = samples;
+      var rgb22 = converter_default("rgb");
+      var fixup_rgb = (c2) => {
+        const res = {
+          mode: c2.mode,
+          r: Math.max(0, Math.min(c2.r !== void 0 ? c2.r : 0, 1)),
+          g: Math.max(0, Math.min(c2.g !== void 0 ? c2.g : 0, 1)),
+          b: Math.max(0, Math.min(c2.b !== void 0 ? c2.b : 0, 1))
+        };
+        if (c2.alpha !== void 0) {
+          res.alpha = c2.alpha;
+        }
+        return res;
+      };
+      var to_displayable_srgb = (c2) => fixup_rgb(rgb22(c2));
+      var inrange_rgb = (c2) => {
+        return c2 !== void 0 && (c2.r === void 0 || c2.r >= 0 && c2.r <= 1) && (c2.g === void 0 || c2.g >= 0 && c2.g <= 1) && (c2.b === void 0 || c2.b >= 0 && c2.b <= 1);
+      };
+      function displayable(color2) {
+        return inrange_rgb(rgb22(color2));
+      }
+      function inGamut(mode = "rgb") {
+        const { gamut } = getMode(mode);
+        if (!gamut) {
+          return (color2) => true;
+        }
+        const conv = converter_default(typeof gamut === "string" ? gamut : mode);
+        return (color2) => inrange_rgb(conv(color2));
+      }
+      function clampRgb(color2) {
+        color2 = prepare_default(color2);
+        if (color2 === void 0 || displayable(color2)) return color2;
+        let conv = converter_default(color2.mode);
+        return conv(to_displayable_srgb(color2));
+      }
+      function clampGamut(mode = "rgb") {
+        const { gamut } = getMode(mode);
+        if (!gamut) {
+          return (color2) => prepare_default(color2);
+        }
+        const destMode = typeof gamut === "string" ? gamut : mode;
+        const destConv = converter_default(destMode);
+        const inDestGamut = inGamut(destMode);
+        return (color2) => {
+          const original = prepare_default(color2);
+          if (!original) {
+            return void 0;
+          }
+          const converted = destConv(original);
+          if (inDestGamut(converted)) {
+            return original;
+          }
+          const clamped = fixup_rgb(converted);
+          if (original.mode === clamped.mode) {
+            return clamped;
+          }
+          return converter_default(original.mode)(clamped);
         };
       }
-      color_default = Color;
+      function clampChroma(color2, mode = "lch", rgbGamut = "rgb") {
+        color2 = prepare_default(color2);
+        let inDestinationGamut = rgbGamut === "rgb" ? displayable : inGamut(rgbGamut);
+        let clipToGamut = rgbGamut === "rgb" ? to_displayable_srgb : clampGamut(rgbGamut);
+        if (color2 === void 0 || inDestinationGamut(color2)) return color2;
+        let conv = converter_default(color2.mode);
+        color2 = converter_default(mode)(color2);
+        let clamped = __spreadProps(__spreadValues({}, color2), { c: 0 });
+        if (!inDestinationGamut(clamped)) {
+          return conv(clipToGamut(clamped));
+        }
+        let start = 0;
+        let end = color2.c !== void 0 ? color2.c : 0;
+        let range = getMode(mode).ranges.c;
+        let resolution = (range[1] - range[0]) / Math.pow(2, 13);
+        let _last_good_c = clamped.c;
+        while (end - start > resolution) {
+          clamped.c = start + (end - start) * 0.5;
+          if (inDestinationGamut(clamped)) {
+            _last_good_c = clamped.c;
+            start = clamped.c;
+          } else {
+            end = clamped.c;
+          }
+        }
+        return conv(
+          inDestinationGamut(clamped) ? clamped : __spreadProps(__spreadValues({}, clamped), { c: _last_good_c })
+        );
+      }
+      function toGamut(dest = "rgb", mode = "oklch", delta = differenceEuclidean("oklch"), jnd = 0.02) {
+        const destConv = converter_default(dest);
+        const destMode = getMode(dest);
+        if (!destMode.gamut) {
+          return (color2) => destConv(color2);
+        }
+        const inDestinationGamut = inGamut(dest);
+        const clipToGamut = clampGamut(dest);
+        const ucs = converter_default(mode);
+        const { ranges } = getMode(mode);
+        if (!ranges.l || !ranges.c) {
+          throw new Error("LCH-like space expected");
+        }
+        return (color2) => {
+          color2 = prepare_default(color2);
+          if (color2 === void 0) {
+            return void 0;
+          }
+          const candidate = __spreadValues({}, ucs(color2));
+          if (candidate.l === void 0) candidate.l = 0;
+          if (candidate.c === void 0) candidate.c = 0;
+          if (candidate.l >= ranges.l[1]) {
+            const res = __spreadProps(__spreadValues({}, destMode.white), { mode: dest });
+            if (color2.alpha !== void 0) {
+              res.alpha = color2.alpha;
+            }
+            return res;
+          }
+          if (candidate.l <= ranges.l[0]) {
+            const res = __spreadProps(__spreadValues({}, destMode.black), { mode: dest });
+            if (color2.alpha !== void 0) {
+              res.alpha = color2.alpha;
+            }
+            return res;
+          }
+          if (inDestinationGamut(candidate)) {
+            return destConv(candidate);
+          }
+          let start = 0;
+          let end = candidate.c;
+          let epsilon = (ranges.c[1] - ranges.c[0]) / 4e3;
+          let clipped = clipToGamut(candidate);
+          while (end - start > epsilon) {
+            candidate.c = (start + end) * 0.5;
+            clipped = clipToGamut(candidate);
+            if (inDestinationGamut(candidate) || delta && jnd > 0 && delta(candidate, clipped) <= jnd) {
+              start = candidate.c;
+            } else {
+              end = candidate.c;
+            }
+          }
+          return destConv(inDestinationGamut(candidate) ? candidate : clipped);
+        };
+      }
+      var nearest = (colors, metric = differenceEuclidean(), accessor = (d) => d) => {
+        let arr = colors.map((c2, idx) => ({ color: accessor(c2), i: idx }));
+        return (color2, n = 1, \u03C4 = Infinity) => {
+          if (isFinite(n)) {
+            n = Math.max(1, Math.min(n, arr.length - 1));
+          }
+          arr.forEach((c2) => {
+            c2.d = metric(color2, c2.color);
+          });
+          return arr.sort((a, b) => a.d - b.d).slice(0, n).filter((c2) => c2.d < \u03C4).map((c2) => colors[c2.i]);
+        };
+      };
+      var nearest_default = nearest;
+      var minzero = (v) => Math.max(v, 0);
+      var clamp2 = (v) => Math.max(Math.min(v, 1), 0);
+      var lerp2 = (a, b, t) => a === void 0 || b === void 0 ? void 0 : a + t * (b - a);
+      var matrixSepia = (amount) => {
+        let a = 1 - clamp2(amount);
+        return [
+          0.393 + 0.607 * a,
+          0.769 - 0.769 * a,
+          0.189 - 0.189 * a,
+          0,
+          0.349 - 0.349 * a,
+          0.686 + 0.314 * a,
+          0.168 - 0.168 * a,
+          0,
+          0.272 - 0.272 * a,
+          0.534 - 0.534 * a,
+          0.131 + 0.869 * a,
+          0,
+          0,
+          0,
+          0,
+          1
+        ];
+      };
+      var matrixSaturate = (sat) => {
+        let s = minzero(sat);
+        return [
+          0.213 + 0.787 * s,
+          0.715 - 0.715 * s,
+          0.072 - 0.072 * s,
+          0,
+          0.213 - 0.213 * s,
+          0.715 + 0.285 * s,
+          0.072 - 0.072 * s,
+          0,
+          0.213 - 0.213 * s,
+          0.715 - 0.715 * s,
+          0.072 + 0.928 * s,
+          0,
+          0,
+          0,
+          0,
+          1
+        ];
+      };
+      var matrixGrayscale = (amount) => {
+        let a = 1 - clamp2(amount);
+        return [
+          0.2126 + 0.7874 * a,
+          0.7152 - 0.7152 * a,
+          0.0722 - 0.0722 * a,
+          0,
+          0.2126 - 0.2126 * a,
+          0.7152 + 0.2848 * a,
+          0.0722 - 0.0722 * a,
+          0,
+          0.2126 - 0.2126 * a,
+          0.7152 - 0.7152 * a,
+          0.0722 + 0.9278 * a,
+          0,
+          0,
+          0,
+          0,
+          1
+        ];
+      };
+      var matrixHueRotate = (degrees3) => {
+        let rad = Math.PI * degrees3 / 180;
+        let c2 = Math.cos(rad);
+        let s = Math.sin(rad);
+        return [
+          0.213 + c2 * 0.787 - s * 0.213,
+          0.715 - c2 * 0.715 - s * 0.715,
+          0.072 - c2 * 0.072 + s * 0.928,
+          0,
+          0.213 - c2 * 0.213 + s * 0.143,
+          0.715 + c2 * 0.285 + s * 0.14,
+          0.072 - c2 * 0.072 - s * 0.283,
+          0,
+          0.213 - c2 * 0.213 - s * 0.787,
+          0.715 - c2 * 0.715 + s * 0.715,
+          0.072 + c2 * 0.928 + s * 0.072,
+          0,
+          0,
+          0,
+          0,
+          1
+        ];
+      };
+      var matrix = (values, mode, preserve_mode = false) => {
+        let conv = converter_default(mode);
+        let channels = getMode(mode).channels;
+        return (color2) => {
+          let c2 = conv(color2);
+          if (!c2) {
+            return void 0;
+          }
+          let res = { mode };
+          let ch;
+          let count = channels.length;
+          for (let i = 0; i < values.length; i++) {
+            ch = channels[Math.floor(i / count)];
+            if (c2[ch] === void 0) {
+              continue;
+            }
+            res[ch] = (res[ch] || 0) + values[i] * (c2[channels[i % count]] || 0);
+          }
+          if (!preserve_mode) {
+            return res;
+          }
+          let prep = prepare_default(color2);
+          return prep && res.mode !== prep.mode ? converter_default(prep.mode)(res) : res;
+        };
+      };
+      var filterBrightness = (amt = 1, mode = "rgb") => {
+        let a = minzero(amt);
+        return mapper(mapTransferLinear(a), mode, true);
+      };
+      var filterContrast = (amt = 1, mode = "rgb") => {
+        let a = minzero(amt);
+        return mapper(mapTransferLinear(a, (1 - a) / 2), mode, true);
+      };
+      var filterSepia = (amt = 1, mode = "rgb") => matrix(matrixSepia(amt), mode, true);
+      var filterSaturate = (amt = 1, mode = "rgb") => matrix(matrixSaturate(amt), mode, true);
+      var filterGrayscale = (amt = 1, mode = "rgb") => matrix(matrixGrayscale(amt), mode, true);
+      var filterInvert = (amt = 1, mode = "rgb") => {
+        let a = clamp2(amt);
+        return mapper(
+          (v, ch) => ch === "alpha" ? v : lerp2(a, 1 - a, v),
+          mode,
+          true
+        );
+      };
+      var filterHueRotate = (deg = 0, mode = "rgb") => matrix(matrixHueRotate(deg), mode, true);
+      var rgb3 = converter_default("rgb");
+      var PROT = [
+        [1, 0, -0, 0, 1, 0, -0, -0, 1],
+        [
+          0.856167,
+          0.182038,
+          -0.038205,
+          0.029342,
+          0.955115,
+          0.015544,
+          -288e-5,
+          -1563e-6,
+          1.004443
+        ],
+        [
+          0.734766,
+          0.334872,
+          -0.069637,
+          0.05184,
+          0.919198,
+          0.028963,
+          -4928e-6,
+          -4209e-6,
+          1.009137
+        ],
+        [
+          0.630323,
+          0.465641,
+          -0.095964,
+          0.069181,
+          0.890046,
+          0.040773,
+          -6308e-6,
+          -7724e-6,
+          1.014032
+        ],
+        [
+          0.539009,
+          0.579343,
+          -0.118352,
+          0.082546,
+          0.866121,
+          0.051332,
+          -7136e-6,
+          -0.011959,
+          1.019095
+        ],
+        [
+          0.458064,
+          0.679578,
+          -0.137642,
+          0.092785,
+          0.846313,
+          0.060902,
+          -7494e-6,
+          -0.016807,
+          1.024301
+        ],
+        [
+          0.38545,
+          0.769005,
+          -0.154455,
+          0.100526,
+          0.829802,
+          0.069673,
+          -7442e-6,
+          -0.02219,
+          1.029632
+        ],
+        [
+          0.319627,
+          0.849633,
+          -0.169261,
+          0.106241,
+          0.815969,
+          0.07779,
+          -7025e-6,
+          -0.028051,
+          1.035076
+        ],
+        [
+          0.259411,
+          0.923008,
+          -0.18242,
+          0.110296,
+          0.80434,
+          0.085364,
+          -6276e-6,
+          -0.034346,
+          1.040622
+        ],
+        [
+          0.203876,
+          0.990338,
+          -0.194214,
+          0.112975,
+          0.794542,
+          0.092483,
+          -5222e-6,
+          -0.041043,
+          1.046265
+        ],
+        [
+          0.152286,
+          1.052583,
+          -0.204868,
+          0.114503,
+          0.786281,
+          0.099216,
+          -3882e-6,
+          -0.048116,
+          1.051998
+        ]
+      ];
+      var DEUTER = [
+        [1, 0, -0, 0, 1, 0, -0, -0, 1],
+        [
+          0.866435,
+          0.177704,
+          -0.044139,
+          0.049567,
+          0.939063,
+          0.01137,
+          -3453e-6,
+          7233e-6,
+          0.99622
+        ],
+        [
+          0.760729,
+          0.319078,
+          -0.079807,
+          0.090568,
+          0.889315,
+          0.020117,
+          -6027e-6,
+          0.013325,
+          0.992702
+        ],
+        [
+          0.675425,
+          0.43385,
+          -0.109275,
+          0.125303,
+          0.847755,
+          0.026942,
+          -795e-5,
+          0.018572,
+          0.989378
+        ],
+        [
+          0.605511,
+          0.52856,
+          -0.134071,
+          0.155318,
+          0.812366,
+          0.032316,
+          -9376e-6,
+          0.023176,
+          0.9862
+        ],
+        [
+          0.547494,
+          0.607765,
+          -0.155259,
+          0.181692,
+          0.781742,
+          0.036566,
+          -0.01041,
+          0.027275,
+          0.983136
+        ],
+        [
+          0.498864,
+          0.674741,
+          -0.173604,
+          0.205199,
+          0.754872,
+          0.039929,
+          -0.011131,
+          0.030969,
+          0.980162
+        ],
+        [
+          0.457771,
+          0.731899,
+          -0.18967,
+          0.226409,
+          0.731012,
+          0.042579,
+          -0.011595,
+          0.034333,
+          0.977261
+        ],
+        [
+          0.422823,
+          0.781057,
+          -0.203881,
+          0.245752,
+          0.709602,
+          0.044646,
+          -0.011843,
+          0.037423,
+          0.974421
+        ],
+        [
+          0.392952,
+          0.82361,
+          -0.216562,
+          0.263559,
+          0.69021,
+          0.046232,
+          -0.01191,
+          0.040281,
+          0.97163
+        ],
+        [
+          0.367322,
+          0.860646,
+          -0.227968,
+          0.280085,
+          0.672501,
+          0.047413,
+          -0.01182,
+          0.04294,
+          0.968881
+        ]
+      ];
+      var TRIT = [
+        [1, 0, -0, 0, 1, 0, -0, -0, 1],
+        [
+          0.92667,
+          0.092514,
+          -0.019184,
+          0.021191,
+          0.964503,
+          0.014306,
+          8437e-6,
+          0.054813,
+          0.93675
+        ],
+        [
+          0.89572,
+          0.13333,
+          -0.02905,
+          0.029997,
+          0.9454,
+          0.024603,
+          0.013027,
+          0.104707,
+          0.882266
+        ],
+        [
+          0.905871,
+          0.127791,
+          -0.033662,
+          0.026856,
+          0.941251,
+          0.031893,
+          0.01341,
+          0.148296,
+          0.838294
+        ],
+        [
+          0.948035,
+          0.08949,
+          -0.037526,
+          0.014364,
+          0.946792,
+          0.038844,
+          0.010853,
+          0.193991,
+          0.795156
+        ],
+        [
+          1.017277,
+          0.027029,
+          -0.044306,
+          -6113e-6,
+          0.958479,
+          0.047634,
+          6379e-6,
+          0.248708,
+          0.744913
+        ],
+        [
+          1.104996,
+          -0.046633,
+          -0.058363,
+          -0.032137,
+          0.971635,
+          0.060503,
+          1336e-6,
+          0.317922,
+          0.680742
+        ],
+        [
+          1.193214,
+          -0.109812,
+          -0.083402,
+          -0.058496,
+          0.97941,
+          0.079086,
+          -2346e-6,
+          0.403492,
+          0.598854
+        ],
+        [
+          1.257728,
+          -0.139648,
+          -0.118081,
+          -0.078003,
+          0.975409,
+          0.102594,
+          -3316e-6,
+          0.501214,
+          0.502102
+        ],
+        [
+          1.278864,
+          -0.125333,
+          -0.153531,
+          -0.084748,
+          0.957674,
+          0.127074,
+          -989e-6,
+          0.601151,
+          0.399838
+        ],
+        [
+          1.255528,
+          -0.076749,
+          -0.178779,
+          -0.078411,
+          0.930809,
+          0.147602,
+          4733e-6,
+          0.691367,
+          0.3039
+        ]
+      ];
+      var deficiency = (lut, t) => {
+        let tt = Math.max(0, Math.min(1, t));
+        let i = Math.round(tt / 0.1);
+        let w = Math.round(tt % 0.1);
+        let arr = lut[i];
+        if (w > 0 && i < lut.length - 1) {
+          let arr_2 = lut[i + 1];
+          arr = arr.map((v, idx) => lerp(arr[idx], arr_2[idx], w));
+        }
+        return (color2) => {
+          let c2 = prepare_default(color2);
+          if (c2 === void 0) {
+            return void 0;
+          }
+          let { r: r2, g, b } = rgb3(c2);
+          let ret = {
+            mode: "rgb",
+            r: arr[0] * r2 + arr[1] * g + arr[2] * b,
+            g: arr[3] * r2 + arr[4] * g + arr[5] * b,
+            b: arr[6] * r2 + arr[7] * g + arr[8] * b
+          };
+          if (c2.alpha !== void 0) {
+            ret.alpha = c2.alpha;
+          }
+          return converter_default(c2.mode)(ret);
+        };
+      };
+      var filterDeficiencyProt = (severity = 1) => deficiency(PROT, severity);
+      var filterDeficiencyDeuter = (severity = 1) => deficiency(DEUTER, severity);
+      var filterDeficiencyTrit = (severity = 1) => deficiency(TRIT, severity);
+      var easingSmoothstep = (t) => t * t * (3 - 2 * t);
+      var easingSmoothstepInverse = (t) => 0.5 - Math.sin(Math.asin(1 - 2 * t) / 3);
+      var smootherstep = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+      var smootherstep_default = smootherstep;
+      var inOutSine = (t) => (1 - Math.cos(t * Math.PI)) / 2;
+      var inOutSine_default = inOutSine;
+      function luminance(color2) {
+        let c2 = converter_default("lrgb")(color2);
+        return 0.2126 * c2.r + 0.7152 * c2.g + 0.0722 * c2.b;
+      }
+      function contrast(a, b) {
+        let L1 = luminance(a);
+        let L2 = luminance(b);
+        return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+      }
+      var a98 = useMode(definition_default2);
+      var cubehelix3 = useMode(definition_default3);
+      var dlab = useMode(definition_default4);
+      var dlch = useMode(definition_default5);
+      var hsi = useMode(definition_default6);
+      var hsl22 = useMode(definition_default7);
+      var hsv = useMode(definition_default8);
+      var hwb = useMode(definition_default9);
+      var itp = useMode(definition_default10);
+      var jab = useMode(definition_default11);
+      var jch = useMode(definition_default12);
+      var lab3 = useMode(definition_default13);
+      var lab65 = useMode(definition_default14);
+      var lch2 = useMode(definition_default15);
+      var lch65 = useMode(definition_default16);
+      var lchuv = useMode(definition_default17);
+      var lrgb = useMode(definition_default18);
+      var luv = useMode(definition_default19);
+      var okhsl = useMode(modeOkhsl_default);
+      var okhsv = useMode(modeOkhsv_default);
+      var oklab = useMode(definition_default20);
+      var oklch = useMode(definition_default21);
+      var p3 = useMode(definition_default22);
+      var prophoto = useMode(definition_default23);
+      var rec2020 = useMode(definition_default24);
+      var rgb4 = useMode(definition_default);
+      var xyb = useMode(definition_default25);
+      var xyz50 = useMode(definition_default26);
+      var xyz65 = useMode(definition_default27);
+      var yiq = useMode(definition_default28);
     }
   });
 
@@ -11760,128 +14733,183 @@ var Plotly = (() => {
   var require_color = __commonJS({
     "src/components/color/index.js"(exports, module) {
       "use strict";
-      var _color = (init_color(), __toCommonJS(color_exports)).default;
+      var {
+        converter,
+        formatHex: culoriFormatHex,
+        formatRgb: culoriFormatRgb,
+        wcagContrast: culoriWcagContrast,
+        wcagLuminance
+      } = require_culori();
+      var { isArrayOrTypedArray } = require_array();
       var { warn } = require_loggers();
       var { background, defaultLine, defaults, lightLine } = require_attributes3();
-      var color2 = (cstr) => {
-        if (typeof cstr === "string") cstr = cstr.trim();
+      var toRgb = converter("rgb");
+      var toHsl = converter("hsl");
+      var toColor = (cstr) => {
+        if (typeof cstr !== "string") return void 0;
+        const s = cstr.trim().toLowerCase();
+        if (/^[0-9a-f]+$/.test(s)) return void 0;
         try {
-          return _color(cstr);
+          return toRgb(s);
         } catch (e) {
-          warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
-          return _color("#000");
+          return void 0;
         }
       };
-      var rgb2 = (cstr) => {
-        const { r, g, b } = color2(cstr).rgb().object();
-        return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+      var clamp01 = (v) => v > 0 ? v > 1 ? 1 : v : 0;
+      var BLACK = { mode: "rgb", r: 0, g: 0, b: 0, alpha: 1 };
+      var snap01 = (v) => Math.round(v * 255e6) / 255e6;
+      var snap = (c) => __spreadProps(__spreadValues({}, c), { r: snap01(c.r), g: snap01(c.g), b: snap01(c.b) });
+      var formatRgb = (c) => culoriFormatRgb(snap(c));
+      var formatHex = (c) => culoriFormatHex(snap(c));
+      var parse = (cstr, silent) => {
+        var _a;
+        const c = toColor(cstr);
+        if (!c) {
+          if (!silent && cstr != null) warn(`Invalid color specifier: "${cstr}". Defaulting to "#000"`);
+          return BLACK;
+        }
+        (_a = c.alpha) != null ? _a : c.alpha = 1;
+        return c;
       };
-      var opacity = (cstr) => cstr ? color2(cstr).alpha() : 0;
-      var addOpacity = (cstr, op) => {
-        const c = color2(cstr).rgb().object();
-        return `rgba(${Math.round(c.r)}, ${Math.round(c.g)}, ${Math.round(c.b)}, ${op})`;
+      var rgb2 = (cstr) => formatRgb(__spreadProps(__spreadValues({}, parse(cstr)), { alpha: 1 }));
+      var opacity = (cstr) => cstr ? parse(cstr).alpha : 0;
+      var isChannelArray = (v) => {
+        return isArrayOrTypedArray(v) && v.length > 2 && Number.isFinite(v[0]) && Number.isFinite(v[1]) && Number.isFinite(v[2]);
       };
+      var channelsToRgb = (v) => {
+        const [r, g, b, alpha] = v;
+        const scale = Math.max(r, g, b) > 1 ? 1 / 255 : 1;
+        const a = alpha != null ? alpha : 1;
+        return { mode: "rgb", r: r * scale, g: g * scale, b: b * scale, alpha: a > 1 ? a / 255 : a };
+      };
+      var normalize = (input, type) => {
+        const c = isChannelArray(input) ? channelsToRgb(input) : parse(input, true);
+        const v = [clamp01(c.r), clamp01(c.g), clamp01(c.b), clamp01(c.alpha)];
+        if (type === "uint8" || type === "uint8_clamped") return Uint8Array.from(v, (x) => Math.round(x * 255));
+        if (type === "float32") return Float32Array.from(v);
+        if (type === "float64") return Float64Array.from(v);
+        return v;
+      };
+      var addOpacity = (cstr, op) => formatRgb(__spreadProps(__spreadValues({}, parse(cstr)), { alpha: clamp01(op) }));
       var combine = (front, back) => {
-        var _a, _b;
-        back || (back = background);
-        const fc = color2(front).rgb().object();
-        (_a = fc.alpha) != null ? _a : fc.alpha = 1;
-        if (fc.alpha === 1) return color2(front).rgb().string();
-        const bc = color2(back).rgb().object();
-        (_b = bc.alpha) != null ? _b : bc.alpha = 1;
-        const bcflat = bc.alpha === 1 ? bc : {
-          r: 255 * (1 - bc.alpha) + bc.r * bc.alpha,
-          g: 255 * (1 - bc.alpha) + bc.g * bc.alpha,
-          b: 255 * (1 - bc.alpha) + bc.b * bc.alpha
-        };
-        const fcflat = {
-          r: bcflat.r * (1 - fc.alpha) + fc.r * fc.alpha,
-          g: bcflat.g * (1 - fc.alpha) + fc.g * fc.alpha,
-          b: bcflat.b * (1 - fc.alpha) + fc.b * fc.alpha
-        };
-        return color2(fcflat).rgb().string();
+        const fc = parse(front);
+        const fa = fc.alpha;
+        if (fa === 1) return formatRgb(fc);
+        const bc = parse(back || background);
+        const ba = bc.alpha;
+        const over = (f, b) => (ba === 1 ? b : 1 - ba + b * ba) * (1 - fa) + f * fa;
+        return formatRgb({ mode: "rgb", r: over(fc.r, bc.r), g: over(fc.g, bc.g), b: over(fc.b, bc.b) });
       };
       var interpolate = (first, second, factor) => {
-        const fc = color2(first).rgb().object();
-        const sc = color2(second).rgb().object();
-        const ic = {
-          r: factor * fc.r + (1 - factor) * sc.r,
-          g: factor * fc.g + (1 - factor) * sc.g,
-          b: factor * fc.b + (1 - factor) * sc.b
-        };
-        return color2(ic).rgb().string();
+        const fc = parse(first);
+        const sc = parse(second);
+        const lerp = (a, b) => factor * a + (1 - factor) * b;
+        return formatRgb({ mode: "rgb", r: lerp(fc.r, sc.r), g: lerp(fc.g, sc.g), b: lerp(fc.b, sc.b) });
       };
       var adjustLightness = (cstr, delta) => {
-        const c = color2(cstr);
-        return c.lightness(c.lightness() + delta);
+        const c = parse(cstr);
+        const h = toHsl(c) || { mode: "hsl", h: 0, s: 0, l: 0 };
+        return formatRgb(toRgb(__spreadProps(__spreadValues({}, h), { l: clamp01((h.l * 100 + delta) / 100), alpha: c.alpha })));
       };
+      var wcagContrast = (cstr1, cstr2) => culoriWcagContrast(parse(cstr1), parse(cstr2));
+      var isDark = (cstr) => wcagContrast(cstr, background) > wcagContrast(cstr, defaultLine);
+      var backgroundRgb = formatRgb(parse(background));
+      var defaultLineRgb = formatRgb(parse(defaultLine));
       var contrast = (cstr, lightAmount, darkAmount) => {
-        let c = color2(cstr);
-        if (c.alpha() !== 1) c = color2(combine(cstr, background));
-        const newColor = c.isDark() ? lightAmount ? adjustLightness(c, lightAmount) : color2(background) : darkAmount ? adjustLightness(c, -darkAmount) : color2(defaultLine);
-        return newColor.rgb().string();
-      };
-      var stroke = (s, cstr) => {
-        const c = color2(cstr);
-        s.style({ stroke: rgb2(cstr), "stroke-opacity": c.alpha() });
-      };
-      var fill = (s, cstr) => {
-        const c = color2(cstr);
-        s.style({ fill: rgb2(cstr), "fill-opacity": c.alpha() });
-      };
-      var equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && color2(cstr1).rgb().string() === color2(cstr2).rgb().string());
-      var isValid = (cstr) => {
-        if (typeof cstr !== "string") return false;
-        try {
-          return !!_color(cstr.trim());
-        } catch (e) {
-          return false;
+        if (parse(cstr).alpha !== 1) cstr = combine(cstr, background);
+        if (isDark(cstr)) {
+          return lightAmount ? adjustLightness(cstr, lightAmount) : backgroundRgb;
+        } else {
+          return darkAmount ? adjustLightness(cstr, -darkAmount) : defaultLineRgb;
         }
       };
-      var brighten = (cstr, amount) => {
-        var _a;
-        amount = amount === 0 ? 0 : amount || 10;
-        const c = color2(cstr).rgb().object();
-        const adj = Math.round(255 * (amount / 100));
-        return color2({
-          r: Math.max(0, Math.min(255, c.r + adj)),
-          g: Math.max(0, Math.min(255, c.g + adj)),
-          b: Math.max(0, Math.min(255, c.b + adj))
-        }).alpha((_a = c.alpha) != null ? _a : 1).rgb().string();
+      var stroke = (s, cstr) => {
+        s.style({ stroke: rgb2(cstr), "stroke-opacity": parse(cstr).alpha });
       };
-      var mix = (cstr1, cstr2, weight) => color2(cstr1).mix(color2(cstr2), weight / 100).rgb().string();
+      var fill = (s, cstr) => {
+        s.style({ fill: rgb2(cstr), "fill-opacity": parse(cstr).alpha });
+      };
+      var equals = (cstr1, cstr2) => !!(cstr1 && cstr2 && rgb2(cstr1) === rgb2(cstr2));
+      var isValid = (cstr) => toColor(cstr) !== void 0;
+      var brighten = (cstr, amount) => {
+        amount = amount === 0 ? 0 : amount || 10;
+        const c = parse(cstr);
+        const adj = amount / 100;
+        return formatRgb(__spreadProps(__spreadValues({}, c), {
+          r: clamp01(c.r + adj),
+          g: clamp01(c.g + adj),
+          b: clamp01(c.b + adj)
+        }));
+      };
+      var mix = (cstr1, cstr2, weight) => {
+        const c1 = parse(cstr1);
+        const c2 = parse(cstr2);
+        const p = weight / 100;
+        const d = c2.alpha - c1.alpha;
+        const w = 2 * p - 1;
+        const w2 = ((w * d === -1 ? w : (w + d) / (1 + w * d)) + 1) / 2;
+        const w1 = 1 - w2;
+        const blend = (x, y) => w1 * x + w2 * y;
+        return formatRgb({
+          mode: "rgb",
+          r: blend(c1.r, c2.r),
+          g: blend(c1.g, c2.g),
+          b: blend(c1.b, c2.b),
+          alpha: c1.alpha * (1 - p) + c2.alpha * p
+        });
+      };
       var mostReadable = (baseColor, colorList = ["#000", "#fff"]) => {
         let bestColor;
         let bestContrast = -Infinity;
         for (const cstr of colorList) {
-          const contrastRatio = color2(baseColor).contrast(color2(cstr));
-          if (contrastRatio > bestContrast) {
-            bestContrast = contrastRatio;
-            bestColor = color2(cstr).rgb().string();
+          const ratio = wcagContrast(baseColor, cstr);
+          if (ratio > bestContrast) {
+            bestContrast = ratio;
+            bestColor = formatRgb(parse(cstr));
           }
         }
         return bestColor;
+      };
+      var rgbaString = (cstr) => formatRgb(parse(cstr));
+      var hexString = (cstr) => formatHex(parse(cstr)).toUpperCase();
+      var rgbaArray = (cstr) => {
+        const c = parse(cstr);
+        return [clamp01(c.r) * 255, clamp01(c.g) * 255, clamp01(c.b) * 255, clamp01(c.alpha)];
+      };
+      var rgbaArrayToString = ([r, g, b, alpha]) => formatRgb({ mode: "rgb", r: r / 255, g: g / 255, b: b / 255, alpha });
+      var luminosity = (cstr) => {
+        const c = parse(cstr);
+        return wcagLuminance({ mode: "rgb", r: clamp01(c.r), g: clamp01(c.g), b: clamp01(c.b) });
       };
       module.exports = {
         addOpacity,
         adjustLightness,
         background,
         brighten,
-        color: color2,
         combine,
         contrast,
         defaultLine,
         defaults,
         equals,
         fill,
+        hexString,
         interpolate,
+        isChannelArray,
+        isDark,
         isValid,
         lightLine,
+        luminosity,
         mix,
         mostReadable,
+        normalize,
         opacity,
+        parse,
         rgb: rgb2,
-        stroke
+        rgbaArray,
+        rgbaArrayToString,
+        rgbaString,
+        stroke,
+        wcagContrast
       };
     }
   });
@@ -11890,7 +14918,7 @@ var Plotly = (() => {
   var require_scales = __commonJS({
     "src/components/colorscale/scales.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var scales = {
         Greys: [
           [0, "rgb(0,0,0)"],
@@ -12092,7 +15120,7 @@ var Plotly = (() => {
         if (+scl[0][0] !== 0 || +scl[scl.length - 1][0] !== 1) return false;
         for (var i = 0; i < scl.length; i++) {
           var si = scl[i];
-          if (si.length !== 2 || +si[0] < highestVal || !Color3.isValid(si[1])) {
+          if (si.length !== 2 || +si[0] < highestVal || !Color2.isValid(si[1])) {
             return false;
           }
           highestVal = +si[0];
@@ -12154,7 +15182,7 @@ var Plotly = (() => {
       var extendFlat = require_extend().extendFlat;
       var baseTraceAttrs = require_attributes2();
       var colorscales = require_scales();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var DESELECTDIM = require_interactions().DESELECTDIM;
       var nestedProperty = require_nested_property();
       var counterRegex = (init_regex(), __toCommonJS(regex_exports)).counter;
@@ -12232,14 +15260,14 @@ var Plotly = (() => {
         color: {
           coerceFunction: function(v, propOut, dflt) {
             if (isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
-            if (Color3.isValid(v)) propOut.set(v);
+            if (Color2.isValid(v)) propOut.set(v);
             else propOut.set(dflt);
           }
         },
         colorlist: {
           coerceFunction: function(v, propOut, dflt) {
             if (!Array.isArray(v) || !v.length) propOut.set(dflt);
-            else if (v.every((color2) => Color3.isValid(color2))) propOut.set(v);
+            else if (v.every((color2) => Color2.isValid(color2))) propOut.set(v);
             else propOut.set(dflt);
           }
         },
@@ -12459,7 +15487,7 @@ var Plotly = (() => {
           var isOverlay = fillmode === "overlay";
           if (!hasMarkerColorscale) {
             var bgcolor = coerce(attr + ".bgcolor", isOverlay ? markerColor : void 0);
-            coerce(attr + ".fgcolor", isOverlay ? Color3.contrast(bgcolor) : markerColor);
+            coerce(attr + ".fgcolor", isOverlay ? Color2.contrast(bgcolor) : markerColor);
           }
           coerce(attr + ".fgopacity", isOverlay ? 0.5 : 1);
         }
@@ -14625,7 +17653,7 @@ var Plotly = (() => {
         if (!document.getElementById("ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe")) {
           var e = document.createElement("style");
           e.id = "ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe";
-          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-map:fullscreen{height:100%;width:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl-group{background:#fff;border-radius:4px}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{background-color:transparent;border:0;box-sizing:border-box;cursor:pointer;display:block;height:29px;outline:none;padding:0;width:29px}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{background-position:50%;background-repeat:no-repeat;display:block;height:100%;width:100%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}.maplibregl-ctrl button:not(:disabled):hover{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;cursor:pointer;display:block;height:23px;margin:0 0 -4px -4px;overflow:hidden;width:88px}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{background-color:#fff;border-radius:12px;box-sizing:content-box;color:#000;margin:10px;min-height:20px;padding:2px 24px 2px 0;position:relative}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{border-radius:12px;padding:2px 8px 2px 28px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{background-color:hsla(0,0%,100%,.5);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");border:0;border-radius:12px;box-sizing:border-box;cursor:pointer;display:none;height:24px;outline:none;position:absolute;right:0;top:0;width:24px}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgb(0 0 0/5%)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{right:0;top:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{left:0;top:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);border:2px solid #333;border-top:#333;box-sizing:border-box;color:#333;font-size:10px;padding:0 5px}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:#fff;border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:#fff;border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:#fff;border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:#fff;border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgb(0 0 0/5%)}.maplibregl-popup-content{background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}@keyframes maplibregl-user-location-dot-pulse{0%{opacity:1;transform:scale(1)}70%{opacity:0;transform:scale(3)}to{opacity:0;transform:scale(1)}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{background:#fff;border:2px dotted #202020;height:0;left:0;opacity:.5;position:absolute;top:0;width:0}.maplibregl-cooperative-gesture-screen{align-items:center;background:rgba(0,0,0,.4);color:#fff;display:flex;font-size:1.4em;inset:0;justify-content:center;line-height:1.2;opacity:0;padding:1rem;pointer-events:none;position:absolute;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(width <= 480px){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{height:100%!important;left:0!important;position:fixed!important;top:0!important;width:100%!important;z-index:99999}`;
+          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-map:fullscreen{height:100%;width:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl-group{background:#fff;border-radius:4px}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{background-color:transparent;border:0;box-sizing:border-box;cursor:pointer;display:block;height:29px;outline:none;padding:0;width:29px}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{background-position:50%;background-repeat:no-repeat;display:block;height:100%;width:100%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}@media (hover:hover){.maplibregl-ctrl button:not(:disabled):hover{background-color:rgba(0,0,0,.05)}}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M24 16v5.5c0 1.75-.75 2.5-2.5 2.5H16v-1l3-1.5-4-5.5 1-1 5.5 4 1.5-3zM6 16l1.5 3 5.5-4 1 1-4 5.5 3 1.5v1H7.5C5.75 24 5 23.25 5 21.5V16zm7-11v1l-3 1.5 4 5.5-1 1-5.5-4L6 13H5V7.5C5 5.75 5.75 5 7.5 5zm11 2.5c0-1.75-.75-2.5-2.5-2.5H16v1l3 1.5-4 5.5 1 1 5.5-4 1.5 3h1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='M18.5 16c-1.75 0-2.5.75-2.5 2.5V24h1l1.5-3 5.5 4 1-1-4-5.5 3-1.5v-1zM13 18.5c0-1.75-.75-2.5-2.5-2.5H5v1l3 1.5L4 24l1 1 5.5-4 1.5 3h1zm3-8c0 1.75.75 2.5 2.5 2.5H24v-1l-3-1.5L25 5l-1-1-5.5 4L17 5h-1zM10.5 13c1.75 0 2.5-.75 2.5-2.5V5h-1l-1.5 3L5 4 4 5l4 5.5L5 12v1z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 29 29'%3E%3Cpath d='m10.5 14 4-8 4 8z'/%3E%3Cpath fill='%23ccc' d='m10.5 16 4 8 4-8z'/%3E%3C/svg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-globe .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%23333' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='8.5'/%3E%3Cpath d='M17.5 11c0 4.819-3.02 8.5-6.5 8.5S4.5 15.819 4.5 11 7.52 2.5 11 2.5s6.5 3.681 6.5 8.5Z'/%3E%3Cpath d='M13.5 11c0 2.447-.331 4.64-.853 6.206-.262.785-.562 1.384-.872 1.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831 15.64 8.5 13.446 8.5 11s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872 1.777.522 1.565.853 3.76.853 6.206Z'/%3E%3Cpath d='M11 7.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138q.07-.058.224-.138c.299-.151.763-.302 1.379-.434C7.378 5.666 9.091 5.5 11 5.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428ZM4.486 6.436ZM11 16.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138 1.3 1.3 0 0 1 .224-.138c.299-.151.763-.302 1.379-.434C7.378 14.666 9.091 14.5 11 14.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138a1.3 1.3 0 0 1-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm-6.514-1.064ZM11 12.5c-2.46 0-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5 1.5 0 0 1-.39-.272.3.3 0 0 1-.047-.064.3.3 0 0 1 .048-.064c.066-.073.189-.167.389-.272.399-.21 1.009-.413 1.805-.59C6.328 9.722 8.54 9.5 11 9.5s4.672.222 6.256.574c.795.177 1.405.38 1.804.59.2.105.323.2.39.272a.3.3 0 0 1 .047.064.3.3 0 0 1-.048.064 1.4 1.4 0 0 1-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0 .018v.002zm17.002.002v-.002zm0-.018v-.002z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%2333b5e5' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='8.5'/%3E%3Cpath d='M17.5 11c0 4.819-3.02 8.5-6.5 8.5S4.5 15.819 4.5 11 7.52 2.5 11 2.5s6.5 3.681 6.5 8.5Z'/%3E%3Cpath d='M13.5 11c0 2.447-.331 4.64-.853 6.206-.262.785-.562 1.384-.872 1.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831 15.64 8.5 13.446 8.5 11s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872 1.777.522 1.565.853 3.76.853 6.206Z'/%3E%3Cpath d='M11 7.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138q.07-.058.224-.138c.299-.151.763-.302 1.379-.434C7.378 5.666 9.091 5.5 11 5.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428ZM4.486 6.436ZM11 16.5c-1.909 0-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3 1.3 0 0 1-.224-.138 1.3 1.3 0 0 1 .224-.138c.299-.151.763-.302 1.379-.434C7.378 14.666 9.091 14.5 11 14.5s3.622.166 4.845.428c.616.132 1.08.283 1.379.434.105.053.177.1.224.138a1.3 1.3 0 0 1-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm-6.514-1.064ZM11 12.5c-2.46 0-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5 1.5 0 0 1-.39-.272.3.3 0 0 1-.047-.064.3.3 0 0 1 .048-.064c.066-.073.189-.167.389-.272.399-.21 1.009-.413 1.805-.59C6.328 9.722 8.54 9.5 11 9.5s4.672.222 6.256.574c.795.177 1.405.38 1.804.59.2.105.323.2.39.272a.3.3 0 0 1 .047.064.3.3 0 0 1-.048.064 1.4 1.4 0 0 1-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0 .018v.002zm17.002.002v-.002zm0-.018v-.002z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%23333' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='%2333b5e5' viewBox='0 0 22 22'%3E%3Cpath d='m1.754 13.406 4.453-4.851 3.09 3.09 3.281 3.277.969-.969-3.309-3.312 3.844-4.121 6.148 6.886h1.082v-.855l-7.207-8.07-4.84 5.187L6.169 6.57l-5.48 5.965v.871ZM.688 16.844h20.625v1.375H.688Zm0 0'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23333' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23aaa' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23fff' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23999' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e58978' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%2333b5e5' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23e54e33' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/svg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' fill='%23666' viewBox='0 0 20 20'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1m0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Cpath fill='red' d='m14 5 1 1-9 9-1-1z'/%3E%3C/svg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E");background-repeat:no-repeat;cursor:pointer;display:block;height:23px;margin:0 0 -4px -4px;overflow:hidden;width:88px}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='23' fill='none'%3E%3Cpath fill='%23000' fill-opacity='.4' fill-rule='evenodd' d='M17.408 16.796h-1.827l2.501-12.095h.198l3.324 6.533.988 2.19.988-2.19 3.258-6.533h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.929 5.644h-.098l-2.914-5.644-.757-1.71-.345 1.71zm1.958-3.42-.726 3.663a1.255 1.255 0 0 1-1.232 1.011h-1.827a1.255 1.255 0 0 1-1.229-1.509l2.501-12.095a1.255 1.255 0 0 1 1.23-1.001h.197a1.25 1.25 0 0 1 1.12.685l3.19 6.273 3.125-6.263a1.25 1.25 0 0 1 1.123-.695h.181a1.255 1.255 0 0 1 1.227.991l1.443 6.71a5 5 0 0 1 .314-.787l.009-.016a4.6 4.6 0 0 1 1.777-1.887c.782-.46 1.668-.667 2.611-.667a4.6 4.6 0 0 1 1.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255 1.255 0 0 1 1.212.925 1.255 1.255 0 0 1 1.212-.925h1.711c.284 0 .545.094.755.252.613-.3 1.312-.45 2.075-.45 1.356 0 2.557.445 3.482 1.4q.47.48.763 1.064V4.701a1.255 1.255 0 0 1 1.255-1.255h1.86A1.255 1.255 0 0 1 54.44 4.7v9.194h2.217c.19 0 .37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42 2.42 0 0 1-.682-1.71c0-.665.267-1.253.735-1.7a2.45 2.45 0 0 1 1.722-.674 2.43 2.43 0 0 1 1.705.675q.318.302.504.683V4.7a1.255 1.255 0 0 1 1.255-1.255h1.744A1.255 1.255 0 0 1 65.812 4.7v3.335a4.8 4.8 0 0 1 1.526-.246c.938 0 1.817.214 2.59.69a4.47 4.47 0 0 1 1.67 1.743v-.98a1.255 1.255 0 0 1 1.256-1.256h1.777c.233 0 .451.064.639.174a3.4 3.4 0 0 1 1.567-.372c.346 0 .861.02 1.285.232a1.25 1.25 0 0 1 .689 1.004 4.7 4.7 0 0 1 .853-.588c.795-.44 1.675-.647 2.61-.647 1.385 0 2.65.39 3.525 1.396.836.938 1.168 2.173 1.168 3.528q-.001.515-.056 1.051a1.255 1.255 0 0 1-.947 1.09l.408.952a1.255 1.255 0 0 1-.477 1.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06 0-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8 5.8 0 0 1-.548-2.512q0-.429.053-.843a1.3 1.3 0 0 1-.333-.086l-.166-.004c-.223 0-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255 1.255 0 0 1-1.256 1.256h-1.777a1.255 1.255 0 0 1-1.256-1.256V15.69l-.032.057a4.8 4.8 0 0 1-1.86 1.833 5.04 5.04 0 0 1-2.484.634 4.5 4.5 0 0 1-1.935-.424 1.25 1.25 0 0 1-.764.258h-1.71a1.255 1.255 0 0 1-1.256-1.255V7.687a2.4 2.4 0 0 1-.428.625c.253.23.412.561.412.93v7.553a1.255 1.255 0 0 1-1.256 1.255h-1.843a1.25 1.25 0 0 1-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255 1.255 0 0 1-1.256-1.255v-1.251l-.061.117a4.7 4.7 0 0 1-1.782 1.884 4.77 4.77 0 0 1-2.485.67 5.6 5.6 0 0 1-1.485-.188l.009 2.764a1.255 1.255 0 0 1-1.255 1.259h-1.729a1.255 1.255 0 0 1-1.255-1.255v-3.537a1.255 1.255 0 0 1-1.167.793h-1.679a1.25 1.25 0 0 1-.77-.263 4.5 4.5 0 0 1-1.945.429c-.885 0-1.724-.21-2.495-.632l-.017-.01a5 5 0 0 1-1.081-.836 1.255 1.255 0 0 1-1.254 1.312h-1.81a1.255 1.255 0 0 1-1.228-.99l-.782-3.625-2.044 3.939a1.25 1.25 0 0 1-1.115.676h-.098a1.25 1.25 0 0 1-1.116-.68l-2.061-3.994zM35.92 16.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033 1.332h1.678V9.242h-1.694l-.033 1.267q-.133-.329-.526-.658l-.032-.028a3.2 3.2 0 0 0-.668-.428l-.27-.12a3.3 3.3 0 0 0-1.235-.23q-1.136-.001-1.974.493a3.36 3.36 0 0 0-1.3 1.382q-.445.89-.444 2.074 0 1.2.51 2.107a3.8 3.8 0 0 0 1.382 1.381 3.9 3.9 0 0 0 1.893.477q.795 0 1.455-.33zm-2.789-5.38q-.576.675-.575 1.762 0 1.102.559 1.794.576.675 1.645.675a2.25 2.25 0 0 0 .934-.19 2.2 2.2 0 0 0 .468-.29l.178-.161a2.2 2.2 0 0 0 .397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2 2.2 0 0 0-.633-.709l-.13-.086-.047-.028a2.1 2.1 0 0 0-1.073-.285q-1.052 0-1.629.692zm2.316 2.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96 0 0 0-.353-.389.85.85 0 0 0-.464-.127c-.4 0-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945 0 .506.122.801.27.99.097.11.266.224.68.224.303 0 .504-.09.687-.269zm7.545 1.705a2.6 2.6 0 0 0 .331.423q.319.33.755.548l.173.074q.65.255 1.49.255 1.02 0 1.844-.493a3.45 3.45 0 0 0 1.316-1.4q.493-.904.493-2.089 0-1.909-.988-2.913-.988-1.02-2.584-1.02-.898 0-1.575.347a3 3 0 0 0-.415.262l-.199.166a3.4 3.4 0 0 0-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296 1.119.297 1.07 0 1.645-.675.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.435 0-.835.16a2 2 0 0 0-.284.136 2 2 0 0 0-.363.254 2.2 2.2 0 0 0-.46.569l-.082.162a2.6 2.6 0 0 0-.213 1.072v.115q0 .707.296 1.267l.135.211zm.964-.818a1.1 1.1 0 0 0 .367.385.94.94 0 0 0 .476.118c.423 0 .59-.117.687-.23.159-.194.28-.478.28-.95 0-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1 1 0 0 0-.503.135l-.012.007a.86.86 0 0 0-.335.343c-.073.133-.132.324-.132.614v.115a1.4 1.4 0 0 0 .14.66zm15.7-6.222q.347-.346.346-.856a1.05 1.05 0 0 0-.345-.79 1.18 1.18 0 0 0-.84-.329q-.51 0-.855.33a1.05 1.05 0 0 0-.346.79q0 .51.346.855.345.346.856.346.51 0 .839-.346zm4.337 9.314.033-1.332q.191.403.59.747l.098.081a4 4 0 0 0 .316.224l.223.122a3.2 3.2 0 0 0 1.44.322 3.8 3.8 0 0 0 1.875-.477 3.5 3.5 0 0 0 1.382-1.366q.527-.89.526-2.09 0-1.184-.444-2.073a3.24 3.24 0 0 0-1.283-1.399q-.823-.51-1.942-.51a3.5 3.5 0 0 0-1.527.344l-.086.043-.165.09a3 3 0 0 0-.33.214q-.432.315-.656.707a2 2 0 0 0-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5 2.5 0 0 0 .566.7q.117.098.245.18l.144.08a2.1 2.1 0 0 0 .975.232q1.07 0 1.645-.675.576-.69.576-1.778 0-1.102-.576-1.777-.56-.691-1.645-.692a2.2 2.2 0 0 0-1.015.235q-.22.113-.415.282l-.15.142a2.1 2.1 0 0 0-.42.594q-.223.479-.223 1.1v.115q0 .705.293 1.26zm2.616-.293c.157-.191.28-.479.28-.967 0-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87 0 0 0-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0 .285.057.499.144.669a1.1 1.1 0 0 0 .367.405c.137.082.28.123.455.123.423 0 .59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493 0 .642.099l.247-1.794q-.196-.099-.717-.099a2.3 2.3 0 0 0-.545.063 2 2 0 0 0-.411.148 2.2 2.2 0 0 0-.4.249 2.5 2.5 0 0 0-.485.499 2.7 2.7 0 0 0-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5 1.5 0 0 1 .466-.636 2.5 2.5 0 0 1 .399-.253 2 2 0 0 1 .224-.099zm9.784 2.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46 3.46 0 0 0-1.4 1.382q-.493.906-.493 2.106 0 1.07.428 1.975.428.89 1.332 1.432.906.526 2.255.526.973 0 1.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954 0-1.497-.444a1.6 1.6 0 0 1-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1 1 0 0 0-.156-.176q-.46-.428-1.316-.428-.986 0-1.494.604-.379.45-.494 1.234zm-27.053 2.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z'/%3E%3Cpath fill='%23fff' d='m19.63 11.151-.757-1.71-.345 1.71-1.12 5.644h-1.827L18.083 4.7h.197l3.325 6.533.988 2.19.988-2.19L26.839 4.7h.181l2.6 12.095h-1.81l-1.218-5.644-.362-1.71-.658 1.71-2.93 5.644h-.098l-2.913-5.644zm14.836 5.81q-1.02 0-1.893-.478a3.8 3.8 0 0 1-1.381-1.382q-.51-.906-.51-2.106 0-1.185.444-2.074a3.36 3.36 0 0 1 1.3-1.382q.839-.494 1.974-.494a3.3 3.3 0 0 1 1.234.231 3.3 3.3 0 0 1 .97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02 1.053a3.17 3.17 0 0 1-1.662.444zm.296-1.482q.938 0 1.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2 2.2 0 0 0-.807-.872 2.1 2.1 0 0 0-1.119-.313q-1.053 0-1.629.692-.575.675-.575 1.76 0 1.103.559 1.795.577.675 1.645.675zm6.521-6.237h1.711v1.4q.906-1.597 2.83-1.597 1.596 0 2.584 1.02.988 1.005.988 2.914 0 1.185-.493 2.09a3.46 3.46 0 0 1-1.316 1.399 3.5 3.5 0 0 1-1.844.493q-.954 0-1.662-.329a2.67 2.67 0 0 1-1.086-.97l.017 5.134h-1.728zm4.048 6.22q1.07 0 1.645-.674.577-.69.576-1.762 0-1.119-.576-1.777-.558-.675-1.645-.675-.592 0-1.12.296-.51.28-.822.823-.296.527-.296 1.234v.115q0 .708.296 1.267.313.543.823.855.51.296 1.119.297z'/%3E%3Cpath fill='%23e1e3e9' d='M51.325 4.7h1.86v10.45h3.473v1.646h-5.333zm7.12 4.542h1.843v7.553h-1.843zm.905-1.415a1.16 1.16 0 0 1-.856-.346 1.17 1.17 0 0 1-.346-.856 1.05 1.05 0 0 1 .346-.79q.346-.329.856-.329.494 0 .839.33a1.05 1.05 0 0 1 .345.79 1.16 1.16 0 0 1-.345.855q-.33.346-.84.346zm7.875 9.133a3.17 3.17 0 0 1-1.662-.444q-.723-.46-1.004-1.053l-.033 1.332h-1.71V4.701h1.743v4.657l-.082 1.283q.279-.658 1.086-1.119a3.5 3.5 0 0 1 1.778-.477q1.119 0 1.942.51a3.24 3.24 0 0 1 1.283 1.4q.445.888.444 2.072 0 1.201-.526 2.09a3.5 3.5 0 0 1-1.382 1.366 3.8 3.8 0 0 1-1.876.477zm-.296-1.481q1.069 0 1.645-.675.577-.69.577-1.778 0-1.102-.577-1.776-.56-.691-1.645-.692a2.12 2.12 0 0 0-1.58.659q-.642.641-.642 1.694v.115q0 .71.296 1.267a2.4 2.4 0 0 0 .807.872 2.1 2.1 0 0 0 1.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14 2.14 0 0 1 1.349-.46q.527 0 .724.098l-.247 1.794q-.149-.099-.642-.099-.774 0-1.416.494-.626.493-.626 1.58v3.883h-1.777V9.242zm9.534 7.718q-1.35 0-2.255-.526-.904-.543-1.332-1.432a4.6 4.6 0 0 1-.428-1.975q0-1.2.493-2.106a3.46 3.46 0 0 1 1.4-1.382q.889-.495 2.007-.494 1.744 0 2.584.97.855.956.856 2.7 0 .444-.05.92h-5.43q.18 1.005.708 1.45.542.443 1.497.443.79 0 1.3-.131a4 4 0 0 0 .938-.362l.542 1.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728 0-1.991 1.86z'/%3E%3Cpath d='M5.074 15.948a.484.657 0 0 0-.486.659v1.84a.484.657 0 0 0 .486.659h4.101a.484.657 0 0 0 .486-.659v-1.84a.484.657 0 0 0-.486-.659zm3.56 1.16H5.617v.838h3.017z' style='fill:%23fff;fill-rule:evenodd;stroke-width:1.03600001'/%3E%3Cg style='stroke-width:1.12603545'%3E%3Cpath d='M-9.408-1.416c-3.833-.025-7.056 2.912-7.08 6.615-.02 3.08 1.653 4.832 3.107 6.268.903.892 1.721 1.74 2.32 2.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87 1.87 0 0 0-.362 1.121l-.011 1.877c-.003.402.104.787.347 1.125.244.338.688.653 1.23.656l4.142.028c.542.003.99-.306 1.238-.641a1.87 1.87 0 0 0 .363-1.121l.012-1.875a1.87 1.87 0 0 0-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145 1.425-1.983 2.348-2.87 1.473-1.414 3.18-3.149 3.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006 1.1v.002c3.274.02 5.92 2.532 5.9 5.6-.017 2.706-1.39 4.026-2.863 5.44-1.034.994-2.118 2.033-2.814 3.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34 0 0 1-.226.084.34.34 0 0 1-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067 2.7-5.545 5.975-5.523m-.02 2.826c-1.62-.01-2.944 1.315-2.955 2.96-.01 1.646 1.295 2.988 2.916 2.999h.002c1.621.01 2.943-1.316 2.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005 1.1c1.017.006 1.829.83 1.822 1.89s-.83 1.874-1.848 1.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874 1.848-1.868m-2.155 11.857 4.14.025c.271.002.49.305.487.676l-.013 1.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668' style='color:%23000;font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:%23000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:evenodd;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:%23000;solid-opacity:1;vector-effect:none;fill:%23000;fill-opacity:.4;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-9.415-.316C-12.69-.338-15.37 2.14-15.39 5.207c-.017 2.716 1.326 4.041 2.78 5.477 1.013 1 2.081 2.055 2.78 3.67l.092.076a.34.34 0 0 0 .225.086.34.34 0 0 0 .227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6 1.78-2.64 2.814-3.634 1.473-1.414 2.847-2.733 2.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057 8.784c1.621.011 2.944-1.315 2.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945 1.315-2.955 2.96s1.295 2.989 2.916 3' style='clip-rule:evenodd;fill:%23e1e3e9;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3Cpath d='M-11.594 15.465c-.27-.002-.492.297-.494.668l-.012 1.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z' style='clip-rule:evenodd;fill:%23fff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.47727823;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:.4' transform='translate(15.553 2.85)scale(.88807)'/%3E%3C/g%3E%3C/svg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{background-color:#fff;border-radius:12px;box-sizing:content-box;color:#000;margin:10px;min-height:20px;padding:2px 24px 2px 0;position:relative}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{border-radius:12px;padding:2px 8px 2px 28px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{background-color:hsla(0,0%,100%,.5);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");border:0;border-radius:12px;box-sizing:border-box;cursor:pointer;display:none;height:24px;outline:none;position:absolute;right:0;top:0;width:24px}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{right:0;top:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{left:0;top:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23fff' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);border:2px solid #333;border-top:#333;box-sizing:border-box;color:#333;font-size:10px;padding:0 5px;white-space:nowrap}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:#fff;border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:#fff;border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:#fff;border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:#fff;border-right:none}[dir=rtl] .maplibregl-popup-anchor-left{flex-direction:row-reverse}[dir=rtl] .maplibregl-popup-anchor-right{flex-direction:row}[dir=rtl] .maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-start}[dir=rtl] .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-start}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid #fff;border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}@media (prefers-reduced-motion:reduce){.maplibregl-user-location-dot:before{animation:none}}@keyframes maplibregl-user-location-dot-pulse{0%{opacity:1;transform:scale(1)}70%{opacity:0;transform:scale(3)}to{opacity:0;transform:scale(1)}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{background:#fff;border:2px dotted #202020;height:0;left:0;opacity:.5;position:absolute;top:0;width:0}.maplibregl-cooperative-gesture-screen{align-items:center;background:rgba(0,0,0,.4);color:#fff;display:flex;font-size:1.4em;inset:0;justify-content:center;line-height:1.2;opacity:0;padding:1rem;pointer-events:none;position:absolute;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(pointer:coarse){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{height:100%!important;left:0!important;position:fixed!important;top:0!important;width:100%!important;z-index:99999}`;
           document.head.appendChild(e);
         }
       })();
@@ -15749,7 +18777,7 @@ var Plotly = (() => {
       module.exports = isMobile;
       module.exports.isMobile = isMobile;
       module.exports.default = isMobile;
-      var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+      var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|redmi|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
       var notMobileRE = /CrOS/;
       var tabletRE = /android|ipad|playbook|silk/i;
       function isMobile(opts) {
@@ -16001,7 +19029,9 @@ var Plotly = (() => {
         if (formatStr === "0.f") return "~f";
         if (/^\d%/.test(formatStr)) return "~%";
         if (/^\ds/.test(formatStr)) return "~s";
-        if (!/^[~,.0$]/.test(formatStr) && /[&fps]/.test(formatStr)) return "~" + formatStr;
+        var prefix = (formatStr.match(/^[+\-( ]?/) || [""])[0];
+        var rest = formatStr.slice(prefix.length);
+        if (!/^[~,.0$#]/.test(rest) && /[&fps]/.test(rest)) return prefix + "~" + rest;
         return formatStr;
       };
       var seenBadFormats = {};
@@ -16851,7 +19881,8 @@ var Plotly = (() => {
         "X .plotly-cloud-dialog .plotly-cloud-dialog-box": "box-sizing:border-box;min-width:300px;max-width:420px;padding:20px 24px;background-color:#fff;border:1px solid #e0e2e5;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,.25);font-size:13px;color:#2a3f5f;",
         "X .plotly-cloud-dialog .plotly-cloud-dialog-title": "font-size:16px;font-weight:bold;margin-bottom:12px;",
         "X .plotly-cloud-dialog .plotly-cloud-dialog-message": "line-height:1.5;overflow-wrap:break-word;word-wrap:break-word;",
-        "X .plotly-cloud-dialog .plotly-cloud-dialog-message--hostname": "font-weight:bold;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-message--hostname": "font-weight:bold;text-decoration:underline;",
+        "X .plotly-cloud-dialog .plotly-cloud-dialog-message--account": "margin-top:16px;padding:8px;border-radius:3px;font-size:.9em;background-color:#edf1f8;",
         "X .plotly-cloud-dialog .plotly-cloud-dialog-buttons": "display:flex;justify-content:flex-end;margin-top:20px;",
         "X .plotly-cloud-dialog .plotly-cloud-dialog-btn": "font-family:inherit;font-size:13px;padding:7px 16px;margin-left:8px;border-radius:3px;border:1px solid rgba(0,0,0,0);cursor:pointer;",
         "X .plotly-cloud-dialog .plotly-cloud-dialog-btn:focus-visible": "outline:2px solid #447adb;outline-offset:1px;",
@@ -18566,7 +21597,7 @@ var Plotly = (() => {
       var PlotSchema = require_plot_schema();
       var Template = require_plot_template();
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var BADNUM2 = require_numerical().BADNUM;
       var axisIDs = require_axis_ids();
       var clearOutline = require_handle_outline().clearOutline;
@@ -19230,7 +22261,7 @@ var Plotly = (() => {
         return frameOut;
       };
       plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, traceInIndex) {
-        var colorway = layout.colorway || Color3.defaults;
+        var colorway = layout.colorway || Color2.defaults;
         var defaultColor = colorway[colorIndex % colorway.length];
         var i;
         function coerce(attr, dflt) {
@@ -20746,7 +23777,8 @@ var Plotly = (() => {
       exports.matchTex = matchTex;
       exports.convertToTspans = function(_context, gd, _callback) {
         var str = _context.text();
-        var tex = !_context.attr("data-notex") && gd && gd._context.typesetMath && typeof MathJax !== "undefined" && matchTex(str);
+        var tex = !_context.attr("data-notex") && gd && gd._context.typesetMath && matchTex(str);
+        if (tex && !isMathJaxVersionSupported()) tex = null;
         var parent = d3.select(_context.node().parentNode);
         if (parent.empty()) return;
         var svgClass = _context.attr("class") ? _context.attr("class").split(" ")[0] : "text";
@@ -20859,14 +23891,25 @@ var Plotly = (() => {
         return s.replace(LT_MATCH, "\\lt ").replace(GT_MATCH, "\\gt ");
       }
       var mathjaxSVGDocument = null;
-      function texToSVG(_texString, _config, _callback) {
-        const MathJaxVersion = parseInt(
-          (MathJax.version || "").split(".")[0]
-        );
-        if (MathJaxVersion !== 3 && MathJaxVersion !== 4) {
+      var mathJaxMajorVersion = () => typeof MathJax !== "undefined" && MathJax.version ? parseInt(MathJax.version.split(".")[0]) : null;
+      var warnedMissingMathJax = false;
+      var warnedUnsupportedMathJax = false;
+      function isMathJaxVersionSupported() {
+        const version = mathJaxMajorVersion();
+        if (version === 3 || version === 4) return true;
+        if (version === null) {
+          if (!warnedMissingMathJax) {
+            warnedMissingMathJax = true;
+            Lib.warn("MathJax is not loaded. Math equations will not be rendered.");
+          }
+        } else if (!warnedUnsupportedMathJax) {
+          warnedUnsupportedMathJax = true;
           Lib.warn("Unsupported MathJax version:", MathJax.version);
-          return;
         }
+        return false;
+      }
+      function texToSVG(_texString, _config, _callback) {
+        const MathJaxVersion = mathJaxMajorVersion();
         var tmpDiv;
         const initiateMathJax = function() {
           if (!mathjaxSVGDocument) {
@@ -21391,7 +24434,7 @@ var Plotly = (() => {
       var d3 = require_d3();
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var isValidScale = require_scales().isValid;
       function hasColorscale(trace, containerStr, colorKey) {
         var container = containerStr ? Lib.nestedProperty(trace, containerStr).get() || {} : trace;
@@ -21479,8 +24522,7 @@ var Plotly = (() => {
         var N = range.length;
         var _range = new Array(N);
         for (var i = 0; i < N; i++) {
-          const { r, g, b, alpha = 1 } = Color3.color(range[i]).rgb().object();
-          _range[i] = [r, g, b, alpha];
+          _range[i] = Color2.rgbaArray(range[i]);
         }
         var _sclFunc = d3.scale.linear().domain(domain).range(_range).clamp(true);
         var noNumericCheck = opts.noNumericCheck;
@@ -21490,19 +24532,19 @@ var Plotly = (() => {
           sclFunc = _sclFunc;
         } else if (noNumericCheck) {
           sclFunc = function(v) {
-            return colorArray2rbga(_sclFunc(v));
+            return Color2.rgbaArrayToString(_sclFunc(v));
           };
         } else if (returnArray) {
           sclFunc = function(v) {
             if (isNumeric2(v)) return _sclFunc(v);
-            if (Color3.isValid(v)) return v;
-            return Color3.defaultLine;
+            if (Color2.isValid(v)) return v;
+            return Color2.defaultLine;
           };
         } else {
           sclFunc = function(v) {
-            if (isNumeric2(v)) return colorArray2rbga(_sclFunc(v));
-            if (Color3.isValid(v)) return v;
-            return Color3.defaultLine;
+            if (isNumeric2(v)) return Color2.rgbaArrayToString(_sclFunc(v));
+            if (Color2.isValid(v)) return v;
+            return Color2.defaultLine;
           };
         }
         sclFunc.domain = _sclFunc.domain;
@@ -21513,15 +24555,6 @@ var Plotly = (() => {
       }
       function makeColorScaleFuncFromTrace(trace, opts) {
         return makeColorScaleFunc(extractScale(trace), opts);
-      }
-      function colorArray2rbga(colorArray) {
-        var colorObj = {
-          r: colorArray[0],
-          g: colorArray[1],
-          b: colorArray[2],
-          alpha: colorArray[3]
-        };
-        return Color3.color(colorObj).rgb().string();
       }
       module.exports = {
         hasColorscale,
@@ -23375,6 +26408,17 @@ var Plotly = (() => {
         }
         return out;
       };
+      exports.c2dApply = function(axArray, valArray) {
+        if (axArray.length !== valArray.length) {
+          Lib.warn("c2dApply: axArray and valArray must be the same length");
+        }
+        var out = new Array(valArray.length);
+        for (var i = 0; i < valArray.length; i++) {
+          var ax = axArray && axArray[i];
+          out[i] = ax && ax.c2d ? ax.c2d(valArray[i]) : valArray[i];
+        }
+        return out;
+      };
       exports.getDistanceFunction = function(mode, dx, dy, dxy) {
         if (mode === "closest") return dxy || exports.quadrature(dx, dy);
         return mode.charAt(0) === "x" ? dx : dy;
@@ -23502,38 +26546,50 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/parse-svg-path/index.js
-  var require_parse_svg_path = __commonJS({
-    "node_modules/parse-svg-path/index.js"(exports, module) {
-      module.exports = parse;
-      var length = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 };
-      var segment = /([astvzqmhlc])([^astvzqmhlc]*)/ig;
+  // node_modules/parse-svg-path/dist/index.cjs
+  var require_dist = __commonJS({
+    "node_modules/parse-svg-path/dist/index.cjs"(exports, module) {
+      var length = {
+        a: 7,
+        c: 6,
+        h: 1,
+        l: 2,
+        m: 2,
+        q: 4,
+        s: 4,
+        t: 2,
+        v: 1,
+        z: 0
+      };
+      var segment = /([astvzqmhlc])([^astvzqmhlc]*)/gi;
+      var number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/gi;
       function parse(path) {
-        var data = [];
-        path.replace(segment, function(_, command, args) {
-          var type = command.toLowerCase();
-          args = parseValues(args);
-          if (type == "m" && args.length > 2) {
-            data.push([command].concat(args.splice(0, 2)));
+        const data = [];
+        path.replace(segment, (_, cmd, args) => {
+          let type = cmd.toLowerCase();
+          let command = cmd;
+          const values = parseValues(args);
+          if (type === "m" && values.length > 2) {
+            data.push([command, ...values.splice(0, 2)]);
             type = "l";
-            command = command == "m" ? "l" : "L";
+            command = command === "m" ? "l" : "L";
           }
           while (true) {
-            if (args.length == length[type]) {
-              args.unshift(command);
-              return data.push(args);
+            if (values.length === length[type]) {
+              data.push([command, ...values]);
+              return "";
             }
-            if (args.length < length[type]) throw new Error("malformed path data");
-            data.push([command].concat(args.splice(0, length[type])));
+            if (values.length < length[type]) throw new Error("malformed path data");
+            data.push([command, ...values.splice(0, length[type])]);
           }
         });
         return data;
       }
-      var number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/ig;
       function parseValues(args) {
-        var numbers = args.match(number);
+        const numbers = args.match(number);
         return numbers ? numbers.map(Number) : [];
       }
+      module.exports = parse;
     }
   });
 
@@ -23541,7 +26597,7 @@ var Plotly = (() => {
   var require_symbol_defs = __commonJS({
     "src/components/drawing/symbol_defs.js"(exports, module) {
       "use strict";
-      var parseSvgPath = require_parse_svg_path();
+      var parseSvgPath = require_dist();
       var round = (
         // require('@plotly/d3').round;
         function(x, n) {
@@ -24232,7 +27288,7 @@ var Plotly = (() => {
       var numberFormat = Lib.numberFormat;
       var isNumeric2 = require_fast_isnumeric();
       var Registry = require_registry();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Colorscale = require_colorscale();
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
@@ -24256,7 +27312,7 @@ var Plotly = (() => {
         var textcase = font.textcase;
         if (family) s.style("font-family", family);
         if (size + 1) s.style("font-size", size + "px");
-        if (color2) s.call(Color3.fill, color2);
+        if (color2) s.call(Color2.fill, color2);
         if (weight) s.style("font-weight", weight);
         if (style) s.style("font-style", style);
         if (variant) s.style("font-variant", variant);
@@ -24264,7 +27320,7 @@ var Plotly = (() => {
         if (shadow)
           s.style(
             "text-shadow",
-            shadow === "auto" ? svgTextUtils.makeTextShadow(Color3.contrast(color2)) : dropNone(shadow)
+            shadow === "auto" ? svgTextUtils.makeTextShadow(Color2.contrast(color2)) : dropNone(shadow)
           );
         if (lineposition) s.style("text-decoration-line", dropNone(lineposition2decorationLine(lineposition)));
       };
@@ -24340,7 +27396,7 @@ var Plotly = (() => {
         var line = (((d || [])[0] || {}).trace || {}).line || {};
         var lw1 = lw || line.width || 0;
         var dash = ld || line.dash || "";
-        Color3.stroke(s, lc || line.color);
+        Color2.stroke(s, lc || line.color);
         drawing.dashLine(s, dash, lw1);
       };
       drawing.lineGroupStyle = function(s, lw, lc, ld) {
@@ -24348,7 +27404,7 @@ var Plotly = (() => {
           var line = (((d || [])[0] || {}).trace || {}).line || {};
           var lw1 = lw || line.width || 0;
           var dash = ld || line.dash || "";
-          d3.select(this).call(Color3.stroke, lc || line.color).call(drawing.dashLine, dash, lw1);
+          d3.select(this).call(Color2.stroke, lc || line.color).call(drawing.dashLine, dash, lw1);
         });
       };
       drawing.dashLine = function(s, dash, lineWidth) {
@@ -24449,7 +27505,7 @@ var Plotly = (() => {
             sel.call(drawing.gradient, gd, gradientID, direction, fillgradient.colorscale, "fill");
           }
         } else if (trace.fillcolor) {
-          sel.call(Color3.fill, trace.fillcolor);
+          sel.call(Color2.fill, trace.fillcolor);
         }
       }
       drawing.singleFillStyle = function(sel, gd) {
@@ -24598,11 +27654,10 @@ var Plotly = (() => {
           stops.exit().remove();
           stops.enter().append("stop");
           stops.each(function(d) {
-            var c = Color3.color(d[1]);
             d3.select(this).attr({
               offset: d[0] + "%",
-              "stop-color": Color3.rgb(d[1]),
-              "stop-opacity": c.alpha()
+              "stop-color": Color2.rgb(d[1]),
+              "stop-opacity": Color2.parse(d[1]).alpha
             });
           });
         });
@@ -24614,7 +27669,7 @@ var Plotly = (() => {
         if (mcc) {
           if (fillmode === "overlay") {
             bgcolor = mcc;
-            fgcolor = Color3.contrast(bgcolor);
+            fgcolor = Color2.contrast(bgcolor);
           } else {
             bgcolor = void 0;
             fgcolor = mcc;
@@ -24629,9 +27684,8 @@ var Plotly = (() => {
         var path, linewidth, radius;
         var patternTag;
         var patternAttrs = {};
-        var fgC = Color3.color(fgcolor);
-        var fgRGB = Color3.rgb(fgcolor);
-        var fgAlpha = fgC.alpha();
+        var fgRGB = Color2.rgb(fgcolor);
+        var fgAlpha = Color2.parse(fgcolor).alpha;
         var opacity = fgopacity * fgAlpha;
         switch (shape) {
           case "/":
@@ -24757,9 +27811,8 @@ var Plotly = (() => {
             patternTransform: isLegend ? "scale(0.8)" : ""
           });
           if (bgcolor) {
-            var bgC = Color3.color(bgcolor);
-            var bgRGB = Color3.rgb(bgcolor);
-            var bgAlpha = bgC.alpha();
+            var bgRGB = Color2.rgb(bgcolor);
+            var bgAlpha = Color2.parse(bgcolor).alpha;
             var rects = el.selectAll("rect").data([0]);
             rects.exit().remove();
             rects.enter().append("rect").attr({
@@ -24834,10 +27887,10 @@ var Plotly = (() => {
           lineWidth = (d.mlw + 1 || markerLineWidth + 1 || // TODO: we need the latter for legends... can we get rid of it?
           (d.trace ? (d.trace.marker.line || {}).width : 0) + 1) - 1 || 0;
           if ("mlc" in d) lineColor = d.mlcc = fns.lineScale(d.mlc);
-          else if (Lib.isArrayOrTypedArray(markerLine.color)) lineColor = Color3.defaultLine;
+          else if (Lib.isArrayOrTypedArray(markerLine.color)) lineColor = Color2.defaultLine;
           else lineColor = markerLine.color;
           if (Lib.isArrayOrTypedArray(marker.color)) {
-            fillColor = Color3.defaultLine;
+            fillColor = Color2.defaultLine;
             perPointGradient = true;
           }
           if ("mc" in d) {
@@ -24852,7 +27905,7 @@ var Plotly = (() => {
         const lineDash = d.mld || (markerLine || {}).dash;
         if (lineDash) drawing.dashLine(sel, lineDash, lineWidth);
         if (d.om) {
-          sel.call(Color3.stroke, fillColor).style({
+          sel.call(Color2.stroke, fillColor).style({
             "stroke-width": (lineWidth || 1) + "px",
             fill: "none"
           });
@@ -24916,10 +27969,10 @@ var Plotly = (() => {
               patternFGOpacity
             );
           } else {
-            Lib.isArrayOrTypedArray(fillColor) ? Color3.fill(sel, fillColor[d.i]) : Color3.fill(sel, fillColor);
+            Lib.isArrayOrTypedArray(fillColor) ? Color2.fill(sel, fillColor[d.i]) : Color2.fill(sel, fillColor);
           }
           if (lineWidth) {
-            Color3.stroke(sel, lineColor);
+            Color2.stroke(sel, lineColor);
           }
         }
       };
@@ -25006,7 +28059,7 @@ var Plotly = (() => {
             return stc || base;
           } else {
             if (utc) return utc;
-            else return stc ? base : Color3.addOpacity(base, DESELECTDIM);
+            else return stc ? base : Color2.addOpacity(base, DESELECTDIM);
           }
         };
         return out;
@@ -25023,7 +28076,7 @@ var Plotly = (() => {
         }
         if (fns.selectedColorFn) {
           seq.push(function(pt, d) {
-            Color3.fill(pt, fns.selectedColorFn(d));
+            Color2.fill(pt, fns.selectedColorFn(d));
           });
         }
         if (fns.selectedSizeFn) {
@@ -25133,7 +28186,7 @@ var Plotly = (() => {
           var tc = fns.selectedTextColorFn(d);
           var tp = d.tp || trace.textposition;
           var fontSize = extracTextFontSize(d, trace);
-          Color3.fill(tx, tc);
+          Color2.fill(tx, tc);
           var dontTouchParent = Registry.traceIs(trace, "bar-like");
           textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc, dontTouchParent);
         });
@@ -25573,7 +28626,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var svgTextUtils = require_svg_text_utils();
       var interactConstants = require_interactions();
       var OPPOSITE_SIDE = require_alignment().OPPOSITE_SIDE;
@@ -25702,8 +28755,8 @@ var Plotly = (() => {
               }
             }
           }
-          titleEl.style("opacity", opacity * Color3.opacity(fontColor)).call(Drawing.font, {
-            color: Color3.rgb(fontColor),
+          titleEl.style("opacity", opacity * Color2.opacity(fontColor)).call(Drawing.font, {
+            color: Color2.rgb(fontColor),
             size: d3.round(fontSize, 2),
             family: fontFamily,
             weight: fontWeight,
@@ -25722,8 +28775,8 @@ var Plotly = (() => {
               y: subtitleY2
             });
             subtitleEl2.attr("transform", transformVal);
-            subtitleEl2.style("opacity", subtitleOpacity * Color3.opacity(subFontColor)).call(Drawing.font, {
-              color: Color3.rgb(subFontColor),
+            subtitleEl2.style("opacity", subtitleOpacity * Color2.opacity(subFontColor)).call(Drawing.font, {
+              color: Color2.rgb(subFontColor),
               size: d3.round(subFontSize, 2),
               family: subFontFamily,
               weight: subFontWeight,
@@ -27136,7 +30189,7 @@ var Plotly = (() => {
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
       var Titles = require_titles();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var axAttrs = require_layout_attributes4();
       var cleanTicks = require_clean_ticks();
@@ -28666,8 +31719,8 @@ var Plotly = (() => {
             return typeof left === "number" ? 1 : -1;
           }
         }
-        function isProperStop(dtick, range, convert3) {
-          var convertFn = convert3 || function(x) {
+        function isProperStop(dtick, range, convert) {
+          var convertFn = convert || function(x) {
             return x;
           };
           var leftDtick = range[0];
@@ -29484,7 +32537,7 @@ var Plotly = (() => {
         var ticks = opts.layer.selectAll("path." + cls).data(vals, tickDataFn);
         ticks.exit().remove();
         ticks.enter().append("path").classed(cls, 1).classed("ticks", 1).classed("crisp", opts.crisp !== false).each(function(d) {
-          return Color3.stroke(d3.select(this), d.minor ? ax.minor.tickcolor : ax.tickcolor);
+          return Color2.stroke(d3.select(this), d.minor ? ax.minor.tickcolor : ax.tickcolor);
         }).style("stroke-width", function(d) {
           return Drawing.crispRound(
             gd,
@@ -29531,7 +32584,7 @@ var Plotly = (() => {
           grid.exit().remove();
           grid.enter().append("path").classed(cls, 1).classed("crisp", opts.crisp !== false);
           grid.attr("transform", opts.transFn).attr("d", opts.path).each(function(d) {
-            return Color3.stroke(
+            return Color2.stroke(
               d3.select(this),
               d.minor ? ax.minor.gridcolor : ax.gridcolor || "#ddd"
             );
@@ -29558,7 +32611,7 @@ var Plotly = (() => {
             return idSort(da.id, db.id);
           });
         });
-        zl.attr("transform", opts.transFn).attr("d", opts.path).call(Color3.stroke, ax.zerolinecolor || Color3.defaultLine).style("stroke-width", Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + "px").style("display", null);
+        zl.attr("transform", opts.transFn).attr("d", opts.path).call(Color2.stroke, ax.zerolinecolor || Color2.defaultLine).style("stroke-width", Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + "px").style("display", null);
         hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
       };
       axes.drawLabels = function(gd, ax, opts) {
@@ -29935,7 +32988,7 @@ var Plotly = (() => {
         var vals = opts.vals;
         var dividers = opts.layer.selectAll("path." + cls).data(vals, tickDataFn);
         dividers.exit().remove();
-        dividers.enter().insert("path", ":first-child").classed(cls, 1).classed("crisp", 1).call(Color3.stroke, ax.dividercolor).style("stroke-width", Drawing.crispRound(gd, ax.dividerwidth, 1) + "px");
+        dividers.enter().insert("path", ":first-child").classed(cls, 1).classed("crisp", 1).call(Color2.stroke, ax.dividercolor).style("stroke-width", Drawing.crispRound(gd, ax.dividerwidth, 1) + "px");
         dividers.attr("transform", opts.transFn).attr("d", opts.path);
       }
       axes.getPxPosition = function(gd, ax) {
@@ -30462,18 +33515,29 @@ var Plotly = (() => {
       var hoverConstants = require_constants();
       var unhover = module.exports = {};
       unhover.wrapped = function(gd, evt, subplot) {
+        var _a;
         gd = getGraphDiv(gd);
         if (gd._fullLayout) {
           throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
         }
-        unhover.raw(gd, evt, subplot);
+        const oldhoverdata = gd._hoverdata;
+        const shouldEmitUnhover = unhover.raw(gd, evt, subplot);
+        if (shouldEmitUnhover && gd._hoverAnywhereActive) {
+          gd._hoverAnywhereActive = false;
+          if (((_a = gd._fullLayout) == null ? void 0 : _a.hoveranywhere) && (evt == null ? void 0 : evt.target) && !oldhoverdata) {
+            gd.emit("plotly_unhover", {
+              event: evt,
+              points: []
+            });
+          }
+        }
       };
       unhover.raw = function raw(gd, evt) {
         var fullLayout = gd._fullLayout;
         var oldhoverdata = gd._hoverdata;
         if (!evt) evt = {};
         if (evt.target && !gd._dragged && Events.triggerHandler(gd, "plotly_beforehover", evt) === false) {
-          return;
+          return false;
         }
         fullLayout._hoverlayer.selectAll("g").remove();
         fullLayout._hoverlayer.selectAll("line").remove();
@@ -30485,6 +33549,7 @@ var Plotly = (() => {
             points: oldhoverdata
           });
         }
+        return true;
       };
     }
   });
@@ -31596,13 +34661,13 @@ var Plotly = (() => {
     "src/traces/pie/fill_one.js"(exports, module) {
       "use strict";
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       module.exports = function fillOne(s, pt, trace, gd) {
         var pattern = trace.marker.pattern;
         if (pattern && pattern.shape) {
           Drawing.pointStyle(s, trace, gd, pt);
         } else {
-          Color3.fill(s, pt.color);
+          Color2.fill(s, pt.color);
         }
       };
     }
@@ -31612,14 +34677,14 @@ var Plotly = (() => {
   var require_style_one = __commonJS({
     "src/traces/pie/style_one.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var castOption = require_helpers4().castOption;
       var fillOne = require_fill_one();
       module.exports = function styleOne(s, pt, trace, gd) {
         var line = trace.marker.line;
-        var lineColor = castOption(line.color, pt.pts) || Color3.defaultLine;
+        var lineColor = castOption(line.color, pt.pts) || Color2.defaultLine;
         var lineWidth = castOption(line.width, pt.pts) || 0;
-        s.call(fillOne, pt, trace, gd).style("stroke-width", lineWidth).call(Color3.stroke, lineColor);
+        s.call(fillOne, pt, trace, gd).style("stroke-width", lineWidth).call(Color2.stroke, lineColor);
       };
     }
   });
@@ -31633,7 +34698,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var extractOpts = require_helpers().extractOpts;
       var subTypes = require_subtypes();
       var stylePie = require_style_one();
@@ -31847,9 +34912,9 @@ var Plotly = (() => {
             var pt = d3.select(this);
             var cont2 = trace[dd[0]].marker;
             var lw = boundLineWidth(void 0, cont2.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
-            pt.attr("d", dd[1]).style("stroke-width", lw + "px").call(Color3.fill, cont2.color);
+            pt.attr("d", dd[1]).style("stroke-width", lw + "px").call(Color2.fill, cont2.color);
             if (lw) {
-              pt.call(Color3.stroke, cont2.line.color);
+              pt.call(Color2.stroke, cont2.line.color);
             }
           });
         }
@@ -31909,9 +34974,9 @@ var Plotly = (() => {
                 patternFGOpacity
               );
             } else {
-              p.call(Color3.fill, fillColor);
+              p.call(Color2.fill, fillColor);
             }
-            if (w) Color3.stroke(p, d0.mlc || markerLine.color);
+            if (w) Color2.stroke(p, d0.mlc || markerLine.color);
           });
         }
         function styleBoxes(d) {
@@ -31921,7 +34986,7 @@ var Plotly = (() => {
           pts.exit().remove();
           pts.each(function() {
             var p = d3.select(this);
-            if ((trace.boxpoints === "all" || trace.points === "all") && Color3.opacity(trace.fillcolor) === 0 && Color3.opacity((trace.line || {}).color) === 0) {
+            if ((trace.boxpoints === "all" || trace.points === "all") && Color2.opacity(trace.fillcolor) === 0 && Color2.opacity((trace.line || {}).color) === 0) {
               var tMod = Lib.minExtend(trace, {
                 marker: {
                   size: constantItemSizing ? CST_MARKER_SIZE : Lib.constrain(trace.marker.size, 2, 16),
@@ -31933,8 +34998,8 @@ var Plotly = (() => {
               pts.call(Drawing.pointStyle, tMod, gd);
             } else {
               var w = boundLineWidth(void 0, trace.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
-              p.style("stroke-width", w + "px").call(Color3.fill, trace.fillcolor);
-              if (w) Color3.stroke(p, trace.line.color);
+              p.style("stroke-width", w + "px").call(Color2.fill, trace.fillcolor);
+              if (w) Color2.stroke(p, trace.line.color);
             }
           });
         }
@@ -31950,8 +35015,8 @@ var Plotly = (() => {
             var p = d3.select(this);
             var cont = trace[i ? "increasing" : "decreasing"];
             var w = boundLineWidth(void 0, cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
-            p.style("stroke-width", w + "px").call(Color3.fill, cont.fillcolor);
-            if (w) Color3.stroke(p, cont.line.color);
+            p.style("stroke-width", w + "px").call(Color2.fill, cont.fillcolor);
+            if (w) Color2.stroke(p, cont.line.color);
           });
         }
         function styleOHLC(d) {
@@ -31967,7 +35032,7 @@ var Plotly = (() => {
             var cont = trace[i ? "increasing" : "decreasing"];
             var w = boundLineWidth(void 0, cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
             p.style("fill", "none").call(Drawing.dashLine, cont.line.dash, w);
-            if (w) Color3.stroke(p, cont.line.color);
+            if (w) Color2.stroke(p, cont.line.color);
           });
         }
         function stylePies(d) {
@@ -32096,7 +35161,7 @@ var Plotly = (() => {
             }
             pt.attr("d", dd[0]);
             if (fillColor) {
-              pt.call(Color3.fill, fillColor);
+              pt.call(Color2.fill, fillColor);
             } else {
               pt.call(fillGradient);
             }
@@ -32157,7 +35222,7 @@ var Plotly = (() => {
       var Events = require_events2();
       var dragElement = require_dragelement();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var svgTextUtils = require_svg_text_utils();
       var handleItemClick = require_handle_click().handleItemClick;
       var handleTitleClick = require_handle_click().handleTitleClick;
@@ -32280,7 +35345,7 @@ var Plotly = (() => {
         var bg = Lib.ensureSingle(legend, "rect", "bg", function(s) {
           s.attr("shape-rendering", "crispEdges");
         });
-        bg.call(Color3.stroke, legendObj.bordercolor).call(Color3.fill, legendObj.bgcolor).style("stroke-width", legendObj.borderwidth + "px");
+        bg.call(Color2.stroke, legendObj.bordercolor).call(Color2.fill, legendObj.bgcolor).style("stroke-width", legendObj.borderwidth + "px");
         var scrollBox = Lib.ensureSingle(legend, "g", "scrollbox");
         var title = legendObj.title;
         legendObj._titleWidth = 0;
@@ -32298,7 +35363,7 @@ var Plotly = (() => {
           scrollBox.selectAll("." + legendId + "titletoggle").remove();
         }
         var scrollBar = Lib.ensureSingle(legend, "rect", "scrollbar", function(s) {
-          s.attr(constants2.scrollBarEnterAttrs).call(Color3.fill, constants2.scrollBarColor);
+          s.attr(constants2.scrollBarEnterAttrs).call(Color2.fill, constants2.scrollBarColor);
         });
         var groups = scrollBox.selectAll("g.groups").data(legendData);
         groups.enter().append("g").attr("class", "groups");
@@ -32640,7 +35705,7 @@ var Plotly = (() => {
           if (!gd._context.staticPlot) {
             s.style("cursor", "pointer").attr("pointer-events", "all");
           }
-          s.call(Color3.fill, "rgba(0,0,0,0)");
+          s.call(Color2.fill, "rgba(0,0,0,0)");
         });
         if (gd._context.staticPlot) return;
         traceToggle.on("mousedown", function() {
@@ -32675,7 +35740,7 @@ var Plotly = (() => {
           if (!gd._context.staticPlot) {
             s.style("cursor", "pointer").attr("pointer-events", "all");
           }
-          s.call(Color3.fill, "rgba(0,0,0,0)");
+          s.call(Color2.fill, "rgba(0,0,0,0)");
         });
         if (gd._context.staticPlot) return;
         titleToggle.on("mousedown", function() {
@@ -33059,7 +36124,7 @@ var Plotly = (() => {
       var svgTextUtils = require_svg_text_utils();
       var overrideCursor = require_override_cursor();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var dragElement = require_dragelement();
       var Axes = require_axes();
       var zindexSeparator = require_constants2().zindexSeparator;
@@ -33141,7 +36206,7 @@ var Plotly = (() => {
             eventData = false;
           }
           return {
-            color: hoverItem.color || Color3.defaultLine,
+            color: hoverItem.color || Color2.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
             x1: hoverItem.x1 || hoverItem.x || 0,
             y0: hoverItem.y0 || hoverItem.y || 0,
@@ -33180,7 +36245,7 @@ var Plotly = (() => {
           gd,
           hovermode: "closest",
           rotateLabels,
-          bgColor: opts.bgColor || Color3.background,
+          bgColor: opts.bgColor || Color2.background,
           container: d3.select(opts.container),
           outerContainer: opts.outerContainer || opts.container
         });
@@ -33341,6 +36406,8 @@ var Plotly = (() => {
           else xvalArray = helpers.p2c(xaArray, xpx);
           if ("yval" in evt) yvalArray = helpers.flat(subplots, evt.yval);
           else yvalArray = helpers.p2c(yaArray, ypx);
+          gd._hoverPointerX = evt.pointerX;
+          gd._hoverPointerY = evt.pointerY;
           if (!isNumeric2(xvalArray[0]) || !isNumeric2(yvalArray[0])) {
             Lib.warn("Fx.hover failed", evt, gd);
             return dragElement.unhoverRaw(gd, evt);
@@ -33397,7 +36464,7 @@ var Plotly = (() => {
               xSpike: void 0,
               ySpike: void 0,
               // where and how to display the hover label
-              color: Color3.defaultLine,
+              color: Color2.defaultLine,
               // trace color
               name: trace.name,
               x0: void 0,
@@ -33606,6 +36673,7 @@ var Plotly = (() => {
               gd._hoverdata = [];
             }
             emitHover([]);
+            gd._hoverAnywhereActive = true;
           }
           return result;
         }
@@ -33688,7 +36756,7 @@ var Plotly = (() => {
         }
         gd._hoverdata = newhoverdata;
         var rotateLabels = hovermode === "y" && (searchData.length > 1 || hoverData.length > 1) || hovermode === "closest" && hasOneHorizontalTrace && hoverData.length > 1;
-        var bgColor = Color3.combine(fullLayout.plot_bgcolor || Color3.background, fullLayout.paper_bgcolor);
+        var bgColor = Color2.combine(fullLayout.plot_bgcolor || Color2.background, fullLayout.paper_bgcolor);
         var hoverText = createHoverText(hoverData, {
           gd,
           hovermode,
@@ -33723,8 +36791,12 @@ var Plotly = (() => {
             points,
             xaxes: xaArray,
             yaxes: yaArray,
-            xvals: xvalArray,
-            yvals: yvalArray
+            xvals: helpers.c2dApply(xaArray, xvalArray),
+            yvals: helpers.c2dApply(yaArray, yvalArray),
+            // Note: top-level xPixel/yPixel correspond to the pixel position of the cursor.
+            // Inside `points` array, points[i].xPixel/yPixel correspond to the pixel position of the point itself.
+            xPixel: evt.pointerX,
+            yPixel: evt.pointerY
           });
         }
       }
@@ -33800,9 +36872,9 @@ var Plotly = (() => {
           var ltext = Lib.ensureSingle(label, "text", "", function(s) {
             s.attr("data-notex", 1);
           });
-          var commonBgColor = commonLabelOpts.bgcolor || Color3.defaultLine;
-          var commonStroke = commonLabelOpts.bordercolor || Color3.contrast(commonBgColor);
-          var contrastColor = Color3.contrast(commonBgColor);
+          var commonBgColor = commonLabelOpts.bgcolor || Color2.defaultLine;
+          var commonStroke = commonLabelOpts.bordercolor || Color2.contrast(commonBgColor);
+          var contrastColor = Color2.contrast(commonBgColor);
           var commonLabelOptsFont = commonLabelOpts.font;
           var commonLabelFont = {
             weight: commonLabelOptsFont.weight || fontWeight,
@@ -34091,7 +37163,7 @@ var Plotly = (() => {
         });
         hoverLabels.enter().append("g").classed("hovertext", true).each(function() {
           var g = d3.select(this);
-          g.append("rect").call(Color3.fill, Color3.addOpacity(bgColor, 0.8));
+          g.append("rect").call(Color2.fill, Color2.addOpacity(bgColor, 0.8));
           g.append("text").classed("name", true);
           g.append("path").style("stroke-width", "1px");
           g.append("text").classed("nums", true).call(Drawing.font, {
@@ -34113,9 +37185,9 @@ var Plotly = (() => {
             dColor = dColor[d.eventData[0].pointNumber];
           }
           var color0 = d.bgcolor || dColor;
-          var numsColor = Color3.combine(Color3.opacity(color0) ? color0 : Color3.defaultLine, bgColor);
-          var nameColor = Color3.combine(Color3.opacity(dColor) ? dColor : Color3.defaultLine, bgColor);
-          var contrastColor = d.borderColor || Color3.contrast(numsColor);
+          var numsColor = Color2.combine(Color2.opacity(color0) ? color0 : Color2.defaultLine, bgColor);
+          var nameColor = Color2.combine(Color2.opacity(dColor) ? dColor : Color2.defaultLine, bgColor);
+          var contrastColor = d.borderColor || Color2.contrast(numsColor);
           var texts2 = getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t02, g);
           var text2 = texts2[0];
           var name2 = texts2[1];
@@ -34603,7 +37675,7 @@ var Plotly = (() => {
         var xa, ya;
         container.selectAll(".spikeline").remove();
         if (!(showX || showY)) return;
-        var contrastColor = Color3.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
+        var contrastColor = Color2.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
         if (showY) {
           var hLinePoint = closestPoints.hLinePoint;
           var hLinePointX, hLinePointY;
@@ -34617,7 +37689,7 @@ var Plotly = (() => {
             hLinePointX = xa._offset + hLinePoint.x;
             hLinePointY = ya._offset + hLinePoint.y;
           }
-          var dfltHLineColor = Color3.color(hLinePoint.color).contrast(Color3.color(contrastColor)) < 1.5 ? Color3.contrast(contrastColor) : hLinePoint.color;
+          var dfltHLineColor = Color2.wcagContrast(hLinePoint.color, contrastColor) < 1.5 ? Color2.contrast(contrastColor) : hLinePoint.color;
           var yMode = ya.spikemode;
           var yThickness = ya.spikethickness;
           var yColor = ya.spikecolor || dfltHLineColor;
@@ -34678,7 +37750,7 @@ var Plotly = (() => {
             vLinePointX = xa._offset + vLinePoint.x;
             vLinePointY = ya._offset + vLinePoint.y;
           }
-          var dfltVLineColor = Color3.color(vLinePoint.color).contrast(Color3.color(contrastColor)) < 1.5 ? Color3.contrast(contrastColor) : vLinePoint.color;
+          var dfltVLineColor = Color2.wcagContrast(vLinePoint.color, contrastColor) < 1.5 ? Color2.contrast(contrastColor) : vLinePoint.color;
           var xMode = xa.spikemode;
           var xThickness = xa.spikethickness;
           var xColor = xa.spikecolor || dfltVLineColor;
@@ -34830,7 +37902,7 @@ var Plotly = (() => {
     "src/components/fx/hoverlabel_defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var isUnifiedHover = require_helpers2().isUnifiedHover;
       module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
         opts = opts || {};
@@ -34849,7 +37921,7 @@ var Plotly = (() => {
           inheritFontAttr("style");
           inheritFontAttr("variant");
           if (hasLegend) {
-            if (!opts.bgcolor) opts.bgcolor = Color3.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);
+            if (!opts.bgcolor) opts.bgcolor = Color2.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);
             if (!opts.bordercolor) opts.bordercolor = contOut.legend.bordercolor;
           } else {
             if (!opts.bgcolor) opts.bgcolor = contOut.paper_bgcolor;
@@ -35002,6 +38074,7 @@ var Plotly = (() => {
     "src/components/fx/click.js"(exports, module) {
       "use strict";
       var Registry = require_registry();
+      var helpers = require_helpers2();
       var hover = require_hover().hover;
       module.exports = function click(gd, evt, subplot) {
         var annotationsDone = Registry.getComponentMethod("annotations", "onClick")(gd, gd._hoverdata);
@@ -35010,12 +38083,14 @@ var Plotly = (() => {
           hover(gd, evt, subplot, true);
         }
         function emitClick() {
-          var _a, _b, _c, _d;
+          var _a, _b, _c, _d, _e, _f;
           var clickData = { points: gd._hoverdata, event: evt };
           (_a = clickData.xaxes) != null ? _a : clickData.xaxes = gd._hoverXAxes;
           (_b = clickData.yaxes) != null ? _b : clickData.yaxes = gd._hoverYAxes;
-          (_c = clickData.xvals) != null ? _c : clickData.xvals = gd._hoverXVals;
-          (_d = clickData.yvals) != null ? _d : clickData.yvals = gd._hoverYVals;
+          (_c = clickData.xvals) != null ? _c : clickData.xvals = gd._hoverXVals && helpers.c2dApply(gd._hoverXAxes, gd._hoverXVals);
+          (_d = clickData.yvals) != null ? _d : clickData.yvals = gd._hoverYVals && helpers.c2dApply(gd._hoverYAxes, gd._hoverYVals);
+          (_e = clickData.xPixel) != null ? _e : clickData.xPixel = gd._hoverPointerX;
+          (_f = clickData.yPixel) != null ? _f : clickData.yPixel = gd._hoverPointerY;
           gd.emit("plotly_click", clickData);
         }
         if ((gd._hoverdata || fullLayout.clickanywhere) && evt && evt.target) {
@@ -35388,7 +38463,7 @@ var Plotly = (() => {
   var require_helpers7 = __commonJS({
     "src/components/shapes/draw_newshape/helpers.js"(exports) {
       "use strict";
-      var parseSvgPath = require_parse_svg_path();
+      var parseSvgPath = require_dist();
       var constants2 = require_constants4();
       var CIRCLE_SIDES = constants2.CIRCLE_SIDES;
       var SQRT2 = constants2.SQRT2;
@@ -36605,7 +39680,7 @@ var Plotly = (() => {
       var drawMode = dragHelpers.drawMode;
       var selectMode = dragHelpers.selectMode;
       var Registry = require_registry();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var constants2 = require_constants4();
       var i000 = constants2.i000;
       var i090 = constants2.i090;
@@ -36771,8 +39846,8 @@ var Plotly = (() => {
               var x = cell[j][1];
               var y = cell[j][2];
               var vertex = g2.append(rectSelection ? "rect" : "circle").attr("data-i", i).attr("data-j", j).style({
-                fill: Color3.background,
-                stroke: Color3.defaultLine,
+                fill: Color2.background,
+                stroke: Color2.defaultLine,
                 "stroke-width": 1,
                 "shape-rendering": "crispEdges"
               });
@@ -36904,7 +39979,7 @@ var Plotly = (() => {
       var displayOutlines = require_display_outlines();
       var drawLabel = require_display_labels();
       var clearOutlineControllers = require_handle_outline().clearOutlineControllers;
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var arrayEditor = require_plot_template().arrayEditor;
       var dragElement = require_dragelement();
@@ -36988,7 +40063,7 @@ var Plotly = (() => {
             opacity = gd._fullLayout.activeshape.opacity;
           }
           var shapeGroup = shapeLayer.append("g").classed("shape-group", true).attr({ "data-index": index });
-          var path = shapeGroup.append("path").attr(attrs).style("opacity", opacity).call(Color3.stroke, lineColor).call(Color3.fill, fillColor).call(Drawing.dashLine, lineDash, lineWidth);
+          var path = shapeGroup.append("path").attr(attrs).style("opacity", opacity).call(Color2.stroke, lineColor).call(Color2.fill, fillColor).call(Drawing.dashLine, lineDash, lineWidth);
           setClipPath(shapeGroup, gd, options);
           drawLabel(gd, index, options, shapeGroup);
           var editHelpers;
@@ -37012,7 +40087,7 @@ var Plotly = (() => {
             if (gd._context.edits.shapePosition) {
               setupDragElement(gd, path, options, index, shapeLayer, editHelpers);
             } else if (options.editable === true) {
-              path.style("pointer-events", isOpen || Color3.opacity(fillColor) * opacity <= 0.5 ? "stroke" : "all");
+              path.style("pointer-events", isOpen || Color2.opacity(fillColor) * opacity <= 0.5 ? "stroke" : "all");
             }
           }
           path.node().addEventListener("click", function() {
@@ -37450,42 +40525,93 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/modebar/cloud_confirm.js
-  var require_cloud_confirm = __commonJS({
-    "src/components/modebar/cloud_confirm.js"(exports, module) {
+  // src/components/modebar/share_chart/strings.js
+  var require_strings = __commonJS({
+    "src/components/modebar/share_chart/strings.js"(exports, module) {
+      "use strict";
+      var _ = require_lib()._;
+      var getDialogStrings = function(gd) {
+        return {
+          DIALOG_TITLE: _(gd, "Share chart"),
+          // Messages to be shown when serverUrl matches the default (Plotly Cloud) URL
+          DIALOG_MESSAGE_CLOUD: _(gd, "This chart will be uploaded to {Plotly Cloud} to create a sharing link. Only you can see it until you change its visibility."),
+          DIALOG_MESSAGE_CLOUD_ACCOUNT: _(gd, "If you don't have a Plotly Cloud account yet, you'll have a chance to create one."),
+          // Message to be shown when serverUrl is not the default URL
+          DIALOG_MESSAGE_OTHER: _(gd, "This chart will be sent to {serverUrl}."),
+          // Labels for buttons
+          DIALOG_CANCEL: _(gd, "Cancel"),
+          DIALOG_CONFIRM: _(gd, "Share")
+        };
+      };
+      module.exports = getDialogStrings;
+    }
+  });
+
+  // src/components/modebar/share_chart/dialog.js
+  var require_dialog = __commonJS({
+    "src/components/modebar/share_chart/dialog.js"(exports, module) {
       "use strict";
       var d3 = require_d3();
-      var _ = require_lib()._;
-      module.exports = function confirmCloudDialog(gd, serverUrl, onConfirm) {
-        var container = d3.select(gd._fullLayout._paperdiv.node());
+      var { dfltConfig } = require_plot_config();
+      var getDialogStrings = require_strings();
+      var buildDialogBox = (gd, overlay, serverUrl, onClickConfirm, onClickCancel) => {
+        const strings = getDialogStrings(gd);
+        const dialog = overlay.append("div").classed("plotly-cloud-dialog-box", true);
+        dialog.append("div").classed("plotly-cloud-dialog-title", true).text(strings.DIALOG_TITLE);
+        if (serverUrl === dfltConfig.plotlyServerURL) {
+          const description = dialog.append("div").classed("plotly-cloud-dialog-message", true);
+          const serverUrlHref = new URL(serverUrl).origin;
+          const descriptionParts = strings.DIALOG_MESSAGE_CLOUD.split(/(\{|\})/);
+          const beforePart = descriptionParts[0];
+          const betweenPart = descriptionParts[2];
+          const afterPart = descriptionParts[4];
+          description.append("span").text(beforePart);
+          description.append("a").classed("plotly-cloud-dialog-message--hostname", true).attr("href", serverUrlHref).attr("target", "_blank").text(betweenPart);
+          description.append("span").text(afterPart);
+          description.append("div").classed("plotly-cloud-dialog-message--account", true).text(strings.DIALOG_MESSAGE_CLOUD_ACCOUNT);
+        } else {
+          const serverUrlObj = new URL(serverUrl);
+          const serverUrlHostname = serverUrlObj.hostname;
+          const serverUrlHref = serverUrlObj.origin;
+          const descriptionParts = strings.DIALOG_MESSAGE_OTHER.split(/(\{|\})/);
+          const beforePart = descriptionParts[0];
+          const afterPart = descriptionParts[4];
+          const description = dialog.append("div").classed("plotly-cloud-dialog-message", true);
+          description.append("span").text(beforePart);
+          description.append("a").classed("plotly-cloud-dialog-message--hostname", true).attr("href", serverUrlHref).attr("target", "_blank").text(serverUrlHostname);
+          description.append("span").text(afterPart);
+        }
+        const buttons = dialog.append("div").classed("plotly-cloud-dialog-buttons", true);
+        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--cancel", true).text(strings.DIALOG_CANCEL).on("click", onClickCancel);
+        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--confirm", true).text(strings.DIALOG_CONFIRM).on("click", onClickConfirm);
+      };
+      var confirmCloudDialog = (gd, serverUrl, onConfirm) => {
+        const container = d3.select(gd._fullLayout._paperdiv.node());
         container.selectAll(".plotly-cloud-dialog").remove();
-        var overlay = container.append("div").classed("plotly-cloud-dialog", true);
-        var dialog = overlay.append("div").classed("plotly-cloud-dialog-box", true);
-        dialog.append("div").classed("plotly-cloud-dialog-title", true).text(_(gd, "Share with Plotly Cloud"));
-        var serverUrlText = new URL(serverUrl).hostname;
-        var description = dialog.append("div");
-        description.classed("plotly-cloud-dialog-message", true);
-        description.append("span").text(_(gd, "This chart and its data will be sent to "));
-        description.append("span").text(serverUrlText).classed("plotly-cloud-dialog-message--hostname", true);
-        description.append("span").text(". ");
-        var buttons = dialog.append("div").classed("plotly-cloud-dialog-buttons", true);
-        function close() {
+        const overlay = container.append("div").classed("plotly-cloud-dialog", true);
+        const close = () => {
           overlay.remove();
           document.removeEventListener("keydown", onKeydown);
-        }
-        function onKeydown(e) {
+        };
+        const onKeydown = (e) => {
           if (e.key === "Escape" || e.keyCode === 27) close();
-        }
+        };
         document.addEventListener("keydown", onKeydown);
-        overlay.on("click", function() {
+        overlay.on("click", () => {
           if (d3.event.target === overlay.node()) close();
         });
-        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--cancel", true).text(_(gd, "Cancel")).on("click", close);
-        buttons.append("button").classed("plotly-cloud-dialog-btn", true).classed("plotly-cloud-dialog-btn--confirm", true).text(_(gd, "Share")).on("click", function() {
-          close();
-          onConfirm();
-        });
+        buildDialogBox(
+          gd,
+          overlay,
+          serverUrl,
+          () => {
+            close();
+            onConfirm();
+          },
+          close
+        );
       };
+      module.exports = confirmCloudDialog;
     }
   });
 
@@ -37498,7 +40624,7 @@ var Plotly = (() => {
       var axisIds = require_axis_ids();
       var Icons = require_ploticon();
       var eraseActiveShape = require_draw2().eraseActiveShape;
-      var confirmCloudDialog = require_cloud_confirm();
+      var confirmCloudDialog = require_dialog();
       var Lib = require_lib();
       var _ = Lib._;
       var modeBarButtons = module.exports = {};
@@ -37532,19 +40658,25 @@ var Plotly = (() => {
       modeBarButtons.sendChartToCloud = {
         name: "sendChartToCloud",
         title: function(gd) {
-          return _(gd, "Share Chart");
+          return _(gd, "Share chart...");
         },
         icon: Icons.cloudupload,
         click: function(gd) {
           var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
           if (!baseUrl) {
-            console.error("No destination URL provided (plotlyServerURL is not set)");
+            console.error("No destination URL provided (plotlyServerURL is empty)");
             return;
           }
+          var baseUrlObj;
           try {
-            new URL(baseUrl);
+            baseUrlObj = new URL(baseUrl);
           } catch (e) {
             console.error("Invalid plotlyServerURL: " + baseUrl);
+            return;
+          }
+          const supportedProtocols = ["http:", "https:"];
+          if (!supportedProtocols.includes(baseUrlObj.protocol)) {
+            console.error(`Invalid protocol '${baseUrlObj.protocol}' in plotlyServerURL '${baseUrl}'. Must be one of: ${supportedProtocols.join(", ")}`);
             return;
           }
           confirmCloudDialog(gd, baseUrl, function() {
@@ -38314,7 +41446,7 @@ var Plotly = (() => {
     "src/components/modebar/defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Template = require_plot_template();
       var attributes2 = (init_attributes(), __toCommonJS(attributes_exports)).default;
       module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
@@ -38324,10 +41456,10 @@ var Plotly = (() => {
           return Lib.coerce(containerIn, containerOut, attributes2, attr, dflt);
         }
         coerce("orientation");
-        coerce("bgcolor", Color3.addOpacity(layoutOut.paper_bgcolor, 0.5));
-        var defaultColor = Color3.contrast(Color3.rgb(layoutOut.modebar.bgcolor));
-        coerce("color", Color3.addOpacity(defaultColor, 0.3));
-        coerce("activecolor", Color3.addOpacity(defaultColor, 0.7));
+        coerce("bgcolor", Color2.addOpacity(layoutOut.paper_bgcolor, 0.5));
+        var defaultColor = Color2.contrast(Color2.rgb(layoutOut.modebar.bgcolor));
+        coerce("color", Color2.addOpacity(defaultColor, 0.3));
+        coerce("activecolor", Color2.addOpacity(defaultColor, 0.7));
         coerce("uirevision", layoutOut.uirevision);
         coerce("add");
         coerce("remove");
@@ -39338,7 +42470,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var svgTextUtils = require_svg_text_utils();
       var clearGlCanvases = require_clear_gl_canvases();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Titles = require_titles();
       var ModeBar = require_modebar2();
@@ -39410,7 +42542,7 @@ var Plotly = (() => {
         var lowerBackgroundIDs = [];
         var backgroundIds = [];
         var lowerDomains = [];
-        var noNeedForBg = Color3.opacity(fullLayout.paper_bgcolor) === 1 && Color3.opacity(fullLayout.plot_bgcolor) === 1 && fullLayout.paper_bgcolor === fullLayout.plot_bgcolor;
+        var noNeedForBg = Color2.opacity(fullLayout.paper_bgcolor) === 1 && Color2.opacity(fullLayout.plot_bgcolor) === 1 && fullLayout.paper_bgcolor === fullLayout.plot_bgcolor;
         for (subplot in fullLayout._plots) {
           plotinfo = fullLayout._plots[subplot];
           if (plotinfo.mainplot) {
@@ -39454,7 +42586,7 @@ var Plotly = (() => {
               ya._offset - pad,
               xa._length + 2 * pad,
               ya._length + 2 * pad
-            ).call(Color3.fill, fullLayout.plot_bgcolor).style("stroke-width", 0);
+            ).call(Color2.fill, fullLayout.plot_bgcolor).style("stroke-width", 0);
           }
         }
         if (!fullLayout._hasOnlyLargeSploms) {
@@ -39529,7 +42661,7 @@ var Plotly = (() => {
             if (extraSubplot && xa.showline && (xa.mirror === "all" || xa.mirror === "allticks")) {
               xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
             }
-            plotinfo.xlines.style("stroke-width", xa._lw + "px").call(Color3.stroke, xa.showline ? xa.linecolor : "rgba(0,0,0,0)");
+            plotinfo.xlines.style("stroke-width", xa._lw + "px").call(Color2.stroke, xa.showline ? xa.linecolor : "rgba(0,0,0,0)");
           }
           plotinfo.xlines.attr("d", xPath);
           var yPath = "M0,0";
@@ -39548,7 +42680,7 @@ var Plotly = (() => {
             if (extraSubplot && ya.showline && (ya.mirror === "all" || ya.mirror === "allticks")) {
               yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
             }
-            plotinfo.ylines.style("stroke-width", ya._lw + "px").call(Color3.stroke, ya.showline ? ya.linecolor : "rgba(0,0,0,0)");
+            plotinfo.ylines.style("stroke-width", ya._lw + "px").call(Color2.stroke, ya.showline ? ya.linecolor : "rgba(0,0,0,0)");
           }
           plotinfo.ylines.attr("d", yPath);
         }
@@ -39930,7 +43062,7 @@ var Plotly = (() => {
       var readPaths = require_helpers7().readPaths;
       var displayOutlines = require_display_outlines();
       var clearOutlineControllers = require_handle_outline().clearOutlineControllers;
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var arrayEditor = require_plot_template().arrayEditor;
       var helpers = require_helpers8();
@@ -39971,7 +43103,7 @@ var Plotly = (() => {
           };
           var opacity = options.opacity;
           var fillColor = "rgba(0,0,0,0)";
-          var lineColor = options.line.color || Color3.contrast(gd._fullLayout.plot_bgcolor);
+          var lineColor = options.line.color || Color2.contrast(gd._fullLayout.plot_bgcolor);
           var lineWidth = options.line.width;
           var lineDash = options.line.dash;
           if (!lineWidth) {
@@ -39985,7 +43117,7 @@ var Plotly = (() => {
           }
           var allPaths = [];
           for (var sensory = 1; sensory >= 0; sensory--) {
-            var path = selectionLayer.append("path").attr(attrs).style("opacity", sensory ? 0.1 : opacity).call(Color3.stroke, lineColor).call(Color3.fill, fillColor).call(
+            var path = selectionLayer.append("path").attr(attrs).style("opacity", sensory ? 0.1 : opacity).call(Color2.stroke, lineColor).call(Color2.fill, fillColor).call(
               Drawing.dashLine,
               sensory ? "solid" : lineDash,
               sensory ? 4 + lineWidth : lineWidth
@@ -41450,7 +44582,7 @@ var Plotly = (() => {
       var pointInPolygon = require_nested();
       var Registry = require_registry();
       var dashStyle = require_drawing().dashStyle;
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Fx = require_fx();
       var makeEventData = require_helpers2().makeEventData;
       var dragHelpers = require_helpers5();
@@ -41532,16 +44664,16 @@ var Plotly = (() => {
           dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
         }
         var fillC = isDrawMode && !isOpenMode ? newStyle.fillcolor : "rgba(0,0,0,0)";
-        var strokeC = newStyle.line.color || (isCartesian ? Color3.contrast(gd._fullLayout.plot_bgcolor) : "#7f7f7f");
+        var strokeC = newStyle.line.color || (isCartesian ? Color2.contrast(gd._fullLayout.plot_bgcolor) : "#7f7f7f");
         outlines.enter().append("path").attr("class", "select-outline select-outline-" + plotinfo.id).style({
           opacity: isDrawMode ? newStyle.opacity / 2 : 1,
           "stroke-dasharray": dashStyle(newStyle.line.dash, newStyle.line.width),
           "stroke-width": newStyle.line.width + "px",
           "shape-rendering": "crispEdges"
-        }).call(Color3.stroke, strokeC).call(Color3.fill, fillC).attr("fill-rule", "evenodd").classed("cursor-move", isDrawMode ? true : false).attr("transform", transform).attr("d", path0 + "Z");
+        }).call(Color2.stroke, strokeC).call(Color2.fill, fillC).attr("fill-rule", "evenodd").classed("cursor-move", isDrawMode ? true : false).attr("transform", transform).attr("d", path0 + "Z");
         var corners = zoomLayer.append("path").attr("class", "zoombox-corners").style({
-          fill: Color3.background,
-          stroke: Color3.defaultLine,
+          fill: Color2.background,
+          stroke: Color2.defaultLine,
           "stroke-width": 1
         }).attr("transform", transform).attr("d", "M0,0Z");
         if (isDrawMode && dragOptions.hasText) {
@@ -42272,8 +45404,8 @@ var Plotly = (() => {
                     var polygon = [];
                     for (var t = 0; t < p.length; t++) {
                       polygon.push([
-                        convert3(xaxis, p[t][1]),
-                        convert3(yaxis, p[t][2])
+                        convert(xaxis, p[t][1]),
+                        convert(yaxis, p[t][2])
                       ]);
                     }
                     polygon.xref = xRef;
@@ -42453,10 +45585,10 @@ var Plotly = (() => {
           var polygon;
           if (selection.type === "rect") {
             polygon = [];
-            var x0 = convert3(xaxis, selection.x0);
-            var x1 = convert3(xaxis, selection.x1);
-            var y0 = convert3(yaxis, selection.y0);
-            var y1 = convert3(yaxis, selection.y1);
+            var x0 = convert(xaxis, selection.x0);
+            var x1 = convert(xaxis, selection.x1);
+            var y0 = convert(yaxis, selection.y0);
+            var y1 = convert(yaxis, selection.y1);
             polygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
             xmin = Math.min(x0, x1);
             xmax = Math.max(x0, x1);
@@ -42486,8 +45618,8 @@ var Plotly = (() => {
               ymax = -Infinity;
               polygon = [];
               for (var k = 0; k < allX.length; k++) {
-                var x = convert3(xaxis, allX[k]);
-                var y = convert3(yaxis, allY[k]);
+                var x = convert(xaxis, allX[k]);
+                var y = convert(yaxis, allY[k]);
                 polygon.push([x, y]);
                 xmin = Math.min(x, xmin);
                 xmax = Math.max(x, xmax);
@@ -42521,7 +45653,7 @@ var Plotly = (() => {
         }
         return subtract;
       }
-      function convert3(ax, d) {
+      function convert(ax, d) {
         if (ax.type === "date") d = d.replace("_", " ");
         return ax.type === "log" ? ax.c2p(d) : ax.r2p(d, null, ax.calendar);
       }
@@ -43626,7 +46758,7 @@ var Plotly = (() => {
       var Registry = require_registry();
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Fx = require_fx();
       var Axes = require_axes();
@@ -43840,7 +46972,7 @@ var Plotly = (() => {
           x0 = transformedCoords[0];
           y0 = transformedCoords[1];
           box = { l: x0, r: x0, w: 0, t: y0, b: y0, h: 0 };
-          lum = gd._hmpixcount ? gd._hmlumcount / gd._hmpixcount : Color3.color(gd._fullLayout.plot_bgcolor).luminosity();
+          lum = gd._hmpixcount ? gd._hmlumcount / gd._hmpixcount : Color2.luminosity(gd._fullLayout.plot_bgcolor);
           path0 = "M0,0H" + pw + "V" + ph + "H0V0";
           dimmed = false;
           zoomMode = "xy";
@@ -43961,6 +47093,7 @@ var Plotly = (() => {
             Lib.log("Did not find wheel motion attributes: ", e);
             return;
           }
+          gd._fullLayout._replotting = true;
           var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200);
           var gbb = mainplot.draglayer.select(".nsewdrag").node().getBoundingClientRect();
           var xfrac = (e.clientX - gbb.left) / gbb.width;
@@ -44450,8 +47583,8 @@ var Plotly = (() => {
       }
       function makeCorners(zoomlayer, xs, ys) {
         return zoomlayer.append("path").attr("class", "zoombox-corners").style({
-          fill: Color3.background,
-          stroke: Color3.defaultLine,
+          fill: Color2.background,
+          stroke: Color2.defaultLine,
           "stroke-width": 1,
           opacity: 0
         }).attr("transform", strTranslate(xs, ys)).attr("d", "M0,0Z");
@@ -45314,7 +48447,7 @@ var Plotly = (() => {
       var handleRangeDefaults = require_range_defaults();
       var cartesianLayoutAttributes = require_layout_attributes4();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var initInteractions = require_graph_interact().initInteractions;
       var xmlnsNamespaces = require_xmlns_namespaces();
       var clearOutline = require_selections().clearOutline;
@@ -45558,7 +48691,7 @@ var Plotly = (() => {
         }
       }
       function opaqueSetBackground(gd, bgColor) {
-        var blend = Color3.combine(bgColor, "white");
+        var blend = Color2.combine(bgColor, "white");
         setBackground(gd, blend);
       }
       function setPlotContext(gd, config) {
@@ -47715,7 +50848,7 @@ var Plotly = (() => {
       var d3 = require_d3();
       var Lib = require_lib();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var xmlnsNamespaces = require_xmlns_namespaces();
       var DOUBLEQUOTE_REGEX = /"/g;
       var DUMMY_SUB = "TOBESTRIPPED";
@@ -47746,7 +50879,7 @@ var Plotly = (() => {
         var width = fullLayout.width;
         var height = fullLayout.height;
         var i;
-        svg.insert("rect", ":first-child").call(Drawing.setRect, 0, 0, width, height).call(Color3.fill, fullLayout.paper_bgcolor);
+        svg.insert("rect", ":first-child").call(Drawing.setRect, 0, 0, width, height).call(Color2.fill, fullLayout.paper_bgcolor);
         var basePlotModules = fullLayout._basePlotModules || [];
         for (i = 0; i < basePlotModules.length; i++) {
           var _module = basePlotModules[i];
@@ -48001,7 +51134,7 @@ var Plotly = (() => {
             setTimeout(resolve, helpers.getDelay(clonedGd._fullLayout));
           });
         }
-        function convert3() {
+        function convert() {
           return new Promise(function(resolve, reject) {
             var svg = toSVG(clonedGd, format, scale);
             var width2 = clonedGd._fullLayout.width;
@@ -48054,7 +51187,7 @@ var Plotly = (() => {
           }
         }
         return new Promise(function(resolve, reject) {
-          plotApi.newPlot(clonedGd, data, layoutImage, configImage).then(redrawFunc).then(wait).then(convert3).then(function(url) {
+          plotApi.newPlot(clonedGd, data, layoutImage, configImage).then(redrawFunc).then(wait).then(convert).then(function(url) {
             resolve(urlToImageData(url));
           }).catch(function(err) {
             reject(err);
@@ -48963,7 +52096,7 @@ var Plotly = (() => {
   var require_marker_defaults = __commonJS({
     "src/traces/scatter/marker_defaults.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var hasColorscale = require_helpers().hasColorscale;
       var colorscaleDefaults = require_defaults2();
       var subTypes = require_subtypes();
@@ -48994,9 +52127,9 @@ var Plotly = (() => {
           if (lineColor && !Array.isArray(lineColor) && traceOut.marker.color !== lineColor) {
             defaultMLC = lineColor;
           } else if (isBubble) {
-            defaultMLC = Color3.background;
+            defaultMLC = Color2.background;
           } else {
-            defaultMLC = Color3.defaultLine;
+            defaultMLC = Color2.defaultLine;
           }
           coerce("marker.line.color", defaultMLC);
           if (hasColorscale(traceIn, "marker.line")) {
@@ -49075,13 +52208,13 @@ var Plotly = (() => {
   var require_fillcolor_defaults = __commonJS({
     "src/traces/scatter/fillcolor_defaults.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var isArrayOrTypedArray = require_lib().isArrayOrTypedArray;
       function averageColors(colorscale) {
-        var color2 = Color3.interpolate(colorscale[0][1], colorscale[1][1], 0.5);
+        var color2 = Color2.interpolate(colorscale[0][1], colorscale[1][1], 0.5);
         for (var i = 2; i < colorscale.length; i++) {
-          var averageColorI = Color3.interpolate(colorscale[i - 1][1], colorscale[i][1], 0.5);
-          color2 = Color3.interpolate(color2, averageColorI, colorscale[i - 1][0] / colorscale[i][0]);
+          var averageColorI = Color2.interpolate(colorscale[i - 1][1], colorscale[i][1], 0.5);
+          color2 = Color2.interpolate(color2, averageColorI, colorscale[i - 1][0] / colorscale[i][0]);
         }
         return color2;
       }
@@ -49109,7 +52242,7 @@ var Plotly = (() => {
             }
           }
         }
-        coerce("fillcolor", Color3.addOpacity(
+        coerce("fillcolor", Color2.addOpacity(
           (traceOut.line || {}).color || inheritColorFromMarker || averageGradientColor || defaultColor,
           0.5
         ));
@@ -51521,26 +54654,26 @@ var Plotly = (() => {
   var require_get_trace_color = __commonJS({
     "src/traces/scatter/get_trace_color.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var subtypes = require_subtypes();
       module.exports = function getTraceColor(trace, di) {
         var lc, tc;
         if (trace.mode === "lines") {
           lc = trace.line.color;
-          return lc && Color3.opacity(lc) ? lc : trace.fillcolor;
+          return lc && Color2.opacity(lc) ? lc : trace.fillcolor;
         } else if (trace.mode === "none") {
           return trace.fill ? trace.fillcolor : "";
         } else {
           var mc = di.mcc || (trace.marker || {}).color;
           var mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
-          tc = mc && Color3.opacity(mc) ? mc : mlc && Color3.opacity(mlc) && (di.mlw || ((trace.marker || {}).line || {}).width) ? mlc : "";
+          tc = mc && Color2.opacity(mc) ? mc : mlc && Color2.opacity(mlc) && (di.mlw || ((trace.marker || {}).line || {}).width) ? mlc : "";
           if (tc) {
-            if (Color3.opacity(tc) < 0.3) {
-              return Color3.addOpacity(tc, 0.3);
+            if (Color2.opacity(tc) < 0.3) {
+              return Color2.addOpacity(tc, 0.3);
             } else return tc;
           } else {
             lc = (trace.line || {}).color;
-            return lc && Color3.opacity(lc) && subtypes.hasLines(trace) && trace.line.width ? lc : trace.fillcolor;
+            return lc && Color2.opacity(lc) && subtypes.hasLines(trace) && trace.line.width ? lc : trace.fillcolor;
           }
         }
       };
@@ -51555,7 +54688,7 @@ var Plotly = (() => {
       var Fx = require_fx();
       var Registry = require_registry();
       var getTraceColor = require_get_trace_color();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var fillText = Lib.fillText;
       module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var cd = pointData.cd;
@@ -51701,9 +54834,9 @@ var Plotly = (() => {
                 y1: pt[1]
               };
             }
-            var color2 = Color3.defaultLine;
-            if (Color3.opacity(trace.fillcolor)) color2 = trace.fillcolor;
-            else if (Color3.opacity((trace.line || {}).color)) {
+            var color2 = Color2.defaultLine;
+            if (Color2.opacity(trace.fillcolor)) color2 = trace.fillcolor;
+            else if (Color2.opacity((trace.line || {}).color)) {
               color2 = trace.line.color;
             }
             Lib.extendFlat(pointData, {
@@ -51939,7 +55072,7 @@ var Plotly = (() => {
   var require_line_grid_defaults = __commonJS({
     "src/plots/cartesian/line_grid_defaults.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var colorAttrs = require_attributes3();
       var Lib = require_lib();
       module.exports = function handleLineGridDefaults(containerIn, containerOut, coerce, opts) {
@@ -51955,7 +55088,7 @@ var Plotly = (() => {
           delete containerOut.linecolor;
           delete containerOut.linewidth;
         }
-        var gridColorDflt = Color3.mix(dfltColor, opts.bgColor, opts.blend || colorAttrs.lightFraction);
+        var gridColorDflt = Color2.mix(dfltColor, opts.bgColor, opts.blend || colorAttrs.lightFraction);
         var gridColor = coerce2("gridcolor", gridColorDflt);
         var gridWidth = coerce2("gridwidth");
         var gridDash = coerce2("griddash");
@@ -51969,7 +55102,7 @@ var Plotly = (() => {
           delete containerOut.griddash;
         }
         if (opts.hasMinor) {
-          var minorGridColorDflt = Color3.mix(containerOut.gridcolor, opts.bgColor, 67);
+          var minorGridColorDflt = Color2.mix(containerOut.gridcolor, opts.bgColor, 67);
           var minorGridColor = coerce2("minor.gridcolor", minorGridColorDflt);
           var minorGridWidth = coerce2("minor.gridwidth", containerOut.gridwidth || 1);
           var minorGridDash = coerce2("minor.griddash", containerOut.griddash || "solid");
@@ -52337,7 +55470,7 @@ var Plotly = (() => {
     "src/plots/cartesian/layout_defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var isUnifiedHover = require_helpers2().isUnifiedHover;
       var handleHoverModeDefaults = require_hovermode_defaults();
       var Template = require_plot_template();
@@ -52429,11 +55562,11 @@ var Plotly = (() => {
         var xNames = Lib.simpleMap(xIds, id2name);
         var yNames = Lib.simpleMap(yIds, id2name);
         var axNames = xNames.concat(yNames);
-        var plotBgColor = Color3.background;
+        var plotBgColor = Color2.background;
         if (xIds.length && yIds.length) {
           plotBgColor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, "plot_bgcolor");
         }
-        var bgColor = Color3.combine(plotBgColor, layoutOut.paper_bgcolor);
+        var bgColor = Color2.combine(plotBgColor, layoutOut.paper_bgcolor);
         var axName;
         var axId;
         var axLetter;
@@ -53346,7 +56479,7 @@ var Plotly = (() => {
     "src/components/annotations/draw_arrow_head.js"(exports, module) {
       "use strict";
       var d3 = require_d3();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var ARROWPATHS = require_arrow_paths();
       var Lib = require_lib();
       var strScale = Lib.strScale;
@@ -53429,7 +56562,7 @@ var Plotly = (() => {
             d: arrowHeadStyle.path,
             transform: strTranslate(p.x, p.y) + strRotate(rot * 180 / Math.PI) + strScale(arrowScale)
           }).style({
-            fill: Color3.rgb(options.arrowcolor),
+            fill: Color2.rgb(options.arrowcolor),
             "stroke-width": 0
           });
         }
@@ -53449,7 +56582,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
       var Axes = require_axes();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Fx = require_fx();
       var svgTextUtils = require_svg_text_utils();
@@ -53575,7 +56708,7 @@ var Plotly = (() => {
         var borderwidth = options.borderwidth;
         var borderpad = options.borderpad;
         var borderfull = borderwidth + borderpad;
-        var annTextBG = annTextGroupInner.append("rect").attr("class", "bg").style("stroke-width", borderwidth + "px").call(Color3.stroke, options.bordercolor).call(Color3.fill, options.bgcolor);
+        var annTextBG = annTextGroupInner.append("rect").attr("class", "bg").style("stroke-width", borderwidth + "px").call(Color2.stroke, options.bordercolor).call(Color2.fill, options.bgcolor);
         var isSizeConstrained = options.width || options.height;
         var annTextClip = fullLayout._topclips.selectAll("#" + annClipID).data(isSizeConstrained ? [0] : []);
         annTextClip.enter().append("clipPath").classed("annclip", true).attr("id", annClipID).append("rect");
@@ -53828,8 +56961,8 @@ var Plotly = (() => {
             var strokewidth = options.arrowwidth;
             var arrowColor = options.arrowcolor;
             var arrowSide = options.arrowside;
-            var arrowGroup = annGroup.append("g").style({ opacity: Color3.opacity(arrowColor) }).classed("annotation-arrow-g", true);
-            var arrow = arrowGroup.append("path").attr("d", "M" + tailX + "," + tailY + "L" + headX + "," + headY).style("stroke-width", strokewidth + "px").call(Color3.stroke, Color3.rgb(arrowColor));
+            var arrowGroup = annGroup.append("g").style({ opacity: Color2.opacity(arrowColor) }).classed("annotation-arrow-g", true);
+            var arrow = arrowGroup.append("path").attr("d", "M" + tailX + "," + tailY + "L" + headX + "," + headY).style("stroke-width", strokewidth + "px").call(Color2.stroke, Color2.rgb(arrowColor));
             drawArrowHead(arrow, arrowSide, options);
             if (edits.annotationPosition && arrow.node().parentNode && !subplotId) {
               var arrowDragHeadX = headX;
@@ -53842,7 +56975,7 @@ var Plotly = (() => {
               var arrowDrag = arrowGroup.append("path").classed("annotation-arrow", true).classed("anndrag", true).classed("cursor-move", true).attr({
                 d: "M3,3H-3V-3H3ZM0,0L" + (tailX - arrowDragHeadX) + "," + (tailY - arrowDragHeadY),
                 transform: strTranslate(arrowDragHeadX, arrowDragHeadY)
-              }).style("stroke-width", strokewidth + 6 + "px").call(Color3.stroke, "rgba(0,0,0,0)").call(Color3.fill, "rgba(0,0,0,0)");
+              }).style("stroke-width", strokewidth + 6 + "px").call(Color2.stroke, "rgba(0,0,0,0)").call(Color2.fill, "rgba(0,0,0,0)");
               var annx0, anny0;
               dragElement.init({
                 element: arrowDrag.node(),
@@ -54068,12 +57201,12 @@ var Plotly = (() => {
     "src/components/annotations/common_defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayout, coerce) {
         coerce("opacity");
         var bgColor = coerce("bgcolor");
         var borderColor = coerce("bordercolor");
-        var borderOpacity = Color3.opacity(borderColor);
+        var borderOpacity = Color2.opacity(borderColor);
         coerce("borderpad");
         var borderWidth = coerce("borderwidth");
         var showArrow = coerce("showarrow");
@@ -54096,7 +57229,7 @@ var Plotly = (() => {
             coerce("startarrowhead", arrowhead);
             coerce("startarrowsize", arrowsize);
           }
-          coerce("arrowcolor", borderOpacity ? annOut.bordercolor : Color3.defaultLine);
+          coerce("arrowcolor", borderOpacity ? annOut.bordercolor : Color2.defaultLine);
           coerce("arrowwidth", (borderOpacity && borderWidth || 1) * 2);
           coerce("standoff");
           coerce("startstandoff");
@@ -54106,11 +57239,11 @@ var Plotly = (() => {
         if (hoverText) {
           var hoverBG = coerce(
             "hoverlabel.bgcolor",
-            globalHoverLabel.bgcolor || (Color3.opacity(bgColor) ? Color3.rgb(bgColor) : Color3.defaultLine)
+            globalHoverLabel.bgcolor || (Color2.opacity(bgColor) ? Color2.rgb(bgColor) : Color2.defaultLine)
           );
           var hoverBorder = coerce(
             "hoverlabel.bordercolor",
-            globalHoverLabel.bordercolor || Color3.contrast(hoverBG)
+            globalHoverLabel.bordercolor || Color2.contrast(hoverBG)
           );
           var fontDflt = Lib.extendFlat({}, globalHoverLabel.font);
           if (!fontDflt.color) {
@@ -54275,7 +57408,7 @@ var Plotly = (() => {
         var axLetter = ax._id.charAt(0);
         var ann;
         var attrPrefix;
-        function convert3(attr) {
+        function convert(attr) {
           var currentVal = ann[attr];
           var newVal = null;
           if (toLog) newVal = toLogRange(currentVal, ax.range);
@@ -54286,8 +57419,8 @@ var Plotly = (() => {
         for (var i = 0; i < annotations.length; i++) {
           ann = annotations[i];
           attrPrefix = "annotations[" + i + "].";
-          if (ann[axLetter + "ref"] === ax._id) convert3(axLetter);
-          if (ann["a" + axLetter + "ref"] === ax._id) convert3("a" + axLetter);
+          if (ann[axLetter + "ref"] === ax._id) convert(axLetter);
+          if (ann["a" + axLetter + "ref"] === ax._id) convert("a" + axLetter);
         }
       };
     }
@@ -54440,7 +57573,7 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var Axes = require_axes();
-      module.exports = function convert3(scene) {
+      module.exports = function convert(scene) {
         var fullSceneLayout = scene.fullSceneLayout;
         var anns = fullSceneLayout.annotations;
         for (var i = 0; i < anns.length; i++) {
@@ -54985,7 +58118,7 @@ var Plotly = (() => {
   var require_defaults12 = __commonJS({
     "src/components/shapes/draw_newshape/defaults.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Lib = require_lib();
       function dfltLabelYanchor(isLine, labelTextPosition) {
         return isLine ? "bottom" : labelTextPosition.indexOf("top") !== -1 ? "top" : labelTextPosition.indexOf("bottom") !== -1 ? "bottom" : "middle";
@@ -55008,7 +58141,7 @@ var Plotly = (() => {
         var newshapeLineWidth = coerce("newshape.line.width");
         if (newshapeLineWidth) {
           var bgcolor = (layoutIn || {}).plot_bgcolor || "#FFF";
-          coerce("newshape.line.color", Color3.contrast(bgcolor));
+          coerce("newshape.line.color", Color2.contrast(bgcolor));
           coerce("newshape.line.dash");
         }
         var isLine = layoutIn.dragmode === "drawline";
@@ -55829,7 +58962,7 @@ var Plotly = (() => {
       "use strict";
       module.exports = ScrollBox;
       var d3 = require_d3();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Lib = require_lib();
       function ScrollBox(gd, container, id) {
@@ -55920,7 +59053,7 @@ var Plotly = (() => {
           needsHorizontalScrollBar ? [0] : []
         );
         hbar.exit().on(".drag", null).remove();
-        hbar.enter().append("rect").classed("scrollbar-horizontal", true).call(Color3.fill, ScrollBox.barColor);
+        hbar.enter().append("rect").classed("scrollbar-horizontal", true).call(Color2.fill, ScrollBox.barColor);
         if (needsHorizontalScrollBar) {
           this.hbar = hbar.attr({
             rx: ScrollBox.barRadius,
@@ -55947,7 +59080,7 @@ var Plotly = (() => {
           needsVerticalScrollBar ? [0] : []
         );
         vbar.exit().on(".drag", null).remove();
-        vbar.enter().append("rect").classed("scrollbar-vertical", true).call(Color3.fill, ScrollBox.barColor);
+        vbar.enter().append("rect").classed("scrollbar-vertical", true).call(Color2.fill, ScrollBox.barColor);
         if (needsVerticalScrollBar) {
           this.vbar = vbar.attr({
             rx: ScrollBox.barRadius,
@@ -56123,7 +59256,7 @@ var Plotly = (() => {
       "use strict";
       var d3 = require_d3();
       var Plots = require_plots();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Lib = require_lib();
       var svgTextUtils = require_svg_text_utils();
@@ -56373,7 +59506,7 @@ var Plotly = (() => {
             "shape-rendering": "crispEdges"
           });
         });
-        rect.call(Color3.stroke, menuOpts.bordercolor).call(Color3.fill, menuOpts.bgcolor).style("stroke-width", menuOpts.borderwidth + "px");
+        rect.call(Color2.stroke, menuOpts.bordercolor).call(Color2.fill, menuOpts.bgcolor).style("stroke-width", menuOpts.borderwidth + "px");
       }
       function drawItemText(item, menuOpts, itemOpts, gd) {
         var text = Lib.ensureSingle(item, "text", constants2.itemTextClassName, function(s) {
@@ -56392,15 +59525,15 @@ var Plotly = (() => {
         buttons.each(function(buttonOpts, i) {
           var button = d3.select(this);
           if (i === active && menuOpts.showactive) {
-            button.select("rect." + constants2.itemRectClassName).call(Color3.fill, constants2.activeColor);
+            button.select("rect." + constants2.itemRectClassName).call(Color2.fill, constants2.activeColor);
           }
         });
       }
       function styleOnMouseOver(item) {
-        item.select("rect." + constants2.itemRectClassName).call(Color3.fill, constants2.hoverColor);
+        item.select("rect." + constants2.itemRectClassName).call(Color2.fill, constants2.hoverColor);
       }
       function styleOnMouseOut(item, menuOpts) {
-        item.select("rect." + constants2.itemRectClassName).call(Color3.fill, menuOpts.bgcolor);
+        item.select("rect." + constants2.itemRectClassName).call(Color2.fill, menuOpts.bgcolor);
       }
       function findDimensions(gd, menuOpts) {
         var dims = menuOpts._dims = {
@@ -56876,7 +60009,7 @@ var Plotly = (() => {
       "use strict";
       var d3 = require_d3();
       var Plots = require_plots();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
@@ -57093,7 +60226,7 @@ var Plotly = (() => {
           height: constants2.gripHeight,
           rx: constants2.gripRadius,
           ry: constants2.gripRadius
-        }).call(Color3.stroke, sliderOpts.bordercolor).call(Color3.fill, sliderOpts.bgcolor).style("stroke-width", sliderOpts.borderwidth + "px");
+        }).call(Color2.stroke, sliderOpts.bordercolor).call(Color2.fill, sliderOpts.bgcolor).style("stroke-width", sliderOpts.borderwidth + "px");
       }
       function drawLabel(item, data, sliderOpts) {
         var text = Lib.ensureSingle(item, "text", constants2.labelClass, function(s) {
@@ -57178,7 +60311,7 @@ var Plotly = (() => {
           var grip = sliderGroup.select("." + constants2.gripRectClass);
           d3.event.stopPropagation();
           d3.event.preventDefault();
-          grip.call(Color3.fill, sliderOpts.activebgcolor);
+          grip.call(Color2.fill, sliderOpts.activebgcolor);
           var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
           handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
           sliderOpts._dragging = true;
@@ -57192,7 +60325,7 @@ var Plotly = (() => {
           function mouseUpHandler() {
             var sliderOpts2 = getSliderOpts();
             sliderOpts2._dragging = false;
-            grip.call(Color3.fill, sliderOpts2.bgcolor);
+            grip.call(Color2.fill, sliderOpts2.bgcolor);
             $gd.on("mouseup", null);
             $gd.on("mousemove", null);
             $gd.on("touchend", null);
@@ -57220,7 +60353,7 @@ var Plotly = (() => {
         tick.each(function(d, i) {
           var isMajor = i % dims.labelStride === 0;
           var item = d3.select(this);
-          item.attr({ height: isMajor ? sliderOpts.ticklen : sliderOpts.minorticklen }).call(Color3.fill, isMajor ? sliderOpts.tickcolor : sliderOpts.tickcolor);
+          item.attr({ height: isMajor ? sliderOpts.ticklen : sliderOpts.minorticklen }).call(Color2.fill, isMajor ? sliderOpts.tickcolor : sliderOpts.tickcolor);
           Drawing.setTranslate(
             item,
             normalizedValueToPosition(sliderOpts, i / (sliderOpts._stepCount - 1)) - 0.5 * sliderOpts.tickwidth,
@@ -57272,7 +60405,7 @@ var Plotly = (() => {
         rect.attr({
           width: dims.inputAreaLength,
           height: Math.max(dims.inputAreaWidth, constants2.tickOffset + sliderOpts.ticklen + dims.labelHeight)
-        }).call(Color3.fill, sliderOpts.bgcolor).attr("opacity", 0);
+        }).call(Color2.fill, sliderOpts.bgcolor).attr("opacity", 0);
         Drawing.setTranslate(rect, 0, dims.currentValueTotalHeight);
       }
       function drawRail(sliderGroup, sliderOpts) {
@@ -57285,7 +60418,7 @@ var Plotly = (() => {
           rx: constants2.railRadius,
           ry: constants2.railRadius,
           "shape-rendering": "crispEdges"
-        }).call(Color3.stroke, sliderOpts.bordercolor).call(Color3.fill, sliderOpts.bgcolor).style("stroke-width", sliderOpts.borderwidth + "px");
+        }).call(Color2.stroke, sliderOpts.bordercolor).call(Color2.fill, sliderOpts.bgcolor).style("stroke-width", sliderOpts.borderwidth + "px");
         Drawing.setTranslate(
           rect,
           constants2.railInset,
@@ -57579,7 +60712,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Titles = require_titles();
       var Cartesian = require_cartesian();
       var axisIDs = require_axis_ids();
@@ -57792,18 +60925,18 @@ var Plotly = (() => {
         rangeSlider.on("touchstart", mouseDownHandler);
       }
       function setDataRange(rangeSlider, gd, axisOpts, opts) {
-        function clamp2(v) {
+        function clamp(v) {
           return axisOpts.l2r(Lib.constrain(v, opts._rl[0], opts._rl[1]));
         }
-        var dataMin = clamp2(opts.p2d(opts._pixelMin));
-        var dataMax = clamp2(opts.p2d(opts._pixelMax));
+        var dataMin = clamp(opts.p2d(opts._pixelMin));
+        var dataMax = clamp(opts.p2d(opts._pixelMax));
         window.requestAnimationFrame(function() {
           Registry.call("_guiRelayout", gd, axisOpts._name + ".range", [dataMin, dataMax]);
         });
       }
       function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRangeOpts) {
         var hw2 = constants2.handleWidth / 2;
-        function clamp2(v) {
+        function clamp(v) {
           return Lib.constrain(v, 0, opts._width);
         }
         function clampOppAxis(v) {
@@ -57812,8 +60945,8 @@ var Plotly = (() => {
         function clampHandle(v) {
           return Lib.constrain(v, -hw2, opts._width + hw2);
         }
-        var pixelMin = clamp2(opts.d2p(axisOpts._rl[0]));
-        var pixelMax = clamp2(opts.d2p(axisOpts._rl[1]));
+        var pixelMin = clamp(opts.d2p(axisOpts._rl[0]));
+        var pixelMax = clamp(opts.d2p(axisOpts._rl[1]));
         rangeSlider.select("rect." + constants2.slideBoxClassName).attr("x", pixelMin).attr("width", pixelMax - pixelMin);
         rangeSlider.select("rect." + constants2.maskMinClassName).attr("width", pixelMin);
         rangeSlider.select("rect." + constants2.maskMaxClassName).attr("x", pixelMax).attr("width", opts._width - pixelMax);
@@ -57846,7 +60979,7 @@ var Plotly = (() => {
           height: opts._height + borderCorrect,
           transform: strTranslate(offsetShift, offsetShift),
           "stroke-width": lw
-        }).call(Color3.stroke, opts.bordercolor).call(Color3.fill, opts.bgcolor);
+        }).call(Color2.stroke, opts.bordercolor).call(Color2.fill, opts.bgcolor);
       }
       function addClipPath(rangeSlider, gd, axisOpts, opts) {
         var fullLayout = gd._fullLayout;
@@ -57941,14 +61074,14 @@ var Plotly = (() => {
             "shape-rendering": "crispEdges"
           });
         });
-        maskMin.attr("height", opts._height).call(Color3.fill, constants2.maskColor);
+        maskMin.attr("height", opts._height).call(Color2.fill, constants2.maskColor);
         var maskMax = Lib.ensureSingle(rangeSlider, "rect", constants2.maskMaxClassName, function(s) {
           s.attr({
             y: 0,
             "shape-rendering": "crispEdges"
           });
         });
-        maskMax.attr("height", opts._height).call(Color3.fill, constants2.maskColor);
+        maskMax.attr("height", opts._height).call(Color2.fill, constants2.maskColor);
         if (oppAxisRangeOpts.rangemode !== "match") {
           var maskMinOppAxis = Lib.ensureSingle(rangeSlider, "rect", constants2.maskMinOppAxisClassName, function(s) {
             s.attr({
@@ -57956,14 +61089,14 @@ var Plotly = (() => {
               "shape-rendering": "crispEdges"
             });
           });
-          maskMinOppAxis.attr("width", opts._width).call(Color3.fill, constants2.maskOppAxisColor);
+          maskMinOppAxis.attr("width", opts._width).call(Color2.fill, constants2.maskOppAxisColor);
           var maskMaxOppAxis = Lib.ensureSingle(rangeSlider, "rect", constants2.maskMaxOppAxisClassName, function(s) {
             s.attr({
               y: 0,
               "shape-rendering": "crispEdges"
             });
           });
-          maskMaxOppAxis.attr("width", opts._width).style("border-top", constants2.maskOppBorder).call(Color3.fill, constants2.maskOppAxisColor);
+          maskMaxOppAxis.attr("width", opts._width).style("border-top", constants2.maskOppBorder).call(Color2.fill, constants2.maskOppAxisColor);
         }
       }
       function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
@@ -57987,8 +61120,8 @@ var Plotly = (() => {
           x: 0,
           width: constants2.handleWidth,
           rx: constants2.handleRadius,
-          fill: Color3.background,
-          stroke: Color3.defaultLine,
+          fill: Color2.background,
+          stroke: Color2.defaultLine,
           "stroke-width": constants2.handleStrokeWidth,
           "shape-rendering": "crispEdges"
         };
@@ -58173,7 +61306,7 @@ var Plotly = (() => {
     "src/components/rangeselector/defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Template = require_plot_template();
       var handleArrayContainerDefaults = require_array_container_defaults();
       var attributes2 = require_attributes20();
@@ -58199,7 +61332,7 @@ var Plotly = (() => {
           coerce("yanchor");
           Lib.coerceFont(coerce, "font", layout.font);
           var bgColor = coerce("bgcolor");
-          coerce("activecolor", Color3.contrast(bgColor, constants2.lightAmount, constants2.darkAmount));
+          coerce("activecolor", Color2.contrast(bgColor, constants2.lightAmount, constants2.darkAmount));
           coerce("bordercolor");
           coerce("borderwidth");
         }
@@ -58284,7 +61417,7 @@ var Plotly = (() => {
       var d3 = require_d3();
       var Registry = require_registry();
       var Plots = require_plots();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
@@ -58364,7 +61497,7 @@ var Plotly = (() => {
           rx: constants2.rx,
           ry: constants2.ry
         });
-        rect.call(Color3.stroke, selectorLayout.bordercolor).call(Color3.fill, getFillColor(selectorLayout, d)).style("stroke-width", selectorLayout.borderwidth + "px");
+        rect.call(Color2.stroke, selectorLayout.bordercolor).call(Color2.fill, getFillColor(selectorLayout, d)).style("stroke-width", selectorLayout.borderwidth + "px");
       }
       function getFillColor(selectorLayout, d) {
         return d._isActive || d._isHovered ? selectorLayout.activecolor : selectorLayout.bgcolor;
@@ -59186,16 +62319,16 @@ var Plotly = (() => {
     "src/components/errorbars/style.js"(exports, module) {
       "use strict";
       var d3 = require_d3();
-      var Color3 = require_color();
+      var Color2 = require_color();
       module.exports = function style(traces) {
         traces.each(function(d) {
           var trace = d[0].trace;
           var yObj = trace.error_y || {};
           var xObj = trace.error_x || {};
           var s = d3.select(this);
-          s.selectAll("path.yerror").style("stroke-width", yObj.thickness + "px").call(Color3.stroke, yObj.color);
+          s.selectAll("path.yerror").style("stroke-width", yObj.thickness + "px").call(Color2.stroke, yObj.color);
           if (xObj.copy_ystyle) xObj = yObj;
-          s.selectAll("path.xerror").style("stroke-width", xObj.thickness + "px").call(Color3.stroke, xObj.color);
+          s.selectAll("path.xerror").style("stroke-width", xObj.thickness + "px").call(Color2.stroke, xObj.color);
         });
       };
     }
@@ -59293,7 +62426,7 @@ var Plotly = (() => {
       var extendFlat = require_extend().extendFlat;
       var setCursor = require_setcursor();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Titles = require_titles();
       var svgTextUtils = require_svg_text_utils();
       var flipScale = require_helpers().flipScale;
@@ -59419,6 +62552,8 @@ var Plotly = (() => {
         }
         return out;
       }
+      var insetDomainStart = (domain, delta) => [Math.min(domain[0] + delta, domain[1]), domain[1]];
+      var insetDomainEnd = (domain, delta) => [domain[0], Math.max(domain[1] - delta, domain[0])];
       function drawColorBar(g, opts, gd) {
         var isVertical = opts.orientation === "v";
         var len = opts.len;
@@ -59501,13 +62636,8 @@ var Plotly = (() => {
           }
           ax.dtick = dtick;
         }
-        ax.domain = isVertical ? [
-          vFrac + ypad / gs.h,
-          vFrac + lenFrac - ypad / gs.h
-        ] : [
-          vFrac + xpad / gs.w,
-          vFrac + lenFrac - xpad / gs.w
-        ];
+        var padFrac = isVertical ? ypad / gs.h : xpad / gs.w;
+        ax.domain = insetDomainEnd(insetDomainStart([vFrac, vFrac + lenFrac], padFrac), padFrac);
         ax.setScale();
         g.attr("transform", strTranslate(Math.round(gs.l), Math.round(gs.t)));
         var titleCont = g.select("." + cn.cbtitleunshift).attr("transform", strTranslate(-Math.round(gs.l), -Math.round(gs.t)));
@@ -59613,10 +62743,10 @@ var Plotly = (() => {
               if (titleHeight) {
                 titleHeight += 5;
                 if (titleSide === "top") {
-                  ax.domain[1] -= titleHeight / gs.h;
+                  ax.domain = insetDomainEnd(ax.domain, titleHeight / gs.h);
                   titleTrans[1] *= -1;
                 } else {
-                  ax.domain[0] += titleHeight / gs.h;
+                  ax.domain = insetDomainStart(ax.domain, titleHeight / gs.h);
                   var nlines = svgTextUtils.lineCount(titleText);
                   titleTrans[1] += (1 - nlines) * lineSize;
                 }
@@ -59626,7 +62756,7 @@ var Plotly = (() => {
             } else {
               if (titleWidth) {
                 if (titleSide === "right") {
-                  ax.domain[0] += (titleWidth + titleFontSize / 2) / gs.w;
+                  ax.domain = insetDomainStart(ax.domain, (titleWidth + titleFontSize / 2) / gs.w);
                 }
                 titleGroup.attr("transform", strTranslate(titleTrans[0], titleTrans[1]));
                 ax.setScale();
@@ -59660,7 +62790,7 @@ var Plotly = (() => {
               Drawing.gradient(fillEl, gd, opts._id, isVertical ? "vertical" : "horizontalreversed", opts._fillgradient, "fill");
             } else {
               var colorString = fillColormap(d).replace("e-", "");
-              fillEl.attr("fill", Color3.color(colorString).hex());
+              fillEl.attr("fill", Color2.hexString(colorString));
             }
           });
           var lines = g.select("." + cn.cblines).selectAll("path." + cn.cbline).data(line.color && line.width ? lineLevels : []);
@@ -59740,9 +62870,9 @@ var Plotly = (() => {
           var extraW = borderwidth + outlinewidth;
           var lx = (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0);
           var ly = (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle);
-          g.select("." + cn.cbbg).attr("x", lx).attr("y", ly).attr(isVertical ? "width" : "height", Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx + extraW, 2)).call(Color3.fill, bgcolor).call(Color3.stroke, opts.bordercolor).style("stroke-width", borderwidth);
+          g.select("." + cn.cbbg).attr("x", lx).attr("y", ly).attr(isVertical ? "width" : "height", Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx + extraW, 2)).call(Color2.fill, bgcolor).call(Color2.stroke, opts.bordercolor).style("stroke-width", borderwidth);
           var moveX = rightSideHorizontal ? Math.max(titleWidth2 - 10, 0) : 0;
-          g.selectAll("." + cn.cboutline).attr("x", (isVertical ? uPx : vPx + xpad) + moveX).attr("y", (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0)).attr(isVertical ? "width" : "height", Math.max(thickPx, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx - (isVertical ? 2 * ypad + titleHeight : 2 * xpad + moveX), 2)).call(Color3.stroke, opts.outlinecolor).style({
+          g.selectAll("." + cn.cboutline).attr("x", (isVertical ? uPx : vPx + xpad) + moveX).attr("y", (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0)).attr(isVertical ? "width" : "height", Math.max(thickPx, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx - (isVertical ? 2 * ypad + titleHeight : 2 * xpad + moveX), 2)).call(Color2.stroke, opts.outlinecolor).style({
             fill: "none",
             "stroke-width": outlinewidth
           });
@@ -59754,7 +62884,7 @@ var Plotly = (() => {
             xShift,
             yShift
           ));
-          if (!isVertical && (borderwidth || Color3.opacity(bgcolor) && !Color3.equals(fullLayout.paper_bgcolor, bgcolor))) {
+          if (!isVertical && (borderwidth || Color2.opacity(bgcolor) && !Color2.equals(fullLayout.paper_bgcolor, bgcolor))) {
             var tickLabels = axLayer.selectAll("text");
             var numTicks = tickLabels[0].length;
             var border = g.select("." + cn.cbbg).node();
@@ -60588,7 +63718,7 @@ var Plotly = (() => {
   var require_style_defaults = __commonJS({
     "src/traces/bar/style_defaults.js"(exports, module) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var hasColorscale = require_helpers().hasColorscale;
       var colorscaleDefaults = require_defaults2();
       var coercePattern = require_lib().coercePattern;
@@ -60604,7 +63734,7 @@ var Plotly = (() => {
             { prefix: "marker.", cLetter: "c" }
           );
         }
-        coerce("marker.line.color", Color3.defaultLine);
+        coerce("marker.line.color", Color2.defaultLine);
         if (hasColorscale(traceIn, "marker.line")) {
           colorscaleDefaults(
             traceIn,
@@ -60629,7 +63759,7 @@ var Plotly = (() => {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Registry = require_registry();
       var handleXYDefaults = require_xy_defaults();
       var handlePeriodDefaults = require_period_defaults();
@@ -60670,8 +63800,8 @@ var Plotly = (() => {
         handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
         var lineColor = (traceOut.marker.line || {}).color;
         var errorBarsSupplyDefaults = Registry.getComponentMethod("errorbars", "supplyDefaults");
-        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color3.defaultLine, { axis: "y" });
-        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color3.defaultLine, { axis: "x", inherit: "y" });
+        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color2.defaultLine, { axis: "y" });
+        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color2.defaultLine, { axis: "x", inherit: "y" });
         Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
       }
       function crossTraceDefaults(fullData, fullLayout) {
@@ -60964,7 +64094,7 @@ var Plotly = (() => {
   var require_helpers12 = __commonJS({
     "src/traces/bar/helpers.js"(exports) {
       "use strict";
-      var Color3 = require_color();
+      var Color2 = require_color();
       var isNumeric2 = require_fast_isnumeric();
       var isArrayOrTypedArray = require_lib().isArrayOrTypedArray;
       exports.coerceString = function(attributeDefinition, value, defaultValue) {
@@ -60986,7 +64116,7 @@ var Plotly = (() => {
         return defaultValue !== void 0 ? defaultValue : attributeDefinition.dflt;
       };
       exports.coerceColor = function(attributeDefinition, value, defaultValue) {
-        if (Color3.isValid(value)) return value;
+        if (Color2.isValid(value)) return value;
         return defaultValue !== void 0 ? defaultValue : attributeDefinition.dflt;
       };
       exports.coerceEnumerated = function(attributeDefinition, value, defaultValue) {
@@ -61012,7 +64142,7 @@ var Plotly = (() => {
     "src/traces/bar/style.js"(exports, module) {
       "use strict";
       var d3 = require_d3();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Lib = require_lib();
       var Registry = require_registry();
@@ -61105,7 +64235,7 @@ var Plotly = (() => {
         var wouldFallBackToLayoutFont = trace._input.textfont === void 0 || trace._input.textfont.color === void 0 || Array.isArray(trace.textfont.color) && trace.textfont.color[index] === void 0;
         if (wouldFallBackToLayoutFont) {
           defaultFont = {
-            color: Color3.contrast(barColor),
+            color: Color2.contrast(barColor),
             family: defaultFont.family,
             size: defaultFont.size,
             weight: defaultFont.weight,
@@ -61217,7 +64347,7 @@ var Plotly = (() => {
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
       var svgTextUtils = require_svg_text_utils();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Registry = require_registry();
       var tickText = require_axes().tickText;
@@ -61367,7 +64497,7 @@ var Plotly = (() => {
                 v > vc ? Math.ceil(v) : Math.floor(v)
               );
             }
-            var op = Color3.opacity(mc);
+            var op = Color2.opacity(mc);
             var fixpx = op < 1 || lw > 0.01 ? roundWithLine : expandToVisible;
             if (!gd._context.staticPlot) {
               x0 = fixpx(x0, x1, isHorizontal);
@@ -61470,6 +64600,7 @@ var Plotly = (() => {
         }
         var trace = cd[0].trace;
         var isHorizontal = trace.orientation === "h";
+        var zeroBarDir = getZeroBarDir(cd, isHorizontal, xa, ya);
         var text = getText(fullLayout, cd, i, xa, ya);
         textPosition = getTextPosition(trace, i);
         var inStackOrRelativeMode = opts.mode === "stack" || opts.mode === "relative";
@@ -61579,7 +64710,8 @@ var Plotly = (() => {
           transform = toMoveOutsideBar(x0, x1, y0, y1, textBB, {
             isHorizontal,
             constrained,
-            angle
+            angle,
+            zeroBarDir
           });
         } else {
           constrained = trace.constraintext === "both" || trace.constraintext === "inside";
@@ -61770,7 +64902,12 @@ var Plotly = (() => {
         var targetY = (y0 + y1) / 2;
         var anchorX = 0;
         var anchorY = 0;
-        var dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+        var dir;
+        if ((isHorizontal ? x0 === x1 : y0 === y1) && opts.zeroBarDir) {
+          dir = opts.zeroBarDir;
+        } else {
+          dir = isHorizontal ? dirSign(x1, x0) : dirSign(y0, y1);
+        }
         if (isHorizontal) {
           targetX = x1 - dir * textpad;
           anchorX = dir * extrapad;
@@ -61805,6 +64942,30 @@ var Plotly = (() => {
       function getTextPosition(trace, index) {
         var value = helpers.getValue(trace.textposition, index);
         return helpers.coerceEnumerated(attributeTextPosition, value);
+      }
+      function getZeroBarDir(cd, isHorizontal, xa, ya) {
+        var hasPositive = false;
+        var hasNegative = false;
+        for (var i = 0; i < cd.length; i++) {
+          var s = cd[i].s;
+          if (s > 0) {
+            hasPositive = true;
+          } else if (s < 0) {
+            hasNegative = true;
+          }
+          if (hasPositive && hasNegative) {
+            return 0;
+          }
+        }
+        var axis = isHorizontal ? xa : ya;
+        var positiveDir = -dirSign(axis.range[0], axis.range[1]);
+        if (!hasNegative) {
+          return positiveDir;
+        }
+        if (!hasPositive) {
+          return -positiveDir;
+        }
+        return 0;
       }
       function calcTexttemplate(fullLayout, cd, index, xa, ya) {
         var trace = cd[0].trace;
@@ -61949,7 +65110,7 @@ var Plotly = (() => {
       "use strict";
       var Fx = require_fx();
       var Registry = require_registry();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var fillText = require_lib().fillText;
       var getLineWidth = require_helpers12().getLineWidth;
       var hoverLabelText = require_axes().hoverLabelText;
@@ -62093,8 +65254,8 @@ var Plotly = (() => {
         var mc = di.mcc || trace.marker.color;
         var mlc = di.mlcc || trace.marker.line.color;
         var mlw = getLineWidth(trace, di);
-        if (Color3.opacity(mc)) return mc;
-        else if (Color3.opacity(mlc) && mlw) return mlc;
+        if (Color2.opacity(mc)) return mc;
+        else if (Color2.opacity(mlc) && mlw) return mlc;
       }
       module.exports = {
         hoverPoints,
@@ -62381,7 +65542,7 @@ var Plotly = (() => {
       "use strict";
       var Registry = require_registry();
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var handleText = require_defaults19().handleText;
       var handleStyleDefaults = require_style_defaults();
       var attributes2 = require_attributes23();
@@ -62430,8 +65591,8 @@ var Plotly = (() => {
         Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
         var lineColor = (traceOut.marker.line || {}).color;
         var errorBarsSupplyDefaults = Registry.getComponentMethod("errorbars", "supplyDefaults");
-        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color3.defaultLine, { axis: "y" });
-        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color3.defaultLine, { axis: "x", inherit: "y" });
+        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color2.defaultLine, { axis: "y" });
+        errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color2.defaultLine, { axis: "x", inherit: "y" });
         coerce("zorder");
       };
     }
@@ -63426,7 +66587,7 @@ var Plotly = (() => {
       var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var constants2 = require_constants16();
       var extendFlat = require_extend().extendFlat;
-      var Color3 = require_color();
+      var Color2 = require_color();
       module.exports = {
         x: barAttrs.x,
         x0: barAttrs.x0,
@@ -63477,7 +66638,7 @@ var Plotly = (() => {
             editType: "style"
           },
           line: {
-            color: extendFlat({}, lineAttrs.color, { dflt: Color3.defaultLine }),
+            color: extendFlat({}, lineAttrs.color, { dflt: Color2.defaultLine }),
             width: extendFlat({}, lineAttrs.width, {
               dflt: 0,
               editType: "plot"
@@ -63543,7 +66704,7 @@ var Plotly = (() => {
       var handleXYDefaults = require_xy_defaults();
       var handlePeriodDefaults = require_period_defaults();
       var attributes2 = require_attributes24();
-      var Color3 = require_color();
+      var Color2 = require_color();
       function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
           return Lib.coerce(traceIn, traceOut, attributes2, attr, dflt);
@@ -63576,7 +66737,7 @@ var Plotly = (() => {
           coerce("textinfo", Lib.isArrayOrTypedArray(text) ? "text+value" : "value");
         }
         var markerColor = coerce("marker.color", defaultColor);
-        coerce("marker.line.color", Color3.defaultLine);
+        coerce("marker.line.color", Color2.defaultLine);
         coerce("marker.line.width");
         var connectorVisible = coerce("connector.visible");
         if (connectorVisible) {
@@ -63591,7 +66752,7 @@ var Plotly = (() => {
       }
       function defaultFillColor(markerColor) {
         var cBase = Lib.isArrayOrTypedArray(markerColor) ? "#000" : markerColor;
-        return Color3.addOpacity(cBase, 0.5 * Color3.opacity(cBase));
+        return Color2.addOpacity(cBase, 0.5 * Color2.opacity(cBase));
       }
       function crossTraceDefaults(fullData, fullLayout) {
         var traceIn, traceOut;
@@ -63904,7 +67065,7 @@ var Plotly = (() => {
       "use strict";
       var d3 = require_d3();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var DESELECTDIM = require_interactions().DESELECTDIM;
       var barStyle = require_style4();
       var resizeText = require_uniform_text().resizeText;
@@ -63921,12 +67082,12 @@ var Plotly = (() => {
           gTrace.selectAll(".point > path").each(function(di) {
             if (!di.isBlank) {
               var cont = trace.marker;
-              d3.select(this).call(Color3.fill, di.mc || cont.color).call(Color3.stroke, di.mlc || cont.line.color).call(Drawing.dashLine, cont.line.dash, di.mlw || cont.line.width).style("opacity", trace.selectedpoints && !di.selected ? DESELECTDIM : 1);
+              d3.select(this).call(Color2.fill, di.mc || cont.color).call(Color2.stroke, di.mlc || cont.line.color).call(Drawing.dashLine, cont.line.dash, di.mlw || cont.line.width).style("opacity", trace.selectedpoints && !di.selected ? DESELECTDIM : 1);
             }
           });
           styleTextPoints(gTrace, trace, gd);
           gTrace.selectAll(".regions").each(function() {
-            d3.select(this).selectAll("path").style("stroke-width", 0).call(Color3.fill, trace.connector.fillcolor);
+            d3.select(this).selectAll("path").style("stroke-width", 0).call(Color2.fill, trace.connector.fillcolor);
           });
           gTrace.selectAll(".lines").each(function() {
             var cont = trace.connector.line;
@@ -64077,7 +67238,7 @@ var Plotly = (() => {
       var { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require_template_attributes();
       var constants2 = require_constants17();
       var extendFlat = require_extend().extendFlat;
-      var Color3 = require_color();
+      var Color2 = require_color();
       function directionAttrs(dirTxt) {
         return {
           marker: {
@@ -64160,7 +67321,7 @@ var Plotly = (() => {
         totals: directionAttrs("intermediate sums and total"),
         connector: {
           line: {
-            color: extendFlat({}, lineAttrs.color, { dflt: Color3.defaultLine }),
+            color: extendFlat({}, lineAttrs.color, { dflt: Color2.defaultLine }),
             width: extendFlat({}, lineAttrs.width, {
               editType: "plot"
               // i.e. to adjust bars is mode: 'between'. See https://github.com/plotly/plotly.js/issues/3787
@@ -64243,14 +67404,14 @@ var Plotly = (() => {
       var handleXYDefaults = require_xy_defaults();
       var handlePeriodDefaults = require_period_defaults();
       var attributes2 = require_attributes25();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var delta = require_delta();
       var INCREASING_COLOR = delta.INCREASING.COLOR;
       var DECREASING_COLOR = delta.DECREASING.COLOR;
       var TOTALS_COLOR = "#4499FF";
       function handleDirection(coerce, direction, defaultColor) {
         coerce(direction + ".marker.color", defaultColor);
-        coerce(direction + ".marker.line.color", Color3.defaultLine);
+        coerce(direction + ".marker.line.color", Color2.defaultLine);
         coerce(direction + ".marker.line.width");
       }
       function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -64590,7 +67751,7 @@ var Plotly = (() => {
       "use strict";
       var d3 = require_d3();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var DESELECTDIM = require_interactions().DESELECTDIM;
       var barStyle = require_style4();
       var resizeText = require_uniform_text().resizeText;
@@ -64607,7 +67768,7 @@ var Plotly = (() => {
           gTrace.selectAll(".point > path").each(function(di) {
             if (!di.isBlank) {
               var cont = trace[di.dir].marker;
-              d3.select(this).call(Color3.fill, cont.color).call(Color3.stroke, cont.line.color).call(Drawing.dashLine, cont.line.dash, cont.line.width).style("opacity", trace.selectedpoints && !di.selected ? DESELECTDIM : 1);
+              d3.select(this).call(Color2.fill, cont.color).call(Color2.stroke, cont.line.color).call(Drawing.dashLine, cont.line.dash, cont.line.width).style("opacity", trace.selectedpoints && !di.selected ? DESELECTDIM : 1);
             }
           });
           styleTextPoints(gTrace, trace, gd);
@@ -65103,7 +68264,7 @@ var Plotly = (() => {
     "src/traces/pie/calc.js"(exports, module) {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var extendedColorWayList = {};
       function calc(gd, trace) {
         var cd = [];
@@ -65171,8 +68332,8 @@ var Plotly = (() => {
       }
       function makePullColorFn(colorMap) {
         return function pullColor(color2, id) {
-          if (!color2 || !Color3.isValid(color2)) return false;
-          const newColor = Color3.color(color2).rgb().string();
+          if (!color2 || !Color2.isValid(color2)) return false;
+          const newColor = Color2.rgbaString(color2);
           if (!colorMap[id]) colorMap[id] = newColor;
           return newColor;
         };
@@ -65212,10 +68373,10 @@ var Plotly = (() => {
         if (!colors) {
           colors = colorList.slice();
           for (i = 0; i < colorList.length; i++) {
-            colors.push(Color3.adjustLightness(colorList[i], 20).hex());
+            colors.push(Color2.hexString(Color2.adjustLightness(colorList[i], 20)));
           }
           for (i = 0; i < colorList.length; i++) {
-            colors.push(Color3.adjustLightness(colorList[i], -20).hex());
+            colors.push(Color2.hexString(Color2.adjustLightness(colorList[i], -20)));
           }
           extendedColorWays[colorString] = colors;
         }
@@ -65268,7 +68429,7 @@ var Plotly = (() => {
       var d3 = require_d3();
       var Plots = require_plots();
       var Fx = require_fx();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       var Lib = require_lib();
       var strScale = Lib.strScale;
@@ -65488,7 +68649,7 @@ var Plotly = (() => {
           } else {
             textLinePath += "V" + (pt.yLabelMid + pt.labelExtraY) + "h" + finalX;
           }
-          Lib.ensureSingle(sliceTop, "path", "textline").call(Color3.stroke, trace.outsidetextfont.color).attr({
+          Lib.ensureSingle(sliceTop, "path", "textline").call(Color2.stroke, trace.outsidetextfont.color).attr({
             "stroke-width": Math.min(2, trace.outsidetextfont.size / 8),
             d: textLinePath,
             fill: "none"
@@ -65641,7 +68802,7 @@ var Plotly = (() => {
         var lineposition = helpers.castOption(trace.insidetextfont.lineposition, pt.pts) || helpers.castOption(trace.textfont.lineposition, pt.pts) || layoutFont.lineposition;
         var shadow = helpers.castOption(trace.insidetextfont.shadow, pt.pts) || helpers.castOption(trace.textfont.shadow, pt.pts) || layoutFont.shadow;
         return {
-          color: customColor || Color3.contrast(pt.color),
+          color: customColor || Color2.contrast(pt.color),
           family,
           size,
           weight,
@@ -67142,7 +70303,7 @@ var Plotly = (() => {
   });
 
   // node_modules/d3-color/src/color.js
-  function Color2() {
+  function Color() {
   }
   function color_formatHex() {
     return this.rgb().formatHex();
@@ -67169,7 +70330,7 @@ var Plotly = (() => {
     return new Rgb(r, g, b, a);
   }
   function rgbConvert(o) {
-    if (!(o instanceof Color2)) o = color(o);
+    if (!(o instanceof Color)) o = color(o);
     if (!o) return new Rgb();
     o = o.rgb();
     return new Rgb(o.r, o.g, o.b, o.opacity);
@@ -67211,7 +70372,7 @@ var Plotly = (() => {
   }
   function hslConvert(o) {
     if (o instanceof Hsl) return new Hsl(o.h, o.s, o.l, o.opacity);
-    if (!(o instanceof Color2)) o = color(o);
+    if (!(o instanceof Color)) o = color(o);
     if (!o) return new Hsl();
     if (o instanceof Hsl) return o;
     o = o.rgb();
@@ -67247,7 +70408,7 @@ var Plotly = (() => {
     return (h < 60 ? m1 + (m2 - m1) * h / 60 : h < 180 ? m2 : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60 : m1) * 255;
   }
   var darker, brighter, reI, reN, reP, reHex, reRgbInteger, reRgbPercent, reRgbaInteger, reRgbaPercent, reHslPercent, reHslaPercent, named;
-  var init_color2 = __esm({
+  var init_color = __esm({
     "node_modules/d3-color/src/color.js"() {
       init_define();
       darker = 0.7;
@@ -67412,7 +70573,7 @@ var Plotly = (() => {
         yellow: 16776960,
         yellowgreen: 10145074
       };
-      define_default(Color2, color, {
+      define_default(Color, color, {
         copy(channels) {
           return Object.assign(new this.constructor(), this, channels);
         },
@@ -67427,7 +70588,7 @@ var Plotly = (() => {
         formatRgb: color_formatRgb,
         toString: color_formatRgb
       });
-      define_default(Rgb, rgb, extend(Color2, {
+      define_default(Rgb, rgb, extend(Color, {
         brighter(k) {
           k = k == null ? brighter : Math.pow(brighter, k);
           return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
@@ -67452,7 +70613,7 @@ var Plotly = (() => {
         formatRgb: rgb_formatRgb,
         toString: rgb_formatRgb
       }));
-      define_default(Hsl, hsl, extend(Color2, {
+      define_default(Hsl, hsl, extend(Color, {
         brighter(k) {
           k = k == null ? brighter : Math.pow(brighter, k);
           return new Hsl(this.h, this.s, this.l * k, this.opacity);
@@ -67552,7 +70713,7 @@ var Plotly = (() => {
   var init_lab = __esm({
     "node_modules/d3-color/src/lab.js"() {
       init_define();
-      init_color2();
+      init_color();
       init_math();
       K = 18;
       Xn = 0.96422;
@@ -67562,7 +70723,7 @@ var Plotly = (() => {
       t1 = 6 / 29;
       t2 = 3 * t1 * t1;
       t3 = t1 * t1 * t1;
-      define_default(Lab, lab, extend(Color2, {
+      define_default(Lab, lab, extend(Color, {
         brighter(k) {
           return new Lab(this.l + K * (k == null ? 1 : k), this.a, this.b, this.opacity);
         },
@@ -67582,7 +70743,7 @@ var Plotly = (() => {
           );
         }
       }));
-      define_default(Hcl, hcl, extend(Color2, {
+      define_default(Hcl, hcl, extend(Color, {
         brighter(k) {
           return new Hcl(this.h, this.c, this.l + K * (k == null ? 1 : k), this.opacity);
         },
@@ -67616,7 +70777,7 @@ var Plotly = (() => {
   var init_cubehelix = __esm({
     "node_modules/d3-color/src/cubehelix.js"() {
       init_define();
-      init_color2();
+      init_color();
       init_math();
       A = -0.14861;
       B = 1.78277;
@@ -67626,7 +70787,7 @@ var Plotly = (() => {
       ED = E * D;
       EB = E * B;
       BC_DA = B * C - D * A;
-      define_default(Cubehelix, cubehelix, extend(Color2, {
+      define_default(Cubehelix, cubehelix, extend(Color, {
         brighter(k) {
           k = k == null ? brighter : Math.pow(brighter, k);
           return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
@@ -67651,7 +70812,7 @@ var Plotly = (() => {
   // node_modules/d3-color/src/index.js
   var init_src = __esm({
     "node_modules/d3-color/src/index.js"() {
-      init_color2();
+      init_color();
       init_lab();
       init_cubehelix();
     }
@@ -67720,7 +70881,7 @@ var Plotly = (() => {
     var d = b - a;
     return d ? linear(a, d) : constant_default(isNaN(a) ? b : a);
   }
-  var init_color3 = __esm({
+  var init_color2 = __esm({
     "node_modules/d3-interpolate/src/color.js"() {
       init_constant();
     }
@@ -67754,7 +70915,7 @@ var Plotly = (() => {
       init_src();
       init_basis();
       init_basisClosed();
-      init_color3();
+      init_color2();
       rgb_default = (function rgbGamma(y) {
         var color2 = gamma(y);
         function rgb2(start, end) {
@@ -67947,7 +71108,7 @@ var Plotly = (() => {
   }
   var init_hue = __esm({
     "node_modules/d3-interpolate/src/hue.js"() {
-      init_color3();
+      init_color2();
     }
   });
 
@@ -68142,7 +71303,7 @@ var Plotly = (() => {
   var init_hsl = __esm({
     "node_modules/d3-interpolate/src/hsl.js"() {
       init_src();
-      init_color3();
+      init_color2();
       hsl_default = hsl2(hue);
       hslLong = hsl2(nogamma);
     }
@@ -68162,7 +71323,7 @@ var Plotly = (() => {
   var init_lab2 = __esm({
     "node_modules/d3-interpolate/src/lab.js"() {
       init_src();
-      init_color3();
+      init_color2();
     }
   });
 
@@ -68183,7 +71344,7 @@ var Plotly = (() => {
   var init_hcl = __esm({
     "node_modules/d3-interpolate/src/hcl.js"() {
       init_src();
-      init_color3();
+      init_color2();
       hcl_default = hcl2(hue);
       hclLong = hcl2(nogamma);
     }
@@ -68211,7 +71372,7 @@ var Plotly = (() => {
   var init_cubehelix2 = __esm({
     "node_modules/d3-interpolate/src/cubehelix.js"() {
       init_src();
-      init_color3();
+      init_color2();
       cubehelix_default = cubehelix2(hue);
       cubehelixLong = cubehelix2(nogamma);
     }
@@ -68320,7 +71481,7 @@ var Plotly = (() => {
       var handleAxisDefaults = require_axis_defaults();
       var handleAxisPositionDefaults = require_position_defaults();
       var axisLayoutAttrs = require_layout_attributes4();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var anchor = {
         left: "start",
         center: "middle",
@@ -68554,7 +71715,7 @@ var Plotly = (() => {
         });
         var threshold = bullet.selectAll("g.threshold-bullet").data(data);
         threshold.enter().append("g").classed("threshold-bullet", true).append("line");
-        threshold.select("line").attr("x1", ax.c2p(trace.gauge.threshold.value)).attr("x2", ax.c2p(trace.gauge.threshold.value)).attr("y1", (1 - trace.gauge.threshold.thickness) / 2 * bulletHeight).attr("y2", (1 - (1 - trace.gauge.threshold.thickness) / 2) * bulletHeight).call(Color3.stroke, trace.gauge.threshold.line.color).style("stroke-width", trace.gauge.threshold.line.width);
+        threshold.select("line").attr("x1", ax.c2p(trace.gauge.threshold.value)).attr("x2", ax.c2p(trace.gauge.threshold.value)).attr("y1", (1 - trace.gauge.threshold.thickness) / 2 * bulletHeight).attr("y2", (1 - (1 - trace.gauge.threshold.thickness) / 2) * bulletHeight).call(Color2.stroke, trace.gauge.threshold.line.color).style("stroke-width", trace.gauge.threshold.line.width);
         threshold.exit().remove();
         var bulletOutline = bullet.selectAll("g.gauge-outline").data([gaugeOutline]);
         bulletOutline.enter().append("g").classed("gauge-outline", true).append("rect");
@@ -68800,9 +71961,9 @@ var Plotly = (() => {
             trace._deltaLastValue = deltaValue(cd[0]);
           }
           var delta2 = numbers.select("text.delta");
-          delta2.call(Drawing.font, trace.delta.font).call(Color3.fill, deltaFill({ delta: trace._deltaLastValue }));
+          delta2.call(Drawing.font, trace.delta.font).call(Color2.fill, deltaFill({ delta: trace._deltaLastValue }));
           function writeDelta() {
-            delta2.text(deltaFormatText(deltaValue(cd[0]), deltaFmt)).call(Color3.fill, deltaFill(cd[0])).call(svgTextUtils.convertToTspans, gd);
+            delta2.text(deltaFormatText(deltaValue(cd[0]), deltaFmt)).call(Color2.fill, deltaFill(cd[0])).call(svgTextUtils.convertToTspans, gd);
           }
           if (hasTransition(transitionOpts)) {
             delta2.transition().duration(transitionOpts.duration).ease(transitionOpts.easing).tween("text", function() {
@@ -68814,7 +71975,7 @@ var Plotly = (() => {
               trace._deltaLastValue = to;
               return function(t) {
                 that.text(deltaFormatText(interpolator(t), transitionFmt));
-                that.call(Color3.fill, deltaFill({ delta: interpolator(t) }));
+                that.call(Color2.fill, deltaFill({ delta: interpolator(t) }));
               };
             }).each("end", function() {
               writeDelta();
@@ -68926,9 +72087,9 @@ var Plotly = (() => {
       }
       function styleShape(p) {
         p.each(function(d) {
-          Color3.stroke(d3.select(this), d.line.color);
+          Color2.stroke(d3.select(this), d.line.color);
         }).each(function(d) {
-          Color3.fill(d3.select(this), d.color);
+          Color2.fill(d3.select(this), d.color);
         }).style("stroke-width", function(d) {
           return d.line.width;
         });
@@ -69350,7 +72511,7 @@ var Plotly = (() => {
       "use strict";
       var d3 = require_d3();
       var Drawing = require_drawing();
-      var Color3 = require_color();
+      var Color2 = require_color();
       module.exports = function style(gd, cd, sel) {
         var s = sel ? sel : d3.select(gd).selectAll("g.ohlclayer").selectAll("g.trace");
         s.style("opacity", function(d) {
@@ -69361,7 +72522,7 @@ var Plotly = (() => {
           d3.select(this).selectAll("path").each(function(di) {
             if (di.empty) return;
             var dirLine = trace[di.dir].line;
-            d3.select(this).style("fill", "none").call(Color3.stroke, dirLine.color).call(Drawing.dashLine, dirLine.dash, dirLine.width).style("opacity", trace.selectedpoints && !di.selected ? 0.3 : 1);
+            d3.select(this).style("fill", "none").call(Color2.stroke, dirLine.color).call(Drawing.dashLine, dirLine.dash, dirLine.width).style("opacity", trace.selectedpoints && !di.selected ? 0.3 : 1);
           });
         });
       };
@@ -69375,7 +72536,7 @@ var Plotly = (() => {
       var Axes = require_axes();
       var Lib = require_lib();
       var Fx = require_fx();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var fillText = require_lib().fillText;
       var delta = require_delta();
       var DIRSYMBOL = {
@@ -69428,7 +72589,7 @@ var Plotly = (() => {
         var dir = di.dir;
         var container = trace[dir];
         var lc = container.line.color;
-        if (Color3.opacity(lc) && container.line.width) pointData.color = lc;
+        if (Color2.opacity(lc) && container.line.width) pointData.color = lc;
         else pointData.color = container.fillcolor;
         pointData.x0 = xa.c2p(di.pos + centerShift - displayHalfWidth, true);
         pointData.x1 = xa.c2p(di.pos + centerShift + displayHalfWidth, true);
@@ -70090,7 +73251,7 @@ var Plotly = (() => {
     "src/traces/candlestick/defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var handleOHLC = require_ohlc_defaults();
       var handlePeriodDefaults = require_period_defaults();
       var attributes2 = require_attributes31();
@@ -70120,7 +73281,7 @@ var Plotly = (() => {
       function handleDirection(traceIn, traceOut, coerce, direction) {
         var lineColor = coerce(direction + ".line.color");
         coerce(direction + ".line.width", traceOut.line.width);
-        coerce(direction + ".fillcolor", Color3.addOpacity(lineColor, 0.5));
+        coerce(direction + ".fillcolor", Color2.addOpacity(lineColor, 0.5));
       }
     }
   });
@@ -70414,7 +73575,7 @@ var Plotly = (() => {
     "src/traces/box/style.js"(exports, module) {
       "use strict";
       var d3 = require_d3();
-      var Color3 = require_color();
+      var Color2 = require_color();
       var Drawing = require_drawing();
       function style(gd, cd, sel) {
         var s = sel ? sel : d3.select(gd).selectAll("g.trace.boxes");
@@ -70426,7 +73587,7 @@ var Plotly = (() => {
           var trace = d[0].trace;
           var lineWidth = trace.line.width;
           function styleBox(boxSel, lineWidth2, lineColor, fillColor) {
-            boxSel.style("stroke-width", lineWidth2 + "px").call(Color3.stroke, lineColor).call(Color3.fill, fillColor);
+            boxSel.style("stroke-width", lineWidth2 + "px").call(Color2.stroke, lineColor).call(Color2.fill, fillColor);
           }
           var allBoxes = el.selectAll("path.box");
           if (trace.type === "candlestick") {
@@ -70442,7 +73603,7 @@ var Plotly = (() => {
             el.selectAll("path.mean").style({
               "stroke-width": lineWidth,
               "stroke-dasharray": 2 * lineWidth + "px," + lineWidth + "px"
-            }).call(Color3.stroke, trace.line.color);
+            }).call(Color2.stroke, trace.line.color);
             var pts = el.selectAll("path.point");
             Drawing.pointStyle(pts, trace, gd);
           }
