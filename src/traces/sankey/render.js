@@ -106,8 +106,8 @@ function sankeyModel(layout, d, traceIndex) {
     });
     for(var key in columns) {
         var column = columns[key].sort(function(a, b) { return a[0] - b[0]; });
-        for(i = 1; i < column.length; i++) {
-            var gap = column[i][0] - column[i - 1][1];
+        for(var n = 1; n < column.length; n++) {
+            var gap = column[n][0] - column[n - 1][1];
             if(gap < effectivePad) effectivePad = gap;
         }
     }
