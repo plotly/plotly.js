@@ -878,6 +878,21 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         for (k = hoverData.length - 1; k > initLen - 1; k--) {
             insert(hoverData[k]);
         }
+
+        // on category axes only keep points that fall in the hovered category
+        var winAx = winningPoint[axLetter + 'a'];
+        if (winAx && (winAx.type === 'category' || winAx.type === 'multicategory')) {
+            var winCat = winningPoint[axLetter + 'LabelVal'];
+            finalPoints = finalPoints.filter(function (point) {
+                var pointAx = point[axLetter + 'a'];
+                if (!pointAx || (pointAx.type !== 'category' && pointAx.type !== 'multicategory')) {
+                    // rare case of data point on overlaying axis
+                    return true;
+                }
+                return point[axLetter + 'LabelVal'] === winCat;
+            });
+        }
+
         hoverData = finalPoints;
         sortHoverData();
     }

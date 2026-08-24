@@ -137,7 +137,10 @@ module.exports = {
             'This is only a real distance for hovering on point-like objects,',
             'like scatter points. For area-like objects (bars, scatter fills, etc)',
             'hovering is on inside the area and off outside, but these objects',
-            'will not supersede hover on point-like objects in case of conflict.'
+            'will not supersede hover on point-like objects in case of conflict.',
+            'For hovermodes *x*, *y*, *x unified* and *y unified*',
+            'on a category axis, only points that fall in the hovered category',
+            'are shown in the hover label, regardless of this distance.'
         ].join(' ')
     },
     spikedistance: {
