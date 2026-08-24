@@ -16,6 +16,7 @@ npm-debug.log*
 tags
 
 .*
+!.agents/
 !.github/
 !.gitignore
 !.npmignore
