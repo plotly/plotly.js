@@ -108,7 +108,6 @@ describe('sankey tests', function () {
         var padMock = {
             data: [{
                 type: 'sankey',
-                layoutversion: 2,
                 node: {
                     label: Array.from({length: 24}, function(_, i) { return 'n' + i; }),
                     pad: 30,
