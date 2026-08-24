@@ -153,13 +153,19 @@ describe('sankey tests', function () {
 
         it('does not warn when the figure fits node.pad', function(done) {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
+            spyOn(Lib, 'warn').and.callFake(function() {
+                // collect all arguments, as Lib.warn is variadic
+                warnings.push(Array.prototype.slice.call(arguments));
             });
 
             var fig = Lib.extendDeep({}, padMock);
             fig.layout.width = 480;
             fig.layout.height = 1000;
+            // keep the sink column short enough that pad=30 always fits
+            fig.data[0].node.label = Array.from({length: 8}, function(_, i) { return 'n' + i; });
+            fig.data[0].link.source = Array.from({length: 7}, function() { return 0; });
+            fig.data[0].link.target = Array.from({length: 7}, function(_, i) { return i + 1; });
+            fig.data[0].link.value = Array.from({length: 7}, function() { return 1; });
             var gd = createGraphDiv();
             Plotly.newPlot(gd, fig)
                 .then(function() {
