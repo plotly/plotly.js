@@ -9,7 +9,7 @@
     "@mapbox/geojson-rewind": "^0.5.2",
     "d3-geo": "^3.1.1",
     "d3-geo-projection": "^4.0.0",
-    "mapshaper": "^0.6.106",
+    "mapshaper": "^0.7.55",
     "topojson-server": "^3.0.1"
   }
 }
