@@ -160,7 +160,7 @@ describe('sankey tests', function () {
 
             var fig = Lib.extendDeep({}, padMock);
             fig.layout.width = 480;
-            fig.layout.height = 880;
+            fig.layout.height = 1000;
             var gd = createGraphDiv();
             Plotly.newPlot(gd, fig)
                 .then(function() {
