@@ -201,6 +201,7 @@ module.exports = function calc(gd, trace) {
         // TODO: For now, just do the same thing as for arrowref === 'data', but this is not correct.
         // We actually need more sophisticated logic here, since this will give a bad result
         // if the data aspect ratio is very different from the plot aspect ratio.
+        // See https://github.com/plotly/plotly.js/issues/7979
         trace._extremes[xa._id] = Axes.findExtremes(xa, xTipPositions.concat(xTailPositions), {padded: true});
         trace._extremes[ya._id] = Axes.findExtremes(ya, yTipPositions.concat(yTailPositions), {padded: true});
     }
