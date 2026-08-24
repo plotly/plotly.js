@@ -11,7 +11,6 @@ var calcSelection = require('../scatter/calc_selection');
 // neighboring points, such that the arrows are _just slightly shorter_ than
 // that distance
 const SHRINK_FACTOR = 0.97;
-// const SHRINK_FACTOR = 1;
 
 module.exports = function calc(gd, trace) {
     // Map x/y through axes so category/date values become numeric calcdata
