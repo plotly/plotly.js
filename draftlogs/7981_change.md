@@ -1,0 +1,1 @@
+ - Correct the `showspikes` axis attribute description: spikes are not limited to *closest* hovermode, they also render in *x*, *y*, and unified hovermodes [[#7981](https://github.com/plotly/plotly.js/pull/7981)]
