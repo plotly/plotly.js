@@ -132,8 +132,9 @@ describe('sankey tests', function () {
 
         it('warns when the figure is too small for node.pad', function(done) {
             var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
+            spyOn(Lib, 'warn').and.callFake(function() {
+                // collect all arguments, as Lib.warn is variadic
+                warnings.push(Array.prototype.slice.call(arguments));
             });
 
             var fig = Lib.extendDeep({}, padMock);
