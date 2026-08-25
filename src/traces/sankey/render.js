@@ -804,13 +804,14 @@ function persistFinalNodePositions(d, gd) {
     for(var i = 0; i < d.graph.nodes.length; i++) {
         var nodeX = (d.graph.nodes[i].x0 + d.graph.nodes[i].x1) / 2;
         var nodeY = (d.graph.nodes[i].y0 + d.graph.nodes[i].y1) / 2;
-        if(d.trace.orientation === 'h') {
+        if(d.horizontal) {
             x.push(nodeX / d.figure.width);
             y.push(nodeY / d.figure.height);
         } else {
             x.push(nodeX / d.figure.height);
             y.push(nodeY / d.figure.width);
         }
+    }
     Registry.call('_guiRestyle', gd, {
         'node.x': [x],
         'node.y': [y]
