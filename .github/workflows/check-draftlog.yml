@@ -53,12 +53,12 @@ jobs:
             exit 1
           fi
 
-          INVALID_NAMES=$(echo "$ADDED" | grep -vE '^draftlogs/[0-9]+_(fix|add|remove|change|deprecate)\.md$' || true)
+          INVALID_NAMES=$(echo "$ADDED" | grep -vE "^draftlogs/${PR_NUMBER}_(fix|add|remove|change|deprecate)\.md$" || true)
           if [ -n "$INVALID_NAMES" ]; then
             echo "::error::Invalid draftlog filename(s):"
             echo "$INVALID_NAMES" | sed 's/^/  - /'
             echo ""
-            echo "Expected pattern: draftlogs/<number>_(fix|add|remove|change|deprecate).md"
+            echo "Expected pattern: draftlogs/${PR_NUMBER}_(fix|add|remove|change|deprecate).md"
             echo "See draftlogs/README.md for details."
             exit 1
           fi
@@ -67,17 +67,17 @@ jobs:
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             content=$(gh api -H 'Accept: application/vnd.github.raw' "/repos/$REPO/contents/$f?ref=$HEAD_SHA")
-            if ! echo "$content" | grep -qE '\[\[#[0-9]+\]\(https://github\.com/plotly/plotly\.js/pull/[0-9]+\)\]'; then
+            if ! echo "$content" | grep -qE "\[\[#${PR_NUMBER}\]\(https://github\.com/plotly/plotly\.js/(pull|issues)/${PR_NUMBER}\)\]"; then
               MISSING_LINK="$MISSING_LINK$f"$'\n'
             fi
           done <<< "$ADDED"
 
           if [ -n "$MISSING_LINK" ]; then
-            echo "::error::Draftlog entry(ies) missing a PR link:"
+            echo "::error::Draftlog entry(ies) missing a link to this PR (#${PR_NUMBER}):"
             printf '%s' "$MISSING_LINK" | sed 's/^/  - /'
             echo ""
             echo "Each entry must include a link in the form:"
-            echo "  [[#1234](https://github.com/plotly/plotly.js/pull/1234)]"
+            echo "  [[#${PR_NUMBER}](https://github.com/plotly/plotly.js/pull/${PR_NUMBER})]"
             echo "See draftlogs/README.md for an example."
             exit 1
           fi

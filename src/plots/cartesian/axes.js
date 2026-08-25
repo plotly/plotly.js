@@ -90,6 +90,28 @@ function expandRange(range) {
     ];
 }
 
+/**
+ * Correct a floating-point roundoff artifact in a linearized tick value.
+ * When `l` is much closer to its nearest ideal grid position than one `dtick`
+ * (within `dtick * snapThreshold`), snap it to that ideal. Otherwise return
+ * `l` unchanged. See https://github.com/plotly/plotly.js/issues/7765.
+ *
+ * @param l - linearized tick value from the accumulator in calcTicks
+ * @param tick0l - the axis' `tick0` in linearized form
+ * @param dtick - the axis' tick step; must be numeric and nonzero to snap
+ * @returns the snapped value, or `l` unchanged if no snap applies
+ */
+function snapToGrid(l, tick0l, dtick) {
+    if (![dtick, l, tick0l].every(isNumeric) || dtick === 0) return l;
+
+    const nTicks = Math.round((l - tick0l) / dtick);
+    const idealTick = tick0l + nTicks * dtick;
+    const snapThreshold = 1e-6;
+    const shouldSnap = l !== idealTick && Math.abs(l - idealTick) < Math.abs(dtick) * snapThreshold;
+
+    return shouldSnap ? idealTick : l;
+}
+
 /*
  * find the list of possible axes to reference with an xref or yref attribute
  * and coerce it to that list
@@ -1067,6 +1089,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
 
         var dtick = mockAx.dtick;
+        var tick0l = (type === 'linear') ? mockAx.r2l(mockAx.tick0) : undefined;
 
         if(mockAx.rangebreaks && mockAx._tick0Init !== mockAx.tick0) {
             // adjust tick0
@@ -1110,9 +1133,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if(tickVals.length > maxTicks || x === prevX) break;
             prevX = x;
 
-            var obj = { value: x };
+            var obj = { value: snapToGrid(x, tick0l, dtick) };
 
             if(major) {
+                // mark first major tick, for showexponent/showtickprefix/showticksuffix 'first'
+                if(x === x0) obj.first = true;
+
                 if(isDLog && (x !== (x | 0))) {
                     obj.simpleLabel = true;
                 }
@@ -1255,9 +1281,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         tickVals.pop();
     }
 
-    // save the last tick as well as first, so we can
-    // show the exponent only on the last one
+    // save the last tick as well as first
     ax._tmax = (tickVals[tickVals.length - 1] || {}).value;
+    // mark the last major tick, for showexponent/showtickprefix/showticksuffix 'last'
+    if(tickVals.length) tickVals[tickVals.length - 1].last = true;
 
     // for showing the rest of a date when the main tick label is only the
     // latter part: ax._prevDateHead holds what we showed most recently.
@@ -1279,7 +1306,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ax,
             tickVal.value,
             false, // hover
-            tickVal.simpleLabel // noSuffixPrefix
+            tickVal.simpleLabel, // noSuffixPrefix
+            {first: tickVal.first, last: tickVal.last} // positionFlags
         );
         var p = tickVal.periodX;
         if(p !== undefined) {
@@ -1351,6 +1379,16 @@ function syncTicks(ax) {
 
     var ticksOut = [];
     if(baseAxis._vals) {
+        // find the indices of the first and last labelled (major, non-noTick) base ticks,
+        // for showexponent/showtickprefix/showticksuffix 'first'/'last'
+        var firstMajorIdx = -1;
+        var lastMajorIdx = -1;
+        for(var j = 0; j < baseAxis._vals.length; j++) {
+            if(baseAxis._vals[j].noTick || baseAxis._vals[j].minor) continue;
+            if(firstMajorIdx === -1) firstMajorIdx = j;
+            lastMajorIdx = j;
+        }
+
         for(var i = 0; i < baseAxis._vals.length; i++) {
             // filter vals with noTick flag
             if(baseAxis._vals[i].noTick) {
@@ -1362,7 +1400,10 @@ function syncTicks(ax) {
 
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
-            var obj = axes.tickText(ax, vali);
+            var obj = axes.tickText(ax, vali, false, undefined, {
+                first: i === firstMajorIdx,
+                last: i === lastMajorIdx,
+            });
 
             // assign minor ticks
             if(baseAxis._vals[i].minor) {
@@ -1408,10 +1449,27 @@ function arrayTicks(ax, majorOnly) {
         // except with more precision to the numbers
         if(!Lib.isArrayOrTypedArray(text)) text = [];
 
+        // indices of the first and last in-range major ticks,
+        // showexponent/showtickprefix/showticksuffix 'first'/'last'
+        var firstIdx = -1;
+        var lastIdx = -1;
+        if(!isMinor) {
+            for(var k = 0; k < vals.length; k++) {
+                var valk = tickVal2l(vals[k]);
+                if(valk > tickMin && valk < tickMax) {
+                    if(firstIdx === -1) firstIdx = k;
+                    lastIdx = k;
+                }
+            }
+        }
+
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = axes.tickText(ax, vali, false, String(text[i]));
+                var obj = axes.tickText(ax, vali, false, String(text[i]), {
+                    first: i === firstIdx,
+                    last: i === lastIdx,
+                });
                 if(isMinor) {
                     obj.minor = true;
                     obj.text = '';
@@ -1725,13 +1783,23 @@ axes.tickFirst = function(ax, opts) {
     } else throw 'unrecognized dtick ' + String(dtick);
 };
 
-// draw the text for one tick.
-// px,py are the location on gd.paper
-// prefix is there so the x axis ticks can be dropped a line
-// ax is the axis layout, x is the tick value
-// hover is a (truthy) flag for whether to show numbers with a bit
-// more precision for hovertext
-axes.tickText = function(ax, x, hover, noSuffixPrefix) {
+/**
+ * Compute the text and metadata for one tick.
+ *
+ * @param {object} ax: the axis layout object
+ * @param {number} x: the tick value
+ * @param {boolean} hover: whether tick being computed for hovertext (as opposed to axis)
+ * @param {boolean} noSuffixPrefix: whether to skip adding tickprefix and ticksuffix
+ * @param {object} positionFlags: optional flags describing where this tick sits on the
+ *     axis, used by the showexponent/showtickprefix/showticksuffix 'first'/'last' options:
+ *       - first (boolean): whether this is the first (labelled, major) tick on the axis
+ *       - last (boolean): whether this is the last (labelled, major) tick on the axis
+ * @return {object} the tick object, including its formatted `text`
+ */
+axes.tickText = function(ax, x, hover, noSuffixPrefix, positionFlags) {
+    var first = !!positionFlags?.first;
+    var last = !!positionFlags?.last;
+
     var out = tickTextObj(ax, x);
     var arrayMode = ax.tickmode === 'array';
     var extraPrecision = hover || arrayMode;
@@ -1765,13 +1833,10 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     function isHidden(showAttr) {
         if(showAttr === undefined) return true;
         if(hover) return showAttr === 'none';
-
-        var firstOrLast = {
-            first: ax._tmin,
-            last: ax._tmax
-        }[showAttr];
-
-        return showAttr !== 'all' && x !== firstOrLast;
+        if(showAttr === 'all') return false;
+        if(showAttr === 'first') return !first;
+        if(showAttr === 'last') return !last;
+        return true; // fallback for the hover is false and showAttr==='none' or another value
     }
 
     var hideexp = hover ?
@@ -2191,9 +2256,6 @@ function numFormat(v, ax, fmtoverride, hover) {
 
     if(tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
 
-    // 'epsilon' - rounding increment
-    var e = Math.pow(10, -tickRound) / 2;
-
     // exponentFormat codes:
     // 'e' (1.2e+6, default)
     // 'E' (1.2E+6)
@@ -2208,27 +2270,27 @@ function numFormat(v, ax, fmtoverride, hover) {
     // take the sign out, put it back manually at the end
     // - makes cases easier
     v = Math.abs(v);
+
+    // 'epsilon' - rounding increment
+    const e = Math.pow(10, -tickRound) / 2;
     if(v < e) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
         isNeg = false;
     } else {
-        v += e;
         // take out a common exponent, if any
         if(exponent) {
             v *= Math.pow(10, -exponent);
             tickRound += exponent;
         }
         // round the mantissa
-        if(tickRound === 0) v = String(Math.floor(v));
-        else if(tickRound < 0) {
+        if(tickRound === 0) {
             v = String(Math.round(v));
-            v = v.slice(0, Math.max(0, v.length + tickRound));
-            for(var i = tickRound; i < 0; i++) v += '0';
+        } else if(tickRound < 0) {
+            const roundingMagnitude = Math.pow(10, -tickRound);
+            v = String(Math.round(v / roundingMagnitude) * roundingMagnitude);
         } else {
-            v = String(v);
-            var dp = v.indexOf('.') + 1;
-            if(dp) v = v.slice(0, dp + tickRound).replace(/\.?0+$/, '');
+            v = v.toFixed(Math.min(20, tickRound)).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
         v = Lib.numSeparate(v, ax._separators, separatethousands);

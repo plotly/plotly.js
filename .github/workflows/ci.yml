@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
     types:
       - opened
@@ -13,9 +13,6 @@ on:
 concurrency:
   group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
-env:
-  NODE_VERSION: '18'
 
 jobs:
   detect-changes:
@@ -60,7 +57,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -94,33 +91,33 @@ jobs:
       - uses: ./.github/actions/setup-workspace
       - uses: ./.github/actions/setup-chrome
 
-      - name: Run hover_label test in UTC timezone
+      - name: Run hover test in UTC timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'UTC'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
-      - name: Run hover_label test in Europe/Berlin timezone
+      - name: Run hover test in Europe/Berlin timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'Europe/Berlin'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
-      - name: Run hover_label test in Asia/Tokyo timezone
+      - name: Run hover test in Asia/Tokyo timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'Asia/Tokyo'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
-      - name: Run hover_label test in America/Toronto timezone
+      - name: Run hover test in America/Toronto timezone
         uses: ./.github/actions/run-xvfb
         env:
           TZ: 'America/Toronto'
         with:
-          run: npm run test-jasmine hover_label
+          run: npm run test-jasmine hover
 
   no-gl-jasmine:
     needs: install-and-cibuild
@@ -270,9 +267,9 @@ jobs:
           chrome-version: 'stable'
 
       - name: Run noCI tests
-        uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1
+        uses: ./.github/actions/run-xvfb
         with:
-          run: ./tasks/noci_test.sh jasmine
+          run: npm run test-jasmine -- --tags=noCI,noCIdep --nowatch
 
   # ============================================================
   # Image baseline generation and comparison
@@ -579,6 +576,26 @@ jobs:
       - name: Run syntax tests on source files
         run: .github/scripts/test.sh source-syntax
 
+  typecheck:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Type-check TypeScript sources
+        run: npm run typecheck
+
+  generated-types-drift:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Verify generated types are in sync with schema
+        run: npm run schema-typegen-diff-check
+
   # ============================================================
   # Standalone jobs (no dependencies on install-and-cibuild)
   # ============================================================
@@ -593,7 +610,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Set up build environment
@@ -624,7 +641,7 @@ jobs:
 
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Set up build environment

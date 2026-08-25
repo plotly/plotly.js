@@ -33,8 +33,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "aitoff",
@@ -69,8 +70,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "albers",
@@ -105,8 +107,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "albers usa",
@@ -142,9 +145,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locationmode": "USA-states",
-      "locations": ["TX", "WA", "NY", "AK"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-96.6],
+      "lat": [38.7]
     },
     {
       "name": "august",
@@ -179,8 +182,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "azimuthal equal area",
@@ -215,8 +219,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "azimuthal equidistant",
@@ -251,8 +256,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "baker",
@@ -287,8 +293,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "bertin1953",
@@ -323,8 +330,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "boggs",
@@ -359,8 +367,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "bonne",
@@ -395,8 +404,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "bottomley",
@@ -431,8 +441,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "bromley",
@@ -467,8 +478,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "collignon",
@@ -503,8 +515,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "conic conformal",
@@ -539,8 +552,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "conic equal area",
@@ -575,8 +589,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "conic equidistant",
@@ -611,8 +626,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "craig",
@@ -647,8 +663,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [0],
+      "lat": [0]
     },
     {
       "name": "craster",
@@ -683,8 +700,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "cylindrical equal area",
@@ -719,8 +737,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "cylindrical stereographic",
@@ -755,8 +774,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eckert1",
@@ -791,8 +811,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eckert2",
@@ -827,8 +848,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eckert3",
@@ -863,8 +885,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eckert4",
@@ -899,8 +922,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eckert5",
@@ -935,8 +959,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eckert6",
@@ -971,8 +996,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "eisenlohr",
@@ -1007,8 +1033,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "equal earth",
@@ -1043,8 +1070,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "equirectangular",
@@ -1079,8 +1107,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "fahey",
@@ -1115,8 +1144,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "foucaut",
@@ -1151,8 +1181,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "foucaut sinusoidal",
@@ -1187,8 +1218,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "ginzburg4",
@@ -1223,8 +1255,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "ginzburg5",
@@ -1259,8 +1292,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "ginzburg6",
@@ -1295,8 +1329,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "ginzburg8",
@@ -1331,8 +1366,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "ginzburg9",
@@ -1367,8 +1403,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "gnomonic",
@@ -1403,8 +1440,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "gringorten",
@@ -1439,8 +1477,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "gringorten quincuncial",
@@ -1475,8 +1514,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "guyou",
@@ -1511,8 +1551,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "hammer",
@@ -1547,8 +1588,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "hill",
@@ -1583,8 +1625,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "homolosine",
@@ -1619,8 +1662,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "hufnagel",
@@ -1655,8 +1699,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "hyperelliptical",
@@ -1691,8 +1736,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "kavrayskiy7",
@@ -1727,8 +1773,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "lagrange",
@@ -1763,8 +1810,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "larrivee",
@@ -1799,8 +1847,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "laskowski",
@@ -1835,8 +1884,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "loximuthal",
@@ -1871,8 +1921,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "mercator",
@@ -1907,8 +1958,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "miller",
@@ -1943,8 +1995,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "mollweide",
@@ -1979,8 +2032,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "mt flat polar parabolic",
@@ -2015,8 +2069,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "mt flat polar quartic",
@@ -2051,8 +2106,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "mt flat polar sinusoidal",
@@ -2087,8 +2143,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "natural earth",
@@ -2123,8 +2180,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "natural earth1",
@@ -2159,8 +2217,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "natural earth2",
@@ -2195,8 +2254,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "nell hammer",
@@ -2231,8 +2291,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "nicolosi",
@@ -2267,8 +2328,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "orthographic",
@@ -2303,8 +2365,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "patterson",
@@ -2339,8 +2402,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "peirce quincuncial",
@@ -2375,8 +2439,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [0],
+      "lat": [0]
     },
     {
       "name": "polyconic",
@@ -2411,8 +2476,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "rectangular polyconic",
@@ -2447,8 +2513,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "robinson",
@@ -2483,8 +2550,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "satellite",
@@ -2519,8 +2587,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [0],
+      "lat": [0]
     },
     {
       "name": "sinu mollweide",
@@ -2555,8 +2624,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "sinusoidal",
@@ -2591,8 +2661,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "stereographic",
@@ -2627,8 +2698,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "times",
@@ -2663,8 +2735,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "transverse mercator",
@@ -2699,8 +2772,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "van der grinten",
@@ -2735,8 +2809,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "van der grinten2",
@@ -2771,8 +2846,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "van der grinten3",
@@ -2807,8 +2883,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "van der grinten4",
@@ -2843,8 +2920,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "wagner4",
@@ -2879,8 +2957,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "wagner6",
@@ -2915,8 +2994,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "wiechel",
@@ -2951,8 +3031,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "winkel tripel",
@@ -2987,8 +3068,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     },
     {
       "name": "winkel3",
@@ -3023,8 +3105,9 @@
         "color": "darkblue",
         "family": "Gravitas One, cursive"
       },
-      "locations": ["GHA", "ARG", "AUS", "CAN"],
-      "hoverinfo": "skip"
+      "hoverinfo": "skip",
+      "lon": [-114.39],
+      "lat": [14.06]
     }
   ],
   "layout": {

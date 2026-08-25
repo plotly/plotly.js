@@ -609,7 +609,6 @@
     "hovermode": "x",
     "dragmode": "zoom",
     "boxmode": "overlay",
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

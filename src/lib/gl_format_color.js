@@ -1,28 +1,28 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
-var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
+var Color = require('../components/color');
 var colorDflt = require('../components/color/attributes').defaultLine;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 
-var colorDfltRgba = rgba(colorDflt);
+var colorDfltRgba = Color.normalize(colorDflt);
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
-    var colorOut = colorIn;
-    colorOut[3] *= opacityIn;
-    return colorOut;
+    // Return a new array to avoid mutating the original
+    return [colorIn[0], colorIn[1], colorIn[2], colorIn[3] * opacityIn];
 }
 
 function validateColor(colorIn) {
-    if(isNumeric(colorIn)) return colorDfltRgba;
+    if (isNumeric(colorIn)) return colorDfltRgba;
 
-    var colorOut = rgba(colorIn);
+    // A per-point color may be raw channels rather than a color string, which
+    // `Color.isValid` rejects but `Color.normalize` handles.
+    if (!Color.isChannelArray(colorIn) && !Color.isValid(colorIn)) return colorDfltRgba;
 
-    return colorOut.length ? colorOut : colorDfltRgba;
+    return Color.normalize(colorIn);
 }
 
 function validateOpacity(opacityIn) {
@@ -47,9 +47,10 @@ function formatColor(containerIn, opacityIn, len) {
     }
 
     if(isArrayColorIn) {
-        getColor = function(c, i) {
-            // FIXME: there is double work, considering that sclFunc does the opposite
-            return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
+        getColor = (c, i) => {
+            if (c[i] === undefined) return colorDfltRgba;
+            // Only normalize sclFunc output when a colorscale exists (because it's a color string)
+            return cOpts.colorscale === undefined ? sclFunc(c[i]) : Color.normalize(sclFunc(c[i]));
         };
     } else getColor = validateColor;
 
@@ -59,13 +60,13 @@ function formatColor(containerIn, opacityIn, len) {
         };
     } else getOpacity = validateOpacity;
 
-    if(isArrayColorIn || isArrayOpacityIn) {
-        for(var i = 0; i < len; i++) {
+    if (isArrayColorIn || isArrayOpacityIn) {
+        for (var i = 0; i < len; i++) {
             colori = getColor(colorIn, i);
             opacityi = getOpacity(opacityIn, i);
             colorOut[i] = calculateColor(colori, opacityi);
         }
-    } else colorOut = calculateColor(rgba(colorIn), opacityIn);
+    } else colorOut = calculateColor(validateColor(colorIn), opacityIn);
 
     return colorOut;
 }
@@ -77,17 +78,14 @@ function parseColorScale(cont) {
     if(cOpts.reversescale) colorscale = Colorscale.flipScale(cOpts.colorscale);
 
     return colorscale.map(function(elem) {
-        var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
         return {
-            index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, rgb.a]
+            index: elem[0],
+            rgb: Color.rgbaArray(elem[1])
         };
     });
 }
 
 module.exports = {
-    formatColor: formatColor,
-    parseColorScale: parseColorScale
+    formatColor,
+    parseColorScale
 };

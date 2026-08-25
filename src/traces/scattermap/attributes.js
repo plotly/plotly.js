@@ -15,7 +15,7 @@ var mapLayoutAtributes = require('../../plots/map/layout_attributes');
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
 
-var attrs = overrideAll(
+const attrs = overrideAll(
     {
         lon: scatterGeoAttrs.lon,
         lat: scatterGeoAttrs.lat,

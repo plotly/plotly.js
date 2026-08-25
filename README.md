@@ -1,8 +1,8 @@
 <a href="https://plotly.com/javascript/"><img src="https://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
-[![CI](https://github.com/plotly/plotly.js/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/plotly/plotly.js/actions/workflows/ci.yml)
-[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
+[![CI](https://github.com/plotly/plotly.js/actions/workflows/ci.yml/badge.svg)](https://github.com/plotly/plotly.js/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/main/LICENSE)
 
 [Plotly.js](https://plotly.com/javascript) is a standalone JavaScript data visualization library, and it also powers the Python and R modules named `plotly` in those respective ecosystems (referred to as [Plotly.py](https://plotly.com/python) and [Plotly.R](http://plotly.com/r)).
 
@@ -38,7 +38,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ---
 ## Load as a node module
-Install [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/master/dist/README.md)
+Install [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/main/dist/README.md)
 ```sh
 npm i --save plotly.js-dist-min
 ```
@@ -62,7 +62,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-4.0.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -79,7 +79,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 Alternatively, you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script type="module">
-    import "https://cdn.plot.ly/plotly-3.6.0.min.js"
+    import "https://cdn.plot.ly/plotly-4.0.0.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
 ```
@@ -89,23 +89,29 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-3.6.0.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-4.0.0.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.5. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
 
 ### MathJax
-You can load either version two or version three of MathJax files. For example:
+plotly.js supports using MathJax v3 or v4 to render mathematical expressions within plots.
+
+MathJax is not included in the plotly.js bundle, so it must be loaded separately as a script on the webpage.
+
+For MathJax v4:
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-svg.js"></script>
 ```
 
+For MathJax v3:
 ```html
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 ```
 
-> When using MathJax version 3, it is also possible to use `chtml` output on the other parts of the page in addition to `svg` output for the plotly graph.
-Please refer to `devtools/test_dashboard/index-mathjax3chtml.html` to see an example.
+When MathJax is available, any string contained within `$..$` signs will be rendered using the MathJax engine. This applies to plot titles, axis labels, tick label text, and annotations.
+
+plotly.js's use of the MathJax `svg` renderer should not prevent using other MathJax renderers elsewhere on the page, nor will it affect the global MathJax config. See `devtools/test_dashboard/index-mathjax3chtml.html` for an example of a webpage which uses the MathJax `chtml` renderer in the main page, and also displays Plotly charts containing MathJax equations rendered as `svg`.
 
 ### Need to have several WebGL graphs on a page?
 You may simply load the [virtual-webgl](https://github.com/greggman/virtual-webgl) script for WebGL 1 (not WebGL 2) before loading other scripts.
@@ -115,12 +121,12 @@ You may simply load the [virtual-webgl](https://github.com/greggman/virtual-webg
 
 ## Bundles
 There are two kinds of plotly.js bundles:
-1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-2. Custom bundles you can create yourself to optimize the size of the bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/master/CUSTOM_BUNDLE.md) for more information.
+1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/main/dist/README.md).
+2. Custom bundles you can create yourself to optimize the size of the bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/main/CUSTOM_BUNDLE.md) for more information.
 
 ---
 ## Alternative ways to load and build plotly.js
-If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations, then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
+If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/main/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/main/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations, then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/main/BUILDING.md).
 
 ---
 ## Documentation
@@ -133,12 +139,12 @@ For more info about contributing to Plotly documentation, please read through [c
 ---
 ## Bugs and feature requests
 
-Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md).
+Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/main/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/main/CONTRIBUTING.md).
 
 ---
 ## Contributing
 
-Please read through our [contributing guidelines](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md). Included are directions for opening issues, using plotly.js in your project and notes on development.
+Please read through our [contributing guidelines](https://github.com/plotly/plotly.js/blob/main/CONTRIBUTING.md). Included are directions for opening issues, using plotly.js in your project and notes on development.
 
 ---
 ## Notable contributors
@@ -176,7 +182,7 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 
 Code and documentation copyright 2025 Plotly, Inc.
 
-Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
+Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/main/LICENSE).
 
 ### Versioning
 

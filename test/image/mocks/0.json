@@ -1217,7 +1217,6 @@
     "barmode": "stack",
     "bargap": 0.2,
     "bargroupgap": 0,
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

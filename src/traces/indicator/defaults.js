@@ -146,7 +146,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         traceOut._isAngular = traceOut._isBullet = false;
     }
 
-    // disable 1D transforms
+    // Ensure _length is defined
     traceOut._length = null;
 }
 

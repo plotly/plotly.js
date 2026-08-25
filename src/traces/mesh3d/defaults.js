@@ -92,8 +92,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('yhoverformat');
     coerce('zhoverformat');
 
-    // disable 1D transforms
-    // x/y/z should match lengths, and i/j/k should match as well, but
-    // the two sets have different lengths so transforms wouldn't work.
+    // Ensure _length is defined
     traceOut._length = null;
 };

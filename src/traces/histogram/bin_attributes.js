@@ -53,7 +53,7 @@ module.exports = function makeBinAttrs(axLetter, match) {
                 (match ? (
                     'If multiple non-overlaying histograms share a subplot, ' +
                     'the first explicit `size` is used and all others discarded. ' +
-                    'If no `size` is provided,the sample data from all traces ' +
+                    'If no `size` is provided, the sample data from all traces ' +
                     'is combined to determine `size` as described above.'
                 ) : '')
             ].join(' ')

@@ -170,7 +170,7 @@ function toImage(gd, opts) {
             }
 
             if(format === 'full-json') {
-                var json = plots.graphJson(clonedGd, false, 'keepdata', 'object', true, true);
+                var json = plots.graphJson(clonedGd, false, 'object', true, true);
                 json.version = version;
                 json = JSON.stringify(json);
                 cleanup();

@@ -2,6 +2,7 @@ var Plotly = require('../../../lib/index');
 var Plots = require('../../../src/plots/plots');
 var Lib = require('../../../src/lib');
 var modeBarButtons = require('../../../src/components/modebar/buttons');
+var dfltConfig = require('../../../src/plot_api/plot_config').dfltConfig;
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -219,41 +220,6 @@ describe('config argument', function() {
             });
         });
     });
-
-    describe('showLink attribute', function() {
-        var gd;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-
-        afterEach(destroyGraphDiv);
-
-        it('should not display the edit link by default', function(done) {
-            Plotly.newPlot(gd, [], {})
-            .then(function() {
-                var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-                expect(link).toBeUndefined();
-            })
-            .then(done, done.fail);
-        });
-
-        it('should display a link when true', function(done) {
-            Plotly.newPlot(gd, [], {}, { showLink: true })
-            .then(function() {
-                var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-                expect(link.textContent).toBe('Edit chart »');
-
-                var bBox = link.getBoundingClientRect();
-                expect(bBox.width).toBeGreaterThan(0);
-                expect(bBox.height).toBeGreaterThan(0);
-            })
-            .then(done, done.fail);
-        });
-    });
-
 
     describe('editable attribute', function() {
         var gd;
@@ -535,16 +501,6 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should default to an empty string', function(done) {
-            Plotly.newPlot(gd, [], {})
-            .then(function() {
-                expect(gd._context.plotlyServerURL).not.toBe('https://plot.ly');
-                expect(gd._context.plotlyServerURL).not.toBe('https://chart-studio.plotly.com');
-                expect(gd._context.plotlyServerURL).toBe('');
-            })
-            .then(done, done.fail);
-        });
-
         it('should open confirmation dialog when set to a correctly-formatted URL', function(done) {
             Plotly.newPlot(gd, [], {}, {
                 plotlyServerURL: 'https://example.plotly.com/endpoint'
@@ -554,12 +510,43 @@ describe('config argument', function() {
                 modeBarButtons.sendChartToCloud.click(gd);
                 var msg = document.querySelector('.plotly-cloud-dialog-message');
                 expect(msg).not.toBe(null, 'confirmation dialog should be shown');
-                expect(msg.textContent).toContain('https://example.plotly.com/endpoint');
+                expect(msg.textContent).toBe('This chart will be sent to example.plotly.com.');
+
+                // The host name is shown as a link to the server's origin,
+                // leaving off the endpoint path
+                var link = msg.querySelector('.plotly-cloud-dialog-message--hostname');
+                expect(link).not.toBe(null, 'host name should be shown as a link');
+                expect(link.textContent).toBe('example.plotly.com');
+                expect(link.getAttribute('href')).toBe('https://example.plotly.com');
             })
             .then(done, done.fail);
         });
 
-        it('should NOT open confirmation dialog when set to an invalid URL', function(done) {
+        it('should show Plotly Cloud wording when left at the default URL', function(done) {
+            Plotly.newPlot(gd, [], {}, {})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe(dfltConfig.plotlyServerURL);
+                modeBarButtons.sendChartToCloud.click(gd);
+
+                var msg = document.querySelector('.plotly-cloud-dialog-message');
+                expect(msg).not.toBe(null, 'confirmation dialog should be shown');
+                expect(msg.textContent).toContain('This chart will be uploaded to Plotly Cloud to create a sharing link.');
+
+                var link = msg.querySelector('.plotly-cloud-dialog-message--hostname');
+                expect(link).not.toBe(null, 'Plotly Cloud should be shown as a link');
+                expect(link.textContent).toBe('Plotly Cloud');
+                expect(link.getAttribute('href')).toBe(new URL(dfltConfig.plotlyServerURL).origin);
+
+                var account = msg.querySelector('.plotly-cloud-dialog-message--account');
+                expect(account).not.toBe(null, 'account note should be shown');
+                expect(account.textContent).toContain('Plotly Cloud account');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should NOT open confirmation dialog when set to an unparseable URL', function(done) {
+            var errorSpy = spyOn(console, 'error');
+
             Plotly.newPlot(gd, [], {}, {
                 plotlyServerURL: 'dummy'
             })
@@ -568,6 +555,21 @@ describe('config argument', function() {
                 modeBarButtons.sendChartToCloud.click(gd);
                 var msg = document.querySelector('.plotly-cloud-dialog-message');
                 expect(msg).toBe(null, 'confirmation dialog should not be shown');
+                expect(errorSpy).toHaveBeenCalledWith('Invalid plotlyServerURL: dummy');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should NOT open confirmation dialog when set to a non-http(s) URL', function(done) {
+            var errorSpy = spyOn(console, 'error');
+
+            Plotly.newPlot(gd, [], {}, {
+                plotlyServerURL: 'ftp://example.plotly.com'
+            })
+            .then(function() {
+                modeBarButtons.sendChartToCloud.click(gd);
+                expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'confirmation dialog should not be shown');
+                expect(errorSpy).toHaveBeenCalledWith("Invalid protocol 'ftp:' in plotlyServerURL 'ftp://example.plotly.com'. Must be one of: http:, https:");
             })
             .then(done, done.fail);
         });
@@ -585,10 +587,47 @@ describe('config argument', function() {
                 expect(confirmBtn).not.toBe(null, 'confirm button should be shown');
                 mouseEvent('click', 0, 0, {element: confirmBtn});
 
-                // Should open the provided URL's origin in a new tab
-                expect(openSpy).toHaveBeenCalledWith('https://example.plotly.com/endpoint', '_blank');
+                // Should open the provided URL's origin in a new tab,
+                // adding the current page's origin as a query parameter
+                expect(openSpy).toHaveBeenCalledWith('https://example.plotly.com/endpoint?origin=http%3A%2F%2Flocalhost%3A9876', '_blank');
+
+                // Confirming should also dismiss the dialog
+                expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'dialog should be closed');
             })
             .then(done, done.fail);
+        });
+
+        [{
+            name: 'clicking cancel button',
+            dismiss: function() {
+                mouseEvent('click', 0, 0, {element: document.querySelector('.plotly-cloud-dialog-btn--cancel')});
+            }
+        }, {
+            name: 'clicking the backdrop',
+            dismiss: function() {
+                mouseEvent('click', 0, 0, {element: document.querySelector('.plotly-cloud-dialog')});
+            }
+        }, {
+            name: 'pressing Escape',
+            dismiss: function() {
+                document.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Escape'}));
+            }
+        }].forEach(function(spec) {
+            it('should close dialog without uploading when ' + spec.name, function(done) {
+                Plotly.newPlot(gd, [], {}, {
+                    plotlyServerURL: 'https://example.plotly.com/endpoint'
+                })
+                .then(function() {
+                    modeBarButtons.sendChartToCloud.click(gd);
+                    expect(document.querySelector('.plotly-cloud-dialog')).not.toBe(null, 'dialog should be shown');
+
+                    spec.dismiss();
+
+                    expect(document.querySelector('.plotly-cloud-dialog')).toBe(null, 'dialog should be closed');
+                    expect(openSpy).not.toHaveBeenCalled();
+                })
+                .then(done, done.fail);
+            });
         });
 
         it('has lesser priority than window env', function(done) {
@@ -604,8 +643,8 @@ describe('config argument', function() {
 
                 var msg = document.querySelector('.plotly-cloud-dialog-message');
                 expect(msg).not.toBe(null, 'confirmation dialog should be shown');
-                expect(msg.textContent).toContain('https://yo.plotly.com/endpoint');
-                expect(msg.textContent).not.toContain('https://example.plotly.com/endpoint2');
+                expect(msg.textContent).toContain('yo.plotly.com');
+                expect(msg.textContent).not.toContain('example.plotly.com');
             })
             .catch(failTest)
             .then(function() {
@@ -882,7 +921,6 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe('gl3d+geo+map');
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, map: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
-                expect(gd._context._scrollZoom.mapbox).toBe(undefined, 'no mapbox!');
             })
             .then(done, done.fail);
         });
@@ -890,7 +928,7 @@ describe('config argument', function() {
         it('should fill in blank scrollZoom value', function(done) {
             plot({scrollZoom: null}).then(function() {
                 expect(gd._context.scrollZoom).toBe(null);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1, map: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, map: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
             .then(done, done.fail);
@@ -899,7 +937,7 @@ describe('config argument', function() {
         it('should honor scrollZoom:true', function(done) {
             plot({scrollZoom: true}).then(function() {
                 expect(gd._context.scrollZoom).toBe(true);
-                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1, map: 1});
+                expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, map: 1});
             })
             .then(done, done.fail);
         });
@@ -908,14 +946,6 @@ describe('config argument', function() {
             plot({scrollZoom: false}).then(function() {
                 expect(gd._context.scrollZoom).toBe(false);
                 expect(gd._context._scrollZoom).toEqual({});
-            })
-            .then(done, done.fail);
-        });
-
-        it('should honor scrollZoom flaglist (mapbox and cartesian)', function(done) {
-            plot({scrollZoom: 'mapbox+cartesian'}).then(function() {
-                expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
-                expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
             })
             .then(done, done.fail);
         });

@@ -16,6 +16,20 @@ var drag = require('../assets/drag');
 describe('Test colorbar:', function() {
     'use strict';
 
+    describe('map trace attribute edit types:', () => {
+        const colorbarAttrs = require('../../../src/components/colorbar/attributes');
+        const traceAttrs = {
+            scattergeo: require('../../../src/traces/scattergeo/attributes'),
+            scattermap: require('../../../src/traces/scattermap/attributes')
+        };
+
+        Object.keys(traceAttrs).forEach((name) => {
+            it(`${name} should preserve colorbar edit types`, () => {
+                expect(traceAttrs[name].marker.colorbar).toEqual(colorbarAttrs);
+            });
+        });
+    });
+
     describe('supplyDefaults:', function() {
         function _supply(trace, layout) {
             var gd = {
@@ -92,6 +106,76 @@ describe('Test colorbar:', function() {
                 [9607345622458650.0, 9607345622458652.0, 9607345622458650.0, 9607345622458652.0, 9607345622458650.0, 9607345622458654.0, 9607345622458654.0, 9607345622458638.0]
             ];
             Plotly.newPlot(gd, [{type: 'heatmap', z: z}])
+            .then(done, done.fail);
+        });
+
+        // see https://github.com/plotly/plotly.js/issues/6499
+        it('does not throw when the colorbar is too short for its own length/padding', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {len: 0.01, thickness: 30}
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
+        it('does not throw when a top-side colorbar title is taller than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        title: {text: 'Long title', side: 'top', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
+        it('does not throw when a bottom-side colorbar title is taller than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        title: {text: 'Long title', side: 'bottom', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
+        it('does not throw when a right-side horizontal colorbar title is wider than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        orientation: 'h',
+                        title: {text: 'Long title', side: 'right', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
             .then(done, done.fail);
         });
 
