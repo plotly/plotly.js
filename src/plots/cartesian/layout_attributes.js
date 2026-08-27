@@ -780,9 +780,7 @@ module.exports = {
         editType: 'modebar',
         description: [
             'Determines whether or not spikes (aka droplines) are drawn for this axis.',
-            'In *closest* hovermode, spikes are only drawn when hovering near a data point.',
-            'In *x*, *y*, *x unified*, and *y unified* hovermodes, spikes are also',
-            'drawn at the current cursor position on the axis.'
+            'Note that spikes will never be drawn when `hovermode` is *false*.'
         ].join(' ')
     },
     spikecolor: {
