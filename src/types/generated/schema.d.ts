@@ -12534,7 +12534,7 @@ export interface LayoutAxis {
      */
     showline?: boolean;
     /**
-     * Determines whether or not spikes (aka droplines) are drawn for this axis. Note: This only takes affect when hovermode = closest
+     * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
      * @default false
      */
     showspikes?: boolean;

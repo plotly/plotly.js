@@ -780,7 +780,7 @@ module.exports = {
         editType: 'modebar',
         description: [
             'Determines whether or not spikes (aka droplines) are drawn for this axis.',
-            'Note: This only takes affect when hovermode = closest'
+            'Note that spikes will never be drawn when `hovermode` is *false*.'
         ].join(' ')
     },
     spikecolor: {
