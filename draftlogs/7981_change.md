@@ -1,1 +1,0 @@
- - Correct the `showspikes` axis attribute description: clarify that spikes are never drawn when `hovermode` is *false* [[#7981](https://github.com/plotly/plotly.js/pull/7981)]
