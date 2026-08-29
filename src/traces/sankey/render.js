@@ -112,7 +112,9 @@ function sankeyModel(layout, d, traceIndex) {
         }
     }
 
-    if(effectivePad < nodePad) {
+    // Allow for floating-point rounding when the effective gap is exactly
+    // nodePad (for example, 29.999999999999943 for a requested pad of 30).
+    if(effectivePad < nodePad - 1e-6) {
         Lib.warn('node.pad was reduced to ', effectivePad, ' to fit within the figure.');
     }
 
