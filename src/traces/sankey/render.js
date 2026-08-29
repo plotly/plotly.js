@@ -90,41 +90,8 @@ function sankeyModel(layout, d, traceIndex) {
 
     var graph = sankey();
 
-    /*
-     * Detect a clamped node.pad from the laid-out node positions rather than
-     * from `sankey.nodePadding()`: since @plotly/d3-sankey v0.12 the getter
-     * returns the *configured* value (the post-clamp padding is kept in an
-     * internal variable), so comparing against it never fires. Measuring the
-     * smallest gap between consecutive nodes sharing a column works for both
-     * @plotly/d3-sankey and @plotly/d3-sankey-circular.
-     */
-    var effectiveNodePad = null;
-    if(graph.nodes.length > 1) {
-        var colAttr = horizontal ? 'x0' : 'y0';
-        var posAttr = horizontal ? 'y0' : 'x0';
-        var columns = {};
-        graph.nodes.forEach(function(n) {
-            var ck = n[colAttr];
-            if(!columns[ck]) columns[ck] = [];
-            columns[ck].push(n);
-        });
-        Object.keys(columns).forEach(function(ck) {
-            var col = columns[ck].sort(function(a, b) { return a[posAttr] - b[posAttr]; });
-            for(var i = 1; i < col.length; i++) {
-                var gap = col[i][posAttr] - col[i - 1][posAttr];
-                if(effectiveNodePad === null || gap < effectiveNodePad) {
-                    effectiveNodePad = gap;
-                }
-            }
-        });
-    }
-
-    if(effectiveNodePad !== null && effectiveNodePad < nodePad) {
-        Lib.warn(
-            'node.pad was reduced to ',
-            Math.round(effectiveNodePad * 100) / 100,
-            ' to fit within the figure.'
-        );
+    if(sankey.nodePadding() < nodePad) {
+        Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
     // Counters for nested loops
