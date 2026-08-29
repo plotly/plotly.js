@@ -90,30 +90,8 @@ function sankeyModel(layout, d, traceIndex) {
 
     var graph = sankey();
 
-    // Derive the effective (post-clamp) node padding from the laid-out node
-    // geometry instead of reading it back through `sankey.nodePadding()`.
-    // In @plotly/d3-sankey@0.7.x that getter returned the clamped value after
-    // the layout ran, but since 0.12.x it returns the user-configured value
-    // (upstream split `dy` from `py`), so a getter-based check would never
-    // fire. Measuring the smallest vertical gap between consecutive nodes in
-    // any one column is version-independent. See #7832.
-    var effectivePad = nodePad;
-    var columns = {};
-    graph.nodes.forEach(function(node) {
-        var col = Math.round(node.x0);
-        if(!columns[col]) columns[col] = [];
-        columns[col].push([node.y0, node.y1]);
-    });
-    for(var key in columns) {
-        var column = columns[key].sort(function(a, b) { return a[0] - b[0]; });
-        for(var n = 1; n < column.length; n++) {
-            var gap = column[n][0] - column[n - 1][1];
-            if(gap < effectivePad) effectivePad = gap;
-        }
-    }
-
-    if(effectivePad < nodePad) {
-        Lib.warn('node.pad was reduced to ', effectivePad, ' to fit within the figure.');
+    if(sankey.nodePadding() < nodePad) {
+        Lib.warn('node.pad was reduced to ', sankey.nodePadding(), ' to fit within the figure.');
     }
 
     // Counters for nested loops
