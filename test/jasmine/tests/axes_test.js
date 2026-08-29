@@ -4368,6 +4368,27 @@ describe('Test axes', function() {
                 expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
             });
 
+            it('should order second-level categories per parent, not globally', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1', '2', '2'], ['b', 'a', 'a', 'b']]
+                }, 'x', 'multicategory');
+
+                // '2' keeps its own 'a' then 'b' order, even though 'b' is
+                // the first second-level category seen overall (under '1')
+                expect(out).toEqual([0, 1, 2, 3]);
+                expect(ax._categories).toEqual([['1', 'b'], ['1', 'a'], ['2', 'a'], ['2', 'b']]);
+                expect(ax._categoriesMap).toEqual({'1,b': 0, '1,a': 1, '2,a': 2, '2,b': 3});
+            });
+
+            it('should not let second-level categories inherit the prototype chain', function() {
+                var out = _makeCalcdata({
+                    x: [['1', '1'], ['toString', 'a']]
+                }, 'x', 'multicategory');
+
+                expect(out).toEqual([0, 1]);
+                expect(ax._categories).toEqual([['1', 'toString'], ['1', 'a']]);
+            });
+
             it('case invalid in x[0]', function() {
                 var out = _makeCalcdata({
                     x: [['1', '2', null, '2'], ['a', 'a', 'b', 'b']]
