@@ -286,6 +286,28 @@ describe('legend defaults', function () {
         expect(layoutOut.legend.title.side).toEqual('left');
     });
 
+    it('should default `groupdoubleclick` to the `groupclick` value', function () {
+        fullData = allShown([{ type: 'scatter' }, { type: 'scatter' }]);
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.groupdoubleclick).toBe('togglegroup');
+
+        layoutIn.legend = { groupclick: 'toggleitem' };
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.groupdoubleclick).toBe('toggleitem');
+    });
+
+    it('should coerce `groupdoubleclick` independently of `groupclick`', function () {
+        fullData = allShown([{ type: 'scatter' }, { type: 'scatter' }]);
+
+        layoutIn.legend = { groupdoubleclick: 'toggleitem' };
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.groupclick).toBe('togglegroup');
+        expect(layoutOut.legend.groupdoubleclick).toBe('toggleitem');
+    });
+
     describe('for horizontal legends', function () {
         var layoutInForHorizontalLegends;
 
@@ -2477,6 +2499,58 @@ describe('legend interaction', function () {
                     .then(click(2))
                     .then(assertVisible([false, true, 'legendonly', true]))
                     .then(click(2))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(done, done.fail);
+            });
+        });
+
+        describe('legendgroup visibility case of groupdoubleclick: "toggleitem"', function () {
+            beforeEach(function (done) {
+                Plotly.newPlot(
+                    gd,
+                    [
+                        {
+                            x: [1, 2],
+                            y: [3, 4],
+                            visible: false
+                        },
+                        {
+                            x: [1, 2, 3, 4],
+                            y: [0, 1, 2, 3],
+                            legendgroup: 'foo'
+                        },
+                        {
+                            x: [1, 2, 3, 4],
+                            y: [1, 3, 2, 4]
+                        },
+                        {
+                            x: [1, 2, 3, 4],
+                            y: [1, 3, 2, 4],
+                            legendgroup: 'foo'
+                        }
+                    ],
+                    {
+                        legend: {
+                            groupdoubleclick: 'toggleitem'
+                        }
+                    }
+                ).then(done);
+            });
+
+            it('isolates the clicked item instead of its legendgroup', function (done) {
+                Promise.resolve()
+                    .then(click(1, 2))
+                    .then(assertVisible([false, 'legendonly', 'legendonly', true]))
+                    .then(click(1, 2))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(done, done.fail);
+            });
+
+            it('leaves the single click behavior to groupclick', function (done) {
+                Promise.resolve()
+                    .then(click(1))
+                    .then(assertVisible([false, 'legendonly', true, 'legendonly']))
+                    .then(click(1))
                     .then(assertVisible([false, true, true, true]))
                     .then(done, done.fail);
             });
