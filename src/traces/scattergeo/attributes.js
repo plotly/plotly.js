@@ -14,7 +14,7 @@ var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-module.exports = overrideAll(
+const attrs = overrideAll(
     {
         lon: {
             valType: 'data_array',
@@ -170,3 +170,7 @@ module.exports = overrideAll(
     'calc',
     'nested'
 );
+
+attrs.marker.colorbar = require('../../components/colorbar/attributes');
+
+module.exports = attrs;
