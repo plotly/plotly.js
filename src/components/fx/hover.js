@@ -262,6 +262,17 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     return multiHover ? hoverLabel : hoverLabel.node();
 };
 
+// can either axis of this trace draw a spike to a point that is not hovered?
+// 'hovered data' spikes snap to the hover label, so they need hoverData to exist.
+function canSpikeToClosest(pointData) {
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    return Boolean(
+        (xa && xa.showspikes && xa.spikesnap !== 'hovered data') ||
+            (ya && ya.showspikes && ya.spikesnap !== 'hovered data')
+    );
+}
+
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if (!subplot) subplot = 'xy';
@@ -659,8 +670,10 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             }
 
             // Now if there is range to look in, find the points to draw the spikelines
-            // Do it only if there is no hoverData
-            if (hasCartesian && spikedistance !== 0) {
+            // Do it only if there is no hoverData, and only if one of this trace's axes
+            // can actually draw a spike to a non-hovered point - the search below is
+            // unbounded when spikedistance is -1 (the default), so it is expensive.
+            if (hasCartesian && spikedistance !== 0 && canSpikeToClosest(pointData)) {
                 if (hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
