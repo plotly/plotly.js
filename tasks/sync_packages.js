@@ -342,7 +342,7 @@ function _publishToNPM(d, pkgPath) {
     return function (cb) {
         if (process.env.DRYRUN) {
             console.log('dry run, did not publish ' + d.name);
-            cb();
+            exec('npm publish --dry-run' + tag, { cwd: pkgPath }, cb).stderr.pipe(process.stderr);
             return;
         }
         exec('npm publish' + tag, { cwd: pkgPath }, cb).stdout.pipe(process.stdout);
