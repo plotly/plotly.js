@@ -596,6 +596,15 @@ jobs:
       - name: Verify generated types are in sync with schema
         run: npm run schema-typegen-diff-check
 
+  package-resolution:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+      - name: Verify the published package loads under Node
+        run: npm run test-node-resolve
+
   # ============================================================
   # Standalone jobs (no dependencies on install-and-cibuild)
   # ============================================================
