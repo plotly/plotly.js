@@ -23,9 +23,7 @@
     "noCheck": true,
     "allowJs": false,
     "module": "commonjs",
-    "declaration": false,
-    "isolatedModules": false,
-    "tsBuildInfoFile": "build/ts-build-info.json"
+    "tsBuildInfoFile": "build/tsconfig.build.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/types/**"]
