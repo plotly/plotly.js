@@ -2,11 +2,11 @@
  * Internal data/trace types (not in public API)
  *
  * These are runtime-resolved versions of trace data with internal state
- * properties. For public trace types, see data.d.ts.
+ * properties. For public trace types, see generated/schema.d.ts.
  */
 
 import type { Datum } from '../lib/common';
-import type { Data } from './data';
+import type { Data } from '../generated/schema';
 
 /**
  * Calculated trace data (internal).
