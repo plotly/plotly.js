@@ -5,8 +5,8 @@
  * properties. For public trace types, see data.d.ts.
  */
 
+import type { Data } from '../generated/schema';
 import type { Datum } from '../lib/common';
-import type { Data } from './data';
 
 /**
  * Calculated trace data (internal).
