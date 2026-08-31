@@ -1,0 +1,32 @@
+{
+  // Emit configuration for the published package.
+  //
+  // The repository authors a growing share of `src/` in TypeScript, but the
+  // published package must contain only JavaScript. Node's CommonJS resolver
+  // never tries a `.ts` extension, and Node refuses to strip types from any
+  // file below `node_modules`. So the `prepack` script writes a `.js` sibling
+  // for each `.ts` source, and `postpack` deletes it again.
+  //
+  // No `outDir` is set, so each `.js` lands next to its `.ts`. That is what
+  // makes `require('./mod')` resolve in the tarball.
+  //
+  // Build mode drives both scripts. `tsc -b` emits, and `tsc -b --clean`
+  // removes every generated file. Build mode also writes a state file, which
+  // `tsBuildInfoFile` parks below `build/`, because `build/` is already
+  // ignored by both git and npm.
+  //
+  // Type errors are not reported here. `npm run typecheck` owns that job and
+  // reads the whole program, including the JavaScript files.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "noCheck": true,
+    "allowJs": false,
+    "module": "commonjs",
+    "declaration": false,
+    "isolatedModules": false,
+    "tsBuildInfoFile": "build/ts-build-info.json"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/types/**"]
+}
