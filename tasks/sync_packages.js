@@ -23,6 +23,10 @@ var copyrightAndLicense = [
     ''
 ].join('\n');
 
+// Type info for the packages that carry types (only the two full bundles for now)
+const TYPES_MAIN = 'lib/index.d.ts';
+const TYPES_FILES = [TYPES_MAIN, 'src/types'];
+
 var partialBundlePaths = constants.partialBundleNames.map(constants.makePartialBundleOpts);
 
 // sync "partial bundle" packages
@@ -44,7 +48,8 @@ partialBundlePaths
             main: 'plotly.js',
             dist: constants.pathToPlotlyDist,
             desc: 'Ready-to-use plotly.js distributed bundle.',
-            traceList: constants.allTraces
+            traceList: constants.allTraces,
+            includeTypes: true
         }
     ])
     .forEach(syncPartialBundlePkg);
@@ -68,7 +73,8 @@ partialBundlePaths
             main: 'plotly.min.js',
             dist: constants.pathToPlotlyDistMin,
             desc: 'Ready-to-use minified plotly.js distributed bundle.',
-            traceList: constants.allTraces
+            traceList: constants.allTraces,
+            includeTypes: true
         }
     ])
     .forEach(syncPartialBundlePkg);
@@ -99,6 +105,10 @@ function syncPartialBundlePkg(d) {
             keywords: pkg.keywords,
             files: ['LICENSE', 'README.md', d.main]
         };
+        if (d.includeTypes) {
+            cnt.types = TYPES_MAIN;
+            cnt.files.push(...TYPES_FILES);
+        }
 
         fs.writeFile(path.join(pkgPath, 'package.json'), JSON.stringify(cnt, null, 2) + '\n', cb);
     }
@@ -128,6 +138,24 @@ function syncPartialBundlePkg(d) {
             "var Plotly = require('" + d.name + "')",
             '```',
             '',
+            ...(d.includeTypes
+                ? [
+                      '## TypeScript',
+                      '',
+                      'This package includes its own TypeScript declarations.',
+                      '',
+                      '```ts',
+                      "import Plotly from '" + d.name + "'",
+                      "import type { Data, Layout } from '" + d.name + "'",
+                      '',
+                      "const data: Data[] = [{ type: 'scatter', x: [1, 2, 3], y: [4, 5, 6] }]",
+                      "const layout: Partial<Layout> = { title: { text: 'Demo' } }",
+                      '',
+                      'await Plotly.newPlot(div, data, layout)',
+                      '```',
+                      ''
+                  ]
+                : []),
             copyrightAndLicense,
             'Please visit [complete list of dependencies](https://www.npmjs.com/package/plotly.js/v/' +
                 pkg.version +
@@ -141,11 +169,36 @@ function syncPartialBundlePkg(d) {
         fs.copy(d.dist, path.join(pkgPath, d.main), cb);
     }
 
+    function copyTypes(cb) {
+        if (!d.includeTypes) {
+            cb();
+            return;
+        }
+
+        // Only include type related files in copy
+        const isDeclaration = (src) => fs.statSync(src).isDirectory() || src.endsWith('.d.ts');
+
+        // Match the type file structure from the full library
+        runSeries(
+            [
+                (cb) => fs.copy(path.join(constants.pathToLib, 'index.d.ts'), path.join(pkgPath, TYPES_MAIN), cb),
+                (cb) =>
+                    fs.copy(
+                        path.join(constants.pathToSrc, 'types'),
+                        path.join(pkgPath, 'src', 'types'),
+                        { filter: isDeclaration },
+                        cb
+                    )
+            ],
+            cb
+        );
+    }
+
     var copyLicense = _copyLicense(d, pkgPath);
 
     var publishToNPM = _publishToNPM(d, pkgPath);
 
-    runSeries([initDirectory, writePackageJSON, writeREADME, copyMain, copyLicense, publishToNPM], function (err) {
+    runSeries([initDirectory, writePackageJSON, writeREADME, copyMain, copyTypes, copyLicense, publishToNPM], (err) => {
         if (err) throw err;
     });
 }
