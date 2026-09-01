@@ -602,8 +602,49 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: ./.github/actions/setup-workspace
-      - name: Verify the published package loads under Node
-        run: npm run test-node-resolve
+
+      - name: Pack the package
+        run: npm pack --pack-destination "$RUNNER_TEMP"
+
+      - name: Install the tarball into a scratch project
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir consumer && cd consumer
+          npm init -y
+          npm install "$RUNNER_TEMP"/plotly.js-*.tgz
+
+      - name: Load every compiled module under Node
+        shell: node {0}
+        working-directory: ${{ runner.temp }}/consumer
+        run: |
+          const assert = require('node:assert');
+          const fs = require('node:fs');
+
+          // src/lib/index.js reaches for these before it touches the DOM.
+          globalThis.self = globalThis;
+          globalThis.window = globalThis;
+
+          const paths = [process.cwd()];
+          const load = (name) => require(require.resolve(name, { paths }));
+
+          const modules = fs
+              .globSync('src/**/*.ts', { cwd: process.env.GITHUB_WORKSPACE })
+              .filter((file) => !file.endsWith('.d.ts'))
+              .map((file) => 'plotly.js/' + file.replace(/[.]ts$/, ''));
+
+          if (modules.length === 0) throw new Error('Found no TypeScript sources to check');
+
+          for (const name of modules) load(name);
+
+          const lib = load('plotly.js/src/lib/index');
+
+          assert.strictEqual(lib.mod(-1, 4), 3);
+          assert.strictEqual(lib.modHalf(3, 4), -1);
+          assert.deepStrictEqual(lib.sortObjectKeys({ b: 1, a: 2 }), ['a', 'b']);
+          assert.strictEqual(lib.cleanNumber(' 12 '), 12);
+          assert.strictEqual(typeof lib.counterRegex, 'function');
+
+          console.log('Loaded ' + modules.length + ' compiled modules and src/lib/index.js');
 
   # ============================================================
   # Standalone jobs (no dependencies on install-and-cibuild)
