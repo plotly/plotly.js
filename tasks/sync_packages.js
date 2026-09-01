@@ -23,7 +23,7 @@ var copyrightAndLicense = [
     ''
 ].join('\n');
 
-// Type info for the packages that carry types (only the two full bundles for now)
+// Type info for the packages that carry types (plotly.js-dist and plotly.js-dist-min)
 const TYPES_MAIN = 'lib/index.d.ts';
 const TYPES_FILES = [TYPES_MAIN, 'src/types'];
 
