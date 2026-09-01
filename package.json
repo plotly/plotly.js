@@ -63,7 +63,9 @@
     "preversion": "check-node-version --node 22 --npm 10 && npm-link-check && npm ls --prod --all",
     "version": "npm run build && git add -A lib dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
-    "postpublish": "node tasks/sync_packages.js"
+    "postpublish": "node tasks/sync_packages.js",
+    "prepack": "tsc -b tsconfig.build.json --force",
+    "postpack": "tsc -b tsconfig.build.json --clean"
   },
   "dependencies": {
     "@plotly/d3": "3.8.2",
@@ -73,6 +75,7 @@
     "@turf/area": "^7.3.5",
     "@turf/centroid": "^7.3.5",
     "@turf/meta": "^7.3.5",
+    "@types/d3": "^3.5.53",
     "base64-arraybuffer": "^1.0.2",
     "country-iso-search": "^0.1.2",
     "culori": "^4.0.2",
@@ -111,7 +114,6 @@
     "@biomejs/biome": "^2.5.5",
     "@plotly/mathjax-v3": "npm:mathjax@^3.2.2",
     "@plotly/mathjax-v4": "npm:mathjax@^4.1.3",
-    "@types/d3": "3.5.34",
     "@types/node": "^26.1.1",
     "assert": "^2.1.0",
     "buffer": "^6.0.3",

@@ -14,3 +14,8 @@ stackgl_modules/node_modules
 tasks
 test
 topojson
+
+# Exclude the TypeScript files (but not declarations) because Node doesn't
+# parse TS when installed in node_modules.
+src/**/*.ts
+!src/**/*.d.ts
