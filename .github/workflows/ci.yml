@@ -596,6 +596,9 @@ jobs:
       - name: Verify generated types are in sync with schema
         run: npm run schema-typegen-diff-check
 
+      - name: Verify entry point declarations are in sync
+        run: npm run entry-point-types-check
+
   package-resolution:
     needs: install-and-cibuild
     runs-on: ubuntu-latest
