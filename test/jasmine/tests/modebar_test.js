@@ -4,6 +4,7 @@ var createModeBar = require('../../../src/components/modebar/modebar');
 var manageModeBar = require('../../../src/components/modebar/manage');
 
 var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var Plots = require('../../../src/plots/plots');
 var Registry = require('../../../src/registry');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -868,6 +869,17 @@ describe('ModeBar', function() {
                 .toEqual(initialButtonCount + 1);
         });
 
+        it('groups downloadJson with toImage when added by name', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtonsToAdd = ['downloadJson'];
+
+            manageModeBar(gd);
+
+            expect(gd._fullLayout._modeBar.buttons[0].map(function(button) {
+                return button.name;
+            })).toEqual(['toImage', 'downloadJson']);
+        });
+
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove', function() {
             var gd = setupGraphInfo();
             gd._context.modeBarButtonsToRemove = [
@@ -1049,6 +1061,81 @@ describe('ModeBar', function() {
                     selectButton(gd._fullLayout._modeBar, 'toImage').click();
                     expect(Registry.call)
                         .toHaveBeenCalledWith('downloadImage', gd, {format: 'png', width: null, height: null});
+                })
+                .then(done, done.fail);
+            });
+        });
+
+        describe('downloadJson handler', function() {
+            beforeEach(function() {
+                spyOn(Registry, 'call').and.returnValue(Promise.resolve());
+                gd = createGraphDiv();
+            });
+
+            it('requests a full JSON download when added through config', function(done) {
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'full-json'});
+                })
+                .then(done, done.fail);
+            });
+
+            it('requests a full JSON download when added through layout', function(done) {
+                Plotly.newPlot(gd, {data: [], layout: {
+                    modebar: {add: ['downloadJson']}
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'full-json'});
+                })
+                .then(done, done.fail);
+            });
+
+            it('reports successful downloads with the filename', function(done) {
+                spyOn(Lib, 'notifier');
+                Registry.call.and.returnValue(Promise.resolve('plot.json'));
+
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    return Promise.resolve();
+                })
+                .then(function() {
+                    expect(Lib.notifier).toHaveBeenCalledWith(
+                        'JSON download succeeded - plot.json',
+                        'long',
+                        gd
+                    );
+                })
+                .then(done, done.fail);
+            });
+
+            it('reports download failures', function(done) {
+                spyOn(Lib, 'notifier');
+                Registry.call.and.callFake(function() {
+                    return Promise.reject();
+                });
+
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    return Promise.resolve();
+                })
+                .then(function() {
+                    expect(Lib.notifier).toHaveBeenCalledWith(
+                        'Sorry, there was a problem downloading your JSON file!',
+                        'long',
+                        gd
+                    );
                 })
                 .then(done, done.fail);
             });
