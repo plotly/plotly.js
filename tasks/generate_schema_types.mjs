@@ -15,6 +15,8 @@
 
 import * as fs from 'fs';
 
+import { generatedHeader, jsDocBlock, toFileText, tsLiteral } from './util/type_gen.mjs';
+
 // ---------------------------------------------------------------------------
 // Meta keys to skip (not user-facing attributes)
 // ---------------------------------------------------------------------------
@@ -186,13 +188,7 @@ const LAYOUT_ARRAY_NAMES = new Map([
 // valType → TS type
 // ---------------------------------------------------------------------------
 
-function serializeValue(v) {
-    if (typeof v === 'string') {
-        const escaped = v.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-        return `'${escaped}'`;
-    }
-    return String(v); // numbers, booleans
-}
+const serializeValue = tsLiteral;
 
 /**
  * Try to match a values array to a known common type.
@@ -305,27 +301,7 @@ function formatJSDoc(attr, indent) {
         }
     }
 
-    if (!description && tags.length === 0) return [];
-
-    // Single-line — preserve original compact format when there's only a description
-    if (description && tags.length === 0) {
-        const text = description.replace(/\*\//g, '*\\/');
-        return [`${indent}/** ${text} */`];
-    }
-
-    // Multi-line block
-    const out = [`${indent}/**`];
-    if (description) {
-        const text = description.replace(/\*\//g, '*\\/');
-        for (const line of text.split('\n')) {
-            out.push(`${indent} * ${line}`);
-        }
-    }
-    for (const tag of tags) {
-        out.push(`${indent} * ${tag}`);
-    }
-    out.push(`${indent} */`);
-    return out;
+    return jsDocBlock({ description, tags, indent });
 }
 
 /**
@@ -1075,10 +1051,11 @@ export function generateSchemaTypes(schema, outputPath) {
 
     // ----- Phase 4: Build output -----
     const chunks = [
-        '/**',
-        ' * Generated from plot-schema.json by tasks/generate_schema_types.mjs.',
-        ' * Do not edit by hand — run `npm run schema` to regenerate.',
-        ' */',
+        generatedHeader({
+            source: 'plot-schema.json',
+            task: 'tasks/generate_schema_types.mjs',
+            command: 'npm run schema'
+        }),
         '',
         "import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';",
         ''
@@ -1265,7 +1242,7 @@ export function generateSchemaTypes(schema, outputPath) {
         }
     }
 
-    fs.writeFileSync(outputPath, chunks.join('\n'));
+    fs.writeFileSync(outputPath, toFileText(chunks));
 
     const sharedCount = sharedList.length;
     const layoutCount = subplotGroups.size + arrayItems.size + 1; // +1 for Layout itself
