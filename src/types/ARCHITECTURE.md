@@ -27,6 +27,9 @@ How TypeScript types are organized in plotly.js.
 │                          │  │  schema.d.ts — common enums,   │
 │                          │  │  traces, layout, animation,    │
 │                          │  │  config, _internal namespace   │
+│                          │  │                                │
+│                          │  │  entry_points/ — one            │
+│                          │  │  declaration per lib/ path     │
 └──────────────────────────┘  └────────────────────────────────┘
 ```
 
@@ -119,8 +122,32 @@ src/types/
 │   └── attributes.d.ts           # AttributeMap, AttrInfo (compile-time validation)
 │
 └── generated/                    # machine-generated types
-    └── schema.d.ts               # all traces + layout + shared types (from plot-schema.json)
+    ├── schema.d.ts               # all traces + layout + shared types (from plot-schema.json)
+    └── entry_points/             # one declaration per lib/ entry point
+        ├── core.d.ts             # plotly.js/lib/core
+        ├── scatter.d.ts          # plotly.js/lib/scatter, and one per trace
+        └── locales/              # plotly.js/lib/locales/<id>, one per locale
 ```
+
+### The `generated/entry_points/` directory
+
+`lib/` holds one entry point per trace, component, bundle, and locale, so a
+consumer can import `plotly.js/lib/scatter` instead of the whole library. Each
+entry point needs its own declaration. Those declarations live here rather than
+beside the entry points so `lib/` stays readable.
+
+`typesVersions` in package.json maps `plotly.js/lib/<entry>` onto this directory.
+Two things follow from that:
+
+- The `lib/index.d.ts` key in that table is necessary. TypeScript 5 runs the
+  resolved `types` field back through the table, and without the key the `lib/*`
+  pattern captures it and breaks the plain `plotly.js` import.
+- WARNING: TypeScript ignores `typesVersions` once a package has an `exports`
+  field. Adding `exports` to package.json breaks every subpath declaration here.
+
+Run `npm run entry-point-types` to regenerate. Run
+`npm run entry-point-types-check` to fail when the committed output is stale. CI
+runs the check, so a new entry point cannot ship without its declaration.
 
 ### The `.internal.d.ts` convention
 
