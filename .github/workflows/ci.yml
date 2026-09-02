@@ -649,6 +649,21 @@ jobs:
 
           console.log('Loaded ' + modules.length + ' compiled modules and src/lib/index.js');
 
+      - name: Type-check type imports from the entry points
+        working-directory: ${{ runner.temp }}/consumer
+        run: |
+          cat > entry-point-types.ts <<'EOF'
+          import type * as Root from 'plotly.js';
+          import type { Config, Data, Layout } from 'plotly.js/lib/core';
+          import type * as calendars from 'plotly.js/lib/calendars';
+          import type * as indexBasic from 'plotly.js/lib/index-basic';
+          import type * as scatter from 'plotly.js/lib/scatter';
+          import type * as de from 'plotly.js/lib/locales/de';
+          EOF
+          "$GITHUB_WORKSPACE"/node_modules/.bin/tsc entry-point-types.ts \
+            --noEmit --strict --skipLibCheck \
+            --target es2022 --module esnext --moduleResolution bundler
+
   # ============================================================
   # Standalone jobs (no dependencies on install-and-cibuild)
   # ============================================================
