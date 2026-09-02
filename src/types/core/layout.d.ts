@@ -93,8 +93,8 @@ export type ModeBarDefaultButtons =
     | 'drawcircle'
     | 'drawrect'
     | 'eraseshape'
-    | 'downloadJson'
     // Other
+    | 'downloadJson'
     | 'toImage'
     | 'sendChartToCloud'
     | 'resetViews'

@@ -76,9 +76,13 @@ modeBarButtons.downloadJson = {
     },
     icon: Icons.disk,
     click: function (gd) {
-        Registry.call('downloadImage', gd, {format: 'full-json'}).catch(function () {
-            Lib.notifier(_(gd, 'Sorry, there was a problem downloading your JSON file!'), 'long', gd);
-        });
+        Registry.call('downloadImage', gd, {format: 'full-json'})
+            .then(function(filename) {
+                Lib.notifier(_(gd, 'JSON download succeeded') + ' - ' + filename, 'long', gd);
+            })
+            .catch(function() {
+                Lib.notifier(_(gd, 'Sorry, there was a problem downloading your JSON file!'), 'long', gd);
+            });
     }
 };
 
