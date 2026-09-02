@@ -3,7 +3,16 @@
  * Do not edit by hand — run `npm run schema` to regenerate.
  */
 
-import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';
+import type {
+    CartesianSubplotId,
+    Color,
+    ColorScale,
+    Datum,
+    MarkerSymbol,
+    TypedArray,
+    XAxisName,
+    YAxisName
+} from '../lib/common';
 
 // ---------------------------------------------------------------------------
 // Common enum types — value sets discovered from the schema
@@ -12125,7 +12134,7 @@ export interface GeoLayout {
 
 export interface LayoutAxis {
     /** If set to an opposite-letter axis id (e.g. `x2`, `y`), this axis is bound to the corresponding opposite-letter axis. If set to *free*, this axis' position is determined by `position`. */
-    anchor?: 'free' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    anchor?: 'free' | XAxisName | YAxisName;
     /**
      * Determines whether long tick labels automatically grow the figure margins.
      * @default false
@@ -12245,7 +12254,7 @@ export interface LayoutAxis {
      */
     linewidth?: number;
     /** If set to another axis id (e.g. `x2`, `y`), the range of this axis will match the range of the corresponding axis in data-coordinates space. Moreover, matching axes share auto-range values, category lists and histogram auto-bins. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Moreover, note that matching axes must have the same `type`. */
-    matches?: '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    matches?: XAxisName | YAxisName;
     /**
      * Determines the maximum range of this axis.
      * Setting this also sets: ^autorange = false
@@ -12340,7 +12349,7 @@ export interface LayoutAxis {
      */
     nticks?: number;
     /** If set a same-letter axis id, this axis is overlaid on top of the corresponding same-letter axis, with traces and axes visible for both axes. If *false*, this axis does not overlay any same-letter axes. In this case, for axes with overlapping domains only the highest-numbered axis will be visible. */
-    overlaying?: 'free' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    overlaying?: 'free' | XAxisName | YAxisName;
     /**
      * Sets the position of this axis in the plotting space (in normalized coordinates). Only has an effect if `anchor` is set to *free*.
      * @default 0
@@ -12502,7 +12511,7 @@ export interface LayoutAxis {
         };
     };
     /** If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Setting `false` allows to remove a default constraint (occasionally, you may need to prevent a default `scaleanchor` constraint from being applied, eg. when having an image trace `yaxis: {scaleanchor: "x"}` is set automatically in order for pixels to be rendered as squares, setting `yaxis: {scaleanchor: false}` allows to remove the constraint). */
-    scaleanchor?: '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/' | false;
+    scaleanchor?: XAxisName | YAxisName | false;
     /**
      * If this axis is linked to another by `scaleanchor`, this determines the pixel to unit scale ratio. For example, if this value is 10, then every unit on this axis spans 10 times the number of pixels as a unit on the linked axis. Use this for example to create an elevation profile where the vertical scale is exaggerated a fixed amount with respect to the horizontal.
      * @default 1
@@ -15174,14 +15183,14 @@ export interface Annotation {
      * Indicates in what coordinates the tail of the annotation (ax,ay) is specified. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. In order for absolute positioning of the arrow to work, *axref* must be exactly the same as *xref*, otherwise *axref* will revert to *pixel* (explained next). For relative positioning, *axref* can be set to *pixel*, in which case the *ax* value is specified in pixels relative to *x*. Absolute positioning is useful for trendline annotations which should continue to indicate the correct trend when zoomed. Relative positioning is useful for specifying the text offset for an annotated point.
      * @default 'pixel'
      */
-    axref?: 'pixel' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    axref?: 'pixel' | XAxisName;
     /** Sets the y component of the arrow tail about the arrow head. If `ayref` is `pixel`, a positive (negative) component corresponds to an arrow pointing from bottom to top (top to bottom). If `ayref` is not `pixel` and is exactly the same as `yref`, this is an absolute value on that axis, like `y`, specified in the same coordinates as `yref`. */
     ay?: any;
     /**
      * Indicates in what coordinates the tail of the annotation (ax,ay) is specified. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. In order for absolute positioning of the arrow to work, *ayref* must be exactly the same as *yref*, otherwise *ayref* will revert to *pixel* (explained next). For relative positioning, *ayref* can be set to *pixel*, in which case the *ay* value is specified in pixels relative to *y*. Absolute positioning is useful for trendline annotations which should continue to indicate the correct trend when zoomed. Relative positioning is useful for specifying the text offset for an annotated point.
      * @default 'pixel'
      */
-    ayref?: 'pixel' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    ayref?: 'pixel' | YAxisName;
     /**
      * Sets the background color of the annotation.
      * @default 'rgba(0,0,0,0)'
@@ -15299,7 +15308,7 @@ export interface Annotation {
     /** Toggle this annotation when clicking a data point whose `x` value is `xclick` rather than the annotation's `x` value. */
     xclick?: any;
     /** Sets the annotation's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    xref?: 'paper' | XAxisName;
     /**
      * Shifts the position of the whole annotation and arrow to the right (positive) or left (negative) by this many pixels.
      * @default 0
@@ -15315,7 +15324,7 @@ export interface Annotation {
     /** Toggle this annotation when clicking a data point whose `y` value is `yclick` rather than the annotation's `y` value. */
     yclick?: any;
     /** Sets the annotation's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    yref?: 'paper' | YAxisName;
     /**
      * Shifts the position of the whole annotation and arrow up (positive) or down (negative) by this many pixels.
      * @default 0
@@ -15375,7 +15384,7 @@ export interface LayoutImage {
      * Sets the images's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis.
      * @default 'paper'
      */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    xref?: 'paper' | XAxisName;
     /**
      * Sets the image's y position. When `yref` is set to `paper`, units are sized relative to the plot height. See `yref` for more info
      * @default 0
@@ -15390,7 +15399,7 @@ export interface LayoutImage {
      * Sets the images's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis.
      * @default 'paper'
      */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    yref?: 'paper' | YAxisName;
 }
 
 export interface LayoutSelection {
@@ -15428,13 +15437,13 @@ export interface LayoutSelection {
     /** Sets the selection's end x position. */
     x1?: any;
     /** Sets the selection's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    xref?: 'paper' | XAxisName;
     /** Sets the selection's starting y position. */
     y0?: any;
     /** Sets the selection's end y position. */
     y1?: any;
     /** Sets the selection's x coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    yref?: 'paper' | YAxisName;
 }
 
 export interface Shape {
@@ -15567,7 +15576,7 @@ export interface Shape {
     /** Only relevant in conjunction with `xsizemode` set to *pixel*. Specifies the anchor point on the x axis to which `x0`, `x1` and x coordinates within `path` are relative to. E.g. useful to attach a pixel sized shape to a certain data value. No effect when `xsizemode` not set to *pixel*. */
     xanchor?: any;
     /** Sets the shape's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. If an array of axis IDs is provided, each `x` value will refer to the corresponding axis, e.g., ['x', 'x2'] for a rectangle, line, or circle means `x0` uses the `x` axis and `x1` uses the `x2` axis. Path shapes using an array should have one entry for each x coordinate in the string. */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | ('paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/')[];
+    xref?: 'paper' | XAxisName | ('paper' | XAxisName)[];
     /**
      * Sets the shapes's sizing mode along the x axis. If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to data values on the x axis or a fraction of the plot area's width (`xref` set to *paper*). If set to *pixel*, `xanchor` specifies the x position in terms of data or plot fraction but `x0`, `x1` and x coordinates within `path` are pixels relative to `xanchor`. This way, the shape can have a fixed width while maintaining a position relative to data or plot fraction. Note: `xsizemode` *pixel* is not supported when `xref` is an array.
      * @default 'scaled'
@@ -15592,7 +15601,7 @@ export interface Shape {
     /** Only relevant in conjunction with `ysizemode` set to *pixel*. Specifies the anchor point on the y axis to which `y0`, `y1` and y coordinates within `path` are relative to. E.g. useful to attach a pixel sized shape to a certain data value. No effect when `ysizemode` not set to *pixel*. */
     yanchor?: any;
     /** Sets the shape's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. If an array of axis IDs is provided, each `y` value will refer to the corresponding axis, e.g., ['y', 'y2'] for a rectangle, line, or circle means `y0` uses the `y` axis and `y1` uses the `y2` axis. Path shapes using an array should have one entry for each y coordinate in the string. */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/' | ('paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/')[];
+    yref?: 'paper' | YAxisName | ('paper' | YAxisName)[];
     /**
      * Sets the shapes's sizing mode along the y axis. If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to data values on the y axis or a fraction of the plot area's height (`yref` set to *paper*). If set to *pixel*, `yanchor` specifies the y position in terms of data or plot fraction but `y0`, `y1` and y coordinates within `path` are pixels relative to `yanchor`. This way, the shape can have a fixed height while maintaining a position relative to data or plot fraction. Note: `ysizemode` *pixel* is not supported when `yref` is an array.
      * @default 'scaled'
@@ -16025,9 +16034,9 @@ export interface Layout {
          */
         rows?: number;
         /** Used for freeform grids, where some axes may be shared across subplots but others are not. Each entry should be a cartesian subplot id, like *xy* or *x3y2*, or ** to leave that cell empty. You may reuse x axes within the same column, and y axes within the same row. Non-cartesian subplots and traces that support `domain` can place themselves in this grid separately using the `gridcell` attribute. */
-        subplots?: any[];
+        subplots?: (CartesianSubplotId | '')[];
         /** Used with `yaxes` when the x and y axes are shared across columns and rows. Each entry should be an x axis id like *x*, *x2*, etc., or ** to not put an x axis in that column. Entries other than ** must be unique. Ignored if `subplots` is present. If missing but `yaxes` is present, will generate consecutive IDs. */
-        xaxes?: any[];
+        xaxes?: (XAxisName | '')[];
         /**
          * Horizontal space between grid cells, expressed as a fraction of the total width available to one cell. Defaults to 0.1 for coupled-axes grids and 0.2 for independent grids.
          * Range: [0, 1]
@@ -16039,7 +16048,7 @@ export interface Layout {
          */
         xside?: 'bottom' | 'bottom plot' | 'top plot' | 'top';
         /** Used with `yaxes` when the x and y axes are shared across columns and rows. Each entry should be an y axis id like *y*, *y2*, etc., or ** to not put a y axis in that row. Entries other than ** must be unique. Ignored if `subplots` is present. If missing but `xaxes` is present, will generate consecutive IDs. */
-        yaxes?: any[];
+        yaxes?: (YAxisName | '')[];
         /**
          * Vertical space between grid cells, expressed as a fraction of the total height available to one cell. Defaults to 0.1 for coupled-axes grids and 0.3 for independent grids.
          * Range: [0, 1]
