@@ -1529,18 +1529,26 @@ function _restyle(gd, aobj, traces) {
                 // increases the margins
 
                 var gs = fullLayout._size;
-                var orient = innerContFull.orient;
-                var topOrBottom = orient === 'top' || orient === 'bottom';
+                var isHorizontal = innerContFull.orientation === 'h';
                 if (finalPart === 'thicknessmode') {
-                    var thicknorm = topOrBottom ? gs.h : gs.w;
-                    doextra(
-                        prefixDot + 'thickness',
-                        innerContFull.thickness * (newVal === 'fraction' ? 1 / thicknorm : thicknorm),
-                        i
-                    );
+                    // innerContFull.thickness is expressed in the units of
+                    // innerContFull.thicknessmode - which is not necessarily
+                    // the mode the user is switching away from, as the
+                    // default is 'pixels' (see #8012) - so only rescale
+                    // when the units actually change
+                    var thicknorm = isHorizontal ? gs.h : gs.w;
+                    if (innerContFull.thicknessmode !== newVal && innerContFull.thickness !== undefined) {
+                        doextra(
+                            prefixDot + 'thickness',
+                            innerContFull.thickness * (newVal === 'fraction' ? 1 / thicknorm : thicknorm),
+                            i
+                        );
+                    }
                 } else {
-                    var lennorm = topOrBottom ? gs.w : gs.h;
-                    doextra(prefixDot + 'len', innerContFull.len * (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
+                    var lennorm = isHorizontal ? gs.w : gs.h;
+                    if (innerContFull.lenmode !== newVal && innerContFull.len !== undefined) {
+                        doextra(prefixDot + 'len', innerContFull.len * (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
+                    }
                 }
             } else if (
                 ai === 'type' &&
