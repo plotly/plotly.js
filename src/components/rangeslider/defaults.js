@@ -67,6 +67,10 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             var rangeMode = coerceRange('rangemode', rangemodeDflt);
             if(rangeMode !== 'match') {
                 coerceRange('range', yAxOut.range.slice());
+
+                if(rangeMode === 'fixed' && !rangemodeDflt && yAxOut.autorange) {
+                    rangeContainerOut._rangeDfltFromAutorangedAx = true;
+                }
             }
         }
     }
