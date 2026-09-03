@@ -8,9 +8,9 @@
     "bundle-stackgl": "webpack --mode production"
   },
   "dependencies": {
-    "@plotly/point-cluster": "^3.1.9",
     "alpha-shape": "^1.0.0",
     "box-intersect": "plotly/box-intersect#v1.1.0",
+    "buffer": "^5.7.1",
     "convex-hull": "^1.0.3",
     "delaunay-triangulate": "^1.1.6",
     "gl-axes3d": "^1.7.1",
@@ -26,7 +26,7 @@
     "gl-surface3d": "^1.6.2",
     "glslify": "^7.1.1",
     "incremental-convex-hull": "plotly/incremental-convex-hull#v1.1.0",
-    "is-mobile": "^4.0.0",
+    "is-mobile": "^5.0.0",
     "matrix-camera-controller": "^2.1.4",
     "ndarray": "plotly/ndarray#v1.1.0",
     "ndarray-extract-contour": "plotly/ndarray-extract-contour#v1.1.0",
@@ -46,13 +46,12 @@
     "zero-crossings": "plotly/zero-crossings#v1.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^8.0.1",
-    "@babel/plugin-transform-modules-commonjs": "8.0.1",
-    "@babel/preset-env": "8.0.1",
-    "babel-loader": "10.1.1",
     "ify-loader": "1.1.0",
-    "node-polyfill-webpack-plugin": "^4.0.0",
     "webpack": "^5.105.4",
-    "webpack-cli": "5.1.4"
+    "webpack-cli": "7.2.3"
+  },
+  "overrides": {
+    "is-mobile": "^5.0.0",
+    "to-px": "1.0.1"
   }
 }

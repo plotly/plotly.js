@@ -71,6 +71,7 @@
     "@plotly/d3": "3.8.2",
     "@plotly/d3-sankey": "0.12.3",
     "@plotly/d3-sankey-circular": "0.33.1",
+    "@plotly/point-cluster": "^3.1.9",
     "@plotly/regl": "^2.1.2",
     "@turf/area": "^7.3.5",
     "@turf/centroid": "^7.3.5",
