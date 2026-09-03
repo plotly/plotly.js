@@ -171,7 +171,7 @@ function _doPlot(gd, data, layout, config) {
             // Keep a reference to the resize observer to purge it down the road
             gd._responsiveChartObserver = new ResizeObserver(function() {
                 if (!Lib.isHidden(gd)) Plots.resize(gd);
-            };
+            });
 
             gd._responsiveChartObserver.observe(gd);
         }
