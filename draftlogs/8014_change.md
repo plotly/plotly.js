@@ -1,0 +1,1 @@
+- Increase default double-click delay threshold to 500ms (from 300) [[#8014](https://github.com/plotly/plotly.js/pull/8014)]

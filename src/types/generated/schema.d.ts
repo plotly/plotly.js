@@ -16573,7 +16573,7 @@ export interface ConfigBase {
     doubleClick?: false | 'reset' | 'autosize' | 'reset+autosize';
     /**
      * Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and map) and on-legend double clicks.
-     * @default 300
+     * @default 500
      * Minimum: 0
      */
     doubleClickDelay?: number;
