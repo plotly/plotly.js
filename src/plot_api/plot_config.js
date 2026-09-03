@@ -181,7 +181,7 @@ var configAttributes = {
     },
     doubleClickDelay: {
         valType: 'number',
-        dflt: 300,
+        dflt: 500,
         min: 0,
         description: [
             'Sets the delay for registering a double-click in ms.',
