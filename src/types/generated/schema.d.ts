@@ -7003,11 +7003,29 @@ export interface SankeyData {
          * @default []
          */
         target?: Datum[] | Datum[][] | TypedArray;
+        /** Sets the font for the permanent link labels. */
+        textfont?: Font;
+        /**
+         * Determines which trace information appears permanently on the links. Any combination of *label* and *value* joined with a *+* OR *none*.
+         * @default 'none'
+         */
+        textinfo?: 'label' | 'value' | 'none' | (string & {});
+        /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Finally, the template string has access to variables `label`, `value`, `valueLabel`, `source`, `target`, `customdata` and `meta`. */
+        texttemplate?: string | string[];
+        /**
+         * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
+         * @default '-'
+         */
+        texttemplatefallback?: any;
         /**
          * A numeric value representing the flow volume value.
          * @default []
          */
         value?: Datum[] | Datum[][] | TypedArray;
+        /** Sets the value formatting rule for the permanent link labels, using d3 formatting mini-languages. Falls back to the trace-level `valueformat` when empty. */
+        valueformat?: string;
+        /** Adds a unit to follow the value in the permanent link labels. Falls back to the trace-level `valuesuffix` when empty. */
+        valuesuffix?: string;
     };
     /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
     meta?: any;

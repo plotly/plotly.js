@@ -5,7 +5,7 @@ var baseAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
+const { hovertemplateAttrs, texttemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
@@ -209,6 +209,48 @@ var attrs = (module.exports = overrideAll(
                 valType: 'data_array',
                 dflt: [],
                 description: 'The shown name of the link.'
+            },
+            textinfo: {
+                valType: 'flaglist',
+                flags: ['label', 'value'],
+                extras: ['none'],
+                dflt: 'none',
+                description: [
+                    'Determines which trace information appears permanently on the links.',
+                    'Any combination of *label* and *value* joined with a *+* OR *none*.'
+                ].join(' ')
+            },
+            texttemplate: texttemplateAttrs({editType: 'calc'}, {
+                description: [
+                    '*%{label}: %{valueLabel}* renders the link label and its formatted',
+                    'value; `valueLabel` is the value formatted with `valueformat`/`valuesuffix`.',
+                    'When set per link, an empty entry makes that link fall back to `textinfo`',
+                    'rather than leaving it unlabeled; to label only some of the links,',
+                    'set `textinfo` to *none* and give a template to those links alone.'
+                ].join(' '),
+                keys: ['label', 'value', 'valueLabel', 'source', 'target', 'customdata', 'meta']
+            }),
+            texttemplatefallback: templatefallbackAttrs(),
+            textfont: fontAttrs({
+                autoShadowDflt: true,
+                description: 'Sets the font for the permanent link labels.'
+            }),
+            valueformat: {
+                valType: 'string',
+                dflt: '',
+                description: [
+                    'Sets the value formatting rule for the permanent link labels,',
+                    'using d3 formatting mini-languages. Falls back to the trace-level',
+                    '`valueformat` when empty.'
+                ].join(' ')
+            },
+            valuesuffix: {
+                valType: 'string',
+                dflt: '',
+                description: [
+                    'Adds a unit to follow the value in the permanent link labels.',
+                    'Falls back to the trace-level `valuesuffix` when empty.'
+                ].join(' ')
             },
             color: {
                 valType: 'color',
