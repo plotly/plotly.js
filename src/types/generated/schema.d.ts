@@ -13187,6 +13187,17 @@ export interface PolarLayout {
         visible?: boolean;
     };
     /**
+     * Sets the gap between bars of adjacent location coordinates. Values are unitless, they represent fractions of the minimum difference in bar positions in the data.
+     * @default 0.1
+     * Range: [0, 1]
+     */
+    bargap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *stack*, the bars are stacked on top of one another With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'stack'
+     */
+    barmode?: 'stack' | 'overlay';
+    /**
      * Set the background color of the subplot
      * @default '#fff'
      */
@@ -15948,6 +15959,43 @@ export interface Layout {
      * @default 'convert types'
      */
     autotypenumbers?: 'convert types' | 'strict';
+    /** Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width (as a string ending in %). */
+    barcornerradius?: any;
+    /**
+     * Sets the gap (in plot fraction) between bars of adjacent location coordinates.
+     * Range: [0, 1]
+     */
+    bargap?: number;
+    /**
+     * Sets the gap (in plot fraction) between bars of the same location coordinate.
+     * @default 0
+     * Range: [0, 1]
+     */
+    bargroupgap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *stack*, the bars are stacked on top of one another With *relative*, the bars are stacked on top of one another, with negative values below the axis, positive values above With *group*, the bars are plotted next to one another centered around the shared location. With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'group'
+     */
+    barmode?: 'stack' | 'group' | 'overlay' | 'relative';
+    /** Sets the normalization for bar traces on the graph. With *fraction*, the value of each bar is divided by the sum of all values at that location coordinate. *percent* is the same but multiplied by 100 to show percentages. */
+    barnorm?: '' | 'fraction' | 'percent';
+    /**
+     * Sets the gap (in plot fraction) between boxes of adjacent location coordinates. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    boxgap?: number;
+    /**
+     * Sets the gap (in plot fraction) between boxes of the same location coordinate. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    boxgroupgap?: number;
+    /**
+     * Determines how boxes at the same location coordinate are displayed on the graph. If *group*, the boxes are plotted next to one another centered around the shared location. If *overlay*, the boxes are plotted over one another, you might need to set *opacity* to see them multiple boxes. Has no effect on traces that have *width* set.
+     * @default 'overlay'
+     */
+    boxmode?: 'group' | 'overlay';
     /**
      * Sets the default calendar system to use for interpreting and displaying dates throughout the plot.
      * @default 'gregorian'
@@ -15997,8 +16045,51 @@ export interface Layout {
     dragmode?: 'zoom' | 'pan' | 'select' | 'lasso' | 'drawclosedpath' | 'drawopenpath' | 'drawline' | 'drawrect' | 'drawcircle' | 'orbit' | 'turntable' | false;
     /** Controls persistence of user-driven changes in `editable: true` configuration, other than trace names and axis titles. Defaults to `layout.uirevision`. */
     editrevision?: any;
+    /**
+     * If `true`, the funnelarea slice colors (whether given by `funnelareacolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendfunnelareacolors?: boolean;
+    /**
+     * If `true`, the icicle slice colors (whether given by `iciclecolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendiciclecolors?: boolean;
+    /**
+     * If `true`, the pie slice colors (whether given by `piecolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendpiecolors?: boolean;
+    /**
+     * If `true`, the sunburst slice colors (whether given by `sunburstcolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendsunburstcolors?: boolean;
+    /**
+     * If `true`, the treemap slice colors (whether given by `treemapcolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendtreemapcolors?: boolean;
     /** Sets the global font. Note that fonts used in traces and other layout components inherit from the global font. */
     font?: Font;
+    /** Sets the default funnelarea slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendfunnelareacolors`. */
+    funnelareacolorway?: Color[];
+    /**
+     * Sets the gap (in plot fraction) between bars of adjacent location coordinates.
+     * Range: [0, 1]
+     */
+    funnelgap?: number;
+    /**
+     * Sets the gap (in plot fraction) between bars of the same location coordinate.
+     * @default 0
+     * Range: [0, 1]
+     */
+    funnelgroupgap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *stack*, the bars are stacked on top of one another With *group*, the bars are plotted next to one another centered around the shared location. With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'stack'
+     */
+    funnelmode?: 'stack' | 'group' | 'overlay';
     geo?: GeoLayout;
     grid?: {
         /**
@@ -16066,6 +16157,8 @@ export interface Layout {
      * Minimum: 10
      */
     height?: number;
+    /** hiddenlabels is the funnelarea & pie chart analog of visible:'legendonly' but it can contain many labels, and can simultaneously hide slices from several pies/funnelarea charts */
+    hiddenlabels?: Datum[] | Datum[][] | TypedArray;
     /**
      * If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space, and `xPixel` and `yPixel` with cursor coordinates in pixels, relative to the top-left corner of the graph div. A `plotly_unhover` event fires when the cursor leaves the plot area.
      * @default false
@@ -16118,6 +16211,8 @@ export interface Layout {
      * @default 'overlaying'
      */
     hoversubplots?: 'single' | 'overlaying' | 'axis';
+    /** Sets the default icicle slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendiciclecolors`. */
+    iciclecolorway?: Color[];
     images?: LayoutImage[];
     legend?: Legend;
     map?: MapLayout;
@@ -16324,12 +16419,24 @@ export interface Layout {
      * @default '#fff'
      */
     paper_bgcolor?: Color;
+    /** Sets the default pie slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendpiecolors`. */
+    piecolorway?: Color[];
     /**
      * Sets the background color of the plotting area in-between x and y axes.
      * @default '#fff'
      */
     plot_bgcolor?: Color;
     polar?: PolarLayout;
+    /**
+     * Sets the gap (in plot fraction) between scatter points of adjacent location coordinates. Defaults to `bargap`.
+     * Range: [0, 1]
+     */
+    scattergap?: number;
+    /**
+     * Determines how scatter points at the same location coordinate are displayed on the graph. With *group*, the scatter points are plotted next to one another centered around the shared location. With *overlay*, the scatter points are plotted over one another, you might need to reduce *opacity* to see multiple scatter points.
+     * @default 'overlay'
+     */
+    scattermode?: 'group' | 'overlay';
     scene?: Scene;
     /**
      * When `dragmode` is set to *select*, this limits the selection of the drag to horizontal, vertical or diagonal. *h* only allows horizontal selection, *v* only vertical, *d* only diagonal and *any* sets no limit.
@@ -16352,6 +16459,8 @@ export interface Layout {
      * Minimum: -1
      */
     spikedistance?: number;
+    /** Sets the default sunburst slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendsunburstcolors`. */
+    sunburstcolorway?: Color[];
     /** Default attributes to be applied to the plot. Templates can be created from existing plots using `Plotly.makeTemplate`, or created manually. They should be objects with format: `{layout: layoutTemplate, data: {[type]: [traceTemplate, ...]}, ...}` `layoutTemplate` and `traceTemplate` are objects matching the attribute structure of `layout` and a data trace.  Trace templates are applied cyclically to traces of each type. Container arrays (eg `annotations`) have special handling: An object ending in `defaults` (eg `annotationdefaults`) is applied to each array item. But if an item has a `templateitemname` key we look in the template array for an item with matching `name` and apply that instead. If no matching `name` is found we mark the item invisible. Any named template item not referenced is appended to the end of the array, so you can use this for a watermark annotation or a logo image, for example. To omit one of these items on the plot, make an item with matching `templateitemname` and `visible: false`. */
     template?: any;
     ternary?: TernaryLayout;
@@ -16424,6 +16533,8 @@ export interface Layout {
     };
     /** Sets transition options used during Plotly.react updates. */
     transition?: Transition;
+    /** Sets the default treemap slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendtreemapcolors`. */
+    treemapcolorway?: Color[];
     /** Used to allow user interactions with the plot to persist after `Plotly.react` calls that are unaware of these interactions. If `uirevision` is omitted, or if it is given and it changed from the previous `Plotly.react` call, the exact new figure is used. If `uirevision` is truthy and did NOT change, any attribute that has been affected by user interactions and did not receive a different value in the new figure will keep the interaction value. `layout.uirevision` attribute serves as the default for `uirevision` attributes in various sub-containers. For finer control you can set these sub-attributes directly. For example, if your app separately controls the data on the x and y axes you might set `xaxis.uirevision=*time*` and `yaxis.uirevision=*cost*`. Then if only the y data is changed, you can update `yaxis.uirevision=*quantity*` and the y axis range will reset but the x axis range will retain any user-driven zoom. */
     uirevision?: any;
     uniformtext?: {
@@ -16440,6 +16551,39 @@ export interface Layout {
         mode?: false | 'hide' | 'show';
     };
     updatemenus?: UpdateMenu[];
+    /**
+     * Sets the gap (in plot fraction) between violins of adjacent location coordinates. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    violingap?: number;
+    /**
+     * Sets the gap (in plot fraction) between violins of the same location coordinate. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    violingroupgap?: number;
+    /**
+     * Determines how violins at the same location coordinate are displayed on the graph. If *group*, the violins are plotted next to one another centered around the shared location. If *overlay*, the violins are plotted over one another, you might need to set *opacity* to see them multiple violins. Has no effect on traces that have *width* set.
+     * @default 'overlay'
+     */
+    violinmode?: 'group' | 'overlay';
+    /**
+     * Sets the gap (in plot fraction) between bars of adjacent location coordinates.
+     * Range: [0, 1]
+     */
+    waterfallgap?: number;
+    /**
+     * Sets the gap (in plot fraction) between bars of the same location coordinate.
+     * @default 0
+     * Range: [0, 1]
+     */
+    waterfallgroupgap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *group*, the bars are plotted next to one another centered around the shared location. With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'group'
+     */
+    waterfallmode?: 'group' | 'overlay';
     /**
      * Sets the plot's width (in px).
      * @default 700

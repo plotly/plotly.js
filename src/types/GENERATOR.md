@@ -99,7 +99,29 @@ schema flows through automatically.
 
 ### Phase 4: Layout types
 
-Layout generation handles three categories:
+Before generation, `mergeTraceLayoutAttributes` folds every
+`schema.traces[<type>].layoutAttributes` map into the layout attribute tree.
+Trace modules contribute layout keys such as `barmode`, `boxmode` and
+`piecolorway`, and the schema files them under the trace that contributes
+them. At runtime they are ordinary layout keys, so the generated types must
+carry them.
+
+Most modules contribute to the top level of layout. barpolar is the
+exception: its `supplyLayoutDefaults` coerces from `layoutIn[trace.subplot]`,
+so `layout.polar.barmode` is the real key and `layout.barmode` does nothing
+for a barpolar trace. `SUBPLOT_SCOPED_TRACE_LAYOUT` maps barpolar to `polar`,
+which is why `Layout.barmode` allows all four bar values while
+`PolarLayout.barmode` allows only `'stack'` and `'overlay'`. Add an entry
+there if another module ever reads its layout attributes from a subplot.
+
+Two modules that contribute the same key to the same target must agree on
+the definition. If they disagree, generation throws rather than guessing,
+because one property cannot describe both. The repo shares such keys by
+reference instead of copying them, so a disagreement means either the shared
+require was broken, or the two modules mean genuinely different things and
+one of them belongs in its own container.
+
+Layout generation then handles three categories:
 
 - **Subplot containers** (`_isSubplotObj` flag) — grouped by target name
   and merged into supersets. E.g., `xaxis` and `yaxis` both map to
