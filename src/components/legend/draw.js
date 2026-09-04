@@ -544,7 +544,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick);
+            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick, numClicks);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -553,7 +553,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
         if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
-            handleItemClick(legendItem, gd, legend, itemDoubleClick);
+            handleItemClick(legendItem, gd, legend, itemDoubleClick, numClicks);
         }
     }
 }

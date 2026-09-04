@@ -222,7 +222,8 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
 
     coerce('itemclick');
     coerce('itemdoubleclick');
-    coerce('groupclick');
+    const groupClick = coerce('groupclick');
+    coerce('groupdoubleclick', groupClick);
 
     coerce('xanchor', defaultXAnchor);
     coerce('yanchor', defaultYAnchor);

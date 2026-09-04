@@ -12736,6 +12736,8 @@ export interface Legend {
      * @default 'togglegroup'
      */
     groupclick?: 'toggleitem' | 'togglegroup';
+    /** Determines the behavior on legend group item double-click. *toggleitem* toggles the visibility of the individual item clicked on the graph. *togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph. Defaults to the value of `groupclick`. */
+    groupdoubleclick?: 'toggleitem' | 'togglegroup';
     /** Sets the font for group titles in legend. Defaults to `legend.font` with its size increased about 10%. */
     grouptitlefont?: Font;
     /**

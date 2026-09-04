@@ -14,10 +14,12 @@ var SHOWISOLATETIP = true;
  * @param {object} gd graph div
  * @param {object} legendObj the legend object from fullLayout
  * @param {string} mode toggle mode for the current action: 'toggle' | 'toggleothers'
- *   - 'toggle': Toggle visibility of this item (or group if groupclick is 'togglegroup')
+ *   - 'toggle': Toggle visibility of this item (or group if the group behavior is 'togglegroup')
  *   - 'toggleothers': Show only this item, hide all others (isolation mode)
+ * @param {number} numClicks 1 for a single click, 2 for a double click. Selects `groupclick`
+ *   or `groupdoubleclick` as the group behavior.
  */
-exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
+exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode, numClicks) {
     var fullLayout = gd._fullLayout;
 
     if (gd._dragged || gd._editing) return;
@@ -25,7 +27,7 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
     var legendItem = g.data()[0][0];
     if (legendItem.groupTitle && legendItem.noClick) return;
 
-    var groupClick = legendObj.groupclick;
+    const groupClick = numClicks === 2 ? legendObj.groupdoubleclick : legendObj.groupclick;
 
     // Show isolate tip on first single click when default behavior is active
     if (
@@ -196,13 +198,15 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
             // but also culls hidden traces. That means we have some work to do.
             var isClicked, isInGroup, notInLegend, otherState, _item;
             var isIsolated = true;
+            // 'toggleitem' isolates the clicked trace alone, so its group peers hide with the rest.
+            const isolateGroup = hasLegendgroup && toggleGroup;
             for (i = 0; i < allLegendItems.length; i++) {
                 _item = allLegendItems[i];
                 isClicked = _item === fullTrace;
                 notInLegend = _item.showlegend !== true;
                 if (isClicked || notInLegend) continue;
 
-                isInGroup = hasLegendgroup && _item.legendgroup === legendgroup;
+                isInGroup = isolateGroup && _item.legendgroup === legendgroup;
 
                 if (
                     !isInGroup &&
@@ -234,7 +238,7 @@ exports.handleItemClick = function handleItemClick(g, gd, legendObj, mode) {
                         isClicked = _item === fullTrace;
                         // N.B. consider traces that have a set legendgroup as toggleable
                         notInLegend = _item.showlegend !== true && !_item.legendgroup;
-                        isInGroup = isClicked || (hasLegendgroup && _item.legendgroup === legendgroup);
+                        isInGroup = isClicked || (isolateGroup && _item.legendgroup === legendgroup);
                         setVisibility(_item, isInGroup || notInLegend ? true : otherState);
                         break;
                 }
