@@ -2539,18 +2539,36 @@ describe('legend interaction', function () {
 
             it('isolates the clicked item instead of its legendgroup', function (done) {
                 Promise.resolve()
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, 'legendonly', 'legendonly']))
+                    .then(click(0, 2))
+                    .then(assertVisible([false, true, true, true]))
                     .then(click(1, 2))
                     .then(assertVisible([false, 'legendonly', 'legendonly', true]))
                     .then(click(1, 2))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(2, 2))
+                    .then(assertVisible([false, 'legendonly', true, 'legendonly']))
+                    .then(click(2, 2))
                     .then(assertVisible([false, true, true, true]))
                     .then(done, done.fail);
             });
 
             it('leaves the single click behavior to groupclick', function (done) {
                 Promise.resolve()
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(0))
+                    .then(assertVisible([false, 'legendonly', true, 'legendonly']))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, true]))
                     .then(click(1))
                     .then(assertVisible([false, 'legendonly', true, 'legendonly']))
                     .then(click(1))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(2))
+                    .then(assertVisible([false, true, 'legendonly', true]))
+                    .then(click(2))
                     .then(assertVisible([false, true, true, true]))
                     .then(done, done.fail);
             });
