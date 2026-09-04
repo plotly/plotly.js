@@ -74,7 +74,7 @@ modeBarButtons.downloadJson = {
     title: function (gd) {
         return _(gd, 'Download plot as JSON');
     },
-    icon: Icons.disk,
+    icon: Icons.curlybraces,
     click: function (gd) {
         Registry.call('downloadImage', gd, {format: 'full-json'})
             .then(function(filename) {
