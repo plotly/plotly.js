@@ -12,24 +12,10 @@ import type { Data, Layout, TraceType } from '../generated/schema';
 import type { PlotlyHTMLElement } from './events';
 
 // ---------------------------------------------------------------------------
-// Axis name types (template literal utilities — not in schema)
+// Axis name types
 // ---------------------------------------------------------------------------
 
-/**
- * Numeric axis suffix plus the optional ` domain` qualifier. The suffix is
- * empty for the first axis (`x` / `y`) and `2` through `99` otherwise.
- */
-type xYAxisNames = `${
-    | ''
-    | `${2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`
-    | `${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`}${'' | ' domain'}`;
-
-/** Any valid x-axis reference: `'x'`, `'x2'`, …, `'x99'`, optionally `' domain'`. */
-export type XAxisName = `x${xYAxisNames}`;
-/** Any valid y-axis reference: `'y'`, `'y2'`, …, `'y99'`, optionally `' domain'`. */
-export type YAxisName = `y${xYAxisNames}`;
-/** Any valid axis reference (x or y, numbered or not, domain-qualified or not). */
-export type AxisName = XAxisName | YAxisName;
+export type { AxisName, CartesianSubplotId, XAxisName, YAxisName } from '../lib/common';
 
 // ---------------------------------------------------------------------------
 // ModeBar / Icon (behavioral types — not in schema)

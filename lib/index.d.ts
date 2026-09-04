@@ -27,6 +27,8 @@ export as namespace Plotly;
 // ---------------------------------------------------------------------------
 
 export type {
+    AxisName,
+    CartesianSubplotId,
     Color,
     ColorScale,
     Datum,
@@ -36,7 +38,9 @@ export type {
     MarkerSymbol,
     TypedArray,
     XAnchor,
-    YAnchor
+    XAxisName,
+    YAnchor,
+    YAxisName
 } from '../src/types/lib/common';
 
 // ---------------------------------------------------------------------------
@@ -50,15 +54,12 @@ export type * from '../src/types/generated/schema';
 // ---------------------------------------------------------------------------
 
 export type {
-    AxisName,
     ButtonClickEvent,
     Icon,
     ModeBarButton,
     ModeBarButtonAny,
     ModeBarDefaultButtons,
-    Template,
-    XAxisName,
-    YAxisName
+    Template
 } from '../src/types/core/layout';
 
 // ---------------------------------------------------------------------------

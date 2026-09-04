@@ -114,11 +114,11 @@ src/types/
 │   ├── data.internal.d.ts        # CalcData, FullData
 │   ├── events.d.ts               # PlotMouseEvent, PlotlyHTMLElement, etc.
 │   ├── graph-div.internal.d.ts   # GraphDiv, GraphContext
-│   ├── layout.d.ts               # AxisName, ModeBar behavioral types, Template
+│   ├── layout.d.ts               # ModeBar behavioral types, Template
 │   └── layout.internal.d.ts      # FullLayout, LayoutSize, SubplotInfo
 │
 ├── lib/                          # primitives + the schema-extraction machinery
-│   ├── common.d.ts               # Color, Datum, TypedArray, MarkerSymbol, ...
+│   ├── common.d.ts               # Color, Datum, TypedArray, AxisName, ...
 │   └── attributes.d.ts           # AttributeMap, AttrInfo (compile-time validation)
 │
 └── generated/                    # machine-generated types

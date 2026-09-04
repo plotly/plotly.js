@@ -65,6 +65,52 @@ export type XAnchor = 'auto' | 'left' | 'center' | 'right';
 export type YAnchor = 'auto' | 'top' | 'middle' | 'bottom';
 
 // ---------------------------------------------------------------------------
+// Axis and subplot identifiers
+//
+// The schema states these as regexes, which no TypeScript type can express
+// exactly. The template literal types below enumerate the accepted strings
+// instead, so they are bounded where the schema is not. See the digit-tier
+// note on `AxisNumber`.
+//
+// tasks/generate_schema_types.mjs maps each schema regex onto one of these
+// types through its REGEX_VALUE_TYPES table.
+// ---------------------------------------------------------------------------
+
+type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+type NonZeroDigit = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+/**
+ * Numeric axis suffix. Empty for the first axis (`x` / `y`), then `2` through
+ * `999`. There is no `1` suffix — the first axis is unnumbered.
+ *
+ * The schema regex accepts any number of digits. This type stops at three
+ * because a template literal union has to be finite, so charts with 1000 or
+ * more axes of one letter cannot be typed.
+ */
+type AxisNumber = '' | `${Exclude<NonZeroDigit, 1>}` | `${NonZeroDigit}${Digit}` | `${NonZeroDigit}${Digit}${Digit}`;
+
+/**
+ * Two-digit variant of `AxisNumber`, capped at `99`.
+ *
+ * Used only where the suffix appears twice in one identifier. Three digits
+ * squared exceeds the TypeScript union size limit.
+ */
+type ShortAxisNumber = '' | `${Exclude<NonZeroDigit, 1>}` | `${NonZeroDigit}${Digit}`;
+
+/** Any valid x-axis reference: `'x'`, `'x2'`, …, optionally `' domain'`. */
+export type XAxisName = `x${AxisNumber}${'' | ' domain'}`;
+/** Any valid y-axis reference: `'y'`, `'y2'`, …, optionally `' domain'`. */
+export type YAxisName = `y${AxisNumber}${'' | ' domain'}`;
+/** Any valid axis reference (x or y, numbered or not, domain-qualified or not). */
+export type AxisName = XAxisName | YAxisName;
+
+/**
+ * A cartesian subplot id pairing an x and a y axis, such as `'xy'` or
+ * `'x3y2'`. Unlike `XAxisName`, no `' domain'` qualifier is permitted.
+ */
+export type CartesianSubplotId = `x${ShortAxisNumber}y${ShortAxisNumber}`;
+
+// ---------------------------------------------------------------------------
 // Error bars
 // ---------------------------------------------------------------------------
 

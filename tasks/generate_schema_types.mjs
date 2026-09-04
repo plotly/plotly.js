@@ -191,6 +191,53 @@ const LAYOUT_ARRAY_NAMES = new Map([
 const serializeValue = tsLiteral;
 
 /**
+ * Schema `values` entries wrapped in `/.../` are regexes, not literals. The
+ * enumerated `validateFunction` in src/lib/coerce.js unwraps and tests them.
+ * Each one maps to a template literal type in src/types/lib/common.d.ts that
+ * accepts the same strings.
+ *
+ * A regex stands in for a value set that the static schema cannot list,
+ * because the real set depends on how many axes a figure declares.
+ */
+const REGEX_VALUE_TYPES = new Map([
+    ['/^x([2-9]|[1-9][0-9]+)?( domain)?$/', 'XAxisName'],
+    ['/^y([2-9]|[1-9][0-9]+)?( domain)?$/', 'YAxisName'],
+    ['/^x([2-9]|[1-9][0-9]+)?y([2-9]|[1-9][0-9]+)?$/', 'CartesianSubplotId']
+]);
+
+/** Test whether a schema value uses the `/.../` regex convention. */
+function isRegexValue(v) {
+    return typeof v === 'string' && v.length > 1 && v.startsWith('/') && v.endsWith('/');
+}
+
+/**
+ * Serialize one `values` entry from a string or enumerated attribute.
+ *
+ * Plain values become string literals. Regex values become the named type
+ * that accepts the same strings.
+ *
+ * @param {string|number|boolean} v - The schema value
+ * @param {string} attrPath - Dotted attribute path, used in the error message
+ * @returns {string}
+ * @throws If `v` is a regex with no entry in `REGEX_VALUE_TYPES`. Emitting the
+ *   regex source as a string literal would produce a type that only accepts
+ *   the pattern text, so failing here is deliberate.
+ */
+function enumValueToTS(v, attrPath) {
+    if (!isRegexValue(v)) return serializeValue(v);
+
+    const typeName = REGEX_VALUE_TYPES.get(v);
+    if (!typeName) {
+        throw new Error(
+            `Unmapped regex value '${v}' at '${attrPath}'. Add an entry to REGEX_VALUE_TYPES ` +
+                `pointing at a template literal type in src/types/lib/common.d.ts that accepts ` +
+                `the same strings.`
+        );
+    }
+    return typeName;
+}
+
+/**
  * Try to match a values array to a known common type.
  * Returns the type name string or null.
  */
@@ -211,32 +258,42 @@ function matchCommonType(values) {
  * When all elements share the same valType we can emit a precise tuple
  * or array type instead of `unknown[]`.
  */
-function infoArrayToTS(attr) {
+function infoArrayToTS(attr, attrPath) {
     if (!attr.items) return 'any[]';
 
     // items can be an array of item descriptors or a single descriptor
     // (single descriptor = freeLength homogeneous array)
     if (!Array.isArray(attr.items)) {
-        const elemType = simpleValType(attr.items.valType);
-        return `${elemType}[]`;
+        return `${asArrayElement(simpleValType(attr.items, attrPath))}[]`;
     }
 
-    const elemTypes = attr.items.map((item) => simpleValType(item.valType));
+    const elemTypes = attr.items.map((item) => simpleValType(item, attrPath));
 
     if (attr.freeLength) {
         // Variable-length — use array of the union of element types
         const unique = [...new Set(elemTypes)];
         const union = unique.length === 1 ? unique[0] : unique.join(' | ');
-        return `${union}[]`;
+        return `${asArrayElement(union)}[]`;
     }
 
     // Fixed-length — emit tuple
     return `[${elemTypes.join(', ')}]`;
 }
 
-/** Map a valType string to a simple TS type (no arrayOk handling). */
-function simpleValType(valType) {
-    switch (valType) {
+/** Parenthesize a union so that appending `[]` binds to the whole union. */
+function asArrayElement(type) {
+    return type.includes('|') ? `(${type})` : type;
+}
+
+/**
+ * Map an info_array item descriptor to a simple TS type (no arrayOk handling).
+ *
+ * @param {object} item - The item descriptor, carrying at least `valType`
+ * @param {string} attrPath - Dotted path of the owning attribute
+ * @returns {string}
+ */
+function simpleValType(item, attrPath) {
+    switch (item.valType) {
         case 'number':
         case 'integer':
             return 'number';
@@ -247,6 +304,9 @@ function simpleValType(valType) {
             return 'boolean';
         case 'color':
             return 'Color';
+        case 'enumerated':
+            if (!Array.isArray(item.values)) return 'any';
+            return item.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
         default:
             return 'any';
     }
@@ -344,7 +404,7 @@ function valTypeToTS(attr, attrPath) {
                     base = common;
                     break;
                 }
-                base = attr.values.map(serializeValue).join(' | ');
+                base = attr.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
             } else {
                 base = 'string';
             }
@@ -381,7 +441,7 @@ function valTypeToTS(attr, attrPath) {
                     base = common;
                     break;
                 }
-                base = attr.values.map(serializeValue).join(' | ');
+                base = attr.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
             } else {
                 base = 'any';
             }
@@ -408,7 +468,7 @@ function valTypeToTS(attr, attrPath) {
         }
 
         case 'info_array':
-            return infoArrayToTS(attr);
+            return infoArrayToTS(attr, attrPath);
 
         case 'any':
             return 'any';
@@ -1057,7 +1117,16 @@ export function generateSchemaTypes(schema, outputPath) {
             command: 'npm run schema'
         }),
         '',
-        "import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';",
+        'import type {',
+        '    CartesianSubplotId,',
+        '    Color,',
+        '    ColorScale,',
+        '    Datum,',
+        '    MarkerSymbol,',
+        '    TypedArray,',
+        '    XAxisName,',
+        '    YAxisName',
+        "} from '../lib/common';",
         ''
     ];
 
@@ -1242,7 +1311,21 @@ export function generateSchemaTypes(schema, outputPath) {
         }
     }
 
-    fs.writeFileSync(outputPath, toFileText(chunks));
+    const output = toFileText(chunks);
+
+    // Backstop for the `/.../` regex convention. `enumValueToTS` already fails
+    // on an unmapped regex and names the attribute, but it only sees `values`
+    // entries. This catches a regex that reaches the output by another route.
+    const leakedRegexes = output.match(/'\/\^[^']*'/g);
+    if (leakedRegexes) {
+        throw new Error(
+            `Generated types contain regex string literals: ${[...new Set(leakedRegexes)].join(', ')}. ` +
+                `A schema regex reached the output as a literal type, which only accepts the pattern ` +
+                `text itself. Map it in REGEX_VALUE_TYPES.`
+        );
+    }
+
+    fs.writeFileSync(outputPath, output);
 
     const sharedCount = sharedList.length;
     const layoutCount = subplotGroups.size + arrayItems.size + 1; // +1 for Layout itself
