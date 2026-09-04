@@ -30,9 +30,10 @@ export type { AxisName, CartesianSubplotId, XAxisName, YAxisName } from '../lib/
  * - `config.modeBarButtons` — the button's registry key, resolved against
  *   Plotly's button table; an unknown key throws.
  * - `config.modeBarButtonsToAdd` — as a *string*, only the shape-drawing
- *   buttons (`drawline` … `eraseshape`) and the category aliases at the end of
- *   this union. Any other button has to be added as a `ModeBarButton` object;
- *   passing its name as a string does not resolve to the built-in button.
+ *   buttons (`drawline` … `eraseshape`), `downloadJson`, and the category
+ *   aliases at the end of this union. Any other button has to be added as a
+ *   `ModeBarButton` object; passing its name as a string does not resolve to
+ *   the built-in button.
  */
 export type ModeBarDefaultButtons =
     // Cartesian
@@ -79,6 +80,7 @@ export type ModeBarDefaultButtons =
     | 'drawrect'
     | 'eraseshape'
     // Other
+    | 'downloadJson'
     | 'toImage'
     | 'sendChartToCloud'
     | 'resetViews'

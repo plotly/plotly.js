@@ -142,10 +142,7 @@ function getButtonGroups(gd) {
         groups.push(out);
     }
 
-    // buttons common to all plot types
-    var commonGroup = ['toImage'];
-    if(context.showSendToCloud) commonGroup.push('sendChartToCloud');
-    addGroup(commonGroup);
+    var addDownloadJson = false;
 
     var zoomGroup = [];
     var hoverGroup = [];
@@ -246,11 +243,19 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosestGeo');
                     enableHover('hoverClosest3d');
                     enableHover('hoverClosestPie');
+                } else if(b === 'downloadjson') {
+                    addDownloadJson = true;
                 }
             } else newList.push(b);
         }
         buttonsToAdd = newList;
     }
+
+    // buttons common to all plot types
+    var commonGroup = ['toImage'];
+    if(addDownloadJson) commonGroup.push('downloadJson');
+    if(context.showSendToCloud) commonGroup.push('sendChartToCloud');
+    addGroup(commonGroup);
 
     addGroup(dragModeGroup);
     addGroup(zoomGroup.concat(resetGroup));

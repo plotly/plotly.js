@@ -330,9 +330,13 @@ wildcard) but their bare names are not.
 ## CI integration
 
 `npm run schema-typegen-diff-check` runs the generator and then verifies that
-both `test/plot-schema.json` and `src/types/generated/` are unchanged via
-`git diff --exit-code`. If either differs, the command fails with exit code 1
+both `test/plot-schema.json` and `src/types/generated/schema.d.ts` are unchanged
+via `git diff --exit-code`. If either differs, the command fails with exit code 1
 and outputs the diff to the console.
+
+The path names `schema.d.ts` rather than the whole `generated/` directory, so an
+uncommitted change to the entry point declarations cannot fail this check.
+`npm run entry-point-types-check` covers those.
 
 This is what makes the JS-to-TS conversion workflow safe: a correct
 conversion produces a byte-identical schema, so the check passes; an

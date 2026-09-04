@@ -181,7 +181,7 @@ var configAttributes = {
     },
     doubleClickDelay: {
         valType: 'number',
-        dflt: 300,
+        dflt: 500,
         min: 0,
         description: [
             'Sets the delay for registering a double-click in ms.',
@@ -262,7 +262,8 @@ var configAttributes = {
             'To enable predefined modebar buttons e.g. shape drawing, hover and spikelines,',
             'simply provide their string name(s). This could include:',
             '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
-            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
+            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*',
+            'and *downloadJson*.',
             'Please note that these predefined buttons will only be shown if they are compatible',
             'with all trace types used in a graph.'
         ].join(' ')
