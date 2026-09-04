@@ -1,7 +1,7 @@
 /**
  * Generate TypeScript interfaces from the plot schema.
  *
- * Walks schema.traces and schema.layout.layoutAttributes, emitting interfaces
+ * Walks schema.traces and the layout attributes, emitting interfaces
  * for all trace types, layout component types, and a top-level Layout interface
  * into a single .d.ts file. All attribute metadata (valType, values, arrayOk,
  * etc.) is mapped to the corresponding TypeScript type.
@@ -818,7 +818,7 @@ function traceNameToInterfaceName(traceName) {
  * attributes into a superset. E.g. xaxis and yaxis both map to LayoutAxis;
  * their attributes are merged so the interface covers both.
  *
- * @param {object} layoutAttrs - schema.layout.layoutAttributes
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
  * @returns {Map<string, {attrs: object, keys: string[]}>}
  */
 function buildSubplotGroups(layoutAttrs) {
@@ -841,10 +841,112 @@ function buildSubplotGroups(layoutAttrs) {
 }
 
 /**
+ * Trace modules whose layout attributes live inside a subplot container
+ * instead of at the top level of layout.
+ *
+ * The plot schema does not record where a trace module reads its layout
+ * attributes from, so the mapping lives here. barpolar is the only module
+ * that reads them from a subplot: its `supplyLayoutDefaults` coerces from
+ * `layoutIn[trace.subplot]`, which makes `layout.polar.barmode` the real key
+ * and `layout.barmode` a no-op for barpolar traces.
+ *
+ * If a trace module ever reads its layout attributes from another subplot
+ * container, add it here. Otherwise its keys land on `Layout`, where setting
+ * them does nothing.
+ */
+const SUBPLOT_SCOPED_TRACE_LAYOUT = new Map([['barpolar', 'polar']]);
+
+/**
+ * Merge the layout attributes that trace modules contribute into the layout
+ * attribute tree.
+ *
+ * The plot schema files these under `schema.traces[<type>].layoutAttributes`
+ * because a trace module only contributes them when the module loads. At
+ * runtime they are ordinary layout keys, so the generated types must carry
+ * them. Without this merge, `Layout` omits `barmode`, `boxmode`,
+ * `piecolorway` and 25 other keys, and `PolarLayout` omits `barmode` and
+ * `bargap`.
+ *
+ * Keys from a module in `SUBPLOT_SCOPED_TRACE_LAYOUT` merge into that subplot
+ * container. All other keys merge into the top level.
+ *
+ * A key that the layout already defines keeps the layout definition. Two
+ * modules that contribute the same key to the same target must agree on the
+ * definition, otherwise one interface cannot describe both and this throws.
+ *
+ * The merge copies rather than mutates, because `generateSchemaTypes` is
+ * exported and must not rewrite a caller's schema object. Only the top level
+ * and each subplot container this writes to need a copy. Attribute objects
+ * below those two levels stay shared by reference, and nothing here writes
+ * to them.
+ *
+ * @param {object} schema - The full plot schema
+ * @returns {object} A new attribute map. The input schema is not modified.
+ */
+function mergeTraceLayoutAttributes(schema) {
+    const layoutAttrs = schema.layout.layoutAttributes;
+    // Target container name ('' for the top level) → key → {attr, traceName}.
+    const contributed = new Map();
+
+    for (const traceName of Object.keys(schema.traces).sort()) {
+        const traceLayoutAttrs = schema.traces[traceName].layoutAttributes;
+        if (!traceLayoutAttrs || typeof traceLayoutAttrs !== 'object') continue;
+
+        const container = SUBPLOT_SCOPED_TRACE_LAYOUT.get(traceName) || '';
+        const target = container ? layoutAttrs[container] : layoutAttrs;
+        if (!target) {
+            throw new Error(
+                `Trace '${traceName}' is mapped to the layout container '${container}', ` +
+                    `but the schema has no 'layout.layoutAttributes.${container}'. ` +
+                    `Update SUBPLOT_SCOPED_TRACE_LAYOUT.`
+            );
+        }
+
+        if (!contributed.has(container)) contributed.set(container, new Map());
+        const claimed = contributed.get(container);
+
+        for (const [key, val] of Object.entries(traceLayoutAttrs)) {
+            if (key in target) continue;
+            if (!val || typeof val !== 'object') continue;
+
+            const existing = claimed.get(key);
+            if (!existing) {
+                claimed.set(key, { attr: val, traceName });
+                continue;
+            }
+            // Compare the TypeScript type each definition would emit, not the
+            // raw schema entry: a differing `description` or `dflt` only
+            // changes the JSDoc, and the first contributor's wins.
+            const emitted = (attr) => (attr.valType ? leafFingerprint(attr, key) : containerFingerprint(attr));
+            if (emitted(existing.attr) !== emitted(val)) {
+                const where = container ? `layout.${container}` : 'layout';
+                throw new Error(
+                    `Traces '${existing.traceName}' and '${traceName}' both contribute '${key}' to ${where}, ` +
+                        `but their definitions differ, so one generated property cannot describe both. ` +
+                        `If the two mean the same thing, share a single definition by reference.` +
+                        `If they mean different things, add the trace to SUBPLOT_SCOPED_TRACE_LAYOUT.`
+                );
+            }
+        }
+    }
+
+    const merged = { ...layoutAttrs };
+    for (const [container, claimed] of contributed) {
+        const additions = Object.fromEntries([...claimed].map(([key, { attr }]) => [key, attr]));
+        if (container) {
+            merged[container] = { ...merged[container], ...additions };
+        } else {
+            Object.assign(merged, additions);
+        }
+    }
+    return merged;
+}
+
+/**
  * Extract linked-to-array containers from layout attributes.
  * Returns a map of interface name → item attributes.
  *
- * @param {object} layoutAttrs - schema.layout.layoutAttributes
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
  * @returns {Map<string, object>} name → item child attrs
  */
 function extractArrayItems(layoutAttrs) {
@@ -862,7 +964,7 @@ function extractArrayItems(layoutAttrs) {
 /**
  * Generate the Layout interface body.
  *
- * @param {object} layoutAttrs - schema.layout.layoutAttributes
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
  * @param {Map<string,string>} sharedTypes - fingerprint → interface name
  * @param {Map<string,{attrs,keys}>} subplotGroups - from buildSubplotGroups
  * @param {Map<string,object>} arrayItems - from extractArrayItems
@@ -965,7 +1067,6 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
  */
 export function generateSchemaTypes(schema, outputPath) {
     const traceNames = Object.keys(schema.traces).sort();
-    const layoutAttrs = schema.layout.layoutAttributes;
 
     // Populate META_KEYS from the schema's own list of metadata keys so we
     // pick up any future additions without code changes.
@@ -977,6 +1078,8 @@ export function generateSchemaTypes(schema, outputPath) {
 
     // ----- Phase 0: Discover common enum types (Calendar, Dash, ...) -----
     const commonTypes = discoverCommonTypes(schema);
+
+    const layoutAttrs = mergeTraceLayoutAttributes(schema);
 
     // ----- Phase 1: Fingerprint all container subtrees across traces + layout -----
     const collector = new Map();
