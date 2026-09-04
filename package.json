@@ -5,6 +5,19 @@
   "license": "MIT",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "lib/index.d.ts": [
+        "./lib/index.d.ts"
+      ],
+      "lib/index": [
+        "./lib/index.d.ts"
+      ],
+      "lib/*": [
+        "./src/types/generated/entry_points/*.d.ts"
+      ]
+    }
+  },
   "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
@@ -30,14 +43,16 @@
     "extra-bundles": "node tasks/extra_bundles.mjs",
     "locales": "node tasks/locales.mjs",
     "schema": "node tasks/schema.mjs",
-    "schema-typegen-diff-check": "npm run schema && git diff --exit-code src/types/generated/ test/plot-schema.json",
+    "schema-typegen-diff-check": "npm run schema && git diff --exit-code src/types/generated/schema.d.ts test/plot-schema.json",
+    "entry-point-types": "node tasks/entry_point_types.mjs",
+    "entry-point-types-check": "node tasks/entry_point_types.mjs --check",
     "stats": "node tasks/stats.mjs",
     "find-strings": "node tasks/find_locale_strings.js",
     "preprocess": "node tasks/preprocess.js",
     "use-draftlogs": "node tasks/use_draftlogs.js",
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
-    "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
+    "build": "npm run empty-dist && npm run preprocess && npm run entry-point-types && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.mjs",
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.mjs",
     "lint": "npx @biomejs/biome lint",
