@@ -44,6 +44,7 @@
     "locales": "node tasks/locales.mjs",
     "schema": "node tasks/schema.mjs",
     "schema-typegen-diff-check": "npm run schema && git diff --exit-code src/types/generated/schema.d.ts test/plot-schema.json",
+    "maplibre-worker-diff-check": "npm run preprocess && git diff --exit-code build/maplibre_worker.js",
     "entry-point-types": "node tasks/entry_point_types.mjs",
     "entry-point-types-check": "node tasks/entry_point_types.mjs --check",
     "stats": "node tasks/stats.mjs",
