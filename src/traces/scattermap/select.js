@@ -4,6 +4,14 @@ const Lib = require('../../lib');
 const subtypes = require('../scatter/subtypes');
 const { BADNUM } = require('../../constants/numerical');
 
+// Tile size of the web mercator transform, in pixels. maplibre holds this
+// constant no matter what tile size a source declares.
+const MERCATOR_TILE_SIZE = 512;
+
+// Pixel width of a single world copy at the map's current zoom. This repeats the
+// `worldSize` computation that maplibre-gl v6 stopped exposing.
+const getWorldWidth = (map) => MERCATOR_TILE_SIZE * 2 ** map.getZoom();
+
 module.exports = function selectPoints(searchInfo, selectionTester) {
     const { cd, xaxis: xa, yaxis: ya } = searchInfo;
     const { trace } = cd[0];
@@ -24,7 +32,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     // for degenerate testers (e.g. point-selection) where extent is zero.
     const map = xa._subplot?.map;
     const worldWidth =
-        map?.getRenderWorldCopies() && selectionTester.xmax > selectionTester.xmin ? map.transform.worldSize : 0;
+        map?.getRenderWorldCopies() && selectionTester.xmax > selectionTester.xmin ? getWorldWidth(map) : 0;
 
     const selection = [];
 
