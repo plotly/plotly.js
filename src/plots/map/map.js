@@ -136,7 +136,7 @@ proto.createMap = function (calcData, fullLayout, resolve, reject) {
     const requestedIcons = {};
     map.setMissingStyleImageResolver((id) => {
         if (!requestedIcons[id] && /^[a-zA-Z0-9-]+$/.test(id)) {
-            // Use a promise so that maplibre-gl awaits the resolution before treating the image is missing
+            // Use a promise so that maplibre-gl awaits the resolution before treating the image as missing
             requestedIcons[id] = new Promise((resolve) => {
                 const img = new Image(15, 15);
                 img.onload = () => {
