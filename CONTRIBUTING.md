@@ -220,8 +220,10 @@ files.
 
 #### Other npm scripts that may be of interest in development
 
-- `npm run preprocess`: pre-processes the css and svg source file in js. This
-  script must be run manually when updating the css and svg source files.
+- `npm run preprocess`: regenerates the sources that the build depends on, and
+  must be run manually when their inputs change. Commit the result.
+  `build/README.md` describes the committed files under `build/` and what
+  triggers each one.
 
 ## Testing
 
@@ -386,7 +388,14 @@ If you would like a link to the dev build for your PR but don't have permission 
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
 - Tests are in `test/`; they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Built files are in `build/` (the files in here are git-ignored, except for `plotcss.js`)
+- Built files are in `build/` (mostly git-ignored; see `build/README.md`)
+
+### The bundled maplibre-gl worker
+
+`map` traces render through `maplibre-gl`, which parses tiles in a web worker.
+As of v6, the library no longer includes a UMD bundle with this code. As such,
+it's now necessary to extract it and include it as part of the build process.
+See `tasks/util/bundle_maplibre_worker.js` for more information.
 
 ## Trace module design
 
