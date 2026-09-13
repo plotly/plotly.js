@@ -599,6 +599,16 @@ jobs:
       - name: Verify entry point declarations are in sync
         run: npm run entry-point-types-check
 
+  maplibre-worker-drift:
+    needs: install-and-cibuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-workspace
+
+      - name: Verify the inlined maplibre-gl worker is in sync
+        run: npm run maplibre-worker-diff-check
+
   package-resolution:
     needs: install-and-cibuild
     runs-on: ubuntu-latest

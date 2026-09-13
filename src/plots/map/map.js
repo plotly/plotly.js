@@ -1,6 +1,21 @@
 'use strict';
 
-var maplibregl = require('maplibre-gl');
+// maplibre-gl v6 is ESM only, so request the bundle by its explicit path.
+const maplibregl = require('maplibre-gl/dist/maplibre-gl.mjs');
+
+// Get the maplibre-gl worker src to load it as v5 used to.
+// This (mostly) follows the guidance from the MapLibre install
+// guide: https://maplibre.org/maplibre-gl-js/docs/#installation
+const maplibreWorkerSource = require('../../../build/maplibre_worker');
+let workerUrlIsSet = false;
+
+// Point maplibre-gl at the worker
+const setWorkerUrl = () => {
+    // Only load the inlined blob when the first map is requested to avoid taking a chunk of memory
+    if (workerUrlIsSet) return;
+    workerUrlIsSet = true;
+    maplibregl.setWorkerUrl(URL.createObjectURL(new Blob([maplibreWorkerSource], { type: 'text/javascript' })));
+};
 
 var Lib = require('../../lib');
 var geoUtils = require('../../lib/geo_location_utils');
@@ -111,23 +126,30 @@ proto.createMap = function (calcData, fullLayout, resolve, reject) {
         mapOptions.fitBoundsOptions = { padding: constants.fitBoundsPadding };
     }
 
+    setWorkerUrl();
+
     // Create the map!
     const map = (self.map = new maplibregl.Map(mapOptions).addControl(
         new maplibregl.AttributionControl({ compact: true })
     ));
 
-    var requestedIcons = {};
-    map.on('styleimagemissing', function (e) {
-        var id = e.id;
+    const requestedIcons = {};
+    map.setMissingStyleImageResolver((id) => {
         if (!requestedIcons[id] && /^[a-zA-Z0-9-]+$/.test(id)) {
-            requestedIcons[id] = true;
-            var img = new Image(15, 15);
-            img.onload = function () {
-                map.addImage(id, img, { sdf: true });
-            };
-            img.crossOrigin = 'Anonymous';
-            img.src = 'https://cdn.jsdelivr.net/npm/@mapbox/maki@8.2.0/icons/' + id + '.svg';
+            // Use a promise so that maplibre-gl awaits the resolution before treating the image as missing
+            requestedIcons[id] = new Promise((resolve) => {
+                const img = new Image(15, 15);
+                img.onload = () => {
+                    map.addImage(id, img, { sdf: true });
+                    resolve();
+                };
+                img.onerror = () => resolve();
+                img.crossOrigin = 'Anonymous';
+                img.src = `https://cdn.jsdelivr.net/npm/@mapbox/maki@8.2.0/icons/${id}.svg`;
+            });
         }
+
+        return requestedIcons[id];
     });
 
     map.setTransformRequest(function (url) {

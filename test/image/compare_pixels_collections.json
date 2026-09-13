@@ -1,6 +1,5 @@
 {
   "disallow": [
-    "map_angles",
     "map_density0-legend",
     "map_fonts-supported-open-sans-weight",
     "map_fonts-supported-open-sans",

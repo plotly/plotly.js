@@ -2,6 +2,7 @@ node_modules
 
 build/*
 !build/plotcss.js
+!build/maplibre_worker.js
 !build/README.md
 
 dist/*.LICENSE.txt
