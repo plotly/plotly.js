@@ -793,7 +793,7 @@ module.exports = {
         valType: 'number',
         dflt: 3,
         editType: 'none',
-        description: 'Sets the width (in px) of the zero line.'
+        description: 'Sets the spike line width in pixels.'
     },
     spikedash: extendFlat({}, dash, { dflt: 'dash', editType: 'none' }),
     spikemode: {
