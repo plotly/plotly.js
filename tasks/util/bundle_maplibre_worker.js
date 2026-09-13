@@ -1,6 +1,8 @@
 const fs = require('fs');
 const esbuild = require('esbuild');
 
+const { esbuildConfig } = require('../../esbuild-config.js');
+
 /**
  * Extract the maplibre-gl web worker code and save it for bundling.
  *
@@ -20,7 +22,7 @@ module.exports = (pathIn, pathOut) => {
         write: false,
         format: 'esm',
         platform: 'browser',
-        target: 'es2020',
+        target: esbuildConfig.target, // Match the build target of the overall build
         minify: true,
         logLevel: 'warning'
     });

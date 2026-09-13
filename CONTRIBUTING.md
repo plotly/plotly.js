@@ -223,7 +223,8 @@ files.
 - `npm run preprocess`: regenerates the sources that the build depends on, and
   must be run manually when their inputs change. Commit the result.
   `build/README.md` describes the committed files under `build/` and what
-  triggers each one.
+  triggers each one. Note that the `preprocess` step is always run automatically
+  as part of `npm run build`.
 
 ## Testing
 
@@ -388,7 +389,7 @@ If you would like a link to the dev build for your PR but don't have permission 
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
 - Tests are in `test/`; they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Built files are in `build/` (mostly git-ignored; see `build/README.md`)
+- Built files are in `build/` (mostly git-ignored, with a few exceptions: see `build/README.md`)  
 
 ### The bundled maplibre-gl worker
 
