@@ -1,2 +1,2 @@
- - Update `maplibre-gl` to v6 to address [CVE-2026-85061](https://github.com/advisories/GHSA-jrc7-96c5-q579) [[#8035](https://github.com/plotly/plotly.js/pull/8035)]
+- Update `maplibre-gl` to v6 to address [CVE-2026-85061](https://github.com/advisories/GHSA-jrc7-96c5-q579) [[#8035](https://github.com/plotly/plotly.js/pull/8035)]
   - `maplibre-gl` v6 dropped WebGL1 support, so some older browsers won't be able to use the map traces. Safari 15, Chrome 56, Firefox 51 and later are now required for the map traces.
