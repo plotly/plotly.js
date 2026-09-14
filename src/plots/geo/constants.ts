@@ -298,7 +298,8 @@ type SameLength<T extends readonly unknown[], V> = { [K in keyof T]: V };
 /** A draw order holding the same layers as `layers`: same length, and every element is a layer */
 type LayerOrder = SameLength<typeof layers, GeoLayer>;
 
-// Same layers as `layers`, but rivers and lakes move above the choropleth so water stays visible
+// Same layers as `layers`, but lakes and rivers move above the choropleth so water stays visible.
+// They keep their order relative to each other, so rivers draw over lakes either way.
 export const layersForChoropleth = [
     'bg',
     'ocean',
@@ -310,8 +311,8 @@ export const layersForChoropleth = [
     'lonaxis',
     'frame',
     'backplot',
-    'rivers',
     'lakes',
+    'rivers',
     'frontplot'
 ] as const satisfies LayerOrder;
 
