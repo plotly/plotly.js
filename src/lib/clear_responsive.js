@@ -6,8 +6,8 @@
  * @param {DOM node or object} gd : graph div object
  */
 module.exports = function clearResponsive(gd) {
-    if(gd._responsiveChartObserver) {
-        gd._responsiveChartObserver.disconnect();
-        delete gd._responsiveChartObserver;
+    if (gd._clearResponsive) {
+        gd._clearResponsive();
+        delete gd._clearResponsive;
     }
 };
