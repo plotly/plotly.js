@@ -1,1 +1,0 @@
-- Fix unified hover swatch color and pattern for bar `marker.pattern` arrays [[#XXXX](https://github.com/plotly/plotly.js/issues/8008)]
