@@ -16809,7 +16809,7 @@ export interface ConfigBase {
      */
     queueLength?: number;
     /**
-     * Determines whether to change the layout size when window is resized. In v3, this option will be removed and will always be true.
+     * Determines whether to change the layout size when the graph container is resized. In v5, this option will be removed and will always be true.
      * @default false
      */
     responsive?: boolean;
