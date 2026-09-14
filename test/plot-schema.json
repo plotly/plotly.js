@@ -10864,7 +10864,7 @@
             ]
           },
           "spikethickness": {
-            "description": "Sets the width (in px) of the zero line.",
+            "description": "Sets the spike line width in pixels.",
             "dflt": 3,
             "editType": "plot",
             "valType": "number"
@@ -11422,7 +11422,7 @@
             ]
           },
           "spikethickness": {
-            "description": "Sets the width (in px) of the zero line.",
+            "description": "Sets the spike line width in pixels.",
             "dflt": 3,
             "editType": "plot",
             "valType": "number"
@@ -11986,7 +11986,7 @@
             ]
           },
           "spikethickness": {
-            "description": "Sets the width (in px) of the zero line.",
+            "description": "Sets the spike line width in pixels.",
             "dflt": 3,
             "editType": "plot",
             "valType": "number"

@@ -14789,7 +14789,7 @@ export interface TernaryLayout {
          */
         spikesnap?: 'data' | 'cursor' | 'hovered data';
         /**
-         * Sets the width (in px) of the zero line.
+         * Sets the spike line width in pixels.
          * @default 3
          */
         spikethickness?: number;
@@ -14978,7 +14978,7 @@ export interface TernaryLayout {
          */
         spikesnap?: 'data' | 'cursor' | 'hovered data';
         /**
-         * Sets the width (in px) of the zero line.
+         * Sets the spike line width in pixels.
          * @default 3
          */
         spikethickness?: number;
@@ -15172,7 +15172,7 @@ export interface TernaryLayout {
          */
         spikesnap?: 'data' | 'cursor' | 'hovered data';
         /**
-         * Sets the width (in px) of the zero line.
+         * Sets the spike line width in pixels.
          * @default 3
          */
         spikethickness?: number;
