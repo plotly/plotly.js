@@ -6,7 +6,7 @@ var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').ax
 const { hovertemplateAttrs, templatefallbackAttrs } = require('../../plots/template_attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
-var delta = require('../../constants/delta.js');
+var delta = require('../../constants/delta');
 
 var INCREASING_COLOR = delta.INCREASING.COLOR;
 var DECREASING_COLOR = delta.DECREASING.COLOR;
