@@ -62,6 +62,13 @@ var ternaryAxesAttrs = {
             'all the minima set to zero.'
         ].join(' ')
     },
+    // spikelines
+    showspikes: axesAttrs.showspikes,
+    spikecolor: axesAttrs.spikecolor,
+    spikethickness: axesAttrs.spikethickness,
+    spikedash: axesAttrs.spikedash,
+    spikemode: axesAttrs.spikemode,
+    spikesnap: axesAttrs.spikesnap,
 };
 
 var attrs = module.exports = overrideAll({
