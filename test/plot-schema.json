@@ -10785,6 +10785,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -10814,6 +10820,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the width (in px) of the zero line.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -11289,6 +11343,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -11318,6 +11378,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the width (in px) of the zero line.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -11799,6 +11907,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -11828,6 +11942,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the width (in px) of the zero line.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
