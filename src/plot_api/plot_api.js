@@ -165,16 +165,34 @@ function _doPlot(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
-    // make the figure responsive
+    // Make the figure responsive. We need to save the callback that clears the
+    // listener for proper teardown.
     if (gd._context.responsive) {
-        if (!gd._responsiveChartHandler) {
-            // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function () {
+        if (!gd._clearResponsive) {
+            const resizeIfShown = () => {
                 if (!Lib.isHidden(gd)) Plots.resize(gd);
             };
-
-            // Listen to window resize
-            window.addEventListener('resize', gd._responsiveChartHandler);
+            // We still need the window resize listener for `fillFrame` and an
+            // escape hatch for browser-like users that don't support `ResizeObserver` (like jsdom)
+            if (gd._context.fillFrame || typeof ResizeObserver === 'undefined') {
+                window.addEventListener('resize', resizeIfShown);
+                gd._clearResponsive = () => window.removeEventListener('resize', resizeIfShown);
+            } else {
+                let previousWidth = gd.offsetWidth;
+                let previousHeight = gd.offsetHeight;
+                const observer = new ResizeObserver(() => {
+                    const width = gd.offsetWidth;
+                    const height = gd.offsetHeight;
+                    // Ignore size changes of one pixel or less (the same as plotAutoSize)
+                    const changed = Math.abs(width - previousWidth) > 1 || Math.abs(height - previousHeight) > 1;
+                    previousWidth = width;
+                    previousHeight = height;
+                    // Only resize plot if it changed and is visible (width and height > 0)
+                    if (changed && width && height) resizeIfShown();
+                });
+                observer.observe(gd);
+                gd._clearResponsive = () => observer.disconnect();
+            }
         }
     } else {
         Lib.clearResponsive(gd);
