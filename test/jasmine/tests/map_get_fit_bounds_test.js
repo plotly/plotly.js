@@ -149,9 +149,20 @@ describe('Test getMapFitBounds', () => {
         });
     });
 
-    it('returns null when a choroplethmap trace is present on the subplot', () => {
+    it('skips a choroplethmap trace whose geojson has not resolved yet, using the other traces for bounds', () => {
         const fullData = [scattermap({ lon: [-10, 10], lat: [30, 40] }), choroplethmap()];
-        // location-based traces need geojson bbox handling — bail entirely
+        // choroplethmap() has no geojson set, so it can't contribute a bbox and is skipped;
+        // the scattermap trace still drives the fit
+        expect(getMapFitBounds(fullData, 'map')).toEqual({
+            west: -10,
+            east: 10,
+            south: 30,
+            north: 40
+        });
+    });
+
+    it('returns null when the only visible trace is a choroplethmap with unresolved geojson', () => {
+        const fullData = [choroplethmap()];
         expect(getMapFitBounds(fullData, 'map')).toBe(null);
     });
 

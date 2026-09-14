@@ -1525,6 +1525,77 @@ describe('map auto-fit', () => {
         LONG_TIMEOUT_INTERVAL
     );
 
+    // Two disjoint polygons: A (lon -100..-90, lat 30..40) and B (lon 0..10,
+    // lat 0..10). The trace only references A via `locations`.
+    const choroGeojson = {
+        type: 'FeatureCollection',
+        features: [
+            {
+                type: 'Feature',
+                id: 'A',
+                geometry: { type: 'Polygon', coordinates: [[[-100, 30], [-90, 30], [-90, 40], [-100, 40], [-100, 30]]] }
+            },
+            {
+                type: 'Feature',
+                id: 'B',
+                geometry: { type: 'Polygon', coordinates: [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]] }
+            }
+        ]
+    };
+
+    const choroMock = (overrides = {}) => {
+        return Lib.extendDeep(
+            {
+                data: [{ type: 'choroplethmap', geojson: choroGeojson, locations: ['A'], z: [1] }],
+                layout: { width: 400, height: 400 }
+            },
+            overrides
+        );
+    };
+
+    it(
+        '@gl frames a choroplethmap to the bounding box of its matched locations',
+        async () => {
+            await Plotly.newPlot(gd, choroMock());
+            const { lng, lat } = gd._fullLayout.map._subplot.map.getCenter();
+            // Only feature A is referenced → center near its middle (-95, 35),
+            // not pulled toward the unmatched feature B.
+            expect(lng).toBeCloseTo(-95, 0);
+            expect(lat).toBeCloseTo(35, 0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl fitbounds *geojson* widens the fit to the entire input geojson',
+        async () => {
+            await Plotly.newPlot(gd, choroMock());
+            const zLoc = gd._fullLayout.map.zoom;
+            const cLoc = gd._fullLayout.map._subplot.map.getCenter().lng;
+
+            await Plotly.newPlot(gd, choroMock({ layout: { map: { fitbounds: 'geojson' } } }));
+            const zAll = gd._fullLayout.map.zoom;
+            const cAll = gd._fullLayout.map._subplot.map.getCenter().lng;
+
+            // *geojson* includes the unmatched feature B (east of A) → the fit is
+            // wider (lower zoom) and its center shifts east relative to *locations*.
+            expect(zAll).toBeLessThan(zLoc);
+            expect(cAll).toBeGreaterThan(cLoc);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl skips auto-fit for a choroplethmap when fitbounds is false',
+        async () => {
+            await Plotly.newPlot(gd, choroMock({ layout: { map: { fitbounds: false } } }));
+            expect(gd._fullLayout.map.center.lon).toBe(0);
+            expect(gd._fullLayout.map.center.lat).toBe(0);
+            expect(gd._fullLayout.map.zoom).toBe(1);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
 });
 
 describe('map react', function() {
