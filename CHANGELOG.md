@@ -11,6 +11,13 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ## [X.Y.Z] -- UNRELEASED
 
+### Changed
+- Update `maplibre-gl` to v6 to address [CVE-2026-85061](https://github.com/advisories/GHSA-jrc7-96c5-q579) [[#8035](https://github.com/plotly/plotly.js/pull/8035)]
+  - `maplibre-gl` v6 dropped WebGL1 support, so some older browsers won't be able to use the map traces. Safari 15, Chrome 56, Firefox 51 and later are now required for the map traces.
+
+### Fixed
+- Box and lasso selection of `scattermap` points are now supported on a rotated or pitched map [[#8035](https://github.com/plotly/plotly.js/pull/8035)]
+
 
 ## [4.1.0] -- 2026-09-08
 
