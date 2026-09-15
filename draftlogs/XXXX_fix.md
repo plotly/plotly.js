@@ -1,0 +1,1 @@
+- Keep cartesian traces aligned with their axes when an automargin title is combined with any component that expands the margins [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
