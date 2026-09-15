@@ -153,10 +153,22 @@ module.exports = overrideAll(
             description: 'Sets the color of padded area.'
         },
         // tick and title properties named and function exactly as in axes
+        // (except dtick: the colorbar axis is mocked as type *linear*, so the
+        // special *log*/*date* string forms documented on `dtick` - *L<f>*,
+        // *D1*, *D2*, *M<n>* - are silently discarded, see #7376)
         tickmode: axesAttrs.minor.tickmode,
         nticks: axesAttrs.nticks,
         tick0: axesAttrs.tick0,
-        dtick: axesAttrs.dtick,
+        dtick: extendFlat({}, axesAttrs.dtick, {
+            description: [
+                'Sets the step in-between ticks on this color bar. Use with `tick0`.',
+                'Must be a positive number.',
+                'Unlike on x/y axes, the special *log* and *date* string forms',
+                '(*L<f>*, *D1*, *D2*, *M<n>*) are NOT supported here: this axis is',
+                'always linear, so such strings are silently ignored and the step',
+                'falls back to its default.'
+            ].join(' ')
+        }),
         tickvals: axesAttrs.tickvals,
         ticktext: axesAttrs.ticktext,
         ticks: extendFlat({}, axesAttrs.ticks, { dflt: '' }),
