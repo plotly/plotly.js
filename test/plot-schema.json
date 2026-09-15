@@ -13178,6 +13178,39 @@
           ],
           "valType": "info_array"
         },
+        "domainpad": {
+          "bottom": {
+            "description": "Pixels of space to reserve inside the bottom edge of the domain. Ignored on x axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "description": "Reserves space inside the edges of `domain`, in pixels. Because `domain` is a plot fraction, the space it leaves between subplots grows and shrinks with the figure. `domainpad` stays the same size at any figure height or width, which is what you want for anything sized in pixels such as a subplot title. x axes use `left` and `right`, y axes use `top` and `bottom`. If the padding asks for more room than the domain has, it is scaled down so the subplot keeps a usable size.",
+          "editType": "plot",
+          "left": {
+            "description": "Pixels of space to reserve inside the left edge of the domain. Ignored on y axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "right": {
+            "description": "Pixels of space to reserve inside the right edge of the domain. Ignored on y axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "role": "object",
+          "top": {
+            "description": "Pixels of space to reserve inside the top edge of the domain. Ignored on x axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          }
+        },
         "dtick": {
           "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
           "editType": "ticks",
@@ -14743,6 +14776,39 @@
             }
           ],
           "valType": "info_array"
+        },
+        "domainpad": {
+          "bottom": {
+            "description": "Pixels of space to reserve inside the bottom edge of the domain. Ignored on x axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "description": "Reserves space inside the edges of `domain`, in pixels. Because `domain` is a plot fraction, the space it leaves between subplots grows and shrinks with the figure. `domainpad` stays the same size at any figure height or width, which is what you want for anything sized in pixels such as a subplot title. x axes use `left` and `right`, y axes use `top` and `bottom`. If the padding asks for more room than the domain has, it is scaled down so the subplot keeps a usable size.",
+          "editType": "plot",
+          "left": {
+            "description": "Pixels of space to reserve inside the left edge of the domain. Ignored on y axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "right": {
+            "description": "Pixels of space to reserve inside the right edge of the domain. Ignored on y axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "role": "object",
+          "top": {
+            "description": "Pixels of space to reserve inside the top edge of the domain. Ignored on x axes.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          }
         },
         "dtick": {
           "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
