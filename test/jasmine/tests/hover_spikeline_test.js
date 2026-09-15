@@ -856,3 +856,73 @@ describe('spikeline hover', function() {
         });
     });
 });
+
+describe('spikeline search', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    // the search for a point to spike to is unbounded when spikedistance is -1
+    // (the default), so it must not run when no spike can come out of it
+    function countHoverPointsCalls(layout) {
+        return Plotly.newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            mode: 'markers'
+        }], Lib.extendFlat({width: 400, height: 400}, layout))
+            .then(function() {
+                var spy = spyOn(gd.calcdata[0][0].trace._module, 'hoverPoints').and.callThrough();
+
+                Lib.clearThrottle();
+                // hover on empty space, so there is no hoverData
+                Fx.hover(gd, {xpx: 40, ypx: 40}, 'xy');
+
+                return spy.calls.count();
+            });
+    }
+
+    it('does not look for spike points when no axis shows spikes', function(done) {
+        countHoverPointsCalls({})
+            .then(function(count) {
+                expect(count).toBe(1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('does not look for spike points when spikesnap is "hovered data"', function(done) {
+        countHoverPointsCalls({
+            xaxis: {showspikes: true, spikesnap: 'hovered data'},
+            yaxis: {showspikes: true, spikesnap: 'hovered data'}
+        })
+            .then(function(count) {
+                expect(count).toBe(1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('looks for spike points when an axis snaps spikes to data', function(done) {
+        countHoverPointsCalls({
+            xaxis: {showspikes: true, spikesnap: 'data'}
+        })
+            .then(function(count) {
+                expect(count).toBe(2);
+            })
+            .then(done, done.fail);
+    });
+
+    it('looks for spike points when an axis snaps spikes to the cursor', function(done) {
+        countHoverPointsCalls({
+            yaxis: {showspikes: true, spikesnap: 'cursor'}
+        })
+            .then(function(count) {
+                expect(count).toBe(2);
+            })
+            .then(done, done.fail);
+    });
+});
