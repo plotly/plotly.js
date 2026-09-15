@@ -16,6 +16,20 @@ var drag = require('../assets/drag');
 describe('Test colorbar:', function() {
     'use strict';
 
+    describe('map trace attribute edit types:', () => {
+        const colorbarAttrs = require('../../../src/components/colorbar/attributes');
+        const traceAttrs = {
+            scattergeo: require('../../../src/traces/scattergeo/attributes'),
+            scattermap: require('../../../src/traces/scattermap/attributes')
+        };
+
+        Object.keys(traceAttrs).forEach((name) => {
+            it(`${name} should preserve colorbar edit types`, () => {
+                expect(traceAttrs[name].marker.colorbar).toEqual(colorbarAttrs);
+            });
+        });
+    });
+
     describe('supplyDefaults:', function() {
         function _supply(trace, layout) {
             var gd = {
