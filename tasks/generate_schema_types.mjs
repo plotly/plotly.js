@@ -1112,6 +1112,29 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         }
     }
 
+    // Nested property updates for relayout and update (common axis/title properties)
+    lines.push('');
+    lines.push('    // Nested property updates for relayout and update');
+    lines.push("    'xaxis.autorange'?: LayoutAxis['autorange'];");
+    lines.push("    'yaxis.autorange'?: LayoutAxis['autorange'];");
+    lines.push("    'xaxis.range'?: LayoutAxis['range'];");
+    lines.push("    'xaxis.range[0]'?: any;");
+    lines.push("    'xaxis.range[1]'?: any;");
+    lines.push("    'yaxis.range'?: LayoutAxis['range'];");
+    lines.push("    'yaxis.range[0]'?: any;");
+    lines.push("    'yaxis.range[1]'?: any;");
+    lines.push("    'xaxis.type'?: LayoutAxis['type'];");
+    lines.push("    'yaxis.type'?: LayoutAxis['type'];");
+    lines.push("    'xaxis.title'?: string | LayoutAxis['title'];");
+    lines.push("    'yaxis.title'?: string | LayoutAxis['title'];");
+    lines.push("    'xaxis.title.text'?: string;");
+    lines.push("    'yaxis.title.text'?: string;");
+    lines.push("    'title.text'?: string;");
+    lines.push('');
+    lines.push('    // Dotted and indexed attribute path index signatures');
+    lines.push('    [key: `${string}.${string}`]: any;');
+    lines.push('    [key: `${string}[${string}`]: any;');
+
     return lines;
 }
 

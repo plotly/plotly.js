@@ -157,3 +157,16 @@ export interface Template {
     /** Template layout defaults. */
     layout?: Partial<Layout> | undefined;
 }
+
+// ---------------------------------------------------------------------------
+// Relayout & update types
+// ---------------------------------------------------------------------------
+
+/**
+ * Layout update object accepted by `Plotly.relayout` and `Plotly.update`.
+ *
+ * An alias for `Partial<Layout>`, which supports both standard nested layout
+ * properties and dotted/indexed attribute paths (e.g. `'xaxis.autorange'`).
+ */
+export type LayoutUpdate = Partial<Layout>;
+
