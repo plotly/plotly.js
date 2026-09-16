@@ -1114,4 +1114,48 @@ describe('heatmap hover', function() {
             expect(pt).toEqual(undefined);
         });
     });
+
+    describe('heatmap event data', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should include 2D pointNumber and z value in plotly_click payload', function(done) {
+            var mockData = [{
+                type: 'heatmap',
+                z: [[1, 2], [3, 4]],
+                x: ['A', 'B'],
+                y: ['Row1', 'Row2']
+            }];
+
+            Plotly.newPlot(gd, mockData).then(function() {
+                var clickData = null;
+
+                gd.on('plotly_click', function(data) {
+                    clickData = data;
+                });
+
+                var mockClick = require('../assets/click');
+                var bBox = gd.getBoundingClientRect();
+
+                mockClick(bBox.left + 100, bBox.top + 300);
+
+                expect(clickData).not.toBeNull();
+                expect(clickData.points.length).toBe(1);
+
+                var pt = clickData.points[0];
+
+                expect(Array.isArray(pt.pointNumber)).toBe(true, 'pointNumber should be an array');
+                expect(pt.pointNumber).toEqual([0, 0], 'should point to the first row and col');
+                expect(pt.z).toBe(1, 'should extract the correct z value');
+
+                done();
+            }).catch(done.fail);
+        });
+    });
 });
+
