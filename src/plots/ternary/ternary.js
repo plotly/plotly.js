@@ -8,6 +8,7 @@ var strTranslate = Lib.strTranslate;
 var _ = Lib._;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var svgTextUtils = require('../../lib/svg_text_utils');
 var setConvert = require('../cartesian/set_convert');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Plots = require('../plots');
@@ -169,6 +170,135 @@ proto.updateLayers = function(ternaryLayout) {
 };
 
 var whRatio = Math.sqrt(4 / 3);
+
+proto.drawSpikelines = function (hoverPoint, spikePoint, cursorXVal, cursorYVal) {
+    const fullLayout = this.graphDiv._fullLayout;
+    const axes = [this.aaxis, this.baxis, this.caxis];
+
+    if(!axes.some((axis) => axis.showspikes)) return;
+
+    const span = this.sum - axes[0].min - axes[1].min - axes[2].min;
+
+    let layer;
+
+    for(let i = 0; i < axes.length; i++) {
+        const axis = axes[i];
+        if(!axis.showspikes) continue;
+
+        const snap = axis.spikesnap;
+
+        // 'hovered data' uses the current hover point
+        // 'data' and 'cursor' use the closest point within spikedistance
+        // 'data' draws at that point, while 'cursor' draws at the cursor position
+        const selectedPoint = snap === 'hovered data' ? hoverPoint : spikePoint || hoverPoint;
+
+        if(!selectedPoint) continue;
+
+        const snapToCursor = snap === 'cursor';
+
+        if(snapToCursor && (!Number.isFinite(cursorXVal) || !Number.isFinite(cursorYVal))) {
+            continue;
+        }
+
+        const calcPoint = selectedPoint.cd[selectedPoint.index];
+
+        // ternary plots use synthetic x/y axes (x = c - b, y = a), see src/traces/scatterternary/calc.js
+        // cursor positions are expressed in these coordinates,
+        // so we need to convert them to a/b/c for the ternary geometry below
+        const a = snapToCursor ? cursorYVal : calcPoint.a;
+        const b = snapToCursor ? (this.sum - cursorYVal - cursorXVal) / 2 : calcPoint.b;
+        const c = snapToCursor ? (this.sum - cursorYVal + cursorXVal) / 2 : calcPoint.c;
+
+        if(!this.xaxis.isPtWithinRange({a, b, c})) continue;
+
+        if(!layer) {
+            layer = fullLayout._hoverlayer
+                .insert('g', ':first-child')
+                .attr('class', 'ternary-spikes')
+                .attr('transform', strTranslate(this.x0, this.y0))
+                .style('pointer-events', 'none');
+        }
+
+        // normalize to the visible ternary range so the spike
+        // geometry also works when plot is zoomed, and constrain fraction at [0, 1] boundaries
+        const fa = Lib.constrain((a - axes[0].min) / span, 0, 1);
+        const fb = Lib.constrain((b - axes[1].min) / span, 0, 1);
+        const fc = Lib.constrain((c - axes[2].min) / span, 0, 1);
+
+        const x = this.w * (fc + fa / 2);
+        const y = this.h * (1 - fa);
+
+        // intersections of the line with the target axis and the opposite triangle edge
+        const [axisX, axisY, acrossX, acrossY] = [
+            [this.w * fa / 2, y, this.w * (1 - fa / 2), y], // aaxis
+            [this.w * (1 - fb), this.h, this.w * (1 - fb) / 2, this.h * fb], // baxis
+            [this.w * (1 + fc) / 2, this.h * fc, this.w * fc, this.h] // caxis
+        ][i];
+
+        const color = axis.spikecolor || selectedPoint.color || axis.color;
+        const thickness = axis.spikethickness;
+        const mode = axis.spikemode;
+
+        if(mode.indexOf('toaxis') !== -1 || mode.indexOf('across') !== -1) {
+            const across = mode.indexOf('across') !== -1;
+            layer.append('line').attr({
+                class: 'spikeline',
+                x1: across ? acrossX : x,
+                y1: across ? acrossY : y,
+                x2: axisX,
+                y2: axisY,
+                'stroke-width': thickness,
+                'stroke-dasharray': Drawing.dashStyle(axis.spikedash, thickness)
+            }).call(Color.stroke, color);
+        }
+
+        if(mode.indexOf('marker') !== -1) {
+            layer.append('circle').attr({
+                class: 'spikeline',
+                cx: axisX,
+                cy: axisY,
+                r: thickness
+            }).call(Color.fill, color);
+        }
+
+        // draw the axis value label (similar to commonlabel for Cartesian) at the spike intersection
+        // note that strictly speaking, spikelines feature shouldn't include this label,
+        // in Carteisan, the label behavior is controlled by hovermode
+        // but in ternary plot, the current hovermode options are not fit and it is very intuitive
+        // that we want the labels to show together with spikelines
+        const label = layer.append('g')
+            .attr('class', 'ternary-spikelabel')
+            .attr('transform', strTranslate(axisX, axisY));
+
+        const text = label.append('text')
+            .attr('text-anchor', 'middle')
+            .call(Drawing.font, axis.tickfont || fullLayout.font)
+            .text(Axes.tickText(axis, [a, b, c][i], true).text)
+            .call(svgTextUtils.convertToTspans, this.graphDiv);
+
+        const box = Drawing.bBox(text.node());
+        const width = box.width + 6;
+        const height = box.height + 4;
+        const arrow = Math.min(6, height / 2, width / 2);
+        const left = i === 0 ? -arrow - width : i === 1 ? -width / 2 : 0;
+        const top = i === 0 ? -height / 2 : i === 1 ? arrow : -height;
+
+        let outline;
+        if(i === 0) {
+            outline = `M0,0L${-arrow},${-arrow}V${top}H${left}v${height}H${-arrow}V${arrow}Z`;
+        } else if(i === 1) {
+            outline = `M0,0L${arrow},${arrow}H${width / 2}v${height}H${left}V${arrow}H${-arrow}Z`;
+        } else {
+            outline = `M0,0V${top}h${width}V0Z`;
+        }
+
+        label.insert('path', 'text').attr('d', outline).call(Color.fill, color);
+        text.call(svgTextUtils.positionText,
+            left + width / 2 - box.left - box.width / 2,
+            top + height / 2 - box.top - box.height / 2);
+        text.call(Color.fill, Color.contrast(color));
+    }
+};
 
 proto.adjustLayout = function(ternaryLayout, graphSize) {
     var _this = this;

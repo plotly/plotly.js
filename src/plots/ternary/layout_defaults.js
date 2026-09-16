@@ -122,4 +122,12 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     coerce('hoverformat');
     coerce('layer');
+
+    if(coerce('showspikes')) {
+        coerce('spikecolor');
+        coerce('spikethickness');
+        coerce('spikedash');
+        coerce('spikemode');
+        coerce('spikesnap');
+    }
 }
