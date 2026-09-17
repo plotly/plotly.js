@@ -1,0 +1,1 @@
+- Fix hover labels ignoring MathJax for text that is a single tex expression [[#PRNUMBER](https://github.com/plotly/plotly.js/pull/PRNUMBER)]

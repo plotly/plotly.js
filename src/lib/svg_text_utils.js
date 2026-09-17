@@ -24,6 +24,23 @@ var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
 const matchTex = (str) => str ? str.match(FIND_TEX) : null;
 exports.matchTex = matchTex;
 
+/**
+ * Checks whether a string is *entirely* a single tex expression, with no
+ * literal text before or after the $...$ delimiters.
+ *
+ * convertToTspans only ever typesets the delimited part of a matchTex()
+ * result (tex[2]); any surrounding text (tex[1], tex[3]) is silently
+ * dropped. That's safe here because there is none to drop.
+ *
+ * @param {string} str: the string to check for tex
+ * @return {boolean} true if the whole string is one tex expression
+ */
+const isPureTex = (str) => {
+    var tex = matchTex(str);
+    return !!tex && !tex[1] && !tex[3];
+};
+exports.isPureTex = isPureTex;
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
@@ -187,6 +204,67 @@ exports.convertToTspans = function(_context, gd, _callback) {
     } else showText();
 
     return _context;
+};
+
+/**
+ * Repositions an existing MathJax-typeset group, previously inserted by
+ * convertToTspans, to match its source <text> node's *current* x/y and
+ * text-anchor.
+ *
+ * convertToTspans positions a math group once, at typeset time, from the
+ * source node's x/y at that instant; it never revisits that position. A
+ * caller that moves the source <text> afterward (e.g. once it learns the
+ * math group's real size and needs to redo layout that depended on it)
+ * needs this to make the rendered group follow. Keep the coordinate math
+ * below in sync with the "else" branch inside convertToTspans.
+ *
+ * @param {d3 selection} _context: the source <text> element
+ */
+exports.repositionMathGroup = function(_context) {
+    if(_context.empty()) return;
+
+    var svgClass = (_context.attr('class') ? _context.attr('class').split(' ')[0] : 'text') + '-math';
+    var parent = d3.select(_context.node().parentNode);
+    var mathjaxGroup = parent.select('g.' + svgClass + '-group');
+    var newSvg = mathjaxGroup.select('svg.' + svgClass);
+    if(mathjaxGroup.empty() || newSvg.empty()) return;
+
+    var g = newSvg.select('g');
+    var bb = g.node().getBoundingClientRect();
+    var w = bb.width;
+    var h = bb.height;
+
+    var x = +_context.attr('x');
+    var y = +_context.attr('y');
+
+    // font baseline is about 1/4 fontSize below centerline
+    var fontSize = parseInt(_context.node().style.fontSize, 10);
+    var textHeight = fontSize || _context.node().getBoundingClientRect().height;
+    var dy = -textHeight / 4;
+
+    if(svgClass[0] === 'y') {
+        mathjaxGroup.attr({
+            transform: 'rotate(' + [-90, x, y] +
+            ')' + strTranslate(-w / 2, dy - h / 2)
+        });
+    } else if(svgClass[0] === 'l') {
+        y = dy - h / 2;
+    } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
+        x = 0;
+        y = dy;
+    } else {
+        var textAnchor = _context.attr('text-anchor');
+        x = x - w * (
+            textAnchor === 'middle' ? 0.5 :
+            textAnchor === 'end' ? 1 : 0
+        );
+        y = y + dy - h / 2;
+    }
+
+    newSvg.attr({
+        x: x,
+        y: y
+    });
 };
 
 

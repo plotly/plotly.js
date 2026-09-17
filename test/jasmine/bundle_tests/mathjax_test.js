@@ -1,9 +1,12 @@
 var Plotly = require('../../../lib/index');
+var Fx = require('../../../src/components/fx');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var loadScript = require('../assets/load_script');
+var delay = require('../assets/delay');
 
 // eslint-disable-next-line no-undef
 var mathjaxVersion = __karma__.config.mathjaxVersion;
@@ -199,6 +202,138 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     '$\\nabla \\cdot \\vec{F}$',
                     '$\\phi$'
                 ]);
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('Test hover tex rendering:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _hover(xpx, ypx, hovermode) {
+            Fx.hover(gd, {xpx: xpx, ypx: ypx}, hovermode || 'closest');
+            Lib.clearThrottle();
+        }
+
+        it('should hand a pure-tex hover label off to MathJax, sized to its final content', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['$\\alpha^2 + \\beta^2 = \\gamma^2$', 'b', 'c'],
+                    hoverinfo: 'text'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.hovertext .nums-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'hover label math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
+
+                // A rendered formula this long is much wider than the
+                // ~15px placeholder box a not-yet-typeset label starts at;
+                // this is what distinguishes a corrected box from one still
+                // sized off the pre-MathJax placeholder measurement.
+                var bg = gd3.select('g.hovertext > path').node().getBBox();
+                expect(bg.width).toBeGreaterThan(80, 'hover box width, once corrected for the real label size');
+
+                // The path/text/math-group coordinates must all be real
+                // numbers -- this is what distinguishes a corrected box
+                // from one still carrying NaN from an unresolved layout.
+                expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
+                expect(mathGroup.select('svg').attr('x')).not.toBe('NaN');
+                expect(mathGroup.select('svg').attr('y')).not.toBe('NaN');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should leave a mixed tex/plain-text hover label as literal text', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['Value: $\\alpha$ units', 'b', 'c'],
+                    hoverinfo: 'text'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var numsText = gd3.select('g.hovertext text.nums');
+
+                expect(gd3.select('g.hovertext .nums-math-group').size()).toBe(0, 'no math group');
+                expect(numsText.text()).toBe('Value: $\\alpha$ units');
+                expect(numsText.style('display')).not.toBe('none');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand a pure-tex common hover label off to MathJax, sized to its final content', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: ['$\\alpha^2 + \\beta^2 = \\gamma^2$', 'b', 'c'],
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x'
+                }
+            })
+            .then(function() {
+                _hover(125, 300, 'x');
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.axistext .text-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'common label math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
+
+                var bg = gd3.select('g.axistext > path').node().getBBox();
+                expect(bg.width).toBeGreaterThan(80, 'common label width, once corrected for the real label size');
+
+                expect(gd3.select('g.axistext > path').attr('d')).not.toContain('NaN');
+                expect(mathGroup.select('svg').attr('x')).not.toBe('NaN');
+                expect(mathGroup.select('svg').attr('y')).not.toBe('NaN');
             })
             .then(done, done.fail);
         });
