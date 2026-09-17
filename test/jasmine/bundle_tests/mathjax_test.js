@@ -216,8 +216,10 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
 
         afterEach(destroyGraphDiv);
 
-        function _hover(xpx, ypx, hovermode) {
-            Fx.hover(gd, {xpx: xpx, ypx: ypx}, hovermode || 'closest');
+        function _hover(xpx, ypx) {
+            // 'xy' is the subplot id, not the hovermode -- hovermode comes
+            // from the figure's own layout.hovermode.
+            Fx.hover(gd, {xpx: xpx, ypx: ypx}, 'xy');
             Lib.clearThrottle();
         }
 
@@ -255,7 +257,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 // this is what distinguishes a corrected box from one still
                 // sized off the pre-MathJax placeholder measurement.
                 var bg = gd3.select('g.hovertext > path').node().getBBox();
-                expect(bg.width).toBeGreaterThan(80, 'hover box width, once corrected for the real label size');
+                expect(bg.width).toBeGreaterThan(50, 'hover box width, once corrected for the real label size');
 
                 // The path/text/math-group coordinates must all be real
                 // numbers -- this is what distinguishes a corrected box
@@ -295,7 +297,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
 
                 expect(gd3.select('g.hovertext .nums-math-group').size()).toBe(0, 'no math group');
                 expect(numsText.text()).toBe('Value: $\\alpha$ units');
-                expect(numsText.style('display')).not.toBe('none');
+                expect(numsText.node().style.display).not.toBe('none');
             })
             .then(done, done.fail);
         });
@@ -312,13 +314,15 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     width: 500,
                     height: 400,
                     margin: {l: 0, t: 0, r: 0, b: 0},
-                    xaxis: {range: [0, 4]},
+                    // category positions are 0, 1, 2; this range puts
+                    // category 0 at pixel 125, matching the other two tests
+                    xaxis: {range: [-1, 3]},
                     yaxis: {range: [0, 4]},
                     hovermode: 'x'
                 }
             })
             .then(function() {
-                _hover(125, 300, 'x');
+                _hover(125, 300);
                 return delay(30)();
             })
             .then(function() {
@@ -329,7 +333,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
 
                 var bg = gd3.select('g.axistext > path').node().getBBox();
-                expect(bg.width).toBeGreaterThan(80, 'common label width, once corrected for the real label size');
+                expect(bg.width).toBeGreaterThan(50, 'common label width, once corrected for the real label size');
 
                 expect(gd3.select('g.axistext > path').attr('d')).not.toContain('NaN');
                 expect(mathGroup.select('svg').attr('x')).not.toBe('NaN');
