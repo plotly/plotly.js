@@ -1,0 +1,1 @@
+ - Memoize color specifier parsing, reducing the time to draw marker-heavy SVG `scatter` traces by roughly a third [[#8055](https://github.com/plotly/plotly.js/pull/8055)]
