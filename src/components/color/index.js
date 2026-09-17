@@ -90,6 +90,31 @@ const parse = (cstr, silent) => {
     return c;
 };
 
+// `stroke` and `fill` below run once per data point, and every point of a trace
+// normally repeats the same specifier, so parsing it each time is pure overhead.
+// Memoize the two values they derive from it, keyed on the specifier itself.
+// Only strings are cached, since they are the only specifiers we can key on.
+const MAX_MEMO_SIZE = 1000;
+
+const memoize = (fn) => {
+    const cache = new Map();
+
+    return (cstr) => {
+        if (typeof cstr !== 'string') return fn(cstr);
+
+        let value = cache.get(cstr);
+        if (value === undefined) {
+            value = fn(cstr);
+            // Stop growing rather than evicting: a graph only ever uses a
+            // handful of distinct colors, so a full cache means array-valued
+            // colors, which repeat too little to be worth tracking.
+            if (cache.size < MAX_MEMO_SIZE) cache.set(cstr, value);
+        }
+
+        return value;
+    };
+};
+
 // TODO: rename to `rgbString` to better describe return value
 /**
  * Convert any color specifier to a normalized `rgb(r, g, b)` string.
@@ -98,7 +123,11 @@ const parse = (cstr, silent) => {
  * @param {*} cstr - Color specifier
  * @return {String}
  */
-const rgb = (cstr) => formatRgb({ ...parse(cstr), alpha: 1 });
+const rgb = memoize((cstr) => formatRgb({ ...parse(cstr), alpha: 1 }));
+
+// The alpha channel of a specifier, memoized for the same reason as `rgb`.
+// Unlike `opacity` this keeps `parse`'s treatment of missing colors (alpha 1).
+const alphaOf = memoize((cstr) => parse(cstr).alpha);
 
 /**
  * Return the alpha channel of a color (0 if falsy).
@@ -278,7 +307,7 @@ const contrast = (cstr, lightAmount, darkAmount) => {
  * @param {*} cstr - Color specifier
  */
 const stroke = (s, cstr) => {
-    s.style({ stroke: rgb(cstr), 'stroke-opacity': parse(cstr).alpha });
+    s.style({ stroke: rgb(cstr), 'stroke-opacity': alphaOf(cstr) });
 };
 
 /**
@@ -288,7 +317,7 @@ const stroke = (s, cstr) => {
  * @param {*} cstr - Color specifier
  */
 const fill = (s, cstr) => {
-    s.style({ fill: rgb(cstr), 'fill-opacity': parse(cstr).alpha });
+    s.style({ fill: rgb(cstr), 'fill-opacity': alphaOf(cstr) });
 };
 
 /**
