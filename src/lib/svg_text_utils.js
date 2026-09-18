@@ -103,6 +103,24 @@ function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor,
     });
 }
 
+/**
+ * Removes an unsafe href/xlink:href from every <a> MathJax's \href{url}{...}
+ * macro produced inside newSvg. MathJax copies the tex argument into the
+ * link verbatim, with no scheme check of its own.
+ *
+ * @param {d3 selection} newSvg: the typeset <svg>, already inserted into
+ *   the document (or a fragment), so selectAll can walk its descendants
+ */
+function sanitizeMathJaxLinks(newSvg) {
+    newSvg.selectAll('a').each(function() {
+        var a = d3.select(this);
+        ['href', 'xlink:href'].forEach(function(attrName) {
+            var href = a.attr(attrName);
+            if(href) a.attr(attrName, sanitizeHref(href) || null);
+        });
+    });
+}
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
@@ -191,6 +209,13 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     });
 
                 mathjaxGroup.node().appendChild(newSvg.node());
+
+                // MathJax's \href{url}{...} macro copies the url into an
+                // <a> verbatim, with no scheme check, so a javascript: url
+                // in tex source becomes a live, clickable XSS vector.
+                // Apply the same protocol allowlist used for pseudo-HTML
+                // <a href> tags elsewhere in this file (sanitizeHref).
+                sanitizeMathJaxLinks(newSvg);
 
                 // stitch the glyph defs
                 if(_glyphDefs && _glyphDefs.node()) {

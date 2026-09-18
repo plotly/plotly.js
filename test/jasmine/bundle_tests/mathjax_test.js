@@ -205,6 +205,28 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should strip a javascript: url from a tex \\href, but keep a safe one', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {
+                    title: {text: '$\\href{javascript:alert(1)}{unsafe}$'},
+                    xaxis: {title: {text: '$\\href{https://plotly.com}{safe}$'}}
+                }
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+
+                var unsafeLink = gd3.select('.gtitle-math-group a');
+                expect(unsafeLink.size()).toBe(1, 'title link exists');
+                expect(unsafeLink.attr('href')).toBe(null, 'javascript: url stripped');
+
+                var safeLink = gd3.select('.g-xtitle .xtitle-math-group a');
+                expect(safeLink.size()).toBe(1, 'axis title link exists');
+                expect(safeLink.attr('href')).toBe('https://plotly.com', 'https: url kept');
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('Test hover tex rendering:', function() {
@@ -265,6 +287,40 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
                 expect(mathGroup.select('svg').attr('x')).not.toBe('NaN');
                 expect(mathGroup.select('svg').attr('y')).not.toBe('NaN');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should strip a javascript: url from a tex \\href in a hover label', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['$\\href{javascript:alert(document.cookie)}{click me}$', 'b', 'c'],
+                    hoverinfo: 'text'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var link = gd3.select('g.hovertext .nums-math-group a');
+
+                // MathJax still wraps the text in an <a>; only the
+                // javascript: url must be gone, not the tex rendering.
+                expect(link.size()).toBe(1, 'link exists');
+                expect(link.attr('href')).toBe(null, 'javascript: url stripped');
             })
             .then(done, done.fail);
         });
