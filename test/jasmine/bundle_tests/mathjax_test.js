@@ -1,9 +1,12 @@
 var Plotly = require('../../../lib/index');
+var Fx = require('../../../src/components/fx');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var loadScript = require('../assets/load_script');
+var delay = require('../assets/delay');
 
 // eslint-disable-next-line no-undef
 var mathjaxVersion = __karma__.config.mathjaxVersion;
@@ -199,6 +202,351 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     '$\\nabla \\cdot \\vec{F}$',
                     '$\\phi$'
                 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should strip a javascript: url from a tex \\href, but keep a safe one', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {
+                    title: {text: '$\\href{javascript:alert(1)}{unsafe}$'},
+                    xaxis: {title: {text: '$\\href{https://plotly.com}{safe}$'}}
+                }
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+
+                var unsafeLink = gd3.select('.gtitle-math-group a');
+                expect(unsafeLink.size()).toBe(1, 'title link exists');
+                expect(unsafeLink.attr('href')).toBe(null, 'javascript: url stripped');
+
+                var safeLink = gd3.select('.g-xtitle .xtitle-math-group a');
+                expect(safeLink.size()).toBe(1, 'axis title link exists');
+                expect(safeLink.attr('href')).toBe('https://plotly.com', 'https: url kept');
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('Test hover tex rendering:', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function _hover(xpx, ypx) {
+            // 'xy' is the subplot id, not the hovermode -- hovermode comes
+            // from the figure's own layout.hovermode.
+            Fx.hover(gd, {xpx: xpx, ypx: ypx}, 'xy');
+            Lib.clearThrottle();
+        }
+
+        it('should hand a pure-tex hover label off to MathJax, sized to its final content', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['$\\alpha^2 + \\beta^2 = \\gamma^2$', 'b', 'c'],
+                    hoverinfo: 'text'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.hovertext .nums-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'hover label math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
+
+                // A rendered formula this long is much wider than the
+                // ~15px placeholder box a not-yet-typeset label starts at;
+                // this is what distinguishes a corrected box from one still
+                // sized off the pre-MathJax placeholder measurement.
+                var bg = gd3.select('g.hovertext > path').node().getBBox();
+                expect(bg.width).toBeGreaterThan(50, 'hover box width, once corrected for the real label size');
+
+                // The path/text/math-group coordinates must all be real
+                // numbers -- this is what distinguishes a corrected box
+                // from one still carrying NaN from an unresolved layout.
+                expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
+                expect(mathGroup.select('svg').attr('x')).not.toBe('NaN');
+                expect(mathGroup.select('svg').attr('y')).not.toBe('NaN');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should strip a javascript: url from a tex \\href in a hover label', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['$\\href{javascript:alert(document.cookie)}{click me}$', 'b', 'c'],
+                    hoverinfo: 'text'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var link = gd3.select('g.hovertext .nums-math-group a');
+
+                // MathJax still wraps the text in an <a>; only the
+                // javascript: url must be gone, not the tex rendering.
+                expect(link.size()).toBe(1, 'link exists');
+                expect(link.attr('href')).toBe(null, 'javascript: url stripped');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should leave a mixed tex/plain-text hover label as literal text', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['Value: $\\alpha$ units', 'b', 'c'],
+                    hoverinfo: 'text'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var numsText = gd3.select('g.hovertext text.nums');
+
+                expect(gd3.select('g.hovertext .nums-math-group').size()).toBe(0, 'no math group');
+                expect(numsText.text()).toBe('Value: $\\alpha$ units');
+                expect(numsText.node().style.display).not.toBe('none');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand a pure-tex common hover label off to MathJax, sized to its final content', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: ['$\\alpha^2 + \\beta^2 = \\gamma^2$', 'b', 'c'],
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    // category positions are 0, 1, 2; this range puts
+                    // category 0 at pixel 125, matching the other two tests
+                    xaxis: {range: [-1, 3]},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.axistext .text-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'common label math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
+
+                var bg = gd3.select('g.axistext > path').node().getBBox();
+                expect(bg.width).toBeGreaterThan(50, 'common label width, once corrected for the real label size');
+
+                expect(gd3.select('g.axistext > path').attr('d')).not.toContain('NaN');
+                expect(mathGroup.select('svg').attr('x')).not.toBe('NaN');
+                expect(mathGroup.select('svg').attr('y')).not.toBe('NaN');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand both the value and the name off to MathJax when both are tex', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['$\\alpha^2$', 'b', 'c'],
+                    name: '$\\beta^2$',
+                    hoverinfo: 'text+name'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var numsMathGroup = gd3.select('g.hovertext .nums-math-group');
+                var nameMathGroup = gd3.select('g.hovertext .name-math-group');
+
+                expect(numsMathGroup.size()).toBe(1, 'value math group');
+                expect(numsMathGroup.attr('data-unformatted')).toBe('$\\alpha^2$');
+                expect(nameMathGroup.size()).toBe(1, 'name math group');
+                expect(nameMathGroup.attr('data-unformatted')).toBe('$\\beta^2$');
+
+                expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should size and position two simultaneous tex hover labels correctly', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {type: 'scatter', mode: 'markers', x: [1], y: [1], text: ['$\\alpha^2$'], hoverinfo: 'text', name: 'A'},
+                    {type: 'scatter', mode: 'markers', x: [1], y: [1], text: ['$\\beta^2$'], hoverinfo: 'text', name: 'B'}
+                ],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var hoverTexts = gd3.selectAll('g.hovertext');
+                var mathGroups = gd3.selectAll('g.hovertext .nums-math-group');
+
+                expect(hoverTexts.size()).toBe(2, 'two hover labels, both identical points');
+                expect(mathGroups.size()).toBe(2, 'both labels typeset');
+
+                var unformatted = [];
+                mathGroups.each(function() { unformatted.push(this.getAttribute('data-unformatted')); });
+                expect(unformatted.sort()).toEqual(['$\\alpha^2$', '$\\beta^2$']);
+
+                hoverTexts.select('path').each(function() {
+                    expect(d3Select(this).attr('d')).not.toContain('NaN');
+                });
+
+                // hoverAvoidOverlaps must have pushed the two labels apart,
+                // since both points sit at the exact same (x, y). The
+                // separation is applied inside each label (an offset on
+                // text.nums), not to the outer <g>'s own transform, so
+                // compare each label's on-screen position, not its <g>.
+                var tops = [];
+                hoverTexts.select('path').each(function() {
+                    tops.push(this.getBoundingClientRect().top);
+                });
+                expect(tops[0]).not.toBeNaN();
+                expect(tops[1]).not.toBeNaN();
+                expect(Math.abs(tops[0] - tops[1])).toBeGreaterThan(5, 'labels pushed apart, not stacked on each other');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand a unified hover title off to MathJax when set through unifiedhovertitle', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4], unifiedhovertitle: {text: '$\\alpha^2$'}},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x unified'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.legend [class*="titletext-math-group"]');
+
+                expect(mathGroup.size()).toBe(1, 'unified hover title math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2$');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand a pure-tex Fx.loneHover label off to MathJax, sized to its final content', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{type: 'scatter', mode: 'markers', x: [1], y: [1]}],
+                layout: {width: 500, height: 400, margin: {l: 0, t: 0, r: 0, b: 0}}
+            })
+            .then(function() {
+                var fullLayout = gd._fullLayout;
+                Fx.loneHover({
+                    x: 100,
+                    y: 100,
+                    text: '$\\alpha^2 + \\beta^2 = \\gamma^2$',
+                    color: 'blue'
+                }, {
+                    gd: gd,
+                    container: fullLayout._hoverlayer.node(),
+                    outerContainer: fullLayout._paper.node()
+                });
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.hovertext .nums-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'loneHover math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
+
+                var bg = gd3.select('g.hovertext > path').node().getBBox();
+                expect(bg.width).toBeGreaterThan(50, 'loneHover box width, once corrected for the real label size');
+                expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
             })
             .then(done, done.fail);
         });
