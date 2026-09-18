@@ -341,5 +341,158 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should hand both the value and the name off to MathJax when both are tex', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    text: ['$\\alpha^2$', 'b', 'c'],
+                    name: '$\\beta^2$',
+                    hoverinfo: 'text+name'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var numsMathGroup = gd3.select('g.hovertext .nums-math-group');
+                var nameMathGroup = gd3.select('g.hovertext .name-math-group');
+
+                expect(numsMathGroup.size()).toBe(1, 'value math group');
+                expect(numsMathGroup.attr('data-unformatted')).toBe('$\\alpha^2$');
+                expect(nameMathGroup.size()).toBe(1, 'name math group');
+                expect(nameMathGroup.attr('data-unformatted')).toBe('$\\beta^2$');
+
+                expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should size and position two simultaneous tex hover labels correctly', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {type: 'scatter', mode: 'markers', x: [1], y: [1], text: ['$\\alpha^2$'], hoverinfo: 'text', name: 'A'},
+                    {type: 'scatter', mode: 'markers', x: [1], y: [1], text: ['$\\beta^2$'], hoverinfo: 'text', name: 'B'}
+                ],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var hoverTexts = gd3.selectAll('g.hovertext');
+                var mathGroups = gd3.selectAll('g.hovertext .nums-math-group');
+
+                expect(hoverTexts.size()).toBe(2, 'two hover labels, both identical points');
+                expect(mathGroups.size()).toBe(2, 'both labels typeset');
+
+                var unformatted = [];
+                mathGroups.each(function() { unformatted.push(this.getAttribute('data-unformatted')); });
+                expect(unformatted.sort()).toEqual(['$\\alpha^2$', '$\\beta^2$']);
+
+                hoverTexts.select('path').each(function() {
+                    expect(d3Select(this).attr('d')).not.toContain('NaN');
+                });
+
+                // hoverAvoidOverlaps must have pushed the two labels apart,
+                // since both points sit at the exact same (x, y). The
+                // separation is applied inside each label (an offset on
+                // text.nums), not to the outer <g>'s own transform, so
+                // compare each label's on-screen position, not its <g>.
+                var tops = [];
+                hoverTexts.select('path').each(function() {
+                    tops.push(this.getBoundingClientRect().top);
+                });
+                expect(tops[0]).not.toBeNaN();
+                expect(tops[1]).not.toBeNaN();
+                expect(Math.abs(tops[0] - tops[1])).toBeGreaterThan(5, 'labels pushed apart, not stacked on each other');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand a unified hover title off to MathJax when set through unifiedhovertitle', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4], unifiedhovertitle: {text: '$\\alpha^2$'}},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x unified'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.legend [class*="titletext-math-group"]');
+
+                expect(mathGroup.size()).toBe(1, 'unified hover title math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2$');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should hand a pure-tex Fx.loneHover label off to MathJax, sized to its final content', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{type: 'scatter', mode: 'markers', x: [1], y: [1]}],
+                layout: {width: 500, height: 400, margin: {l: 0, t: 0, r: 0, b: 0}}
+            })
+            .then(function() {
+                var fullLayout = gd._fullLayout;
+                Fx.loneHover({
+                    x: 100,
+                    y: 100,
+                    text: '$\\alpha^2 + \\beta^2 = \\gamma^2$',
+                    color: 'blue'
+                }, {
+                    gd: gd,
+                    container: fullLayout._hoverlayer.node(),
+                    outerContainer: fullLayout._paper.node()
+                });
+                return delay(30)();
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var mathGroup = gd3.select('g.hovertext .nums-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'loneHover math group');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2 + \\beta^2 = \\gamma^2$');
+
+                var bg = gd3.select('g.hovertext > path').node().getBBox();
+                expect(bg.width).toBeGreaterThan(50, 'loneHover box width, once corrected for the real label size');
+                expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
+            })
+            .then(done, done.fail);
+        });
     });
 });

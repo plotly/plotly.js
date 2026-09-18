@@ -230,34 +230,57 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     });
     var hoverLabel = hoverText.hoverLabels;
 
-    // Fix vertical overlap
-    var tooltipSpacing = 5;
-    var lastBottomY = 0;
-    var anchor = 0;
-    hoverLabel
-        .sort(function (a, b) {
-            return a.y0 - b.y0;
-        })
-        .each(function (d, i) {
-            var topY = d.y0 - d.by / 2;
+    function fixVerticalOverlap() {
+        var tooltipSpacing = 5;
+        var lastBottomY = 0;
+        var anchor = 0;
+        hoverLabel
+            .sort(function (a, b) {
+                return a.y0 - b.y0;
+            })
+            .each(function (d, i) {
+                var topY = d.y0 - d.by / 2;
 
-            if (topY - tooltipSpacing < lastBottomY) {
-                d.offset = lastBottomY - topY + tooltipSpacing;
-            } else {
-                d.offset = 0;
-            }
+                if (topY - tooltipSpacing < lastBottomY) {
+                    d.offset = lastBottomY - topY + tooltipSpacing;
+                } else {
+                    d.offset = 0;
+                }
 
-            lastBottomY = topY + d.by + d.offset;
+                lastBottomY = topY + d.by + d.offset;
 
-            if (i === opts.anchorIndex || 0) anchor = d.offset;
-        })
-        .each(function (d) {
-            d.offset -= anchor;
-        });
+                if (i === opts.anchorIndex || 0) anchor = d.offset;
+            })
+            .each(function (d) {
+                d.offset -= anchor;
+            });
+    }
 
     var scaleX = gd._fullLayout._invScaleX;
     var scaleY = gd._fullLayout._invScaleY;
+
+    fixVerticalOverlap();
     alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
+
+    // Pure-tex label parts are typeset by MathJax asynchronously, so the
+    // sizes used just above can be stale. Once every such part has its
+    // final size, redo the same (idempotent) overlap/alignment pass.
+    if (hoverText.mathjaxPromise) {
+        hoverText.mathjaxPromise.then(function () {
+            fixVerticalOverlap();
+            alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
+
+            // alignHoverText just moved text.nums/text.name to their final
+            // spot; convertToTspans positioned each math group once
+            // already, from the pre-final placeholder position, so make
+            // them follow.
+            hoverLabel.each(function () {
+                var g = d3.select(this);
+                svgTextUtils.repositionMathGroup(g.select('text.nums'));
+                svgTextUtils.repositionMathGroup(g.select('text.name'));
+            });
+        });
+    }
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -1024,13 +1047,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-// svgTextUtils.convertToTspans hides the source <text> node and appends a
-// sibling '<baseClass>-math-group' once MathJax has typeset it; measure
-// that group instead of the (now empty) text node when it's present.
-function getHoverTextBBox(gd, textSel, baseClass) {
-    var node = textSel.node();
-    var mathGroup = d3.select(node.parentNode).select('.' + baseClass + '-math-group');
-    return getBoundingClientRect(gd, mathGroup.empty() ? node : mathGroup.node());
+function getHoverTextBBox(gd, textSel) {
+    return getBoundingClientRect(gd, svgTextUtils.getMathOrTextNode(textSel));
 }
 
 function createHoverText(hoverData, opts) {
@@ -1202,7 +1220,7 @@ function createHoverText(hoverData, opts) {
             svgTextUtils.positionText(ltext, 0, 0);
             svgTextUtils.repositionMathGroup(ltext);
 
-            var tbb = getHoverTextBBox(gd, ltext, 'text');
+            var tbb = getHoverTextBBox(gd, ltext);
             var lx, ly;
 
             if (hovermode === 'x') {
@@ -1743,12 +1761,12 @@ function createHoverText(hoverData, opts) {
             var tx2width = 0;
             var tx2height = 0;
             if (hasName) {
-                var t2bb = getHoverTextBBox(gd, tx2, 'name');
+                var t2bb = getHoverTextBBox(gd, tx2);
                 tx2width = t2bb.width + 2 * HOVERTEXTPAD;
                 tx2height = t2bb.height + 2 * HOVERTEXTPAD;
             }
 
-            var tbb = getHoverTextBBox(gd, tx, 'nums');
+            var tbb = getHoverTextBBox(gd, tx);
             var tbbWidth = tbb.width / fullLayout._invScaleX;
             var tbbHeight = tbb.height / fullLayout._invScaleY;
 
