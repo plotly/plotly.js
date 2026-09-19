@@ -23,29 +23,57 @@ export type { Edits };
  * for use as a data URI or as raw SVG markup.
  */
 export interface ToImgopts {
-    /** Output image format. */
-    format: 'jpeg' | 'png' | 'webp' | 'svg';
-    /** If null, uses current graph width */
-    width: number | null;
-    /** If null, uses current graph height */
-    height: number | null;
-    /** Resolution multiplier for raster formats. */
+    /**
+     * Output image format. `'full-json'` returns the figure as a JSON
+     * string instead of a raster/vector image.
+     */
+    format?: 'jpeg' | 'png' | 'webp' | 'svg' | 'full-json';
+    /** If null (the default), uses current graph width */
+    width?: number | null;
+    /** If null (the default), uses current graph height */
+    height?: number | null;
+    /** Resolution multiplier for raster formats. Defaults to 1. */
     scale?: number | undefined;
+    /**
+     * Overrides the image background, which otherwise follows
+     * `layout.paper_bgcolor`. Set to `'opaque'` when exporting a `'jpeg'`,
+     * since JPEG does not support transparency.
+     */
+    setBackground?: 'opaque' | 'transparent' | ((gd: PlotlyHTMLElement, bgColor: string) => void);
+    /**
+     * If true, returns only the raw base64/SVG data, without the
+     * `data:image/...;base64,` (or `data:image/svg+xml,`) prefix. Defaults
+     * to false.
+     */
+    imageDataOnly?: boolean;
 }
 
 /**
- * Options for `Plotly.downloadImage`. Like `ToImgopts`, but also requires
- * a `filename` because the result is saved to disk by the browser.
+ * Options for `Plotly.downloadImage`. Like `ToImgopts`, but adds a
+ * `filename` for the downloaded file; unlike `ToImgopts`, `imageDataOnly`
+ * is not accepted since `downloadImage` always saves a full file.
  */
 export interface DownloadImgopts {
-    /** Output image format. */
-    format: 'jpeg' | 'png' | 'webp' | 'svg';
-    /** Output width in pixels. */
-    width: number | null;
-    /** Output height in pixels. */
-    height: number | null;
-    /** Filename used for the downloaded file (no extension required). */
-    filename: string;
+    /** Output image format. `'full-json'` downloads the figure as JSON. */
+    format?: 'jpeg' | 'png' | 'webp' | 'svg' | 'full-json';
+    /** Output width in pixels. If null (the default), uses current graph width. */
+    width?: number | null;
+    /** Output height in pixels. If null (the default), uses current graph height. */
+    height?: number | null;
+    /**
+     * Filename used for the downloaded file (no extension required). If
+     * omitted, a name is derived from the graph's title (or subtitle),
+     * falling back to `'plot-image'`.
+     */
+    filename?: string;
+    /** Resolution multiplier for raster formats. Defaults to 1. */
+    scale?: number | undefined;
+    /**
+     * Overrides the image background, which otherwise follows
+     * `layout.paper_bgcolor`. Set to `'opaque'` when exporting a `'jpeg'`,
+     * since JPEG does not support transparency.
+     */
+    setBackground?: 'opaque' | 'transparent' | ((gd: PlotlyHTMLElement, bgColor: string) => void);
 }
 
 /**
