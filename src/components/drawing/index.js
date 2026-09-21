@@ -20,7 +20,8 @@ var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
-var drawing = (module.exports = {});
+module.exports = {};
+var drawing = module.exports;
 
 // -----------------------------------------------------
 // styling functions for plot elements
