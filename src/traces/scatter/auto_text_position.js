@@ -28,7 +28,7 @@ const LEADER_STEP = 1;
 
 // a label without a leader line must keep CLUSTER_GAP font sizes
 // from every other marker, or a reader cannot tell which point is its own
-const CLUSTER_GAP = 1.5;
+const CLUSTER_GAP = 1;
 
 // minimum px between a label and anything else
 const PAD = 2;
@@ -163,14 +163,10 @@ function place(index, label) {
     Drawing.textPointPosition(label.tx, d, label.trace, d.mrc);
 }
 
-// true when another marker sits within `margin` px of a label box
+// true when another marker sits within `margin` px of a label box,
+// measured from the nearest edge or corner of the box
 function isAmbiguous(index, rect, margin) {
-    const x0 = rect.x0 - margin;
-    const y0 = rect.y0 - margin;
-    const x1 = rect.x1 + margin;
-    const y1 = rect.y1 + margin;
-
-    const b = cellBounds(index, x0, y0, x1, y1);
+    const b = cellBounds(index, rect.x0 - margin, rect.y0 - margin, rect.x1 + margin, rect.y1 + margin);
     const cells = index.cells;
 
     for (let row = b[1]; row <= b[3]; row++) {
@@ -181,7 +177,9 @@ function isAmbiguous(index, rect, margin) {
             for (let i = 0; i < cell.length; i++) {
                 const ob = cell[i];
                 if (!ob.isMarker || ob.owner === rect.owner) continue;
-                if (ob.x0 < x1 && ob.x1 > x0 && ob.y0 < y1 && ob.y1 > y0) return true;
+                const dx = Math.max(0, ob.x0 - rect.x1, rect.x0 - ob.x1);
+                const dy = Math.max(0, ob.y0 - rect.y1, rect.y0 - ob.y1);
+                if (dx * dx + dy * dy < margin * margin) return true;
             }
         }
     }

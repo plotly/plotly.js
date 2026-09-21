@@ -809,8 +809,8 @@ describe('end-to-end scatter tests', function() {
             Plotly.newPlot(gd, [{
                 mode: 'markers+text',
                 textposition: 'auto',
-                x: [1, 1.1, 3],
-                y: [1, 1.1, 3],
+                x: [1, 1.05, 3],
+                y: [1, 1.05, 3],
                 text: ['a', 'b', 'c']
             }], layout)
             .then(function() {
