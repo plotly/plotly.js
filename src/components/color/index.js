@@ -90,31 +90,6 @@ const parse = (cstr, silent) => {
     return c;
 };
 
-// `stroke` and `fill` below run once per data point, and every point of a trace
-// normally repeats the same specifier, so parsing it each time is pure overhead.
-// Memoize the two values they derive from it, keyed on the specifier itself.
-// Only strings are cached, since they are the only specifiers we can key on.
-const MAX_MEMO_SIZE = 1000;
-
-const memoize = (fn) => {
-    const cache = new Map();
-
-    return (cstr) => {
-        if (typeof cstr !== 'string') return fn(cstr);
-
-        let value = cache.get(cstr);
-        if (value === undefined) {
-            value = fn(cstr);
-            // Stop growing rather than evicting: a graph only ever uses a
-            // handful of distinct colors, so a full cache means array-valued
-            // colors, which repeat too little to be worth tracking.
-            if (cache.size < MAX_MEMO_SIZE) cache.set(cstr, value);
-        }
-
-        return value;
-    };
-};
-
 // TODO: rename to `rgbString` to better describe return value
 /**
  * Convert any color specifier to a normalized `rgb(r, g, b)` string.
@@ -123,11 +98,7 @@ const memoize = (fn) => {
  * @param {*} cstr - Color specifier
  * @return {String}
  */
-const rgb = memoize((cstr) => formatRgb({ ...parse(cstr), alpha: 1 }));
-
-// The alpha channel of a specifier, memoized for the same reason as `rgb`.
-// Unlike `opacity` this keeps `parse`'s treatment of missing colors (alpha 1).
-const alphaOf = memoize((cstr) => parse(cstr).alpha);
+const rgb = (cstr) => formatRgb({ ...parse(cstr), alpha: 1 });
 
 /**
  * Return the alpha channel of a color (0 if falsy).
@@ -300,6 +271,37 @@ const contrast = (cstr, lightAmount, darkAmount) => {
     }
 };
 
+// `stroke` and `fill` below run once per data point, and every point of a trace
+// normally repeats the same specifier, so re-deriving the styles each time is
+// pure overhead. Cache both values a specifier yields, keyed on the specifier
+// itself, and take them from a single `parse` so that a miss costs no more than
+// it has to. Only strings are cached, since they are the only specifiers that
+// repeat by value rather than by identity.
+const MAX_MEMO_SIZE = 1000;
+
+const styleCache = new Map();
+
+const computeStyle = (cstr) => {
+    const c = parse(cstr);
+    // Force alpha to 1 in the color so that it gets dropped from the string.
+    return [formatRgb({ ...c, alpha: 1 }), c.alpha];
+};
+
+const styleOf = (cstr) => {
+    if (typeof cstr !== 'string') return computeStyle(cstr);
+
+    let value = styleCache.get(cstr);
+    if (value === undefined) {
+        value = computeStyle(cstr);
+        // Stop growing rather than evicting: a graph only ever uses a handful
+        // of distinct colors, so a full cache means array-valued colors, which
+        // repeat too little to be worth tracking.
+        if (styleCache.size < MAX_MEMO_SIZE) styleCache.set(cstr, value);
+    }
+
+    return value;
+};
+
 /**
  * Apply `stroke` and `stroke-opacity` styles to a D3 selection.
  *
@@ -307,7 +309,8 @@ const contrast = (cstr, lightAmount, darkAmount) => {
  * @param {*} cstr - Color specifier
  */
 const stroke = (s, cstr) => {
-    s.style({ stroke: rgb(cstr), 'stroke-opacity': alphaOf(cstr) });
+    const style = styleOf(cstr);
+    s.style({ stroke: style[0], 'stroke-opacity': style[1] });
 };
 
 /**
@@ -317,7 +320,8 @@ const stroke = (s, cstr) => {
  * @param {*} cstr - Color specifier
  */
 const fill = (s, cstr) => {
-    s.style({ fill: rgb(cstr), 'fill-opacity': alphaOf(cstr) });
+    const style = styleOf(cstr);
+    s.style({ fill: style[0], 'fill-opacity': style[1] });
 };
 
 /**
