@@ -1290,11 +1290,12 @@ drawing.textPointOffset = function (textPosition, fontSize, markerRadius, numLin
  *
  * @param textPosition - a `textposition` value other than *auto*
  * @param markerRadius - the calculated marker radius in px, or 0 without markers
+ * @param markerSymbol - the marker symbol of the point, name or number
  * @param bb - the label box from `drawing.bBox`, relative to the text anchor
  * @param gap - extra px between the point and the label, set by the *auto* placement
  * @returns the same shape as `drawing.textPointOffset`
  */
-drawing.textPointBoxOffset = function (textPosition, markerRadius, bb, gap) {
+drawing.textPointBoxOffset = function (textPosition, markerRadius, markerSymbol, bb, gap) {
     var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
     var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
     var sx = TEXTOFFSETSIGN[h];
@@ -1303,9 +1304,15 @@ drawing.textPointBoxOffset = function (textPosition, markerRadius, bb, gap) {
 
     // the clearance the side positions of `drawing.textPointOffset` leave
     var clearance = (r ? r / 4 + 1 : 0) + (gap || 0);
-    // a corner comes in along the diagonal, so it keeps the same clearance
-    var isCorner = sx && sy;
-    var reach = r + (isCorner ? clearance / Math.SQRT2 : clearance);
+
+    // a corner label keeps the same clearance along the diagonal: from the
+    // edge of a circle, or from the corner of a square, which reaches the
+    // farthest of all symbols on the diagonal
+    var reach = r + clearance;
+    if (sx && sy) {
+        var isCircle = r && drawing.symbolNumber(markerSymbol) % 100 === 0;
+        reach = isCircle ? (r + clearance) / Math.SQRT2 : r + clearance / Math.SQRT2;
+    }
     var ax = sx * reach;
     var ay = sy * reach;
 
@@ -1355,7 +1362,8 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
 
     var offset;
     if (textPosition && (d.tp || trace.textposition) === 'auto') {
-        offset = drawing.textPointBoxOffset(textPosition, markerRadius, drawing.bBox(s.node()), d._tpAutoGap);
+        var symbol = d.mx || (trace.marker || {}).symbol;
+        offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, drawing.bBox(s.node()), d._tpAutoGap);
     } else {
         offset = drawing.textPointOffset(
             textPosition || 'middle center',
