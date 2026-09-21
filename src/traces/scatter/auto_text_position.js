@@ -145,7 +145,7 @@ function place(index, label) {
 
             const rect = labelRect(label, pos, gap);
             if (!rectIsFree(index, rect)) continue;
-            if (rect.leader && !lineIsFree(index, rect.leader)) continue;
+            if (rect.leader && !lineIsFree(index, rect.leader, label.x, label.y)) continue;
 
             insert(index, rect);
             if (rect.leader) insert(index, rect.leader);
@@ -283,8 +283,8 @@ function rectIsFree(index, rect) {
 }
 
 // a leader line is free when it crosses nothing but the marker of its own point
-// and the obstacles that already cover the point, which no candidate can escape
-function lineIsFree(index, line) {
+// and the obstacles that already cover the point (px, py), which no candidate can escape
+function lineIsFree(index, line, px, py) {
     const b = cellBounds(index, line.x0, line.y0, line.x1, line.y1);
     const cells = index.cells;
 
@@ -299,7 +299,7 @@ function lineIsFree(index, line) {
                 let hit;
                 if (ob.isLine) {
                     hit = Lib.segmentsIntersect(line.x0, line.y0, line.x1, line.y1, ob.x0, ob.y0, ob.x1, ob.y1);
-                } else if (!pointInRect(line.x0, line.y0, ob.x0, ob.y0, ob.x1, ob.y1)) {
+                } else if (!pointInRect(px, py, ob.x0, ob.y0, ob.x1, ob.y1)) {
                     hit = lineHitsRect(line, ob.x0, ob.y0, ob.x1, ob.y1);
                 }
                 if (hit) return false;
