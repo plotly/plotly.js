@@ -1285,6 +1285,48 @@ drawing.textPointOffset = function (textPosition, fontSize, markerRadius, numLin
 };
 
 /**
+ * Compute the geometry of an *auto* text label from its measured box, so that
+ * every position keeps the same clearance between the marker and the text.
+ *
+ * @param textPosition - a `textposition` value other than *auto*
+ * @param markerRadius - the calculated marker radius in px, or 0 without markers
+ * @param bb - the label box from `drawing.bBox`, relative to the text anchor
+ * @param gap - extra px between the point and the label, set by the *auto* placement
+ * @returns the same shape as `drawing.textPointOffset`
+ */
+drawing.textPointBoxOffset = function (textPosition, markerRadius, bb, gap) {
+    var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+    var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
+    var sx = TEXTOFFSETSIGN[h];
+    var sy = TEXTOFFSETSIGN[v];
+    var r = markerRadius || 0;
+
+    // the clearance the side positions of `drawing.textPointOffset` leave
+    var clearance = (r ? r / 4 + 1 : 0) + (gap || 0);
+    // a corner comes in along the diagonal, so it keeps the same clearance
+    var isCorner = sx && sy;
+    var reach = r + (isCorner ? clearance / Math.SQRT2 : clearance);
+    var ax = sx * reach;
+    var ay = sy * reach;
+
+    var out = {
+        anchor: h,
+        dx: ax,
+        dy: sy < 0 ? ay - bb.bottom : sy > 0 ? ay - bb.top : -(bb.top + bb.bottom) / 2,
+        leader: null
+    };
+
+    if (gap > 0 && (sx || sy)) {
+        var norm = Math.sqrt(sx * sx + sy * sy);
+        var ux = sx / norm;
+        var uy = sy / norm;
+        out.leader = [ux * (r + 1), uy * (r + 1), ax - ux * LEADER_END_GAP, ay - uy * LEADER_END_GAP];
+    }
+
+    return out;
+};
+
+/**
  * Resolve the `textposition` of one point.
  *
  * @returns the position, or null when the *auto* placement found no free spot for the label
@@ -1311,13 +1353,18 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
 
     s.style('display', textPosition === null ? 'none' : null);
 
-    var offset = drawing.textPointOffset(
-        textPosition || 'middle center',
-        drawing.textPointFontSize(d, trace),
-        markerRadius,
-        svgTextUtils.lineCount(s),
-        d._tpAutoGap
-    );
+    var offset;
+    if (textPosition && (d.tp || trace.textposition) === 'auto') {
+        offset = drawing.textPointBoxOffset(textPosition, markerRadius, drawing.bBox(s.node()), d._tpAutoGap);
+    } else {
+        offset = drawing.textPointOffset(
+            textPosition || 'middle center',
+            drawing.textPointFontSize(d, trace),
+            markerRadius,
+            svgTextUtils.lineCount(s),
+            d._tpAutoGap
+        );
+    }
 
     // fix the overall text group position
     s.attr('text-anchor', offset.anchor);

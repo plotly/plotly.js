@@ -191,7 +191,7 @@ function isAmbiguous(index, rect, margin) {
 function labelRect(label, pos, gap) {
     const d = label.d;
     const bb = label.bb;
-    const offset = Drawing.textPointOffset(pos, label.fontSize, d.mrc, label.numLines, gap);
+    const offset = Drawing.textPointBoxOffset(pos, d.mrc, bb, gap);
 
     let x0 = label.x + offset.dx;
     if (offset.anchor === 'end') x0 -= bb.width;
