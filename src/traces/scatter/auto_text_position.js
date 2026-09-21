@@ -23,8 +23,12 @@ const POSITIONS_NO_MARKER = ['middle center', ...POSITIONS];
 
 // ring 0 touches the point, every ring after it adds LEADER_STEP
 // font sizes of distance and a leader line back to the point
-const LEADER_RINGS = 4;
-const LEADER_STEP = 1.5;
+const LEADER_RINGS = 6;
+const LEADER_STEP = 1;
+
+// a point with another marker or label within CLUSTER_GAP font sizes
+// of its marker skips ring 0, so a leader line says which point is its own
+const CLUSTER_GAP = 1.5;
 
 // minimum px between a label and anything else
 const PAD = 2;
@@ -37,10 +41,12 @@ const CELL_SIZE = 64;
  *
  * Every label takes the first free candidate in a fixed order: the eight
  * positions next to the point first, then the same positions farther out
- * with a leader line. A free candidate stays inside the plot area and hits
- * no marker, no label placed before it, and no leader line. A label with
- * no free candidate is hidden. Traces come in draw order and points in data
- * order, so an earlier point wins a contested spot.
+ * with a leader line. A point with a neighbor close by skips the positions
+ * next to it, so the leader line shows which point the label belongs to.
+ * A free candidate stays inside the plot area and hits no marker, no label
+ * placed before it, and no leader line. A label with no free candidate is
+ * hidden. Traces come in draw order and points in data order, so an earlier
+ * point wins a contested spot.
  *
  * Sets `_tpAuto` and `_tpAutoGap` on every calcdata point with an *auto*
  * position and repositions its `<text>` node. Does nothing when no trace
@@ -128,8 +134,9 @@ function place(index, label) {
     const d = label.d;
     const step = LEADER_STEP * label.fontSize;
     const rings = step ? LEADER_RINGS : 0;
+    const firstRing = rings && isCrowded(index, label) ? 1 : 0;
 
-    for (let ring = 0; ring <= rings; ring++) {
+    for (let ring = firstRing; ring <= rings; ring++) {
         const gap = ring * step;
 
         for (let k = 0; k < label.positions.length; k++) {
@@ -151,6 +158,33 @@ function place(index, label) {
 
     d._tpAuto = null;
     Drawing.textPointPosition(label.tx, d, label.trace, d.mrc);
+}
+
+// true when another marker or label sits close to the point of a label
+function isCrowded(index, label) {
+    const r = (label.d.mrc || 0) + CLUSTER_GAP * label.fontSize;
+    const x0 = label.x - r;
+    const y0 = label.y - r;
+    const x1 = label.x + r;
+    const y1 = label.y + r;
+
+    const b = cellBounds(index, x0, y0, x1, y1);
+    const cells = index.cells;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const cell = cells[row * index.ncols + col];
+            if (!cell) continue;
+
+            for (let i = 0; i < cell.length; i++) {
+                const ob = cell[i];
+                if (ob.isLine || ob.owner === label.d) continue;
+                if (ob.x0 < x1 && ob.x1 > x0 && ob.y0 < y1 && ob.y1 > y0) return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 // the box of a label at a given position, plus its leader line if any

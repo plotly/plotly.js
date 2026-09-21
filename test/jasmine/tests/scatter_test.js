@@ -805,6 +805,25 @@ describe('end-to-end scatter tests', function() {
             .then(done, done.fail);
         });
 
+        it('should add a leader line to every label in a cluster', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: [1, 1.1, 3],
+                y: [1, 1.1, 3],
+                text: ['a', 'b', 'c']
+            }], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAutoGap).toBeGreaterThan(0);
+                expect(cd[1]._tpAutoGap).toBeGreaterThan(0);
+                expect(cd[2]._tpAutoGap).toBe(0);
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(2);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
         it('should place text-only labels on their point first', function(done) {
             Plotly.newPlot(gd, [{
                 mode: 'text',

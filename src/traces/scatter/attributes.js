@@ -674,9 +674,9 @@ module.exports = {
             'with respects to the (x,y) coordinates.',
             'With *auto*, each label takes the first position around its point',
             'that overlaps no marker and no other label on the subplot.',
-            'When the positions next to the point are taken, the label moves',
-            'farther out with a leader line back to the point.',
-            'A label with no free position is hidden.'
+            'When the positions next to the point are taken, or another point',
+            'sits close by, the label moves farther out with a leader line',
+            'back to the point. A label with no free position is hidden.'
         ].join(' ')
     },
     textfont: fontAttrs({
