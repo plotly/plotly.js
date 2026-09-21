@@ -17,8 +17,8 @@ const POSITIONS = [
     'bottom left'
 ];
 
-// a label without a marker can also sit on its point
-const POSITIONS_NO_MARKER = ['middle center', ...POSITIONS];
+// a label without a marker or a line can also sit on its point
+const POSITIONS_ON_POINT = ['middle center', ...POSITIONS];
 
 // ring 0 touches the point, every ring after it adds LEADER_STEP
 // font sizes of distance and a leader line back to the point
@@ -95,7 +95,7 @@ module.exports = function autoTextPosition(plotinfo, traceGroups) {
 
         if (!subTypes.hasText(trace)) return;
 
-        const positions = hasMarkers ? POSITIONS : POSITIONS_NO_MARKER;
+        const positions = hasMarkers || subTypes.hasLines(trace) ? POSITIONS : POSITIONS_ON_POINT;
 
         tr.selectAll('g.textpoint').each(function (d) {
             const tx = d3.select(this).select('text');
