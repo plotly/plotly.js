@@ -2569,6 +2569,22 @@ describe('Test plot api', function () {
             expect(gd.data[0].scl).toBe(undefined);
         });
 
+        it('should keep *auto* textposition on scatter traces', function () {
+            var data = [
+                {
+                    type: 'scatter',
+                    mode: 'text',
+                    x: [1],
+                    y: [1],
+                    text: ['a'],
+                    textposition: 'auto'
+                }
+            ];
+
+            Plotly.newPlot(gd, data);
+            expect(gd.data[0].textposition).toBe('auto');
+        });
+
         it("should not delete rename 'scl' to 'colorscale' when colorscale is defined ", function () {
             var data = [
                 {

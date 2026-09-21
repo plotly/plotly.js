@@ -48,6 +48,19 @@ describe('Test scatter', function() {
             traceOut = {};
         });
 
+        it('should accept *auto* textposition', function() {
+            traceIn = {
+                x: [1, 2],
+                y: [1, 2],
+                mode: 'markers+text',
+                text: ['a', 'b'],
+                textposition: 'auto'
+            };
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textposition).toBe('auto');
+        });
+
         it('should set visible to false when x and y are empty', function() {
             traceIn = {};
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -696,6 +709,171 @@ describe('end-to-end scatter tests', function() {
         }]).then(function() {
             expect(d3SelectAll('.textpoint').size()).toBe(3);
         }).then(done, done.fail);
+    });
+
+    describe('with textposition *auto*', function() {
+        var layout = {
+            width: 500,
+            height: 500,
+            margin: {l: 50, r: 50, t: 50, b: 50},
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]}
+        };
+
+        function visibleLabelBoxes() {
+            var boxes = [];
+            d3SelectAll('.textpoint text').each(function() {
+                if(this.style.display !== 'none') boxes.push(this.getBoundingClientRect());
+            });
+            return boxes;
+        }
+
+        function countOverlaps(boxes) {
+            var n = 0;
+            for(var i = 0; i < boxes.length; i++) {
+                for(var j = i + 1; j < boxes.length; j++) {
+                    var a = boxes[i];
+                    var b = boxes[j];
+                    if(a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top) n++;
+                }
+            }
+            return n;
+        }
+
+        function textPointTransforms() {
+            var out = [];
+            d3SelectAll('.textpoint').each(function() {
+                out.push(d3Select(this).attr('transform'));
+            });
+            return out;
+        }
+
+        function makeStack(n) {
+            var x = [];
+            var y = [];
+            var text = [];
+            for(var i = 0; i < n; i++) {
+                x.push(2);
+                y.push(2);
+                text.push('label ' + i);
+            }
+            return {mode: 'markers+text', textposition: 'auto', x: x, y: y, text: text, marker: {size: 10}};
+        }
+
+        it('should place labels without overlaps, add leader lines and hide the rest', function(done) {
+            Plotly.newPlot(gd, [makeStack(40)], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                var hidden = 0;
+                var leaders = 0;
+                for(var i = 0; i < cd.length; i++) {
+                    if(cd[i]._tpAuto === null) hidden++;
+                    else if(cd[i]._tpAutoGap > 0) leaders++;
+                }
+
+                // the stacked markers block every position next to the point,
+                // so even the first label moves out with a leader line
+                expect(cd[0]._tpAuto).toBe('top center');
+                expect(cd[0]._tpAutoGap).toBeGreaterThan(0);
+                expect(hidden).toBeGreaterThan(0);
+                expect(leaders).toBeGreaterThan(0);
+
+                var boxes = visibleLabelBoxes();
+                expect(boxes.length).toBe(40 - hidden);
+                expect(countOverlaps(boxes)).toBe(0);
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(leaders);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should let an isolated label take the first candidate', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: [1, 3],
+                y: [1, 3],
+                text: ['a', 'b']
+            }], layout)
+            .then(function() {
+                expect(gd.calcdata[0][0]._tpAuto).toBe('top center');
+                expect(gd.calcdata[0][1]._tpAuto).toBe('top center');
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(0);
+                expect(d3SelectAll('.textpoint text').filter(function() {
+                    return this.style.display === 'none';
+                }).size()).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should place text-only labels on their point first', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'text',
+                textposition: 'auto',
+                x: [1, 1, 1],
+                y: [1, 1, 1],
+                text: ['a', 'b', 'c']
+            }], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAuto).toBe('middle center');
+                expect(cd[1]._tpAutoGap).toBeGreaterThan(0);
+                expect(cd[2]._tpAutoGap).toBeGreaterThan(0);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(2);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should respect fixed labels and per-point *auto* values', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: ['top center', 'auto'],
+                x: [2, 2],
+                y: [2, 2],
+                text: ['fixed', 'auto']
+            }], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAuto).toBeUndefined();
+                expect(cd[1]._tpAuto).toBe('bottom center');
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should keep the placement across style edits and selection', function(done) {
+            var transforms;
+
+            Plotly.newPlot(gd, [makeStack(12)], layout)
+            .then(function() {
+                transforms = textPointTransforms();
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.restyle(gd, 'textfont.color', 'red');
+            })
+            .then(function() {
+                expect(textPointTransforms()).toEqual(transforms);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.restyle(gd, 'selectedpoints', [[0, 1]]);
+            })
+            .then(function() {
+                expect(textPointTransforms()).toEqual(transforms);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.relayout(gd, 'xaxis.range', [1, 3]);
+            })
+            .then(function() {
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.restyle(gd, 'textposition', 'top center');
+            })
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAuto).toBeUndefined();
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(0);
+                expect(d3SelectAll('.textpoint text').filter(function() {
+                    return this.style.display === 'none';
+                }).size()).toBe(0);
+            })
+            .then(done, done.fail);
+        });
     });
 
     it('should remove all point and text nodes on blank data', function(done) {

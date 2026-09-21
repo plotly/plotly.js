@@ -1,0 +1,1 @@
+- Add *auto* to the `textposition` of `scatter`, `scatterpolar`, `scatterternary`, `scattercarpet` and `scattersmith` traces, to place text labels without overlaps and with leader lines for labels moved away from their points [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]

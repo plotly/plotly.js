@@ -7337,10 +7337,10 @@ export interface ScatterData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
      * @default 'middle center'
      */
-    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
     /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  */
     texttemplate?: string | string[];
     /**
@@ -8063,10 +8063,10 @@ export interface ScattercarpetData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
      * @default 'middle center'
      */
-    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
     /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b` and `text`. */
     texttemplate?: string | string[];
     /**
@@ -8909,10 +8909,10 @@ export interface ScattermapData {
     /** Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size). Has an effect only when `type` is set to *symbol*. */
     textfont?: Font;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
      * @default 'middle center'
      */
-    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right';
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto';
     /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `lat`, `lon` and `text`. */
     texttemplate?: string | string[];
     /**
@@ -9098,10 +9098,10 @@ export interface ScatterpolarData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
      * @default 'middle center'
      */
-    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
     /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `r`, `theta` and `text`. */
     texttemplate?: string | string[];
     /**
@@ -9491,10 +9491,10 @@ export interface ScattersmithData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
      * @default 'middle center'
      */
-    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
     /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `real`, `imag` and `text`. */
     texttemplate?: string | string[];
     /**
@@ -9682,10 +9682,10 @@ export interface ScatterternaryData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
      * @default 'middle center'
      */
-    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
     /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b`, `c` and `text`. */
     texttemplate?: string | string[];
     /**
@@ -12951,10 +12951,10 @@ export interface MapLayout {
             /** Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size). Has an effect only when `type` is set to *symbol*. */
             textfont?: Font;
             /**
-             * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+             * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
              * @default 'middle center'
              */
-            textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right';
+            textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto';
         };
         /** Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`. */
         templateitemname?: string;

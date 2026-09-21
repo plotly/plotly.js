@@ -1240,32 +1240,109 @@ var TEXTOFFSETSIGN = {
     top: -1
 };
 
-function textPointPosition(s, textPosition, fontSize, markerRadius, dontTouchParent) {
-    var group = d3.select(s.node().parentNode);
+// px between the end of a leader line and the label it points at
+var LEADER_END_GAP = 2;
 
+/**
+ * Compute the geometry of a text label relative to its point.
+ *
+ * @param textPosition - a `textposition` value other than *auto*
+ * @param fontSize - the font size in px
+ * @param markerRadius - the calculated marker radius in px, or 0 without markers
+ * @param numLines - the line count of the label
+ * @param gap - extra px between the point and the label, set by the *auto* placement
+ * @returns `anchor` for the `text-anchor` attribute, `dx` and `dy` of the label group in px,
+ *   and `leader` as `[x0, y0, x1, y1]` from the marker edge to the label, or null when `gap` is 0
+ */
+drawing.textPointOffset = function (textPosition, fontSize, markerRadius, numLines, gap) {
     var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
     var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
+    var sx = TEXTOFFSETSIGN[h];
+    var sy = TEXTOFFSETSIGN[v];
 
     // if markers are shown, offset a little more than
     // the nominal marker size
     // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-    var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
+    var r0 = markerRadius ? markerRadius / 0.8 + 1 : 0;
+    var r = r0 + (gap || 0);
 
-    var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
-    var dx = TEXTOFFSETSIGN[h] * r;
-    var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r + ((TEXTOFFSETSIGN[v] - 1) * numLines * fontSize) / 2;
+    var lineSpan = ((numLines || 1) - 1) * LINE_SPACING + 1;
+    var out = {
+        anchor: h,
+        dx: sx * r,
+        dy: fontSize * 0.75 + sy * r + ((sy - 1) * lineSpan * fontSize) / 2,
+        leader: null
+    };
+
+    if (gap > 0 && (sx || sy)) {
+        var norm = Math.sqrt(sx * sx + sy * sy);
+        var ux = sx / norm;
+        var uy = sy / norm;
+        out.leader = [ux * r0, uy * r0, sx * r - ux * LEADER_END_GAP, sy * r - uy * LEADER_END_GAP];
+    }
+
+    return out;
+};
+
+/**
+ * Resolve the `textposition` of one point.
+ *
+ * @returns the position, or null when the *auto* placement found no free spot for the label
+ */
+function getTextPosition(d, trace) {
+    var pos = d.tp || trace.textposition;
+    if (pos !== 'auto') return pos;
+    // the scatter *auto* placement sets `_tpAuto` after it draws all points of the subplot
+    return d._tpAuto === undefined ? 'middle center' : d._tpAuto;
+}
+
+/**
+ * Position a text label relative to its point, and join its leader line.
+ *
+ * @param s - d3 selection of one `<text>` element, inside its own `<g>`
+ * @param d - the calcdata point
+ * @param trace - the full trace
+ * @param markerRadius - the calculated marker radius in px, or undefined without markers
+ * @param dontTouchParent - true to leave the `transform` of the parent `<g>` alone
+ */
+drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent) {
+    var group = d3.select(s.node().parentNode);
+    var textPosition = getTextPosition(d, trace);
+
+    s.style('display', textPosition === null ? 'none' : null);
+
+    var offset = drawing.textPointOffset(
+        textPosition || 'middle center',
+        drawing.textPointFontSize(d, trace),
+        markerRadius,
+        svgTextUtils.lineCount(s),
+        d._tpAutoGap
+    );
 
     // fix the overall text group position
-    s.attr('text-anchor', h);
+    s.attr('text-anchor', offset.anchor);
     if (!dontTouchParent) {
-        group.attr('transform', strTranslate(dx, dy));
+        group.attr('transform', strTranslate(offset.dx, offset.dy));
     }
-}
 
-function extracTextFontSize(d, trace) {
+    var leader = group.selectAll('path.textleader').data(offset.leader ? [offset.leader] : []);
+    leader.exit().remove();
+    leader.enter().insert('path', ':first-child').classed('textleader', true).style('fill', 'none');
+    leader.each(function (seg) {
+        // the group is translated by (dx, dy), so the point sits at (x - dx, y - dy) in the group frame
+        var x = +s.attr('x') - offset.dx;
+        var y = +s.attr('y') - offset.dy;
+        d3.select(this)
+            .attr('d', 'M' + (x + seg[0]) + ',' + (y + seg[1]) + 'L' + (x + seg[2]) + ',' + (y + seg[3]))
+            .style('stroke-width', 1)
+            .call(Color.stroke, s.node().style.fill);
+    });
+};
+
+drawing.textPointFontSize = function (d, trace) {
     var fontSize = d.ts || trace.textfont.size;
     return isNumeric(fontSize) && fontSize > 0 ? fontSize : 0;
-}
+};
 
 // draw text at points
 drawing.textPointStyle = function (s, trace, gd) {
@@ -1306,8 +1383,7 @@ drawing.textPointStyle = function (s, trace, gd) {
             });
         }
 
-        var pos = d.tp || trace.textposition;
-        var fontSize = extracTextFontSize(d, trace);
+        var fontSize = drawing.textPointFontSize(d, trace);
         var fontColor = selectedTextColorFn ? selectedTextColorFn(d) : d.tc || trace.textfont.color;
 
         p.call(drawing.font, {
@@ -1323,7 +1399,7 @@ drawing.textPointStyle = function (s, trace, gd) {
         })
             .text(text)
             .call(svgTextUtils.convertToTspans, gd)
-            .call(textPointPosition, pos, fontSize, d.mrc);
+            .call(drawing.textPointPosition, d, trace, d.mrc);
     });
 };
 
@@ -1335,12 +1411,10 @@ drawing.selectedTextStyle = function (s, trace) {
     s.each(function (d) {
         var tx = d3.select(this);
         var tc = fns.selectedTextColorFn(d);
-        var tp = d.tp || trace.textposition;
-        var fontSize = extracTextFontSize(d, trace);
 
         Color.fill(tx, tc);
         var dontTouchParent = Registry.traceIs(trace, 'bar-like');
-        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc, dontTouchParent);
+        drawing.textPointPosition(tx, d, trace, d.mrc2 || d.mrc, dontTouchParent);
     });
 };
 

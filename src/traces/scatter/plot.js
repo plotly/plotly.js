@@ -12,6 +12,7 @@ var subTypes = require('./subtypes');
 var linePoints = require('./line_points');
 var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
+var autoTextPosition = require('./auto_text_position');
 
 module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
     var join, onComplete;
@@ -61,11 +62,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
             scatterLayer.selectAll('g.trace').each(function(d, i) {
                 plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
             });
+            autoTextPosition(plotinfo, scatterLayer.selectAll('g.trace'));
         });
     } else {
         join.each(function(d, i) {
             plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
         });
+        autoTextPosition(plotinfo, join);
     }
 
     if(isFullReplot) {

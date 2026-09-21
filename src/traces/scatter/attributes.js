@@ -663,12 +663,21 @@ module.exports = {
             'middle right',
             'bottom left',
             'bottom center',
-            'bottom right'
+            'bottom right',
+            'auto'
         ],
         dflt: 'middle center',
         arrayOk: true,
         editType: 'calc',
-        description: ['Sets the positions of the `text` elements', 'with respects to the (x,y) coordinates.'].join(' ')
+        description: [
+            'Sets the positions of the `text` elements',
+            'with respects to the (x,y) coordinates.',
+            'With *auto*, each label takes the first position around its point',
+            'that overlaps no marker and no other label on the subplot.',
+            'When the positions next to the point are taken, the label moves',
+            'farther out with a leader line back to the point.',
+            'A label with no free position is hidden.'
+        ].join(' ')
     },
     textfont: fontAttrs({
         editType: 'calc',

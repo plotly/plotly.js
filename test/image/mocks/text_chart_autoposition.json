@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "type": "scatter",
+      "name": "markers+text, auto",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [1, 1.1, 1.2, 1.05, 1.15, 1.3, 1.02, 1.25, 1.12, 1.18, 3, 3.1, 3.05, 5, 5.5, 6, 2, 2.2, 2.1, 4.2, 4.3, 4.25, 4.35, 4.15, 4.28, 4.22],
+      "y": [1, 1.1, 1.2, 1.3, 1.05, 1.15, 1.22, 1.02, 1.28, 1.12, 3, 3.05, 3.1, 5, 5.1, 5.05, 4, 4.1, 3.9, 2, 2.1, 2.05, 1.95, 2.15, 2.2, 1.9],
+      "text": ["Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India", "Juliet", "Kilo", "Lima", "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo", "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "X-ray", "Yankee", "Zulu"],
+      "marker": { "size": 10 }
+    },
+    {
+      "type": "scatter",
+      "name": "text only, auto",
+      "mode": "text",
+      "textposition": "auto",
+      "x": [1.6, 1.62, 1.64, 5.2],
+      "y": [2.6, 2.62, 2.64, 4.5],
+      "text": ["one", "two", "three", "alone"],
+      "textfont": { "color": "#d62728", "size": 14 }
+    },
+    {
+      "type": "scatter",
+      "name": "fixed position",
+      "mode": "markers+text",
+      "textposition": ["top center", "auto", "bottom right"],
+      "x": [3.2, 3.15, 5.9],
+      "y": [3.15, 3.05, 5.15],
+      "text": ["fixed top", "mixed auto", "fixed bottom right"],
+      "marker": { "size": 12, "symbol": "square" }
+    }
+  ],
+  "layout": {
+    "title": { "text": "textposition: auto" },
+    "width": 800,
+    "height": 500,
+    "showlegend": false,
+    "xaxis": { "range": [0.5, 6.5] },
+    "yaxis": { "range": [0.5, 5.5] }
+  }
+}
