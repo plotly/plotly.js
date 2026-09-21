@@ -33,15 +33,21 @@ const CLUSTER_GAP = 1;
 // minimum px between a label and anything else
 const PAD = 2;
 
+// markers within NEIGHBOR_RADIUS font sizes of a point push its label
+// to the far side, so labels around a cluster point away from it
+const NEIGHBOR_RADIUS = 3;
+
 // side of one cell of the spatial index, in px
 const CELL_SIZE = 64;
 
 /**
  * Resolve the *auto* text positions of all scatter traces on one subplot.
  *
- * Every label takes the first free candidate in a fixed order: the eight
- * positions next to the point first, then the same positions farther out
- * with a leader line. A position next to the point is used only when no
+ * Every label takes the first free candidate: the eight positions next to
+ * the point first, then the same positions farther out with a leader line.
+ * The positions are tried in the order that points away from the markers
+ * near the point, and in a fixed order when there are none.
+ * A position next to the point is used only when no
  * other marker sits close to the label, so a leader line shows which point
  * the label belongs to whenever that is in doubt.
  * A free candidate stays inside the plot area and hits no marker, no label
@@ -140,12 +146,13 @@ function place(index, label) {
 
     // a point outside the plot area gets no label, even when a candidate box would fit inside
     const inside = label.x >= 0 && label.x <= index.width && label.y >= 0 && label.y <= index.height;
+    const positions = inside ? orderPositions(index, label) : [];
 
     for (let ring = 0; inside && ring <= rings; ring++) {
         const gap = ring * step;
 
-        for (let k = 0; k < label.positions.length; k++) {
-            const pos = label.positions[k];
+        for (let k = 0; k < positions.length; k++) {
+            const pos = positions[k];
             if (gap && pos === 'middle center') continue;
 
             const rect = labelRect(label, pos, gap);
@@ -164,6 +171,52 @@ function place(index, label) {
 
     d._tpAuto = null;
     Drawing.textPointPosition(label.tx, d, label.trace, d.mrc);
+}
+
+// the candidate positions of a label, sorted so that the ones that point
+// away from the nearby markers come first; ties keep the default order
+function orderPositions(index, label) {
+    const r = ((label.d.mrc || 0) + NEIGHBOR_RADIUS * label.fontSize) ** 2;
+    const b = cellBounds(
+        index,
+        label.x - Math.sqrt(r),
+        label.y - Math.sqrt(r),
+        label.x + Math.sqrt(r),
+        label.y + Math.sqrt(r)
+    );
+    const cells = index.cells;
+    let ax = 0;
+    let ay = 0;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const cell = cells[row * index.ncols + col];
+            if (!cell) continue;
+
+            for (let i = 0; i < cell.length; i++) {
+                const ob = cell[i];
+                if (!ob.isMarker || ob.owner === label.d) continue;
+                const dx = label.x - (ob.x0 + ob.x1) / 2;
+                const dy = label.y - (ob.y0 + ob.y1) / 2;
+                const d2 = dx * dx + dy * dy;
+                if (!d2 || d2 > r) continue;
+                // nearer markers push harder
+                ax += dx / d2;
+                ay += dy / d2;
+            }
+        }
+    }
+
+    if (!ax && !ay) return label.positions;
+
+    const scored = label.positions.map((pos, k) => {
+        const sx = pos.indexOf('right') !== -1 ? 1 : pos.indexOf('left') !== -1 ? -1 : 0;
+        const sy = pos.indexOf('bottom') !== -1 ? 1 : pos.indexOf('top') !== -1 ? -1 : 0;
+        const norm = Math.sqrt(sx * sx + sy * sy) || 1;
+        return { pos, k, score: (sx * ax + sy * ay) / norm };
+    });
+    scored.sort((a, b) => b.score - a.score || a.k - b.k);
+    return scored.map((s) => s.pos);
 }
 
 // true when another marker sits within `margin` px of a label box,

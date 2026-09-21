@@ -878,7 +878,16 @@ describe('end-to-end scatter tests', function() {
                 return n;
             }
 
+            function countArrows() {
+                var n = 0;
+                gd.calcdata[0].forEach(function(d) {
+                    if(d._tpAutoGap > 0) n++;
+                });
+                return n;
+            }
+
             var hiddenAtStart;
+            var arrowsAtStart;
 
             Plotly.newPlot(gd, [{
                 mode: 'markers+text',
@@ -889,12 +898,14 @@ describe('end-to-end scatter tests', function() {
             }], layout)
             .then(function() {
                 hiddenAtStart = countHidden();
-                expect(hiddenAtStart).toBeGreaterThan(0);
+                arrowsAtStart = countArrows();
+                expect(arrowsAtStart).toBeGreaterThan(0);
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
                 return Plotly.relayout(gd, {'xaxis.range': [1.8, 2.4], 'yaxis.range': [1.8, 2.4]});
             })
             .then(function() {
                 expect(countHidden()).toBe(0);
+                expect(countArrows()).toBeLessThan(arrowsAtStart);
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
                 // the last three points fall outside this range
                 return Plotly.relayout(gd, {'xaxis.range': [1.8, 2.09], 'yaxis.range': [1.8, 2.4]});
@@ -910,6 +921,7 @@ describe('end-to-end scatter tests', function() {
             })
             .then(function() {
                 expect(countHidden()).toBe(hiddenAtStart);
+                expect(countArrows()).toBe(arrowsAtStart);
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
             })
             .then(done, done.fail);
