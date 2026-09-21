@@ -8,10 +8,10 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var axisLineGridAttr = overrideAll({
     color: axesAttrs.color,
-    showline: extendFlat({}, axesAttrs.showline, {dflt: true}),
+    showline: extendFlat({}, axesAttrs.showline, { dflt: true }),
     linecolor: axesAttrs.linecolor,
     linewidth: axesAttrs.linewidth,
-    showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
+    showgrid: extendFlat({}, axesAttrs.showgrid, { dflt: true }),
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth,
     griddash: axesAttrs.griddash
@@ -53,7 +53,7 @@ var axisTickAttrs = overrideAll({
 }, 'plot', 'from-root');
 
 var radialAxisAttrs = {
-    visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
+    visible: extendFlat({}, axesAttrs.visible, { dflt: true }),
     type: extendFlat({}, axesAttrs.type, {
         values: ['-', 'linear', 'log', 'date', 'category']
     }),
@@ -67,7 +67,7 @@ var radialAxisAttrs = {
         include: axesAttrs.autorangeoptions.include,
         editType: 'plot'
     },
-    autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
+    autorange: extendFlat({}, axesAttrs.autorange, { editType: 'plot' }),
     rangemode: {
         valType: 'enumerated',
         values: ['tozero', 'nonnegative', 'normal'],
@@ -82,12 +82,12 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
-    minallowed: extendFlat({}, axesAttrs.minallowed, {editType: 'plot'}),
-    maxallowed: extendFlat({}, axesAttrs.maxallowed, {editType: 'plot'}),
+    minallowed: extendFlat({}, axesAttrs.minallowed, { editType: 'plot' }),
+    maxallowed: extendFlat({}, axesAttrs.maxallowed, { editType: 'plot' }),
     range: extendFlat({}, axesAttrs.range, {
         items: [
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+            { valType: 'any', editType: 'plot', impliedEdits: { '^autorange': false } },
+            { valType: 'any', editType: 'plot', impliedEdits: { '^autorange': false } }
         ],
         editType: 'plot'
     }),
@@ -124,8 +124,8 @@ var radialAxisAttrs = {
     title: {
         // radial title is not gui-editable at the moment,
         // so it needs dflt: '', similar to carpet axes.
-        text: extendFlat({}, axesAttrs.title.text, {editType: 'plot', dflt: ''}),
-        font: extendFlat({}, axesAttrs.title.font, {editType: 'plot'}),
+        text: extendFlat({}, axesAttrs.title.text, { editType: 'plot', dflt: '' }),
+        font: extendFlat({}, axesAttrs.title.font, { editType: 'plot' }),
 
         // TODO
         // - might need a 'titleside' and even 'titledirection' down the road
@@ -159,7 +159,7 @@ extendFlat(
 );
 
 var angularAxisAttrs = {
-    visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
+    visible: extendFlat({}, axesAttrs.visible, { dflt: true }),
     type: {
         valType: 'enumerated',
         // 'linear' should maybe be called 'angle' or 'angular' here
@@ -268,13 +268,13 @@ module.exports = {
     // y: {},
     // zoom: {},
 
-    domain: domainAttrs({name: 'polar', editType: 'plot'}),
+    domain: domainAttrs({ name: 'polar', editType: 'plot' }),
 
     sector: {
         valType: 'info_array',
         items: [
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'}
+            { valType: 'number', editType: 'plot' },
+            { valType: 'number', editType: 'plot' }
         ],
         dflt: [0, 360],
         editType: 'plot',

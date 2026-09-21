@@ -484,6 +484,11 @@ export namespace _internal {
         maxallowed?: any;
         /** Use this value exactly as autorange minimum. */
         minallowed?: any;
+        /**
+         * Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.
+         * Minimum: 0
+         */
+        minrange?: number;
     }
 
     export interface ErrorY {

@@ -78,8 +78,8 @@ module.exports = overrideAll({
     maxallowed: axesAttrs.maxallowed,
     range: extendFlat({}, axesAttrs.range, {
         items: [
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+            { valType: 'any', editType: 'plot', impliedEdits: { '^autorange': false } },
+            { valType: 'any', editType: 'plot', impliedEdits: { '^autorange': false } }
         ],
         anim: false
     }),
@@ -116,7 +116,7 @@ module.exports = overrideAll({
     linewidth: axesAttrs.linewidth,
     showgrid: axesAttrs.showgrid,
     gridcolor: extendFlat({}, axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
-        {dflt: 'rgb(204, 204, 204)'}),
+        { dflt: 'rgb(204, 204, 204)' }),
     gridwidth: axesAttrs.gridwidth,
     zeroline: axesAttrs.zeroline,
     zerolinecolor: axesAttrs.zerolinecolor,

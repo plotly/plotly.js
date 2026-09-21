@@ -2,7 +2,7 @@
 
 module.exports = function handleAutorangeOptionsDefaults(coerce, autorange, range) {
     var minRange, maxRange;
-    if(range) {
+    if (range) {
         var isReversed = (
             autorange === 'reversed' ||
             autorange === 'min reversed' ||
@@ -16,8 +16,8 @@ module.exports = function handleAutorangeOptionsDefaults(coerce, autorange, rang
     var minallowed = coerce('autorangeoptions.minallowed', maxRange === null ? minRange : undefined);
     var maxallowed = coerce('autorangeoptions.maxallowed', minRange === null ? maxRange : undefined);
 
-    if(minallowed === undefined) coerce('autorangeoptions.clipmin');
-    if(maxallowed === undefined) coerce('autorangeoptions.clipmax');
+    if (minallowed === undefined) coerce('autorangeoptions.clipmin');
+    if (maxallowed === undefined) coerce('autorangeoptions.clipmax');
 
     coerce('autorangeoptions.include');
 };

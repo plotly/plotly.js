@@ -60,19 +60,19 @@ function getAutoRange(gd, ax) {
     var minArray = extremes.min;
     var maxArray = extremes.max;
 
-    if(minArray.length === 0 || maxArray.length === 0) {
+    if (minArray.length === 0 || maxArray.length === 0) {
         return Lib.simpleMap(ax.range, ax.r2l);
     }
 
     var minmin = minArray[0].val;
     var maxmax = maxArray[0].val;
 
-    for(i = 1; i < minArray.length; i++) {
-        if(minmin !== maxmax) break;
+    for (i = 1; i < minArray.length; i++) {
+        if (minmin !== maxmax) break;
         minmin = Math.min(minmin, minArray[i].val);
     }
-    for(i = 1; i < maxArray.length; i++) {
-        if(minmin !== maxmax) break;
+    for (i = 1; i < maxArray.length; i++) {
+        if (minmin !== maxmax) break;
         maxmax = Math.max(maxmax, maxArray[i].val);
     }
 
@@ -82,14 +82,14 @@ function getAutoRange(gd, ax) {
         autorange === 'min reversed' ||
         autorange === 'max reversed';
 
-    if(!axReverse && ax.range) {
+    if (!axReverse && ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
 
     // one-time setting to easily reverse the axis
     // when plotting from code
-    if(ax.autorange === 'reversed') {
+    if (ax.autorange === 'reversed') {
         ax.autorange = true;
     }
 
@@ -103,24 +103,24 @@ function getAutoRange(gd, ax) {
     var mbest = 0;
     var minpt, maxpt, minbest, maxbest, dp, dv;
 
-    for(i = 0; i < minArray.length; i++) {
+    for (i = 0; i < minArray.length; i++) {
         minpt = minArray[i];
-        for(j = 0; j < maxArray.length; j++) {
+        for (j = 0; j < maxArray.length; j++) {
             maxpt = maxArray[j];
             dv = maxpt.val - minpt.val - calcBreaksLength(ax, minpt.val, maxpt.val);
-            if(dv > 0) {
+            if (dv > 0) {
                 dp = axLen - getPadMin(minpt) - getPadMax(maxpt);
-                if(dp > minSpan) {
-                    if(dv / dp > mbest) {
+                if (dp > minSpan) {
+                    if (dv / dp > mbest) {
                         minbest = minpt;
                         maxbest = maxpt;
                         mbest = dv / dp;
                     }
-                } else if(dv / axLen > mbest) {
+                } else if (dv / axLen > mbest) {
                     // in case of padding longer than the axis
                     // at least include the unpadded data values.
-                    minbest = {val: minpt.val, nopad: 1};
-                    maxbest = {val: maxpt.val, nopad: 1};
+                    minbest = { val: minpt.val, nopad: 1 };
+                    maxbest = { val: maxpt.val, nopad: 1 };
                     mbest = dv / axLen;
                 }
             }
@@ -131,11 +131,11 @@ function getAutoRange(gd, ax) {
         return Math.max(prev, getPadMax(pt));
     }
 
-    if(minmin === maxmax) {
+    if (minmin === maxmax) {
         var lower = minmin - 1;
         var upper = minmin + 1;
-        if(toZero) {
-            if(minmin === 0) {
+        if (toZero) {
+            if (minmin === 0) {
                 // The only value we have on this axis is 0, and we want to
                 // autorange so zero is one end.
                 // In principle this could be [0, 1] or [-1, 0] but usually
@@ -149,25 +149,25 @@ function getAutoRange(gd, ax) {
                 var rangeEnd = minmin / (1 - Math.min(0.5, maxPad / axLen));
                 newRange = minmin > 0 ? [0, rangeEnd] : [rangeEnd, 0];
             }
-        } else if(nonNegative) {
+        } else if (nonNegative) {
             newRange = [Math.max(0, lower), Math.max(1, upper)];
         } else {
             newRange = [lower, upper];
         }
     } else {
-        if(toZero) {
-            if(minbest.val >= 0) {
-                minbest = {val: 0, nopad: 1};
+        if (toZero) {
+            if (minbest.val >= 0) {
+                minbest = { val: 0, nopad: 1 };
             }
-            if(maxbest.val <= 0) {
-                maxbest = {val: 0, nopad: 1};
+            if (maxbest.val <= 0) {
+                maxbest = { val: 0, nopad: 1 };
             }
-        } else if(nonNegative) {
-            if(minbest.val - mbest * getPadMin(minbest) < 0) {
-                minbest = {val: 0, nopad: 1};
+        } else if (nonNegative) {
+            if (minbest.val - mbest * getPadMin(minbest) < 0) {
+                minbest = { val: 0, nopad: 1 };
             }
-            if(maxbest.val <= 0) {
-                maxbest = {val: 1, nopad: 1};
+            if (maxbest.val <= 0) {
+                maxbest = { val: 1, nopad: 1 };
             }
         }
 
@@ -183,10 +183,10 @@ function getAutoRange(gd, ax) {
 
     newRange = applyAutorangeOptions(newRange, ax);
 
-    if(ax.limitRange) ax.limitRange();
+    if (ax.limitRange) ax.limitRange();
 
     // maintain reversal
-    if(axReverse) newRange.reverse();
+    if (axReverse) newRange.reverse();
 
     return Lib.simpleMap(newRange, ax.l2r || Number);
 }
@@ -194,9 +194,9 @@ function getAutoRange(gd, ax) {
 // find axis rangebreaks in [v0,v1] and compute its length in value space
 function calcBreaksLength(ax, v0, v1) {
     var lBreaks = 0;
-    if(ax.rangebreaks) {
+    if (ax.rangebreaks) {
         var rangebreaksOut = ax.locateBreaks(v0, v1);
-        for(var i = 0; i < rangebreaksOut.length; i++) {
+        for (var i = 0; i < rangebreaksOut.length; i++) {
             var brk = rangebreaksOut[i];
             lBreaks += brk.max - brk.min;
         }
@@ -214,33 +214,33 @@ function makePadFn(fullLayout, ax, max) {
 
     var anchorAxis = ax._anchorAxis || {};
 
-    if(
+    if (
         (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
         (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
     ) {
         var axReverse = ax.isReversed();
-        if(!axReverse) {
+        if (!axReverse) {
             var rng = Lib.simpleMap(ax.range, ax.r2l);
             axReverse = rng[1] < rng[0];
         }
-        if(axReverse) max = !max;
+        if (axReverse) max = !max;
     }
 
     var zero = 0;
-    if(!isLinked(fullLayout, ax._id)) {
+    if (!isLinked(fullLayout, ax._id)) {
         zero = padInsideLabelsOnAnchorAxis(fullLayout, ax, max);
     }
     extrappad = Math.max(zero, extrappad);
 
     // domain-constrained axes: base extrappad on the unconstrained
     // domain so it's consistent as the domain changes
-    if((ax.constrain === 'domain') && ax._inputDomain) {
+    if ((ax.constrain === 'domain') && ax._inputDomain) {
         extrappad *= (ax._inputDomain[1] - ax._inputDomain[0]) /
             (ax.domain[1] - ax.domain[0]);
     }
 
     return function getPad(pt) {
-        if(pt.nopad) return 0;
+        if (pt.nopad) return 0;
         return pt.pad + (pt.extrapad ? extrappad : zero);
     };
 }
@@ -252,50 +252,50 @@ function padInsideLabelsOnAnchorAxis(fullLayout, ax, max) {
 
     var isX = ax._id.charAt(0) === 'x';
 
-    for(var subplot in fullLayout._plots) {
+    for (var subplot in fullLayout._plots) {
         var plotinfo = fullLayout._plots[subplot];
 
-        if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+        if (ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
 
         var anchorAxis = (isX ? plotinfo.yaxis : plotinfo.xaxis) || {};
 
-        if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
+        if ((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
             // increase padding to make more room for inside tick labels of the counter axis
-            if((
+            if ((
                 !max && (
                     anchorAxis.side === 'left' ||
                     anchorAxis.side === 'bottom'
                 )
             ) || (
-                max && (
-                    anchorAxis.side === 'top' ||
-                    anchorAxis.side === 'right'
-                )
-            )) {
-                if(anchorAxis._vals) {
+                    max && (
+                        anchorAxis.side === 'top' ||
+                        anchorAxis.side === 'right'
+                    )
+                )) {
+                if (anchorAxis._vals) {
                     var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
                     var cosA = Math.abs(Math.cos(rad));
                     var sinA = Math.abs(Math.sin(rad));
 
                     // no stashed bounding boxes - stash bounding boxes
-                    if(!anchorAxis._vals[0].bb) {
+                    if (!anchorAxis._vals[0].bb) {
                         var cls = anchorAxis._id + 'tick';
                         var tickLabels = anchorAxis._selections[cls];
-                        tickLabels.each(function(d) {
+                        tickLabels.each(function (d) {
                             var thisLabel = d3.select(this);
                             var mathjaxGroup = thisLabel.select('.text-math-group');
-                            if(mathjaxGroup.empty()) {
+                            if (mathjaxGroup.empty()) {
                                 d.bb = Drawing.bBox(thisLabel.node());
                             }
                         });
                     }
 
                     // use bounding boxes
-                    for(var i = 0; i < anchorAxis._vals.length; i++) {
+                    for (var i = 0; i < anchorAxis._vals.length; i++) {
                         var t = anchorAxis._vals[i];
                         var bb = t.bb;
 
-                        if(bb) {
+                        if (bb) {
                             var w = 2 * TEXTPAD + bb.width;
                             var h = 2 * TEXTPAD + bb.height;
 
@@ -307,7 +307,7 @@ function padInsideLabelsOnAnchorAxis(fullLayout, ax, max) {
                     }
                 }
 
-                if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
+                if (anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
                     pad += anchorAxis.ticklen || 0;
                 }
             }
@@ -326,17 +326,17 @@ function concatExtremes(gd, ax, noMatch) {
     var i, j, d;
 
     function _concat(cont, indices) {
-        for(i = 0; i < indices.length; i++) {
+        for (i = 0; i < indices.length; i++) {
             var item = cont[indices[i]];
             var extremes = (item._extremes || {})[axId];
-            if(item.visible === true && extremes) {
-                for(j = 0; j < extremes.min.length; j++) {
+            if (item.visible === true && extremes) {
+                for (j = 0; j < extremes.min.length; j++) {
                     d = extremes.min[j];
-                    collapseMinArray(minArray, d.val, d.pad, {extrapad: d.extrapad});
+                    collapseMinArray(minArray, d.val, d.pad, { extrapad: d.extrapad });
                 }
-                for(j = 0; j < extremes.max.length; j++) {
+                for (j = 0; j < extremes.max.length; j++) {
                     d = extremes.max[j];
-                    collapseMaxArray(maxArray, d.val, d.pad, {extrapad: d.extrapad});
+                    collapseMaxArray(maxArray, d.val, d.pad, { extrapad: d.extrapad });
                 }
             }
         }
@@ -347,32 +347,32 @@ function concatExtremes(gd, ax, noMatch) {
     _concat(fullLayout.shapes || [], ax._shapeIndices || []);
 
     // Include the extremes from other matched axes with this one
-    if(ax._matchGroup && !noMatch) {
-        for(var axId2 in ax._matchGroup) {
-            if(axId2 !== ax._id) {
+    if (ax._matchGroup && !noMatch) {
+        for (var axId2 in ax._matchGroup) {
+            if (axId2 !== ax._id) {
                 var ax2 = getFromId(gd, axId2);
                 var extremes2 = concatExtremes(gd, ax2, true);
                 // convert padding on the second axis to the first with lenRatio
                 var lenRatio = ax._length / ax2._length;
-                for(j = 0; j < extremes2.min.length; j++) {
+                for (j = 0; j < extremes2.min.length; j++) {
                     d = extremes2.min[j];
-                    collapseMinArray(minArray, d.val, d.pad * lenRatio, {extrapad: d.extrapad});
+                    collapseMinArray(minArray, d.val, d.pad * lenRatio, { extrapad: d.extrapad });
                 }
-                for(j = 0; j < extremes2.max.length; j++) {
+                for (j = 0; j < extremes2.max.length; j++) {
                     d = extremes2.max[j];
-                    collapseMaxArray(maxArray, d.val, d.pad * lenRatio, {extrapad: d.extrapad});
+                    collapseMaxArray(maxArray, d.val, d.pad * lenRatio, { extrapad: d.extrapad });
                 }
             }
         }
     }
 
-    return {min: minArray, max: maxArray};
+    return { min: minArray, max: maxArray };
 }
 
 function doAutoRange(gd, ax, presetRange) {
     ax.setScale();
 
-    if(ax.autorange) {
+    if (ax.autorange) {
         ax.range = presetRange ? presetRange.slice() : getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
@@ -395,10 +395,10 @@ function doAutoRange(gd, ax, presetRange) {
 
     var anchorAx = ax._anchorAxis;
 
-    if(anchorAx && anchorAx.rangeslider) {
+    if (anchorAx && anchorAx.rangeslider) {
         var axeRangeOpts = anchorAx.rangeslider[ax._name];
-        if(axeRangeOpts) {
-            if(axeRangeOpts.rangemode === 'auto') {
+        if (axeRangeOpts) {
+            if (axeRangeOpts.rangemode === 'auto') {
                 axeRangeOpts.range = getAutoRange(gd, ax);
             }
         }
@@ -448,8 +448,8 @@ function doAutoRange(gd, ax, presetRange) {
  *  - opts {object}: a ref to the passed "options" object
  */
 function findExtremes(ax, data, opts) {
-    if(!opts) opts = {};
-    if(!ax._m) ax.setScale();
+    if (!opts) opts = {};
+    if (!ax._m) ax.setScale();
 
     var minArray = [];
     var maxArray = [];
@@ -463,12 +463,12 @@ function findExtremes(ax, data, opts) {
     var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
 
     function makePadAccessor(item) {
-        if(Array.isArray(item)) {
+        if (Array.isArray(item)) {
             hasArrayOption = true;
-            return function(i) { return Math.max(Number(item[i]||0), 0); };
+            return function (i) { return Math.max(Number(item[i] || 0), 0); };
         } else {
-            var v = Math.max(Number(item||0), 0);
-            return function() { return v; };
+            var v = Math.max(Number(item || 0), 0);
+            return function () { return v; };
         }
     }
 
@@ -479,24 +479,24 @@ function findExtremes(ax, data, opts) {
     var vpadplus = makePadAccessor(opts.vpadplus || opts.vpad);
     var vpadminus = makePadAccessor(opts.vpadminus || opts.vpad);
 
-    if(!hasArrayOption) {
+    if (!hasArrayOption) {
         // with no arrays other than `data` we don't need to consider
         // every point, only the extreme data points
         vmin = Infinity;
         vmax = -Infinity;
 
-        if(isLog) {
-            for(i = 0; i < len; i++) {
+        if (isLog) {
+            for (i = 0; i < len; i++) {
                 v = data[i];
                 // data is not linearized yet so we still have to filter out negative logs
-                if(v < vmin && v > 0) vmin = v;
-                if(v > vmax && v < FP_SAFE) vmax = v;
+                if (v < vmin && v > 0) vmin = v;
+                if (v > vmax && v < FP_SAFE) vmax = v;
             }
         } else {
-            for(i = 0; i < len; i++) {
+            for (i = 0; i < len; i++) {
                 v = data[i];
-                if(v < vmin && v > -FP_SAFE) vmin = v;
-                if(v > vmax && v < FP_SAFE) vmax = v;
+                if (v < vmin && v > -FP_SAFE) vmin = v;
+                if (v > vmax && v < FP_SAFE) vmax = v;
             }
         }
 
@@ -504,15 +504,15 @@ function findExtremes(ax, data, opts) {
         len = 2;
     }
 
-    var collapseOpts = {tozero: tozero, extrapad: extrapad};
+    var collapseOpts = { tozero: tozero, extrapad: extrapad };
 
     function addItem(i) {
         di = data[i];
-        if(!isNumeric(di)) return;
+        if (!isNumeric(di)) return;
         ppadiplus = ppadplus(i);
         ppadiminus = ppadminus(i);
 
-        if(vpadLinearized) {
+        if (vpadLinearized) {
             dmin = ax.c2l(di) - vpadminus(i);
             dmax = ax.c2l(di) + vpadplus(i);
         } else {
@@ -522,20 +522,20 @@ function findExtremes(ax, data, opts) {
             // more than an order of mag, clip it to one order. This is so
             // we don't have non-positive errors or absurdly large lower
             // range due to rounding errors
-            if(isLog && vmin < vmax / 10) vmin = vmax / 10;
+            if (isLog && vmin < vmax / 10) vmin = vmax / 10;
 
             dmin = ax.c2l(vmin);
             dmax = ax.c2l(vmax);
         }
 
-        if(tozero) {
+        if (tozero) {
             dmin = Math.min(0, dmin);
             dmax = Math.max(0, dmax);
         }
-        if(goodNumber(dmin)) {
+        if (goodNumber(dmin)) {
             collapseMinArray(minArray, dmin, ppadiminus, collapseOpts);
         }
-        if(goodNumber(dmax)) {
+        if (goodNumber(dmax)) {
             collapseMaxArray(maxArray, dmax, ppadiplus, collapseOpts);
         }
     }
@@ -544,8 +544,8 @@ function findExtremes(ax, data, opts) {
     // check a few points at both ends first and then sweep
     // through the middle
     var iMax = Math.min(6, len);
-    for(i = 0; i < iMax; i++) addItem(i);
-    for(i = len - 1; i >= iMax; i--) addItem(i);
+    for (i = 0; i < iMax; i++) addItem(i);
+    for (i = len - 1; i >= iMax; i--) addItem(i);
 
     return {
         min: minArray,
@@ -604,17 +604,17 @@ function collapseArray(array, newVal, newPad, opts, atLeastAsExtreme) {
     var extrapad = opts.extrapad;
     var includeThis = true;
 
-    for(var j = 0; j < array.length && includeThis; j++) {
+    for (var j = 0; j < array.length && includeThis; j++) {
         var v = array[j];
-        if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
+        if (atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
             includeThis = false;
             break;
-        } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
+        } else if (atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
             array.splice(j, 1);
             j--;
         }
     }
-    if(includeThis) {
+    if (includeThis) {
         var clipAtZero = (tozero && newVal === 0);
         array.push({
             val: newVal,
@@ -635,7 +635,7 @@ function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
 function applyAutorangeMinOptions(v, ax) {
     var autorangeoptions = ax.autorangeoptions;
-    if(
+    if (
         autorangeoptions &&
         autorangeoptions.minallowed !== undefined &&
         hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)
@@ -643,7 +643,7 @@ function applyAutorangeMinOptions(v, ax) {
         return autorangeoptions.minallowed;
     }
 
-    if(
+    if (
         autorangeoptions &&
         autorangeoptions.clipmin !== undefined &&
         hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)
@@ -656,7 +656,7 @@ function applyAutorangeMinOptions(v, ax) {
 function applyAutorangeMaxOptions(v, ax) {
     var autorangeoptions = ax.autorangeoptions;
 
-    if(
+    if (
         autorangeoptions &&
         autorangeoptions.maxallowed !== undefined &&
         hasValidMinAndMax(ax, autorangeoptions.minallowed, autorangeoptions.maxallowed)
@@ -664,7 +664,7 @@ function applyAutorangeMaxOptions(v, ax) {
         return autorangeoptions.maxallowed;
     }
 
-    if(
+    if (
         autorangeoptions &&
         autorangeoptions.clipmax !== undefined &&
         hasValidMinAndMax(ax, autorangeoptions.clipmin, autorangeoptions.clipmax)
@@ -677,7 +677,7 @@ function applyAutorangeMaxOptions(v, ax) {
 
 function hasValidMinAndMax(ax, min, max) {
     // in case both min and max are defined, ensure min < max
-    if(
+    if (
         min !== undefined &&
         max !== undefined
     ) {
@@ -691,24 +691,24 @@ function hasValidMinAndMax(ax, min, max) {
 // this function should be (and is) called before reversing the range
 // so range[0] is the minimum and range[1] is the maximum
 function applyAutorangeOptions(range, ax) {
-    if(!ax || !ax.autorangeoptions) return range;
+    if (!ax || !ax.autorangeoptions) return range;
 
     var min = range[0];
     var max = range[1];
 
     var include = ax.autorangeoptions.include;
-    if(include !== undefined) {
+    if (include !== undefined) {
         var lMin = ax.d2l(min);
         var lMax = ax.d2l(max);
 
-        if(!Lib.isArrayOrTypedArray(include)) include = [include];
-        for(var i = 0; i < include.length; i++) {
+        if (!Lib.isArrayOrTypedArray(include)) include = [include];
+        for (var i = 0; i < include.length; i++) {
             var v = ax.d2l(include[i]);
-            if(lMin >= v) {
+            if (lMin >= v) {
                 lMin = v;
                 min = v;
             }
-            if(lMax <= v) {
+            if (lMax <= v) {
                 lMax = v;
                 max = v;
             }

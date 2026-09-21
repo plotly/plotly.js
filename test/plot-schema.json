@@ -5309,6 +5309,13 @@
               "impliedEdits": {},
               "valType": "any"
             },
+            "minrange": {
+              "description": "Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.",
+              "editType": "plot",
+              "impliedEdits": {},
+              "min": 0,
+              "valType": "number"
+            },
             "role": "object"
           },
           "autotickangles": {
@@ -6726,6 +6733,13 @@
               "impliedEdits": {},
               "valType": "any"
             },
+            "minrange": {
+              "description": "Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.",
+              "editType": "plot",
+              "impliedEdits": {},
+              "min": 0,
+              "valType": "number"
+            },
             "role": "object"
           },
           "autotypenumbers": {
@@ -7446,6 +7460,13 @@
               "impliedEdits": {},
               "valType": "any"
             },
+            "minrange": {
+              "description": "Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.",
+              "editType": "plot",
+              "impliedEdits": {},
+              "min": 0,
+              "valType": "number"
+            },
             "role": "object"
           },
           "autotypenumbers": {
@@ -8165,6 +8186,13 @@
               "editType": "plot",
               "impliedEdits": {},
               "valType": "any"
+            },
+            "minrange": {
+              "description": "Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.",
+              "editType": "plot",
+              "impliedEdits": {},
+              "min": 0,
+              "valType": "number"
             },
             "role": "object"
           },
@@ -13034,6 +13062,13 @@
             "impliedEdits": {},
             "valType": "any"
           },
+          "minrange": {
+            "description": "Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.",
+            "editType": "plot",
+            "impliedEdits": {},
+            "min": 0,
+            "valType": "number"
+          },
           "role": "object"
         },
         "autotickangles": {
@@ -14593,6 +14628,13 @@
             "editType": "plot",
             "impliedEdits": {},
             "valType": "any"
+          },
+          "minrange": {
+            "description": "Specifies the minimum span of the computed autorange, in linearized units. If the span is smaller than this value, the autorange is expanded symmetrically to match this minimum span. Has no effect when both `autorangeoptions.minallowed` and `autorangeoptions.maxallowed` are provided and valid. Subject to `autorangeoptions.clipmin` and `autorangeoptions.clipmax`.",
+            "editType": "plot",
+            "impliedEdits": {},
+            "min": 0,
+            "valType": "number"
           },
           "role": "object"
         },
