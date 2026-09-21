@@ -7,12 +7,28 @@
       "textposition": "auto",
       "x": [2, 2.15, 2.3, 2.1, 2.25, 2.4],
       "y": [8, 8.1, 8.2, 7.85, 7.95, 8.05],
-      "text": ["circle", "square", "diamond", "open circle", "star", "big text"],
+      "text": [
+        "circle",
+        "square",
+        "diamond",
+        "open circle",
+        "star",
+        "big text"
+      ],
       "marker": {
         "size": 12,
-        "symbol": ["circle", "square", "diamond", "circle-open", "star", "circle"]
+        "symbol": [
+          "circle",
+          "square",
+          "diamond",
+          "circle-open",
+          "star",
+          "circle"
+        ]
       },
-      "textfont": { "size": [11, 11, 11, 11, 11, 18] }
+      "textfont": {
+        "size": [11, 11, 11, 11, 11, 18]
+      }
     },
     {
       "name": "multi-line",
@@ -22,7 +38,10 @@
       "x": [5, 5.2, 5.1, 5.35],
       "y": [8, 8.1, 7.8, 7.9],
       "text": ["Two<br>lines", "one line", "plain", "Three<br>short<br>lines"],
-      "marker": { "size": 12, "color": "#d62728" }
+      "marker": {
+        "size": 12,
+        "color": "#d62728"
+      }
     },
     {
       "name": "bubbles",
@@ -32,7 +51,11 @@
       "x": [8, 8.4, 8.2],
       "y": [8, 8.1, 7.7],
       "text": ["bubble 40", "bubble 18", "bubble 8"],
-      "marker": { "size": [40, 18, 8], "color": "#2ca02c", "opacity": 0.6 }
+      "marker": {
+        "size": [40, 18, 8],
+        "color": "#2ca02c",
+        "opacity": 0.6
+      }
     },
     {
       "name": "text only",
@@ -42,7 +65,9 @@
       "x": [2, 2, 2.05],
       "y": [5, 5, 5],
       "text": ["one", "two", "three"],
-      "textfont": { "color": "#9467bd" }
+      "textfont": {
+        "color": "#9467bd"
+      }
     },
     {
       "name": "fixed positions mixed with auto",
@@ -52,7 +77,11 @@
       "x": [5, 5.05, 5.1, 5.15],
       "y": [5, 5.05, 5.1, 5.15],
       "text": ["fixed top", "auto A", "auto B", "fixed bottom"],
-      "marker": { "size": 12, "symbol": "square", "color": "#8c564b" }
+      "marker": {
+        "size": 12,
+        "symbol": "square",
+        "color": "#8c564b"
+      }
     },
     {
       "name": "edges and corners",
@@ -71,26 +100,49 @@
         "left edge",
         "right edge"
       ],
-      "marker": { "size": 12, "color": "#ff7f0e" }
+      "marker": {
+        "size": 12,
+        "color": "#ff7f0e"
+      }
     },
     {
-      "name": "cluster of eight",
+      "name": "clock: twelve points in clockwise order",
       "type": "scatter",
       "mode": "markers+text",
       "textposition": "auto",
-      "x": [8, 8.05, 8.1, 8.15, 8, 8.05, 8.1, 8.15],
-      "y": [4, 4.05, 4.1, 4.15, 4.2, 4.25, 4.3, 4.35],
-      "text": ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"],
-      "marker": { "size": 12, "color": "#17becf" }
+      "x": [
+        8.0, 8.075, 8.1299, 8.15, 8.1299, 8.075, 8.0, 7.925, 7.8701, 7.85,
+        7.8701, 7.925
+      ],
+      "y": [
+        4.15, 4.1299, 4.075, 4.0, 3.925, 3.8701, 3.85, 3.8701, 3.925, 4.0,
+        4.075, 4.1299
+      ],
+      "text": ["12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+      "marker": {
+        "size": 12,
+        "color": "#17becf"
+      }
     }
   ],
   "layout": {
-    "title": { "text": "textposition: auto" },
+    "title": {
+      "text": "textposition: auto"
+    },
     "width": 1000,
     "height": 640,
-    "margin": { "l": 50, "r": 30, "t": 60, "b": 50 },
+    "margin": {
+      "l": 50,
+      "r": 30,
+      "t": 60,
+      "b": 50
+    },
     "showlegend": false,
-    "xaxis": { "range": [0, 10] },
-    "yaxis": { "range": [0, 10] }
+    "xaxis": {
+      "range": [0, 10]
+    },
+    "yaxis": {
+      "range": [0, 10]
+    }
   }
 }
