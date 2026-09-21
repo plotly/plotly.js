@@ -3,7 +3,6 @@
 const d3 = require('@plotly/d3');
 const Lib = require('../../lib');
 const Drawing = require('../../components/drawing');
-const svgTextUtils = require('../../lib/svg_text_utils');
 const subTypes = require('./subtypes');
 
 // candidate positions, in order of preference
@@ -119,7 +118,6 @@ module.exports = function autoTextPosition(plotinfo, traceGroups) {
                 x: xa.c2p(d.x),
                 y: ya.c2p(d.y),
                 fontSize: Drawing.textPointFontSize(d, trace),
-                numLines: svgTextUtils.lineCount(tx),
                 bb: Drawing.bBox(tx.node())
             };
 

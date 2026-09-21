@@ -1254,7 +1254,7 @@ var LEADER_END_GAP = 2;
  * @returns `anchor` for the `text-anchor` attribute, `dx` and `dy` of the label group in px,
  *   and `leader` as `[x0, y0, x1, y1]` from the marker edge to the label, or null when `gap` is 0
  */
-drawing.textPointOffset = function (textPosition, fontSize, markerRadius, numLines, gap) {
+function textPointOffset(textPosition, fontSize, markerRadius, numLines, gap) {
     var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
     var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
     var sx = TEXTOFFSETSIGN[h];
@@ -1282,7 +1282,7 @@ drawing.textPointOffset = function (textPosition, fontSize, markerRadius, numLin
     }
 
     return out;
-};
+}
 
 /**
  * Compute the geometry of an *auto* text label from its measured box, so that
@@ -1293,7 +1293,7 @@ drawing.textPointOffset = function (textPosition, fontSize, markerRadius, numLin
  * @param markerSymbol - the marker symbol of the point, name or number
  * @param bb - the label box from `drawing.bBox`, relative to the text anchor
  * @param gap - extra px between the point and the label, set by the *auto* placement
- * @returns the same shape as `drawing.textPointOffset`
+ * @returns the same shape as the fixed-position geometry: `anchor`, `dx`, `dy`, and `leader`
  */
 drawing.textPointBoxOffset = function (textPosition, markerRadius, markerSymbol, bb, gap) {
     var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
@@ -1302,7 +1302,7 @@ drawing.textPointBoxOffset = function (textPosition, markerRadius, markerSymbol,
     var sy = TEXTOFFSETSIGN[v];
     var r = markerRadius || 0;
 
-    // the clearance the side positions of `drawing.textPointOffset` leave
+    // the clearance the side positions of the fixed-position geometry leave
     var clearance = (r ? r / 4 + 1 : 0) + (gap || 0);
 
     // a corner label keeps the same clearance along the diagonal: from the
@@ -1365,7 +1365,7 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
         var symbol = d.mx || (trace.marker || {}).symbol;
         offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, drawing.bBox(s.node()), d._tpAutoGap);
     } else {
-        offset = drawing.textPointOffset(
+        offset = textPointOffset(
             textPosition || 'middle center',
             drawing.textPointFontSize(d, trace),
             markerRadius,
