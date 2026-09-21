@@ -7337,7 +7337,7 @@ export interface ScatterData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
      * @default 'middle center'
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
@@ -8063,7 +8063,7 @@ export interface ScattercarpetData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
      * @default 'middle center'
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
@@ -8909,7 +8909,7 @@ export interface ScattermapData {
     /** Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size). Has an effect only when `type` is set to *symbol*. */
     textfont?: Font;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
      * @default 'middle center'
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto';
@@ -9098,7 +9098,7 @@ export interface ScatterpolarData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
      * @default 'middle center'
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
@@ -9491,7 +9491,7 @@ export interface ScattersmithData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
      * @default 'middle center'
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
@@ -9682,7 +9682,7 @@ export interface ScatterternaryData {
     /** Sets the text font. */
     textfont?: FontArray;
     /**
-     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
      * @default 'middle center'
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto')[];
@@ -12951,7 +12951,7 @@ export interface MapLayout {
             /** Sets the icon text font (color=map.layer.paint.text-color, size=map.layer.layout.text-size). Has an effect only when `type` is set to *symbol*. */
             textfont?: Font;
             /**
-             * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden.
+             * Sets the positions of the `text` elements with respects to the (x,y) coordinates. With *auto*, each label takes the first position around its point that overlaps no marker and no other label on the subplot. When the positions next to the point are taken, or another point sits close to the label, the label moves farther out with a leader line back to the point. A label with no free position is hidden. Auto placement considers markers and text labels only. It does not avoid annotations, shapes, images, or the legend.
              * @default 'middle center'
              */
             textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | 'auto';

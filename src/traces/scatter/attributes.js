@@ -676,7 +676,9 @@ module.exports = {
             'that overlaps no marker and no other label on the subplot.',
             'When the positions next to the point are taken, or another point',
             'sits close to the label, the label moves farther out with a leader',
-            'line back to the point. A label with no free position is hidden.'
+            'line back to the point. A label with no free position is hidden.',
+            'Auto placement considers markers and text labels only.',
+            'It does not avoid annotations, shapes, images, or the legend.'
         ].join(' ')
     },
     textfont: fontAttrs({
