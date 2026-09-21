@@ -860,6 +860,61 @@ describe('end-to-end scatter tests', function() {
             .then(done, done.fail);
         });
 
+        it('should place labels again after a zoom', function(done) {
+            var x = [];
+            var y = [];
+            var text = [];
+            for(var i = 0; i < 8; i++) {
+                x.push(2 + 0.02 * i);
+                y.push(2 + 0.02 * (i % 3));
+                text.push('point ' + i);
+            }
+
+            function countHidden() {
+                var n = 0;
+                gd.calcdata[0].forEach(function(d) {
+                    if(d._tpAuto === null) n++;
+                });
+                return n;
+            }
+
+            var hiddenAtStart;
+
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: x,
+                y: y,
+                text: text
+            }], layout)
+            .then(function() {
+                hiddenAtStart = countHidden();
+                expect(hiddenAtStart).toBeGreaterThan(0);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.relayout(gd, {'xaxis.range': [1.8, 2.4], 'yaxis.range': [1.8, 2.4]});
+            })
+            .then(function() {
+                expect(countHidden()).toBe(0);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                // the last three points fall outside this range
+                return Plotly.relayout(gd, {'xaxis.range': [1.8, 2.09], 'yaxis.range': [1.8, 2.4]});
+            })
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[5]._tpAuto).toBe(null);
+                expect(cd[6]._tpAuto).toBe(null);
+                expect(cd[7]._tpAuto).toBe(null);
+                expect(cd[0]._tpAuto).not.toBe(null);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                expect(countHidden()).toBe(hiddenAtStart);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
         it('should keep the placement across style edits and selection', function(done) {
             var transforms;
 

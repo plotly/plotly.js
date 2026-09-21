@@ -138,7 +138,10 @@ function place(index, label) {
     const step = LEADER_STEP * label.fontSize;
     const rings = step ? LEADER_RINGS : 0;
 
-    for (let ring = 0; ring <= rings; ring++) {
+    // a point outside the plot area gets no label, even when a candidate box would fit inside
+    const inside = label.x >= 0 && label.x <= index.width && label.y >= 0 && label.y <= index.height;
+
+    for (let ring = 0; inside && ring <= rings; ring++) {
         const gap = ring * step;
 
         for (let k = 0; k < label.positions.length; k++) {
