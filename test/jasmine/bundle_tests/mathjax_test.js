@@ -227,6 +227,47 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should strip a javascript: url from a tex \\href in an annotation', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {
+                    annotations: [{
+                        x: 2,
+                        y: 2,
+                        showarrow: false,
+                        text: '$\\href{javascript:alert(1)}{unsafe}$'
+                    }]
+                }
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var link = gd3.select('.annotation-text-math-group a');
+
+                expect(link.size()).toBe(1, 'annotation link exists');
+                expect(link.attr('href')).toBe(null, 'javascript: url stripped');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should strip a javascript: url from a tex \\href in non-hover legend text', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    name: '$\\href{javascript:alert(1)}{unsafe}$'
+                }],
+                layout: {showlegend: true}
+            })
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var link = gd3.select('.legendtext-math-group a');
+
+                expect(link.size()).toBe(1, 'legend link exists');
+                expect(link.attr('href')).toBe(null, 'javascript: url stripped');
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('Test hover tex rendering:', function() {
