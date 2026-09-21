@@ -6,7 +6,7 @@
       "mode": "markers+text",
       "textposition": "auto",
       "x": [2, 2.15, 2.3, 2.1, 2.25, 2.4],
-      "y": [8, 8.1, 8.2, 7.85, 7.95, 8.05],
+      "y": [7, 7.1, 7.2, 6.85, 6.95, 7.05],
       "text": [
         "circle",
         "square",
@@ -36,7 +36,7 @@
       "mode": "markers+text",
       "textposition": "auto",
       "x": [5, 5.2, 5.1, 5.35],
-      "y": [8, 8.1, 7.8, 7.9],
+      "y": [7, 7.1, 6.8, 6.9],
       "text": ["Two<br>lines", "one line", "plain", "Three<br>short<br>lines"],
       "marker": {
         "size": 12,
@@ -49,7 +49,7 @@
       "mode": "markers+text",
       "textposition": "auto",
       "x": [8, 8.4, 8.2],
-      "y": [8, 8.1, 7.7],
+      "y": [7, 7.1, 6.7],
       "text": ["bubble 40", "bubble 18", "bubble 8"],
       "marker": {
         "size": [40, 18, 8],
@@ -58,11 +58,30 @@
       }
     },
     {
+      "name": "clock: natural side",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [
+        10.8, 10.875, 10.9299, 10.95, 10.9299, 10.875, 10.8, 10.725, 10.6701,
+        10.65, 10.6701, 10.725
+      ],
+      "y": [
+        7.15, 7.1299, 7.075, 7.0, 6.925, 6.8701, 6.85, 6.8701, 6.925, 7.0,
+        7.075, 7.1299
+      ],
+      "text": ["12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+      "marker": {
+        "size": 12,
+        "color": "#17becf"
+      }
+    },
+    {
       "name": "text only",
       "type": "scatter",
       "mode": "text",
       "textposition": "auto",
-      "x": [2, 2, 2.05],
+      "x": [1, 1, 1.05],
       "y": [5, 5, 5],
       "text": ["one", "two", "three"],
       "textfont": {
@@ -70,11 +89,11 @@
       }
     },
     {
-      "name": "fixed positions mixed with auto",
+      "name": "fixed mixed with auto",
       "type": "scatter",
       "mode": "markers+text",
       "textposition": ["top center", "auto", "auto", "bottom center"],
-      "x": [5, 5.05, 5.1, 5.15],
+      "x": [3.2, 3.25, 3.3, 3.35],
       "y": [5, 5.05, 5.1, 5.15],
       "text": ["fixed top", "auto A", "auto B", "fixed bottom"],
       "marker": {
@@ -84,12 +103,135 @@
       }
     },
     {
+      "name": "order trap: obstacles",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [5.7, 6.3, 6.0, 5.5, 5.8],
+      "y": [5, 5, 4.72, 5.28, 5.55],
+      "text": ["", "", "", "", ""],
+      "marker": {
+        "size": 12,
+        "color": "#7f7f7f"
+      }
+    },
+    {
+      "name": "order trap",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [5.8, 6.0],
+      "y": [5.28, 5.0],
+      "text": ["A: first in data", "B: boxed in"],
+      "marker": {
+        "size": 12,
+        "color": "#e377c2"
+      }
+    },
+    {
+      "name": "diagonal chain",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [9.0, 9.22, 9.44, 9.66, 9.88, 10.1, 10.32],
+      "y": [
+        4.4, 4.6000000000000005, 4.800000000000001, 5.0, 5.2, 5.4,
+        5.6000000000000005
+      ],
+      "text": ["d1", "d2", "d3", "d4", "d5", "d6", "d7"],
+      "marker": {
+        "size": 12,
+        "color": "#bcbd22"
+      }
+    },
+    {
+      "name": "row: alternate sides",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [
+        1.0, 1.32, 1.6400000000000001, 1.96, 2.2800000000000002, 2.6, 2.92, 3.24
+      ],
+      "y": [3, 3, 3, 3, 3, 3, 3, 3],
+      "text": ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"],
+      "marker": {
+        "size": 12,
+        "color": "#1f77b4"
+      }
+    },
+    {
+      "name": "ring: inside or outside",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [5.2, 5.5889, 5.75, 5.5889, 5.2, 4.8111, 4.65, 4.8111],
+      "y": [3.55, 3.3889, 3.0, 2.6111, 2.45, 2.6111, 3.0, 3.3889],
+      "text": ["N", "NE", "E", "SE", "S", "SW", "W", "NW"],
+      "marker": {
+        "size": 12,
+        "color": "#ff7f0e"
+      }
+    },
+    {
+      "name": "two clusters: crossing leaders",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [
+        8.6, 8.7141, 8.6705, 8.5295, 8.4859, 9.5, 9.6141, 9.5705, 9.4295, 9.3859
+      ],
+      "y": [
+        3.12, 3.0371, 2.9029, 2.9029, 3.0371, 3.12, 3.0371, 2.9029, 2.9029,
+        3.0371
+      ],
+      "text": ["L1", "L2", "L3", "L4", "L5", "R1", "R2", "R3", "R4", "R5"],
+      "marker": {
+        "size": 12,
+        "color": "#2ca02c"
+      }
+    },
+    {
+      "name": "blob: how many fit",
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "x": [
+        10.841, 10.686, 11.136, 10.615, 11.032, 10.879, 10.602, 11.007, 10.584,
+        10.94, 10.613, 10.632, 10.932, 11.294, 10.661
+      ],
+      "y": [
+        2.779, 3.102, 3.358, 3.062, 2.917, 3.381, 2.637, 3.287, 2.832, 2.715,
+        2.694, 2.847, 3.253, 2.745, 3.065
+      ],
+      "text": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7",
+        "b8",
+        "b9",
+        "b10",
+        "b11",
+        "b12",
+        "b13",
+        "b14",
+        "b15"
+      ],
+      "marker": {
+        "size": 12,
+        "color": "#d62728"
+      }
+    },
+    {
       "name": "edges and corners",
       "type": "scatter",
       "mode": "markers+text",
       "textposition": "auto",
-      "x": [0, 10, 0, 10, 5, 5, 0, 10],
-      "y": [10, 10, 0, 0, 10, 0, 5, 5],
+      "x": [0, 12, 0, 12, 6, 6, 0, 12],
+      "y": [8, 8, 0, 0, 8, 0, 4.2, 4.2],
       "text": [
         "top-left corner",
         "top-right corner",
@@ -104,33 +246,14 @@
         "size": 12,
         "color": "#ff7f0e"
       }
-    },
-    {
-      "name": "clock: twelve points in clockwise order",
-      "type": "scatter",
-      "mode": "markers+text",
-      "textposition": "auto",
-      "x": [
-        8.0, 8.075, 8.1299, 8.15, 8.1299, 8.075, 8.0, 7.925, 7.8701, 7.85,
-        7.8701, 7.925
-      ],
-      "y": [
-        4.15, 4.1299, 4.075, 4.0, 3.925, 3.8701, 3.85, 3.8701, 3.925, 4.0,
-        4.075, 4.1299
-      ],
-      "text": ["12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
-      "marker": {
-        "size": 12,
-        "color": "#17becf"
-      }
     }
   ],
   "layout": {
     "title": {
       "text": "textposition: auto"
     },
-    "width": 1000,
-    "height": 640,
+    "width": 1200,
+    "height": 800,
     "margin": {
       "l": 50,
       "r": 30,
@@ -139,10 +262,10 @@
     },
     "showlegend": false,
     "xaxis": {
-      "range": [0, 10]
+      "range": [0, 12]
     },
     "yaxis": {
-      "range": [0, 10]
+      "range": [0, 8]
     }
   }
 }
