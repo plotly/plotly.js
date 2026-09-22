@@ -267,8 +267,8 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 // to a point that is not currently hovered over; returns false otherwise.
 function canSpikeToNonHoveredPoint(xa, ya) {
     return Boolean(
-        (xa && xa.showspikes && xa.spikesnap !== 'hovered data') ||
-        (ya && ya.showspikes && ya.spikesnap !== 'hovered data')
+        (xa?.showspikes && xa.spikesnap !== 'hovered data') ||
+        (ya?.showspikes && ya.spikesnap !== 'hovered data')
     );
 }
 
@@ -690,7 +690,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                         return point.spikeDistance <= spikedistance;
                     });
                 }
-                if (closestPoints && closestPoints.length) {
+                if (closestPoints?.length) {
                     var tmpPoint;
                     var closestVPoints = closestPoints.filter(function (point) {
                         return point.xa.showspikes && point.xa.spikesnap !== 'hovered data';
