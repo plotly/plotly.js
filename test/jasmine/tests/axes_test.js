@@ -8317,6 +8317,45 @@ describe('more react tests', function() {
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.173, 2]);
         }).then(done, done.fail);
     });
+
+    it('should not carry over the forced minimum tick spacing of the previous figure', function(done) {
+        var layout = {width: 700, height: 400};
+
+        var scatterFig = {
+            data: [{y: [1, 2, 3]}],
+            layout: layout
+        };
+
+        // one box per integer position - each box forces a tick of its own
+        var boxFig = {
+            data: [{
+                type: 'box',
+                x: [1, 1, 2, 2, 3, 3],
+                y: [1, 2, 3, 4, 5, 6]
+            }],
+            layout: layout
+        };
+
+        function getXLabels() {
+            return gd._fullLayout.xaxis._vals.map(function(d) { return d.text; });
+        }
+
+        Plotly.newPlot(gd, boxFig)
+        .then(function() {
+            expect(getXLabels()).toEqual(['1', '2', '3']);
+
+            // scatter cancels the forcing for its own figure only
+            return Plotly.newPlot(gd, scatterFig);
+        })
+        .then(function() {
+            return Plotly.react(gd, boxFig);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis._minDtick).toBe(1);
+            expect(getXLabels()).toEqual(['1', '2', '3']);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('category preservation tests on gd passed to Plotly.react()', function() {
