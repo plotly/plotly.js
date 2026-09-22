@@ -294,6 +294,7 @@ const CELL_SIZE = 64;
  *   `fontSize` - the font size in px, which scales the leader step and the clearance from other markers;
  *   `priority` - a number, higher first, 0 when absent;
  *   `onPoint` - true when the label may also sit on its point;
+ *   `prefer` - the position the label had before, tried first so a redraw does not move it while it is free;
  *   `rect(position, gap)` - the box of the label at a `textposition` value, `gap` px farther
  *     from the point, as `{x0, y0, x1, y1, leader}`, with `leader` as `[x0, y0, x1, y1]`
  *     from the marker edge to the box when `gap` is above 0, else null
@@ -402,16 +403,21 @@ function orderPositions(index, label, owner) {
         }
     }
 
-    if (!ax && !ay) return positions;
+    let out = positions;
+    if (ax || ay) {
+        const scored = positions.map((pos, k) => {
+            const sx = pos.indexOf('right') !== -1 ? 1 : pos.indexOf('left') !== -1 ? -1 : 0;
+            const sy = pos.indexOf('bottom') !== -1 ? 1 : pos.indexOf('top') !== -1 ? -1 : 0;
+            const norm = Math.sqrt(sx * sx + sy * sy) || 1;
+            return { pos, k, score: (sx * ax + sy * ay) / norm };
+        });
+        scored.sort((a, b) => b.score - a.score || a.k - b.k);
+        out = scored.map((s) => s.pos);
+    }
 
-    const scored = positions.map((pos, k) => {
-        const sx = pos.indexOf('right') !== -1 ? 1 : pos.indexOf('left') !== -1 ? -1 : 0;
-        const sy = pos.indexOf('bottom') !== -1 ? 1 : pos.indexOf('top') !== -1 ? -1 : 0;
-        const norm = Math.sqrt(sx * sx + sy * sy) || 1;
-        return { pos, k, score: (sx * ax + sy * ay) / norm };
-    });
-    scored.sort((a, b) => b.score - a.score || a.k - b.k);
-    return scored.map((s) => s.pos);
+    const prefer = label.prefer;
+    if (prefer && out.indexOf(prefer) > 0) out = [prefer, ...out.filter((pos) => pos !== prefer)];
+    return out;
 }
 
 // true when another marker sits within `margin` px of a label box,

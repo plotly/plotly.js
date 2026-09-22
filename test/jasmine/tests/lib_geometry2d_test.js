@@ -118,6 +118,15 @@ describe('placeLabels', function() {
         expect(out[0].position).not.toBe(out[1].position);
     });
 
+    it('keeps the preferred position of a label while it is free', function() {
+        var out = place([label(100, 100, {prefer: 'bottom center'})]);
+        expect(out[0].position).toBe('bottom center');
+
+        var fixed = {x0: 80, y0: 108, x1: 120, y1: 130};
+        out = place([label(100, 100, {prefer: 'bottom center'})], {fixed: [fixed]});
+        expect(out[0].position).toBe('top center');
+    });
+
     it('hides a label outside the area', function() {
         var out = place([label(300, 100)]);
         expect(out[0]).toBe(null);

@@ -839,6 +839,36 @@ describe('end-to-end scatter tests', function() {
             .then(done, done.fail);
         });
 
+        it('should keep the position of a label across a zoom while it is free', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: [2],
+                y: [2],
+                text: ['auto']
+            }, {
+                mode: 'markers+text',
+                textposition: 'bottom center',
+                x: [2],
+                y: [2.25],
+                text: ['fixed']
+            }], layout)
+            .then(function() {
+                // the fixed label hangs over the point, so the *auto* label goes below it
+                expect(gd.calcdata[0][0]._tpAuto).toBe('bottom center');
+                return Plotly.relayout(gd, {'xaxis.range': [1.5, 2.5], 'yaxis.range': [1.5, 2.5]});
+            })
+            .then(function() {
+                // the zoom frees the top, but the label stays where it was
+                expect(gd.calcdata[0][0]._tpAuto).toBe('bottom center');
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                expect(gd.calcdata[0][0]._tpAuto).toBe('bottom center');
+            })
+            .then(done, done.fail);
+        });
+
         it('should let an isolated label take the first candidate', function(done) {
             Plotly.newPlot(gd, [{
                 mode: 'markers+text',
