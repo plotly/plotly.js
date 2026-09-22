@@ -61,6 +61,32 @@ describe('Test scatter', function() {
             expect(traceOut.textposition).toBe('auto');
         });
 
+        it('should coerce textpriority with *auto* textposition only', function() {
+            traceIn = {
+                x: [1, 2],
+                y: [1, 2],
+                mode: 'markers+text',
+                text: ['a', 'b'],
+                textposition: 'auto',
+                textpriority: [2, 1]
+            };
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textpriority).toEqual([2, 1]);
+
+            traceIn.textposition = ['top center', 'auto'];
+            delete traceIn.textpriority;
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textpriority).toBe(0);
+
+            traceIn.textposition = 'top center';
+            traceIn.textpriority = [2, 1];
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textpriority).toBeUndefined();
+        });
+
         it('should set visible to false when x and y are empty', function() {
             traceIn = {};
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -788,6 +814,27 @@ describe('end-to-end scatter tests', function() {
                 expect(boxes.length).toBe(40 - hidden);
                 expect(countOverlaps(boxes)).toBe(0);
                 expect(d3SelectAll('.textpoint path.textleader').size()).toBe(leaders);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should place the labels with the highest textpriority first', function(done) {
+            var stack = makeStack(3);
+            stack.textpriority = [0, 0, 1];
+
+            Plotly.newPlot(gd, [stack], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[2]._tpAuto).toBe('top center');
+                expect(cd[0]._tpAuto).not.toBe('top center');
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+
+                // a trace-wide priority puts a whole trace ahead of the others
+                return Plotly.newPlot(gd, [makeStack(1), Lib.extendFlat(makeStack(1), {textpriority: 1})], layout);
+            })
+            .then(function() {
+                expect(gd.calcdata[1][0]._tpAuto).toBe('top center');
+                expect(gd.calcdata[0][0]._tpAuto).not.toBe('top center');
             })
             .then(done, done.fail);
         });
