@@ -182,6 +182,7 @@
         "dflt": false,
         "valType": "boolean"
       },
+      "description": "Determines which parts of the graph a user can edit directly. `editable` sets every key here at once, and a key set here overrides it. `staticPlot` disables all of them.",
       "legendPosition": {
         "description": "Enables moving the legend.",
         "dflt": false,
@@ -329,9 +330,39 @@
       "valType": "boolean"
     },
     "toImageButtonOptions": {
-      "description": "Statically override options for toImage modebar button allowed keys are format, filename, width, height, scale see ../components/modebar/buttons.js",
-      "dflt": {},
-      "valType": "any"
+      "description": "Statically overrides options for the toImage modebar button. The button reads only `format`, `filename`, `width`, `height` and `scale`, and drops every other key.",
+      "filename": {
+        "description": "Sets the name of the downloaded file, without an extension. The button appends the extension that matches `format`. The name defaults to the plot title, then the plot subtitle, then *plot-image*.",
+        "valType": "string"
+      },
+      "format": {
+        "description": "Sets the format of exported image.",
+        "dflt": "png",
+        "valType": "enumerated",
+        "values": [
+          "png",
+          "jpeg",
+          "webp",
+          "svg",
+          "full-json"
+        ]
+      },
+      "height": {
+        "description": "Sets the exported image height. Defaults to the value found in `layout.height` If set to *null*, the exported image height will match the current graph height.",
+        "min": 1,
+        "valType": "number"
+      },
+      "role": "object",
+      "scale": {
+        "description": "Sets a scaling for the generated image. If set, all features of a graphs (e.g. text, line width) are scaled, unlike simply setting a bigger *width* and *height*.",
+        "min": 0,
+        "valType": "number"
+      },
+      "width": {
+        "description": "Sets the exported image width. Defaults to the value found in `layout.width` If set to *null*, the exported image width will match the current graph width.",
+        "min": 1,
+        "valType": "number"
+      }
     },
     "topojsonURL": {
       "description": "Set the URL to topojson used in geo charts. By default, the topojson files are fetched from cdn.plot.ly. For example, set this option to: <path-to-plotly.js>/dist/topojson/ to render geographical feature using the topojson files that ship with the plotly.js module.",
