@@ -51,6 +51,79 @@ describe('segmentsIntersect', function() {
     });
 });
 
+describe('placeLabels', function() {
+    var W = 20;
+    var H = 10;
+
+    // a W x H box next to its point, like a text label with a 5px marker
+    function rect(x, y) {
+        return function(pos, gap) {
+            var sx = pos.indexOf('right') !== -1 ? 1 : pos.indexOf('left') !== -1 ? -1 : 0;
+            var sy = pos.indexOf('bottom') !== -1 ? 1 : pos.indexOf('top') !== -1 ? -1 : 0;
+            var r = 6 + gap;
+            var x0 = x + sx * r - (sx > 0 ? 0 : sx < 0 ? W : W / 2);
+            var y0 = y + sy * r - (sy > 0 ? 0 : sy < 0 ? H : H / 2);
+            return {
+                x0: x0,
+                y0: y0,
+                x1: x0 + W,
+                y1: y0 + H,
+                leader: gap ? [x + sx * 5, y + sy * 5, x + sx * r, y + sy * r] : null
+            };
+        };
+    }
+
+    function label(x, y, opts) {
+        return Object.assign({x: x, y: y, owner: {}, radius: 5, fontSize: 10, rect: rect(x, y)}, opts);
+    }
+
+    function marker(lab) {
+        return {x0: lab.x - 5, y0: lab.y - 5, x1: lab.x + 5, y1: lab.y + 5, owner: lab.owner};
+    }
+
+    function place(labels, opts) {
+        return geom2d.placeLabels(Object.assign({width: 200, height: 200, labels: labels}, opts));
+    }
+
+    it('places an isolated label at the first position', function() {
+        var out = place([label(100, 100)]);
+        expect(out[0].position).toBe('top center');
+        expect(out[0].gap).toBe(0);
+        expect(out[0].leader).toBe(null);
+    });
+
+    it('places labels in order of priority, then in the given order', function() {
+        var a = label(100, 100, {onPoint: true});
+        var b = label(100, 100, {onPoint: true, priority: 1});
+        var out = place([a, b]);
+        expect(out[1].position).toBe('middle center');
+        expect(out[0].position).toBe('top center');
+    });
+
+    it('avoids fixed boxes and the markers of other points', function() {
+        var a = label(100, 100);
+        var fixed = {x0: 80, y0: 70, x1: 120, y1: 92, owner: {}};
+        var out = place([a], {fixed: [fixed], markers: [marker(a)]});
+        expect(out[0].position).toBe('bottom center');
+        expect(out[0].gap).toBe(0);
+    });
+
+    it('moves a label out with a leader line when another marker is close', function() {
+        var a = label(100, 100);
+        var b = label(102, 102);
+        var out = place([a, b], {markers: [marker(a), marker(b)]});
+        expect(out[0].gap).toBeGreaterThan(0);
+        expect(out[1].gap).toBeGreaterThan(0);
+        expect(out[0].leader.length).toBe(4);
+        expect(out[0].position).not.toBe(out[1].position);
+    });
+
+    it('hides a label outside the area', function() {
+        var out = place([label(300, 100)]);
+        expect(out[0]).toBe(null);
+    });
+});
+
 describe('segmentDistance', function() {
     function check(x1, y1, x2, y2, x3, y3, x4, y4, expected) {
         var result1 = geom2d.segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4);
