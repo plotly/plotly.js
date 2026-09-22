@@ -12,6 +12,12 @@
  * at the moment.
  */
 
+const { format, width, height, scale } = require('./to_image_attributes').default;
+
+// `toImage` owns the scale default, not the button. A default here would reach
+// `downloadImage` on every click and change what the caller receives.
+const { dflt: scaleDflt, ...buttonScale } = scale;
+
 var configAttributes = {
     staticPlot: {
         valType: 'boolean',
@@ -279,13 +285,24 @@ var configAttributes = {
         ].join(' ')
     },
     toImageButtonOptions: {
-        valType: 'any',
-        dflt: {},
         description: [
-            'Statically override options for toImage modebar button',
-            'allowed keys are format, filename, width, height, scale',
-            'see ../components/modebar/buttons.js'
-        ].join(' ')
+            'Statically overrides options for the toImage modebar button.',
+            'The button reads only `format`, `filename`, `width`, `height` and `scale`,',
+            'and drops every other key.'
+        ].join(' '),
+        format,
+        filename: {
+            valType: 'string',
+            description: [
+                'Sets the name of the downloaded file, without an extension.',
+                'The button appends the extension that matches `format`.',
+                'The name defaults to the plot title, then the plot subtitle,',
+                'then *plot-image*.'
+            ].join(' ')
+        },
+        width,
+        height,
+        scale: buttonScale
     },
     displaylogo: {
         valType: 'boolean',
@@ -414,12 +431,17 @@ var configAttributes = {
 var dfltConfig = {};
 
 function crawl(src, target) {
-    for(var k in src) {
-        var obj = src[k];
-        if(obj.valType) {
-            target[k] = obj.dflt;
+    for (const k in src) {
+        const obj = src[k];
+        // A container carries its own `description` string beside the child
+        // attributes. Recursing into a string never terminates.
+        if (typeof obj !== 'object' || obj === null) continue;
+        if (obj.valType) {
+            // An attribute without a `dflt` seeds no key. A key holding
+            // `undefined` reads as present to `in`, which callers test.
+            if ('dflt' in obj) target[k] = obj.dflt;
         } else {
-            if(!target[k]) {
+            if (!target[k]) {
                 target[k] = {};
             }
             crawl(obj, target[k]);

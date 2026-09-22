@@ -32,6 +32,8 @@ export type PatternShape = '' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.';
 
 export type TransitionEasing = 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'circle' | 'elastic' | 'back' | 'bounce' | 'linear-in' | 'quad-in' | 'cubic-in' | 'sin-in' | 'exp-in' | 'circle-in' | 'elastic-in' | 'back-in' | 'bounce-in' | 'linear-out' | 'quad-out' | 'cubic-out' | 'sin-out' | 'exp-out' | 'circle-out' | 'elastic-out' | 'back-out' | 'bounce-out' | 'linear-in-out' | 'quad-in-out' | 'cubic-in-out' | 'sin-in-out' | 'exp-in-out' | 'circle-in-out' | 'elastic-in-out' | 'back-in-out' | 'bounce-in-out';
 
+export type ToImageFormat = 'png' | 'jpeg' | 'webp' | 'svg' | 'full-json';
+
 export type TraceType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'quiver' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'violin' | 'volume' | 'waterfall';
 
 /** @deprecated Renamed to TraceType. */
@@ -16700,6 +16702,31 @@ export interface Edits {
     titleText?: boolean;
 }
 
+export interface ToImageButtonOptions {
+    /** Sets the name of the downloaded file, without an extension. The button appends the extension that matches `format`. The name defaults to the plot title, then the plot subtitle, then *plot-image*. */
+    filename?: string;
+    /**
+     * Sets the format of exported image.
+     * @default 'png'
+     */
+    format?: ToImageFormat;
+    /**
+     * Sets the exported image height. Defaults to the value found in `layout.height` If set to *null*, the exported image height will match the current graph height.
+     * Minimum: 1
+     */
+    height?: number | null;
+    /**
+     * Sets a scaling for the generated image. If set, all features of a graphs (e.g. text, line width) are scaled, unlike simply setting a bigger *width* and *height*.
+     * Minimum: 0
+     */
+    scale?: number;
+    /**
+     * Sets the exported image width. Defaults to the value found in `layout.width` If set to *null*, the exported image width will match the current graph width.
+     * Minimum: 1
+     */
+    width?: number | null;
+}
+
 export interface ConfigBase {
     /**
      * Determines whether the graphs are plotted with respect to layout.autosize:true and infer its container size.
@@ -16848,11 +16875,8 @@ export interface ConfigBase {
      * @default false
      */
     staticPlot?: boolean;
-    /**
-     * Statically override options for toImage modebar button allowed keys are format, filename, width, height, scale see ../components/modebar/buttons.js
-     * @default {}
-     */
-    toImageButtonOptions?: any;
+    /** Statically overrides options for the toImage modebar button. The button reads only `format`, `filename`, `width`, `height` and `scale`, and drops every other key. */
+    toImageButtonOptions?: ToImageButtonOptions;
     /**
      * Set the URL to topojson used in geo charts. By default, the topojson files are fetched from cdn.plot.ly. For example, set this option to: <path-to-plotly.js>/dist/topojson/ to render geographical feature using the topojson files that ship with the plotly.js module.
      * @default 'https://cdn.plot.ly/un/'
