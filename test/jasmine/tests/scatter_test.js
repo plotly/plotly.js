@@ -722,10 +722,16 @@ describe('end-to-end scatter tests', function() {
 
         function visibleLabelBoxes() {
             var boxes = [];
-            d3SelectAll('.textpoint text').each(function() {
-                if(this.style.display !== 'none') boxes.push(this.getBoundingClientRect());
+            d3SelectAll('.textpoint').each(function() {
+                if(this.style.display !== 'none') boxes.push(this.querySelector('text').getBoundingClientRect());
             });
             return boxes;
+        }
+
+        function hiddenLabelCount() {
+            return d3SelectAll('.textpoint').filter(function() {
+                return this.style.display === 'none';
+            }).size();
         }
 
         function countOverlaps(boxes) {
@@ -798,9 +804,7 @@ describe('end-to-end scatter tests', function() {
                 expect(gd.calcdata[0][0]._tpAuto).toBe('top center');
                 expect(gd.calcdata[0][1]._tpAuto).toBe('top center');
                 expect(d3SelectAll('.textpoint path.textleader').size()).toBe(0);
-                expect(d3SelectAll('.textpoint text').filter(function() {
-                    return this.style.display === 'none';
-                }).size()).toBe(0);
+                expect(hiddenLabelCount()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -954,9 +958,38 @@ describe('end-to-end scatter tests', function() {
                 var cd = gd.calcdata[0];
                 expect(cd[0]._tpAuto).toBeUndefined();
                 expect(d3SelectAll('.textpoint path.textleader').size()).toBe(0);
-                expect(d3SelectAll('.textpoint text').filter(function() {
-                    return this.style.display === 'none';
-                }).size()).toBe(0);
+                expect(hiddenLabelCount()).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should draw the leader lines at the new point positions after an animation', function(done) {
+            function leaderPaths() {
+                var out = [];
+                d3SelectAll('.textpoint path.textleader').each(function() {
+                    out.push(d3Select(this).attr('d'));
+                });
+                return out;
+            }
+
+            var animated;
+
+            Plotly.newPlot(gd, [makeStack(3)], layout)
+            .then(function() {
+                expect(leaderPaths().length).toBe(3);
+                return Plotly.animate(gd, [{data: [{x: [1, 1, 1], y: [3, 3, 3]}]}], {
+                    frame: {redraw: false, duration: 100},
+                    transition: {duration: 100}
+                });
+            })
+            .then(function() {
+                animated = leaderPaths();
+                expect(animated.length).toBe(3);
+                return Plotly.redraw(gd);
+            })
+            .then(function() {
+                // a full redraw draws the leader lines where the animation should have left them
+                expect(leaderPaths()).toEqual(animated);
             })
             .then(done, done.fail);
         });

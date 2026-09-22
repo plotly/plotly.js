@@ -62,13 +62,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
             scatterLayer.selectAll('g.trace').each(function(d, i) {
                 plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
             });
-            autoTextPosition(plotinfo, scatterLayer.selectAll('g.trace'));
+            autoTextPosition(gd, plotinfo, scatterLayer.selectAll('g.trace'));
         });
     } else {
         join.each(function(d, i) {
             plotOne(gd, i, plotinfo, d, cdscatterSorted, this, transitionOpts);
         });
-        autoTextPosition(plotinfo, join);
+        autoTextPosition(gd, plotinfo, join);
     }
 
     if(isFullReplot) {

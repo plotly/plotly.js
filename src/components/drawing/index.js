@@ -1250,11 +1250,9 @@ var LEADER_END_GAP = 2;
  * @param fontSize - the font size in px
  * @param markerRadius - the calculated marker radius in px, or 0 without markers
  * @param numLines - the line count of the label
- * @param gap - extra px between the point and the label, set by the *auto* placement
- * @returns `anchor` for the `text-anchor` attribute, `dx` and `dy` of the label group in px,
- *   and `leader` as `[x0, y0, x1, y1]` from the marker edge to the label, or null when `gap` is 0
+ * @returns `anchor` for the `text-anchor` attribute, and `dx` and `dy` of the label group in px
  */
-function textPointOffset(textPosition, fontSize, markerRadius, numLines, gap) {
+function textPointOffset(textPosition, fontSize, markerRadius, numLines) {
     var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
     var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
     var sx = TEXTOFFSETSIGN[h];
@@ -1263,25 +1261,14 @@ function textPointOffset(textPosition, fontSize, markerRadius, numLines, gap) {
     // if markers are shown, offset a little more than
     // the nominal marker size
     // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-    var r0 = markerRadius ? markerRadius / 0.8 + 1 : 0;
-    var r = r0 + (gap || 0);
+    var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
 
     var lineSpan = ((numLines || 1) - 1) * LINE_SPACING + 1;
-    var out = {
+    return {
         anchor: h,
         dx: sx * r,
-        dy: fontSize * 0.75 + sy * r + ((sy - 1) * lineSpan * fontSize) / 2,
-        leader: null
+        dy: fontSize * 0.75 + sy * r + ((sy - 1) * lineSpan * fontSize) / 2
     };
-
-    if (gap > 0 && (sx || sy)) {
-        var norm = Math.sqrt(sx * sx + sy * sy);
-        var ux = sx / norm;
-        var uy = sy / norm;
-        out.leader = [ux * r0, uy * r0, sx * r - ux * LEADER_END_GAP, sy * r - uy * LEADER_END_GAP];
-    }
-
-    return out;
 }
 
 /**
@@ -1346,6 +1333,23 @@ function getTextPosition(d, trace) {
 }
 
 /**
+ * Measure a text label, from its `<text>` node or from the MathJax render that replaces it.
+ *
+ * @param s - d3 selection of one `<text>` element, inside its own `<g>`
+ * @returns the label box from `drawing.bBox`, with `top` and `bottom` relative to the text anchor
+ */
+drawing.textPointBBox = function (s) {
+    var math = d3.select(s.node().parentNode).select('g.text-math-group');
+    if (!math.size()) return drawing.bBox(s.node());
+
+    var bb = drawing.bBox(math.node());
+    // the MathJax svg is placed in the frame of the `<text>` node
+    bb.top = +math.select('svg').attr('y') - +s.attr('y');
+    bb.bottom = bb.top + bb.height;
+    return bb;
+};
+
+/**
  * Position a text label relative to its point, and join its leader line.
  *
  * @param s - d3 selection of one `<text>` element, inside its own `<g>`
@@ -1356,39 +1360,43 @@ function getTextPosition(d, trace) {
  */
 drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent) {
     var group = d3.select(s.node().parentNode);
+    var isAuto = (d.tp || trace.textposition) === 'auto';
     var textPosition = getTextPosition(d, trace);
 
-    s.style('display', textPosition === null ? 'none' : null);
-
     var offset;
-    if (textPosition && (d.tp || trace.textposition) === 'auto') {
+    if (isAuto && textPosition) {
         var symbol = d.mx || (trace.marker || {}).symbol;
-        offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, drawing.bBox(s.node()), d._tpAutoGap);
+        var bb = drawing.textPointBBox(s);
+        offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, bb, d._tpAutoGap);
+
+        // a MathJax render is aligned to the anchor it had when it rendered
+        group.select('svg.text-math').attr('x', +s.attr('x') - (bb.width * (1 - TEXTOFFSETSIGN[offset.anchor])) / 2);
     } else {
         offset = textPointOffset(
             textPosition || 'middle center',
             drawing.textPointFontSize(d, trace),
             markerRadius,
-            svgTextUtils.lineCount(s),
-            d._tpAutoGap
+            svgTextUtils.lineCount(s)
         );
     }
 
     // fix the overall text group position
     s.attr('text-anchor', offset.anchor);
     if (!dontTouchParent) {
+        // the whole group, so that a MathJax render is hidden with its source text
+        group.style('display', textPosition === null ? 'none' : null);
         group.attr('transform', strTranslate(offset.dx, offset.dy));
     }
 
-    var leader = group.selectAll('path.textleader').data(offset.leader ? [offset.leader] : []);
+    var leader = group.selectAll('path.textleader').data(d._tpAutoLeader ? [d._tpAutoLeader] : []);
     leader.exit().remove();
     leader.enter().insert('path', ':first-child').classed('textleader', true).style('fill', 'none');
     leader.each(function (seg) {
-        // the group is translated by (dx, dy), so the point sits at (x - dx, y - dy) in the group frame
-        var x = +s.attr('x') - offset.dx;
-        var y = +s.attr('y') - offset.dy;
+        // the leader is set in the plot frame, and the group is translated by (dx, dy)
+        var dx = offset.dx;
+        var dy = offset.dy;
         d3.select(this)
-            .attr('d', 'M' + (x + seg[0]) + ',' + (y + seg[1]) + 'L' + (x + seg[2]) + ',' + (y + seg[3]))
+            .attr('d', 'M' + (seg[0] - dx) + ',' + (seg[1] - dy) + 'L' + (seg[2] - dx) + ',' + (seg[3] - dy))
             .style('stroke-width', 1)
             .call(Color.stroke, s.node().style.fill);
     });
@@ -1453,8 +1461,10 @@ drawing.textPointStyle = function (s, trace, gd) {
             color: fontColor
         })
             .text(text)
-            .call(svgTextUtils.convertToTspans, gd)
-            .call(drawing.textPointPosition, d, trace, d.mrc);
+            .call(svgTextUtils.convertToTspans, gd, function () {
+                // a MathJax label is positioned once it is rendered
+                drawing.textPointPosition(p, d, trace, d.mrc);
+            });
     });
 };
 

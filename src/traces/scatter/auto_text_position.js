@@ -54,14 +54,18 @@ const CELL_SIZE = 64;
  * hidden. Traces come in draw order and points in data order, so an earlier
  * point wins a contested spot.
  *
- * Sets `_tpAuto` and `_tpAutoGap` on every calcdata point with an *auto*
- * position and repositions its `<text>` node. Does nothing when no trace
- * of the subplot uses *auto*.
+ * Sets `_tpAuto`, `_tpAutoGap`, and `_tpAutoLeader` on every calcdata point
+ * with an *auto* position and repositions its `<text>` node. Does nothing
+ * when no trace of the subplot uses *auto*.
  *
+ * A label that MathJax has not rendered yet has no box, so it is skipped,
+ * and the whole pass runs again once every pending render is done.
+ *
+ * @param gd - the graph div
  * @param plotinfo - the subplot, with `xaxis` and `yaxis`
  * @param traceGroups - d3 selection of the `g.trace` groups, bound to calcdata
  */
-module.exports = function autoTextPosition(plotinfo, traceGroups) {
+module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
     let hasAuto = false;
     traceGroups.each((cd) => {
         const trace = cd[0].trace;
@@ -73,6 +77,7 @@ module.exports = function autoTextPosition(plotinfo, traceGroups) {
     const ya = plotinfo.yaxis;
     const index = makeIndex(xa._length, ya._length);
     const labels = [];
+    let pending = false;
 
     traceGroups.each(function (cd) {
         const trace = cd[0].trace;
@@ -98,18 +103,17 @@ module.exports = function autoTextPosition(plotinfo, traceGroups) {
         const positions = hasMarkers || subTypes.hasLines(trace) ? POSITIONS : POSITIONS_ON_POINT;
 
         tr.selectAll('g.textpoint').each(function (d) {
-            const tx = d3.select(this).select('text');
+            const g = d3.select(this);
+            const tx = g.select('text');
             if (!tx.size()) return;
 
-            const pos = d.tp || trace.textposition;
-            const isAuto = pos === 'auto';
-            if (isAuto) {
-                // measure the label in its shown state
-                d._tpAuto = undefined;
-                d._tpAutoGap = 0;
-                tx.style('display', null);
+            // `convertToTspans` hides the tex source until MathJax replaces it
+            if (tx.node().style.display === 'none' && !g.select('g.text-math-group').size()) {
+                pending = true;
+                return;
             }
 
+            const pos = d.tp || trace.textposition;
             const label = {
                 tx,
                 d,
@@ -118,10 +122,10 @@ module.exports = function autoTextPosition(plotinfo, traceGroups) {
                 x: xa.c2p(d.x),
                 y: ya.c2p(d.y),
                 fontSize: Drawing.textPointFontSize(d, trace),
-                bb: Drawing.bBox(tx.node())
+                bb: Drawing.textPointBBox(tx)
             };
 
-            if (isAuto) labels.push(label);
+            if (pos === 'auto') labels.push(label);
             // a label with a fixed position blocks the *auto* labels
             else insert(index, labelRect(label, pos, 0));
         });
@@ -129,6 +133,10 @@ module.exports = function autoTextPosition(plotinfo, traceGroups) {
 
     for (let i = 0; i < labels.length; i++) {
         place(index, labels[i]);
+    }
+
+    if (pending) {
+        gd._promises.push(Promise.all(gd._promises).then(() => autoTextPosition(gd, plotinfo, traceGroups)));
     }
 };
 
@@ -162,12 +170,16 @@ function place(index, label) {
             if (rect.leader) insert(index, rect.leader);
             d._tpAuto = pos;
             d._tpAutoGap = gap;
+            // in the plot frame, so the leader does not depend on the `<text>` node in mid-transition
+            d._tpAutoLeader = rect.leader ? [rect.leader.x0, rect.leader.y0, rect.leader.x1, rect.leader.y1] : null;
             Drawing.textPointPosition(label.tx, d, label.trace, d.mrc);
             return;
         }
     }
 
     d._tpAuto = null;
+    d._tpAutoGap = 0;
+    d._tpAutoLeader = null;
     Drawing.textPointPosition(label.tx, d, label.trace, d.mrc);
 }
 
