@@ -9,7 +9,8 @@ var confirmCloudDialog = require('./share_chart/dialog');
 var Lib = require('../../lib');
 var _ = Lib._;
 
-var modeBarButtons = (module.exports = {});
+var modeBarButtons = {};
+module.exports = modeBarButtons;
 
 /**
  * ModeBar buttons configuration
