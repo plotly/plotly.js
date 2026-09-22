@@ -671,11 +671,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                     ternary[name].showspikes && ternary[name].spikesnap !== 'hovered data');
 
                 if (needsClosestPoint) {
-                    let spikePoint = pointData;
+                    // may be undefined when no point is found within hoverdistance
+                    let spikePoint = newPoints?.[0];
 
                     // reuse the normal hover candidate when available
                     // otherwise search again using spikedistance
-                    if (!Number.isFinite(spikePoint.spikeDistance)) {
+                    if (!Number.isFinite(spikePoint?.spikeDistance)) {
                         const spikeData = Lib.extendFlat({}, pointData, {distance: spikedistance, index: false});
                         const closestPoints = trace._module.hoverPoints(spikeData, xval, yval, 'closest');
                         spikePoint = closestPoints && closestPoints[0];
