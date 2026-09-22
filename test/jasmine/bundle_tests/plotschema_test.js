@@ -294,7 +294,7 @@ describe('plot schema', function() {
     it('should describe every toImageButtonOptions key', () => {
         const opts = plotSchema.config.toImageButtonOptions;
         expect(opts.role).toBe('object');
-        expect(Object.keys(opts).sort()).toEqual(['filename', 'format', 'height', 'role', 'scale', 'width']);
+        expect(Object.keys(opts).sort()).toEqual(['description', 'filename', 'format', 'height', 'role', 'scale', 'width']);
         expect(opts.format.values).toEqual(['png', 'jpeg', 'webp', 'svg', 'full-json']);
         expect(opts.format.dflt).toBe('png');
     });
