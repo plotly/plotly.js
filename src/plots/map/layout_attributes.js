@@ -319,7 +319,12 @@ var attrs = (module.exports = overrideAll(
                     ].join(' ')
                 },
                 textfont: fontAttr,
-                textposition: Lib.extendFlat({}, textposition, { arrayOk: false })
+                textposition: Lib.extendFlat({}, textposition, {
+                    // *auto* placement runs in the svg scatter plot code only
+                    values: textposition.values.filter((v) => v !== 'auto'),
+                    arrayOk: false,
+                    description: 'Sets the positions of the `text` elements with respects to the (x,y) coordinates.'
+                })
             }
         })
     },
