@@ -56,6 +56,11 @@ var configAttributes = {
         ].join(' ')
     },
     edits: {
+        description: [
+            'Determines which parts of the graph a user can edit directly.',
+            '`editable` sets every key here at once, and a key set here overrides it.',
+            '`staticPlot` disables all of them.'
+        ].join(' '),
         annotationPosition: {
             valType: 'boolean',
             dflt: false,

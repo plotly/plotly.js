@@ -16769,6 +16769,7 @@ export interface ConfigBase {
      * @default false
      */
     editable?: boolean;
+    /** Determines which parts of the graph a user can edit directly. `editable` sets every key here at once, and a key set here overrides it. `staticPlot` disables all of them. */
     edits?: Edits;
     /**
      * When `layout.autosize` is turned on, determines whether the graph fills the container (the default) or the screen (if set to *true*).
