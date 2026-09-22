@@ -9,7 +9,10 @@ var Lib = require('../../lib');
 module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     opts = opts || {};
 
-    coerce('textposition');
+    var textposition = coerce('textposition');
+    if (textposition === 'auto' || (Lib.isArrayOrTypedArray(textposition) && textposition.indexOf('auto') !== -1)) {
+        coerce('textpriority');
+    }
     Lib.coerceFont(coerce, 'textfont', opts.font || layout.font, opts);
 
     if(!opts.noSelect) {
