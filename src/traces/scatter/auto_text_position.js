@@ -85,6 +85,7 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
                 onPoint,
                 // `_tpAuto` survives a relayout, so a pan or zoom keeps the labels in place where it can
                 prefer: d._tpAuto || undefined,
+                preferGap: d._tpAutoGap,
                 rect: labelRect(d, trace, x, y, Drawing.textPointBBox(tx))
             };
 

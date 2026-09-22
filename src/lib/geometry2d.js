@@ -294,7 +294,8 @@ const CELL_SIZE = 64;
  *   `fontSize` - the font size in px, which scales the leader step and the clearance from other markers;
  *   `priority` - a number, higher first, 0 when absent;
  *   `onPoint` - true when the label may also sit on its point;
- *   `prefer` - the position the label had before, tried first so a redraw does not move it while it is free;
+ *   `prefer`, `preferGap` - the position and gap the label had before: the label goes back next to
+ *     its point at that position when it can, else it stays where it was, and only then it searches again;
  *   `rect(position, gap)` - the box of the label at a `textposition` value, `gap` px farther
  *     from the point, as `{x0, y0, x1, y1, leader}`, with `leader` as `[x0, y0, x1, y1]`
  *     from the marker edge to the box when `gap` is above 0, else null
@@ -341,31 +342,44 @@ function placeOne(index, label) {
     // a point outside the area gets no label, even when a candidate box would fit inside
     if (label.x < 0 || label.x > index.width || label.y < 0 || label.y > index.height) return null;
 
+    // a label that was placed before does not step ring by ring on a redraw, so a pan does not shuffle leader lines
+    if (label.prefer) {
+        const out =
+            tryCandidate(index, label, owner, label.prefer, 0, rings) ||
+            (label.preferGap && tryCandidate(index, label, owner, label.prefer, label.preferGap, rings));
+        if (out) return out;
+    }
+
     const positions = orderPositions(index, label, owner);
 
     for (let ring = 0; ring <= rings; ring++) {
         const gap = ring * step;
 
         for (let k = 0; k < positions.length; k++) {
-            const pos = positions[k];
-            if (gap && pos === 'middle center') continue;
-
-            const box = label.rect(pos, gap);
-            const rect = makeRect(box.x0, box.y0, box.x1, box.y1, owner);
-            if (!rectIsFree(index, rect)) continue;
-            if (!gap && rings && isAmbiguous(index, rect, CLUSTER_GAP * label.fontSize)) continue;
-
-            const seg = box.leader;
-            const line = seg ? makeLine(seg[0], seg[1], seg[2], seg[3], owner) : null;
-            if (line && !lineIsFree(index, line, label.x, label.y)) continue;
-
-            insert(index, rect);
-            if (line) insert(index, line);
-            return { position: pos, gap, leader: seg || null };
+            const out = tryCandidate(index, label, owner, positions[k], gap, rings);
+            if (out) return out;
         }
     }
 
     return null;
+}
+
+// take a candidate when its box and leader line are free, and it is not ambiguous
+function tryCandidate(index, label, owner, pos, gap, rings) {
+    if (gap && pos === 'middle center') return null;
+
+    const box = label.rect(pos, gap);
+    const rect = makeRect(box.x0, box.y0, box.x1, box.y1, owner);
+    if (!rectIsFree(index, rect)) return null;
+    if (!gap && rings && isAmbiguous(index, rect, CLUSTER_GAP * label.fontSize)) return null;
+
+    const seg = box.leader;
+    const line = seg ? makeLine(seg[0], seg[1], seg[2], seg[3], owner) : null;
+    if (line && !lineIsFree(index, line, label.x, label.y)) return null;
+
+    insert(index, rect);
+    if (line) insert(index, line);
+    return { position: pos, gap, leader: seg || null };
 }
 
 // the candidate positions of a label, sorted so that the ones that point

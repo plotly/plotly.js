@@ -127,6 +127,17 @@ describe('placeLabels', function() {
         expect(out[0].position).toBe('top center');
     });
 
+    it('keeps the preferred gap of a label unless it can go next to its point', function() {
+        var a = label(100, 100, {prefer: 'bottom center', preferGap: 25});
+        var b = label(102, 102);
+        var out = place([a, b], {markers: [marker(a), marker(b)]});
+        expect(out[0].position).toBe('bottom center');
+        expect(out[0].gap).toBe(25);
+
+        out = place([label(100, 100, {prefer: 'bottom center', preferGap: 25})]);
+        expect(out[0].gap).toBe(0);
+    });
+
     it('hides a label outside the area', function() {
         var out = place([label(300, 100)]);
         expect(out[0]).toBe(null);
