@@ -538,6 +538,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var styleFns;
         if(showMarkers) {
             styleFns = Drawing.makePointStyleFns(trace);
+            styleFns.colorCache = new Map();
         }
 
         join.each(function(d) {

@@ -271,32 +271,32 @@ const contrast = (cstr, lightAmount, darkAmount) => {
     }
 };
 
-// `stroke` and `fill` below run once per data point, and every point of a trace
-// normally repeats the same specifier, so re-deriving the styles each time is
-// pure overhead. Cache both values a specifier yields, keyed on the specifier
-// itself, and take them from a single `parse` so that a miss costs no more than
-// it has to. Only strings are cached, since they are the only specifiers that
-// repeat by value rather than by identity.
+// `stroke` and `fill` run once per data point. Most points of a trace repeat
+// one specifier, so a second parse of that specifier wastes the work. A caller
+// that loops over points passes a `cache`. Every other caller passes nothing
+// and parses each time. The cache belongs to the loop, so a cache that filled
+// up never outlives the trace that filled it. Only a string serves as a key,
+// because the other specifiers repeat by identity, not by value.
+//
+// The bound covers one loop. A trace with a distinct color per point writes an
+// entry per point, and no later point reads that entry.
 const MAX_MEMO_SIZE = 1000;
 
-const styleCache = new Map();
-
 const computeStyle = (cstr) => {
+    // One `parse` yields the two values, so a miss costs one parse, not two.
+    // With a distinct color per point, every lookup is a miss.
     const c = parse(cstr);
-    // Force alpha to 1 in the color so that it gets dropped from the string.
+    // Force alpha to 1 in the color, so that the string drops it.
     return [formatRgb({ ...c, alpha: 1 }), c.alpha];
 };
 
-const styleOf = (cstr) => {
-    if (typeof cstr !== 'string') return computeStyle(cstr);
+const styleOf = (cstr, cache) => {
+    if (cache === undefined || typeof cstr !== 'string') return computeStyle(cstr);
 
-    let value = styleCache.get(cstr);
+    let value = cache.get(cstr);
     if (value === undefined) {
         value = computeStyle(cstr);
-        // Stop growing rather than evicting: a graph only ever uses a handful
-        // of distinct colors, so a full cache means array-valued colors, which
-        // repeat too little to be worth tracking.
-        if (styleCache.size < MAX_MEMO_SIZE) styleCache.set(cstr, value);
+        if (cache.size < MAX_MEMO_SIZE) cache.set(cstr, value);
     }
 
     return value;
@@ -307,9 +307,11 @@ const styleOf = (cstr) => {
  *
  * @param {Selection} s - D3 selection
  * @param {*} cstr - Color specifier
+ * @param {Map} [cache] - Cache of the styles of specifiers seen before. A caller
+ *   that loops over points passes one cache for the whole loop.
  */
-const stroke = (s, cstr) => {
-    const style = styleOf(cstr);
+const stroke = (s, cstr, cache) => {
+    const style = styleOf(cstr, cache);
     s.style({ stroke: style[0], 'stroke-opacity': style[1] });
 };
 
@@ -318,9 +320,11 @@ const stroke = (s, cstr) => {
  *
  * @param {Selection} s - D3 selection
  * @param {*} cstr - Color specifier
+ * @param {Map} [cache] - Cache of the styles of specifiers seen before. A caller
+ *   that loops over points passes one cache for the whole loop.
  */
-const fill = (s, cstr) => {
-    const style = styleOf(cstr);
+const fill = (s, cstr, cache) => {
+    const style = styleOf(cstr, cache);
     s.style({ fill: style[0], 'fill-opacity': style[1] });
 };
 

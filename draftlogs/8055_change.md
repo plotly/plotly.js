@@ -1,1 +1,1 @@
- - Memoize color specifier parsing, reducing the time to draw marker-heavy SVG `scatter` traces by roughly a third [[#8055](https://github.com/plotly/plotly.js/pull/8055)]
+ - Cache parsed marker colors for the length of one point-style pass, so that marker-heavy SVG `scatter` traces draw about one third faster [[#8055](https://github.com/plotly/plotly.js/pull/8055)]
