@@ -662,8 +662,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 distance = hoverData[0].distance;
             }
 
-            // TODO need to support 'scatterternarygl' in future
-            if (trace.type === 'scatterternary' && spikedistance !== 0) {
+            if (Registry.traceIs(trace, 'ternary') && spikedistance !== 0) {
                 const ternary = pointData.subplot;
                 
                 // as in Cartesian, 'hovered data' relies only on the normal hover result, while
