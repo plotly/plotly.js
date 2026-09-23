@@ -4,7 +4,7 @@ var d3 = require('@plotly/d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var colorscaleStroke = require('./style').colorscaleStroke;
+var strokeArrowColors = require('./style').strokeArrowColors;
 
 // Fixed arrowhead wedge angle (radians). Arrow direction is fully
 // determined by u,v (see angPx below); this constant only controls the
@@ -182,12 +182,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     // Apply styling using Plotly's standard styling system
     var marker = trace.marker || {};
     var markerLine = marker.line || {};
-    var lineColor = Lib.isArrayOrTypedArray(marker.color) ? undefined : marker.color;
+    const lineColor = Lib.isArrayOrTypedArray(marker.color) ? undefined : marker.color;
     Drawing.lineGroupStyle(lineSegments, markerLine.width, lineColor, markerLine.dash);
 
-    // If colorscale present, color arrows by marker.color or magnitude |(u,v)|.
+    // Color arrows from a colorscale or from a discrete marker.color array.
     // Shared with style.js so the static render and restyle stay in sync.
-    if(trace._hasColorscale) colorscaleStroke(lineSegments, trace);
+    strokeArrowColors(lineSegments, trace);
 
     // Render text labels at data points
     var textGroup = d3.select(element).selectAll('g.text')
