@@ -36,7 +36,12 @@ function colorscaleStroke(paths, trace) {
 
 // A color-string array is not a colorscale. Apply each string here, because
 // `lineGroupStyle` paints an array as black.
-const discreteColorStroke = (paths, trace) => {
+const strokeArrowColors = (paths, trace) => {
+    if(trace._hasColorscale) {
+        colorscaleStroke(paths, trace);
+        return;
+    }
+
     const markerColor = (trace.marker || {}).color;
     if(!Lib.isArrayOrTypedArray(markerColor)) return;
 
@@ -50,11 +55,6 @@ const discreteColorStroke = (paths, trace) => {
         }
         return this.style.stroke;
     });
-};
-
-const strokeArrowColors = (paths, trace) => {
-    if(trace._hasColorscale) colorscaleStroke(paths, trace);
-    else discreteColorStroke(paths, trace);
 };
 
 function style(gd) {
