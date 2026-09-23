@@ -1,1 +1,0 @@
- - Fix quiver arrow colors for a discrete `marker.color` array [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
