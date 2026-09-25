@@ -2261,6 +2261,30 @@ describe('A bar plot', function() {
         .then(done, done.fail);
     });
 
+    it('should draw *auto* text of zero-length bars outside', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                type: 'bar',
+                x: ['a', 'b', 'c'],
+                y: [0, 5, null],
+                text: ['ZERO', 'FIVE', 'NULLPT'],
+                textposition: 'auto'
+            }],
+            layout: {width: 400, height: 400, margin: {l: 0, t: 0, r: 0, b: 0}}
+        })
+        .then(function() {
+            var texts = [];
+            d3Select(gd).selectAll('.barlayer .bartext').each(function() {
+                texts.push(this.textContent);
+            });
+
+            expect(texts).toEqual(['ZERO', 'FIVE'], 'drawn bar text');
+            expect(d3Select(gd).select('.barlayer .bartext').attr('class'))
+                .toBe('bartext bartext-outside', 'zero-length bar text placement');
+        })
+        .then(done, done.fail);
+    });
+
     describe('show narrow bars', function() {
         ['initial zoom', 'after zoom out'].forEach(function(zoomStr) {
             it(zoomStr, function(done) {

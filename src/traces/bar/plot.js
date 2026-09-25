@@ -568,10 +568,15 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     var hasB = calcBar.hasB;
     var barIsRounded = r && r - overhead > TEXTPAD;
 
+    // A null value has no bar to place text inside of or next to.
+    // A zero-length bar keeps a position, so `auto` text can fall through to
+    // the outside placement below.
+    var isNullBar = !isNumeric(calcBar.s1);
+
     if (
         !text ||
         textPosition === 'none' ||
-        ((calcBar.isBlank || x0 === x1 || y0 === y1) && (textPosition === 'auto' || textPosition === 'inside'))
+        ((calcBar.isBlank || x0 === x1 || y0 === y1) && (textPosition === 'inside' || isNullBar))
     ) {
         bar.select('text').remove();
         return;
