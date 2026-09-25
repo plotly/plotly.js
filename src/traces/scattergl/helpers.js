@@ -1,13 +1,7 @@
 'use strict';
 
-var constants = require('./constants');
+const { symbolNumber } = require('../../components/drawing');
 
-exports.isOpenSymbol = function(symbol) {
-    return (typeof symbol === 'string' && constants.OPEN_RE.test(symbol)) ||
-        symbol % 200 >= 100;
-};
+exports.isOpenSymbol = (symbol) => symbolNumber(symbol) % 200 >= 100;
 
-exports.isDotSymbol = function(symbol) {
-    return (typeof symbol === 'string' && constants.DOT_RE.test(symbol)) ||
-        symbol >= 200;
-};
+exports.isDotSymbol = (symbol) => symbolNumber(symbol) >= 200;
