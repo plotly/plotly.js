@@ -1235,7 +1235,10 @@ module.exports = {
             'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
             'Set `categoryorder` to *total ascending* or *total descending* if order should be determined by the',
             'numerical order of the values.',
-            'Similarly, the order can be determined by the min, max, sum, mean, geometric mean or median of all the values.'
+            'Similarly, the order can be determined by the min, max, sum, mean, geometric mean or median of all the values.',
+            'On *multicategory* axes, *trace* orders the second-level categories by the order they appear in the data',
+            'within each first-level category, and ordering by aggregated value is not supported',
+            '- those values fall back on *trace*.'
         ].join(' ')
     },
     categoryarray: {
@@ -1244,7 +1247,9 @@ module.exports = {
         description: [
             'Sets the order in which categories on this axis appear.',
             'Only has an effect if `categoryorder` is set to *array*.',
-            'Used with `categoryorder`.'
+            'Used with `categoryorder`.',
+            'On *multicategory* axes each entry is a [first-level, second-level] pair,',
+            'e.g. `[[*2023*, *Q4*], [*2024*, *Q1*]]`; entries that are not such a pair are ignored.'
         ].join(' ')
     },
     uirevision: {
