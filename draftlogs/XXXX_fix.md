@@ -1,0 +1,1 @@
+ - Make `opts` optional on `Plotly.downloadImage` so the type matches the runtime and `toImage` [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
