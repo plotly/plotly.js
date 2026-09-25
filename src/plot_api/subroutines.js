@@ -772,6 +772,7 @@ exports.redrawReglTraces = function(gd) {
         var fullData = gd._fullData;
         var cartesianIds = [];
         var polarIds = [];
+        var ternaryIds = [];
         var i, sp;
 
         if(fullLayout._hasOnlyLargeSploms) {
@@ -792,6 +793,8 @@ exports.redrawReglTraces = function(gd) {
                     Lib.pushUnique(cartesianIds, trace.xaxis + trace.yaxis);
                 } else if(trace.type === 'scatterpolargl') {
                     Lib.pushUnique(polarIds, trace.subplot);
+                } else if(trace.type === 'scatterternarygl') {
+                    Lib.pushUnique(ternaryIds, trace.subplot);
                 }
             }
         }
@@ -803,6 +806,11 @@ exports.redrawReglTraces = function(gd) {
 
         for(i = 0; i < polarIds.length; i++) {
             sp = fullLayout[polarIds[i]]._subplot;
+            if(sp._scene) sp._scene.draw();
+        }
+
+        for(i = 0; i < ternaryIds.length; i++) {
+            sp = fullLayout[ternaryIds[i]]._subplot;
             if(sp._scene) sp._scene.draw();
         }
     }
