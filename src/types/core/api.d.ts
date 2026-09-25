@@ -208,30 +208,64 @@ export function newPlot(
     figure: PlotlyDataLayoutConfig
 ): Promise<PlotlyHTMLElement>;
 
-/** Update layout properties on an existing plot. */
+/**
+ * Update layout properties on an existing plot using an update object.
+ *
+ * @param root - Graph div id or element
+ * @param layout - Partial layout object or attribute path mapping (e.g. `{'xaxis.autorange': true}`)
+ */
 export function relayout(root: Root, layout: Partial<Layout>): Promise<PlotlyHTMLElement>;
+/**
+ * Update a single layout property on an existing plot using an attribute path string.
+ *
+ * @param root - Graph div id or element
+ * @param astr - Attribute path string (e.g. `'xaxis.autorange'`, `'title.text'`)
+ * @param val - Value to assign to the attribute
+ */
+export function relayout(root: Root, astr: string, val: any): Promise<PlotlyHTMLElement>;
+
 /** Re-render the plot at `root` from its current data/layout. */
 export function redraw(root: Root): Promise<PlotlyHTMLElement>;
 /** Remove a plot and its event listeners from the DOM. */
 export function purge(root: Root): void;
 /**
- * Update trace properties (style) on the existing plot.
+ * Update trace properties (style) on the existing plot using an update object.
  *
- * @param aobj - Update object whose keys are attribute paths
+ * @param root - Graph div id or element
+ * @param aobj - Update object with trace properties or attribute paths
  * @param traces - Trace index/indices to update (defaults to all)
  */
-export function restyle(root: Root, aobj: Data, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+export function restyle(
+    root: Root,
+    aobj: Partial<Data> | Record<string, any>,
+    traces?: number[] | number
+): Promise<PlotlyHTMLElement>;
+/**
+ * Update a single trace property on an existing plot using an attribute path string.
+ *
+ * @param root - Graph div id or element
+ * @param astr - Attribute path string (e.g. `'marker.color'`)
+ * @param val - Value or array of values to assign to the attribute
+ * @param traces - Trace index/indices to update (defaults to all)
+ */
+export function restyle(
+    root: Root,
+    astr: string,
+    val: any,
+    traces?: number[] | number
+): Promise<PlotlyHTMLElement>;
 
 /**
  * Update both trace and layout properties in a single call.
  *
- * @param traceUpdate - Per-trace updates
- * @param layoutUpdate - Layout updates
+ * @param root - Graph div id or element
+ * @param traceUpdate - Per-trace updates or attribute paths
+ * @param layoutUpdate - Layout updates or attribute paths
  * @param traces - Trace index/indices `traceUpdate` applies to
  */
 export function update(
     root: Root,
-    traceUpdate: Data,
+    traceUpdate: Partial<Data> | Record<string, any>,
     layoutUpdate: Partial<Layout>,
     traces?: number[] | number
 ): Promise<PlotlyHTMLElement>;

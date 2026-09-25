@@ -16608,6 +16608,27 @@ export interface Layout {
     [key: `ternary${number}`]: TernaryLayout;
     [key: `xaxis${number}`]: LayoutAxis;
     [key: `yaxis${number}`]: LayoutAxis;
+
+    // Nested property updates for relayout and update
+    'xaxis.autorange'?: LayoutAxis['autorange'];
+    'yaxis.autorange'?: LayoutAxis['autorange'];
+    'xaxis.range'?: LayoutAxis['range'];
+    'xaxis.range[0]'?: any;
+    'xaxis.range[1]'?: any;
+    'yaxis.range'?: LayoutAxis['range'];
+    'yaxis.range[0]'?: any;
+    'yaxis.range[1]'?: any;
+    'xaxis.type'?: LayoutAxis['type'];
+    'yaxis.type'?: LayoutAxis['type'];
+    'xaxis.title'?: string | LayoutAxis['title'];
+    'yaxis.title'?: string | LayoutAxis['title'];
+    'xaxis.title.text'?: string;
+    'yaxis.title.text'?: string;
+    'title.text'?: string;
+
+    // Dotted and indexed attribute path index signatures
+    [key: `${string}.${string}`]: any;
+    [key: `${string}[${string}`]: any;
 }
 
 // ---------------------------------------------------------------------------
