@@ -85,7 +85,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             }
         }
     } else {
-        for(i = ids.length - 1; i > -1; i--) {
+        for(i = 0; i < ids.length; i++) {
             k = ids[i];
             ptx = x[k];
             pty = y[k];
