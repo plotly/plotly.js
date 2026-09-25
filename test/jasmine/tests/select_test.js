@@ -677,7 +677,7 @@ describe('Click-to-select', function() {
         [
             testCase('scatterpolargl', require('../../image/mocks/glpolar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('splom', require('../../image/mocks/splom_lower.json'), 427, 400, [[], [7], []])
+            testCase('splom', require('../../image/mocks/splom_lower.json'), 427, 400, [[], [43], []])
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {

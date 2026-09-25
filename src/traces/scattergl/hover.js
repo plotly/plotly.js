@@ -64,7 +64,8 @@ function hoverPoints(pointData, xval, yval, hovermode) {
                 ) ? 0 : Infinity;
             }
 
-            if(dx < minDist) {
+            // Accept a tie so that the point drawn last wins, as in `Fx.getClosest`
+            if(dx <= minDist) {
                 minDist = dx;
                 pty = y[k];
                 dy = ya.c2p(pty) - ypx;
@@ -84,7 +85,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             }
         }
     } else {
-        for(i = ids.length - 1; i > -1; i--) {
+        for(i = 0; i < ids.length; i++) {
             k = ids[i];
             ptx = x[k];
             pty = y[k];
@@ -92,7 +93,8 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < minDist) {
+            // Accept a tie so that the trace drawn last wins, as in `Fx.getClosest`
+            if(dist <= minDist) {
                 minDist = dxy = dist;
                 closestId = k;
             }

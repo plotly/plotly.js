@@ -76,7 +76,8 @@ function _hoverPoints(pointData, xval, yval, axisHoversubplots) {
         var dy = ya.c2p(pty) - ypx;
         var dist = Math.sqrt(dx * dx + dy * dy);
 
-        if(axisHoversubplots || dist < minDist) {
+        // Accept a tie so that the point drawn last wins, as in `Fx.getClosest`
+        if(axisHoversubplots || dist <= minDist) {
             minDist = dxy = dist;
             id = i;
         }
