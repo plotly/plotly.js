@@ -5617,6 +5617,44 @@ describe('hover working with zorder', function () {
     });
 });
 
+describe('hover on points at the same position', () => {
+    afterEach(destroyGraphDiv);
+
+    ['scatter', 'scattergl', 'splom'].forEach((type) => {
+        const makeTrace = (x, y) =>
+            type === 'splom' ? { type, dimensions: [{ values: x }, { values: y }] } : { type, x, y };
+        // splom plots dimension 0 against dimension 1 on subplot xy2
+        const subplot = type === 'splom' ? 'xy2' : 'xy';
+
+        it(`picks the trace drawn last for ${type} in closest hovermode`, async () => {
+            const gd = createGraphDiv();
+            await Plotly.newPlot(gd, {
+                data: [makeTrace([0, 1, 2], [1, 0, 1]), makeTrace([0, 1, 2], [2, 0, 2])],
+                layout: { width: 400, height: 400, hovermode: 'closest' }
+            });
+
+            Fx.hover(gd, { xval: 1, yval: 0 }, subplot);
+
+            expect(gd._hoverdata.length).toEqual(1);
+            expect(gd._hoverdata[0].curveNumber).toEqual(1);
+            expect(gd._hoverdata[0].pointNumber).toEqual(1);
+        });
+
+        it(`picks the point drawn last for ${type} in x hovermode`, async () => {
+            const gd = createGraphDiv();
+            await Plotly.newPlot(gd, {
+                data: [makeTrace([0, 1, 1, 2], [1, 0, 0, 1])],
+                layout: { width: 400, height: 400, hovermode: 'x' }
+            });
+
+            Fx.hover(gd, { xval: 1, yval: 0 }, subplot);
+
+            expect(gd._hoverdata.length).toEqual(1);
+            expect(gd._hoverdata[0].pointNumber).toEqual(2);
+        });
+    });
+});
+
 describe('hover label rotation:', function () {
     var gd;
 
