@@ -65,7 +65,6 @@ describe('Test Plots', function() {
                 type: 'contour',
                 _empties: [1, 2, 3]
             }];
-            oldFullData.forEach(function(trace) { trace._fullInput = trace; });
 
             var oldFullLayout = {
                 _plots: { xy: { plot: {} } },
@@ -133,9 +132,6 @@ describe('Test Plots', function() {
 
             expect(gd._fullData[0]._input).toBe(trace0);
             expect(gd._fullData[1]._input).toBe(trace1);
-
-            expect(gd._fullData[0]._fullInput).toBe(gd._fullData[0]);
-            expect(gd._fullData[1]._fullInput).toBe(gd._fullData[1]);
         });
 
         function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
@@ -578,7 +574,7 @@ describe('Test Plots', function() {
             };
 
             Plotly.newPlot(gd, mock).then(function() {
-                var str = Plots.graphJson(gd, false, 'keepdata');
+                var str = Plots.graphJson(gd);
                 var obj = JSON.parse(str);
 
                 expect(obj.data).toEqual(mock.data);
@@ -612,7 +608,7 @@ describe('Test Plots', function() {
             };
 
             Plotly.newPlot(gd, [trace]).then(function() {
-                var str = Plots.graphJson(gd, false, 'keepdata');
+                var str = Plots.graphJson(gd);
                 var obj = JSON.parse(str);
 
                 expect(obj.data[0].x).toEqual([1, 2, 3]);
@@ -866,7 +862,6 @@ describe('Test Plots', function() {
         var subplotSelectors = {
             gl3d: '.gl-container>div[id^="scene"]',
             geo: '.geolayer>g',
-            mapbox: '.mapboxgl-map',
             map: '.maplibregl-map',
             parcoords: '.parcoords-line-layers',
             pie: '.pielayer .trace',
@@ -880,7 +875,7 @@ describe('Test Plots', function() {
         }
 
         // opts.cartesian and opts.gl2d should be arrays of subplot ids ('xy', 'x2y2' etc)
-        // others should be counts: gl3d, geo, mapbox, map, parcoords, pie, ternary
+        // others should be counts: gl3d, geo, map, parcoords, pie, ternary
         // if omitted, that subplot type is assumed to not exist
         function assertSubplots(opts, msg) {
             msg = msg || '';
@@ -952,7 +947,6 @@ describe('Test Plots', function() {
                 scene: {},
                 geo: {},
                 ternary: {},
-                mapbox: {},
                 map: {}
             })
             .then(function() {

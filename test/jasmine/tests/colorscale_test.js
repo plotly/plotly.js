@@ -750,6 +750,34 @@ describe('Test colorscale restyle calls:', function() {
         return d3Select(q).node().style.fill;
     }
 
+    // A colorscale reaches the renderer as an array of channels, not as a color
+    // string. When that array fails to parse, every point falls back to the same
+    // black, which still renders and still passes the per-call unit tests.
+    it('should render a colorscale as distinct, non-black colors', (done) => {
+        Plotly.newPlot(gd, [
+            {
+                mode: 'markers',
+                y: [1, 2, 3, 4, 5],
+                marker: { color: [1, 2, 3, 4, 5], colorscale: 'Viridis' }
+            }
+        ])
+            .then(() => {
+                const fills = [];
+                d3SelectAll('path.point').each(function () {
+                    fills.push(getFill(this));
+                });
+
+                expect(fills).toEqual([
+                    'rgb(68, 1, 84)',
+                    'rgb(59, 82, 139)',
+                    'rgb(33, 145, 140)',
+                    'rgb(93, 200, 99)',
+                    'rgb(253, 231, 37)'
+                ]);
+            })
+            .then(done, done.fail);
+    });
+
     it('should be able to toggle between autocolorscale true/false and set colorscales (contour case)', function(done) {
         function _assert(msg, exp) {
             var cc = [];

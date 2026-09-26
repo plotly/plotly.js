@@ -4,6 +4,7 @@ var createModeBar = require('../../../src/components/modebar/modebar');
 var manageModeBar = require('../../../src/components/modebar/manage');
 
 var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var Plots = require('../../../src/plots/plots');
 var Registry = require('../../../src/registry');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -54,7 +55,6 @@ describe('ModeBar', function() {
             _context: {
                 displaylogo: true,
                 showSendToCloud: false,
-                showEditInChartStudio: false,
                 displayModeBar: true,
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
@@ -475,44 +475,6 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (mapbox version)', function() {
-            var buttons = getButtons([
-                ['toImage'],
-                ['pan2d'],
-                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox']
-            ]);
-
-            var gd = getMockGraphInfo();
-            gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
-            gd._fullData = [{type: 'scattermapbox'}];
-
-            manageModeBar(gd);
-            var modeBar = gd._fullLayout._modeBar;
-
-            checkButtons(modeBar, buttons, 1);
-        });
-
-        it('creates mode bar (mapbox + selected version)', function() {
-            var buttons = getButtons([
-                ['toImage'],
-                ['pan2d', 'select2d', 'lasso2d'],
-                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox']
-            ]);
-
-            var gd = getMockGraphInfo();
-            gd._fullLayout._basePlotModules = [{ name: 'mapbox' }];
-            gd._fullData = [{
-                type: 'scatter',
-                visible: true,
-                mode: 'markers',
-                _module: {selectPoints: true}
-            }];
-
-            manageModeBar(gd);
-            var modeBar = gd._fullLayout._modeBar;
-
-            checkButtons(modeBar, buttons, 1);
-        });
 
         it('creates mode bar (map version)', function() {
             var buttons = getButtons([
@@ -810,7 +772,7 @@ describe('ModeBar', function() {
             expect(countLogo(gd._fullLayout._modeBar)).toEqual(0);
         });
 
-        it('displays/hides cloud link according to showSendToCloud and/or showEditInChartStudio config arg', function() {
+        it('displays/hides cloud link according to showSendToCloud config arg', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._basePlotModules = [{ name: 'pie' }];
             gd._fullData = [{type: 'pie'}];
@@ -820,24 +782,15 @@ describe('ModeBar', function() {
             ]), 1);
 
             gd._context.showSendToCloud = true;
-            gd._context.showEditInChartStudio = false;
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
                 ['toImage', 'sendChartToCloud']
             ]), 1);
 
             gd._context.showSendToCloud = false;
-            gd._context.showEditInChartStudio = true;
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
-                ['toImage', 'sendChartToCloud']
-            ]), 1);
-
-            gd._context.showSendToCloud = true;
-            gd._context.showEditInChartStudio = true;
-            manageModeBar(gd);
-            checkButtons(gd._fullLayout._modeBar, getButtons([
-                ['toImage', 'sendChartToCloud']
+                ['toImage']
             ]), 1);
         });
 
@@ -914,6 +867,17 @@ describe('ModeBar', function() {
                 .toEqual(initialGroupCount + 1);
             expect(countButtons(gd._fullLayout._modeBar))
                 .toEqual(initialButtonCount + 1);
+        });
+
+        it('groups downloadJson with toImage when added by name', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtonsToAdd = ['downloadJson'];
+
+            manageModeBar(gd);
+
+            expect(gd._fullLayout._modeBar.buttons[0].map(function(button) {
+                return button.name;
+            })).toEqual(['toImage', 'downloadJson']);
         });
 
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove', function() {
@@ -1097,6 +1061,81 @@ describe('ModeBar', function() {
                     selectButton(gd._fullLayout._modeBar, 'toImage').click();
                     expect(Registry.call)
                         .toHaveBeenCalledWith('downloadImage', gd, {format: 'png', width: null, height: null});
+                })
+                .then(done, done.fail);
+            });
+        });
+
+        describe('downloadJson handler', function() {
+            beforeEach(function() {
+                spyOn(Registry, 'call').and.returnValue(Promise.resolve());
+                gd = createGraphDiv();
+            });
+
+            it('requests a full JSON download when added through config', function(done) {
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'full-json'});
+                })
+                .then(done, done.fail);
+            });
+
+            it('requests a full JSON download when added through layout', function(done) {
+                Plotly.newPlot(gd, {data: [], layout: {
+                    modebar: {add: ['downloadJson']}
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    expect(Registry.call)
+                        .toHaveBeenCalledWith('downloadImage', gd, {format: 'full-json'});
+                })
+                .then(done, done.fail);
+            });
+
+            it('reports successful downloads with the filename', function(done) {
+                spyOn(Lib, 'notifier');
+                Registry.call.and.returnValue(Promise.resolve('plot.json'));
+
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    return Promise.resolve();
+                })
+                .then(function() {
+                    expect(Lib.notifier).toHaveBeenCalledWith(
+                        'JSON download succeeded - plot.json',
+                        'long',
+                        gd
+                    );
+                })
+                .then(done, done.fail);
+            });
+
+            it('reports download failures', function(done) {
+                spyOn(Lib, 'notifier');
+                Registry.call.and.callFake(function() {
+                    return Promise.reject();
+                });
+
+                Plotly.newPlot(gd, {data: [], layout: {}, config: {
+                    modeBarButtonsToAdd: ['downloadJson']
+                }})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'downloadJson').click();
+                    return Promise.resolve();
+                })
+                .then(function() {
+                    expect(Lib.notifier).toHaveBeenCalledWith(
+                        'Sorry, there was a problem downloading your JSON file!',
+                        'long',
+                        gd
+                    );
                 })
                 .then(done, done.fail);
             });
@@ -1437,52 +1476,6 @@ describe('ModeBar', function() {
             });
         });
 
-        describe('mapbox handlers', function() {
-            it('@gl button *resetViewMapbox* should reset the mapbox view attribute to their default', function(done) {
-                var gd = createGraphDiv();
-
-                function _assert(centerLon, centerLat, zoom) {
-                    var mapboxLayout = gd._fullLayout.mapbox;
-
-                    expect(mapboxLayout.center.lon).toBe(centerLon, 'center.lon');
-                    expect(mapboxLayout.center.lat).toBe(centerLat, 'center.lat');
-                    expect(mapboxLayout.zoom).toBe(zoom, 'zoom');
-                }
-
-                Plotly.newPlot(gd, [{
-                    type: 'scattermapbox',
-                    lon: [10, 20, 30],
-                    lat: [10, 20, 30]
-                }], {
-                    mapbox: {
-                        center: {lon: 10, lat: 10},
-                        zoom: 8
-                    }
-                }, {
-                    mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
-                })
-                .then(function() {
-                    _assert(10, 10, 8);
-
-                    return Plotly.relayout(gd, {
-                        'mapbox.zoom': 10,
-                        'mapbox.center.lon': 30
-                    });
-                })
-                .then(function() {
-                    _assert(30, 10, 10);
-
-                    var button = selectButton(gd._fullLayout._modeBar, 'resetViewMapbox');
-
-                    button.isActive(false);
-                    button.click(false);
-                    _assert(10, 10, 8);
-                    button.isActive(false);
-                })
-                .then(done, done.fail);
-            });
-        });
-
         describe('map handlers', function() {
             it('@gl button *resetViewMap* should reset the map view attribute to their default', function(done) {
                 var gd = createGraphDiv();
@@ -1569,7 +1562,6 @@ describe('ModeBar', function() {
 
                     // mock for custom geo + ternary bundle
                     delete gd._fullLayout._subplots.gl3d;
-                    delete gd._fullLayout._subplots.mapbox;
                     delete gd._fullLayout._subplots.map;
 
                     selectButton(gd._fullLayout._modeBar, 'resetViews').click();
@@ -1627,6 +1619,31 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
+        it('changes hover icon colors', function(done) {
+            Plotly.newPlot(gd, [], {
+                modebar: {
+                    color: colors[0],
+                    activecolor: colors[1]
+                }
+            })
+            .then(function() {
+                button = selectButton(gd._fullLayout._modeBar, targetBtn);
+
+                // intentionally swap colors to verify hover handlers use the updated values
+                return Plotly.relayout(gd, {
+                    'modebar.color': colors[1],
+                    'modebar.activecolor': colors[0]
+                });
+            })
+            .then(function() {
+                button.node.dispatchEvent(new window.MouseEvent('mouseenter'));
+                checkButtonColor(button, colors[0]);
+                button.node.dispatchEvent(new window.MouseEvent('mouseleave'));
+                checkButtonColor(button, colors[1]);
+            })
+            .then(done, done.fail);
+        });
+
         it('changes background color (displayModeBar: hover)', function(done) {
             Plotly.newPlot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {
@@ -1679,7 +1696,7 @@ describe('ModeBar', function() {
                 return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
-            var initial = 10;
+            var initial = 11;
             Plotly.newPlot(gd, [{y: [1, 2]}], {})
             .then(function() {
                 expect(countButtons()).toBe(initial);
@@ -1764,7 +1781,7 @@ describe('ModeBar', function() {
                 return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
-            var initial = 10;
+            var initial = 11;
             Plotly.newPlot(gd, [{y: [1, 2]}], {})
             .then(function() {
                 expect(countButtons()).toBe(initial);
@@ -1810,10 +1827,10 @@ describe('ModeBar', function() {
         it('remove buttons using template', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
-                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
-            var initial = 10;
+            var initial = 11;
             Plotly.newPlot(gd, [{y: [1, 2]}], {
                 template: {
                     layout: {
@@ -1845,7 +1862,7 @@ describe('ModeBar', function() {
                 return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
-            var initial = 10;
+            var initial = 11;
             Plotly.newPlot(gd, [{y: [1, 2]}], {
                 template: {
                     layout: {
@@ -1868,7 +1885,7 @@ describe('ModeBar', function() {
                     return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
                 }
 
-                var initial = 10;
+                var initial = 11;
                 Plotly.newPlot(gd, [{y: [1, 2]}], {
                     modebar: {
                         remove: t
@@ -1889,7 +1906,7 @@ describe('ModeBar', function() {
                 return d3Select(modeBarEl).selectAll('button.modebar-btn, a.modebar-btn').size();
             }
 
-            var initial = 10;
+            var initial = 11;
             Plotly.newPlot(gd, [{y: [1, 2]}], {
                 modebar: {
                     add: 'drawline'

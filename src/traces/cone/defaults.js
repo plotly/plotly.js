@@ -63,6 +63,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('yhoverformat');
     coerce('zhoverformat');
 
-    // disable 1D transforms (for now)
+    // Ensure _length is defined
     traceOut._length = null;
 };

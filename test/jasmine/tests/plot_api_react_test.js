@@ -18,8 +18,6 @@ var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
-var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
-
 describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [
         'doTraceStyle',
@@ -626,7 +624,7 @@ describe('@noCIdep Plotly.react', function() {
 
         function fullJson() {
             var out = JSON.parse(Plotly.Plots.graphJson({
-                data: gd._fullData.map(function(trace) { return trace._fullInput; }),
+                data: gd._fullData.map(function(trace) { return trace; }),
                 layout: gd._fullLayout
             }));
 
@@ -724,7 +722,6 @@ describe('@noCIdep Plotly.react', function() {
 
     it('@noCI tested every trace type at least once', function() {
         for(var itemType in typesTested) {
-            if(itemType.indexOf('mapbox') !== -1) continue;
             expect(typesTested[itemType]).toBeGreaterThan(0, itemType + ' was not tested');
         }
     });
@@ -978,7 +975,7 @@ describe('Plotly.react and uirevision attributes', function() {
                 var trace = gd.data[i];
                 var fullTrace = gd._fullData.filter(function(ft) {
                     return ft.index === i;
-                })[0]._fullInput;
+                })[0];
 
                 for(var key in traceKeys) {
                     var val = traceKeys[key];
@@ -1414,7 +1411,7 @@ describe('Plotly.react and uirevision attributes', function() {
                 }],
                 layout: {
                     uirevision: mainRev,
-                    geo: {uirevision: geoRev}
+                    geo: {uirevision: geoRev, fitbounds: false}
                 }
             };
         }
@@ -1680,57 +1677,21 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done);
     });
 
-    it('@gl preserves mapbox view changes using mapbox.uirevision', function(done) {
-        function fig(mainRev, mapboxRev) {
-            return {
-                data: [{lat: [1, 2], lon: [1, 2], type: 'scattermapbox'}],
-                layout: {
-                    uirevision: mainRev,
-                    mapbox: {uirevision: mapboxRev}
-                }
-            };
-        }
-
-        function attrs(original) {
-            return {
-                'mapbox.center.lat': original ? [undefined, 0] : 1,
-                'mapbox.center.lon': original ? [undefined, 0] : 2,
-                'mapbox.zoom': original ? [undefined, 1] : 3,
-                'mapbox.bearing': original ? [undefined, 0] : 4,
-                'mapbox.pitch': original ? [undefined, 0] : 5
-            };
-        }
-
-        function editMap() {
-            return Registry.call('_guiRelayout', gd, attrs());
-        }
-
-        var checkInitial = checkState([], attrs(true));
-        var checkEdited = checkState([], attrs());
-
-        Plotly.setPlotConfig({
-            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-        });
-
-        _run(fig, editMap, checkInitial, checkEdited).then(done);
-    });
-
     it('@gl preserves map view changes using map.uirevision', function(done) {
         function fig(mainRev, mapRev) {
             return {
                 data: [{lat: [1, 2], lon: [1, 2], type: 'scattermap'}],
                 layout: {
                     uirevision: mainRev,
-                    map: {uirevision: mapRev}
+                    // Use explicit zoom to opt out of the v4 default auto-fit
+                    map: {uirevision: mapRev, zoom: 1}
                 }
             };
         }
 
         function attrs(original) {
             return {
-                'map.center.lat': original ? [undefined, 0] : 1,
-                'map.center.lon': original ? [undefined, 0] : 2,
-                'map.zoom': original ? [undefined, 1] : 3,
+                'map.zoom': original ? [1, 1] : 3,
                 'map.bearing': original ? [undefined, 0] : 4,
                 'map.pitch': original ? [undefined, 0] : 5
             };
@@ -2055,7 +2016,8 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             }], {
                 width: 500,
                 height: 500,
-                uirevision: true
+                uirevision: true,
+                geo: {fitbounds: false}
             });
         }
 
@@ -2082,7 +2044,7 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
 
         _react()
         .then(function() {
-            expect(gd.layout.geo).toEqual({});
+            expect(gd.layout.geo).toEqual({fitbounds: false});
 
             var fullGeo = gd._fullLayout.geo;
             expect(fullGeo.projection.rotation.lon).toBe(0);
@@ -2092,81 +2054,6 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             expect(gd._fullLayout._preGUI).toEqual({});
         })
         .then(function() { return drag({pos0: [200, 200], dpos: [50, 50], noCover: true}); })
-        .then(function() { _assertGUI('before'); })
-        .then(_react)
-        .then(function() { _assertGUI('after'); })
-        .then(done, done.fail);
-    });
-
-    it('@gl mapbox subplots should preserve viewport changes after panning', function(done) {
-        Plotly.setPlotConfig({
-            mapboxAccessToken: MAPBOX_ACCESS_TOKEN
-        });
-
-        function _react() {
-            return Plotly.react(gd, [{
-                type: 'scattermapbox',
-                lon: [3, 1, 2],
-                lat: [2, 3, 1]
-            }], {
-                width: 500,
-                height: 500,
-                uirevision: true
-            });
-        }
-
-        // see mapbox_test.js for rationale
-        function _mouseEvent(type, pos) {
-            return new Promise(function(resolve) {
-                mouseEvent(type, pos[0], pos[1], {
-                    buttons: 1 // left button
-                });
-                setTimeout(resolve, 100);
-            });
-        }
-
-        // see mapbox_test.js for rationale
-        function _drag(p0, p1) {
-            return _mouseEvent('mousemove', p0)
-                .then(function() { return _mouseEvent('mousedown', p0); })
-                .then(function() { return _mouseEvent('mousemove', p1); })
-                .then(function() { return _mouseEvent('mousemove', p1); })
-                .then(function() { return _mouseEvent('mouseup', p1); })
-                .then(function() { return _mouseEvent('mouseup', p1); });
-        }
-
-        // should be same before & after 2nd react()
-        function _assertGUI(msg) {
-            var TOL = 2;
-
-            var mapbox = gd.layout.mapbox || {};
-            expect((mapbox.center || {}).lon).toBeCloseTo(-17.578, TOL, msg);
-            expect((mapbox.center || {}).lat).toBeCloseTo(17.308, TOL, msg);
-            expect(mapbox.zoom).toBe(1);
-
-            var fullMapbox = gd._fullLayout.mapbox || {};
-            expect(fullMapbox.center.lon).toBeCloseTo(-17.578, TOL, msg);
-            expect(fullMapbox.center.lat).toBeCloseTo(17.308, TOL, msg);
-            expect(fullMapbox.zoom).toBe(1);
-
-            var preGUI = gd._fullLayout._preGUI;
-            expect(preGUI['mapbox.center.lon']).toBe(null, msg);
-            expect(preGUI['mapbox.center.lat']).toBe(null, msg);
-            expect(preGUI['mapbox.zoom']).toBe(null, msg);
-        }
-
-        _react()
-        .then(function() {
-            expect(gd.layout.mapbox).toEqual({});
-
-            var fullMapbox = gd._fullLayout.mapbox;
-            expect(fullMapbox.center.lon).toBe(0);
-            expect(fullMapbox.center.lat).toBe(0);
-            expect(fullMapbox.zoom).toBe(1);
-
-            expect(gd._fullLayout._preGUI).toEqual({});
-        })
-        .then(function() { return _drag([200, 200], [250, 250]); })
         .then(function() { _assertGUI('before'); })
         .then(_react)
         .then(function() { _assertGUI('after'); })
@@ -2184,7 +2071,9 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             }], {
                 width: 500,
                 height: 500,
-                uirevision: true
+                uirevision: true,
+                // Opt out of the v4 default auto-fit
+                map: { zoom: 1 }
             });
         }
 
@@ -2225,12 +2114,12 @@ describe('Test Plotly.react + interactions under uirevision:', function() {
             var preGUI = gd._fullLayout._preGUI;
             expect(preGUI['map.center.lon']).toBe(null, msg);
             expect(preGUI['map.center.lat']).toBe(null, msg);
-            expect(preGUI['map.zoom']).toBe(null, msg);
+            expect(preGUI['map.zoom']).toBe(1, msg);
         }
 
         _react()
         .then(function() {
-            expect(gd.layout.map).toEqual({});
+            expect(gd.layout.map).toEqual({ zoom: 1 });
 
             var fullMap = gd._fullLayout.map;
             expect(fullMap.center.lon).toBe(0);

@@ -3,6 +3,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
+const Drawing = require('../../components/drawing');
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -144,6 +145,9 @@ function calcHover(pointData, x, y, trace) {
         di.mx = Lib.isArrayOrTypedArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
         di.ma = Lib.isArrayOrTypedArray(marker.angle) ? marker.angle[id] : marker.angle;
         di.mc = Lib.isArrayOrTypedArray(marker.color) ? marker.color[id] : marker.color;
+
+        // scattergl has no render step that sets `mcc`, so map the per-point color here
+        di.mcc = Drawing.tryColorscale(marker, '')(di.mc);
     }
 
     var line = marker && marker.line;

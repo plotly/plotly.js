@@ -1,0 +1,138 @@
+{
+  "data": [
+    {
+      "type": "quiver",
+      "x": [1],
+      "y": [1],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#fe218b",
+        "arrowsize": 1,
+        "line": {"width": 1}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [2],
+      "y": [1],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#fe218b",
+        "arrowsize": 2,
+        "line": {"width": 1}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [3],
+      "y": [1],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#fe218b",
+        "arrowsize": 3,
+        "line": {"width": 1}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [1],
+      "y": [2],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#e0af00",
+        "arrowsize": 1,
+        "line": {"width": 2}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [2],
+      "y": [2],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#e0af00",
+        "arrowsize": 2,
+        "line": {"width": 2}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [3],
+      "y": [2],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#e0af00",
+        "arrowsize": 3,
+        "line": {"width": 2}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [1],
+      "y": [3],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#21b0fe",
+        "arrowsize": 1,
+        "line": {"width": 3}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [2],
+      "y": [3],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#21b0fe",
+        "arrowsize": 2,
+        "line": {"width": 3}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    },
+    {
+      "type": "quiver",
+      "x": [3],
+      "y": [3],
+      "u": [1],
+      "v": [1],
+      "anchor": "tail",
+      "marker": {
+        "color": "#21b0fe",
+        "arrowsize": 3,
+        "line": {"width": 3}
+      },
+      "hovertemplate": "line.width=%{y}<br>arrowsize=%{x}<extra></extra>"
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 600,
+    "showlegend": false,
+    "xaxis": {"title": {"text": "arrowsize"}},
+    "yaxis": {"title": {"text": "line.width"}},
+    "title": {"text": "Quiver arrow styling<br>(marker.line.width and marker.arrowsize)"}
+  }
+}

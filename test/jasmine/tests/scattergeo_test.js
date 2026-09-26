@@ -314,7 +314,9 @@ describe('Test scattergeo hover', function() {
             lon: [10, 20, 30],
             lat: [10, 20, 30],
             text: ['A', 'B', 'C']
-        }])
+        }], {
+            geo: { fitbounds: false }
+        })
         .then(done);
     });
 

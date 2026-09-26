@@ -721,7 +721,9 @@ describe('scattermap hover', function() {
             text: ['A', 'B', 'C', 'D']
         }];
 
-        Plotly.newPlot(gd, data, { autosize: true }).then(done);
+        // Set zoom to opt out of the v4 default auto-fit so the that
+        // hover-pixel assertions still match
+        Plotly.newPlot(gd, data, { autosize: true, map: { zoom: 1 } }).then(done);
     });
 
     afterAll(function() {
@@ -1248,6 +1250,45 @@ describe('Test plotly events on a scattermap plot when css transform is present:
     });
 });
 
+describe('scattermap legend', function() {
+    var gd;
+
+    beforeEach(function() {
+        Plotly.setPlotConfig({});
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should always draw a circle swatch regardless of marker.symbol', function(done) {
+        // marker.symbol on map traces is a Maki/sprite icon name that the SVG
+        // legend can't reproduce, so the swatch should consistently be a circle.
+        // The circle symbol path is the only one using an arc ('A') command;
+        // square/triangle/etc. use only straight (H/V/L) segments.
+        Plotly.newPlot(gd, {
+            data: [
+                { type: 'scattermap', lat: [0], lon: [0], mode: 'markers', name: 'square', marker: { symbol: 'square' } },
+                { type: 'scattermap', lat: [1], lon: [1], mode: 'markers', name: 'tri', marker: { symbol: 'triangle-stroked' } }
+            ],
+            layout: {
+                map: { style: 'open-street-map', zoom: 6, center: { lat: 0.5, lon: 0.5 } },
+                showlegend: true
+            }
+        }).then(function() {
+            var swatches = gd.querySelectorAll('.legend .legendpoints path.scatterpts');
+            expect(swatches.length).toBe(2, 'one swatch per trace');
+            swatches.forEach(function(node) {
+                var d = node.getAttribute('d');
+                expect(d.indexOf('A')).toBeGreaterThan(-1, 'swatch is a circle (has arc): ' + d);
+                expect(d.indexOf('NaN')).toBe(-1, 'swatch path has no NaN: ' + d);
+            });
+        }).then(done, done.fail);
+    });
+});
+
 describe('scattermap restyle', function() {
     var gd;
 
@@ -1287,5 +1328,122 @@ describe('scattermap restyle', function() {
         }).then(function() {
             return Plotly.restyle(gd, 'visible', true);
         }).then(done, done.fail);
+    });
+});
+
+describe('scattermap world-copy selection', () => {
+    const selectPoints = require('../../../src/traces/scattermap/select');
+
+    // Stand-in for the map projection. `bearing` rotates the plane, which is how
+    // maplibre turns the offset between world copies into a diagonal.
+    function makeSearchInfo(cd, bearing, worldWidth, renderWorldCopies) {
+        const rad = (bearing * Math.PI) / 180;
+        const cos = Math.cos(rad);
+        const sin = Math.sin(rad);
+        const perDegree = worldWidth / 360;
+
+        const project = (lon, lat) => {
+            const x = lon * perDegree;
+            const y = -lat * perDegree;
+            return [x * cos - y * sin, x * sin + y * cos];
+        };
+
+        return {
+            cd: cd,
+            trace: cd[0].trace,
+            xaxis: {
+                c2p: (v) => project(v[0], v[1])[0],
+                _subplot: { map: { getRenderWorldCopies: () => renderWorldCopies } }
+            },
+            yaxis: { c2p: (v) => project(v[0], v[1])[1] }
+        };
+    }
+
+    // Stand-in for a pitched map. A projective divide compresses the copies as
+    // they recede, so the offset to the copy on the right no longer matches the
+    // offset to the copy on the left.
+    function makePitchedSearchInfo(cd, renderWorldCopies) {
+        const perDegree = WORLD_WIDTH / 360;
+        const focalDistance = 4 * WORLD_WIDTH;
+
+        const project = (lon, lat) => {
+            const u = lon * perDegree;
+            return [(WORLD_WIDTH * u) / (u + focalDistance), -lat * perDegree];
+        };
+
+        return {
+            cd: cd,
+            trace: cd[0].trace,
+            xaxis: {
+                c2p: (v) => project(v[0], v[1])[0],
+                _subplot: { map: { getRenderWorldCopies: () => renderWorldCopies } }
+            },
+            yaxis: { c2p: (v) => project(v[0], v[1])[1] }
+        };
+    }
+
+    function boxTester(xmin, ymin, xmax, ymax) {
+        return {
+            xmin,
+            ymin,
+            xmax,
+            ymax,
+            contains: (pt) => pt[0] >= xmin && pt[0] <= xmax && pt[1] >= ymin && pt[1] <= ymax
+        };
+    }
+
+    const WORLD_WIDTH = 1024;
+    const trace = { type: 'scattermap', mode: 'markers', visible: true };
+    const cd = [{ trace: trace, lonlat: [0, 0] }];
+
+    it('selects a point through its repeated world copy', () => {
+        const searchInfo = makeSearchInfo(cd, 0, WORLD_WIDTH, true);
+        // The primary copy sits at the origin, so box the copy one world to the right.
+        const tester = boxTester(WORLD_WIDTH - 20, -20, WORLD_WIDTH + 20, 20);
+
+        expect(selectPoints(searchInfo, tester)).toEqual([{ pointNumber: 0, lon: 0, lat: 0 }]);
+        expect(cd[0].selected).toBe(1);
+    });
+
+    it('offsets diagonally between world copies when the map has a bearing', () => {
+        const bearing = 45;
+        const rad = (bearing * Math.PI) / 180;
+        const searchInfo = makeSearchInfo(cd, bearing, WORLD_WIDTH, true);
+
+        // A bearing puts the next copy at a rotated offset, not straight to the right.
+        const cx = WORLD_WIDTH * Math.cos(rad);
+        const cy = WORLD_WIDTH * Math.sin(rad);
+        expect(selectPoints(searchInfo, boxTester(cx - 20, cy - 20, cx + 20, cy + 20)).length).toBe(
+            1,
+            'copy at the rotated offset'
+        );
+
+        // The pre-v6 code shifted x by the world size alone, which lands here.
+        expect(selectPoints(searchInfo, boxTester(WORLD_WIDTH - 20, -20, WORLD_WIDTH + 20, 20)).length).toBe(
+            0,
+            'no copy straight to the right'
+        );
+    });
+
+    it('ignores repeated copies when renderWorldCopies is off', () => {
+        const searchInfo = makeSearchInfo(cd, 0, WORLD_WIDTH, false);
+
+        expect(selectPoints(searchInfo, boxTester(WORLD_WIDTH - 20, -20, WORLD_WIDTH + 20, 20)).length).toBe(0);
+        expect(selectPoints(searchInfo, boxTester(-20, -20, 20, 20)).length).toBe(1);
+    });
+
+    it('projects each copy when perspective makes the offsets uneven', () => {
+        const searchInfo = makePitchedSearchInfo(cd, true);
+        const copyX = searchInfo.xaxis.c2p([4 * 360, 0]);
+        const evenOffsetX = 4 * searchInfo.xaxis.c2p([360, 0]);
+
+        // Compression puts the fourth copy well short of four even offsets, so
+        // the fixture only passes when the hit test projects each copy and when
+        // the copy range reaches past the straight-line estimate.
+        expect(evenOffsetX).toBeGreaterThan(copyX + 10);
+
+        expect(selectPoints(searchInfo, boxTester(copyX - 10, -20, copyX + 10, 20))).toEqual([
+            { pointNumber: 0, lon: 0, lat: 0 }
+        ]);
     });
 });

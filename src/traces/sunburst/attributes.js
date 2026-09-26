@@ -138,7 +138,12 @@ module.exports = {
         flags: ['label', 'text', 'value', 'current path', 'percent root', 'percent entry', 'percent parent'],
         extras: ['none'],
         editType: 'plot',
-        description: ['Determines which trace information appear on the graph.'].join(' ')
+        description: [
+            'Determines what trace information appears on the graph.',
+            'Flags are rendered in a fixed order; use `texttemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     },
 
     // TODO: incorporate `label` and `value` in the eventData
@@ -148,7 +153,13 @@ module.exports = {
     hovertext: pieAttrs.hovertext,
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'name', 'current path', 'percent root', 'percent entry', 'percent parent'],
-        dflt: 'label+text+value+name'
+        dflt: 'label+text+value+name',
+        description: [
+            'Determines what trace information appears on hover.',
+            'Flags are rendered in a fixed order; use `hovertemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     }),
     hovertemplate: hovertemplateAttrs({}, { keys: constants.eventDataKeys }),
     hovertemplatefallback: templatefallbackAttrs(),

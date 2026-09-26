@@ -496,15 +496,15 @@ describe('Test treemap calc:', function () {
 
         var cd = gd.calcdata[0];
         expect(cd.length).toEqual(9);
-        expect(cd[0].color).toEqual('rgba(255, 192, 203, 1)');
-        expect(cd[1].color).toEqual('rgba(119, 119, 119, 1)');
-        expect(cd[2].color).toEqual('rgba(255, 0, 0, 1)');
-        expect(cd[3].color).toEqual('rgba(255, 255, 0, 1)');
-        expect(cd[4].color).toEqual('rgba(0, 255, 0, 1)');
-        expect(cd[5].color).toEqual('rgba(0, 255, 255, 1)');
-        expect(cd[6].color).toEqual('rgba(0, 0, 255, 1)');
-        expect(cd[7].color).toEqual('rgba(255, 0, 255, 1)');
-        expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
+        expect(cd[0].color).toEqual('rgb(255, 192, 203)');
+        expect(cd[1].color).toEqual('rgb(119, 119, 119)');
+        expect(cd[2].color).toEqual('rgb(255, 0, 0)');
+        expect(cd[3].color).toEqual('rgb(255, 255, 0)');
+        expect(cd[4].color).toEqual('rgb(0, 255, 0)');
+        expect(cd[5].color).toEqual('rgb(0, 255, 255)');
+        expect(cd[6].color).toEqual('rgb(0, 0, 255)');
+        expect(cd[7].color).toEqual('rgb(255, 0, 255)');
+        expect(cd[8].color).toEqual('rgb(255, 255, 255)');
     });
 
     it('should use *marker.colors* numbers with default colorscale', function () {

@@ -1,9 +1,9 @@
-import ecstatic from 'ecstatic';
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
 import { build } from 'esbuild';
-import fs from 'fs';
-import http from 'http';
 import minimist from 'minimist';
-import path from 'path';
+import sirv from 'sirv';
 import { localDevReglCodegenConfig as config } from '../../esbuild-config.js';
 import constants from '../../tasks/util/constants.js';
 import {
@@ -19,12 +19,13 @@ var PORT = args.port || 3000;
 
 var reglTraceList = ['parcoords', 'scattergl', 'scatterpolargl', 'splom'];
 
-// Create server
-var _static = ecstatic({
-    root: constants.pathToRoot,
-    cache: 0,
+const _static = sirv(constants.pathToRoot, {
+    dev: true,
+    maxAge: 0,
     gzip: true,
-    cors: true
+    setHeaders: (res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
 });
 
 var tracesReceived = [];

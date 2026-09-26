@@ -3,16 +3,17 @@ var path = require('path');
 var sass = require('sass');
 
 var constants = require('./util/constants');
-var mapBoxGLStyleRules = require('./../src/plots/mapbox/constants').styleRules;
 var common = require('./util/common');
 var pullCSS = require('./util/pull_css');
 var updateVersion = require('./util/update_version');
+const bundleMapLibreWorker = require('./util/bundle_maplibre_worker');
 
 // main
 makeBuildCSS();
 exposePartsInLib();
 copyTopojsonFiles();
 updateVersion(constants.pathToPlotlyVersion);
+makeMapLibreWorker();
 
 // convert scss to css to js and static css file
 function makeBuildCSS() {
@@ -20,11 +21,7 @@ function makeBuildCSS() {
 
     // To support application with strict CSP where styles cannot be inlined,
     // build a static CSS file that can be included into such applications.
-    let staticCSS = result.css;
-    for (var k in mapBoxGLStyleRules) {
-        staticCSS = addAdditionalCSSRules(staticCSS, '.js-plotly-plot .plotly .mapboxgl-' + k, mapBoxGLStyleRules[k]);
-    }
-    fs.writeFile(constants.pathToCSSDist, staticCSS, function (err) {
+    fs.writeFile(constants.pathToCSSDist, String(result.css), function (err) {
         if (err) throw err;
     });
 
@@ -32,8 +29,8 @@ function makeBuildCSS() {
     pullCSS(result.css, constants.pathToCSSBuild);
 }
 
-function addAdditionalCSSRules(staticStyleString, selector, style) {
-    return staticStyleString + selector + '{' + style + '}';
+function makeMapLibreWorker() {
+    bundleMapLibreWorker(constants.pathToMapLibreWorkerSrc, constants.pathToMapLibreWorkerBuild);
 }
 
 function exposePartsInLib() {

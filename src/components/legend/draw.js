@@ -111,7 +111,6 @@ function drawOne(gd, opts) {
 
             var shapeLegend = {
                 _isShape: true,
-                _fullInput: shape,
                 index: shape._index,
                 name: shape.name || shape.label.text || ('shape ' + shape._index),
                 legend: shape.legend,
@@ -545,7 +544,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick);
+            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick, numClicks);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -554,7 +553,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
         if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
-            handleItemClick(legendItem, gd, legend, itemDoubleClick);
+            handleItemClick(legendItem, gd, legend, itemDoubleClick, numClicks);
         }
     }
 }
@@ -599,12 +598,11 @@ function drawTexts(g, gd, legendObj) {
                 this.text(ensureLength(newName, maxNameLength))
                     .call(textLayout, g, gd, legendObj);
 
-                var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
 
                 update.name = newName;
 
-                if(fullInput._isShape) {
+                if(legendItem.trace._isShape) {
                     return Registry.call('_guiRelayout', gd, 'shapes[' + trace.index + '].name', update.name);
                 } else {
                     return Registry.call('_guiRestyle', gd, update, trace.index);

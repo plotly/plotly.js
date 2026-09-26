@@ -485,7 +485,6 @@
     "bargap": 0.2,
     "bargroupgap": 0,
     "boxmode": "overlay",
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

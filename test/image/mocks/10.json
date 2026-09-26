@@ -256,7 +256,6 @@
     "plot_bgcolor": "rgb(255, 255, 255)",
     "hovermode": "x",
     "dragmode": "zoom",
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

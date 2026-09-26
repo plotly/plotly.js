@@ -8,7 +8,7 @@ var handleXYDefaults = require('../scatter/xy_defaults');
 var handlePeriodDefaults = require('../scatter/period_defaults');
 var attributes = require('./attributes');
 var Color = require('../../components/color');
-var delta = require('../../constants/delta.js');
+var delta = require('../../constants/delta');
 
 var INCREASING_COLOR = delta.INCREASING.COLOR;
 var DECREASING_COLOR = delta.DECREASING.COLOR;

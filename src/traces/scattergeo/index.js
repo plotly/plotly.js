@@ -7,6 +7,7 @@ module.exports = {
     formatLabels: require('./format_labels'),
     calc: require('./calc'),
     calcGeoJSON: require('./plot').calcGeoJSON,
+    fitCoords: require('./plot').fitCoords,
     plot: require('./plot').plot,
     style: require('./style'),
     styleOnSelect: require('../scatter/style').styleOnSelect,

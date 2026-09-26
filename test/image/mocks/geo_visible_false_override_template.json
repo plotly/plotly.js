@@ -64,7 +64,8 @@
           },
           "lataxis": {
             "showgrid": true
-          }
+          },
+          "fitbounds": false
         }
       }
     }

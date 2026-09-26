@@ -1,0 +1,1476 @@
+/**
+ * Generate TypeScript interfaces from the plot schema.
+ *
+ * Walks schema.traces and the layout attributes, emitting interfaces
+ * for all trace types, layout component types, and a top-level Layout interface
+ * into a single .d.ts file. All attribute metadata (valType, values, arrayOk,
+ * etc.) is mapped to the corresponding TypeScript type.
+ *
+ * Repeated container subtrees (colorbar, hoverlabel, font, etc.) are
+ * automatically detected via fingerprinting and extracted into shared
+ * interfaces to reduce output size.
+ *
+ * Run via `npm run schema` (which calls this after writing plot-schema.json).
+ */
+
+import * as fs from 'fs';
+
+import { generatedHeader, jsDocBlock, toFileText, tsLiteral } from './util/type_gen.mjs';
+
+// ---------------------------------------------------------------------------
+// Meta keys to skip (not user-facing attributes)
+// ---------------------------------------------------------------------------
+
+// Populated from `schema.defs.metaKeys` at the start of `generateSchemaTypes`.
+// Empty until then — every helper that consults `META_KEYS` is only called
+// from inside the generator's main pipeline, so the initial empty state is
+// never observed in practice.
+let META_KEYS = new Set();
+
+// ---------------------------------------------------------------------------
+// Common enum types — discovered from the schema at generation time and
+// emitted as named type aliases in the output. Each anchor specifies a
+// PascalCase type name and a `match(key, path, values)` predicate. If multiple
+// enumerated attributes match the predicate, the one with the largest set of values
+// is chosen.
+// ---------------------------------------------------------------------------
+
+const COMMON_TYPE_ANCHORS = [
+    { name: 'Calendar', match: (key) => /^[xyz]?calendar$/.test(key) },
+    { name: 'Dash', match: (key) => key === 'dash' },
+    { name: 'AxisType', match: (key, path) => key === 'type' && /[xyz]axis\.type$/.test(path) },
+    {
+        name: 'XRef',
+        match: (key, _path, values) => key === 'xref' && values.length === 2 && values.includes('container')
+    },
+    {
+        name: 'YRef',
+        match: (key, _path, values) => key === 'yref' && values.length === 2 && values.includes('container')
+    },
+    { name: 'PatternShape', match: (key, path) => key === 'shape' && /\.pattern\.shape$/.test(path) },
+    { name: 'TransitionEasing', match: (key) => key === 'easing' },
+    { name: 'ToImageFormat', match: (_key, path) => path === 'config.toImageButtonOptions.format' }
+];
+
+/**
+ * Module-level map populated by `discoverCommonTypes` before generation.
+ * Sorted-JSON-stringified values → common type name.
+ */
+const VALUES_TO_COMMON_TYPE = new Map();
+
+/** Attribute name patterns that should use a specific common type. */
+const ATTR_NAME_OVERRIDES = new Map([['marker.symbol', 'MarkerSymbol']]);
+
+/**
+ * Shared interfaces wrapped inside `export namespace _internal { ... }`.
+ *
+ * These are publicly importable but the namespace path signals they are
+ * either schema-internal helpers (AutoRangeOptions, Lighting), superseded
+ * by a hand-written alternative (ErrorY → ErrorBar), or have names that
+ * would mislead if surfaced directly (Marker is scatter-only, Line is
+ * the marker outline rather than the trace line).
+ *
+ * Inside the namespace, sibling references are bare (`line?: Line`); outside,
+ * references are prefixed (`marker?: _internal.Marker`) via `refName()`.
+ */
+const INTERNAL_INTERFACES = new Set(['AutoRangeOptions', 'ErrorY', 'Lighting', 'Line', 'Marker']);
+
+function refName(name, inInternalNamespace) {
+    if (inInternalNamespace) return name;
+    if (INTERNAL_INTERFACES.has(name)) return `_internal.${name}`;
+    return name;
+}
+
+/**
+ * Walk the schema to find the canonical `values` array for each anchor in
+ * `COMMON_TYPE_ANCHORS`. The first matching enumerated attribute wins.
+ * Also emits a `TraceType` alias derived from the trace-names list,
+ * plus a deprecated `PlotType` alias for back-compat.
+ *
+ * Populates `VALUES_TO_COMMON_TYPE` and returns `Map<name, {values}>` for
+ * emitting type aliases.
+ */
+function discoverCommonTypes(schema) {
+    // Collect every match for each anchor — we'll pick the superset at the end.
+    const candidates = new Map(COMMON_TYPE_ANCHORS.map((a) => [a.name, []]));
+
+    function visit(node, path) {
+        if (!node || typeof node !== 'object') return;
+        for (const [key, val] of Object.entries(node)) {
+            if (val && typeof val === 'object') {
+                const childPath = path ? `${path}.${key}` : key;
+                if (
+                    val.valType === 'enumerated' &&
+                    Array.isArray(val.values) &&
+                    val.values.every((v) => typeof v === 'string')
+                ) {
+                    for (const anchor of COMMON_TYPE_ANCHORS) {
+                        if (anchor.match(key, childPath, val.values)) {
+                            candidates.get(anchor.name).push(val.values.slice());
+                        }
+                    }
+                }
+                visit(val, childPath);
+            }
+        }
+    }
+    visit(schema.traces, 'traces');
+    visit(schema.layout, 'layout');
+    if (schema.animation) visit(schema.animation, 'animation');
+    if (schema.config) visit(schema.config, 'config');
+
+    // For each anchor, pick the largest value set. When sizes tie, the first
+    // match wins. The superset rule handles axis-type-style cases where
+    // different axis kinds (cartesian vs 3D scene) have different value sets.
+    const found = new Map();
+    for (const anchor of COMMON_TYPE_ANCHORS) {
+        const matches = candidates.get(anchor.name);
+        if (matches.length === 0) {
+            throw new Error(
+                `Could not find an enumerated schema attribute for common type '${anchor.name}'. ` +
+                    `Either the schema no longer exposes a matching attribute, or the anchor's match predicate needs updating.`
+            );
+        }
+        const best = matches.reduce((a, b) => (b.length > a.length ? b : a));
+        found.set(anchor.name, { values: best });
+        VALUES_TO_COMMON_TYPE.set(JSON.stringify(best.slice().sort()), anchor.name);
+    }
+
+    // TraceType — derived from the list of trace names, not from an attribute.
+    // (A deprecated `PlotType` alias is also emitted; see the emit loop.)
+    found.set('TraceType', { values: Object.keys(schema.traces).sort() });
+
+    return found;
+}
+
+// ---------------------------------------------------------------------------
+// Layout naming maps
+// ---------------------------------------------------------------------------
+
+/**
+ * Override auto-generated shared type names to produce correct PascalCase.
+ * The fingerprint-based naming just capitalizes the first letter, which
+ * produces "Colorbar" instead of "ColorBar". These overrides fix that.
+ */
+const SHARED_NAME_OVERRIDES = new Map([
+    ['colorbar', 'ColorBar'],
+    ['hoverlabel', 'HoverLabel'],
+    ['tickformatstops', 'TickFormatStops'],
+    ['autorangeoptions', 'AutoRangeOptions'],
+    ['legendgrouptitle', 'LegendGroupTitle'],
+    ['error_y', 'ErrorY'],
+    ['error_x', 'ErrorX']
+]);
+
+/** Interface names for layout subplot containers (_isSubplotObj). */
+const LAYOUT_CONTAINER_NAMES = new Map([
+    ['xaxis', 'LayoutAxis'],
+    ['yaxis', 'LayoutAxis'],
+    ['legend', 'Legend'],
+    ['scene', 'Scene'],
+    ['polar', 'PolarLayout'],
+    ['ternary', 'TernaryLayout'],
+    ['geo', 'GeoLayout'],
+    ['map', 'MapLayout'],
+    ['coloraxis', 'ColorAxis'],
+    ['smith', 'SmithLayout']
+]);
+
+/** Interface names for layout linked-to-array containers. */
+const LAYOUT_ARRAY_NAMES = new Map([
+    ['annotations', 'Annotation'],
+    ['shapes', 'Shape'],
+    ['images', 'LayoutImage'],
+    ['sliders', 'Slider'],
+    ['updatemenus', 'UpdateMenu'],
+    ['selections', 'LayoutSelection']
+]);
+
+// ---------------------------------------------------------------------------
+// valType → TS type
+// ---------------------------------------------------------------------------
+
+const serializeValue = tsLiteral;
+
+/**
+ * Schema `values` entries wrapped in `/.../` are regexes, not literals. The
+ * enumerated `validateFunction` in src/lib/coerce.js unwraps and tests them.
+ * Each one maps to a template literal type in src/types/lib/common.d.ts that
+ * accepts the same strings.
+ *
+ * A regex stands in for a value set that the static schema cannot list,
+ * because the real set depends on how many axes a figure declares.
+ */
+const REGEX_VALUE_TYPES = new Map([
+    ['/^x([2-9]|[1-9][0-9]+)?( domain)?$/', 'XAxisName'],
+    ['/^y([2-9]|[1-9][0-9]+)?( domain)?$/', 'YAxisName'],
+    ['/^x([2-9]|[1-9][0-9]+)?y([2-9]|[1-9][0-9]+)?$/', 'CartesianSubplotId']
+]);
+
+/** Test whether a schema value uses the `/.../` regex convention. */
+function isRegexValue(v) {
+    return typeof v === 'string' && v.length > 1 && v.startsWith('/') && v.endsWith('/');
+}
+
+/**
+ * Serialize one `values` entry from a string or enumerated attribute.
+ *
+ * Plain values become string literals. Regex values become the named type
+ * that accepts the same strings.
+ *
+ * @param {string|number|boolean} v - The schema value
+ * @param {string} attrPath - Dotted attribute path, used in the error message
+ * @returns {string}
+ * @throws If `v` is a regex with no entry in `REGEX_VALUE_TYPES`. Emitting the
+ *   regex source as a string literal would produce a type that only accepts
+ *   the pattern text, so failing here is deliberate.
+ */
+function enumValueToTS(v, attrPath) {
+    if (!isRegexValue(v)) return serializeValue(v);
+
+    const typeName = REGEX_VALUE_TYPES.get(v);
+    if (!typeName) {
+        throw new Error(
+            `Unmapped regex value '${v}' at '${attrPath}'. Add an entry to REGEX_VALUE_TYPES ` +
+                `pointing at a template literal type in src/types/lib/common.d.ts that accepts ` +
+                `the same strings.`
+        );
+    }
+    return typeName;
+}
+
+/**
+ * Try to match a values array to a known common type.
+ * Returns the type name string or null.
+ */
+function matchCommonType(values) {
+    const sorted = values
+        .slice()
+        .filter((v) => typeof v === 'string')
+        .sort();
+    const key = JSON.stringify(sorted);
+    return VALUES_TO_COMMON_TYPE.get(key) ?? null;
+}
+
+/**
+ * Map an info_array attribute to a TypeScript type.
+ *
+ * info_array items in the schema carry an `items` array describing
+ * each element's valType (e.g. [{valType:'number'}, {valType:'number'}]).
+ * When all elements share the same valType we can emit a precise tuple
+ * or array type instead of `unknown[]`.
+ */
+function infoArrayToTS(attr, attrPath) {
+    if (!attr.items) return 'any[]';
+
+    // items can be an array of item descriptors or a single descriptor
+    // (single descriptor = freeLength homogeneous array)
+    if (!Array.isArray(attr.items)) {
+        return `${asArrayElement(simpleValType(attr.items, attrPath))}[]`;
+    }
+
+    const elemTypes = attr.items.map((item) => simpleValType(item, attrPath));
+
+    if (attr.freeLength) {
+        // Variable-length — use array of the union of element types
+        const unique = [...new Set(elemTypes)];
+        const union = unique.length === 1 ? unique[0] : unique.join(' | ');
+        return `${asArrayElement(union)}[]`;
+    }
+
+    // Fixed-length — emit tuple
+    return `[${elemTypes.join(', ')}]`;
+}
+
+/** Parenthesize a union so that appending `[]` binds to the whole union. */
+function asArrayElement(type) {
+    return type.includes('|') ? `(${type})` : type;
+}
+
+/**
+ * Map an info_array item descriptor to a simple TS type (no arrayOk handling).
+ *
+ * @param {object} item - The item descriptor, carrying at least `valType`
+ * @param {string} attrPath - Dotted path of the owning attribute
+ * @returns {string}
+ */
+function simpleValType(item, attrPath) {
+    switch (item.valType) {
+        case 'number':
+        case 'integer':
+            return 'number';
+        case 'string':
+        case 'subplotid':
+            return 'string';
+        case 'boolean':
+            return 'boolean';
+        case 'color':
+            return 'Color';
+        case 'enumerated':
+            if (!Array.isArray(item.values)) return 'any';
+            return item.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
+        default:
+            return 'any';
+    }
+}
+
+/**
+ * Format schema attribute metadata as a JSDoc comment block.
+ * Emits the description plus `@default`, min/max bounds, and `impliedEdits`
+ * lines when present. Containers (no valType) only carry a description, so
+ * the extra-metadata branches are no-ops for them.
+ *
+ * @param {object|undefined} attr - The schema attribute object
+ * @param {string} indent - Indentation string for each emitted line
+ * @returns {string[]}
+ */
+function formatJSDoc(attr, indent) {
+    if (!attr || typeof attr !== 'object') return [];
+
+    const description = attr.description;
+    const tags = [];
+
+    // @default — skip null and empty string (uninformative noise)
+    if ('dflt' in attr && attr.dflt !== null && attr.dflt !== '') {
+        let dfltStr;
+        if (typeof attr.dflt === 'string') {
+            dfltStr = `'${attr.dflt.replace(/'/g, "\\'")}'`;
+        } else if (Array.isArray(attr.dflt) || (typeof attr.dflt === 'object' && attr.dflt !== null)) {
+            dfltStr = JSON.stringify(attr.dflt);
+        } else {
+            dfltStr = String(attr.dflt);
+        }
+        tags.push(`@default ${dfltStr}`);
+    }
+
+    // Numeric bounds
+    const hasMin = typeof attr.min === 'number';
+    const hasMax = typeof attr.max === 'number';
+    if (hasMin && hasMax) {
+        tags.push(`Range: [${attr.min}, ${attr.max}]`);
+    } else if (hasMin) {
+        tags.push(`Minimum: ${attr.min}`);
+    } else if (hasMax) {
+        tags.push(`Maximum: ${attr.max}`);
+    }
+
+    // impliedEdits — attributes that get reset/changed alongside this one
+    if (attr.impliedEdits && typeof attr.impliedEdits === 'object') {
+        const entries = Object.entries(attr.impliedEdits);
+        if (entries.length > 0) {
+            const parts = entries.map(([k, v]) => `${k} = ${JSON.stringify(v)}`).join(', ');
+            tags.push(`Setting this also sets: ${parts}`);
+        }
+    }
+
+    return jsDocBlock({ description, tags, indent });
+}
+
+/**
+ * Map a single schema attribute to its TypeScript type string.
+ *
+ * @param {object} attr - The attribute object from the schema
+ * @param {string} attrPath - Dot-separated path for name-based overrides
+ * @returns {string} TypeScript type expression
+ */
+function valTypeToTS(attr, attrPath) {
+    // Check name-based overrides first
+    for (const [pattern, typeName] of ATTR_NAME_OVERRIDES) {
+        if (attrPath.endsWith(pattern)) return typeName;
+    }
+
+    const { valType } = attr;
+    let base;
+
+    switch (valType) {
+        case 'data_array':
+            // Loose union — `data_array` has no dimensionality in the schema. See the
+            // dimensionality TODO in src/types/README.md for the precise long-term fix.
+            return 'Datum[] | Datum[][] | TypedArray';
+
+        case 'number':
+        case 'integer': {
+            const extras = Array.isArray(attr.extras) ? attr.extras.filter((v) => typeof v === 'string') : [];
+            if (extras.length > 0) {
+                base = 'number | ' + extras.map(serializeValue).join(' | ');
+            } else {
+                base = 'number';
+            }
+            break;
+        }
+
+        case 'string': {
+            if (attr.values && Array.isArray(attr.values)) {
+                const common = matchCommonType(attr.values);
+                if (common) {
+                    base = common;
+                    break;
+                }
+                base = attr.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
+            } else {
+                base = 'string';
+            }
+            break;
+        }
+
+        case 'boolean':
+            base = 'boolean';
+            break;
+
+        case 'color':
+            base = 'Color';
+            break;
+
+        case 'colorscale':
+            base = 'ColorScale';
+            break;
+
+        case 'colorlist':
+            return 'Color[]';
+
+        case 'angle':
+            base = "number | 'auto'";
+            break;
+
+        case 'subplotid':
+            base = 'string';
+            break;
+
+        case 'enumerated': {
+            if (attr.values && Array.isArray(attr.values)) {
+                const common = matchCommonType(attr.values);
+                if (common) {
+                    base = common;
+                    break;
+                }
+                base = attr.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
+            } else {
+                base = 'any';
+            }
+            break;
+        }
+
+        case 'flaglist': {
+            const parts = [];
+            if (Array.isArray(attr.flags)) {
+                parts.push(...attr.flags.map(serializeValue));
+            }
+            if (Array.isArray(attr.extras)) {
+                parts.push(...attr.extras.map(serializeValue));
+            }
+            // Use (string & {}) to allow flag combinations like 'x+y'
+            // while preserving autocomplete for individual flags.
+            if (parts.length > 0) {
+                parts.push('(string & {})');
+                base = parts.join(' | ');
+            } else {
+                base = 'string';
+            }
+            break;
+        }
+
+        case 'info_array':
+            return infoArrayToTS(attr, attrPath);
+
+        case 'any':
+            return 'any';
+
+        default:
+            return 'any';
+    }
+
+    if (attr.arrayOk) {
+        // Wrap in parens if base contains '|' to avoid ambiguity
+        const needsParens = base.includes('|');
+        return needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+    }
+
+    return base;
+}
+
+// ---------------------------------------------------------------------------
+// Structural helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Detect a linked-to-array container in the serialized schema.
+ *
+ * In the source, these are marked with `_isLinkedToArray`, but that flag
+ * is stripped during serialization. We detect them structurally: a container
+ * whose only non-meta keys are `items`, and `items` is an object with exactly
+ * one child that is itself an object with attribute leaves.
+ */
+function isLinkedToArrayContainer(obj) {
+    if (!obj || typeof obj !== 'object' || !obj.items) return false;
+    // The container should have no other meaningful keys
+    const meaningful = Object.keys(obj).filter((k) => !META_KEYS.has(k) && k !== 'items');
+    if (meaningful.length > 0) return false;
+    // items should have exactly one named child that is an object
+    const itemKeys = Object.keys(obj.items);
+    if (itemKeys.length !== 1) return false;
+    const child = obj.items[itemKeys[0]];
+    return child && typeof child === 'object' && !child.valType;
+}
+
+// ---------------------------------------------------------------------------
+// Fingerprinting — canonical representation of container subtree shapes
+// ---------------------------------------------------------------------------
+
+/**
+ * Compute a canonical fingerprint for a leaf attribute (has valType).
+ * Two leaves with the same fingerprint produce the same TS type.
+ */
+function leafFingerprint(attr, attrPath) {
+    return valTypeToTS(attr, attrPath);
+}
+
+/**
+ * Compute a canonical fingerprint for a container (no valType).
+ * Recursively fingerprints nested containers. Two containers with the
+ * same fingerprint produce identical TypeScript object types.
+ */
+function containerFingerprint(attrs) {
+    const parts = [];
+
+    for (const key of Object.keys(attrs).sort()) {
+        if (META_KEYS.has(key)) continue;
+        const val = attrs[key];
+        if (val == null) continue;
+
+        if (typeof val === 'string') {
+            parts.push(`${key}:L'${val}'`);
+            continue;
+        }
+        if (typeof val !== 'object') continue;
+
+        if (val.valType) {
+            parts.push(`${key}:${leafFingerprint(val, key)}`);
+            continue;
+        }
+
+        if (isLinkedToArrayContainer(val)) {
+            const itemChild = Object.values(val.items)[0];
+            parts.push(`${key}:Array<${containerFingerprint(itemChild)}>`);
+            continue;
+        }
+
+        parts.push(`${key}:{${containerFingerprint(val)}}`);
+    }
+
+    return parts.join(',');
+}
+
+/**
+ * Walk an attribute tree and collect fingerprints for every container
+ * subtree (including nested ones). Records each occurrence with the
+ * attribute key name (used later for naming).
+ *
+ * @param {object} attrs - Attribute object
+ * @param {Map} collector - Map<fingerprint, {count, names: Map<string,count>, attrs}>
+ */
+function collectFingerprints(attrs, collector) {
+    for (const key of Object.keys(attrs).sort()) {
+        if (META_KEYS.has(key)) continue;
+        const val = attrs[key];
+        if (val == null || typeof val !== 'object' || val.valType) continue;
+
+        let containerAttrs;
+        if (isLinkedToArrayContainer(val)) {
+            // For linked-to-array containers, fingerprint the inner item,
+            // not the wrapper. The wrapper itself is always {items:{X:{...}}}.
+            containerAttrs = Object.values(val.items)[0];
+        } else {
+            containerAttrs = val;
+        }
+
+        const fp = containerFingerprint(containerAttrs);
+
+        if (!collector.has(fp)) {
+            collector.set(fp, { count: 0, names: new Map(), attrs: containerAttrs });
+        }
+        const entry = collector.get(fp);
+        entry.count++;
+        entry.names.set(key, (entry.names.get(key) || 0) + 1);
+
+        // Recurse into children
+        collectFingerprints(containerAttrs, collector);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Shared type selection and naming
+// ---------------------------------------------------------------------------
+
+const MIN_OCCURRENCES = 5;
+const MIN_PROPERTIES = 4;
+
+/**
+ * Count the number of property lines a container would produce.
+ */
+function countProperties(attrs) {
+    let count = 0;
+    for (const key of Object.keys(attrs)) {
+        if (META_KEYS.has(key)) continue;
+        const val = attrs[key];
+        if (val == null) continue;
+        if (typeof val === 'string' || typeof val !== 'object') {
+            count++;
+            continue;
+        }
+        if (val.valType) {
+            count++;
+            continue;
+        }
+        count++; // container counts as one property
+    }
+    return count;
+}
+
+/** Convert an attribute key to a PascalCase interface name. */
+function keyToInterfaceName(key) {
+    const override = SHARED_NAME_OVERRIDES.get(key);
+    if (override) return override;
+    return key
+        .split('_')
+        .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+        .join('');
+}
+
+/**
+ * Determine shared types from collected fingerprints.
+ *
+ * Returns Map<fingerprint, interfaceName> for containers that should
+ * be extracted into shared interfaces.
+ */
+function selectSharedTypes(collector) {
+    /** @type {Map<string, string>} fingerprint → interface name */
+    const shared = new Map();
+    /** @type {Map<string, string>} interface name → canonical fingerprint (largest so far) */
+    const nameToCanonFp = new Map();
+
+    // Sort by count descending so the most common get first pick of names
+    const candidates = [...collector.entries()]
+        .filter(([, entry]) => {
+            if (entry.count < MIN_OCCURRENCES) return false;
+            if (countProperties(entry.attrs) >= MIN_PROPERTIES) return true;
+            // Allow explicitly named overrides to bypass MIN_PROPERTIES
+            for (const name of entry.names.keys()) {
+                if (SHARED_NAME_OVERRIDES.has(name)) return true;
+            }
+            return false;
+        })
+        .sort((a, b) => b[1].count - a[1].count);
+
+    for (const [fp, entry] of candidates) {
+        // Pick the most common attribute key as the name
+        let bestKey = '';
+        let bestCount = 0;
+        for (const [name, count] of entry.names) {
+            if (count > bestCount) {
+                bestKey = name;
+                bestCount = count;
+            }
+        }
+
+        let interfaceName = keyToInterfaceName(bestKey);
+
+        // Disambiguate font variants by checking if properties have arrayOk
+        if (interfaceName.toLowerCase().endsWith('font')) {
+            const hasArrayOk = Object.values(entry.attrs).some(
+                (v) => v && typeof v === 'object' && v.valType && v.arrayOk
+            );
+            interfaceName = hasArrayOk ? 'FontArray' : 'Font';
+        }
+
+        if (nameToCanonFp.has(interfaceName)) {
+            // Name collision — check subset/superset relationship.
+            // Since all properties are optional, a superset type safely
+            // covers all subset variants.
+            const existingFp = nameToCanonFp.get(interfaceName);
+            const existingParts = existingFp.split(',');
+            const newParts = fp.split(',');
+            const existingSet = new Set(existingParts);
+            const newSet = new Set(newParts);
+
+            const newSubsetOfExisting = newParts.every((p) => existingSet.has(p));
+            const existingSubsetOfNew = existingParts.every((p) => newSet.has(p));
+
+            if (newSubsetOfExisting) {
+                // New is a subset of existing — just map to existing name
+                shared.set(fp, interfaceName);
+                continue;
+            } else if (existingSubsetOfNew) {
+                // Existing is a subset of new — upgrade canonical to the superset
+                shared.set(fp, interfaceName);
+                nameToCanonFp.set(interfaceName, fp);
+                continue;
+            } else {
+                // Unrelated — disambiguate with numeric suffix
+                let suffix = 2;
+                while (nameToCanonFp.has(interfaceName + suffix)) suffix++;
+                interfaceName = interfaceName + suffix;
+            }
+        }
+
+        nameToCanonFp.set(interfaceName, fp);
+        shared.set(fp, interfaceName);
+    }
+
+    return shared;
+}
+
+/**
+ * Attempt superset merging: if a smaller fingerprint is a strict subset
+ * of a larger one (same keys minus a few extras), merge the smaller's
+ * occurrences into the larger.
+ *
+ * We do this by checking if the property lines of the subset are a
+ * prefix-match of the superset (since keys are sorted).
+ */
+function mergeSubsets(collector, shared) {
+    // Merge non-shared fingerprints that are strict SUBSETS of a shared
+    // fingerprint into the same name. Only one direction — we never expand
+    // a shared type to a superset here (that's handled in selectSharedTypes
+    // for same-named candidates). Iterate until stable for transitive
+    // subset chains (if C ⊂ B and B was just merged into A, C should too).
+    let changed = true;
+    while (changed) {
+        changed = false;
+        for (const [fpA, nameA] of [...shared.entries()]) {
+            const partsA = new Set(fpA.split(','));
+
+            for (const [fpB, entryB] of collector.entries()) {
+                if (fpB === fpA) continue;
+                if (shared.has(fpB)) continue;
+                if (entryB.count < 2) continue;
+
+                // Check if B is a strict subset of A
+                const partsB = fpB.split(',');
+                const bSubsetOfA = partsB.every((p) => partsA.has(p));
+
+                if (bSubsetOfA) {
+                    shared.set(fpB, nameA);
+                    changed = true;
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Attribute tree walker (with shared type support)
+// ---------------------------------------------------------------------------
+
+/**
+ * Walk a schema attribute object and emit TypeScript property lines.
+ *
+ * @param {object} attrs - Attribute object from the schema
+ * @param {string} indent - Current indentation string
+ * @param {string} pathPrefix - Dot-separated path for name-based overrides
+ * @param {Map<string,string>} sharedTypes - fingerprint → interface name
+ * @param {Object<string,string>} [fieldOverrides] - field-name → TS type to
+ *     force, bypassing schema-derived types. Used for fields whose schema
+ *     valType is intentionally `any` because the schema is recursive (e.g.
+ *     Frame.layout points to the entire Layout shape).
+ * @returns {string[]} Array of TS property declaration lines
+ */
+function attrsToProperties(attrs, indent, pathPrefix, sharedTypes, fieldOverrides, inInternalNamespace = false) {
+    const lines = [];
+
+    for (const key of Object.keys(attrs).sort()) {
+        // Skip meta keys
+        if (META_KEYS.has(key)) continue;
+
+        const val = attrs[key];
+
+        // Skip null/undefined
+        if (val == null) continue;
+
+        const attrPath = pathPrefix ? `${pathPrefix}.${key}` : key;
+
+        // Field-level override — bypass schema typing entirely
+        if (fieldOverrides && Object.prototype.hasOwnProperty.call(fieldOverrides, key)) {
+            if (val && typeof val === 'object' && val.description) {
+                lines.push(...formatJSDoc(val, indent));
+            }
+            lines.push(`${indent}${key}?: ${fieldOverrides[key]};`);
+            continue;
+        }
+
+        // String literal (e.g. type: "ohlc")
+        if (typeof val === 'string') {
+            lines.push(`${indent}${key}?: '${val}';`);
+            continue;
+        }
+
+        // Non-object primitive (shouldn't happen, but guard)
+        if (typeof val !== 'object') continue;
+
+        // Leaf attribute (has valType)
+        if (val.valType) {
+            const tsType = valTypeToTS(val, attrPath);
+            lines.push(...formatJSDoc(val, indent));
+            lines.push(`${indent}${key}?: ${tsType};`);
+            continue;
+        }
+
+        // Linked-to-array container — check if inner item matches a shared type
+        if (isLinkedToArrayContainer(val)) {
+            const itemChild = Object.values(val.items)[0];
+            const fp = containerFingerprint(itemChild);
+            const sharedName = sharedTypes.get(fp);
+            if (sharedName) {
+                lines.push(...formatJSDoc(val, indent));
+                lines.push(`${indent}${key}?: ${refName(sharedName, inInternalNamespace)}[];`);
+                continue;
+            }
+            const nested = attrsToProperties(
+                itemChild,
+                indent + '    ',
+                attrPath,
+                sharedTypes,
+                undefined,
+                inInternalNamespace
+            );
+            if (nested.length > 0) {
+                lines.push(...formatJSDoc(val, indent));
+                lines.push(`${indent}${key}?: Array<{`);
+                lines.push(...nested);
+                lines.push(`${indent}}>;`);
+                continue;
+            }
+        }
+
+        // Check if this container matches a shared type
+        const fp = containerFingerprint(val);
+        const sharedName = sharedTypes.get(fp);
+        if (sharedName) {
+            lines.push(...formatJSDoc(val, indent));
+            lines.push(`${indent}${key}?: ${refName(sharedName, inInternalNamespace)};`);
+            continue;
+        }
+
+        // Container object — recurse
+        const nested = attrsToProperties(val, indent + '    ', attrPath, sharedTypes, undefined, inInternalNamespace);
+        if (nested.length > 0) {
+            lines.push(...formatJSDoc(val, indent));
+            lines.push(`${indent}${key}?: {`);
+            lines.push(...nested);
+            lines.push(`${indent}};`);
+        }
+    }
+
+    return lines;
+}
+
+// ---------------------------------------------------------------------------
+// Trace name → interface name
+// ---------------------------------------------------------------------------
+
+function traceNameToInterfaceName(traceName) {
+    return traceName.charAt(0).toUpperCase() + traceName.slice(1) + 'Data';
+}
+
+// ---------------------------------------------------------------------------
+// Layout generation helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Group subplot containers by target interface name and merge their
+ * attributes into a superset. E.g. xaxis and yaxis both map to LayoutAxis;
+ * their attributes are merged so the interface covers both.
+ *
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
+ * @returns {Map<string, {attrs: object, keys: string[]}>}
+ */
+function buildSubplotGroups(layoutAttrs) {
+    const groups = new Map();
+    for (const [key, val] of Object.entries(layoutAttrs)) {
+        if (!val || typeof val !== 'object' || !val._isSubplotObj) continue;
+        const name = LAYOUT_CONTAINER_NAMES.get(key) || keyToInterfaceName(key);
+        const existing = groups.get(name);
+        if (existing) {
+            // Merge: superset of both attribute sets
+            for (const [k, v] of Object.entries(val)) {
+                if (!(k in existing.attrs)) existing.attrs[k] = v;
+            }
+            existing.keys.push(key);
+        } else {
+            groups.set(name, { attrs: { ...val }, keys: [key] });
+        }
+    }
+    return groups;
+}
+
+/**
+ * Trace modules whose layout attributes live inside a subplot container
+ * instead of at the top level of layout.
+ *
+ * The plot schema does not record where a trace module reads its layout
+ * attributes from, so the mapping lives here. barpolar is the only module
+ * that reads them from a subplot: its `supplyLayoutDefaults` coerces from
+ * `layoutIn[trace.subplot]`, which makes `layout.polar.barmode` the real key
+ * and `layout.barmode` a no-op for barpolar traces.
+ *
+ * If a trace module ever reads its layout attributes from another subplot
+ * container, add it here. Otherwise its keys land on `Layout`, where setting
+ * them does nothing.
+ */
+const SUBPLOT_SCOPED_TRACE_LAYOUT = new Map([['barpolar', 'polar']]);
+
+/**
+ * Merge the layout attributes that trace modules contribute into the layout
+ * attribute tree.
+ *
+ * The plot schema files these under `schema.traces[<type>].layoutAttributes`
+ * because a trace module only contributes them when the module loads. At
+ * runtime they are ordinary layout keys, so the generated types must carry
+ * them. Without this merge, `Layout` omits `barmode`, `boxmode`,
+ * `piecolorway` and 25 other keys, and `PolarLayout` omits `barmode` and
+ * `bargap`.
+ *
+ * Keys from a module in `SUBPLOT_SCOPED_TRACE_LAYOUT` merge into that subplot
+ * container. All other keys merge into the top level.
+ *
+ * A key that the layout already defines keeps the layout definition. Two
+ * modules that contribute the same key to the same target must agree on the
+ * definition, otherwise one interface cannot describe both and this throws.
+ *
+ * The merge copies rather than mutates, because `generateSchemaTypes` is
+ * exported and must not rewrite a caller's schema object. Only the top level
+ * and each subplot container this writes to need a copy. Attribute objects
+ * below those two levels stay shared by reference, and nothing here writes
+ * to them.
+ *
+ * @param {object} schema - The full plot schema
+ * @returns {object} A new attribute map. The input schema is not modified.
+ */
+function mergeTraceLayoutAttributes(schema) {
+    const layoutAttrs = schema.layout.layoutAttributes;
+    // Target container name ('' for the top level) → key → {attr, traceName}.
+    const contributed = new Map();
+
+    for (const traceName of Object.keys(schema.traces).sort()) {
+        const traceLayoutAttrs = schema.traces[traceName].layoutAttributes;
+        if (!traceLayoutAttrs || typeof traceLayoutAttrs !== 'object') continue;
+
+        const container = SUBPLOT_SCOPED_TRACE_LAYOUT.get(traceName) || '';
+        const target = container ? layoutAttrs[container] : layoutAttrs;
+        if (!target) {
+            throw new Error(
+                `Trace '${traceName}' is mapped to the layout container '${container}', ` +
+                    `but the schema has no 'layout.layoutAttributes.${container}'. ` +
+                    `Update SUBPLOT_SCOPED_TRACE_LAYOUT.`
+            );
+        }
+
+        if (!contributed.has(container)) contributed.set(container, new Map());
+        const claimed = contributed.get(container);
+
+        for (const [key, val] of Object.entries(traceLayoutAttrs)) {
+            if (key in target) continue;
+            if (!val || typeof val !== 'object') continue;
+
+            const existing = claimed.get(key);
+            if (!existing) {
+                claimed.set(key, { attr: val, traceName });
+                continue;
+            }
+            // Compare the TypeScript type each definition would emit, not the
+            // raw schema entry: a differing `description` or `dflt` only
+            // changes the JSDoc, and the first contributor's wins.
+            const emitted = (attr) => (attr.valType ? leafFingerprint(attr, key) : containerFingerprint(attr));
+            if (emitted(existing.attr) !== emitted(val)) {
+                const where = container ? `layout.${container}` : 'layout';
+                throw new Error(
+                    `Traces '${existing.traceName}' and '${traceName}' both contribute '${key}' to ${where}, ` +
+                        `but their definitions differ, so one generated property cannot describe both. ` +
+                        `If the two mean the same thing, share a single definition by reference.` +
+                        `If they mean different things, add the trace to SUBPLOT_SCOPED_TRACE_LAYOUT.`
+                );
+            }
+        }
+    }
+
+    const merged = { ...layoutAttrs };
+    for (const [container, claimed] of contributed) {
+        const additions = Object.fromEntries([...claimed].map(([key, { attr }]) => [key, attr]));
+        if (container) {
+            merged[container] = { ...merged[container], ...additions };
+        } else {
+            Object.assign(merged, additions);
+        }
+    }
+    return merged;
+}
+
+/**
+ * Extract linked-to-array containers from layout attributes.
+ * Returns a map of interface name → item attributes.
+ *
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
+ * @returns {Map<string, object>} name → item child attrs
+ */
+function extractArrayItems(layoutAttrs) {
+    const items = new Map();
+    for (const [key, val] of Object.entries(layoutAttrs)) {
+        if (!val || typeof val !== 'object') continue;
+        if (!isLinkedToArrayContainer(val)) continue;
+        const name = LAYOUT_ARRAY_NAMES.get(key) || keyToInterfaceName(key);
+        const itemChild = Object.values(val.items)[0];
+        items.set(name, itemChild);
+    }
+    return items;
+}
+
+/**
+ * Generate the Layout interface body.
+ *
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
+ * @param {Map<string,string>} sharedTypes - fingerprint → interface name
+ * @param {Map<string,{attrs,keys}>} subplotGroups - from buildSubplotGroups
+ * @param {Map<string,object>} arrayItems - from extractArrayItems
+ * @returns {string[]} property lines
+ */
+function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, arrayItems) {
+    const lines = [];
+    const subplotEntries = []; // {key, typeName} for index signatures
+
+    // Build reverse maps: layout key → subplot name, layout key → array name
+    const subplotKeyToName = new Map();
+    for (const [name, { keys }] of subplotGroups) {
+        for (const k of keys) subplotKeyToName.set(k, name);
+    }
+    const arrayKeyToName = new Map();
+    for (const [key, val] of Object.entries(layoutAttrs)) {
+        if (isLinkedToArrayContainer(val)) {
+            arrayKeyToName.set(key, LAYOUT_ARRAY_NAMES.get(key) || keyToInterfaceName(key));
+        }
+    }
+
+    for (const key of Object.keys(layoutAttrs).sort()) {
+        if (META_KEYS.has(key)) continue;
+        const val = layoutAttrs[key];
+        if (val == null) continue;
+
+        // String literal
+        if (typeof val === 'string') {
+            lines.push(`    ${key}?: '${val}';`);
+            continue;
+        }
+        if (typeof val !== 'object') continue;
+
+        // Leaf attribute
+        if (val.valType) {
+            const tsType = valTypeToTS(val, key);
+            lines.push(...formatJSDoc(val, '    '));
+            lines.push(`    ${key}?: ${tsType};`);
+            continue;
+        }
+
+        // Subplot container — reference the named interface
+        if (subplotKeyToName.has(key)) {
+            const typeName = subplotKeyToName.get(key);
+            lines.push(...formatJSDoc(val, '    '));
+            lines.push(`    ${key}?: ${typeName};`);
+            subplotEntries.push({ key, typeName });
+            continue;
+        }
+
+        // Linked-to-array container — reference as array
+        if (arrayKeyToName.has(key)) {
+            const typeName = arrayKeyToName.get(key);
+            lines.push(...formatJSDoc(val, '    '));
+            lines.push(`    ${key}?: ${typeName}[];`);
+            continue;
+        }
+
+        // Regular container — check for shared type
+        const fp = containerFingerprint(val);
+        const sharedName = sharedTypes.get(fp);
+        if (sharedName) {
+            lines.push(...formatJSDoc(val, '    '));
+            lines.push(`    ${key}?: ${refName(sharedName, false)};`);
+            continue;
+        }
+
+        // Inline container
+        const nested = attrsToProperties(val, '        ', key, sharedTypes);
+        if (nested.length > 0) {
+            lines.push(...formatJSDoc(val, '    '));
+            lines.push(`    ${key}?: {`);
+            lines.push(...nested);
+            lines.push(`    };`);
+        }
+    }
+
+    // Subplot index signatures for numbered variants (xaxis2, scene3, etc.)
+    if (subplotEntries.length > 0) {
+        lines.push('');
+        lines.push('    // Subplot index signatures for numbered variants');
+        // Dedupe by typeName+key pattern (xaxis and yaxis have separate entries)
+        for (const { key, typeName } of subplotEntries) {
+            lines.push(`    [key: \`${key}\${number}\`]: ${typeName};`);
+        }
+    }
+
+    return lines;
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate type declarations from a plot schema object.
+ *
+ * @param {object} schema - The full plot schema (as from Plotly.PlotSchema.get())
+ * @param {string} outputPath - Absolute path to write the .d.ts file
+ */
+export function generateSchemaTypes(schema, outputPath) {
+    const traceNames = Object.keys(schema.traces).sort();
+
+    // Populate META_KEYS from the schema's own list of metadata keys so we
+    // pick up any future additions without code changes.
+    if (Array.isArray(schema.defs?.metaKeys)) {
+        META_KEYS = new Set(schema.defs.metaKeys);
+    } else {
+        throw new Error('schema.defs.metaKeys is missing — cannot determine which keys to skip during emission');
+    }
+
+    // ----- Phase 0: Discover common enum types (Calendar, Dash, ...) -----
+    const commonTypes = discoverCommonTypes(schema);
+
+    const layoutAttrs = mergeTraceLayoutAttributes(schema);
+
+    // ----- Phase 1: Fingerprint all container subtrees across traces + layout -----
+    const collector = new Map();
+    for (const traceName of traceNames) {
+        collectFingerprints(schema.traces[traceName].attributes, collector);
+    }
+    collectFingerprints(layoutAttrs, collector);
+
+    // ----- Phase 2: Select shared types and merge subsets -----
+    const sharedTypes = selectSharedTypes(collector);
+    mergeSubsets(collector, sharedTypes);
+
+    // Build ordered list of shared interfaces. For each name, use the
+    // LARGEST fingerprint (most properties) so the interface is a superset
+    // of all variants mapped to that name.
+    const nameToData = new Map();
+    for (const [fp, name] of sharedTypes.entries()) {
+        const entry = collector.get(fp);
+        if (!entry) continue;
+        const propCount = countProperties(entry.attrs);
+        const existing = nameToData.get(name);
+        if (!existing || propCount > existing.propCount) {
+            nameToData.set(name, { fp, attrs: entry.attrs, propCount });
+        }
+    }
+
+    // Inject animation subtree types as shared interfaces so AnimationOpts
+    // and any other site referencing the same shape gets a named reference
+    // instead of an inlined object. These occur fewer than MIN_OCCURRENCES
+    // times so the automatic fingerprint extraction skips them.
+    if (schema.animation) {
+        const injectShared = (attrs, name) => {
+            if (!attrs || typeof attrs !== 'object') return;
+            const fp = containerFingerprint(attrs);
+            if (!sharedTypes.has(fp)) {
+                sharedTypes.set(fp, name);
+                nameToData.set(name, { fp, attrs, propCount: countProperties(attrs) });
+            }
+        };
+        injectShared(schema.animation.transition, 'Transition');
+        injectShared(schema.animation.frame, 'AnimationFrameOpts');
+    }
+
+    const sharedList = [...nameToData.entries()]
+        .map(([name, { fp, attrs }]) => [name, { fp, attrs }])
+        .sort((a, b) => {
+            // Leaf types first (Font before ColorBar/HoverLabel)
+            const aDepth = a[1].fp.includes(':{') ? 1 : 0;
+            const bDepth = b[1].fp.includes(':{') ? 1 : 0;
+            if (aDepth !== bDepth) return aDepth - bDepth;
+            return a[0].localeCompare(b[0]);
+        });
+
+    // For emitting shared interface bodies, use sharedTypes so nested
+    // shared types get replaced (e.g. Font inside ColorBar), but exclude
+    // all fingerprints that map to the same name to avoid circular
+    // self-references (multiple fps can share a name after merging).
+    const emitSharedBody = (attrs, selfName) => {
+        const innerShared = new Map();
+        for (const [fp, name] of sharedTypes) {
+            if (name !== selfName) {
+                innerShared.set(fp, name);
+            }
+        }
+        const inNs = INTERNAL_INTERFACES.has(selfName);
+        return attrsToProperties(attrs, '    ', '', innerShared, undefined, inNs);
+    };
+
+    // ----- Phase 3: Layout-specific interfaces -----
+    const subplotGroups = buildSubplotGroups(layoutAttrs);
+    const arrayItems = extractArrayItems(layoutAttrs);
+
+    // ----- Phase 4: Build output -----
+    const chunks = [
+        generatedHeader({
+            source: 'plot-schema.json',
+            task: 'tasks/generate_schema_types.mjs',
+            command: 'npm run schema'
+        }),
+        '',
+        'import type {',
+        '    CartesianSubplotId,',
+        '    Color,',
+        '    ColorScale,',
+        '    Datum,',
+        '    MarkerSymbol,',
+        '    TypedArray,',
+        '    XAxisName,',
+        '    YAxisName',
+        "} from '../lib/common';",
+        ''
+    ];
+
+    // Emit common enum type aliases discovered from the schema
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('// Common enum types — value sets discovered from the schema');
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('');
+    for (const [name, { values }] of commonTypes) {
+        const union = values.map(serializeValue).join(' | ');
+        chunks.push(`export type ${name} = ${union};`);
+        chunks.push('');
+    }
+
+    // Deprecated back-compat alias — kept so existing consumers importing
+    // `PlotType` continue to work. New code should use `TraceType`.
+    chunks.push('/** @deprecated Renamed to TraceType. */');
+    chunks.push('export type PlotType = TraceType;');
+    chunks.push('');
+
+    // Emit shared interfaces — public ones at the top level, "internal" ones
+    // wrapped in `export namespace _internal { ... }` so consumers reach them
+    // via the namespace prefix rather than directly.
+    const publicShared = sharedList.filter(([name]) => !INTERNAL_INTERFACES.has(name));
+    const internalShared = sharedList.filter(([name]) => INTERNAL_INTERFACES.has(name));
+
+    if (publicShared.length > 0) {
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('// Shared interfaces — extracted from repeated attribute subtrees');
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('');
+
+        for (const [name, { fp, attrs }] of publicShared) {
+            const properties = emitSharedBody(attrs, name);
+            chunks.push(`export interface ${name} {`);
+            chunks.push(...properties);
+            chunks.push('}');
+            chunks.push('');
+        }
+    }
+
+    if (internalShared.length > 0) {
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('// Internal shared interfaces — schema helpers or types whose direct names');
+        chunks.push('// would mislead consumers. Reach them via `_internal.X` or, preferably,');
+        chunks.push('// through indexed access on the parent type (e.g. `ScatterData["marker"]`).');
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('');
+        chunks.push('export namespace _internal {');
+        for (const [name, { fp, attrs }] of internalShared) {
+            const properties = emitSharedBody(attrs, name);
+            chunks.push(`    export interface ${name} {`);
+            // Reindent the body — each line gets 4 more spaces (or stays blank).
+            for (const line of properties) chunks.push(line === '' ? line : '    ' + line);
+            chunks.push('    }');
+            chunks.push('');
+        }
+        chunks.push('}');
+        chunks.push('');
+    }
+
+    // Emit per-trace interfaces
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('// Trace interfaces');
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('');
+
+    for (const traceName of traceNames) {
+        const trace = schema.traces[traceName];
+        const interfaceName = traceNameToInterfaceName(traceName);
+
+        const properties = attrsToProperties(trace.attributes, '    ', '', sharedTypes);
+
+        chunks.push(`export interface ${interfaceName} {`);
+        chunks.push(...properties);
+        chunks.push('}');
+        chunks.push('');
+    }
+
+    // Discriminated union of every trace shape. All fields are optional via
+    // `Partial<…>` — narrow with the `type` discriminator before accessing
+    // trace-specific attributes.
+    chunks.push('/**');
+    chunks.push(' * Union of every trace shape. All fields are optional via `Partial<…>` —');
+    chunks.push(' * narrow with the `type` discriminator before accessing trace-specific');
+    chunks.push(' * attributes:');
+    chunks.push(' *');
+    chunks.push(" *     if (trace.type === 'bar') { trace.marker?.cornerradius }");
+    chunks.push(" *     if (trace.type === 'pie') { trace.marker?.colors }");
+    chunks.push(' */');
+    chunks.push('export type Data =');
+    traceNames.forEach((traceName, i) => {
+        const interfaceName = traceNameToInterfaceName(traceName);
+        const sep = i === traceNames.length - 1 ? ';' : '';
+        chunks.push(`    | Partial<${interfaceName}>${sep}`);
+    });
+    chunks.push('');
+
+    // Emit layout-specific interfaces (subplots + array items)
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('// Layout component interfaces');
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('');
+
+    for (const [name, { attrs }] of [...subplotGroups.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+        const properties = attrsToProperties(attrs, '    ', '', sharedTypes);
+        chunks.push(`export interface ${name} {`);
+        chunks.push(...properties);
+        chunks.push('}');
+        chunks.push('');
+    }
+
+    for (const [name, attrs] of [...arrayItems.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+        const properties = attrsToProperties(attrs, '    ', '', sharedTypes);
+        chunks.push(`export interface ${name} {`);
+        chunks.push(...properties);
+        chunks.push('}');
+        chunks.push('');
+    }
+
+    // Emit the Layout interface
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('// Layout');
+    chunks.push('// ---------------------------------------------------------------------------');
+    chunks.push('');
+
+    const layoutProperties = generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, arrayItems);
+    chunks.push('export interface Layout {');
+    chunks.push(...layoutProperties);
+    chunks.push('}');
+    chunks.push('');
+
+    // ----- Phase 5: Animation, Frame, Edits, and ConfigBase interfaces -----
+    const extraInterfaces = [];
+    if (schema.animation) {
+        const animProps = attrsToProperties(schema.animation, '    ', 'animation', sharedTypes);
+        extraInterfaces.push({ name: 'AnimationOpts', properties: animProps });
+    }
+    if (schema.frames && schema.frames.items) {
+        const frameEntry = Object.values(schema.frames.items)[0];
+        if (frameEntry) {
+            // `data` and `layout` are `valType: 'any'` in the schema because they
+            // recursively reference the schema's own top-level shapes — schema
+            // can't self-reference, so override here at the type-generation layer.
+            const frameProps = attrsToProperties(frameEntry, '    ', 'frame', sharedTypes, {
+                data: 'any[]',
+                layout: 'Partial<Layout>'
+            });
+            extraInterfaces.push({ name: 'Frame', properties: frameProps });
+        }
+    }
+    if (schema.config && schema.config.edits) {
+        const editsProps = attrsToProperties(schema.config.edits, '    ', 'edits', sharedTypes);
+        extraInterfaces.push({ name: 'Edits', properties: editsProps });
+
+        // Register Edits's fingerprint so the ConfigBase emission below
+        // references `edits?: Edits` instead of re-inlining the subtree.
+        sharedTypes.set(containerFingerprint(schema.config.edits), 'Edits');
+    }
+    if (schema.config && schema.config.toImageButtonOptions) {
+        // The runtime reads `null` for `width` and `height` as the current graph
+        // size. A `number` valType cannot express that, so widen the two fields
+        // here rather than in `core/config.d.ts`.
+        const toImageButtonProps = attrsToProperties(
+            schema.config.toImageButtonOptions,
+            '    ',
+            'toImageButtonOptions',
+            sharedTypes,
+            { width: 'number | null', height: 'number | null' }
+        );
+        extraInterfaces.push({ name: 'ToImageButtonOptions', properties: toImageButtonProps });
+
+        // Register the fingerprint so the ConfigBase emission below references
+        // `toImageButtonOptions?: ToImageButtonOptions` instead of re-inlining the subtree.
+        sharedTypes.set(containerFingerprint(schema.config.toImageButtonOptions), 'ToImageButtonOptions');
+    }
+    if (schema.config) {
+        // Generate the schema-derived Config building block. Fields whose
+        // schema valType is `any` (locales, modeBarButtons, setBackground, ...)
+        // come through as `any` and are overridden with precise types in
+        // `core/config.d.ts`'s `Config` via Omit/intersection. The schema is
+        // fundamentally unable to describe functions or arbitrary-key maps, so
+        // those overrides are permanent.
+        const configProps = attrsToProperties(schema.config, '    ', 'config', sharedTypes);
+        extraInterfaces.push({ name: 'ConfigBase', properties: configProps });
+    }
+
+    if (extraInterfaces.length > 0) {
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('// Animation, frames, and config interfaces');
+        chunks.push('// ---------------------------------------------------------------------------');
+        chunks.push('');
+        for (const { name, properties } of extraInterfaces) {
+            chunks.push(`export interface ${name} {`);
+            chunks.push(...properties);
+            chunks.push('}');
+            chunks.push('');
+        }
+    }
+
+    const output = toFileText(chunks);
+
+    // Backstop for the `/.../` regex convention. `enumValueToTS` already fails
+    // on an unmapped regex and names the attribute, but it only sees `values`
+    // entries. This catches a regex that reaches the output by another route.
+    const leakedRegexes = output.match(/'\/\^[^']*'/g);
+    if (leakedRegexes) {
+        throw new Error(
+            `Generated types contain regex string literals: ${[...new Set(leakedRegexes)].join(', ')}. ` +
+                `A schema regex reached the output as a literal type, which only accepts the pattern ` +
+                `text itself. Map it in REGEX_VALUE_TYPES.`
+        );
+    }
+
+    fs.writeFileSync(outputPath, output);
+
+    const sharedCount = sharedList.length;
+    const layoutCount = subplotGroups.size + arrayItems.size + 1; // +1 for Layout itself
+    const extraCount = extraInterfaces.length;
+    console.log(
+        `Generated ${traceNames.length} trace(s) + ${layoutCount} layout type(s) + ${sharedCount} shared interface(s) + ${extraCount} animation/config interface(s) → ${outputPath}`
+    );
+
+    // Return all top-level exported interface names so callers can verify
+    // re-exports. Excludes names wrapped inside `namespace _internal` — they
+    // are exported via the namespace but their bare names aren't importable
+    // from the module's top level, so a per-name re-export check would
+    // falsely flag them as missing.
+    const exportedNames = new Set();
+    for (const name of commonTypes.keys()) exportedNames.add(name);
+    exportedNames.add('PlotType');
+    for (const [name] of sharedList) {
+        if (!INTERNAL_INTERFACES.has(name)) exportedNames.add(name);
+    }
+    for (const traceName of traceNames) exportedNames.add(traceNameToInterfaceName(traceName));
+    exportedNames.add('Data');
+    for (const name of subplotGroups.keys()) exportedNames.add(name);
+    for (const name of arrayItems.keys()) exportedNames.add(name);
+    exportedNames.add('Layout');
+    for (const { name } of extraInterfaces) exportedNames.add(name);
+    return exportedNames;
+}

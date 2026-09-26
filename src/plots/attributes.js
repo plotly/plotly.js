@@ -6,7 +6,7 @@ var fxAttrs = require('../components/fx/attributes');
 module.exports = {
     type: {
         valType: 'enumerated',
-        values: [],     // listed dynamically
+        values: [], // listed dynamically
         dflt: 'scatter',
         editType: 'calc+clearAxisTypes',
         _noTemplating: true // we handle this at a higher level
@@ -27,10 +27,9 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         editType: 'style',
-        description: [
-            'Determines whether or not an item corresponding to this',
-            'trace is shown in the legend.'
-        ].join(' ')
+        description: ['Determines whether or not an item corresponding to this', 'trace is shown in the legend.'].join(
+            ' '
+        )
     },
     legend: {
         valType: 'subplotid',
@@ -59,17 +58,13 @@ module.exports = {
             valType: 'string',
             dflt: '',
             editType: 'style',
-            description: [
-                'Sets the title of the legend group.'
-            ].join(' ')
+            description: ['Sets the title of the legend group.'].join(' ')
         },
         font: fontAttrs({
             editType: 'style',
-            description: [
-                'Sets this legend group\'s title font.'
-            ].join(' '),
+            description: ["Sets this legend group's title font."].join(' ')
         }),
-        editType: 'style',
+        editType: 'style'
     },
     legendrank: {
         valType: 'number',
@@ -90,7 +85,7 @@ module.exports = {
         valType: 'number',
         min: 0,
         editType: 'style',
-        description: 'Sets the width (in px or fraction) of the legend for this trace.',
+        description: 'Sets the width (in px or fraction) of the legend for this trace.'
     },
     opacity: {
         valType: 'number',
@@ -103,10 +98,7 @@ module.exports = {
     name: {
         valType: 'string',
         editType: 'style',
-        description: [
-            'Sets the trace name.',
-            'The trace name appears as the legend item and on hover.'
-        ].join(' ')
+        description: ['Sets the trace name.', 'The trace name appears as the legend item and on hover.'].join(' ')
     },
     uid: {
         valType: 'string',
@@ -182,38 +174,12 @@ module.exports = {
         dflt: 'all',
         editType: 'none',
         description: [
-            'Determines which trace information appear on hover.',
+            'Determines what trace information appears on hover.',
             'If `none` or `skip` are set, no information is displayed upon hovering.',
             'But, if `none` is set, click and hover events are still fired.'
         ].join(' ')
     },
     hoverlabel: fxAttrs.hoverlabel,
-    stream: {
-        token: {
-            valType: 'string',
-            noBlank: true,
-            strict: true,
-            editType: 'calc',
-            description: [
-                'The stream id number links a data trace on a plot with a stream.',
-                'See https://chart-studio.plotly.com/settings for more details.'
-            ].join(' ')
-        },
-        maxpoints: {
-            valType: 'number',
-            min: 0,
-            max: 10000,
-            dflt: 500,
-            editType: 'calc',
-            description: [
-                'Sets the maximum number of points to keep on the plots from an',
-                'incoming stream.',
-                'If `maxpoints` is set to *50*, only the newest 50 points will',
-                'be displayed on the plot.'
-            ].join(' ')
-        },
-        editType: 'calc'
-    },
     uirevision: {
         valType: 'any',
         editType: 'none',

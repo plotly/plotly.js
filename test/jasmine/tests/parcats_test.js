@@ -284,6 +284,55 @@ describe('Basic parcats trace', function() {
             .then(done, done.fail);
     });
 
+    it('should sort bundled paths by numeric color values', function(done) {
+        var trace = {
+            type: 'parcats',
+            dimensions: [
+                {values: ['a', 'a', 'a', 'a']},
+                {values: ['b', 'b', 'b', 'b']}
+            ],
+            line: {color: [1, 10, 2, 20]},
+            bundlecolors: true
+        };
+
+        Plotly.newPlot(gd, [trace])
+            .then(function() {
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
+                var pathColors = parcatsViewModel.paths.map(function(path) {
+                    return path.model.rawColor;
+                });
+
+                expect(pathColors).toEqual([1, 2, 10, 20]);
+            })
+            .then(done, done.fail);
+    });
+
+    it('should sort NaN color values after orderable values', function(done) {
+        var trace = {
+            type: 'parcats',
+            dimensions: [
+                {values: ['a', 'a', 'a', 'a']},
+                {values: ['b', 'b', 'b', 'b']}
+            ],
+            line: {color: [10, NaN, 2, NaN]},
+            bundlecolors: true
+        };
+
+        Plotly.newPlot(gd, [trace])
+            .then(function() {
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
+                var pathColors = parcatsViewModel.paths.map(function(path) {
+                    return path.model.rawColor;
+                });
+
+                // Orderable values sort first, NaN values sort last
+                expect(pathColors.length).toBe(3)
+                expect(pathColors.slice(0, 2)).toEqual([2, 10]);
+                expect(isNaN(pathColors[2])).toBe(true);
+            })
+            .then(done, done.fail);
+    });
+
     it('should compute initial model views properly', function(done) {
         Plotly.newPlot(gd, basicMock)
             .then(function() {

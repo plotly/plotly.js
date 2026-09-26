@@ -7,7 +7,6 @@ exports.getDelay = function(fullLayout) {
 
     return (
         fullLayout._has('gl3d') ||
-        fullLayout._has('mapbox') ||
         fullLayout._has('map')
     ) ? 500 : 0;
 };
@@ -49,6 +48,35 @@ exports.createBlob = function(url, format) {
 
 exports.octetStream = function(s) {
     document.location.href = 'data:application/octet-stream' + s;
+};
+
+/**
+ * Get the resolved plot title to derive a filename from, or undefined if there
+ * is none. We try to read _fullLayout, which reflects the title after applying
+ * layout.template, but since title.text falls back to the editable-mode placeholder
+ * when unset, a value equal to that placeholder is treated as no title.
+ * For an un-rendered figure object (no _fullLayout) we fall back to the input layout
+ * (gd.layout).
+ */
+exports.getPlotTitle = function(gd) {
+    var fullLayout = gd._fullLayout;
+    if(fullLayout) {
+        var title = fullLayout.title?.text;
+        return title === fullLayout._dfltTitle?.plot ? undefined : title;
+    }
+    return gd.layout?.title?.text;
+};
+
+/**
+ * Get the resolved plot subtitle, or undefined if there is none.
+ */
+exports.getPlotSubtitle = function(gd) {
+    var fullLayout = gd._fullLayout;
+    if(fullLayout) {
+        var subtitle = fullLayout.title?.subtitle?.text;
+        return subtitle === fullLayout._dfltTitle?.subtitle ? undefined : subtitle;
+    }
+    return gd.layout?.title?.subtitle?.text;
 };
 
 // Taken from https://bl.ocks.org/nolanlawson/0eac306e4dac2114c752

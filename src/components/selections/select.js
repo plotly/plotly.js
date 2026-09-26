@@ -940,41 +940,33 @@ function isOnlyOnePointSelected(searchTraces) {
 
 function updateSelectedState(gd, searchTraces, eventData) {
     var i;
+    var trace;
 
     // before anything else, update preGUI if necessary
     for(i = 0; i < searchTraces.length; i++) {
-        var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
-        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid] || {};
+        trace = searchTraces[i].cd[0].trace;
+        var tracePreGUI = gd._fullLayout._tracePreGUI[trace.uid] || {};
         if(tracePreGUI.selectedpoints === undefined) {
-            tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
+            tracePreGUI.selectedpoints = trace._input.selectedpoints || null;
         }
     }
 
-    var trace;
     if(eventData) {
         var pts = eventData.points || [];
         for(i = 0; i < searchTraces.length; i++) {
             trace = searchTraces[i].cd[0].trace;
-            trace._input.selectedpoints = trace._fullInput.selectedpoints = [];
-            if(trace._fullInput !== trace) trace.selectedpoints = [];
+            trace._input.selectedpoints = trace.selectedpoints = [];
         }
 
         for(var k = 0; k < pts.length; k++) {
             var pt = pts[k];
             var data = pt.data;
-            var fullData = pt.fullData;
             var pointIndex = pt.pointIndex;
             var pointIndices = pt.pointIndices;
             if(pointIndices) {
                 [].push.apply(data.selectedpoints, pointIndices);
-                if(trace._fullInput !== trace) {
-                    [].push.apply(fullData.selectedpoints, pointIndices);
-                }
             } else {
                 data.selectedpoints.push(pointIndex);
-                if(trace._fullInput !== trace) {
-                    fullData.selectedpoints.push(pointIndex);
-                }
             }
         }
     } else {
@@ -982,9 +974,6 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
-            if(trace._fullInput !== trace) {
-                delete trace._fullInput.selectedpoints;
-            }
         }
     }
 
@@ -1550,7 +1539,7 @@ function getFillRangeItems(dragOptions) {
     var plotinfo = dragOptions.plotinfo;
 
     return (
-        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, map, sankey) to override fillRangeItems routine
+        plotinfo.fillRangeItems || // allow subplots (i.e. geo, map, sankey) to override fillRangeItems routine
         makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes))
     );
 }

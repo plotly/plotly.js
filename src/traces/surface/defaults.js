@@ -125,8 +125,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
     opacityscaleDefaults(traceIn, traceOut, layout, coerce);
 
-    // disable 1D transforms - currently surface does NOT support column data like heatmap does
-    // you can use mesh3d for this use case, but not surface
+    // Ensure _length is defined
     traceOut._length = null;
 }
 

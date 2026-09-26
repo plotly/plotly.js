@@ -19,6 +19,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 
 var SLICES_TEXT_SELECTOR = '.sunburstlayer text.slicetext';
+const checkContrastingText = require('../assets/check_contrasting_text');
 
 function _mouseEvent(type, gd, v) {
     return function () {
@@ -415,15 +416,15 @@ describe('Test sunburst calc:', function () {
 
         var cd = gd.calcdata[0];
         expect(cd.length).toEqual(9);
-        expect(cd[0].color).toEqual('rgba(255, 192, 203, 1)');
-        expect(cd[1].color).toEqual('rgba(119, 119, 119, 1)');
-        expect(cd[2].color).toEqual('rgba(255, 0, 0, 1)');
-        expect(cd[3].color).toEqual('rgba(255, 255, 0, 1)');
-        expect(cd[4].color).toEqual('rgba(0, 255, 0, 1)');
-        expect(cd[5].color).toEqual('rgba(0, 255, 255, 1)');
-        expect(cd[6].color).toEqual('rgba(0, 0, 255, 1)');
-        expect(cd[7].color).toEqual('rgba(255, 0, 255, 1)');
-        expect(cd[8].color).toEqual('rgba(255, 255, 255, 1)');
+        expect(cd[0].color).toEqual('rgb(255, 192, 203)');
+        expect(cd[1].color).toEqual('rgb(119, 119, 119)');
+        expect(cd[2].color).toEqual('rgb(255, 0, 0)');
+        expect(cd[3].color).toEqual('rgb(255, 255, 0)');
+        expect(cd[4].color).toEqual('rgb(0, 255, 0)');
+        expect(cd[5].color).toEqual('rgb(0, 255, 255)');
+        expect(cd[6].color).toEqual('rgb(0, 0, 255)');
+        expect(cd[7].color).toEqual('rgb(255, 0, 255)');
+        expect(cd[8].color).toEqual('rgb(255, 255, 255)');
     });
 
     it('should use *marker.colors* numbers with default colorscale', function () {
@@ -3022,3 +3023,15 @@ describe('sunburst uniformtext', function () {
             .then(done, done.fail);
     });
 });
+
+checkContrastingText(
+    'sunburst',
+    {
+        labels: ['A', 'B', 'C'],
+        parents: ['', '', ''],
+        values: [3, 2, 1],
+        marker: { colors: ['#3D9970', '#3D9970', '#3D9970'] }
+    },
+    SLICES_TEXT_SELECTOR,
+    '#3D9970'
+);

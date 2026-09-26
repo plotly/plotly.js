@@ -133,7 +133,6 @@
     "waterfallmode": "group",
     "waterfallgap": 0.2,
     "waterfallgroupgap": 0.1,
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

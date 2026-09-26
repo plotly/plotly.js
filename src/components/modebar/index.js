@@ -4,7 +4,7 @@ module.exports = {
     moduleType: 'component',
     name: 'modebar',
 
-    layoutAttributes: require('./attributes'),
+    layoutAttributes: require('./attributes').default,
     supplyLayoutDefaults: require('./defaults'),
 
     manage: require('./manage')

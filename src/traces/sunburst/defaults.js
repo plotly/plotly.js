@@ -72,6 +72,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleDomainDefaults(traceOut, layout, coerce);
 
-    // do not support transforms for now
+    // Ensure _length is defined
     traceOut._length = null;
 };

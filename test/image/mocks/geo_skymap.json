@@ -2258,7 +2258,8 @@
       "showrivers": false,
       "showlakes": false,
       "showocean": false,
-      "showcountries": false
+      "showcountries": false,
+      "fitbounds": false
     }
   }
 }

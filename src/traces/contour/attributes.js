@@ -206,7 +206,7 @@ module.exports = extendFlat(
                     '*][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]`',
 
                     'Open vs. closed intervals make no difference to constraint display, but',
-                    'all versions are allowed for consistency with filter transforms.'
+                    'all versions are allowed.'
                 ].join(' ')
             },
             value: {

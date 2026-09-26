@@ -3251,3 +3251,52 @@ describe('plot_api edit_types', function () {
         expect(flags).toEqual({ calc: true, legend: true, style: true });
     });
 });
+
+describe('color attribute coercion:', () => {
+    'use strict';
+
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+
+    afterEach(() => {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    // Color attributes are gated by Color.isValid. A syntax the parser accepts
+    // but the gate rejects silently falls back to the default, which renders as
+    // a plausible color rather than as an error.
+    const CSS_COLOR_4 = [
+        'oklch(0.7 0.15 180)',
+        'lab(50% 40 59.5)',
+        'lch(50% 70 40)',
+        'oklab(0.5 0.1 0.1)',
+        'color(srgb 1 0 0)',
+        'color(display-p3 1 0 0)',
+        'hwb(120 0% 0%)',
+        'hsl(0.5turn 50% 50%)',
+        'hsl(120 50% 50% / 50%)',
+        'rgb(255 0 0 / 50%)'
+    ];
+
+    CSS_COLOR_4.forEach((cstr) => {
+        it(`should keep ${cstr} through supplyDefaults`, (done) => {
+            Plotly.newPlot(gd, [{ y: [1, 2, 3], marker: { color: cstr } }])
+                .then(() => {
+                    expect(gd._fullData[0].marker.color).toBe(cstr, 'coerced away');
+                })
+                .then(done, done.fail);
+        });
+    });
+
+    it('should drop an invalid color specifier', (done) => {
+        Plotly.newPlot(gd, [{ y: [1, 2, 3], marker: { color: 'notacolor' } }])
+            .then(() => {
+                expect(gd._fullData[0].marker.color).not.toBe('notacolor');
+            })
+            .then(done, done.fail);
+    });
+});

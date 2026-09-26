@@ -7,7 +7,6 @@ var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 
 var c = require('./constants');
-var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
@@ -33,6 +32,9 @@ function sankeyModel(layout, d, traceIndex) {
     var trace = calcData.trace;
     var domain = trace.domain;
     var horizontal = trace.orientation === 'h';
+    // reversed flips the source side along the flow axis: horizontal -> sources on the
+    // right (flow leftward), vertical -> sources at the bottom (flow upward).
+    var reversed = trace.direction === 'reversed';
     var nodePad = trace.node.pad;
     var nodeThickness = trace.node.thickness;
     var nodeAlign = {
@@ -70,6 +72,21 @@ function sankeyModel(layout, d, traceIndex) {
       .nodeAlign(nodeAlign)
       .nodes(nodes)
       .links(links);
+
+    function applyInputSort(type) {
+        if (trace[type].sort === 'input') {
+            if (circular) {
+                Lib.warn(
+                    `Circular Sankey diagrams do not support the "input" ${type}.sort mode; falling back to the default sort.`
+                );
+            } else {
+                // Passing null maintains the input order
+                sankey[`${type}Sort`](null);
+            }
+        }
+    }
+    applyInputSort('link');
+    applyInputSort('node');
 
     var graph = sankey();
 
@@ -151,7 +168,7 @@ function sankeyModel(layout, d, traceIndex) {
                         links: flowLinks
                     };
                     if(link.concentrationscale) {
-                        link.color = tinycolor(link.concentrationscale(link.flow.labelConcentration));
+                        link.color = link.concentrationscale(link.flow.labelConcentration);
                     }
                 }
             }
@@ -271,6 +288,7 @@ function sankeyModel(layout, d, traceIndex) {
         trace: trace,
         guid: Lib.randstr(),
         horizontal: horizontal,
+        reversed: reversed,
         width: width,
         height: height,
         nodePad: trace.node.pad,
@@ -298,8 +316,6 @@ function sankeyModel(layout, d, traceIndex) {
 }
 
 function linkModel(d, l, i) {
-    var tc = tinycolor(l.color);
-    var htc = tinycolor(l.hovercolor);
     var basicKey = l.source.label + '|' + l.target.label;
     var key = basicKey + '__' + i;
 
@@ -313,10 +329,10 @@ function linkModel(d, l, i) {
         traceId: d.key,
         pointNumber: l.pointNumber,
         link: l,
-        tinyColorHue: Color.tinyRGB(tc),
-        tinyColorAlpha: tc.getAlpha(),
-        tinyColorHoverHue: Color.tinyRGB(htc),
-        tinyColorHoverAlpha: htc.getAlpha(),
+        rgb: Color.rgb(l.color),
+        alpha: Color.parse(l.color).alpha,
+        hoverRgb: Color.rgb(l.hovercolor),
+        hoverAlpha: Color.parse(l.hovercolor).alpha,
         linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
@@ -535,7 +551,6 @@ function linkPath() {
 }
 
 function nodeModel(d, n) {
-    var tc = tinycolor(n.color);
     var zoneThicknessPad = c.nodePadAcross;
     var zoneLengthPad = d.nodePad / 2;
     n.dx = n.x1 - n.x0;
@@ -577,9 +592,9 @@ function nodeModel(d, n) {
         sizeAcross: d.width,
         forceLayouts: d.forceLayouts,
         horizontal: d.horizontal,
-        darkBackground: tc.getBrightness() <= 128,
-        tinyColorHue: Color.tinyRGB(tc),
-        tinyColorAlpha: tc.getAlpha(),
+        reversed: d.reversed,
+        rgb: Color.rgb(n.color),
+        alpha: Color.parse(n.color).alpha,
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
@@ -618,8 +633,21 @@ function sizeNode(rect) {
 function salientEnough(d) {return (d.link.width > 1 || d.linkLineWidth > 0);}
 
 function sankeyTransform(d) {
-    var offset = strTranslate(d.translateX, d.translateY);
-    return offset + (d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)');
+    if(d.horizontal) {
+        if(d.reversed) {
+            // horizontal + reversed: sources on the right, flow leftward; a mirror of forward.
+            return strTranslate(d.translateX + d.width, d.translateY) + 'matrix(-1 0 0 1 0 0)';
+        }
+        // horizontal + forward: sources on the left, flow rightward.
+        return strTranslate(d.translateX, d.translateY) + 'matrix(1 0 0 1 0 0)';
+    }
+    if(d.reversed) {
+        // vertical + reversed: sources at the bottom, flow upward; a mirror of forward.
+        // Pure 90deg rotation (det +1) keeps the cross axis intact.
+        return strTranslate(d.translateX, d.translateY + d.height) + 'matrix(0 -1 1 0 0 0)';
+    }
+    // vertical + forward: reflection about y=x, sources at the top, flow downward.
+    return strTranslate(d.translateX, d.translateY) + 'matrix(0 1 1 0 0 0)';
 }
 
 // event handling
@@ -937,21 +965,11 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
           .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
-        .style('stroke', function(d) {
-            return salientEnough(d) ? Color.tinyRGB(tinycolor(d.linkLineColor)) : d.tinyColorHue;
-        })
-        .style('stroke-opacity', function(d) {
-            return salientEnough(d) ? Color.opacity(d.linkLineColor) : d.tinyColorAlpha;
-        })
-        .style('fill', function(d) {
-            return d.tinyColorHue;
-        })
-        .style('fill-opacity', function(d) {
-            return d.tinyColorAlpha;
-        })
-        .style('stroke-width', function(d) {
-            return salientEnough(d) ? d.linkLineWidth : 1;
-        })
+        .style('stroke', d => salientEnough(d) ? Color.rgb(d.linkLineColor) : d.rgb)
+        .style('stroke-opacity', d => salientEnough(d) ? Color.opacity(d.linkLineColor) : d.alpha)
+        .style('fill', d => d.rgb)
+        .style('fill-opacity', d => d.alpha)
+        .style('stroke-width', d => salientEnough(d) ? d.linkLineWidth : 1)
         .attr('d', linkPath());
 
     sankeyLink
@@ -1022,10 +1040,10 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     nodeRect
         .style('stroke-width', function(d) {return d.nodeLineWidth;})
-        .style('stroke', function(d) {return Color.tinyRGB(tinycolor(d.nodeLineColor));})
+        .style('stroke', function(d) {return Color.rgb(d.nodeLineColor);})
         .style('stroke-opacity', function(d) {return Color.opacity(d.nodeLineColor);})
-        .style('fill', function(d) {return d.tinyColorHue;})
-        .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
+        .style('fill', d => d.rgb)
+        .style('fill-opacity', d => d.alpha);
 
     nodeRect.transition()
         .ease(c.ease).duration(c.duration)
@@ -1048,7 +1066,10 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             svgTextUtils.convertToTspans(e, gd);
         })
         .attr('text-anchor', function(d) {
-            return (d.horizontal && d.left) ? 'end' : 'start';
+            // horizontal: aligned to the outer edge (reversed flips which side is outer).
+            // vertical: inside-node placement, anchored at 'start'.
+            if(!d.horizontal) return 'start';
+            return (d.left !== d.reversed) ? 'end' : 'start';
         })
         .attr('transform', function(d) {
             var e = d3.select(this);
@@ -1058,24 +1079,32 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
                 (nLines - 1) * LINE_SPACING - CAP_SHIFT
             );
 
-            var posX = d.nodeLineWidth / 2 + TEXTPAD;
-            var posY = ((d.horizontal ? d.visibleHeight : d.visibleWidth) - blockHeight) / 2;
-            if(d.horizontal) {
-                if(d.left) {
-                    posX = -posX;
-                } else {
-                    posX += d.visibleWidth;
-                }
+            var pad = d.nodeLineWidth / 2 + TEXTPAD;
+
+            if(!d.horizontal) {
+                // vertical: label sits inside the node, centered along its length. 
+                // forward's local flip (scale(-1,1) + rotate(90)) is a reflection, 
+                // reversed's (rotate(90) alone) a pure rotation; the group
+                // matrix has the same opposing handedness. That flips the sign with which
+                // the CAP_SHIFT baseline correction (baked into blockHeight) lands on
+                // screen, so it must be applied with the opposite sign for reversed -
+                // otherwise the label renders about half a line height too high.
+                var posY = d.reversed
+                    ? (d.visibleWidth + blockHeight) / 2
+                    : (d.visibleWidth - blockHeight) / 2;
+                var flipV = d.reversed ? strRotate(90) : ('scale(-1,1)' + strRotate(90));
+                return strTranslate(posY, pad) + flipV;
             }
 
-            var flipText = d.horizontal ? '' : (
-                'scale(-1,1)' + strRotate(90)
-            );
-
-            return strTranslate(
-                d.horizontal ? posX : posY,
-                d.horizontal ? posY : posX
-            ) + flipText;
+            // horizontal: center along the node length, place just past the thickness edge.
+            var posX = pad;
+            var posY = (d.visibleHeight - blockHeight) / 2;
+            if(d.left) {
+                posX = -posX;
+            } else {
+                posX += d.visibleWidth;
+            }
+            return strTranslate(posX, posY) + (d.reversed ? 'scale(-1,1)' : '');
         });
 
     nodeLabel

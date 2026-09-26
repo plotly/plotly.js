@@ -4,7 +4,7 @@ var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var numberFormat = Lib.numberFormat;
-var rgba = require('color-rgba').default;
+var Color = require('../../components/color');
 
 var Axes = require('../../plots/cartesian/axes');
 var strRotate = Lib.strRotate;
@@ -118,8 +118,8 @@ function ordinalScale(dimension) {
 function unitToColorScale(cscale) {
     var colorStops = cscale.map(function(d) { return d[0]; });
     var colorTuples = cscale.map(function(d) {
-        var RGBA = rgba(d[1]);
-        return d3.rgb('rgb(' + RGBA[0] + ',' + RGBA[1] + ',' + RGBA[2] + ')');
+        const [r, g, b] = Color.rgbaArray(d[1]);
+        return d3.rgb(r, g, b);
     });
     var prop = function(n) { return function(o) { return o[n]; }; };
 
@@ -151,7 +151,7 @@ function model(layout, d, i) {
     var lineColor = helpers.convertTypedArray(cd0.lineColor);
     var line = trace.line;
     var deselectedLines = {
-        color: rgba(trace.unselected.line.color),
+        color: Color.normalize(trace.unselected.line.color),
         opacity: trace.unselected.line.opacity
     };
     var cOpts = Colorscale.extractOpts(line);

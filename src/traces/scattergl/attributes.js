@@ -7,7 +7,7 @@ var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
-var sortObjectKeys = require('../../lib/sort_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys').default;
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var DASHES = require('./constants').DASHES;

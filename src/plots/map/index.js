@@ -55,15 +55,6 @@ exports.plot = function plot(gd) {
             fullLayout[id]._subplot = map;
         }
 
-        if(!map.viewInitial) {
-            map.viewInitial = {
-                center: Lib.extendFlat({}, opts.center),
-                zoom: opts.zoom,
-                bearing: opts.bearing,
-                pitch: opts.pitch
-            };
-        }
-
         map.plot(subplotCalcData, fullLayout, gd._promises);
     }
 };

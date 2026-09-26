@@ -654,8 +654,8 @@ describe('Click-to-select', function() {
               { width: 1100, height: 450 }),
             testCase('ohlc', require('../../image/mocks/ohlc_first.json'), 669, 165, [9]),
             testCase('candlestick', require('../../image/mocks/finance_style.json'), 331, 162, [[], [5]]),
-            testCase('choropleth', require('../../image/mocks/geo_choropleth-text.json'), 440, 163, [6]),
-            testCase('scattergeo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('choropleth', require('../../image/mocks/geo_choropleth-text.json'), 440, 163, [6], {geo: {fitbounds: false}}),
+            testCase('scattergeo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1], {geo: {fitbounds: false}}),
             testCase('scatterternary', require('../../image/mocks/ternary_markers.json'), 485, 335, [7]),
 
             // Note that first trace (carpet) in mock doesn't support selection,
@@ -770,7 +770,7 @@ describe('Click-to-select', function() {
     describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
         [
             testCase('cartesian', require('../../image/mocks/14.json'), 270, 160, [7]),
-            testCase('geo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('geo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1], {geo: {fitbounds: false}}),
             testCase('ternary', require('../../image/mocks/ternary_markers.json'), 485, 335, [7]),
             testCase('polar', require('../../image/mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' })
@@ -2440,7 +2440,8 @@ describe('Test select box and lasso per trace:', function() {
                     showlegend: false,
                     dragmode: 'select',
                     width: 800,
-                    height: 600
+                    height: 600,
+                    geo: {fitbounds: false}
                 }
             };
             addInvisible(fig);
@@ -2664,6 +2665,7 @@ describe('Test select box and lasso per trace:', function() {
             fig.layout.height = 450;
             fig.layout.dragmode = 'select';
             fig.layout.geo.scope = 'europe';
+            fig.layout.geo.fitbounds = false;
             addInvisible(fig, false);
 
             // add a trace with no locations which will then make trace invisible, lacking DOM elements

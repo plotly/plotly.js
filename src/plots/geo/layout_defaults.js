@@ -22,24 +22,26 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var subplotData = getSubplotData(opts.fullData, 'geo', opts.id);
-    var traceIndices = subplotData.map(function(t) { return t.index; });
+    var traceIndices = subplotData.map(function (t) {
+        return t.index;
+    });
 
     var resolution = coerce('resolution');
     var scope = coerce('scope');
     var scopeParams = constants.scopeDefaults[scope];
 
     var projType = coerce('projection.type', scopeParams.projType);
-    var isAlbersUsa = geoLayoutOut._isAlbersUsa = projType === 'albers usa';
+    var isAlbersUsa = (geoLayoutOut._isAlbersUsa = projType === 'albers usa');
 
     // no other scopes are allowed for 'albers usa' projection
-    if(isAlbersUsa) scope = geoLayoutOut.scope = 'usa';
+    if (isAlbersUsa) scope = geoLayoutOut.scope = 'usa';
 
-    var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
-    var isSatellite = geoLayoutOut._isSatellite = projType === 'satellite';
-    var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1 || projType === 'albers';
-    var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
+    var isScoped = (geoLayoutOut._isScoped = scope !== 'world');
+    var isSatellite = (geoLayoutOut._isSatellite = projType === 'satellite');
+    var isConic = (geoLayoutOut._isConic = projType.indexOf('conic') !== -1 || projType === 'albers');
+    var isClipped = (geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType]);
 
-    if(geoLayoutIn.visible === false) {
+    if (geoLayoutIn.visible === false) {
         // should override template.layout.geo.show* - see issue 4482
 
         // make a copy
@@ -54,8 +56,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         newTemplate.showocean = false;
         newTemplate.showrivers = false;
         newTemplate.showsubunits = false;
-        if(newTemplate.lonaxis) newTemplate.lonaxis.showgrid = false;
-        if(newTemplate.lataxis) newTemplate.lataxis.showgrid = false;
+        if (newTemplate.lonaxis) newTemplate.lonaxis.showgrid = false;
+        if (newTemplate.lataxis) newTemplate.lataxis.showgrid = false;
 
         // set ref to copy
         geoLayoutOut._template = newTemplate;
@@ -63,20 +65,17 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var visible = coerce('visible');
 
     var show;
-    for(var i = 0; i < axesNames.length; i++) {
+    for (var i = 0; i < axesNames.length; i++) {
         var axisName = axesNames[i];
         var dtickDflt = [30, 10][i];
         var rangeDflt;
 
-        if(isScoped) {
+        if (isScoped) {
             rangeDflt = scopeParams[axisName + 'Range'];
         } else {
             var dfltSpans = constants[axisName + 'Span'];
             var hSpan = (dfltSpans[projType] || dfltSpans['*']) / 2;
-            var rot = coerce(
-                'projection.rotation.' + axisName.slice(0, 3),
-                scopeParams.projRotate[i]
-            );
+            var rot = coerce('projection.rotation.' + axisName.slice(0, 3), scopeParams.projRotate[i]);
             rangeDflt = [rot - hSpan, rot + hSpan];
         }
 
@@ -85,7 +84,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         coerce(axisName + '.dtick', dtickDflt);
 
         show = coerce(axisName + '.showgrid', !visible ? false : undefined);
-        if(show) {
+        if (show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
             coerce(axisName + '.griddash');
@@ -114,7 +113,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     var centerLon = (lon0 + lon1) / 2;
     var projLon;
 
-    if(!isAlbersUsa) {
+    if (!isAlbersUsa) {
         var dfltProjRotate = isScoped ? scopeParams.projRotate : [centerLon, 0, 0];
 
         projLon = coerce('projection.rotation.lon', dfltProjRotate[0]);
@@ -122,19 +121,19 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         coerce('projection.rotation.roll', dfltProjRotate[2]);
 
         show = coerce('showcoastlines', !isScoped && visible);
-        if(show) {
+        if (show) {
             coerce('coastlinecolor');
             coerce('coastlinewidth');
         }
 
         show = coerce('showocean', !visible ? false : undefined);
-        if(show) coerce('oceancolor');
+        if (show) coerce('oceancolor');
     }
 
     var centerLonDflt;
     var centerLatDflt;
 
-    if(isAlbersUsa) {
+    if (isAlbersUsa) {
         // 'albers usa' does not have a 'center',
         // these values were found using via:
         //   projection.invert([geoLayout.center.lon, geoLayoutIn.center.lat])
@@ -148,37 +147,39 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     coerce('center.lon', centerLonDflt);
     coerce('center.lat', centerLatDflt);
 
-    if(isSatellite) {
+    if (isSatellite) {
         coerce('projection.tilt');
         coerce('projection.distance');
     }
 
-    if(isConic) {
+    if (isConic) {
         var dfltProjParallels = scopeParams.projParallels || [0, 60];
         coerce('projection.parallels', dfltProjParallels);
     }
 
     coerce('projection.scale');
+    coerce('projection.minscale');
+    coerce('projection.maxscale');
 
     show = coerce('showland', !visible ? false : undefined);
-    if(show) coerce('landcolor');
+    if (show) coerce('landcolor');
 
     show = coerce('showlakes', !visible ? false : undefined);
-    if(show) coerce('lakecolor');
+    if (show) coerce('lakecolor');
 
     show = coerce('showrivers', !visible ? false : undefined);
-    if(show) {
+    if (show) {
         coerce('rivercolor');
         coerce('riverwidth');
     }
 
     show = coerce('showcountries', isScoped && scope !== 'usa' && visible);
-    if(show) {
+    if (show) {
         coerce('countrycolor');
         coerce('countrywidth');
     }
 
-    if(scope === 'usa' || (scope === 'north america' && resolution === 50)) {
+    if (scope === 'usa' || (scope === 'north america' && resolution === 50)) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
@@ -187,10 +188,10 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         coerce('subunitwidth');
     }
 
-    if(!isScoped) {
+    if (!isScoped) {
         // Does not work in non-world scopes
         show = coerce('showframe', visible);
-        if(show) {
+        if (show) {
             coerce('framecolor');
             coerce('framewidth');
         }
@@ -198,26 +199,50 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
 
     coerce('bgcolor');
 
-    var fitBounds = coerce('fitbounds');
-
-    // clear attributes that will get auto-filled later
-    if(fitBounds) {
-        delete geoLayoutOut.projection.scale;
-
-        if(isScoped) {
-            delete geoLayoutOut.center.lon;
-            delete geoLayoutOut.center.lat;
-        } else if(isClipped) {
-            delete geoLayoutOut.center.lon;
-            delete geoLayoutOut.center.lat;
-            delete geoLayoutOut.projection.rotation.lon;
-            delete geoLayoutOut.projection.rotation.lat;
-            delete geoLayoutOut.lonaxis.range;
-            delete geoLayoutOut.lataxis.range;
+    // `fitbounds` updates a selection of view attributes, specific to the projection type.
+    // Check to see if a user has set any of these. If they have, skip fitbounds. Otherwise
+    // null out the proper attributes and run the fitting logic.
+    coerce('fitbounds');
+    if (geoLayoutOut.fitbounds) {
+        const centerIn = geoLayoutIn.center || {};
+        const projectionIn = geoLayoutIn.projection || {};
+        const rotationIn = projectionIn.rotation || {};
+        const lonaxisIn = geoLayoutIn.lonaxis || {};
+        const lataxisIn = geoLayoutIn.lataxis || {};
+        // All projection types will set these attributes
+        const viewAttributes = [
+            { dst: geoLayoutOut.center, key: 'lon', src: centerIn },
+            { dst: geoLayoutOut.center, key: 'lat', src: centerIn },
+            { dst: geoLayoutOut.projection, key: 'scale', src: projectionIn }
+        ];
+        // Branch order is important because scoped projections can also be clipped,
+        // but these should be treated as scoped below
+        if (isScoped) {
+            // Scoped only sets center, so move on
+        } else if (isClipped) {
+            viewAttributes.push(
+                { dst: geoLayoutOut.projection.rotation, key: 'lon', src: rotationIn },
+                { dst: geoLayoutOut.projection.rotation, key: 'lat', src: rotationIn },
+                { dst: geoLayoutOut.lonaxis, key: 'range', src: lonaxisIn },
+                { dst: geoLayoutOut.lataxis, key: 'range', src: lataxisIn }
+            );
         } else {
-            delete geoLayoutOut.center.lon;
-            delete geoLayoutOut.center.lat;
-            delete geoLayoutOut.projection.rotation.lon;
+            viewAttributes.push({ dst: geoLayoutOut.projection.rotation, key: 'lon', src: rotationIn });
+        }
+
+        // Add entries for axis ranges with no `dst` key for non-clipped projections.
+        // These ranges signal user view-config intent, but non-clipped projections should
+        // skip the null step because it would break the fit calc.
+        if (!isClipped) {
+            viewAttributes.push({ key: 'range', src: lonaxisIn }, { key: 'range', src: lataxisIn });
+        }
+        const hasUserView = viewAttributes.some(({ src, key }) => src[key] != null); // Use loose comparison so null/undefined count as unset
+        if (hasUserView || constants.fitboundsIncompatible.has(projType)) {
+            geoLayoutOut.fitbounds = false;
+        } else {
+            // Set auto-filled view attributes to null so updateProjection can
+            // compute the fit from scratch and fullLayout matches user input
+            viewAttributes.forEach(({ dst, key }) => dst && (dst[key] = null));
         }
     }
 }

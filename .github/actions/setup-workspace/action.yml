@@ -1,17 +1,12 @@
 name: 'Setup Workspace'
 description: 'Setup Node.js, install dependencies, and download build artifacts'
 
-inputs:
-  node-version:
-    description: 'Node.js version to use'
-    default: '18'
-
 runs:
   using: 'composite'
   steps:
     - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
       with:
-        node-version: ${{ inputs.node-version }}
+        node-version-file: '.nvmrc'
         cache: 'npm'
 
     - name: Install dependencies

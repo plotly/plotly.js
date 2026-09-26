@@ -313281,12 +313281,6 @@
             "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } }
           }
         ],
-        "scattermapbox": [
-          {
-            "type": "scattermapbox",
-            "marker": { "colorbar": { "outlinewidth": 0, "ticks": "" } }
-          }
-        ],
         "scatterternary": [
           {
             "type": "scatterternary",
@@ -313481,8 +313475,7 @@
           "showlakes": true,
           "lakecolor": "white"
         },
-        "title": { "x": 0.05 },
-        "mapbox": { "style": "light" }
+        "title": { "x": 0.05 }
       }
     }
   }

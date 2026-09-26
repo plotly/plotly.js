@@ -65,7 +65,7 @@ exports.getModuleCalcData = function(calcdata, arg1, arg2) {
         var filterByZ = (trace.zorder !== undefined);
         // N.B.
         // - 'legendonly' traces do not make it past here
-        // - skip over 'visible' traces that got trimmed completely during calc transforms
+        // - skip over 'visible' traces with no data points
         if(trace.visible !== true || trace._length === 0) continue;
 
         // group calcdata trace not by 'module' (as the name of this function

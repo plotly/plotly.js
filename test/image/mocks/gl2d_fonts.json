@@ -427,7 +427,6 @@
     "bargroupgap": 0,
     "boxmode": "overlay",
     "boxgap": 0.3,
-    "boxgroupgap": 0.3,
-    "hidesources": false
+    "boxgroupgap": 0.3
   }
 }

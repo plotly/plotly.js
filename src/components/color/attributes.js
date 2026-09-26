@@ -25,6 +25,6 @@ exports.borderLine = '#BEC8D9';
 
 // with axis.color and Color.interp we aren't using lightLine
 // itself anymore, instead interpolating between axis.color
-// and the background color using tinycolor.mix. lightFraction
+// and the background color using Color.mix. lightFraction
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);

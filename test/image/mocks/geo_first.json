@@ -15,6 +15,7 @@
   ],
   "layout": {
     "width": 600,
-    "height": 440
+    "height": 440,
+    "geo": { "fitbounds": false }
   }
 }

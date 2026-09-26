@@ -2,7 +2,6 @@
 
 var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
 var pushUnique = Lib.pushUnique;
@@ -472,6 +471,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         if ('yval' in evt) yvalArray = helpers.flat(subplots, evt.yval);
         else yvalArray = helpers.p2c(yaArray, ypx);
 
+        // Save pointer position to gd so that it can be included in all hover/click event data,
+        // even when hoveranywhere and clickanywhere are not enabled
+        gd._hoverPointerX = evt.pointerX;
+        gd._hoverPointerY = evt.pointerY;
+
         if (!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             Lib.warn('Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
@@ -819,6 +823,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 gd._hoverdata = [];
             }
             emitHover([]);
+
+            // Set a flag to note that an empty-space hover event is being emitted,
+            // so that we know to emit an unhover event when the mouse leaves the plot area.
+            // See dragelement/unhover.js.
+            gd._hoverAnywhereActive = true;
         }
         return result;
     }
@@ -977,8 +986,12 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             points: points,
             xaxes: xaArray,
             yaxes: yaArray,
-            xvals: xvalArray,
-            yvals: yvalArray
+            xvals: helpers.c2dApply(xaArray, xvalArray),
+            yvals: helpers.c2dApply(yaArray, yvalArray),
+            // Note: top-level xPixel/yPixel correspond to the pixel position of the cursor.
+            // Inside `points` array, points[i].xPixel/yPixel correspond to the pixel position of the point itself.
+            xPixel: evt.pointerX,
+            yPixel: evt.pointerY
         });
     }
 }
@@ -1689,7 +1702,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     if (d.zLabel !== undefined) {
         if (d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if (d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
-        if (d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox' && d.trace.type !== 'choroplethmap') {
+        if (d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmap') {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
     } else if (showCommonLabel && d[h0 + 'Label'] === t0) {
@@ -2288,7 +2301,7 @@ function createSpikelines(gd, closestPoints, opts) {
             hLinePointY = ya._offset + hLinePoint.y;
         }
         var dfltHLineColor =
-            tinycolor.readability(hLinePoint.color, contrastColor) < 1.5
+            Color.wcagContrast(hLinePoint.color, contrastColor) < 1.5
                 ? Color.contrast(contrastColor)
                 : hLinePoint.color;
         var yMode = ya.spikemode;
@@ -2371,8 +2384,9 @@ function createSpikelines(gd, closestPoints, opts) {
             vLinePointX = xa._offset + vLinePoint.x;
             vLinePointY = ya._offset + vLinePoint.y;
         }
+
         var dfltVLineColor =
-            tinycolor.readability(vLinePoint.color, contrastColor) < 1.5
+            Color.wcagContrast(vLinePoint.color, contrastColor) < 1.5
                 ? Color.contrast(contrastColor)
                 : vLinePoint.color;
         var xMode = xa.spikemode;
