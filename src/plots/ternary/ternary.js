@@ -4,6 +4,8 @@ var d3 = require('@plotly/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var clearGlCanvases = require('../../lib/clear_gl_canvases');
+var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 var strTranslate = Lib.strTranslate;
 var _ = Lib._;
 var Color = require('../../components/color');
@@ -56,12 +58,17 @@ proto.plot = function(ternaryCalcData, fullLayout) {
     var graphSize = fullLayout._size;
 
     _this._hasClipOnAxisFalse = false;
+    _this._hasRegl = false;
+
     for(var i = 0; i < ternaryCalcData.length; i++) {
         var trace = ternaryCalcData[i][0].trace;
 
         if(trace.cliponaxis === false) {
             _this._hasClipOnAxisFalse = true;
-            break;
+        }
+
+        if(trace.visible === true && Registry.traceIs(trace, 'regl')) {
+             _this._hasRegl = true;
         }
     }
 
@@ -106,6 +113,13 @@ proto.updateFx = function(fullLayout) {
 proto.updateLayers = function(ternaryLayout) {
     var _this = this;
     var layers = _this.layers;
+
+    // restore promoted axes before reordering the ternary SVG layers
+    if(_this.topPlotContainer) {
+        _this.topPlotContainer.selectAll('g.toplevel').each(function() {
+            _this.plotContainer.node().appendChild(this);
+        });
+    }
 
     // inside that container, we have one container for the data, and
     // one each for the three axes around it.
@@ -166,6 +180,25 @@ proto.updateLayers = function(ternaryLayout) {
         });
 
     toplevel.order();
+
+    // move 'above traces' axes to the top SVG so they remain above regl traces
+    if(_this._hasRegl) {
+        if(!_this.topPlotContainer) {
+            _this.topPlotContainer = _this.graphDiv._fullLayout._toppaper
+                .insert('g', '.indicatorlayer')
+                .classed(_this.id + '-axis-above', true)
+                .style('pointer-events', 'none');
+        }
+
+        var topNode = _this.topPlotContainer.node();
+
+        ['a', 'b', 'c'].forEach(function(letter) {
+            if(ternaryLayout[letter + 'axis'].layer === 'above traces') {
+                topNode.appendChild(layers[letter + 'axis'].node());
+                topNode.appendChild(layers[letter + 'line'].node());
+            }
+        });
+    }
 };
 
 var whRatio = Math.sqrt(4 / 3);
@@ -737,6 +770,20 @@ proto.initInteractions = function() {
         _this.caxis.range = [_this.sum - mins.a - mins.b, mins.c];
 
         _this.drawAxes(false);
+
+        if (_this._scene) {
+            // update the projected cartesian range (x = c - b, y = a) and redraw regl traces while panning
+            _this._scene.update({
+                range: [
+                    mins.a + 2 * mins.c - _this.sum,
+                    mins.a,
+                    _this.sum - mins.a - 2 * mins.b,
+                    _this.sum - mins.b - mins.c
+                ]
+            });
+            clearGlCanvases(gd);
+            redrawReglTraces(gd);
+        }
 
         if(_this._hasClipOnAxisFalse) {
             _this.plotContainer

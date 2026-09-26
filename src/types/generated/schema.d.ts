@@ -34,7 +34,7 @@ export type TransitionEasing = 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'ci
 
 export type ToImageFormat = 'png' | 'jpeg' | 'webp' | 'svg' | 'full-json';
 
-export type TraceType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'quiver' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'violin' | 'volume' | 'waterfall';
+export type TraceType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'quiver' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'scatterternarygl' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'violin' | 'volume' | 'waterfall';
 
 /** @deprecated Renamed to TraceType. */
 export type PlotType = TraceType;
@@ -9724,6 +9724,196 @@ export interface ScatterternaryData {
     visible?: true | false | 'legendonly';
 }
 
+export interface ScatterternaryglData {
+    /** Sets the quantity of component `a` in each data point. If `a`, `b`, and `c` are all provided, they need not be normalized, only the relative values matter. If only two arrays are provided they must be normalized to match `ternary<i>.sum`. */
+    a?: Datum[] | Datum[][] | TypedArray;
+    /** Sets the quantity of component `a` in each data point. If `a`, `b`, and `c` are all provided, they need not be normalized, only the relative values matter. If only two arrays are provided they must be normalized to match `ternary<i>.sum`. */
+    b?: Datum[] | Datum[][] | TypedArray;
+    /** Sets the quantity of component `a` in each data point. If `a`, `b`, and `c` are all provided, they need not be normalized, only the relative values matter. If only two arrays are provided they must be normalized to match `ternary<i>.sum`. */
+    c?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * Determines whether or not gaps (i.e. {nan} or missing values) in the provided data arrays are connected.
+     * @default false
+     */
+    connectgaps?: boolean;
+    /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
+    customdata?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * Sets the area to fill with a solid color. Use with `fillcolor` if not *none*. scatterternary has a subset of the options available to scatter. *toself* connects the endpoints of the trace (or each segment of the trace if it has gaps) into a closed shape. *tonext* fills the space between two traces if one completely encloses the other (eg consecutive contour lines), and behaves like *toself* if there is no trace before it. *tonext* should not be used if one trace does not enclose the other.
+     * @default 'none'
+     */
+    fill?: 'none' | 'toself' | 'tonext';
+    /** Sets the fill color. Defaults to a half-transparent variant of the line color, marker color, or marker line color, whichever is available. */
+    fillcolor?: Color;
+    /**
+     * Determines what trace information appears on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
+     * @default 'all'
+     */
+    hoverinfo?: 'a' | 'b' | 'c' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('a' | 'b' | 'c' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
+    hoverlabel?: HoverLabel;
+    /** Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example "y: %{y}" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, all attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`. */
+    hovertemplate?: string | string[];
+    /**
+     * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
+     * @default '-'
+     */
+    hovertemplatefallback?: any;
+    /** Sets hover text elements associated with each (a,b,c) point. If a single string, the same string appears over all the data points. If an array of strings, the items are mapped in order to the data points in (a,b,c). To be seen, trace `hoverinfo` must contain a *text* flag. */
+    hovertext?: string | string[];
+    /** Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type. */
+    ids?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.
+     * @default 'legend'
+     */
+    legend?: string;
+    /** Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items. */
+    legendgroup?: string;
+    legendgrouptitle?: LegendGroupTitle;
+    /**
+     * Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.
+     * @default 1000
+     */
+    legendrank?: number;
+    /**
+     * Sets the width (in px or fraction) of the legend for this trace.
+     * Minimum: 0
+     */
+    legendwidth?: number;
+    line?: {
+        /** Sets the line color. */
+        color?: Color;
+        /**
+         * Sets the style of the lines.
+         * @default 'solid'
+         */
+        dash?: Dash;
+        /**
+         * Sets the line width (in px).
+         * @default 2
+         * Minimum: 0
+         */
+        width?: number;
+    };
+    marker?: _internal.Marker;
+    /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
+    meta?: any;
+    /**
+     * Determines the drawing mode for this scatter trace. If the provided `mode` includes *text* then the `text` elements appear at the coordinates. Otherwise, the `text` elements appear on hover. If there are less than 20 points and the trace is not stacked then the default is *lines+markers*. Otherwise, *lines*.
+     * @default 'markers'
+     */
+    mode?: 'lines' | 'markers' | 'text' | 'none' | (string & {});
+    /** Sets the trace name. The trace name appears as the legend item and on hover. */
+    name?: string;
+    /**
+     * Sets the opacity of the trace.
+     * @default 1
+     * Range: [0, 1]
+     */
+    opacity?: number;
+    selected?: {
+        marker?: {
+            /** Sets the marker color of selected points. */
+            color?: Color;
+            /**
+             * Sets the marker opacity of selected points.
+             * Range: [0, 1]
+             */
+            opacity?: number;
+            /**
+             * Sets the marker size of selected points.
+             * Minimum: 0
+             */
+            size?: number;
+        };
+        textfont?: Font;
+    };
+    /** Array containing integer indices of selected points. Has an effect only for traces that support selections. Note that an empty array means an empty selection where the `unselected` are turned on for all points, whereas, any other non-array values means no selection all where the `selected` and `unselected` styles have no effect. */
+    selectedpoints?: any;
+    /**
+     * Determines whether or not an item corresponding to this trace is shown in the legend.
+     * @default true
+     */
+    showlegend?: boolean;
+    /**
+     * Sets a reference between this trace's data coordinates and a ternary subplot. If *ternary* (the default value), the data refer to `layout.ternary`. If *ternary2*, the data refer to `layout.ternary2`, and so on.
+     * @default 'ternary'
+     */
+    subplot?: string;
+    /**
+     * The number each triplet should sum to, if only two of `a`, `b`, and `c` are provided. This overrides `ternary<i>.sum` to normalize this specific trace, but does not affect the values displayed on the axes. 0 (or missing) means to use ternary<i>.sum
+     * @default 0
+     * Minimum: 0
+     */
+    sum?: number;
+    /** Sets text elements associated with each (a,b,c) point. If a single string, the same string appears over all the data points. If an array of strings, the items are mapped in order to the data points in (a,b,c). If trace `hoverinfo` contains a *text* flag and *hovertext* is not set, these elements will be seen in the hover labels. */
+    text?: string | string[];
+    /** Sets the text font. */
+    textfont?: {
+        color?: Color | Color[];
+        /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
+        family?: string | string[];
+        /**
+         * Minimum: 1
+         */
+        size?: number | number[];
+        /**
+         * Sets whether a font should be styled with a normal or italic face from its family.
+         * @default 'normal'
+         */
+        style?: 'normal' | 'italic' | ('normal' | 'italic')[];
+        /**
+         * Sets the variant of the font.
+         * @default 'normal'
+         */
+        variant?: 'normal' | 'small-caps' | ('normal' | 'small-caps')[];
+        /**
+         * Sets the weight (or boldness) of the font.
+         * @default 'normal'
+         */
+        weight?: 'normal' | 'bold' | ('normal' | 'bold')[];
+    };
+    /**
+     * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
+     * @default 'middle center'
+     */
+    textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
+    /** Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `a`, `b`, `c` and `text`. */
+    texttemplate?: string | string[];
+    /**
+     * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
+     * @default '-'
+     */
+    texttemplatefallback?: any;
+    type?: 'scatterternarygl';
+    /** Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions. */
+    uid?: string;
+    /** Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves. */
+    uirevision?: any;
+    unselected?: {
+        marker?: {
+            /** Sets the marker color of unselected points, applied only when a selection exists. */
+            color?: Color;
+            /**
+             * Sets the marker opacity of unselected points, applied only when a selection exists.
+             * Range: [0, 1]
+             */
+            opacity?: number;
+            /**
+             * Sets the marker size of unselected points, applied only when a selection exists.
+             * Minimum: 0
+             */
+            size?: number;
+        };
+        textfont?: Font;
+    };
+    /**
+     * Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).
+     * @default true
+     */
+    visible?: true | false | 'legendonly';
+}
+
 export interface SplomData {
     /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
     customdata?: Datum[] | Datum[][] | TypedArray;
@@ -11838,6 +12028,7 @@ export type Data =
     | Partial<ScatterpolarglData>
     | Partial<ScattersmithData>
     | Partial<ScatterternaryData>
+    | Partial<ScatterternaryglData>
     | Partial<SplomData>
     | Partial<StreamtubeData>
     | Partial<SunburstData>
