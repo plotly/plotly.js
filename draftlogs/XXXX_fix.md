@@ -1,1 +1,0 @@
- - Fix `histogram2dcontour` fill colors when bin values are negative [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
