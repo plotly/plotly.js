@@ -650,6 +650,25 @@ describe('contour plotting and editing', function() {
         })
         .then(done, done.fail);
     });
+
+    it('fills histogram2dcontour levels above negative bin values', (done) => {
+        Plotly.newPlot(gd, [{
+            type: 'histogram2dcontour',
+            x: [1, 2, 3, 4, 1, 2, 3, 4],
+            y: [1, 1, 1, 1, 2, 2, 2, 2],
+            z: [-10, -50, -100, -150, -10, -50, -100, -150],
+            histfunc: 'avg',
+            contours: {coloring: 'fill'}
+        }])
+        .then(() => {
+            const fills = d3SelectAll('.contourfill path');
+            expect(fills.size()).toBe(13);
+            fills.each((d) => {
+                expect(d.prefixBoundary).toBe(true, `level ${d.level}`);
+            });
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('contour hover', function() {
