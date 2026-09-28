@@ -71299,6 +71299,80 @@
           "editType": "style",
           "valType": "color"
         },
+        "fillpattern": {
+          "bgcolor": {
+            "arrayOk": true,
+            "description": "When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background.",
+            "editType": "style",
+            "valType": "color"
+          },
+          "description": "Sets the pattern within the marker.",
+          "editType": "style",
+          "fgcolor": {
+            "arrayOk": true,
+            "description": "When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`.",
+            "editType": "style",
+            "valType": "color"
+          },
+          "fgopacity": {
+            "description": "Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.",
+            "editType": "style",
+            "max": 1,
+            "min": 0,
+            "valType": "number"
+          },
+          "fillmode": {
+            "description": "Determines whether `marker.color` should be used as a default to `bgcolor` or a `fgcolor`.",
+            "dflt": "replace",
+            "editType": "style",
+            "valType": "enumerated",
+            "values": [
+              "replace",
+              "overlay"
+            ]
+          },
+          "path": {
+            "arrayOk": true,
+            "description": "Sets a custom path for pattern fill. Use with no `shape` or `solidity`, provide an SVG path string for the regions of the square from (0,0) to (`size`,`size`) to color.",
+            "editType": "style",
+            "valType": "string"
+          },
+          "role": "object",
+          "shape": {
+            "arrayOk": true,
+            "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area.",
+            "dflt": "",
+            "editType": "style",
+            "valType": "enumerated",
+            "values": [
+              "",
+              "/",
+              "\\",
+              "x",
+              "-",
+              "|",
+              "+",
+              "."
+            ]
+          },
+          "size": {
+            "arrayOk": true,
+            "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern.",
+            "dflt": 8,
+            "editType": "style",
+            "min": 0,
+            "valType": "number"
+          },
+          "solidity": {
+            "arrayOk": true,
+            "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.",
+            "dflt": 0.3,
+            "editType": "style",
+            "max": 1,
+            "min": 0,
+            "valType": "number"
+          }
+        },
         "hoverinfo": {
           "arrayOk": true,
           "description": "Determines what trace information appears on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
