@@ -124,7 +124,7 @@ export interface Font {
 }
 
 export interface FontArray {
-    color?: Color | Color[];
+    color?: Color | Color[] | TypedArray;
     /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
     family?: string | string[];
     /**
@@ -140,7 +140,7 @@ export interface FontArray {
     /**
      * Minimum: 1
      */
-    size?: number | number[];
+    size?: number | number[] | TypedArray;
     /**
      * Sets whether a font should be styled with a normal or italic face from its family.
      * @default 'normal'
@@ -161,14 +161,14 @@ export interface FontArray {
      * @default 'normal'
      * Range: [1, 1000]
      */
-    weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[];
+    weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[] | TypedArray;
 }
 
 export interface Pattern {
     /** When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background. */
-    bgcolor?: Color | Color[];
+    bgcolor?: Color | Color[] | TypedArray;
     /** When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`. */
-    fgcolor?: Color | Color[];
+    fgcolor?: Color | Color[] | TypedArray;
     /**
      * Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.
      * Range: [0, 1]
@@ -188,13 +188,13 @@ export interface Pattern {
      * @default 8
      * Minimum: 0
      */
-    size?: number | number[];
+    size?: number | number[] | TypedArray;
     /**
      * Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.
      * @default 0.3
      * Range: [0, 1]
      */
-    solidity?: number | number[];
+    solidity?: number | number[] | TypedArray;
 }
 
 export interface TickFormatStops {
@@ -443,9 +443,9 @@ export interface HoverLabel {
      */
     align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
     /** Sets the background color of the hover labels for this trace */
-    bgcolor?: Color | Color[];
+    bgcolor?: Color | Color[] | TypedArray;
     /** Sets the border color of the hover labels for this trace. */
-    bordercolor?: Color | Color[];
+    bordercolor?: Color | Color[] | TypedArray;
     /** Sets the font used in hover labels. */
     font?: FontArray;
     /**
@@ -453,7 +453,7 @@ export interface HoverLabel {
      * @default 15
      * Minimum: -1
      */
-    namelength?: number | number[];
+    namelength?: number | number[] | TypedArray;
     /**
      * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
      * @default true
@@ -605,7 +605,7 @@ export namespace _internal {
          */
         cmin?: number;
         /** Sets the marker.line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.line.cmin` and `marker.line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         /**
@@ -627,7 +627,7 @@ export namespace _internal {
          * Sets the width (in px) of the lines bounding the marker points.
          * Minimum: 0
          */
-        width?: number | number[];
+        width?: number | number[] | TypedArray;
     }
 
     export interface Marker {
@@ -635,7 +635,7 @@ export namespace _internal {
          * Sets the marker angle in respect to `angleref`.
          * @default 0
          */
-        angle?: number | 'auto' | (number | 'auto')[];
+        angle?: number | 'auto' | (number | 'auto')[] | TypedArray;
         /**
          * Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.
          * @default 'up'
@@ -664,7 +664,7 @@ export namespace _internal {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -675,7 +675,7 @@ export namespace _internal {
         colorscale?: ColorScale;
         gradient?: {
             /** Sets the final color of the gradient fill: the center color for radial, the right for horizontal, or the bottom for vertical. */
-            color?: Color | Color[];
+            color?: Color | Color[] | TypedArray;
             /**
              * Sets the type of gradient used to fill the markers
              * @default 'none'
@@ -693,7 +693,7 @@ export namespace _internal {
          * Sets the marker opacity.
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -709,7 +709,7 @@ export namespace _internal {
          * @default 6
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -731,7 +731,7 @@ export namespace _internal {
          * @default 0
          * Minimum: 0
          */
-        standoff?: number | number[];
+        standoff?: number | number[] | TypedArray;
         /**
          * Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.
          * @default 'circle'
@@ -887,7 +887,7 @@ export interface BarData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -904,7 +904,7 @@ export interface BarData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /** Sets the pattern within the marker. */
         pattern?: Pattern;
         /**
@@ -923,7 +923,7 @@ export interface BarData {
     /** Sets the trace name. The trace name appears as the legend item and on hover. */
     name?: string;
     /** Shifts the position where the bar is drawn (in position axis units). In *group* barmode, traces that set *offset* will be excluded and drawn in *overlay* mode instead. */
-    offset?: number | number[];
+    offset?: number | number[] | TypedArray;
     /** Set several traces linked to the same position axis or matching axes to the same offsetgroup where bars of the same position coordinate will line up. */
     offsetgroup?: string;
     /**
@@ -1002,7 +1002,7 @@ export interface BarData {
      * Sets the bar width (in position axis units).
      * Minimum: 0
      */
-    width?: number | number[];
+    width?: number | number[] | TypedArray;
     /** Sets the x coordinates. */
     x?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -1143,7 +1143,7 @@ export interface BarpolarData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -1158,7 +1158,7 @@ export interface BarpolarData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /** Sets the pattern within the marker. */
         pattern?: Pattern;
         /**
@@ -1177,7 +1177,7 @@ export interface BarpolarData {
     /** Sets the trace name. The trace name appears as the legend item and on hover. */
     name?: string;
     /** Shifts the angular position where the bar is drawn (in *thetatunit* units). */
-    offset?: number | number[];
+    offset?: number | number[] | TypedArray;
     /**
      * Sets the opacity of the trace.
      * @default 1
@@ -1255,7 +1255,7 @@ export interface BarpolarData {
      * Sets the bar angular width (in *thetaunit* units).
      * Minimum: 0
      */
-    width?: number | number[];
+    width?: number | number[] | TypedArray;
 }
 
 export interface BoxData {
@@ -1582,9 +1582,9 @@ export interface CandlestickData {
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
         /** Sets the background color of the hover labels for this trace */
-        bgcolor?: Color | Color[];
+        bgcolor?: Color | Color[] | TypedArray;
         /** Sets the border color of the hover labels for this trace. */
-        bordercolor?: Color | Color[];
+        bordercolor?: Color | Color[] | TypedArray;
         /** Sets the font used in hover labels. */
         font?: FontArray;
         /**
@@ -1592,7 +1592,7 @@ export interface CandlestickData {
          * @default 15
          * Minimum: -1
          */
-        namelength?: number | number[];
+        namelength?: number | number[] | TypedArray;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
@@ -2363,7 +2363,7 @@ export interface ChoroplethData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
     };
     /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
     meta?: any;
@@ -2506,7 +2506,7 @@ export interface ChoroplethmapData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
     };
     /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
     meta?: any;
@@ -3388,7 +3388,7 @@ export interface DensitymapData {
      * @default 30
      * Minimum: 1
      */
-    radius?: number | number[];
+    radius?: number | number[] | TypedArray;
     /**
      * Reverses the color mapping if true. If true, `zmin` will correspond to the last color in the array and `zmax` will correspond to the first color.
      * @default false
@@ -3560,7 +3560,7 @@ export interface FunnelData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -3575,7 +3575,7 @@ export interface FunnelData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -4251,7 +4251,7 @@ export interface HistogramData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -4268,7 +4268,7 @@ export interface HistogramData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /** Sets the pattern within the marker. */
         pattern?: Pattern;
         /**
@@ -6079,9 +6079,9 @@ export interface OhlcData {
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
         /** Sets the background color of the hover labels for this trace */
-        bgcolor?: Color | Color[];
+        bgcolor?: Color | Color[] | TypedArray;
         /** Sets the border color of the hover labels for this trace. */
-        bordercolor?: Color | Color[];
+        bordercolor?: Color | Color[] | TypedArray;
         /** Sets the font used in hover labels. */
         font?: FontArray;
         /**
@@ -6089,7 +6089,7 @@ export interface OhlcData {
          * @default 15
          * Minimum: -1
          */
-        namelength?: number | number[];
+        namelength?: number | number[] | TypedArray;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
@@ -6258,7 +6258,7 @@ export interface ParcatsData {
      * @default 1
      * Minimum: 0
      */
-    counts?: number | number[];
+    counts?: number | number[] | TypedArray;
     dimensions?: Array<{
         /** Sets the order in which categories in this dimension appear. Only has an effect if `categoryorder` is set to *array*. Used with `categoryorder`. */
         categoryarray?: Datum[] | Datum[][] | TypedArray;
@@ -6334,7 +6334,7 @@ export interface ParcatsData {
          */
         cmin?: number;
         /** Sets the line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `line.cmin` and `line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -6477,7 +6477,7 @@ export interface ParcoordsData {
          */
         cmin?: number;
         /** Sets the line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `line.cmin` and `line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -6601,7 +6601,7 @@ export interface PieData {
      * Sets the legend rank for this pie. If passed as an array, this will set the legend rank of the individual pie slices. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.
      * @default 1000
      */
-    legendrank?: number | number[];
+    legendrank?: number | number[] | TypedArray;
     /**
      * Sets the width (in px or fraction) of the legend for this trace.
      * Minimum: 0
@@ -6631,7 +6631,7 @@ export interface PieData {
      * @default 0
      * Range: [0, 1]
      */
-    pull?: number | number[];
+    pull?: number | number[] | TypedArray;
     /**
      * Instead of the first slice starting at 12 o'clock, rotate to some other angle.
      * @default 0
@@ -6781,7 +6781,7 @@ export interface QuiverData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -6951,7 +6951,7 @@ export interface SankeyData {
          */
         arrowlen?: number;
         /** Sets the `link` color. It can be a single value, or an array for specifying color for each `link`. If `link.color` is omitted, then by default, a translucent grey link will be used. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         colorscales?: Array<{
             /**
              * Sets the upper bound of the color domain.
@@ -6979,7 +6979,7 @@ export interface SankeyData {
         /** Assigns extra data to each link. */
         customdata?: Datum[] | Datum[][] | TypedArray;
         /** Sets the `link` hover color. It can be a single value, or an array for specifying hover colors for each `link`. If `link.hovercolor` is omitted, then by default, links will become slightly more opaque when hovered over. */
-        hovercolor?: Color | Color[];
+        hovercolor?: Color | Color[] | TypedArray;
         /**
          * Determines what trace information appears when hovering links. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
          * @default 'all'
@@ -7032,7 +7032,7 @@ export interface SankeyData {
          */
         align?: 'justify' | 'left' | 'right' | 'center';
         /** Sets the `node` color. It can be a single value, or an array for specifying color for each `node`. If `node.color` is omitted, then the default `Plotly` color palette will be cycled through to have a variety of colors. These defaults are not fully opaque, to allow some visibility of what is beneath the node. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Assigns extra data to each node. */
         customdata?: Datum[] | Datum[][] | TypedArray;
         /**
@@ -7255,7 +7255,7 @@ export interface ScatterData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -7610,7 +7610,7 @@ export interface Scatter3dData {
          */
         cmin?: number;
         /** Sets the line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `line.cmin` and `line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -7665,7 +7665,7 @@ export interface Scatter3dData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -7698,7 +7698,7 @@ export interface Scatter3dData {
              */
             cmin?: number;
             /** Sets the marker.line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.line.cmin` and `marker.line.cmax` if set. */
-            color?: Color | Color[];
+            color?: Color | Color[] | TypedArray;
             /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
             coloraxis?: string;
             /**
@@ -7737,7 +7737,7 @@ export interface Scatter3dData {
          * @default 8
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -7855,13 +7855,13 @@ export interface Scatter3dData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'
@@ -7877,7 +7877,7 @@ export interface Scatter3dData {
          * @default 'normal'
          * Range: [1, 1000]
          */
-        weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[];
+        weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[] | TypedArray;
     };
     /**
      * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
@@ -7994,7 +7994,7 @@ export interface ScattercarpetData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -8213,7 +8213,7 @@ export interface ScattergeoData {
          * Sets the marker angle in respect to `angleref`.
          * @default 0
          */
-        angle?: number | 'auto' | (number | 'auto')[];
+        angle?: number | 'auto' | (number | 'auto')[] | TypedArray;
         /**
          * Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen. With *north*, angle 0 points north based on the current map projection.
          * @default 'up'
@@ -8242,7 +8242,7 @@ export interface ScattergeoData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -8253,7 +8253,7 @@ export interface ScattergeoData {
         colorscale?: ColorScale;
         gradient?: {
             /** Sets the final color of the gradient fill: the center color for radial, the right for horizontal, or the bottom for vertical. */
-            color?: Color | Color[];
+            color?: Color | Color[] | TypedArray;
             /**
              * Sets the type of gradient used to fill the markers
              * @default 'none'
@@ -8265,7 +8265,7 @@ export interface ScattergeoData {
          * Sets the marker opacity.
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -8281,7 +8281,7 @@ export interface ScattergeoData {
          * @default 6
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -8303,7 +8303,7 @@ export interface ScattergeoData {
          * @default 0
          * Minimum: 0
          */
-        standoff?: number | number[];
+        standoff?: number | number[] | TypedArray;
         /**
          * Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.
          * @default 'circle'
@@ -8564,13 +8564,13 @@ export interface ScatterglData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'
@@ -8695,7 +8695,7 @@ export interface ScattermapData {
     below?: string;
     cluster?: {
         /** Sets the color for each cluster step. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Determines whether clustering is enabled or disabled. */
         enabled?: boolean;
         /**
@@ -8709,19 +8709,19 @@ export interface ScattermapData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Sets the size for each cluster step.
          * @default 20
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets how many points it takes to create a cluster or advance to the next cluster step. Use this in conjunction with arrays for `size` and / or `color`. If an integer, steps start at multiples of this number. If an array, each step extends from the given value until one less than the next value.
          * @default -1
          * Minimum: -1
          */
-        step?: number | number[];
+        step?: number | number[] | TypedArray;
     };
     /**
      * Determines whether or not gaps (i.e. {nan} or missing values) in the provided data arrays are connected.
@@ -8787,7 +8787,7 @@ export interface ScattermapData {
          * Sets the marker orientation from true North, in degrees clockwise. When using the *auto* default, no rotation would be applied in perspective views which is different from using a zero angle.
          * @default 'auto'
          */
-        angle?: number | number[];
+        angle?: number | number[] | TypedArray;
         /**
          * Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.
          * @default true
@@ -8811,7 +8811,7 @@ export interface ScattermapData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -8824,7 +8824,7 @@ export interface ScattermapData {
          * Sets the marker opacity.
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -8840,7 +8840,7 @@ export interface ScattermapData {
          * @default 6
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -9020,7 +9020,7 @@ export interface ScatterpolarData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -9277,13 +9277,13 @@ export interface ScatterpolarglData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'
@@ -9418,7 +9418,7 @@ export interface ScattersmithData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -9602,7 +9602,7 @@ export interface ScatterternaryData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -10656,7 +10656,7 @@ export interface TableData {
     /** Specifies the rendered order of the data columns; for example, a value `2` at position `0` means that column index `0` in the data will be rendered as the third column, as columns have an index base of zero. */
     columnorder?: Datum[] | Datum[][] | TypedArray;
     /** The width of columns expressed as a ratio. Columns fill the available width in proportion of their specified column widths. */
-    columnwidth?: number | number[];
+    columnwidth?: number | number[] | TypedArray;
     /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
     customdata?: Datum[] | Datum[][] | TypedArray;
     domain?: Domain;
@@ -11667,7 +11667,7 @@ export interface WaterfallData {
     /** Sets the trace name. The trace name appears as the legend item and on hover. */
     name?: string;
     /** Shifts the position where the bar is drawn (in position axis units). In *group* barmode, traces that set *offset* will be excluded and drawn in *overlay* mode instead. */
-    offset?: number | number[];
+    offset?: number | number[] | TypedArray;
     /** Set several traces linked to the same position axis or matching axes to the same offsetgroup where bars of the same position coordinate will line up. */
     offsetgroup?: string;
     /**
@@ -11731,7 +11731,7 @@ export interface WaterfallData {
      * Sets the bar width (in position axis units).
      * Minimum: 0
      */
-    width?: number | number[];
+    width?: number | number[] | TypedArray;
     /** Sets the x coordinates. */
     x?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -12609,7 +12609,7 @@ export interface LayoutAxis {
     tickformat?: string;
     tickformatstops?: TickFormatStops[];
     /** Only for axes with `type` *date* or *linear*. Instead of drawing the major tick label, draw the label for the minor tick that is n positions away from the major tick. E.g. to always draw the label for the minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date axes with `ticklabelmode` *period* if you want to label the period that ends with each major tick instead of the period that begins there. */
-    ticklabelindex?: number | number[];
+    ticklabelindex?: number | number[] | TypedArray;
     /**
      * Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.
      * @default 'instant'
