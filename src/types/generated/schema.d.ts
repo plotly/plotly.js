@@ -14754,6 +14754,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -14768,6 +14773,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -14916,6 +14943,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -14930,6 +14962,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -15083,6 +15137,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -15097,6 +15156,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"

@@ -706,6 +706,274 @@ describe('ternary plots when css transform is present', function() {
     });
 });
 
+describe('ternary spikelines', function() {
+    'use strict';
+
+    var gd;
+
+    var data = [{
+        type: 'scatterternary',
+        mode: 'markers',
+        a: [49],
+        b: [43],
+        c: [8]
+    }];
+
+    var layout = {
+        ternary: {
+            sum: 100,
+            aaxis: {showspikes: true, spikecolor: '#444', hoverformat: '.1f'},
+            baxis: {showspikes: true, hoverformat: '.1f'},
+            caxis: {showspikes: true, hoverformat: '.1f'},
+        }
+    };
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function hoverAt(xval, yval, subplot) {
+        Lib.clearThrottle();
+        Plotly.Fx.hover(gd, {xval: xval, yval: yval}, subplot || 'ternary');
+    }
+
+    it('draws toaxis spikes and labels for all three axes and removes them on unhover', function(done) {
+        Plotly.newPlot(gd, data, layout).then(function() {
+            // x = c - b = 8 - 43 = -35
+            // y = a = 49
+            hoverAt(-35, 49);
+
+            var subplot = gd._fullLayout.ternary._subplot;
+            var lines = gd.querySelectorAll('.ternary-spikes line');
+            expect(lines.length).toBe(3);
+
+            // spike intersections with each axis, expressed as fractions of subplot width/height.
+            // fa = 49 / 100 = 0.49
+            // fb = 43 / 100 = 0.43
+            // fc = 8 / 100 = 0.08
+            var axisEnds = [
+                // [x fraction of subplot width, y fraction of subplot height]
+                [0.245, 0.51], // aaxis: x = fa/2 = 0.245, y = 0.51
+                [0.57, 1], // baxis: x = 1 - fb = 0.57, y = 1
+                [0.54, 0.08] // caxis: x = (1 + fc) / 2 = 0.54, y = fc = 0.08
+            ];
+
+            // x1 = w * (fc + fa / 2)
+            // y1 = h * (1 - fa)
+            for(var i = 0; i < lines.length; i++) {
+                expect(+lines[i].getAttribute('x1')).toBeCloseTo(subplot.w * 0.325, 5);
+                expect(+lines[i].getAttribute('y1')).toBeCloseTo(subplot.h * 0.51, 5);
+                expect(+lines[i].getAttribute('x2')).toBeCloseTo(subplot.w * axisEnds[i][0], 5);
+                expect(+lines[i].getAttribute('y2')).toBeCloseTo(subplot.h * axisEnds[i][1], 5);
+            }
+
+            expect(Array.from(gd.querySelectorAll('.ternary-spikelabel text'), function(el) {
+                return el.textContent;
+            })).toEqual(['49.0', '43.0', '8.0']);
+
+            var labels = gd.querySelectorAll('.ternary-spikelabel');
+
+            for(var j = 0; j < labels.length; j++) {
+                var transform = labels[j].transform.baseVal.consolidate().matrix;
+                expect(transform.e).toBeCloseTo(+lines[j].getAttribute('x2'), 4);
+                expect(transform.f).toBeCloseTo(+lines[j].getAttribute('y2'), 4);
+            }
+
+            Plotly.Fx.unhover(gd);
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('keeps redrawn spikes behind the hover label', function(done) {
+        Plotly.newPlot(gd, data, layout).then(function() {
+            hoverAt(-35, 49);
+            expect(gd.querySelector('.hovertext')).not.toBeNull();
+
+            hoverAt(-35, 49);
+
+            var spikes = gd.querySelector('.ternary-spikes');
+            var hoverLabel = gd.querySelector('.hovertext');
+            expect(spikes.parentNode).toBe(hoverLabel.parentNode);
+            expect(spikes.compareDocumentPosition(hoverLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        })
+        .then(done, done.fail);
+    });
+
+    it('supports spikesnap "cursor" with axis minima and spikemode "across+marker"', function(done) {
+        var options = Lib.extendDeep({}, layout, {
+            ternary: {
+                aaxis: {
+                    min: 10,
+                    spikesnap: 'cursor',
+                    spikemode: 'across+marker',
+                },
+                // only observe A spike
+                baxis: {min: 20, showspikes: false},
+                caxis: {min: 5, showspikes: false},
+            }
+        });
+
+        Plotly.newPlot(gd, data, options).then(function() {
+            hoverAt(-10, 36);
+
+            var subplot = gd._fullLayout.ternary._subplot;
+            var line = gd.querySelector('.ternary-spikes line');
+            expect(+line.getAttribute('x1')).toBeCloseTo(subplot.w * 0.8, 5);
+            expect(+line.getAttribute('x2')).toBeCloseTo(subplot.w * 0.2, 5);
+            expect(+line.getAttribute('y2')).toBeCloseTo(subplot.h * 0.6, 5);
+            expect(gd.querySelectorAll('.ternary-spikes circle').length).toBe(1);
+            expect(gd.querySelector('.ternary-spikelabel text').textContent).toBe('36.0');
+
+            // this synthetic x/y axes position converts to an invalid ternary point.
+            hoverAt(100, 90);
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('respects hoverdistance and spikedistance across spikesnap modes', function(done) {
+        var options = Lib.extendDeep({}, layout, {
+            hoverdistance: 1,
+            spikedistance: 20,
+            ternary: {
+                aaxis: {spikesnap: 'hovered data'},
+                baxis: {showspikes: false},
+                caxis: {showspikes: false}
+            }
+        });
+
+        var nearXVal;
+        var farXVal;
+
+        Plotly.newPlot(gd, data, options).then(function() {
+            var subplot = gd._fullLayout.ternary._subplot;
+            var pointPx = subplot.xaxis.c2p(-35);
+
+            // keep the cursor outside hoverdistance but inside/outside spikedistance
+            nearXVal = subplot.xaxis.p2c(pointPx + 15);
+            farXVal = subplot.xaxis.p2c(pointPx + 30);
+
+            hoverAt(nearXVal, 49);
+            expect(gd.querySelectorAll('.hovertext').length).toBe(0);
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+
+            return Plotly.relayout(gd, 'ternary.aaxis.spikesnap', 'data');
+        })
+        .then(function() {
+            hoverAt(nearXVal, 49);
+            expect(gd.querySelectorAll('.hovertext').length).toBe(0);
+            expect(gd.querySelectorAll('.ternary-spikes line').length).toBe(1);
+
+            return Plotly.relayout(gd, 'ternary.aaxis.spikesnap', 'cursor');
+        })
+        .then(function() {
+            hoverAt(nearXVal, 49);
+            expect(gd.querySelectorAll('.hovertext').length).toBe(0);
+            expect(gd.querySelectorAll('.ternary-spikes line').length).toBe(1);
+
+            hoverAt(farXVal, 49);
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+
+            return Plotly.relayout(gd, 'spikedistance', 0);
+        })
+        .then(function() {
+            hoverAt(nearXVal, 49);
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('clears spikes across ternary subplots and respects showspikes relayouts', function(done) {
+        var traces = [
+            data[0],
+            Lib.extendDeep({}, data[0], {subplot: 'ternary2'})
+        ];
+        var options = Lib.extendDeep({}, layout, {
+            ternary: {domain: {x: [0, 0.45]}},
+            ternary2: {sum: 100, domain: {x: [0.55, 1]}}
+        });
+
+        Plotly.newPlot(gd, traces, options).then(function() {
+            hoverAt(-35, 49, 'ternary');
+            expect(gd.querySelectorAll('.ternary-spikes line').length).toBe(3);
+
+            hoverAt(-35, 49, 'ternary2');
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+
+            return Plotly.relayout(gd, 'ternary2.aaxis.showspikes', true);
+        })
+        .then(function() {
+            hoverAt(-35, 49, 'ternary2');
+            expect(gd.querySelectorAll('.ternary-spikes line').length).toBe(1);
+
+            return Plotly.relayout(gd, 'ternary2.aaxis.showspikes', false);
+        })
+        .then(function() {
+            hoverAt(-35, 49, 'ternary2');
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('clears ternary spikes when hovering a Cartesian subplot in the same figure', function(done) {
+        var traces = [
+            data[0],
+            {type: 'scatter', mode: 'markers', x: [0], y: [0]}
+        ];
+        var options = Lib.extendDeep({}, layout, {
+            ternary: {domain: {x: [0, 0.45]}},
+            xaxis: {domain: [0.55, 1]},
+            yaxis: {domain: [0, 1]}
+        });
+
+        Plotly.newPlot(gd, traces, options).then(function() {
+            hoverAt(-35, 49, 'ternary');
+            expect(gd.querySelectorAll('.ternary-spikes line').length).toBe(3);
+
+            hoverAt(0, 0, 'xy');
+            expect(gd.querySelectorAll('.ternary-spikes').length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('uses the closest spike candidate across traces in the same ternary subplot', function(done) {
+        var traces = [
+            data[0],
+            {
+                type: 'scatterternary',
+                mode: 'markers',
+                a: [60],
+                b: [25],
+                c: [15]
+            }
+        ];
+        var options = Lib.extendDeep({}, layout, {
+            hoverdistance: 0, // no looking for data
+            spikedistance: -1, // no cutoff (default)
+            ternary: {
+                aaxis: {spikesnap: 'data'},
+                // only observe A spike
+                baxis: {showspikes: false},
+                caxis: {showspikes: false}
+            }
+        });
+
+        Plotly.newPlot(gd, traces, options).then(function() {
+            // x = c - b = 15 - 25 = -10
+            // y = a = 60
+            hoverAt(-10, 60);
+
+            expect(gd.querySelectorAll('.hovertext').length).toBe(0);
+            expect(gd.querySelectorAll('.ternary-spikes line').length).toBe(1);
+            expect(gd.querySelector('.ternary-spikelabel text').textContent).toBe('60.0');
+        })
+        .then(done, done.fail);
+    });
+});
+
 describe('ternary defaults', function() {
     'use strict';
 
@@ -729,6 +997,29 @@ describe('ternary defaults', function() {
         expect(layoutOut.ternary.aaxis.type).toEqual('linear');
         expect(layoutOut.ternary.baxis.type).toEqual('linear');
         expect(layoutOut.ternary.caxis.type).toEqual('linear');
+    });
+
+    it('defaults spikes off and coerces each enabled axis independently', function() {
+        layoutIn = {ternary: {
+            aaxis: {showspikes: true},
+            baxis: {showspikes: true, spikecolor: 'red', spikethickness: 2,
+                spikedash: 'dot', spikemode: 'across+marker', spikesnap: 'cursor'},
+            caxis: {spikecolor: 'blue'}
+        }};
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        var ternary = layoutOut.ternary;
+        expect(ternary.aaxis.showspikes).toBe(true);
+        expect(ternary.aaxis.spikesnap).toBe('hovered data');
+        expect(ternary.aaxis.spikemode).toBe('toaxis');
+        expect(ternary.aaxis.spikethickness).toBe(3);
+        expect(ternary.aaxis.spikedash).toBe('dash');
+        expect(ternary.baxis.spikecolor).toBe('red');
+        expect(ternary.baxis.spikethickness).toBe(2);
+        expect(ternary.baxis.spikedash).toBe('dot');
+        expect(ternary.baxis.spikemode).toBe('across+marker');
+        expect(ternary.baxis.spikesnap).toBe('cursor');
+        expect(ternary.caxis.showspikes).toBe(false);
+        expect(ternary.caxis.spikecolor).toBeUndefined();
     });
 
     it('should coerce \'min\' values to 0 and delete them for user data if they contradict', function() {
