@@ -1,0 +1,1 @@
+- Remove tick labels and titles of the previous orientation when a colorbar changes orientation [[#PRNUMBER](https://github.com/plotly/plotly.js/pull/PRNUMBER)]
