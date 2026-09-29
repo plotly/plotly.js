@@ -1,0 +1,1 @@
+- Fix autorange turning off for matched axes that have no set range, when another match group sets a range [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
