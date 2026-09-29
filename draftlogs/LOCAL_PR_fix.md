@@ -1,1 +1,0 @@
-- Fix directional axis automargins that discard anchor coordinates and clip labels [[#LOCAL_PR](https://github.com/plotly/plotly.js/pull/LOCAL_PR)]
