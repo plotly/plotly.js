@@ -28,6 +28,10 @@ export interface GraphContext extends Partial<Config> {
  * This is an HTMLDivElement with additional Plotly-specific properties.
  */
 export interface GraphDiv extends HTMLDivElement {
+    /** Removes the listener that redraws the plot when a web font it uses finishes loading */
+    _clearFontListener?: () => void;
+    /** Removes the listener that resizes the plot when `config.responsive` is on */
+    _clearResponsive?: () => void;
     /** Resolved configuration plus internal context. */
     _context?: GraphContext;
     /** True while an inline edit is in progress (e.g. axis title rename). */
