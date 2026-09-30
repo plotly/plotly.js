@@ -3327,9 +3327,10 @@ describe('web font loading', () => {
     });
 
     // Each test adds a new family, so that no earlier measurement can be in the bBox cache
-    const addFace = () => {
-        face = new FontFace(`PlotlyTestFont${++faceCount}`, `url(${fontUrl})`);
+    const addFace = (name = `PlotlyTestFont${++faceCount}`) => {
+        face = new FontFace(name, `url(${fontUrl})`);
         document.fonts.add(face);
+        // The family comes back as CSS, with quotes when the name needs them
         return face.family;
     };
 
@@ -3364,6 +3365,23 @@ describe('web font loading', () => {
             .then(done, done.fail);
     });
 
+    it('should redraw a plot whose quoted font family contains a comma', (done) => {
+        const fig = makeFigure(addFace(`PlotlyTest, Font${++faceCount}`));
+        let widthBeforeLoad;
+
+        Plotly.newPlot(gd, fig.data, fig.layout)
+            .then(() => {
+                expect(face.status).not.toBe('loaded');
+                widthBeforeLoad = legendWidth(gd);
+                return new Promise((resolve) => gd.once('plotly_afterplot', resolve));
+            })
+            .then(() => {
+                expect(face.status).toBe('loaded');
+                expect(legendWidth(gd)).not.toBe(widthBeforeLoad);
+            })
+            .then(done, done.fail);
+    });
+
     it('should not redraw a plot that does not use the loaded font', (done) => {
         addFace();
         const fig = makeFigure('Arial');
@@ -3373,7 +3391,7 @@ describe('web font loading', () => {
                 spyOn(plotApi, '_doPlot').and.callThrough();
                 return face.load();
             })
-            // The `loadingdone` event can fire after the load promise resolves
+            // `document.fonts.ready` can resolve after the load promise
             .then(() => new Promise((resolve) => setTimeout(resolve, 100)))
             .then(() => {
                 expect(plotApi._doPlot).not.toHaveBeenCalled();
@@ -3392,7 +3410,7 @@ describe('web font loading', () => {
                 spyOn(plotApi, '_doPlot').and.callThrough();
                 return face.loaded;
             })
-            // The `loadingdone` event can fire after the load promise resolves
+            // `document.fonts.ready` can resolve after the load promise
             .then(() => new Promise((resolve) => setTimeout(resolve, 100)))
             .then(() => {
                 expect(plotApi._doPlot).toHaveBeenCalledTimes(1);
@@ -3406,15 +3424,15 @@ describe('web font loading', () => {
         Plotly.newPlot(gd, fig.data, fig.layout)
             .then(() => {
                 expect(face.status).not.toBe('loaded');
-                expect(gd._clearFontListener).toEqual(jasmine.any(Function));
+                expect(gd._fontLoadToken).toBeDefined();
 
                 Plotly.purge(gd);
-                expect(gd._clearFontListener).toBeUndefined();
+                expect(gd._fontLoadToken).toBeUndefined();
 
                 spyOn(plotApi, '_doPlot').and.callThrough();
                 return face.loaded;
             })
-            // The `loadingdone` event can fire after the load promise resolves
+            // `document.fonts.ready` can resolve after the load promise
             .then(() => new Promise((resolve) => setTimeout(resolve, 100)))
             .then(() => {
                 expect(plotApi._doPlot).not.toHaveBeenCalled();

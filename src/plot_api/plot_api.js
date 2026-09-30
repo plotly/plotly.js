@@ -198,27 +198,8 @@ function _doPlot(gd, data, layout, config) {
         Lib.clearResponsive(gd);
     }
 
-    // A plot that draws before its web font loads measures its text with the fallback font.
-    // Save the callback that clears the listener for teardown in `Plots.purge`.
-    if (!gd._clearFontListener && document.fonts) {
-        const onLoadingDone = (event) => {
-            const families = event.fontfaces.map((face) => face.family.replace(/["']/g, '').toLowerCase());
-            if (!families.length) return;
-
-            // Clear size cache to force new measurement with loaded fonts
-            Drawing.savedBBoxes = {};
-
-            for (const node of gd.querySelectorAll('[style*="font-family"]')) {
-                const fontFamily = node.style.fontFamily.toLowerCase();
-                if (families.some((family) => fontFamily.includes(family))) {
-                    exports._doPlot(gd);
-                    return;
-                }
-            }
-        };
-        document.fonts.addEventListener('loadingdone', onLoadingDone);
-        gd._clearFontListener = () => document.fonts.removeEventListener('loadingdone', onLoadingDone);
-    }
+    // Text measured while one of these faces loads uses the fallback font
+    const unloadedFaces = document.fonts ? [...document.fonts].filter((face) => face.status !== 'loaded') : [];
 
     /*
      * start async-friendly code - now we're actually drawing things
@@ -430,9 +411,44 @@ function _doPlot(gd, data, layout, config) {
     if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function () {
+        redrawAfterFontLoads(gd, unloadedFaces);
         emitAfterPlot(gd);
         return gd;
     });
+}
+
+/**
+ * Redraw a plot after the web fonts that its text uses finish loading.
+ *
+ * A plot that draws before its web font loads measures its text with the fallback font.
+ * The redraw happens after the draw that calls this function, once every face of a used family
+ * that started or finished loading during the draw settles. A face that fails to load still settles.
+ * A later draw or `Plots.purge` cancels a pending redraw.
+ *
+ * @param gd - The graph div that finished a draw
+ * @param unloadedFaces - The faces in `document.fonts` that were not loaded when the draw started
+ */
+async function redrawAfterFontLoads(gd, unloadedFaces) {
+    // The draw started these loads, or they finished during the draw
+    const changedFaces = unloadedFaces.filter((face) => ['loaded', 'loading'].includes(face.status));
+    if (!changedFaces.length) return;
+
+    const usedFamilies = new Set();
+    for (const node of gd.querySelectorAll('[style*="font-family"]')) {
+        for (const family of Lib.fontFamilyNames(node.style.fontFamily)) usedFamilies.add(family);
+    }
+    const faces = changedFaces.filter((face) => usedFamilies.has(Lib.fontFamilyNames(face.family)[0]));
+    if (!faces.length) return;
+
+    const token = {};
+    gd._fontLoadToken = token;
+    await Promise.all(faces.map((face) => face.loaded.catch(() => {})));
+    if (gd._fontLoadToken !== token) return;
+    delete gd._fontLoadToken;
+
+    // Clear size cache to force new measurement with loaded fonts
+    Drawing.savedBBoxes = {};
+    exports._doPlot(gd);
 }
 
 function emitAfterPlot(gd) {

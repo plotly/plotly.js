@@ -1470,9 +1470,8 @@ plots.purge = function(gd) {
     // remove responsive handler
     Lib.clearResponsive(gd);
 
-    // Remove web font handler
-    gd._clearFontListener?.();
-    delete gd._clearFontListener;
+    // Cancel the pending redraw for web fonts
+    delete gd._fontLoadToken;
 
     // data and layout
     delete gd.data;
