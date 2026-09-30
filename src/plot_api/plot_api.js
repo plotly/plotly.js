@@ -198,6 +198,28 @@ function _doPlot(gd, data, layout, config) {
         Lib.clearResponsive(gd);
     }
 
+    // A plot that draws before its web font loads measures its text with the fallback font.
+    // Save the callback that clears the listener for teardown in `Plots.purge`.
+    if (!gd._clearFontListener && document.fonts) {
+        const onLoadingDone = (event) => {
+            const families = event.fontfaces.map((face) => face.family.replace(/["']/g, '').toLowerCase());
+            if (!families.length) return;
+
+            // Clear size cache to force new measurement with loaded fonts
+            Drawing.savedBBoxes = {};
+
+            for (const node of gd.querySelectorAll('[style*="font-family"]')) {
+                const fontFamily = node.style.fontFamily.toLowerCase();
+                if (families.some((family) => fontFamily.includes(family))) {
+                    exports._doPlot(gd);
+                    return;
+                }
+            }
+        };
+        document.fonts.addEventListener('loadingdone', onLoadingDone);
+        gd._clearFontListener = () => document.fonts.removeEventListener('loadingdone', onLoadingDone);
+    }
+
     /*
      * start async-friendly code - now we're actually drawing things
      */
