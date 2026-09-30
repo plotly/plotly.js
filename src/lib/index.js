@@ -219,8 +219,6 @@ lib.cleanNumber = require('./clean_number').default;
 
 lib.slugify = require('./slugify');
 
-lib.fontFamilyNames = require('./font_family_names').fontFamilyNames;
-
 lib.ensureNumber = function ensureNumber(v) {
     if (!isNumeric(v)) return BADNUM;
     v = Number(v);

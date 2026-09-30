@@ -418,11 +418,12 @@ function _doPlot(gd, data, layout, config) {
 }
 
 /**
- * Redraw a plot after the web fonts that its text uses finish loading.
+ * Redraw a plot after the web fonts that load during its draw finish loading.
  *
  * A plot that draws before its web font loads measures its text with the fallback font.
- * The redraw happens after the draw that calls this function, once every face of a used family
- * that started or finished loading during the draw settles. A face that fails to load still settles.
+ * The redraw happens after the draw that calls this function, once every face that started or
+ * finished loading during the draw settles. A face that fails to load still settles.
+ * A font that other text loads during the draw also causes one redraw.
  * A later draw or `Plots.purge` cancels a pending redraw.
  *
  * @param gd - The graph div that finished a draw
@@ -430,14 +431,7 @@ function _doPlot(gd, data, layout, config) {
  */
 async function redrawAfterFontLoads(gd, unloadedFaces) {
     // The draw started these loads, or they finished during the draw
-    const changedFaces = unloadedFaces.filter((face) => ['loaded', 'loading'].includes(face.status));
-    if (!changedFaces.length) return;
-
-    const usedFamilies = new Set();
-    for (const node of gd.querySelectorAll('[style*="font-family"]')) {
-        for (const family of Lib.fontFamilyNames(node.style.fontFamily)) usedFamilies.add(family);
-    }
-    const faces = changedFaces.filter((face) => usedFamilies.has(Lib.fontFamilyNames(face.family)[0]));
+    const faces = unloadedFaces.filter((face) => ['loaded', 'loading'].includes(face.status));
     if (!faces.length) return;
 
     const token = {};

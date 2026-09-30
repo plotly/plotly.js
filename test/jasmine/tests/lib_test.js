@@ -1996,45 +1996,6 @@ describe('Test lib.js:', function () {
         });
     });
 
-    describe('fontFamilyNames', () => {
-        it('should split a font stack into lowercase names', () => {
-            expect(Lib.fontFamilyNames('"Open Sans", verdana, Arial, sans-serif')).toEqual([
-                'open sans',
-                'verdana',
-                'arial',
-                'sans-serif'
-            ]);
-        });
-
-        it('should return a single unquoted name', () => {
-            expect(Lib.fontFamilyNames('ReproMono')).toEqual(['repromono']);
-        });
-
-        it('should strip double and single quotes', () => {
-            expect(Lib.fontFamilyNames(`"Open Sans", 'Fira Code'`)).toEqual(['open sans', 'fira code']);
-        });
-
-        it('should keep a comma inside quotes as part of the name', () => {
-            expect(Lib.fontFamilyNames('"Foo, Bar", serif')).toEqual(['foo, bar', 'serif']);
-            expect(Lib.fontFamilyNames(`'Foo, Bar', serif`)).toEqual(['foo, bar', 'serif']);
-        });
-
-        it('should keep a longer name whole instead of matching a shorter one', () => {
-            expect(Lib.fontFamilyNames('"Open Sans Condensed", sans-serif')).toEqual([
-                'open sans condensed',
-                'sans-serif'
-            ]);
-        });
-
-        it('should ignore spaces around names', () => {
-            expect(Lib.fontFamilyNames('  "Open Sans"  ,   verdana  ')).toEqual(['open sans', 'verdana']);
-        });
-
-        it('should return an empty array for an empty value', () => {
-            expect(Lib.fontFamilyNames('')).toEqual([]);
-        });
-    });
-
     describe('isPlotDiv', function () {
         it('should work on plain objects', function () {
             expect(Lib.isPlotDiv({})).toBe(false);

@@ -3327,11 +3327,11 @@ describe('web font loading', () => {
     });
 
     // Each test adds a new family, so that no earlier measurement can be in the bBox cache
-    const addFace = (name = `PlotlyTestFont${++faceCount}`) => {
-        face = new FontFace(name, `url(${fontUrl})`);
+    const addFace = () => {
+        const family = `PlotlyTestFont${++faceCount}`;
+        face = new FontFace(family, `url(${fontUrl})`);
         document.fonts.add(face);
-        // The family comes back as CSS, with quotes when the name needs them
-        return face.family;
+        return family;
     };
 
     const makeFigure = (family) => ({
@@ -3365,24 +3365,7 @@ describe('web font loading', () => {
             .then(done, done.fail);
     });
 
-    it('should redraw a plot whose quoted font family contains a comma', (done) => {
-        const fig = makeFigure(addFace(`PlotlyTest, Font${++faceCount}`));
-        let widthBeforeLoad;
-
-        Plotly.newPlot(gd, fig.data, fig.layout)
-            .then(() => {
-                expect(face.status).not.toBe('loaded');
-                widthBeforeLoad = legendWidth(gd);
-                return new Promise((resolve) => gd.once('plotly_afterplot', resolve));
-            })
-            .then(() => {
-                expect(face.status).toBe('loaded');
-                expect(legendWidth(gd)).not.toBe(widthBeforeLoad);
-            })
-            .then(done, done.fail);
-    });
-
-    it('should not redraw a plot that does not use the loaded font', (done) => {
+    it('should not redraw a plot when a font loads after its draw', (done) => {
         addFace();
         const fig = makeFigure('Arial');
 
