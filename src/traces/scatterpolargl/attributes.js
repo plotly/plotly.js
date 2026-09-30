@@ -1,7 +1,7 @@
 'use strict';
 
-// No cliponaxis or hoveron
-const { cliponaxis, hoveron, ...scatterPolarAttrs } = require('../scatterpolar/attributes');
+// No cliponaxis or hoveron, and no textpriority without *auto* textposition
+const { cliponaxis, hoveron, textpriority, ...scatterPolarAttrs } = require('../scatterpolar/attributes');
 const {
     connectgaps,
     line: { color, dash, width },

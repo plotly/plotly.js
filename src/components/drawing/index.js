@@ -1241,32 +1241,172 @@ var TEXTOFFSETSIGN = {
     top: -1
 };
 
-function textPointPosition(s, textPosition, fontSize, markerRadius, dontTouchParent) {
-    var group = d3.select(s.node().parentNode);
+// px between the end of a leader line and the label it points at
+var LEADER_END_GAP = 2;
 
+/**
+ * Compute the geometry of a text label relative to its point.
+ *
+ * @param textPosition - a `textposition` value other than *auto*
+ * @param fontSize - the font size in px
+ * @param markerRadius - the calculated marker radius in px, or 0 without markers
+ * @param numLines - the line count of the label
+ * @returns `anchor` for the `text-anchor` attribute, and `dx` and `dy` of the label group in px
+ */
+function textPointOffset(textPosition, fontSize, markerRadius, numLines) {
     var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
     var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
+    var sx = TEXTOFFSETSIGN[h];
+    var sy = TEXTOFFSETSIGN[v];
 
     // if markers are shown, offset a little more than
     // the nominal marker size
     // ie 2/1.6 * nominal, bcs some markers are a bit bigger
     var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
 
-    var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
-    var dx = TEXTOFFSETSIGN[h] * r;
-    var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r + ((TEXTOFFSETSIGN[v] - 1) * numLines * fontSize) / 2;
+    var lineSpan = ((numLines || 1) - 1) * LINE_SPACING + 1;
+    return {
+        anchor: h,
+        dx: sx * r,
+        dy: fontSize * 0.75 + sy * r + ((sy - 1) * lineSpan * fontSize) / 2
+    };
+}
+
+/**
+ * Compute the geometry of an *auto* text label from its measured box, so that
+ * every position keeps the same clearance between the marker and the text.
+ *
+ * @param textPosition - a `textposition` value other than *auto*
+ * @param markerRadius - the calculated marker radius in px, or 0 without markers
+ * @param markerSymbol - the marker symbol of the point, name or number
+ * @param bb - the label box from `drawing.bBox`, relative to the text anchor
+ * @param gap - extra px between the point and the label, set by the *auto* placement
+ * @returns the same shape as the fixed-position geometry: `anchor`, `dx`, `dy`, and `leader`
+ */
+drawing.textPointBoxOffset = function (textPosition, markerRadius, markerSymbol, bb, gap) {
+    var v = textPosition.indexOf('top') !== -1 ? 'top' : textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+    var h = textPosition.indexOf('left') !== -1 ? 'end' : textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
+    var sx = TEXTOFFSETSIGN[h];
+    var sy = TEXTOFFSETSIGN[v];
+    var r = markerRadius || 0;
+
+    // the clearance the side positions of the fixed-position geometry leave
+    var clearance = (r ? r / 4 + 1 : 0) + (gap || 0);
+
+    // a corner label keeps the same clearance along the diagonal: from the
+    // edge of a circle, or from the corner of a square, which reaches the
+    // farthest of all symbols on the diagonal
+    var reach = r + clearance;
+    if (sx && sy) {
+        var isCircle = r && drawing.symbolNumber(markerSymbol) % 100 === 0;
+        reach = isCircle ? (r + clearance) / Math.SQRT2 : r + clearance / Math.SQRT2;
+    }
+    var ax = sx * reach;
+    var ay = sy * reach;
+
+    var out = {
+        anchor: h,
+        dx: ax,
+        dy: sy < 0 ? ay - bb.bottom : sy > 0 ? ay - bb.top : -(bb.top + bb.bottom) / 2,
+        leader: null
+    };
+
+    if (gap > 0 && (sx || sy)) {
+        var norm = Math.sqrt(sx * sx + sy * sy);
+        var ux = sx / norm;
+        var uy = sy / norm;
+        out.leader = [ux * (r + 1), uy * (r + 1), ax - ux * LEADER_END_GAP, ay - uy * LEADER_END_GAP];
+    }
+
+    return out;
+};
+
+/**
+ * Resolve the `textposition` of one point.
+ *
+ * @returns the position, or null when the *auto* placement found no free spot for the label
+ */
+function getTextPosition(d, trace) {
+    var pos = d.tp || trace.textposition;
+    if (pos !== 'auto') return pos;
+    // the scatter *auto* placement sets `_tpAuto` after it draws all points of the subplot
+    return d._tpAuto === undefined ? 'middle center' : d._tpAuto;
+}
+
+/**
+ * Measure a text label, from its `<text>` node or from the MathJax render that replaces it.
+ *
+ * @param s - d3 selection of one `<text>` element, inside its own `<g>`
+ * @returns the label box from `drawing.bBox`, with `top` and `bottom` relative to the text anchor
+ */
+drawing.textPointBBox = function (s) {
+    var math = d3.select(s.node().parentNode).select('g.text-math-group');
+    if (!math.size()) return drawing.bBox(s.node());
+
+    var bb = drawing.bBox(math.node());
+    // the MathJax svg is placed in the frame of the `<text>` node
+    bb.top = +math.select('svg').attr('y') - +s.attr('y');
+    bb.bottom = bb.top + bb.height;
+    return bb;
+};
+
+/**
+ * Position a text label relative to its point, and join its leader line.
+ *
+ * @param s - d3 selection of one `<text>` element, inside its own `<g>`
+ * @param d - the calcdata point
+ * @param trace - the full trace
+ * @param markerRadius - the calculated marker radius in px, or undefined without markers
+ * @param dontTouchParent - true to leave the `transform` of the parent `<g>` alone
+ */
+drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent) {
+    var group = d3.select(s.node().parentNode);
+    var isAuto = (d.tp || trace.textposition) === 'auto';
+    var textPosition = getTextPosition(d, trace);
+
+    var offset;
+    if (isAuto && textPosition) {
+        var symbol = d.mx || (trace.marker || {}).symbol;
+        var bb = drawing.textPointBBox(s);
+        offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, bb, d._tpAutoGap);
+
+        // a MathJax render is aligned to the anchor it had when it rendered
+        group.select('svg.text-math').attr('x', +s.attr('x') - (bb.width * (1 - TEXTOFFSETSIGN[offset.anchor])) / 2);
+    } else {
+        offset = textPointOffset(
+            textPosition || 'middle center',
+            drawing.textPointFontSize(d, trace),
+            markerRadius,
+            svgTextUtils.lineCount(s)
+        );
+    }
 
     // fix the overall text group position
-    s.attr('text-anchor', h);
+    s.attr('text-anchor', offset.anchor);
     if (!dontTouchParent) {
-        group.attr('transform', strTranslate(dx, dy));
+        // the whole group, so that a MathJax render is hidden with its source text
+        group.style('display', textPosition === null ? 'none' : null);
+        group.attr('transform', strTranslate(offset.dx, offset.dy));
     }
-}
 
-function extracTextFontSize(d, trace) {
+    var leader = group.selectAll('path.textleader').data(d._tpAutoLeader ? [d._tpAutoLeader] : []);
+    leader.exit().remove();
+    leader.enter().insert('path', ':first-child').classed('textleader', true).style('fill', 'none');
+    leader.each(function (seg) {
+        // the leader is set in the plot frame, and the group is translated by (dx, dy)
+        var dx = offset.dx;
+        var dy = offset.dy;
+        d3.select(this)
+            .attr('d', 'M' + (seg[0] - dx) + ',' + (seg[1] - dy) + 'L' + (seg[2] - dx) + ',' + (seg[3] - dy))
+            .style('stroke-width', 1)
+            .call(Color.stroke, s.node().style.fill);
+    });
+};
+
+drawing.textPointFontSize = function (d, trace) {
     var fontSize = d.ts || trace.textfont.size;
     return isNumeric(fontSize) && fontSize > 0 ? fontSize : 0;
-}
+};
 
 // draw text at points
 drawing.textPointStyle = function (s, trace, gd) {
@@ -1307,8 +1447,7 @@ drawing.textPointStyle = function (s, trace, gd) {
             });
         }
 
-        var pos = d.tp || trace.textposition;
-        var fontSize = extracTextFontSize(d, trace);
+        var fontSize = drawing.textPointFontSize(d, trace);
         var fontColor = selectedTextColorFn ? selectedTextColorFn(d) : d.tc || trace.textfont.color;
 
         p.call(drawing.font, {
@@ -1323,8 +1462,10 @@ drawing.textPointStyle = function (s, trace, gd) {
             color: fontColor
         })
             .text(text)
-            .call(svgTextUtils.convertToTspans, gd)
-            .call(textPointPosition, pos, fontSize, d.mrc);
+            .call(svgTextUtils.convertToTspans, gd, function () {
+                // a MathJax label is positioned once it is rendered
+                drawing.textPointPosition(p, d, trace, d.mrc);
+            });
     });
 };
 
@@ -1336,12 +1477,10 @@ drawing.selectedTextStyle = function (s, trace) {
     s.each(function (d) {
         var tx = d3.select(this);
         var tc = fns.selectedTextColorFn(d);
-        var tp = d.tp || trace.textposition;
-        var fontSize = extracTextFontSize(d, trace);
 
         Color.fill(tx, tc);
         var dontTouchParent = Registry.traceIs(trace, 'bar-like');
-        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc, dontTouchParent);
+        drawing.textPointPosition(tx, d, trace, d.mrc2 || d.mrc, dontTouchParent);
     });
 };
 

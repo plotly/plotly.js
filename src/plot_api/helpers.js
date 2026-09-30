@@ -324,6 +324,8 @@ function commonPrefix(name1, name2, show1, show2) {
 // textposition - support partial attributes (ie just 'top')
 // and incorrect use of middle / center etc.
 function cleanTextPosition(textposition) {
+    if (textposition === 'auto') return textposition;
+
     var posY = 'middle';
     var posX = 'center';
 

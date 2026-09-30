@@ -1,0 +1,176 @@
+{
+  "data": [
+    {
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "name": "Mostly women",
+      "x": [
+        0.0184, 0.06007, 0.07486, 0.08976, 0.103, 0.26177, 0.26871, 0.41749,
+        0.48319, 1.02648, 1.21504, 1.24624, 1.36008, 1.5286, 1.70498, 2.11077,
+        2.17576, 2.64545, 2.82591, 3.71193, 4.50175, 6.02744, 6.17446, 9.76152,
+        12.51926, 14.993
+      ],
+      "y": [
+        38, 148, 177, 135, 30, 49, 112, 66, 53, 12, 37, 757, 15, 21, 9, 6, 3620,
+        98, 141, 35, 118, 17, 176, 147, 43, 253
+      ],
+      "text": [
+        "Scleroderma",
+        "Lupus",
+        "Ovarian cancer",
+        "Cervical cancer",
+        "Sjögren's",
+        "Uterine cancer",
+        "Multiple sclerosis",
+        "Rheumatoid arthritis",
+        "Eating disorders",
+        "ME/CFS",
+        "Endometriosis",
+        "Breast cancer",
+        "Fibromyalgia",
+        "Uterine fibroids",
+        "PCOS",
+        "Vulvodynia",
+        "Alzheimer's",
+        "Long COVID",
+        "PTSD",
+        "TMJ disorders",
+        "Osteoporosis",
+        "Gallstones",
+        "Major depression",
+        "Osteoarthritis",
+        "Migraine",
+        "Anxiety disorders"
+      ],
+      "marker": {
+        "size": 11,
+        "color": "#d6307a",
+        "symbol": "circle"
+      },
+      "textfont": {
+        "color": "#d6307a",
+        "size": 12
+      }
+    },
+    {
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "name": "Both sexes",
+      "x": [
+        0.00999, 0.0294, 0.0335, 0.037, 0.04432, 0.05773, 0.06068, 0.1946,
+        0.27344, 0.29726, 0.43472, 0.45, 0.66307, 0.99967, 1.41777, 1.81145,
+        2.19793, 2.27642, 2.27919, 4.17511, 6.46848, 8.17586, 8.20703, 10.8788,
+        11.79027, 15.17152, 30.55351, 37.39665
+      ],
+      "y": [
+        86, 155, 288, 7, 56, 434, 124, 439, 255, 50, 361, 262, 12, 216, 662, 22,
+        72, 422, 21, 158, 73, 242, 613, 745, 1102, 810, 1172, 377
+      ],
+      "text": [
+        "Cystic fibrosis",
+        "Sickle cell disease",
+        "Pancreatic cancer",
+        "Myasthenia gravis",
+        "Stomach cancer",
+        "Brain cancer",
+        "Down syndrome",
+        "Lung cancer",
+        "Parkinson's",
+        "Crohn's disease",
+        "Colorectal cancer",
+        "Schizophrenia",
+        "Celiac disease",
+        "Epilepsy",
+        "Opioid use disorder",
+        "Interstitial cystitis",
+        "Bipolar disorder",
+        "Stroke",
+        "Psoriasis",
+        "COPD",
+        "ADHD",
+        "Asthma",
+        "Alcohol use disorder",
+        "Chronic kidney disease",
+        "Diabetes",
+        "Chronic pain",
+        "Obesity",
+        "Hypertension"
+      ],
+      "marker": {
+        "size": 11,
+        "color": "#8a96ab",
+        "symbol": "square"
+      },
+      "textfont": {
+        "color": "#8a96ab",
+        "size": 12
+      }
+    },
+    {
+      "type": "scatter",
+      "mode": "markers+text",
+      "textposition": "auto",
+      "name": "Mostly men",
+      "x": [
+        0.00178, 0.00967, 0.01147, 0.01625, 0.03426, 0.05116, 0.09161, 0.09585,
+        0.364, 0.70565, 1.08791, 2.42288, 3.90382
+      ],
+      "y": [37, 252, 40, 61, 195, 9, 82, 12, 3294, 86, 314, 339, 404],
+      "text": [
+        "Duchenne/Becker MD",
+        "ALS",
+        "Fragile X",
+        "Esophageal cancer",
+        "Liver cancer",
+        "Tourette",
+        "Spinal cord injury",
+        "Testicular cancer",
+        "HIV",
+        "Hepatitis C",
+        "Prostate cancer",
+        "Autism",
+        "Coronary heart disease"
+      ],
+      "marker": {
+        "size": 11,
+        "color": "#2f63d1",
+        "symbol": "diamond"
+      },
+      "textfont": {
+        "color": "#2f63d1",
+        "size": 12
+      }
+    }
+  ],
+  "layout": {
+    "width": 1000,
+    "height": 640,
+    "margin": {
+      "l": 70,
+      "r": 40,
+      "t": 60,
+      "b": 70
+    },
+    "xaxis": {
+      "type": "log",
+      "title": {
+        "text": "Share of US population (%)"
+      }
+    },
+    "yaxis": {
+      "type": "log",
+      "title": {
+        "text": "NIH FY2025 funding ($M)"
+      }
+    },
+    "title": {
+      "text": "NIH funding against prevalence, textposition: auto"
+    },
+    "legend": {
+      "orientation": "h",
+      "y": 1.06
+    }
+  }
+}

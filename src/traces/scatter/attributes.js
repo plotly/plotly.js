@@ -663,12 +663,38 @@ module.exports = {
             'middle right',
             'bottom left',
             'bottom center',
-            'bottom right'
+            'bottom right',
+            'auto'
         ],
         dflt: 'middle center',
         arrayOk: true,
         editType: 'calc',
-        description: ['Sets the positions of the `text` elements', 'with respects to the (x,y) coordinates.'].join(' ')
+        description: [
+            'Sets the positions of the `text` elements',
+            'with respects to the (x,y) coordinates.',
+            'With *auto*, each label takes the first position around its point',
+            'that overlaps no marker and no other label on the subplot.',
+            'When the positions next to the point are taken, or another point',
+            'sits close to the label, the label moves farther out with a leader',
+            'line back to the point. A label with no free position is hidden.',
+            'Labels are placed in the order of `textpriority`.',
+            'Auto placement considers markers and text labels only.',
+            'It does not avoid annotations, shapes, images, or the legend.'
+        ].join(' ')
+    },
+    textpriority: {
+        valType: 'number',
+        dflt: 0,
+        arrayOk: true,
+        editType: 'calc',
+        description: [
+            'Sets the placement priority of the `text` elements',
+            'with `textposition` *auto*, per point or for the whole trace.',
+            'A label with a higher priority takes its position',
+            'before the labels of lower priority on the subplot,',
+            'so it stays next to its point and is hidden last.',
+            'Labels of equal priority are placed in trace and data order.'
+        ].join(' ')
     },
     textfont: fontAttrs({
         editType: 'calc',
