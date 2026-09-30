@@ -379,15 +379,26 @@ module.exports = function style(s, gd, legend) {
 
             var markerPattern = marker.pattern;
             var pAttr = Drawing.getPatternAttr;
-            var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, '') || pAttr(markerPattern.path, 0, ''));
+            var patternIndex = 0;
+            if (legend._inHover && d0._distinct && d0.index != null) {
+                patternIndex = d0.index;
+            }
+            var patternShape =
+                markerPattern &&
+                (pAttr(markerPattern.shape, patternIndex, '') || pAttr(markerPattern.path, patternIndex, ''));
 
             if (patternShape) {
-                var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
-                var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
+                var patternBGColor = pAttr(markerPattern.bgcolor, patternIndex, null);
+                var patternFGColor = pAttr(markerPattern.fgcolor, patternIndex, null);
                 var patternFGOpacity = markerPattern.fgopacity;
-                var patternSize = dimAttr(markerPattern.size, 8, 10);
-                var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
-                var patternID = 'legend-' + trace.uid;
+                var patternSize = legend._inHover
+                    ? dimAttr(pAttr(markerPattern.size, patternIndex, 8), 8, 10)
+                    : dimAttr(markerPattern.size, 8, 10);
+                var patternSolidity = legend._inHover
+                    ? dimAttr(pAttr(markerPattern.solidity, patternIndex, 0.5), 0.5, 1)
+                    : dimAttr(markerPattern.solidity, 0.5, 1);
+                var patternID = (legend._inHover ? 'hover-' : 'legend-') + trace.uid;
+                if (legend._inHover) patternID += '-' + patternIndex;
                 p.call(
                     Drawing.pattern,
                     'legend',
