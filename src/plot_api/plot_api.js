@@ -1847,6 +1847,7 @@ function addAxRangeSequence(seq, rangesAltered) {
     seq.push(
         clearOutline,
         subroutines.doAutoRangeAndConstraints,
+        Registry.getComponentMethod('rangeslider', 'calcAutorange'),
         drawAxes,
         subroutines.drawData,
         subroutines.finalDraw

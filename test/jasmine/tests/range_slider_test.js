@@ -988,6 +988,37 @@ describe('rangesliders in general', function() {
         .then(done, done.fail);
     });
 
+    it('should reset autoranged rangeslider range after axis autorange', function(done) {
+        var initialRange;
+        var precision = 1e-2;
+
+        Plotly.newPlot(gd, [{
+            y: [2, 1, 2]
+        }], {
+            xaxis: { rangeslider: {} }
+        })
+        .then(function() {
+            initialRange = gd._fullLayout.xaxis.range.slice();
+
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray(initialRange, precision);
+
+            // zoom out
+            return Plotly.relayout(gd, 'xaxis.range', [-1, 3]);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-1, 3], precision);
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-1, 3], precision);
+
+            // reset axis
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray(initialRange, precision);
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray(initialRange, precision);
+        })
+        .then(done, done.fail);
+    });
+
     it('should not expand its range when range slider range is set', function(done) {
         Plotly.newPlot(gd, [{
             y: [2, 1, 2]
