@@ -149,9 +149,10 @@ module.exports = {
         editType: 'legend',
         description: [
             'Sets the height (in px) of the legend item fill swatch.',
-            'Increasing it reveals more of a trace *fill* or *fillpattern* in the legend,',
-            'and grows the legend item to fit.',
-        ].join(' '),
+            'A taller swatch shows more of a trace *fill* or *fillpattern*.',
+            'Only traces with a *fill* use this value.',
+            'Every legend item grows to fit, so a larger value makes every row taller.'
+        ].join(' ')
     },
     itemclick: {
         valType: 'enumerated',
