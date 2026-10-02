@@ -328,7 +328,7 @@ function _doPlot(gd, data, layout, config) {
     function marginPushersAgain() {
         if (!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
 
-        return Lib.syncOrAsync([marginPushers, subroutines.layoutStyles], gd);
+        return marginPushers();
     }
 
     function positionAndAutorange() {
