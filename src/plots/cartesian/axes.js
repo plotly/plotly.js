@@ -1220,7 +1220,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
             return minor;
         })
-        .toSorted((a, b) => a.value - b.value);
+        .slice()
+        .sort((a, b) => a.value - b.value);
 
         if (isPeriod && tickVals.length) {
             // first major tick was just added for period handling
