@@ -824,7 +824,9 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         legendObj._titleHeight = height;
     } else { // legend item
         legendItem.lineHeight = lineHeight;
-        legendItem.height = Math.max(height, 16, legendObj.itemheight + 10) + 3;
+        // A taller fill swatch keeps the space that the default row gives the default swatch
+        const fillItemHeight = constants.itemMinHeight + legendObj.itemheight - constants.dfltFillHeight;
+        legendItem.height = Math.max(height, constants.itemMinHeight, fillItemHeight) + constants.itemHeightPad;
         legendItem.width = width;
     }
 }

@@ -2,6 +2,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
+const { dfltFillHeight } = require('./constants');
 
 
 module.exports = {
@@ -143,8 +144,8 @@ module.exports = {
     },
     itemheight: {
         valType: 'number',
-        min: 6,
-        dflt: 6,
+        min: dfltFillHeight,
+        dflt: dfltFillHeight,
         editType: 'legend',
         description: [
             'Sets the height (in px) of the legend item fill swatch.',
