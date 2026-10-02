@@ -3605,6 +3605,7 @@ describe('legend title click', function() {
         }).then(done, done.fail);
     });
 });
+
 describe('legend itemheight:', function() {
     'use strict';
 
@@ -3655,7 +3656,7 @@ describe('legend itemheight:', function() {
             .then(done, done.fail);
     });
 
-    it('grows the swatch downwards, leaving the line on top of the fill', function(done) {
+    it('keeps the line on the top edge of a taller fill', function(done) {
         var dfltLine;
 
         Plotly.newPlot(gd, filled, { showlegend: true })
@@ -3703,7 +3704,7 @@ describe('legend itemheight:', function() {
                 expect(grown.length).toBe(dflt.length);
                 grown.forEach(function(h, i) {
                     expect(h).toBeGreaterThan(dflt[i]);
-                    // Math.max(textHeight, 16, itemheight + 10) + 3
+                    // itemMinHeight + itemheight - dfltFillHeight + itemHeightPad = 16 + 40 - 6 + 3
                     expect(h).toBe(53);
                 });
             })
@@ -3724,14 +3725,57 @@ describe('legend itemheight:', function() {
             .then(done, done.fail);
     });
 
-    it('applies to unified hover labels without error', function(done) {
+    it('keeps the default space above and below a taller symbol', (done) => {
+        // Space between the row edges and the symbol (fill, line, and marker) of each legend item
+        const symbolGaps = () => [...gd.querySelectorAll('g.traces')].map((item) => {
+            const row = item.querySelector('rect.legendtoggle').getBoundingClientRect();
+            const parts = [...item.querySelectorAll('g.legendfill path, g.legendlines path, g.legendpoints path')]
+                .map((el) => el.getBoundingClientRect());
+            return {
+                above: Math.min(...parts.map((r) => r.top)) - row.top,
+                below: row.bottom - Math.max(...parts.map((r) => r.bottom))
+            };
+        });
+        let dfltGaps;
+
+        Plotly.newPlot(gd, filled, { showlegend: true })
+            .then(() => {
+                dfltGaps = symbolGaps();
+                return Plotly.relayout(gd, 'legend.itemheight', 40);
+            })
+            .then(() => {
+                const gaps = symbolGaps();
+                expect(gaps.length).toBe(dfltGaps.length);
+                gaps.forEach((gap, i) => {
+                    expect(gap.above).toBeCloseTo(dfltGaps[i].above, 1);
+                    expect(gap.below).toBeCloseTo(dfltGaps[i].below, 1);
+                });
+            })
+            .then(done, done.fail);
+    });
+
+    it('keeps the default swatch in unified hover labels', (done) => {
         Plotly.newPlot(gd, filled, {
             showlegend: true,
             hovermode: 'x unified',
             legend: { itemheight: 18 }
         })
-            .then(function() {
-                expect(gd._fullLayout.legend.itemheight).toBe(18);
+            .then(() => {
+                Plotly.Fx.hover(gd, { xval: 1 });
+                Lib.clearThrottle();
+
+                // The hover legend does not inherit layout.legend, the same as for itemwidth
+                const hoverFills = [...gd.querySelectorAll('g.hoverlayer g.legendfill path')];
+                expect(hoverFills.length).toBe(2);
+                hoverFills.forEach((fillPath) => {
+                    expect(fillPath.getAttribute('d')).toBe('M5,0h30v6h-30z');
+                });
+
+                const legendFills = [...gd.querySelectorAll('g.infolayer g.legendfill path')];
+                expect(legendFills.length).toBe(2);
+                legendFills.forEach((fillPath) => {
+                    expect(fillPath.getAttribute('d')).toBe('M5,0h30v18h-30z');
+                });
             })
             .then(done, done.fail);
     });
