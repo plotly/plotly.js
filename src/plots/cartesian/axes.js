@@ -1247,6 +1247,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         }
                     }
                 });
+                 // Skip the major tick label since the label moved to a minor tick
+                majorTick.skipLabel = true;
             }
         });
         allTicklabelVals.forEach((t) => t.skipLabel = false);
