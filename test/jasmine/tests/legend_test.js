@@ -3606,12 +3606,12 @@ describe('legend title click', function() {
     });
 });
 
-describe('legend itemheight:', function() {
+describe('legend itemheight:', function () {
     'use strict';
 
     var gd;
 
-    beforeEach(function() {
+    beforeEach(function () {
         gd = createGraphDiv();
     });
 
@@ -3628,9 +3628,11 @@ describe('legend itemheight:', function() {
     // The toggle rect is sized to the computed row height, see setRect in draw.js
     function rowHeights() {
         var heights = [];
-        d3Select(gd).selectAll('rect.legendtoggle').each(function() {
-            heights.push(+this.getAttribute('height'));
-        });
+        d3Select(gd)
+            .selectAll('rect.legendtoggle')
+            .each(function () {
+                heights.push(+this.getAttribute('height'));
+            });
         return heights;
     }
 
@@ -3639,32 +3641,32 @@ describe('legend itemheight:', function() {
         { x: [1, 2], y: [2, 3], fill: 'tozeroy', name: 'b' }
     ];
 
-    it('reproduces the historical 6px swatch at the default', function(done) {
+    it('reproduces the historical 6px swatch at the default', function (done) {
         Plotly.newPlot(gd, filled, { showlegend: true })
-            .then(function() {
+            .then(function () {
                 expect(gd._fullLayout.legend.itemheight).toBe(6);
                 expect(fillPathD()).toBe('M5,0h30v6h-30z');
             })
             .then(done, done.fail);
     });
 
-    it('grows the fill swatch to the requested height', function(done) {
+    it('grows the fill swatch to the requested height', function (done) {
         Plotly.newPlot(gd, filled, { showlegend: true, legend: { itemheight: 24 } })
-            .then(function() {
+            .then(function () {
                 expect(fillPathD()).toBe('M5,0h30v24h-30z');
             })
             .then(done, done.fail);
     });
 
-    it('keeps the line on the top edge of a taller fill', function(done) {
+    it('keeps the line on the top edge of a taller fill', function (done) {
         var dfltLine;
 
         Plotly.newPlot(gd, filled, { showlegend: true })
-            .then(function() {
+            .then(function () {
                 dfltLine = linePathD();
                 return Plotly.relayout(gd, 'legend.itemheight', 30);
             })
-            .then(function() {
+            .then(function () {
                 // the line marks the top edge of the fill, exactly as in the plot itself
                 expect(linePathD()).toBe(dfltLine);
                 expect(fillPathD()).toBe('M5,0h30v30h-30z');
@@ -3672,7 +3674,7 @@ describe('legend itemheight:', function() {
             .then(done, done.fail);
     });
 
-    it('does not move the swatch of a trace without fill', function(done) {
+    it('does not move the swatch of a trace without fill', function (done) {
         var unfilled = [
             { x: [1, 2], y: [1, 2], name: 'a' },
             { x: [1, 2], y: [2, 3], name: 'b' }
@@ -3680,29 +3682,29 @@ describe('legend itemheight:', function() {
         var dfltLine;
 
         Plotly.newPlot(gd, unfilled, { showlegend: true })
-            .then(function() {
+            .then(function () {
                 dfltLine = linePathD();
                 return Plotly.relayout(gd, 'legend.itemheight', 40);
             })
-            .then(function() {
+            .then(function () {
                 expect(linePathD()).toBe(dfltLine);
             })
             .then(done, done.fail);
     });
 
-    it('grows each legend row so taller swatches do not overlap', function(done) {
+    it('grows each legend row so taller swatches do not overlap', function (done) {
         var dflt;
 
         Plotly.newPlot(gd, filled, { showlegend: true })
-            .then(function() {
+            .then(function () {
                 dflt = rowHeights();
                 expect(dflt.length).toBe(2);
                 return Plotly.relayout(gd, 'legend.itemheight', 40);
             })
-            .then(function() {
+            .then(function () {
                 var grown = rowHeights();
                 expect(grown.length).toBe(dflt.length);
-                grown.forEach(function(h, i) {
+                grown.forEach(function (h, i) {
                     expect(h).toBeGreaterThan(dflt[i]);
                     // itemMinHeight + itemheight - dfltFillHeight + itemHeightPad = 16 + 40 - 6 + 3
                     expect(h).toBe(53);
@@ -3711,15 +3713,15 @@ describe('legend itemheight:', function() {
             .then(done, done.fail);
     });
 
-    it('leaves row heights untouched at the default', function(done) {
+    it('leaves row heights untouched at the default', function (done) {
         var dflt;
 
         Plotly.newPlot(gd, filled, { showlegend: true })
-            .then(function() {
+            .then(function () {
                 dflt = rowHeights();
                 return Plotly.relayout(gd, 'legend.itemheight', 6);
             })
-            .then(function() {
+            .then(function () {
                 expect(rowHeights()).toEqual(dflt);
             })
             .then(done, done.fail);
@@ -3727,15 +3729,17 @@ describe('legend itemheight:', function() {
 
     it('keeps the default space above and below a taller symbol', (done) => {
         // Space between the row edges and the symbol (fill, line, and marker) of each legend item
-        const symbolGaps = () => [...gd.querySelectorAll('g.traces')].map((item) => {
-            const row = item.querySelector('rect.legendtoggle').getBoundingClientRect();
-            const parts = [...item.querySelectorAll('g.legendfill path, g.legendlines path, g.legendpoints path')]
-                .map((el) => el.getBoundingClientRect());
-            return {
-                above: Math.min(...parts.map((r) => r.top)) - row.top,
-                below: row.bottom - Math.max(...parts.map((r) => r.bottom))
-            };
-        });
+        const symbolGaps = () =>
+            [...gd.querySelectorAll('g.traces')].map((item) => {
+                const row = item.querySelector('rect.legendtoggle').getBoundingClientRect();
+                const parts = [
+                    ...item.querySelectorAll('g.legendfill path, g.legendlines path, g.legendpoints path')
+                ].map((el) => el.getBoundingClientRect());
+                return {
+                    above: Math.min(...parts.map((r) => r.top)) - row.top,
+                    below: row.bottom - Math.max(...parts.map((r) => r.bottom))
+                };
+            });
         let dfltGaps;
 
         Plotly.newPlot(gd, filled, { showlegend: true })
