@@ -142,6 +142,13 @@ module.exports = function style(s, gd, legend) {
         fill.exit().remove();
         fill.attr('d', pathStart + 'h' + itemWidth + 'v' + itemHeight + 'h-' + itemWidth + 'z').call(fillStyle);
 
+        // Grow a tall fill swatch up and down by the same amount, so the space above and below the symbol
+        // stays as in the default row. The line and the markers move with the fill to stay on its top edge.
+        const fillShiftY = showFill || showGradientFill ? (constants.dfltFillHeight - itemHeight) / 2 : 0;
+        this3
+            .selectAll('g.legendfill, g.legendlines, g.legendsymbols')
+            .attr('transform', fillShiftY ? strTranslate(0, fillShiftY) : null);
+
         if (showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);
             tMod = Lib.minExtend(trace, { line: { width: lw } });
