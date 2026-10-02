@@ -887,19 +887,18 @@ function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
  * @param {array} tickVals: the list of ticks for which to position the period labels
  * @param {object} ax: the axis of the ticks
  * @param {number} definedDelta: the defined distance between two ticks
- * @param {array (optional)} periodEndTicks: the optional list of neighboring ticks
- *      for each tick in tickVals. If not provided, the function will use the next
- *      tick in tickVals as the neighbor. Useful if labeled periods have unlabeled 
- *      periods between each other which can happen when using ticklabelindex.
  */
-function positionPeriodTicks(tickVals, ax, definedDelta, periodEndTicks) {
+function positionPeriodTicks(tickVals, ax, definedDelta) {
     for(var i = 0; i < tickVals.length; i++) {
         var v = tickVals[i].value;
         var A, B;
-        if (periodEndTicks != null) {
+        if (tickVals[i].periodEndTick != null) {
+            // Will be set when ticklabelindex is used because labeled periods can
+            // have unlabeled periods between each other
             A = tickVals[i].value;
-            B = periodEndTicks[i].value;
+            B = tickVals[i].periodEndTick;
         } else {
+            // Use the next tick in tickVals as the period end tick
             var a = i;
             var b = i + 1;
             if(i < tickVals.length - 1) {
@@ -1010,9 +1009,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // all ticks for which labels are drawn which is not necessarily the major ticks when
     // `ticklabelindex` is set.
     var allTicklabelVals = [];
-    // for period label positioning when using `ticklabelindex`:
-    // for each tick in `allTicklabelVals` holds the neighboring period end tick
-    var periodEndTicks;
 
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
     // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
@@ -1208,7 +1204,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
     } else {
         // For each major tick, find the minor tick `ticklabelIndex` steps away.
         // This minor tick will be labeled instead of the major tick.
-        if (isPeriod) periodEndTicks = []; // for each minor tick at the start of a labeled period this will hold the neighboring period end tick.
 
         const labelTickValsAscending = minorTickVals
         .map((minor) => {
@@ -1235,17 +1230,22 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         const absLabelIndex = Math.abs(labelIndex);
                         const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
                         if (absLabelIndex <= smallerTicks.length - 1) {
-                            allTicklabelVals.push(smallerTicks[labeledTickIndex]);
-                            if (isPeriod) periodEndTicks.push(smallerTicks[labeledTickIndex + 1]);
+                            var tickToLabel = smallerTicks[labeledTickIndex];
+                            allTicklabelVals.push(tickToLabel);
+                            if (isPeriod) {
+                                tickToLabel.periodEndTick = smallerTicks[labeledTickIndex + 1];
+                            }
                         }
                     } else { // labelIndex >= 0
                         const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
                         if (labelIndex < largerTicks.length - 1) {
-                            allTicklabelVals.push(largerTicks[labelIndex]);
-                            if (isPeriod) periodEndTicks.push(largerTicks[labelIndex + 1]);
+                            var tickToLabel = largerTicks[labelIndex]
+                            allTicklabelVals.push(tickToLabel);
+                            if (isPeriod) {
+                                tickToLabel.periodEndTick = largerTicks[labelIndex + 1];
+                            }
                         }
                     }
-                    majorTick.skipLabel = majorTick.skipLabel !== false;
                 });
             }
         });
@@ -1270,12 +1270,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     if(isPeriod) {
-        if (ax._useTicklabelIndex) {
-            var periodDefinedDelta = ax._useTicklabelIndex ? ax.minor._definedDelta : ax._definedDelta;
-            positionPeriodTicks(allTicklabelVals, ax, ax.minor._definedDelta, periodEndTicks);
-        } else {
-            positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
-        }
+        positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
     }
 
     var i;
