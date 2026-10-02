@@ -896,7 +896,7 @@ function positionPeriodTicks(tickVals, ax, definedDelta) {
             // Will be set when ticklabelindex is used because labeled periods can
             // have unlabeled periods between each other
             A = tickVals[i].value;
-            B = tickVals[i].periodEndTick;
+            B = tickVals[i].periodEndTick.value;
         } else {
             // Use the next tick in tickVals as the period end tick
             var a = i;
