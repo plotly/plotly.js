@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v4.1.1
+* plotly.js (cartesian) v4.1.2
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -37,6 +37,18 @@ var Plotly = (() => {
     return a;
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+  var __objRest = (source, exclude) => {
+    var target = {};
+    for (var prop in source)
+      if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+        target[prop] = source[prop];
+    if (source != null && __getOwnPropSymbols)
+      for (var prop of __getOwnPropSymbols(source)) {
+        if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+          target[prop] = source[prop];
+      }
+    return target;
+  };
   var __esm = (fn, res, err) => function __init() {
     if (err) throw err[0];
     try {
@@ -53,8 +65,8 @@ var Plotly = (() => {
     }
   };
   var __export = (target, all) => {
-    for (var name in all)
-      __defProp(target, name, { get: all[name], enumerable: true });
+    for (var name4 in all)
+      __defProp(target, name4, { get: all[name4], enumerable: true });
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
@@ -73,25 +85,45 @@ var Plotly = (() => {
     mod2
   ));
   var __toCommonJS = (mod2) => __copyProps(__defProp({}, "__esModule", { value: true }), mod2);
+  var __async = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = (value) => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var rejected = (value) => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
+  };
 
   // src/version.js
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "4.1.1";
+      exports.version = "4.1.2";
     }
   });
 
   // node_modules/native-promise-only/lib/npo.src.js
   var require_npo_src = __commonJS({
     "node_modules/native-promise-only/lib/npo.src.js"(exports, module) {
-      (function UMD(name, context, definition) {
-        context[name] = context[name] || definition();
+      (function UMD(name4, context, definition) {
+        context[name4] = context[name4] || definition();
         if (typeof module != "undefined" && module.exports) {
-          module.exports = context[name];
+          module.exports = context[name4];
         } else if (typeof define == "function" && false) {
           define(function $AMD$() {
-            return context[name];
+            return context[name4];
           });
         }
       })("Promise", typeof window != "undefined" ? window : exports, function DEF() {
@@ -101,16 +133,16 @@ var Plotly = (() => {
         } : setTimeout;
         try {
           Object.defineProperty({}, "x", {});
-          builtInProp = function builtInProp2(obj, name, val, config) {
-            return Object.defineProperty(obj, name, {
+          builtInProp = function builtInProp2(obj, name4, val, config) {
+            return Object.defineProperty(obj, name4, {
               value: val,
               writable: true,
               configurable: config !== false
             });
           };
         } catch (err) {
-          builtInProp = function builtInProp2(obj, name, val) {
-            obj[name] = val;
+          builtInProp = function builtInProp2(obj, name4, val) {
+            obj[name4] = val;
             return obj;
           };
         }
@@ -419,14 +451,14 @@ var Plotly = (() => {
             d3_document.createElement("DIV").style.setProperty("opacity", 0, "");
           } catch (error) {
             var d3_element_prototype = this.Element.prototype, d3_element_setAttribute = d3_element_prototype.setAttribute, d3_element_setAttributeNS = d3_element_prototype.setAttributeNS, d3_style_prototype = this.CSSStyleDeclaration.prototype, d3_style_setProperty = d3_style_prototype.setProperty;
-            d3_element_prototype.setAttribute = function(name, value) {
-              d3_element_setAttribute.call(this, name, value + "");
+            d3_element_prototype.setAttribute = function(name4, value) {
+              d3_element_setAttribute.call(this, name4, value + "");
             };
             d3_element_prototype.setAttributeNS = function(space, local, value) {
               d3_element_setAttributeNS.call(this, space, local, value + "");
             };
-            d3_style_prototype.setProperty = function(name, value, priority) {
-              d3_style_setProperty.call(this, name, value + "", priority);
+            d3_style_prototype.setProperty = function(name4, value, priority) {
+              d3_style_setProperty.call(this, name4, value + "", priority);
             };
           }
         }
@@ -861,11 +893,11 @@ var Plotly = (() => {
             return value === source ? target : value;
           };
         }
-        function d3_vendorSymbol(object, name) {
-          if (name in object) return name;
-          name = name.charAt(0).toUpperCase() + name.slice(1);
+        function d3_vendorSymbol(object, name4) {
+          if (name4 in object) return name4;
+          name4 = name4.charAt(0).toUpperCase() + name4.slice(1);
           for (var i = 0, n = d3_vendorPrefixes.length; i < n; ++i) {
-            var prefixName = d3_vendorPrefixes[i] + name;
+            var prefixName = d3_vendorPrefixes[i] + name4;
             if (prefixName in object) return prefixName;
           }
         }
@@ -880,15 +912,15 @@ var Plotly = (() => {
         function d3_dispatch() {
         }
         d3_dispatch.prototype.on = function(type, listener) {
-          var i = type.indexOf("."), name = "";
+          var i = type.indexOf("."), name4 = "";
           if (i >= 0) {
-            name = type.slice(i + 1);
+            name4 = type.slice(i + 1);
             type = type.slice(0, i);
           }
-          if (type) return arguments.length < 2 ? this[type].on(name) : this[type].on(name, listener);
+          if (type) return arguments.length < 2 ? this[type].on(name4) : this[type].on(name4, listener);
           if (arguments.length === 2) {
             if (listener == null) for (type in this) {
-              if (this.hasOwnProperty(type)) this[type].on(name, null);
+              if (this.hasOwnProperty(type)) this[type].on(name4, null);
             }
             return this;
           }
@@ -900,15 +932,15 @@ var Plotly = (() => {
             while (++i < n) if (l = z[i].on) l.apply(this, arguments);
             return dispatch;
           }
-          event.on = function(name, listener) {
-            var l = listenerByName.get(name), i;
+          event.on = function(name4, listener) {
+            var l = listenerByName.get(name4), i;
             if (arguments.length < 2) return l && l.on;
             if (l) {
               l.on = null;
               listeners = listeners.slice(0, i = listeners.indexOf(l)).concat(listeners.slice(i + 1));
-              listenerByName.remove(name);
+              listenerByName.remove(name4);
             }
-            if (listener) listeners.push(listenerByName.set(name, {
+            if (listener) listeners.push(listenerByName.set(name4, {
               on: listener
             }));
             return dispatch;
@@ -1026,154 +1058,154 @@ var Plotly = (() => {
         };
         d3.ns = {
           prefix: d3_nsPrefix,
-          qualify: function(name) {
-            var i = name.indexOf(":"), prefix = name;
-            if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
+          qualify: function(name4) {
+            var i = name4.indexOf(":"), prefix = name4;
+            if (i >= 0 && (prefix = name4.slice(0, i)) !== "xmlns") name4 = name4.slice(i + 1);
             return d3_nsPrefix.hasOwnProperty(prefix) ? {
               space: d3_nsPrefix[prefix],
-              local: name
-            } : name;
+              local: name4
+            } : name4;
           }
         };
-        d3_selectionPrototype.attr = function(name, value) {
+        d3_selectionPrototype.attr = function(name4, value) {
           if (arguments.length < 2) {
-            if (typeof name === "string") {
+            if (typeof name4 === "string") {
               var node = this.node();
-              name = d3.ns.qualify(name);
-              return name.local ? node.getAttributeNS(name.space, name.local) : node.getAttribute(name);
+              name4 = d3.ns.qualify(name4);
+              return name4.local ? node.getAttributeNS(name4.space, name4.local) : node.getAttribute(name4);
             }
-            for (value in name) this.each(d3_selection_attr(value, name[value]));
+            for (value in name4) this.each(d3_selection_attr(value, name4[value]));
             return this;
           }
-          return this.each(d3_selection_attr(name, value));
+          return this.each(d3_selection_attr(name4, value));
         };
-        function d3_selection_attr(name, value) {
-          name = d3.ns.qualify(name);
+        function d3_selection_attr(name4, value) {
+          name4 = d3.ns.qualify(name4);
           function attrNull() {
-            this.removeAttribute(name);
+            this.removeAttribute(name4);
           }
           function attrNullNS() {
-            this.removeAttributeNS(name.space, name.local);
+            this.removeAttributeNS(name4.space, name4.local);
           }
           function attrConstant() {
-            this.setAttribute(name, value);
+            this.setAttribute(name4, value);
           }
           function attrConstantNS() {
-            this.setAttributeNS(name.space, name.local, value);
+            this.setAttributeNS(name4.space, name4.local, value);
           }
           function attrFunction() {
             var x = value.apply(this, arguments);
-            if (x == null) this.removeAttribute(name);
-            else this.setAttribute(name, x);
+            if (x == null) this.removeAttribute(name4);
+            else this.setAttribute(name4, x);
           }
           function attrFunctionNS() {
             var x = value.apply(this, arguments);
-            if (x == null) this.removeAttributeNS(name.space, name.local);
-            else this.setAttributeNS(name.space, name.local, x);
+            if (x == null) this.removeAttributeNS(name4.space, name4.local);
+            else this.setAttributeNS(name4.space, name4.local, x);
           }
-          return value == null ? name.local ? attrNullNS : attrNull : typeof value === "function" ? name.local ? attrFunctionNS : attrFunction : name.local ? attrConstantNS : attrConstant;
+          return value == null ? name4.local ? attrNullNS : attrNull : typeof value === "function" ? name4.local ? attrFunctionNS : attrFunction : name4.local ? attrConstantNS : attrConstant;
         }
         function d3_collapse(s) {
           return s.trim().replace(/\s+/g, " ");
         }
-        d3_selectionPrototype.classed = function(name, value) {
+        d3_selectionPrototype.classed = function(name4, value) {
           if (arguments.length < 2) {
-            if (typeof name === "string") {
-              var node = this.node(), n = (name = d3_selection_classes(name)).length, i = -1;
+            if (typeof name4 === "string") {
+              var node = this.node(), n = (name4 = d3_selection_classes(name4)).length, i = -1;
               if (value = node.classList) {
-                while (++i < n) if (!value.contains(name[i])) return false;
+                while (++i < n) if (!value.contains(name4[i])) return false;
               } else {
                 value = node.getAttribute("class");
-                while (++i < n) if (!d3_selection_classedRe(name[i]).test(value)) return false;
+                while (++i < n) if (!d3_selection_classedRe(name4[i]).test(value)) return false;
               }
               return true;
             }
-            for (value in name) this.each(d3_selection_classed(value, name[value]));
+            for (value in name4) this.each(d3_selection_classed(value, name4[value]));
             return this;
           }
-          return this.each(d3_selection_classed(name, value));
+          return this.each(d3_selection_classed(name4, value));
         };
-        function d3_selection_classedRe(name) {
-          return new RegExp("(?:^|\\s+)" + d3.requote(name) + "(?:\\s+|$)", "g");
+        function d3_selection_classedRe(name4) {
+          return new RegExp("(?:^|\\s+)" + d3.requote(name4) + "(?:\\s+|$)", "g");
         }
-        function d3_selection_classes(name) {
-          return (name + "").trim().split(/^|\s+/);
+        function d3_selection_classes(name4) {
+          return (name4 + "").trim().split(/^|\s+/);
         }
-        function d3_selection_classed(name, value) {
-          name = d3_selection_classes(name).map(d3_selection_classedName);
-          var n = name.length;
+        function d3_selection_classed(name4, value) {
+          name4 = d3_selection_classes(name4).map(d3_selection_classedName);
+          var n = name4.length;
           function classedConstant() {
             var i = -1;
-            while (++i < n) name[i](this, value);
+            while (++i < n) name4[i](this, value);
           }
           function classedFunction() {
             var i = -1, x = value.apply(this, arguments);
-            while (++i < n) name[i](this, x);
+            while (++i < n) name4[i](this, x);
           }
           return typeof value === "function" ? classedFunction : classedConstant;
         }
-        function d3_selection_classedName(name) {
-          var re = d3_selection_classedRe(name);
+        function d3_selection_classedName(name4) {
+          var re = d3_selection_classedRe(name4);
           return function(node, value) {
-            if (c = node.classList) return value ? c.add(name) : c.remove(name);
+            if (c = node.classList) return value ? c.add(name4) : c.remove(name4);
             var c = node.getAttribute("class") || "";
             if (value) {
               re.lastIndex = 0;
-              if (!re.test(c)) node.setAttribute("class", d3_collapse(c + " " + name));
+              if (!re.test(c)) node.setAttribute("class", d3_collapse(c + " " + name4));
             } else {
               node.setAttribute("class", d3_collapse(c.replace(re, " ")));
             }
           };
         }
-        d3_selectionPrototype.style = function(name, value, priority) {
+        d3_selectionPrototype.style = function(name4, value, priority) {
           var n = arguments.length;
           if (n < 3) {
-            if (typeof name !== "string") {
+            if (typeof name4 !== "string") {
               if (n < 2) value = "";
-              for (priority in name) this.each(d3_selection_style(priority, name[priority], value));
+              for (priority in name4) this.each(d3_selection_style(priority, name4[priority], value));
               return this;
             }
             if (n < 2) {
               var node = this.node();
-              return d3_window(node).getComputedStyle(node, null).getPropertyValue(name);
+              return d3_window(node).getComputedStyle(node, null).getPropertyValue(name4);
             }
             priority = "";
           }
-          return this.each(d3_selection_style(name, value, priority));
+          return this.each(d3_selection_style(name4, value, priority));
         };
-        function d3_selection_style(name, value, priority) {
+        function d3_selection_style(name4, value, priority) {
           function styleNull() {
-            this.style.removeProperty(name);
+            this.style.removeProperty(name4);
           }
           function styleConstant() {
-            this.style.setProperty(name, value, priority);
+            this.style.setProperty(name4, value, priority);
           }
           function styleFunction() {
             var x = value.apply(this, arguments);
-            if (x == null) this.style.removeProperty(name);
-            else this.style.setProperty(name, x, priority);
+            if (x == null) this.style.removeProperty(name4);
+            else this.style.setProperty(name4, x, priority);
           }
           return value == null ? styleNull : typeof value === "function" ? styleFunction : styleConstant;
         }
-        d3_selectionPrototype.property = function(name, value) {
+        d3_selectionPrototype.property = function(name4, value) {
           if (arguments.length < 2) {
-            if (typeof name === "string") return this.node()[name];
-            for (value in name) this.each(d3_selection_property(value, name[value]));
+            if (typeof name4 === "string") return this.node()[name4];
+            for (value in name4) this.each(d3_selection_property(value, name4[value]));
             return this;
           }
-          return this.each(d3_selection_property(name, value));
+          return this.each(d3_selection_property(name4, value));
         };
-        function d3_selection_property(name, value) {
+        function d3_selection_property(name4, value) {
           function propertyNull() {
-            delete this[name];
+            delete this[name4];
           }
           function propertyConstant() {
-            this[name] = value;
+            this[name4] = value;
           }
           function propertyFunction() {
             var x = value.apply(this, arguments);
-            if (x == null) delete this[name];
-            else this[name] = x;
+            if (x == null) delete this[name4];
+            else this[name4] = x;
           }
           return value == null ? propertyNull : typeof value === "function" ? propertyFunction : propertyConstant;
         }
@@ -1197,27 +1229,27 @@ var Plotly = (() => {
             this.innerHTML = value;
           }) : this.node().innerHTML;
         };
-        d3_selectionPrototype.append = function(name) {
-          name = d3_selection_creator(name);
+        d3_selectionPrototype.append = function(name4) {
+          name4 = d3_selection_creator(name4);
           return this.select(function() {
-            return this.appendChild(name.apply(this, arguments));
+            return this.appendChild(name4.apply(this, arguments));
           });
         };
-        function d3_selection_creator(name) {
+        function d3_selection_creator(name4) {
           function create() {
             var document2 = this.ownerDocument, namespace = this.namespaceURI;
-            return namespace === d3_nsXhtml && document2.documentElement.namespaceURI === d3_nsXhtml ? document2.createElement(name) : document2.createElementNS(namespace, name);
+            return namespace === d3_nsXhtml && document2.documentElement.namespaceURI === d3_nsXhtml ? document2.createElement(name4) : document2.createElementNS(namespace, name4);
           }
           function createNS() {
-            return this.ownerDocument.createElementNS(name.space, name.local);
+            return this.ownerDocument.createElementNS(name4.space, name4.local);
           }
-          return typeof name === "function" ? name : (name = d3.ns.qualify(name)).local ? createNS : create;
+          return typeof name4 === "function" ? name4 : (name4 = d3.ns.qualify(name4)).local ? createNS : create;
         }
-        d3_selectionPrototype.insert = function(name, before) {
-          name = d3_selection_creator(name);
+        d3_selectionPrototype.insert = function(name4, before) {
+          name4 = d3_selection_creator(name4);
           before = d3_selection_selector(before);
           return this.select(function() {
-            return this.insertBefore(name.apply(this, arguments), before.apply(this, arguments) || null);
+            return this.insertBefore(name4.apply(this, arguments), before.apply(this, arguments) || null);
           });
         };
         d3_selectionPrototype.remove = function() {
@@ -1423,9 +1455,9 @@ var Plotly = (() => {
           }
           return d3_selection(subgroups);
         };
-        d3_selection_enterPrototype.insert = function(name, before) {
+        d3_selection_enterPrototype.insert = function(name4, before) {
           if (arguments.length < 2) before = d3_selection_enterInsertBefore(this);
-          return d3_selectionPrototype.insert.call(this, name, before);
+          return d3_selectionPrototype.insert.call(this, name4, before);
         };
         function d3_selection_enterInsertBefore(enter) {
           var i0, j0;
@@ -1473,30 +1505,30 @@ var Plotly = (() => {
           return this.each(d3_selection_on(type, listener, capture));
         };
         function d3_selection_on(type, listener, capture) {
-          var name = "__on" + type, i = type.indexOf("."), wrap = d3_selection_onListener;
+          var name4 = "__on" + type, i = type.indexOf("."), wrap = d3_selection_onListener;
           if (i > 0) type = type.slice(0, i);
           var filter = d3_selection_onFilters.get(type);
           if (filter) type = filter, wrap = d3_selection_onFilter;
           function onRemove() {
-            var l = this[name];
+            var l = this[name4];
             if (l) {
               this.removeEventListener(type, l, l.$);
-              delete this[name];
+              delete this[name4];
             }
           }
           function onAdd() {
             var l = wrap(listener, d3_array(arguments));
             onRemove.call(this);
-            this.addEventListener(type, this[name] = l, l.$ = capture);
+            this.addEventListener(type, this[name4] = l, l.$ = capture);
             l._ = listener;
           }
           function removeAll() {
             var re = new RegExp("^__on([^.]+)" + d3.requote(type) + "$"), match;
-            for (var name2 in this) {
-              if (match = name2.match(re)) {
-                var l = this[name2];
+            for (var name5 in this) {
+              if (match = name5.match(re)) {
+                var l = this[name5];
                 this.removeEventListener(match[1], l, l.$);
-                delete this[name2];
+                delete this[name5];
               }
             }
           }
@@ -1534,7 +1566,7 @@ var Plotly = (() => {
         }
         var d3_event_dragSelect, d3_event_dragId = 0;
         function d3_event_dragSuppress(node) {
-          var name = ".dragsuppress-" + ++d3_event_dragId, click = "click" + name, w = d3.select(d3_window(node)).on("touchmove" + name, d3_eventPreventDefault).on("dragstart" + name, d3_eventPreventDefault).on("selectstart" + name, d3_eventPreventDefault);
+          var name4 = ".dragsuppress-" + ++d3_event_dragId, click = "click" + name4, w = d3.select(d3_window(node)).on("touchmove" + name4, d3_eventPreventDefault).on("dragstart" + name4, d3_eventPreventDefault).on("selectstart" + name4, d3_eventPreventDefault);
           if (d3_event_dragSelect == null) {
             d3_event_dragSelect = "onselectstart" in node ? false : d3_vendorSymbol(node.style, "userSelect");
           }
@@ -1543,7 +1575,7 @@ var Plotly = (() => {
             style[d3_event_dragSelect] = "none";
           }
           return function(suppressClick) {
-            w.on(name, null);
+            w.on(name4, null);
             if (d3_event_dragSelect) style[d3_event_dragSelect] = select;
             if (suppressClick) {
               var off = function() {
@@ -1563,13 +1595,13 @@ var Plotly = (() => {
         var d3_mouse_bug44083 = this.navigator && /WebKit/.test(this.navigator.userAgent) ? -1 : 0;
         function d3_mousePoint(container, e) {
           if (e.changedTouches) e = e.changedTouches[0];
-          var svg = container.ownerSVGElement || container;
-          if (svg.createSVGPoint) {
-            var point = svg.createSVGPoint();
+          var svg2 = container.ownerSVGElement || container;
+          if (svg2.createSVGPoint) {
+            var point = svg2.createSVGPoint();
             if (d3_mouse_bug44083 < 0) {
               var window2 = d3_window(container);
               if (window2.scrollX || window2.scrollY) {
-                svg = d3.select("body").append("svg").style({
+                svg2 = d3.select("body").append("svg").style({
                   position: "absolute",
                   top: 0,
                   left: 0,
@@ -1577,9 +1609,9 @@ var Plotly = (() => {
                   padding: 0,
                   border: "none"
                 }, "important");
-                var ctm = svg[0][0].getScreenCTM();
+                var ctm = svg2[0][0].getScreenCTM();
                 d3_mouse_bug44083 = !(ctm.f || ctm.e);
-                svg.remove();
+                svg2.remove();
               }
             }
             if (d3_mouse_bug44083) point.x = e.pageX, point.y = e.pageY;
@@ -2360,11 +2392,11 @@ var Plotly = (() => {
               d3.event = o;
             }
           };
-          xhr.header = function(name, value) {
-            name = (name + "").toLowerCase();
-            if (arguments.length < 2) return headers[name];
-            if (value == null) delete headers[name];
-            else headers[name] = value + "";
+          xhr.header = function(name4, value) {
+            name4 = (name4 + "").toLowerCase();
+            if (arguments.length < 2) return headers[name4];
+            if (value == null) delete headers[name4];
+            else headers[name4] = value + "";
             return xhr;
           };
           xhr.mimeType = function(value) {
@@ -2390,7 +2422,7 @@ var Plotly = (() => {
             if (arguments.length === 2 && typeof data === "function") callback2 = data, data = null;
             request.open(method, url, true);
             if (mimeType != null && !("accept" in headers)) headers["accept"] = mimeType + ",*/*";
-            if (request.setRequestHeader) for (var name in headers) request.setRequestHeader(name, headers[name]);
+            if (request.setRequestHeader) for (var name4 in headers) request.setRequestHeader(name4, headers[name4]);
             if (mimeType != null && request.overrideMimeType) request.overrideMimeType(mimeType);
             if (responseType != null) request.responseType = responseType;
             if (callback2 != null) xhr.on("error", callback2).on("load", function(request2) {
@@ -2984,10 +3016,10 @@ var Plotly = (() => {
         function d3_geom_voronoiConnectEdge(edge, extent) {
           var vb = edge.b;
           if (vb) return true;
-          var va = edge.a, x0 = extent[0][0], x1 = extent[1][0], y0 = extent[0][1], y1 = extent[1][1], lSite = edge.l, rSite = edge.r, lx = lSite.x, ly = lSite.y, rx = rSite.x, ry = rSite.y, fx = (lx + rx) / 2, fy = (ly + ry) / 2, fm, fb;
-          if (ry === ly) {
+          var va = edge.a, x0 = extent[0][0], x1 = extent[1][0], y0 = extent[0][1], y1 = extent[1][1], lSite = edge.l, rSite = edge.r, lx = lSite.x, ly = lSite.y, rx3 = rSite.x, ry3 = rSite.y, fx = (lx + rx3) / 2, fy = (ly + ry3) / 2, fm, fb;
+          if (ry3 === ly) {
             if (fx < x0 || fx >= x1) return;
-            if (lx > rx) {
+            if (lx > rx3) {
               if (!va) va = {
                 x: fx,
                 y: y0
@@ -3009,10 +3041,10 @@ var Plotly = (() => {
               };
             }
           } else {
-            fm = (lx - rx) / (ry - ly);
+            fm = (lx - rx3) / (ry3 - ly);
             fb = fy - fm * fx;
             if (fm < -1 || fm > 1) {
-              if (lx > rx) {
+              if (lx > rx3) {
                 if (!va) va = {
                   x: (y0 - fb) / fm,
                   y: y0
@@ -3034,7 +3066,7 @@ var Plotly = (() => {
                 };
               }
             } else {
-              if (ly < ry) {
+              if (ly < ry3) {
                 if (!va) va = {
                   x: x0,
                   y: fm * x0 + fb
@@ -3711,8 +3743,8 @@ var Plotly = (() => {
             return d3_ease_reflect(d3_ease_reverse(f));
           }
         });
-        d3.ease = function(name) {
-          var i = name.indexOf("-"), t = i >= 0 ? name.slice(0, i) : name, m = i >= 0 ? name.slice(i + 1) : "in";
+        d3.ease = function(name4) {
+          var i = name4.indexOf("-"), t = i >= 0 ? name4.slice(0, i) : name4, m = i >= 0 ? name4.slice(i + 1) : "in";
           t = d3_ease.get(t) || d3_ease_default;
           m = d3_ease_mode.get(m) || d3_identity;
           return d3_ease_clamp(m(t.apply(null, d3_arraySlice.call(arguments, 1))));
@@ -6471,26 +6503,26 @@ var Plotly = (() => {
             return "M" + -3 * r + "," + -r + "H" + -r + "V" + -3 * r + "H" + r + "V" + -r + "H" + 3 * r + "V" + r + "H" + r + "V" + 3 * r + "H" + -r + "V" + r + "H" + -3 * r + "Z";
           },
           diamond: function(size) {
-            var ry = Math.sqrt(size / (2 * d3_svg_symbolTan30)), rx = ry * d3_svg_symbolTan30;
-            return "M0," + -ry + "L" + rx + ",0 0," + ry + " " + -rx + ",0Z";
+            var ry3 = Math.sqrt(size / (2 * d3_svg_symbolTan30)), rx3 = ry3 * d3_svg_symbolTan30;
+            return "M0," + -ry3 + "L" + rx3 + ",0 0," + ry3 + " " + -rx3 + ",0Z";
           },
           square: function(size) {
             var r = Math.sqrt(size) / 2;
             return "M" + -r + "," + -r + "L" + r + "," + -r + " " + r + "," + r + " " + -r + "," + r + "Z";
           },
           "triangle-down": function(size) {
-            var rx = Math.sqrt(size / d3_svg_symbolSqrt3), ry = rx * d3_svg_symbolSqrt3 / 2;
-            return "M0," + ry + "L" + rx + "," + -ry + " " + -rx + "," + -ry + "Z";
+            var rx3 = Math.sqrt(size / d3_svg_symbolSqrt3), ry3 = rx3 * d3_svg_symbolSqrt3 / 2;
+            return "M0," + ry3 + "L" + rx3 + "," + -ry3 + " " + -rx3 + "," + -ry3 + "Z";
           },
           "triangle-up": function(size) {
-            var rx = Math.sqrt(size / d3_svg_symbolSqrt3), ry = rx * d3_svg_symbolSqrt3 / 2;
-            return "M0," + -ry + "L" + rx + "," + ry + " " + -rx + "," + ry + "Z";
+            var rx3 = Math.sqrt(size / d3_svg_symbolSqrt3), ry3 = rx3 * d3_svg_symbolSqrt3 / 2;
+            return "M0," + -ry3 + "L" + rx3 + "," + ry3 + " " + -rx3 + "," + ry3 + "Z";
           }
         });
         d3.svg.symbolTypes = d3_svg_symbols.keys();
         var d3_svg_symbolSqrt3 = Math.sqrt(3), d3_svg_symbolTan30 = Math.tan(30 * d3_radians);
-        d3_selectionPrototype.transition = function(name) {
-          var id = d3_transitionInheritId || ++d3_transitionId, ns = d3_transitionNamespace(name), subgroups = [], subgroup, node, transition = d3_transitionInherit || {
+        d3_selectionPrototype.transition = function(name4) {
+          var id = d3_transitionInheritId || ++d3_transitionId, ns = d3_transitionNamespace(name4), subgroups = [], subgroup, node, transition = d3_transitionInherit || {
             time: Date.now(),
             ease: d3_ease_cubicInOut,
             delay: 0,
@@ -6505,8 +6537,8 @@ var Plotly = (() => {
           }
           return d3_transition(subgroups, ns, id);
         };
-        d3_selectionPrototype.interrupt = function(name) {
-          return this.each(name == null ? d3_selection_interrupt : d3_selection_interruptNS(d3_transitionNamespace(name)));
+        d3_selectionPrototype.interrupt = function(name4) {
+          return this.each(name4 == null ? d3_selection_interrupt : d3_selection_interruptNS(d3_transitionNamespace(name4)));
         };
         var d3_selection_interrupt = d3_selection_interruptNS(d3_transitionNamespace());
         function d3_selection_interruptNS(ns) {
@@ -6533,8 +6565,8 @@ var Plotly = (() => {
         d3_transitionPrototype.empty = d3_selectionPrototype.empty;
         d3_transitionPrototype.node = d3_selectionPrototype.node;
         d3_transitionPrototype.size = d3_selectionPrototype.size;
-        d3.transition = function(selection, name) {
-          return selection && selection.transition ? d3_transitionInheritId ? selection.transition(name) : selection : d3.selection().transition(selection);
+        d3.transition = function(selection, name4) {
+          return selection && selection.transition ? d3_transitionInheritId ? selection.transition(name4) : selection : d3.selection().transition(selection);
         };
         d3.transition.prototype = d3_transitionPrototype;
         d3_transitionPrototype.select = function(selector) {
@@ -6585,21 +6617,21 @@ var Plotly = (() => {
           }
           return d3_transition(subgroups, this.namespace, this.id);
         };
-        d3_transitionPrototype.tween = function(name, tween) {
+        d3_transitionPrototype.tween = function(name4, tween) {
           var id = this.id, ns = this.namespace;
-          if (arguments.length < 2) return this.node()[ns][id].tween.get(name);
+          if (arguments.length < 2) return this.node()[ns][id].tween.get(name4);
           return d3_selection_each(this, tween == null ? function(node) {
-            node[ns][id].tween.remove(name);
+            node[ns][id].tween.remove(name4);
           } : function(node) {
-            node[ns][id].tween.set(name, tween);
+            node[ns][id].tween.set(name4, tween);
           });
         };
-        function d3_transition_tween(groups, name, value, tween) {
+        function d3_transition_tween(groups, name4, value, tween) {
           var id = groups.id, ns = groups.namespace;
           return d3_selection_each(groups, typeof value === "function" ? function(node, i, j) {
-            node[ns][id].tween.set(name, tween(value.call(node, node.__data__, i, j)));
+            node[ns][id].tween.set(name4, tween(value.call(node, node.__data__, i, j)));
           } : (value = tween(value), function(node) {
-            node[ns][id].tween.set(name, value);
+            node[ns][id].tween.set(name4, value);
           }));
         }
         d3_transitionPrototype.attr = function(nameNS, value) {
@@ -6607,79 +6639,79 @@ var Plotly = (() => {
             for (value in nameNS) this.attr(value, nameNS[value]);
             return this;
           }
-          var interpolate = nameNS == "transform" ? d3_interpolateTransform : d3_interpolate, name = d3.ns.qualify(nameNS);
+          var interpolate = nameNS == "transform" ? d3_interpolateTransform : d3_interpolate, name4 = d3.ns.qualify(nameNS);
           function attrNull() {
-            this.removeAttribute(name);
+            this.removeAttribute(name4);
           }
           function attrNullNS() {
-            this.removeAttributeNS(name.space, name.local);
+            this.removeAttributeNS(name4.space, name4.local);
           }
           function attrTween(b) {
             return b == null ? attrNull : (b += "", function() {
-              var a = this.getAttribute(name), i;
+              var a = this.getAttribute(name4), i;
               return a !== b && (i = interpolate(a, b), function(t) {
-                this.setAttribute(name, i(t));
+                this.setAttribute(name4, i(t));
               });
             });
           }
           function attrTweenNS(b) {
             return b == null ? attrNullNS : (b += "", function() {
-              var a = this.getAttributeNS(name.space, name.local), i;
+              var a = this.getAttributeNS(name4.space, name4.local), i;
               return a !== b && (i = interpolate(a, b), function(t) {
-                this.setAttributeNS(name.space, name.local, i(t));
+                this.setAttributeNS(name4.space, name4.local, i(t));
               });
             });
           }
-          return d3_transition_tween(this, "attr." + nameNS, value, name.local ? attrTweenNS : attrTween);
+          return d3_transition_tween(this, "attr." + nameNS, value, name4.local ? attrTweenNS : attrTween);
         };
         d3_transitionPrototype.attrTween = function(nameNS, tween) {
-          var name = d3.ns.qualify(nameNS);
+          var name4 = d3.ns.qualify(nameNS);
           function attrTween(d, i) {
-            var f = tween.call(this, d, i, this.getAttribute(name));
+            var f = tween.call(this, d, i, this.getAttribute(name4));
             return f && function(t) {
-              this.setAttribute(name, f(t));
+              this.setAttribute(name4, f(t));
             };
           }
           function attrTweenNS(d, i) {
-            var f = tween.call(this, d, i, this.getAttributeNS(name.space, name.local));
+            var f = tween.call(this, d, i, this.getAttributeNS(name4.space, name4.local));
             return f && function(t) {
-              this.setAttributeNS(name.space, name.local, f(t));
+              this.setAttributeNS(name4.space, name4.local, f(t));
             };
           }
-          return this.tween("attr." + nameNS, name.local ? attrTweenNS : attrTween);
+          return this.tween("attr." + nameNS, name4.local ? attrTweenNS : attrTween);
         };
-        d3_transitionPrototype.style = function(name, value, priority) {
+        d3_transitionPrototype.style = function(name4, value, priority) {
           var n = arguments.length;
           if (n < 3) {
-            if (typeof name !== "string") {
+            if (typeof name4 !== "string") {
               if (n < 2) value = "";
-              for (priority in name) this.style(priority, name[priority], value);
+              for (priority in name4) this.style(priority, name4[priority], value);
               return this;
             }
             priority = "";
           }
           function styleNull() {
-            this.style.removeProperty(name);
+            this.style.removeProperty(name4);
           }
           function styleString(b) {
             return b == null ? styleNull : (b += "", function() {
-              var a = d3_window(this).getComputedStyle(this, null).getPropertyValue(name), i;
+              var a = d3_window(this).getComputedStyle(this, null).getPropertyValue(name4), i;
               return a !== b && (i = d3_interpolate(a, b), function(t) {
-                this.style.setProperty(name, i(t), priority);
+                this.style.setProperty(name4, i(t), priority);
               });
             });
           }
-          return d3_transition_tween(this, "style." + name, value, styleString);
+          return d3_transition_tween(this, "style." + name4, value, styleString);
         };
-        d3_transitionPrototype.styleTween = function(name, tween, priority) {
+        d3_transitionPrototype.styleTween = function(name4, tween, priority) {
           if (arguments.length < 3) priority = "";
           function styleTween(d, i) {
-            var f = tween.call(this, d, i, d3_window(this).getComputedStyle(this, null).getPropertyValue(name));
+            var f = tween.call(this, d, i, d3_window(this).getComputedStyle(this, null).getPropertyValue(name4));
             return f && function(t) {
-              this.style.setProperty(name, f(t), priority);
+              this.style.setProperty(name4, f(t), priority);
             };
           }
-          return this.tween("style." + name, styleTween);
+          return this.tween("style." + name4, styleTween);
         };
         d3_transitionPrototype.text = function(value) {
           return d3_transition_tween(this, "text", value, d3_transition_text);
@@ -6764,8 +6796,8 @@ var Plotly = (() => {
           }
           return d3_transition(subgroups, ns, id1);
         };
-        function d3_transitionNamespace(name) {
-          return name == null ? "__transition__" : "__transition_" + name + "__";
+        function d3_transitionNamespace(name4) {
+          return name4 == null ? "__transition__" : "__transition_" + name4 + "__";
         }
         function d3_transitionNode(node, i, ns, id, inherit) {
           var lock = node[ns] || (node[ns] = {
@@ -8475,77 +8507,58 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/numerical.js
-  var require_numerical = __commonJS({
-    "src/constants/numerical.js"(exports, module) {
+  // src/constants/numerical.ts
+  var numerical_exports = {};
+  __export(numerical_exports, {
+    ALMOST_EQUAL: () => ALMOST_EQUAL,
+    BADNUM: () => BADNUM,
+    EPOCHJD: () => EPOCHJD,
+    FP_SAFE: () => FP_SAFE,
+    LOG_CLIP: () => LOG_CLIP,
+    MINUS_SIGN: () => MINUS_SIGN,
+    ONEAVGMONTH: () => ONEAVGMONTH,
+    ONEAVGQUARTER: () => ONEAVGQUARTER,
+    ONEAVGYEAR: () => ONEAVGYEAR,
+    ONEDAY: () => ONEDAY,
+    ONEHOUR: () => ONEHOUR,
+    ONEMAXMONTH: () => ONEMAXMONTH,
+    ONEMAXQUARTER: () => ONEMAXQUARTER,
+    ONEMAXYEAR: () => ONEMAXYEAR,
+    ONEMICROSEC: () => ONEMICROSEC,
+    ONEMILLI: () => ONEMILLI,
+    ONEMIN: () => ONEMIN,
+    ONEMINMONTH: () => ONEMINMONTH,
+    ONEMINQUARTER: () => ONEMINQUARTER,
+    ONEMINYEAR: () => ONEMINYEAR,
+    ONESEC: () => ONESEC,
+    ONEWEEK: () => ONEWEEK
+  });
+  var BADNUM, FP_SAFE, ONEMAXYEAR, ONEAVGYEAR, ONEMINYEAR, ONEMAXQUARTER, ONEAVGQUARTER, ONEMINQUARTER, ONEMAXMONTH, ONEAVGMONTH, ONEMINMONTH, ONEWEEK, ONEDAY, ONEHOUR, ONEMIN, ONESEC, ONEMILLI, ONEMICROSEC, EPOCHJD, ALMOST_EQUAL, LOG_CLIP, MINUS_SIGN;
+  var init_numerical = __esm({
+    "src/constants/numerical.ts"() {
       "use strict";
-      module.exports = {
-        /**
-         * Standardize all missing data in calcdata to use undefined
-         * never null or NaN.
-         * That way we can use !==undefined, or !== BADNUM,
-         * to test for real data
-         */
-        BADNUM: void 0,
-        /*
-         * Limit certain operations to well below floating point max value
-         * to avoid glitches: Make sure that even when you multiply it by the
-         * number of pixels on a giant screen it still works
-         */
-        FP_SAFE: Number.MAX_VALUE * 1e-4,
-        /*
-         * conversion of date units to milliseconds
-         * year and month constants are marked "AVG"
-         * to remind us that not all years and months
-         * have the same length
-         */
-        ONEMAXYEAR: 316224e5,
-        // 366 * ONEDAY
-        ONEAVGYEAR: 315576e5,
-        // 365.25 days
-        ONEMINYEAR: 31536e6,
-        // 365 * ONEDAY
-        ONEMAXQUARTER: 79488e5,
-        // 92 * ONEDAY
-        ONEAVGQUARTER: 78894e5,
-        // 1/4 of ONEAVGYEAR
-        ONEMINQUARTER: 76896e5,
-        // 89 * ONEDAY
-        ONEMAXMONTH: 26784e5,
-        // 31 * ONEDAY
-        ONEAVGMONTH: 26298e5,
-        // 1/12 of ONEAVGYEAR
-        ONEMINMONTH: 24192e5,
-        // 28 * ONEDAY
-        ONEWEEK: 6048e5,
-        // 7 * ONEDAY
-        ONEDAY: 864e5,
-        // 24 * ONEHOUR
-        ONEHOUR: 36e5,
-        ONEMIN: 6e4,
-        ONESEC: 1e3,
-        ONEMILLI: 1,
-        ONEMICROSEC: 1e-3,
-        /*
-         * For fast conversion btwn world calendars and epoch ms, the Julian Day Number
-         * of the unix epoch. From calendars.instance().newDate(1970, 1, 1).toJD()
-         */
-        EPOCHJD: 24405875e-1,
-        /*
-         * Are two values nearly equal? Compare to 1PPM
-         */
-        ALMOST_EQUAL: 1 - 1e-6,
-        /*
-         * If we're asked to clip a non-positive log value, how far off-screen
-         * do we put it?
-         */
-        LOG_CLIP: 10,
-        /*
-         * not a number, but for displaying numbers: the "minus sign" symbol is
-         * wider than the regular ascii dash "-"
-         */
-        MINUS_SIGN: "\u2212"
-      };
+      BADNUM = void 0;
+      FP_SAFE = Number.MAX_VALUE * 1e-4;
+      ONEMAXYEAR = 316224e5;
+      ONEAVGYEAR = 315576e5;
+      ONEMINYEAR = 31536e6;
+      ONEMAXQUARTER = 79488e5;
+      ONEAVGQUARTER = 78894e5;
+      ONEMINQUARTER = 76896e5;
+      ONEMAXMONTH = 26784e5;
+      ONEAVGMONTH = 26298e5;
+      ONEMINMONTH = 24192e5;
+      ONEWEEK = 6048e5;
+      ONEDAY = 864e5;
+      ONEHOUR = 36e5;
+      ONEMIN = 6e4;
+      ONESEC = 1e3;
+      ONEMILLI = 1;
+      ONEMICROSEC = 1e-3;
+      EPOCHJD = 24405875e-1;
+      ALMOST_EQUAL = 1 - 1e-6;
+      LOG_CLIP = 10;
+      MINUS_SIGN = "\u2212";
     }
   });
 
@@ -9013,24 +9026,24 @@ var Plotly = (() => {
         }
         var isSimpleValueProp = SIMPLE_PROPERTY_REGEX.test(valueName);
         var obj = {
-          set: function(name, value) {
+          set: function(name4, value) {
             var changeType = value === null ? UNSET : NONE;
             if (!arr) {
               if (!baseProp || changeType === UNSET) return;
               arr = [];
               baseProp.set(arr);
             }
-            var idx = indexLookup[name];
+            var idx = indexLookup[name4];
             if (idx === void 0) {
               if (changeType === UNSET) return;
               changeType = changeType | BOTH;
               idx = arr.length;
-              indexLookup[name] = idx;
+              indexLookup[name4] = idx;
             } else if (value !== (isSimpleValueProp ? arr[idx][valueName] : nestedProperty(arr[idx], valueName).get())) {
               changeType = changeType | VALUE;
             }
             var newValue = arr[idx] = arr[idx] || {};
-            newValue[keyName] = name;
+            newValue[keyName] = name4;
             if (isSimpleValueProp) {
               newValue[valueName] = value;
             } else {
@@ -9042,9 +9055,9 @@ var Plotly = (() => {
             changeTypes[idx] = changeTypes[idx] | changeType;
             return obj;
           },
-          get: function(name) {
+          get: function(name4) {
             if (!arr) return;
-            var idx = indexLookup[name];
+            var idx = indexLookup[name4];
             if (idx === void 0) {
               return void 0;
             } else if (isSimpleValueProp) {
@@ -9053,22 +9066,22 @@ var Plotly = (() => {
               return nestedProperty(arr[idx], valueName).get();
             }
           },
-          rename: function(name, newName) {
-            var idx = indexLookup[name];
+          rename: function(name4, newName) {
+            var idx = indexLookup[name4];
             if (idx === void 0) return obj;
             changeTypes[idx] = changeTypes[idx] | NAME;
             indexLookup[newName] = idx;
-            delete indexLookup[name];
+            delete indexLookup[name4];
             arr[idx][keyName] = newName;
             return obj;
           },
-          remove: function(name) {
-            var idx = indexLookup[name];
+          remove: function(name4) {
+            var idx = indexLookup[name4];
             if (idx === void 0) return obj;
             var object = arr[idx];
             if (Object.keys(object).length > 2) {
               changeTypes[idx] = changeTypes[idx] | VALUE;
-              return obj.set(name, null);
+              return obj.set(name4, null);
             }
             if (isSimpleValueProp) {
               for (i = idx; i < arr.length; i++) {
@@ -9078,7 +9091,7 @@ var Plotly = (() => {
                 indexLookup[arr[i][keyName]]--;
               }
               arr.splice(idx, 1);
-              delete indexLookup[name];
+              delete indexLookup[name4];
             } else {
               nestedProperty(object, valueName).set(null);
               changeTypes[idx] = changeTypes[idx] | VALUE | UNSET;
@@ -9378,26 +9391,28 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/fx/constants.js
-  var require_constants = __commonJS({
-    "src/components/fx/constants.js"(exports, module) {
+  // src/components/fx/constants.ts
+  var constants_exports = {};
+  __export(constants_exports, {
+    HOVERARROWSIZE: () => HOVERARROWSIZE,
+    HOVERFONT: () => HOVERFONT,
+    HOVERFONTSIZE: () => HOVERFONTSIZE,
+    HOVERID: () => HOVERID,
+    HOVERMINTIME: () => HOVERMINTIME,
+    HOVERTEXTPAD: () => HOVERTEXTPAD,
+    YANGLE: () => YANGLE
+  });
+  var YANGLE, HOVERARROWSIZE, HOVERTEXTPAD, HOVERFONTSIZE, HOVERFONT, HOVERMINTIME, HOVERID;
+  var init_constants = __esm({
+    "src/components/fx/constants.ts"() {
       "use strict";
-      module.exports = {
-        // hover labels for multiple horizontal bars get tilted by this angle
-        YANGLE: 60,
-        // size and display constants for hover text
-        // pixel size of hover arrows
-        HOVERARROWSIZE: 6,
-        // pixels padding around text
-        HOVERTEXTPAD: 3,
-        // hover font
-        HOVERFONTSIZE: 13,
-        HOVERFONT: "Arial, sans-serif",
-        // minimum time (msec) between hover calls
-        HOVERMINTIME: 50,
-        // ID suffix (with fullLayout._uid) for hover events in the throttle cache
-        HOVERID: "-hover"
-      };
+      YANGLE = 60;
+      HOVERARROWSIZE = 6;
+      HOVERTEXTPAD = 3;
+      HOVERFONTSIZE = 13;
+      HOVERFONT = "Arial, sans-serif";
+      HOVERMINTIME = 50;
+      HOVERID = "-hover";
     }
   });
 
@@ -9405,7 +9420,7 @@ var Plotly = (() => {
   var require_layout_attributes = __commonJS({
     "src/components/fx/layout_attributes.js"(exports, module) {
       "use strict";
-      var constants2 = require_constants();
+      var constants2 = (init_constants(), __toCommonJS(constants_exports));
       var fontAttrs = require_font_attributes();
       var font = fontAttrs({
         editType: "none"
@@ -9671,8 +9686,8 @@ var Plotly = (() => {
       var __getOwnPropNames2 = Object.getOwnPropertyNames;
       var __hasOwnProp2 = Object.prototype.hasOwnProperty;
       var __export2 = (target, all) => {
-        for (var name in all)
-          __defProp2(target, name, { get: all[name], enumerable: true });
+        for (var name4 in all)
+          __defProp2(target, name4, { get: all[name4], enumerable: true });
       };
       var __copyProps2 = (to, from, except, desc) => {
         if (from && typeof from === "object" || typeof from === "function") {
@@ -14374,10 +14389,81 @@ var Plotly = (() => {
     }
   });
 
+  // src/plot_api/to_image_attributes.ts
+  var to_image_attributes_exports = {};
+  __export(to_image_attributes_exports, {
+    default: () => to_image_attributes_default
+  });
+  var attributes, to_image_attributes_default;
+  var init_to_image_attributes = __esm({
+    "src/plot_api/to_image_attributes.ts"() {
+      "use strict";
+      attributes = {
+        format: {
+          valType: "enumerated",
+          values: ["png", "jpeg", "webp", "svg", "full-json"],
+          dflt: "png",
+          description: "Sets the format of exported image."
+        },
+        width: {
+          valType: "number",
+          min: 1,
+          description: [
+            "Sets the exported image width.",
+            "Defaults to the value found in `layout.width`",
+            "If set to *null*, the exported image width will match the current graph width."
+          ].join(" ")
+        },
+        height: {
+          valType: "number",
+          min: 1,
+          description: [
+            "Sets the exported image height.",
+            "Defaults to the value found in `layout.height`",
+            "If set to *null*, the exported image height will match the current graph height."
+          ].join(" ")
+        },
+        scale: {
+          valType: "number",
+          min: 0,
+          dflt: 1,
+          description: [
+            "Sets a scaling for the generated image.",
+            "If set, all features of a graphs (e.g. text, line width)",
+            "are scaled, unlike simply setting",
+            "a bigger *width* and *height*."
+          ].join(" ")
+        },
+        setBackground: {
+          valType: "any",
+          dflt: false,
+          description: [
+            "Sets the image background mode.",
+            "By default, the image background is determined by `layout.paper_bgcolor`,",
+            "the *transparent* mode.",
+            "One might consider setting `setBackground` to *opaque*",
+            "when exporting a *jpeg* image as JPEGs do not support opacity."
+          ].join(" ")
+        },
+        imageDataOnly: {
+          valType: "boolean",
+          dflt: false,
+          description: [
+            "Determines whether or not the return value is prefixed by",
+            "the image format's corresponding 'data:image;' spec."
+          ].join(" ")
+        }
+      };
+      to_image_attributes_default = attributes;
+    }
+  });
+
   // src/plot_api/plot_config.js
   var require_plot_config = __commonJS({
     "src/plot_api/plot_config.js"(exports, module) {
       "use strict";
+      var { format, width, height, scale } = (init_to_image_attributes(), __toCommonJS(to_image_attributes_exports)).default;
+      var _a = scale, { dflt: scaleDflt } = _a, buttonScale = __objRest(_a, ["dflt"]);
       var configAttributes = {
         staticPlot: {
           valType: "boolean",
@@ -14513,8 +14599,13 @@ var Plotly = (() => {
           dflt: false
         },
         toImageButtonOptions: {
-          valType: "any",
-          dflt: {}
+          format,
+          filename: {
+            valType: "string"
+          },
+          width,
+          height,
+          scale: buttonScale
         },
         displaylogo: {
           valType: "boolean",
@@ -14568,10 +14659,11 @@ var Plotly = (() => {
       };
       var dfltConfig = {};
       function crawl(src, target) {
-        for (var k in src) {
-          var obj = src[k];
+        for (const k in src) {
+          const obj = src[k];
+          if (typeof obj !== "object" || obj === null) continue;
           if (obj.valType) {
-            target[k] = obj.dflt;
+            if ("dflt" in obj) target[k] = obj.dflt;
           } else {
             if (!target[k]) {
               target[k] = {};
@@ -14822,12 +14914,12 @@ var Plotly = (() => {
       var isDark = (cstr) => wcagContrast(cstr, background) > wcagContrast(cstr, defaultLine);
       var backgroundRgb = formatRgb(parse(background));
       var defaultLineRgb = formatRgb(parse(defaultLine));
-      var contrast = (cstr, lightAmount, darkAmount) => {
+      var contrast = (cstr, lightAmount2, darkAmount2) => {
         if (parse(cstr).alpha !== 1) cstr = combine(cstr, background);
         if (isDark(cstr)) {
-          return lightAmount ? adjustLightness(cstr, lightAmount) : backgroundRgb;
+          return lightAmount2 ? adjustLightness(cstr, lightAmount2) : backgroundRgb;
         } else {
-          return darkAmount ? adjustLightness(cstr, -darkAmount) : defaultLineRgb;
+          return darkAmount2 ? adjustLightness(cstr, -darkAmount2) : defaultLineRgb;
         }
       };
       var stroke = (s, cstr) => {
@@ -15147,19 +15239,20 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/interactions.js
-  var require_interactions = __commonJS({
-    "src/constants/interactions.js"(exports, module) {
+  // src/constants/interactions.ts
+  var interactions_exports = {};
+  __export(interactions_exports, {
+    DESELECTDIM: () => DESELECTDIM,
+    HIDE_PLACEHOLDER: () => HIDE_PLACEHOLDER,
+    SHOW_PLACEHOLDER: () => SHOW_PLACEHOLDER
+  });
+  var SHOW_PLACEHOLDER, HIDE_PLACEHOLDER, DESELECTDIM;
+  var init_interactions = __esm({
+    "src/constants/interactions.ts"() {
       "use strict";
-      module.exports = {
-        /**
-         * Timing information for interactive elements
-         */
-        SHOW_PLACEHOLDER: 100,
-        HIDE_PLACEHOLDER: 1e3,
-        // opacity dimming fraction for points that are not in selection
-        DESELECTDIM: 0.2
-      };
+      SHOW_PLACEHOLDER = 100;
+      HIDE_PLACEHOLDER = 1e3;
+      DESELECTDIM = 0.2;
     }
   });
 
@@ -15190,7 +15283,7 @@ var Plotly = (() => {
       var baseTraceAttrs = require_attributes2();
       var colorscales = require_scales();
       var Color = require_color();
-      var DESELECTDIM = require_interactions().DESELECTDIM;
+      var DESELECTDIM2 = (init_interactions(), __toCommonJS(interactions_exports)).DESELECTDIM;
       var nestedProperty = require_nested_property();
       var counterRegex = (init_regex(), __toCommonJS(regex_exports)).counter;
       var modHalf2 = (init_mod(), __toCommonJS(mod_exports)).modHalf;
@@ -15417,8 +15510,8 @@ var Plotly = (() => {
           }
         }
       };
-      exports.coerce = function(containerIn, containerOut, attributes3, attribute, dflt) {
-        var opts = nestedProperty(attributes3, attribute).get();
+      exports.coerce = function(containerIn, containerOut, attributes4, attribute, dflt) {
+        var opts = nestedProperty(attributes4, attribute).get();
         var propIn = nestedProperty(containerIn, attribute);
         var propOut = nestedProperty(containerOut, attribute);
         var v = propIn.get();
@@ -15450,9 +15543,9 @@ var Plotly = (() => {
         }
         return out;
       };
-      exports.coerce2 = function(containerIn, containerOut, attributes3, attribute, dflt) {
+      exports.coerce2 = function(containerIn, containerOut, attributes4, attribute, dflt) {
         var propIn = nestedProperty(containerIn, attribute);
-        var propOut = exports.coerce(containerIn, containerOut, attributes3, attribute, dflt);
+        var propOut = exports.coerce(containerIn, containerOut, attributes4, attribute, dflt);
         var valIn = propIn.get();
         return valIn !== void 0 && valIn !== null ? propOut : false;
       };
@@ -15519,7 +15612,7 @@ var Plotly = (() => {
         var usmoDflt;
         if (!isArrayOrTypedArray(mo) && !traceOut.selected && !traceOut.unselected) {
           smoDflt = mo;
-          usmoDflt = DESELECTDIM * mo;
+          usmoDflt = DESELECTDIM2 * mo;
         }
         coerce("selected.marker.opacity", smoDflt);
         coerce("unselected.marker.opacity", usmoDflt);
@@ -16704,20 +16797,26 @@ var Plotly = (() => {
           element = document;
         }
         element.querySelectorAll(selector).forEach(function(el) {
+          el._hoverStyle = {
+            activeStyleParts,
+            inactiveStyleParts
+          };
           if (!el.getAttribute(eventAddedAttrName)) {
             el.addEventListener("mouseenter", function() {
+              var hoverStyle = this._hoverStyle;
               var childEl = this.querySelector(childSelector);
               if (childEl) {
-                childEl.style[activeStyleParts[0]] = activeStyleParts[1];
+                childEl.style[hoverStyle.activeStyleParts[0]] = hoverStyle.activeStyleParts[1];
               }
             });
             el.addEventListener("mouseleave", function() {
+              var hoverStyle = this._hoverStyle;
               var childEl = this.querySelector(childSelector);
               if (childEl) {
                 if (activeSelector && this.matches(activeSelector)) {
-                  childEl.style[activeStyleParts[0]] = activeStyleParts[1];
+                  childEl.style[hoverStyle.activeStyleParts[0]] = hoverStyle.activeStyleParts[1];
                 } else {
-                  childEl.style[inactiveStyleParts[0]] = inactiveStyleParts[1];
+                  childEl.style[hoverStyle.inactiveStyleParts[0]] = hoverStyle.inactiveStyleParts[1];
                 }
               }
             });
@@ -17053,14 +17152,18 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/docs.js
-  var require_docs = __commonJS({
-    "src/constants/docs.js"(exports, module) {
+  // src/constants/docs.ts
+  var docs_exports = {};
+  __export(docs_exports, {
+    DATE_FORMAT_LINK: () => DATE_FORMAT_LINK,
+    FORMAT_LINK: () => FORMAT_LINK
+  });
+  var FORMAT_LINK, DATE_FORMAT_LINK;
+  var init_docs = __esm({
+    "src/constants/docs.ts"() {
       "use strict";
-      module.exports = {
-        FORMAT_LINK: "https://github.com/d3/d3-format/tree/v1.4.5#d3-format",
-        DATE_FORMAT_LINK: "https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format"
-      };
+      FORMAT_LINK = "https://github.com/d3/d3-format/tree/v1.4.5#d3-format";
+      DATE_FORMAT_LINK = "https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format";
     }
   });
 
@@ -17068,7 +17171,7 @@ var Plotly = (() => {
   var require_template_attributes = __commonJS({
     "src/plots/template_attributes.js"(exports) {
       "use strict";
-      var { DATE_FORMAT_LINK, FORMAT_LINK } = require_docs();
+      var { DATE_FORMAT_LINK: DATE_FORMAT_LINK2, FORMAT_LINK: FORMAT_LINK2 } = (init_docs(), __toCommonJS(docs_exports));
       var MISSING_UNDEFINED_DESCRIPTION = [
         "Variables that can't be found will be replaced with the specifier.",
         'For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing.',
@@ -17080,10 +17183,10 @@ var Plotly = (() => {
           "Variables are inserted using %{variable},",
           'for example "y: %{y}"' + (supportOther ? supportOtherText : "."),
           `Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".`,
-          FORMAT_LINK,
+          FORMAT_LINK2,
           "for details on the formatting syntax.",
           `Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".`,
-          DATE_FORMAT_LINK,
+          DATE_FORMAT_LINK2,
           "for details on the date formatting syntax.",
           MISSING_UNDEFINED_DESCRIPTION
         ].join(" ");
@@ -17657,10 +17760,10 @@ var Plotly = (() => {
   var require_maplibre_gl = __commonJS({
     "node_modules/maplibre-gl/dist/maplibre-gl.css"() {
       (function() {
-        if (!document.getElementById("9f215cf04c5486422605d13261cb87401f4e7763b6296af81e98efbc0130da53")) {
+        if (!document.getElementById("ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe")) {
           var e = document.createElement("style");
-          e.id = "9f215cf04c5486422605d13261cb87401f4e7763b6296af81e98efbc0130da53";
-          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0)}.maplibregl-canvas{position:absolute;left:0;top:0}.maplibregl-map:fullscreen{width:100%;height:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{position:absolute;pointer-events:none;z-index:2}.maplibregl-ctrl-top-left{top:0;left:0}.maplibregl-ctrl-top-right{top:0;right:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{right:0;bottom:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{margin:10px 0 0 10px;float:left}.maplibregl-ctrl-top-right .maplibregl-ctrl{margin:10px 10px 0 0;float:right}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 10px 10px;float:left}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{margin:0 10px 10px 0;float:right}.maplibregl-ctrl-group{border-radius:4px;background:#fff}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{width:29px;height:29px;display:block;padding:0;outline:none;border:0;box-sizing:border-box;background-color:transparent;cursor:pointer}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{display:block;width:100%;height:100%;background-repeat:no-repeat;background-position:50%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}@media (hover:hover){.maplibregl-ctrl button:not(:disabled):hover{background-color:rgba(0,0,0,.05)}}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-globe .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%23333%22%20viewBox%3D%220%200%2022%2022%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%228.5%22%2F%3E%3Cpath%20d%3D%22M17.5%2011c0%204.819-3.02%208.5-6.5%208.5S4.5%2015.819%204.5%2011%207.52%202.5%2011%202.5s6.5%203.681%206.5%208.5Z%22%2F%3E%3Cpath%20d%3D%22M13.5%2011c0%202.447-.331%204.64-.853%206.206-.262.785-.562%201.384-.872%201.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831%2015.64%208.5%2013.446%208.5%2011s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872%201.777.522%201.565.853%203.76.853%206.206Z%22%2F%3E%3Cpath%20d%3D%22M11%207.5c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138q.07-.058.224-.138c.299-.151.763-.302%201.379-.434C7.378%205.666%209.091%205.5%2011%205.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0%209c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138%201.3%201.3%200%200%201%20.224-.138c.299-.151.763-.302%201.379-.434C7.378%2014.666%209.091%2014.5%2011%2014.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138a1.3%201.3%200%200%201-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0-4c-2.46%200-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5%201.5%200%200%201-.39-.272.3.3%200%200%201-.047-.064.3.3%200%200%201%20.048-.064c.066-.073.189-.167.389-.272.399-.21%201.009-.413%201.805-.59C6.328%209.722%208.54%209.5%2011%209.5s4.672.222%206.256.574c.795.177%201.405.38%201.804.59.2.105.323.2.39.272a.3.3%200%200%201%20.047.064.3.3%200%200%201-.048.064%201.4%201.4%200%200%201-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0%20.018v.002zm17.002.002v-.002zm0-.018v-.002z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%2333b5e5%22%20viewBox%3D%220%200%2022%2022%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%228.5%22%2F%3E%3Cpath%20d%3D%22M17.5%2011c0%204.819-3.02%208.5-6.5%208.5S4.5%2015.819%204.5%2011%207.52%202.5%2011%202.5s6.5%203.681%206.5%208.5Z%22%2F%3E%3Cpath%20d%3D%22M13.5%2011c0%202.447-.331%204.64-.853%206.206-.262.785-.562%201.384-.872%201.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831%2015.64%208.5%2013.446%208.5%2011s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872%201.777.522%201.565.853%203.76.853%206.206Z%22%2F%3E%3Cpath%20d%3D%22M11%207.5c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138q.07-.058.224-.138c.299-.151.763-.302%201.379-.434C7.378%205.666%209.091%205.5%2011%205.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0%209c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138%201.3%201.3%200%200%201%20.224-.138c.299-.151.763-.302%201.379-.434C7.378%2014.666%209.091%2014.5%2011%2014.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138a1.3%201.3%200%200%201-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0-4c-2.46%200-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5%201.5%200%200%201-.39-.272.3.3%200%200%201-.047-.064.3.3%200%200%201%20.048-.064c.066-.073.189-.167.389-.272.399-.21%201.009-.413%201.805-.59C6.328%209.722%208.54%209.5%2011%209.5s4.672.222%206.256.574c.795.177%201.405.38%201.804.59.2.105.323.2.39.272a.3.3%200%200%201%20.047.064.3.3%200%200%201-.048.064%201.4%201.4%200%200%201-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0%20.018v.002zm17.002.002v-.002zm0-.018v-.002z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20d%3D%22m1.754%2013.406%204.453-4.851%203.09%203.09%203.281%203.277.969-.969-3.309-3.312%203.844-4.121%206.148%206.886h1.082v-.855l-7.207-8.07-4.84%205.187L6.169%206.57l-5.48%205.965v.871ZM.688%2016.844h20.625v1.375H.688Zm0%200%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20d%3D%22m1.754%2013.406%204.453-4.851%203.09%203.09%203.281%203.277.969-.969-3.309-3.312%203.844-4.121%206.148%206.886h1.082v-.855l-7.207-8.07-4.84%205.187L6.169%206.57l-5.48%205.965v.871ZM.688%2016.844h20.625v1.375H.688Zm0%200%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23aaa%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e58978%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e54e33%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23999%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e58978%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e54e33%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23666%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{width:88px;height:23px;margin:0 0 -4px -4px;display:block;background-repeat:no-repeat;cursor:pointer;overflow:hidden;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{padding:0 5px;background-color:hsla(0,0%,100%,.5);margin:0}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{min-height:20px;padding:2px 24px 2px 0;margin:10px;position:relative;background-color:#fff;color:#000;border-radius:12px;box-sizing:content-box}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 8px 2px 28px;border-radius:12px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{display:none;cursor:pointer;position:absolute;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E");background-color:hsla(0,0%,100%,.5);width:24px;height:24px;box-sizing:border-box;border-radius:12px;outline:none;top:0;right:0;border:0}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;right:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;left:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);font-size:10px;white-space:nowrap;border-color:#333;border-style:none solid solid;border-width:medium 2px 2px;padding:0 5px;color:#333;box-sizing:border-box}.maplibregl-popup{position:absolute;top:0;left:0;display:flex;will-change:transform;pointer-events:none}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{width:0;height:0;border:10px solid transparent;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-top:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-top:none;border-left:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-top:none;border-right:none;border-bottom-color:#fff}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-right:none;border-left-color:#fff}[dir=rtl] .maplibregl-popup-anchor-left{flex-direction:row-reverse}[dir=rtl] .maplibregl-popup-anchor-right{flex-direction:row}[dir=rtl] .maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-start}[dir=rtl] .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-start}.maplibregl-popup-close-button{position:absolute;right:0;top:0;border:0;border-radius:0 3px 0 0;cursor:pointer;background-color:transparent}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{position:relative;background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{position:absolute;top:0;left:0;will-change:transform;transition:opacity .2s}.maplibregl-marker-draggable{cursor:grab}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;width:15px;height:15px;border-radius:50%}.maplibregl-user-location-dot:before{content:"";position:absolute;animation:maplibregl-user-location-dot-pulse 2s infinite}.maplibregl-user-location-dot:after{border-radius:50%;border:2px solid #fff;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px;box-sizing:border-box;box-shadow:0 0 3px rgba(0,0,0,.35)}@media (prefers-reduced-motion:reduce){.maplibregl-user-location-dot:before{animation:none}}@keyframes maplibregl-user-location-dot-pulse{0%{transform:scale(1);opacity:1}70%{transform:scale(3);opacity:0}to{transform:scale(1);opacity:0}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;width:1px;height:1px;border-radius:100%}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{position:absolute;top:0;left:0;width:0;height:0;background:#fff;border:2px dotted #202020;opacity:.5}.maplibregl-cooperative-gesture-screen{background:rgba(0,0,0,.4);position:absolute;inset:0;display:flex;justify-content:center;align-items:center;color:#fff;padding:1rem;font-size:1.4em;line-height:1.2;opacity:0;pointer-events:none;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(pointer:coarse){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{position:fixed!important;width:100%!important;height:100%!important;top:0!important;left:0!important;z-index:99999}`;
+          e.id = "ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe";
+          e.textContent = `.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0 0 0/0);-webkit-touch-callout:none}.maplibregl-canvas{position:absolute;left:0;top:0}.maplibregl-map:fullscreen{width:100%;height:100%}.maplibregl-ctrl-group button.maplibregl-ctrl-compass{touch-action:none}.maplibregl-canvas-container.maplibregl-interactive,.maplibregl-ctrl-group button.maplibregl-ctrl-compass{cursor:grab;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-interactive:active,.maplibregl-ctrl-group button.maplibregl-ctrl-compass:active{cursor:grabbing}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{position:absolute;pointer-events:none;z-index:2}.maplibregl-ctrl-top-left{top:0;left:0}.maplibregl-ctrl-top-right{top:0;right:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{right:0;bottom:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{margin:10px 0 0 10px;float:left}.maplibregl-ctrl-top-right .maplibregl-ctrl{margin:10px 10px 0 0;float:right}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 10px 10px;float:left}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{margin:0 10px 10px 0;float:right}.maplibregl-ctrl-group{border-radius:4px;background:#fff}.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px rgba(0,0,0,.1)}@media (forced-colors:active){.maplibregl-ctrl-group:not(:empty){box-shadow:0 0 0 2px ButtonText}}.maplibregl-ctrl-group button{width:29px;height:29px;display:block;padding:0;outline:none;border:0;box-sizing:border-box;background-color:transparent;cursor:pointer}.maplibregl-ctrl button{-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-ctrl-group button+button{border-top:1px solid #ddd}.maplibregl-ctrl button .maplibregl-ctrl-icon{display:block;width:100%;height:100%;background-repeat:no-repeat;background-position:50%}@media (forced-colors:active){.maplibregl-ctrl-icon{background-color:transparent}.maplibregl-ctrl-group button+button{border-top:1px solid ButtonText}}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl-attrib-button:focus,.maplibregl-ctrl-group button:focus{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:disabled .maplibregl-ctrl-icon{opacity:.25}@media (hover:hover){.maplibregl-ctrl button:not(:disabled):hover{background-color:rgba(0,0,0,.05)}}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-group button:focus:focus-visible{box-shadow:0 0 2px 2px #0096ff}.maplibregl-ctrl-group button:focus:not(:focus-visible){box-shadow:none}.maplibregl-ctrl-group button:focus:first-child{border-radius:4px 4px 0 0}.maplibregl-ctrl-group button:focus:last-child{border-radius:0 0 4px 4px}.maplibregl-ctrl-group button:focus:only-child{border-radius:inherit}.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M10%2013c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h9c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M14.5%208.5c-.75%200-1.5.75-1.5%201.5v3h-3c-.75%200-1.5.75-1.5%201.5S9.25%2016%2010%2016h3v3c0%20.75.75%201.5%201.5%201.5S16%2019.75%2016%2019v-3h3c.75%200%201.5-.75%201.5-1.5S19.75%2013%2019%2013h-3v-3c0-.75-.75-1.5-1.5-1.5%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M24%2016v5.5c0%201.75-.75%202.5-2.5%202.5H16v-1l3-1.5-4-5.5%201-1%205.5%204%201.5-3zM6%2016l1.5%203%205.5-4%201%201-4%205.5%203%201.5v1H7.5C5.75%2024%205%2023.25%205%2021.5V16zm7-11v1l-3%201.5%204%205.5-1%201-5.5-4L6%2013H5V7.5C5%205.75%205.75%205%207.5%205zm11%202.5c0-1.75-.75-2.5-2.5-2.5H16v1l3%201.5-4%205.5%201%201%205.5-4%201.5%203h1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-shrink .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22M18.5%2016c-1.75%200-2.5.75-2.5%202.5V24h1l1.5-3%205.5%204%201-1-4-5.5%203-1.5v-1zM13%2018.5c0-1.75-.75-2.5-2.5-2.5H5v1l3%201.5L4%2024l1%201%205.5-4%201.5%203h1zm3-8c0%201.75.75%202.5%202.5%202.5H24v-1l-3-1.5L25%205l-1-1-5.5%204L17%205h-1zM10.5%2013c1.75%200%202.5-.75%202.5-2.5V5h-1l-1.5%203L5%204%204%205l4%205.5L5%2012v1z%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2029%2029%22%3E%3Cpath%20d%3D%22m10.5%2014%204-8%204%208z%22%2F%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22m10.5%2016%204%208%204-8z%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl button.maplibregl-ctrl-globe .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%23333%22%20viewBox%3D%220%200%2022%2022%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%228.5%22%2F%3E%3Cpath%20d%3D%22M17.5%2011c0%204.819-3.02%208.5-6.5%208.5S4.5%2015.819%204.5%2011%207.52%202.5%2011%202.5s6.5%203.681%206.5%208.5Z%22%2F%3E%3Cpath%20d%3D%22M13.5%2011c0%202.447-.331%204.64-.853%206.206-.262.785-.562%201.384-.872%201.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831%2015.64%208.5%2013.446%208.5%2011s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872%201.777.522%201.565.853%203.76.853%206.206Z%22%2F%3E%3Cpath%20d%3D%22M11%207.5c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138q.07-.058.224-.138c.299-.151.763-.302%201.379-.434C7.378%205.666%209.091%205.5%2011%205.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0%209c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138%201.3%201.3%200%200%201%20.224-.138c.299-.151.763-.302%201.379-.434C7.378%2014.666%209.091%2014.5%2011%2014.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138a1.3%201.3%200%200%201-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0-4c-2.46%200-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5%201.5%200%200%201-.39-.272.3.3%200%200%201-.047-.064.3.3%200%200%201%20.048-.064c.066-.073.189-.167.389-.272.399-.21%201.009-.413%201.805-.59C6.328%209.722%208.54%209.5%2011%209.5s4.672.222%206.256.574c.795.177%201.405.38%201.804.59.2.105.323.2.39.272a.3.3%200%200%201%20.047.064.3.3%200%200%201-.048.064%201.4%201.4%200%200%201-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0%20.018v.002zm17.002.002v-.002zm0-.018v-.002z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22none%22%20stroke%3D%22%2333b5e5%22%20viewBox%3D%220%200%2022%2022%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%228.5%22%2F%3E%3Cpath%20d%3D%22M17.5%2011c0%204.819-3.02%208.5-6.5%208.5S4.5%2015.819%204.5%2011%207.52%202.5%2011%202.5s6.5%203.681%206.5%208.5Z%22%2F%3E%3Cpath%20d%3D%22M13.5%2011c0%202.447-.331%204.64-.853%206.206-.262.785-.562%201.384-.872%201.777-.314.399-.58.517-.775.517s-.461-.118-.775-.517c-.31-.393-.61-.992-.872-1.777C8.831%2015.64%208.5%2013.446%208.5%2011s.331-4.64.853-6.206c.262-.785.562-1.384.872-1.777.314-.399.58-.517.775-.517s.461.118.775.517c.31.393.61.992.872%201.777.522%201.565.853%203.76.853%206.206Z%22%2F%3E%3Cpath%20d%3D%22M11%207.5c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138q.07-.058.224-.138c.299-.151.763-.302%201.379-.434C7.378%205.666%209.091%205.5%2011%205.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138q-.07.058-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0%209c-1.909%200-3.622-.166-4.845-.428-.616-.132-1.08-.283-1.379-.434a1.3%201.3%200%200%201-.224-.138%201.3%201.3%200%200%201%20.224-.138c.299-.151.763-.302%201.379-.434C7.378%2014.666%209.091%2014.5%2011%2014.5s3.622.166%204.845.428c.616.132%201.08.283%201.379.434.105.053.177.1.224.138a1.3%201.3%200%200%201-.224.138c-.299.151-.763.302-1.379.434-1.223.262-2.936.428-4.845.428Zm0-4c-2.46%200-4.672-.222-6.255-.574-.796-.177-1.406-.38-1.805-.59a1.5%201.5%200%200%201-.39-.272.3.3%200%200%201-.047-.064.3.3%200%200%201%20.048-.064c.066-.073.189-.167.389-.272.399-.21%201.009-.413%201.805-.59C6.328%209.722%208.54%209.5%2011%209.5s4.672.222%206.256.574c.795.177%201.405.38%201.804.59.2.105.323.2.39.272a.3.3%200%200%201%20.047.064.3.3%200%200%201-.048.064%201.4%201.4%200%200%201-.389.272c-.399.21-1.009.413-1.804.59-1.584.352-3.796.574-6.256.574Zm-8.501-1.51v.002zm0%20.018v.002zm17.002.002v-.002zm0-.018v-.002z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20d%3D%22m1.754%2013.406%204.453-4.851%203.09%203.09%203.281%203.277.969-.969-3.309-3.312%203.844-4.121%206.148%206.886h1.082v-.855l-7.207-8.07-4.84%205.187L6.169%206.57l-5.48%205.965v.871ZM.688%2016.844h20.625v1.375H.688Zm0%200%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-terrain-enabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2222%22%20height%3D%2222%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2022%2022%22%3E%3Cpath%20d%3D%22m1.754%2013.406%204.453-4.851%203.09%203.09%203.281%203.277.969-.969-3.309-3.312%203.844-4.121%206.148%206.886h1.082v-.855l-7.207-8.07-4.84%205.187L6.169%206.57l-5.48%205.965v.871ZM.688%2016.844h20.625v1.375H.688Zm0%200%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23333%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23aaa%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e58978%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e54e33%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-waiting .maplibregl-ctrl-icon{animation:maplibregl-spin 2s linear infinite}@media (forced-colors:active){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23fff%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23999%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e58978%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%2333b5e5%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-background-error .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23e54e33%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl button.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3C%2Fsvg%3E")}.maplibregl-ctrl button.maplibregl-ctrl-geolocate:disabled .maplibregl-ctrl-icon{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2229%22%20height%3D%2229%22%20fill%3D%22%23666%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M10%204C9%204%209%205%209%205v.1A5%205%200%200%200%205.1%209H5s-1%200-1%201%201%201%201%201h.1A5%205%200%200%200%209%2014.9v.1s0%201%201%201%201-1%201-1v-.1a5%205%200%200%200%203.9-3.9h.1s1%200%201-1-1-1-1-1h-.1A5%205%200%200%200%2011%205.1V5s0-1-1-1m0%202.5a3.5%203.5%200%201%201%200%207%203.5%203.5%200%201%201%200-7%22%2F%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2210%22%20r%3D%222%22%2F%3E%3Cpath%20fill%3D%22red%22%20d%3D%22m14%205%201%201-9%209-1-1z%22%2F%3E%3C%2Fsvg%3E")}}@keyframes maplibregl-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}a.maplibregl-ctrl-logo{width:88px;height:23px;margin:0 0 -4px -4px;display:block;background-repeat:no-repeat;cursor:pointer;overflow:hidden;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}a.maplibregl-ctrl-logo.maplibregl-compact{width:14px}@media (forced-colors:active){a.maplibregl-ctrl-logo{background-color:transparent;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}@media (forced-colors:active) and (prefers-color-scheme:light){a.maplibregl-ctrl-logo{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2288%22%20height%3D%2223%22%20fill%3D%22none%22%3E%3Cpath%20fill%3D%22%23000%22%20fill-opacity%3D%22.4%22%20fill-rule%3D%22evenodd%22%20d%3D%22M17.408%2016.796h-1.827l2.501-12.095h.198l3.324%206.533.988%202.19.988-2.19%203.258-6.533h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.929%205.644h-.098l-2.914-5.644-.757-1.71-.345%201.71zm1.958-3.42-.726%203.663a1.255%201.255%200%200%201-1.232%201.011h-1.827a1.255%201.255%200%200%201-1.229-1.509l2.501-12.095a1.255%201.255%200%200%201%201.23-1.001h.197a1.25%201.25%200%200%201%201.12.685l3.19%206.273%203.125-6.263a1.25%201.25%200%200%201%201.123-.695h.181a1.255%201.255%200%200%201%201.227.991l1.443%206.71a5%205%200%200%201%20.314-.787l.009-.016a4.6%204.6%200%200%201%201.777-1.887c.782-.46%201.668-.667%202.611-.667a4.6%204.6%200%200%201%201.7.32l.306.134c.21-.16.474-.256.759-.256h1.694a1.255%201.255%200%200%201%201.212.925%201.255%201.255%200%200%201%201.212-.925h1.711c.284%200%20.545.094.755.252.613-.3%201.312-.45%202.075-.45%201.356%200%202.557.445%203.482%201.4q.47.48.763%201.064V4.701a1.255%201.255%200%200%201%201.255-1.255h1.86A1.255%201.255%200%200%201%2054.44%204.7v9.194h2.217c.19%200%20.37.043.532.118v-4.77c0-.356.147-.678.385-.906a2.42%202.42%200%200%201-.682-1.71c0-.665.267-1.253.735-1.7a2.45%202.45%200%200%201%201.722-.674%202.43%202.43%200%200%201%201.705.675q.318.302.504.683V4.7a1.255%201.255%200%200%201%201.255-1.255h1.744A1.255%201.255%200%200%201%2065.812%204.7v3.335a4.8%204.8%200%200%201%201.526-.246c.938%200%201.817.214%202.59.69a4.47%204.47%200%200%201%201.67%201.743v-.98a1.255%201.255%200%200%201%201.256-1.256h1.777c.233%200%20.451.064.639.174a3.4%203.4%200%200%201%201.567-.372c.346%200%20.861.02%201.285.232a1.25%201.25%200%200%201%20.689%201.004%204.7%204.7%200%200%201%20.853-.588c.795-.44%201.675-.647%202.61-.647%201.385%200%202.65.39%203.525%201.396.836.938%201.168%202.173%201.168%203.528q-.001.515-.056%201.051a1.255%201.255%200%200%201-.947%201.09l.408.952a1.255%201.255%200%200%201-.477%201.552c-.418.268-.92.463-1.458.612-.613.171-1.304.244-2.049.244-1.06%200-2.043-.207-2.886-.698l-.015-.008c-.798-.48-1.419-1.135-1.818-1.963l-.004-.008a5.8%205.8%200%200%201-.548-2.512q0-.429.053-.843a1.3%201.3%200%200%201-.333-.086l-.166-.004c-.223%200-.426.062-.643.228-.03.024-.142.139-.142.59v3.883a1.255%201.255%200%200%201-1.256%201.256h-1.777a1.255%201.255%200%200%201-1.256-1.256V15.69l-.032.057a4.8%204.8%200%200%201-1.86%201.833%205.04%205.04%200%200%201-2.484.634%204.5%204.5%200%200%201-1.935-.424%201.25%201.25%200%200%201-.764.258h-1.71a1.255%201.255%200%200%201-1.256-1.255V7.687a2.4%202.4%200%200%201-.428.625c.253.23.412.561.412.93v7.553a1.255%201.255%200%200%201-1.256%201.255h-1.843a1.25%201.25%200%200%201-.894-.373c-.228.23-.544.373-.894.373H51.32a1.255%201.255%200%200%201-1.256-1.255v-1.251l-.061.117a4.7%204.7%200%200%201-1.782%201.884%204.77%204.77%200%200%201-2.485.67%205.6%205.6%200%200%201-1.485-.188l.009%202.764a1.255%201.255%200%200%201-1.255%201.259h-1.729a1.255%201.255%200%200%201-1.255-1.255v-3.537a1.255%201.255%200%200%201-1.167.793h-1.679a1.25%201.25%200%200%201-.77-.263%204.5%204.5%200%200%201-1.945.429c-.885%200-1.724-.21-2.495-.632l-.017-.01a5%205%200%200%201-1.081-.836%201.255%201.255%200%200%201-1.254%201.312h-1.81a1.255%201.255%200%200%201-1.228-.99l-.782-3.625-2.044%203.939a1.25%201.25%200%200%201-1.115.676h-.098a1.25%201.25%200%200%201-1.116-.68l-2.061-3.994zM35.92%2016.63l.207-.114.223-.15q.493-.356.735-.785l.061-.118.033%201.332h1.678V9.242h-1.694l-.033%201.267q-.133-.329-.526-.658l-.032-.028a3.2%203.2%200%200%200-.668-.428l-.27-.12a3.3%203.3%200%200%200-1.235-.23q-1.136-.001-1.974.493a3.36%203.36%200%200%200-1.3%201.382q-.445.89-.444%202.074%200%201.2.51%202.107a3.8%203.8%200%200%200%201.382%201.381%203.9%203.9%200%200%200%201.893.477q.795%200%201.455-.33zm-2.789-5.38q-.576.675-.575%201.762%200%201.102.559%201.794.576.675%201.645.675a2.25%202.25%200%200%200%20.934-.19%202.2%202.2%200%200%200%20.468-.29l.178-.161a2.2%202.2%200%200%200%20.397-.561q.244-.5.244-1.15v-.115q0-.708-.296-1.267l-.043-.077a2.2%202.2%200%200%200-.633-.709l-.13-.086-.047-.028a2.1%202.1%200%200%200-1.073-.285q-1.052%200-1.629.692zm2.316%202.706c.163-.17.28-.407.28-.83v-.114c0-.292-.06-.508-.15-.68a.96.96%200%200%200-.353-.389.85.85%200%200%200-.464-.127c-.4%200-.56.114-.664.239l-.01.012c-.148.174-.275.45-.275.945%200%20.506.122.801.27.99.097.11.266.224.68.224.303%200%20.504-.09.687-.269zm7.545%201.705a2.6%202.6%200%200%200%20.331.423q.319.33.755.548l.173.074q.65.255%201.49.255%201.02%200%201.844-.493a3.45%203.45%200%200%200%201.316-1.4q.493-.904.493-2.089%200-1.909-.988-2.913-.988-1.02-2.584-1.02-.898%200-1.575.347a3%203%200%200%200-.415.262l-.199.166a3.4%203.4%200%200%200-.64.82V9.242h-1.712v11.553h1.729l-.017-5.134zm.53-1.138q.206.29.48.5l.155.11.053.034q.51.296%201.119.297%201.07%200%201.645-.675.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.435%200-.835.16a2%202%200%200%200-.284.136%202%202%200%200%200-.363.254%202.2%202.2%200%200%200-.46.569l-.082.162a2.6%202.6%200%200%200-.213%201.072v.115q0%20.707.296%201.267l.135.211zm.964-.818a1.1%201.1%200%200%200%20.367.385.94.94%200%200%200%20.476.118c.423%200%20.59-.117.687-.23.159-.194.28-.478.28-.95%200-.53-.133-.8-.266-.952l-.021-.025c-.078-.094-.231-.221-.68-.221a1%201%200%200%200-.503.135l-.012.007a.86.86%200%200%200-.335.343c-.073.133-.132.324-.132.614v.115a1.4%201.4%200%200%200%20.14.66zm15.7-6.222q.347-.346.346-.856a1.05%201.05%200%200%200-.345-.79%201.18%201.18%200%200%200-.84-.329q-.51%200-.855.33a1.05%201.05%200%200%200-.346.79q0%20.51.346.855.345.346.856.346.51%200%20.839-.346zm4.337%209.314.033-1.332q.191.403.59.747l.098.081a4%204%200%200%200%20.316.224l.223.122a3.2%203.2%200%200%200%201.44.322%203.8%203.8%200%200%200%201.875-.477%203.5%203.5%200%200%200%201.382-1.366q.527-.89.526-2.09%200-1.184-.444-2.073a3.24%203.24%200%200%200-1.283-1.399q-.823-.51-1.942-.51a3.5%203.5%200%200%200-1.527.344l-.086.043-.165.09a3%203%200%200%200-.33.214q-.432.315-.656.707a2%202%200%200%200-.099.198l.082-1.283V4.701h-1.744v12.095zm.473-2.509a2.5%202.5%200%200%200%20.566.7q.117.098.245.18l.144.08a2.1%202.1%200%200%200%20.975.232q1.07%200%201.645-.675.576-.69.576-1.778%200-1.102-.576-1.777-.56-.691-1.645-.692a2.2%202.2%200%200%200-1.015.235q-.22.113-.415.282l-.15.142a2.1%202.1%200%200%200-.42.594q-.223.479-.223%201.1v.115q0%20.705.293%201.26zm2.616-.293c.157-.191.28-.479.28-.967%200-.51-.13-.79-.276-.961l-.021-.026c-.082-.1-.232-.225-.67-.225a.87.87%200%200%200-.681.279l-.012.011c-.154.155-.274.38-.274.807v.115c0%20.285.057.499.144.669a1.1%201.1%200%200%200%20.367.405c.137.082.28.123.455.123.423%200%20.59-.118.686-.23zm8.266-3.013q.345-.13.724-.14l.069-.002q.493%200%20.642.099l.247-1.794q-.196-.099-.717-.099a2.3%202.3%200%200%200-.545.063%202%202%200%200%200-.411.148%202.2%202.2%200%200%200-.4.249%202.5%202.5%200%200%200-.485.499%202.7%202.7%200%200%200-.32.581l-.05.137v-1.48h-1.778v7.553h1.777v-3.884q0-.546.159-.943a1.5%201.5%200%200%201%20.466-.636%202.5%202.5%200%200%201%20.399-.253%202%202%200%200%201%20.224-.099zm9.784%202.656.05-.922q0-1.743-.856-2.698-.838-.97-2.584-.97-1.119-.001-2.007.493a3.46%203.46%200%200%200-1.4%201.382q-.493.906-.493%202.106%200%201.07.428%201.975.428.89%201.332%201.432.906.526%202.255.526.973%200%201.668-.185l.044-.012.135-.04q.613-.184.984-.421l-.542-1.267q-.3.162-.642.274l-.297.087q-.51.131-1.3.131-.954%200-1.497-.444a1.6%201.6%200%200%201-.192-.193q-.366-.44-.512-1.234l-.004-.021zm-5.427-1.256-.003.022h3.752v-.138q-.011-.727-.288-1.118a1%201%200%200%200-.156-.176q-.46-.428-1.316-.428-.986%200-1.494.604-.379.45-.494%201.234zm-27.053%202.77V4.7h-1.86v12.095h5.333V15.15zm7.103-5.908v7.553h-1.843V9.242h1.843z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22m19.63%2011.151-.757-1.71-.345%201.71-1.12%205.644h-1.827L18.083%204.7h.197l3.325%206.533.988%202.19.988-2.19L26.839%204.7h.181l2.6%2012.095h-1.81l-1.218-5.644-.362-1.71-.658%201.71-2.93%205.644h-.098l-2.913-5.644zm14.836%205.81q-1.02%200-1.893-.478a3.8%203.8%200%200%201-1.381-1.382q-.51-.906-.51-2.106%200-1.185.444-2.074a3.36%203.36%200%200%201%201.3-1.382q.839-.494%201.974-.494a3.3%203.3%200%200%201%201.234.231%203.3%203.3%200%200%201%20.97.575q.396.33.527.659l.033-1.267h1.694v7.553H37.18l-.033-1.332q-.279.593-1.02%201.053a3.17%203.17%200%200%201-1.662.444zm.296-1.482q.938%200%201.58-.642.642-.66.642-1.711v-.115q0-.708-.296-1.267a2.2%202.2%200%200%200-.807-.872%202.1%202.1%200%200%200-1.119-.313q-1.053%200-1.629.692-.575.675-.575%201.76%200%201.103.559%201.795.577.675%201.645.675zm6.521-6.237h1.711v1.4q.906-1.597%202.83-1.597%201.596%200%202.584%201.02.988%201.005.988%202.914%200%201.185-.493%202.09a3.46%203.46%200%200%201-1.316%201.399%203.5%203.5%200%200%201-1.844.493q-.954%200-1.662-.329a2.67%202.67%200%200%201-1.086-.97l.017%205.134h-1.728zm4.048%206.22q1.07%200%201.645-.674.577-.69.576-1.762%200-1.119-.576-1.777-.558-.675-1.645-.675-.592%200-1.12.296-.51.28-.822.823-.296.527-.296%201.234v.115q0%20.708.296%201.267.313.543.823.855.51.296%201.119.297z%22%2F%3E%3Cpath%20fill%3D%22%23e1e3e9%22%20d%3D%22M51.325%204.7h1.86v10.45h3.473v1.646h-5.333zm7.12%204.542h1.843v7.553h-1.843zm.905-1.415a1.16%201.16%200%200%201-.856-.346%201.17%201.17%200%200%201-.346-.856%201.05%201.05%200%200%201%20.346-.79q.346-.329.856-.329.494%200%20.839.33a1.05%201.05%200%200%201%20.345.79%201.16%201.16%200%200%201-.345.855q-.33.346-.84.346zm7.875%209.133a3.17%203.17%200%200%201-1.662-.444q-.723-.46-1.004-1.053l-.033%201.332h-1.71V4.701h1.743v4.657l-.082%201.283q.279-.658%201.086-1.119a3.5%203.5%200%200%201%201.778-.477q1.119%200%201.942.51a3.24%203.24%200%200%201%201.283%201.4q.445.888.444%202.072%200%201.201-.526%202.09a3.5%203.5%200%200%201-1.382%201.366%203.8%203.8%200%200%201-1.876.477zm-.296-1.481q1.069%200%201.645-.675.577-.69.577-1.778%200-1.102-.577-1.776-.56-.691-1.645-.692a2.12%202.12%200%200%200-1.58.659q-.642.641-.642%201.694v.115q0%20.71.296%201.267a2.4%202.4%200%200%200%20.807.872%202.1%202.1%200%200%200%201.119.313zm5.927-6.237h1.777v1.481q.263-.757.856-1.217a2.14%202.14%200%200%201%201.349-.46q.527%200%20.724.098l-.247%201.794q-.149-.099-.642-.099-.774%200-1.416.494-.626.493-.626%201.58v3.883h-1.777V9.242zm9.534%207.718q-1.35%200-2.255-.526-.904-.543-1.332-1.432a4.6%204.6%200%200%201-.428-1.975q0-1.2.493-2.106a3.46%203.46%200%200%201%201.4-1.382q.889-.495%202.007-.494%201.744%200%202.584.97.855.956.856%202.7%200%20.444-.05.92h-5.43q.18%201.005.708%201.45.542.443%201.497.443.79%200%201.3-.131a4%204%200%200%200%20.938-.362l.542%201.267q-.411.263-1.119.46-.708.198-1.711.197zm1.596-4.558q.016-1.02-.444-1.432-.46-.428-1.316-.428-1.728%200-1.991%201.86z%22%2F%3E%3Cpath%20d%3D%22M5.074%2015.948a.484.657%200%200%200-.486.659v1.84a.484.657%200%200%200%20.486.659h4.101a.484.657%200%200%200%20.486-.659v-1.84a.484.657%200%200%200-.486-.659zm3.56%201.16H5.617v.838h3.017z%22%20style%3D%22fill%3A%23fff%3Bfill-rule%3Aevenodd%3Bstroke-width%3A1.03600001%22%2F%3E%3Cg%20style%3D%22stroke-width%3A1.12603545%22%3E%3Cpath%20d%3D%22M-9.408-1.416c-3.833-.025-7.056%202.912-7.08%206.615-.02%203.08%201.653%204.832%203.107%206.268.903.892%201.721%201.74%202.32%202.902l-.525-.004c-.543-.003-.992.304-1.24.639a1.87%201.87%200%200%200-.362%201.121l-.011%201.877c-.003.402.104.787.347%201.125.244.338.688.653%201.23.656l4.142.028c.542.003.99-.306%201.238-.641a1.87%201.87%200%200%200%20.363-1.121l.012-1.875a1.87%201.87%200%200%200-.348-1.127c-.243-.338-.688-.653-1.23-.656l-.518-.004c.597-1.145%201.425-1.983%202.348-2.87%201.473-1.414%203.18-3.149%203.2-6.226-.016-3.59-2.923-6.684-6.993-6.707m-.006%201.1v.002c3.274.02%205.92%202.532%205.9%205.6-.017%202.706-1.39%204.026-2.863%205.44-1.034.994-2.118%202.033-2.814%203.633-.018.041-.052.055-.075.065q-.013.004-.02.01a.34.34%200%200%201-.226.084.34.34%200%200%201-.224-.086l-.092-.077c-.699-1.615-1.768-2.669-2.781-3.67-1.454-1.435-2.797-2.762-2.78-5.478.02-3.067%202.7-5.545%205.975-5.523m-.02%202.826c-1.62-.01-2.944%201.315-2.955%202.96-.01%201.646%201.295%202.988%202.916%202.999h.002c1.621.01%202.943-1.316%202.953-2.961.011-1.646-1.294-2.988-2.916-2.998m-.005%201.1c1.017.006%201.829.83%201.822%201.89s-.83%201.874-1.848%201.867c-1.018-.006-1.829-.83-1.822-1.89s.83-1.874%201.848-1.868m-2.155%2011.857%204.14.025c.271.002.49.305.487.676l-.013%201.875c-.003.37-.224.67-.495.668l-4.14-.025c-.27-.002-.487-.306-.485-.676l.012-1.875c.003-.37.224-.67.494-.668%22%20style%3D%22color%3A%23000%3Bfont-style%3Anormal%3Bfont-variant%3Anormal%3Bfont-weight%3A400%3Bfont-stretch%3Anormal%3Bfont-size%3Amedium%3Bline-height%3Anormal%3Bfont-family%3Asans-serif%3Bfont-variant-ligatures%3Anormal%3Bfont-variant-position%3Anormal%3Bfont-variant-caps%3Anormal%3Bfont-variant-numeric%3Anormal%3Bfont-variant-alternates%3Anormal%3Bfont-feature-settings%3Anormal%3Btext-indent%3A0%3Btext-align%3Astart%3Btext-decoration%3Anone%3Btext-decoration-line%3Anone%3Btext-decoration-style%3Asolid%3Btext-decoration-color%3A%23000%3Bletter-spacing%3Anormal%3Bword-spacing%3Anormal%3Btext-transform%3Anone%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Btext-orientation%3Amixed%3Bdominant-baseline%3Aauto%3Bbaseline-shift%3Abaseline%3Btext-anchor%3Astart%3Bwhite-space%3Anormal%3Bshape-padding%3A0%3Bclip-rule%3Aevenodd%3Bdisplay%3Ainline%3Boverflow%3Avisible%3Bvisibility%3Avisible%3Bopacity%3A1%3Bisolation%3Aauto%3Bmix-blend-mode%3Anormal%3Bcolor-interpolation%3AsRGB%3Bcolor-interpolation-filters%3AlinearRGB%3Bsolid-color%3A%23000%3Bsolid-opacity%3A1%3Bvector-effect%3Anone%3Bfill%3A%23000%3Bfill-opacity%3A.4%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-linecap%3Abutt%3Bstroke-linejoin%3Amiter%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-dashoffset%3A0%3Bstroke-opacity%3A1%3Bcolor-rendering%3Aauto%3Bimage-rendering%3Aauto%3Bshape-rendering%3Aauto%3Btext-rendering%3Aauto%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-9.415-.316C-12.69-.338-15.37%202.14-15.39%205.207c-.017%202.716%201.326%204.041%202.78%205.477%201.013%201%202.081%202.055%202.78%203.67l.092.076a.34.34%200%200%200%20.225.086.34.34%200%200%200%20.227-.083l.019-.01c.022-.009.057-.024.074-.064.697-1.6%201.78-2.64%202.814-3.634%201.473-1.414%202.847-2.733%202.864-5.44.02-3.067-2.627-5.58-5.901-5.601m-.057%208.784c1.621.011%202.944-1.315%202.955-2.96.01-1.646-1.295-2.988-2.916-2.999-1.622-.01-2.945%201.315-2.955%202.96s1.295%202.989%202.916%203%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23e1e3e9%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3Cpath%20d%3D%22M-11.594%2015.465c-.27-.002-.492.297-.494.668l-.012%201.876c-.003.371.214.673.485.675l4.14.027c.271.002.492-.298.495-.668l.012-1.877c.003-.37-.215-.672-.485-.674z%22%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23fff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke%3Anone%3Bstroke-width%3A2.47727823%3Bstroke-miterlimit%3A4%3Bstroke-dasharray%3Anone%3Bstroke-opacity%3A.4%22%20transform%3D%22translate(15.553%202.85)scale(.88807)%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl.maplibregl-ctrl-attrib{padding:0 5px;background-color:hsla(0,0%,100%,.5);margin:0}@media screen{.maplibregl-ctrl-attrib.maplibregl-compact{min-height:20px;padding:2px 24px 2px 0;margin:10px;position:relative;background-color:#fff;color:#000;border-radius:12px;box-sizing:content-box}.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 28px 2px 8px;visibility:visible}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact-show,.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact-show{padding:2px 8px 2px 28px;border-radius:12px}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-inner{display:none}.maplibregl-ctrl-attrib-button{display:none;cursor:pointer;position:absolute;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E");background-color:hsla(0,0%,100%,.5);width:24px;height:24px;box-sizing:border-box;border-radius:12px;outline:none;top:0;right:0;border:0}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button{-webkit-appearance:none;-moz-appearance:none;appearance:none;list-style:none}.maplibregl-ctrl-attrib summary.maplibregl-ctrl-attrib-button::-webkit-details-marker{display:none}.maplibregl-ctrl-bottom-left .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-top-left .maplibregl-ctrl-attrib-button{left:0}.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner{display:block}.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl-bottom-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;right:0}.maplibregl-ctrl-top-right>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;right:0}.maplibregl-ctrl-top-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{top:0;left:0}.maplibregl-ctrl-bottom-left>.maplibregl-ctrl-attrib.maplibregl-compact:after{bottom:0;left:0}}@media screen and (forced-colors:active){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E")}}@media screen and (forced-colors:active) and (prefers-color-scheme:light){.maplibregl-ctrl-attrib.maplibregl-compact:after{background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill-rule%3D%22evenodd%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M4%2010a6%206%200%201%200%2012%200%206%206%200%201%200-12%200m5-3a1%201%200%201%200%202%200%201%201%200%201%200-2%200m0%203a1%201%200%201%201%202%200v3a1%201%200%201%201-2%200%22%2F%3E%3C%2Fsvg%3E")}}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-attrib-empty{display:none}.maplibregl-ctrl-scale{background-color:hsla(0,0%,100%,.75);font-size:10px;white-space:nowrap;border-color:#333;border-style:none solid solid;border-width:medium 2px 2px;padding:0 5px;color:#333;box-sizing:border-box}.maplibregl-popup{position:absolute;top:0;left:0;display:flex;will-change:transform;pointer-events:none}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{width:0;height:0;border:10px solid transparent;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-top:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-top:none;border-left:none;border-bottom-color:#fff}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-top:none;border-right:none;border-bottom-color:#fff}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:#fff}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:#fff}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:#fff}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-right:none;border-left-color:#fff}[dir=rtl] .maplibregl-popup-anchor-left{flex-direction:row-reverse}[dir=rtl] .maplibregl-popup-anchor-right{flex-direction:row}[dir=rtl] .maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-start}[dir=rtl] .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-end}[dir=rtl] .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-start}.maplibregl-popup-close-button{position:absolute;right:0;top:0;border:0;border-radius:0 3px 0 0;cursor:pointer;background-color:transparent}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{position:relative;background:#fff;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{position:absolute;top:0;left:0;will-change:transform;transition:opacity .2s}.maplibregl-marker-draggable{cursor:grab}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;width:15px;height:15px;border-radius:50%}.maplibregl-user-location-dot:before{content:"";position:absolute;animation:maplibregl-user-location-dot-pulse 2s infinite}.maplibregl-user-location-dot:after{border-radius:50%;border:2px solid #fff;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px;box-sizing:border-box;box-shadow:0 0 3px rgba(0,0,0,.35)}@media (prefers-reduced-motion:reduce){.maplibregl-user-location-dot:before{animation:none}}@keyframes maplibregl-user-location-dot-pulse{0%{transform:scale(1);opacity:1}70%{transform:scale(3);opacity:0}to{transform:scale(1);opacity:0}}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;width:1px;height:1px;border-radius:100%}.maplibregl-crosshair,.maplibregl-crosshair .maplibregl-interactive,.maplibregl-crosshair .maplibregl-interactive:active{cursor:crosshair}.maplibregl-boxzoom{position:absolute;top:0;left:0;width:0;height:0;background:#fff;border:2px dotted #202020;opacity:.5}.maplibregl-cooperative-gesture-screen{background:rgba(0,0,0,.4);position:absolute;inset:0;display:flex;justify-content:center;align-items:center;color:#fff;padding:1rem;font-size:1.4em;line-height:1.2;opacity:0;pointer-events:none;transition:opacity 1s ease 1s;z-index:99999}.maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1;transition:opacity .05s}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:none}@media (hover:none),(pointer:coarse){.maplibregl-cooperative-gesture-screen .maplibregl-desktop-message{display:none}.maplibregl-cooperative-gesture-screen .maplibregl-mobile-message{display:block}}.maplibregl-pseudo-fullscreen{position:fixed!important;width:100%!important;height:100%!important;top:0!important;left:0!important;z-index:99999}`;
           document.head.appendChild(e);
         }
       })();
@@ -17714,8 +17817,8 @@ var Plotly = (() => {
               registerLocale(newModule);
               break;
             case "apiMethod":
-              var name = newModule.name;
-              exports.apiMethodRegistry[name] = newModule.fn;
+              var name4 = newModule.name;
+              exports.apiMethodRegistry[name4] = newModule.fn;
               break;
             default:
               throw new Error("Invalid module was attempted to be registered!");
@@ -17739,15 +17842,15 @@ var Plotly = (() => {
         }
         return !!_module.categories[category];
       };
-      exports.getComponentMethod = function(name, method) {
-        var _module = exports.componentsRegistry[name];
+      exports.getComponentMethod = function(name4, method) {
+        var _module = exports.componentsRegistry[name4];
         if (!_module) return noop;
         return _module[method] || noop;
       };
       exports.call = function() {
-        var name = arguments[0];
+        var name4 = arguments[0];
         var args = [].slice.call(arguments, 1);
-        return exports.apiMethodRegistry[name].apply(null, args);
+        return exports.apiMethodRegistry[name4].apply(null, args);
       };
       function registerTraceModule(_module) {
         var thisType = _module.name;
@@ -17804,19 +17907,19 @@ var Plotly = (() => {
         if (typeof _module.name !== "string") {
           throw new Error("Component module *name* must be a string.");
         }
-        var name = _module.name;
-        exports.componentsRegistry[name] = _module;
+        var name4 = _module.name;
+        exports.componentsRegistry[name4] = _module;
         if (_module.layoutAttributes) {
           if (_module.layoutAttributes._isLinkedToArray) {
-            pushUnique(exports.layoutArrayContainers, name);
+            pushUnique(exports.layoutArrayContainers, name4);
           }
           findArrayRegexps(_module);
         }
         for (var traceType in exports.modules) {
-          mergeComponentAttrsToTrace(name, traceType);
+          mergeComponentAttrsToTrace(name4, traceType);
         }
         for (var subplotName in exports.subplotsRegistry) {
-          mergeComponentAttrsToSubplot(name, subplotName);
+          mergeComponentAttrsToSubplot(name4, subplotName);
         }
         if (_module.schema && _module.schema.layout) {
           extendDeepAll(baseLayoutAttributes, _module.schema.layout);
@@ -17890,13 +17993,13 @@ var Plotly = (() => {
       var isNumeric2 = require_fast_isnumeric();
       var Loggers = require_loggers();
       var mod2 = (init_mod(), __toCommonJS(mod_exports)).mod;
-      var constants2 = require_numerical();
+      var constants2 = (init_numerical(), __toCommonJS(numerical_exports));
       var BADNUM2 = constants2.BADNUM;
-      var ONEDAY = constants2.ONEDAY;
-      var ONEHOUR = constants2.ONEHOUR;
-      var ONEMIN = constants2.ONEMIN;
-      var ONESEC = constants2.ONESEC;
-      var EPOCHJD = constants2.EPOCHJD;
+      var ONEDAY2 = constants2.ONEDAY;
+      var ONEHOUR2 = constants2.ONEHOUR;
+      var ONEMIN2 = constants2.ONEMIN;
+      var ONESEC2 = constants2.ONESEC;
+      var EPOCHJD2 = constants2.EPOCHJD;
       var Registry = require_registry();
       var utcFormat = require_d3_time_format().utcFormat;
       var DATETIME_REGEXP = /^\s*(-?\d\d\d\d|\d\d)(-(\d?\d)(-(\d?\d)([ Tt]([01]?\d|2[0-3])(:([0-5]\d)(:([0-5]\d(\.\d+)?))?(Z|z|[+\-]\d\d(:?\d\d)?)?)?)?)?)?\s*$/m;
@@ -17909,7 +18012,7 @@ var Plotly = (() => {
         var tick0 = _dateTick0(calendar, !!dayOfWeek);
         if (dayOfWeek < 2) return tick0;
         var v = exports.dateTime2ms(tick0, calendar);
-        v += ONEDAY * (dayOfWeek - 1);
+        v += ONEDAY2 * (dayOfWeek - 1);
         return exports.ms2DateTime(v, 0, calendar);
       };
       function _dateTick0(calendar, sunday) {
@@ -17933,10 +18036,10 @@ var Plotly = (() => {
       var MAX_MS;
       exports.dateTime2ms = function(s, calendar) {
         if (exports.isJSDate(s)) {
-          var tzOffset = s.getTimezoneOffset() * ONEMIN;
-          var offsetTweak = (s.getUTCMinutes() - s.getMinutes()) * ONEMIN + (s.getUTCSeconds() - s.getSeconds()) * ONESEC + (s.getUTCMilliseconds() - s.getMilliseconds());
+          var tzOffset = s.getTimezoneOffset() * ONEMIN2;
+          var offsetTweak = (s.getUTCMinutes() - s.getMinutes()) * ONEMIN2 + (s.getUTCSeconds() - s.getSeconds()) * ONESEC2 + (s.getUTCMilliseconds() - s.getMilliseconds());
           if (offsetTweak) {
-            var comb = 3 * ONEMIN;
+            var comb = 3 * ONEMIN2;
             tzOffset = tzOffset - comb / 2 + mod2(offsetTweak - tzOffset + comb / 2, comb);
           }
           s = Number(s) - tzOffset;
@@ -17977,7 +18080,7 @@ var Plotly = (() => {
             return BADNUM2;
           }
           if (!cDate) return BADNUM2;
-          return (cDate.toJD() - EPOCHJD) * ONEDAY + H * ONEHOUR + M * ONEMIN + S * ONESEC;
+          return (cDate.toJD() - EPOCHJD2) * ONEDAY2 + H * ONEHOUR2 + M * ONEMIN2 + S * ONESEC2;
         }
         if (y.length === 2) {
           y = (Number(y) + 2e3 - YFIRST) % 100 + YFIRST;
@@ -17987,7 +18090,7 @@ var Plotly = (() => {
         date.setUTCFullYear(y);
         if (date.getUTCMonth() !== m) return BADNUM2;
         if (date.getUTCDate() !== d) return BADNUM2;
-        return date.getTime() + S * ONESEC;
+        return date.getTime() + S * ONESEC2;
       };
       MIN_MS = exports.MIN_MS = exports.dateTime2ms("-9999");
       MAX_MS = exports.MAX_MS = exports.dateTime2ms("9999-12-31 23:59:59.9999");
@@ -17997,9 +18100,9 @@ var Plotly = (() => {
       function lpad(val, digits) {
         return String(val + Math.pow(10, digits)).slice(1);
       }
-      var NINETYDAYS = 90 * ONEDAY;
-      var THREEHOURS = 3 * ONEHOUR;
-      var FIVEMIN = 5 * ONEMIN;
+      var NINETYDAYS = 90 * ONEDAY2;
+      var THREEHOURS = 3 * ONEHOUR2;
+      var FIVEMIN = 5 * ONEMIN2;
       exports.ms2DateTime = function(ms, r, calendar) {
         if (typeof ms !== "number" || !(ms >= MIN_MS && ms <= MAX_MS)) return BADNUM2;
         if (!r) r = 0;
@@ -18007,8 +18110,8 @@ var Plotly = (() => {
         var msRounded = Math.round(ms - msecTenths / 10);
         var dateStr, h, m, s, msec10, d;
         if (isWorldCalendar(calendar)) {
-          var dateJD = Math.floor(msRounded / ONEDAY) + EPOCHJD;
-          var timeMs = Math.floor(mod2(ms, ONEDAY));
+          var dateJD = Math.floor(msRounded / ONEDAY2) + EPOCHJD2;
+          var timeMs = Math.floor(mod2(ms, ONEDAY2));
           try {
             dateStr = Registry.getComponentMethod("calendars", "getCal")(calendar).fromJD(dateJD).formatDate("yyyy-mm-dd");
           } catch (e) {
@@ -18019,10 +18122,10 @@ var Plotly = (() => {
           } else {
             while (dateStr.length < 10) dateStr = "0" + dateStr;
           }
-          h = r < NINETYDAYS ? Math.floor(timeMs / ONEHOUR) : 0;
-          m = r < NINETYDAYS ? Math.floor(timeMs % ONEHOUR / ONEMIN) : 0;
-          s = r < THREEHOURS ? Math.floor(timeMs % ONEMIN / ONESEC) : 0;
-          msec10 = r < FIVEMIN ? timeMs % ONESEC * 10 + msecTenths : 0;
+          h = r < NINETYDAYS ? Math.floor(timeMs / ONEHOUR2) : 0;
+          m = r < NINETYDAYS ? Math.floor(timeMs % ONEHOUR2 / ONEMIN2) : 0;
+          s = r < THREEHOURS ? Math.floor(timeMs % ONEMIN2 / ONESEC2) : 0;
+          msec10 = r < FIVEMIN ? timeMs % ONESEC2 * 10 + msecTenths : 0;
         } else {
           d = new Date(msRounded);
           dateStr = utcFormat("%Y-%m-%d")(d);
@@ -18034,7 +18137,7 @@ var Plotly = (() => {
         return includeTime(dateStr, h, m, s, msec10);
       };
       exports.ms2DateTimeLocal = function(ms) {
-        if (!(ms >= MIN_MS + ONEDAY && ms <= MAX_MS - ONEDAY)) return BADNUM2;
+        if (!(ms >= MIN_MS + ONEDAY2 && ms <= MAX_MS - ONEDAY2)) return BADNUM2;
         var msecTenths = Math.floor(mod2(ms + 0.05, 1) * 10);
         var d = new Date(Math.round(ms - msecTenths / 10));
         var dateStr = timeFormat("%Y-%m-%d")(d);
@@ -18105,11 +18208,11 @@ var Plotly = (() => {
       }
       var MAXSECONDS = [59, 59.9, 59.99, 59.999, 59.9999];
       function formatTime(x, tr) {
-        var timePart = mod2(x + 0.05, ONEDAY);
-        var timeStr = lpad(Math.floor(timePart / ONEHOUR), 2) + ":" + lpad(mod2(Math.floor(timePart / ONEMIN), 60), 2);
+        var timePart = mod2(x + 0.05, ONEDAY2);
+        var timeStr = lpad(Math.floor(timePart / ONEHOUR2), 2) + ":" + lpad(mod2(Math.floor(timePart / ONEMIN2), 60), 2);
         if (tr !== "M") {
           if (!isNumeric2(tr)) tr = 0;
-          var sec = Math.min(mod2(x / ONESEC, 60), MAXSECONDS[tr]);
+          var sec = Math.min(mod2(x / ONESEC2, 60), MAXSECONDS[tr]);
           var secStr = (100 + sec).toFixed(tr).slice(1);
           if (tr > 0) {
             secStr = secStr.replace(/0+$/, "").replace(/[\.]$/, "");
@@ -18131,19 +18234,19 @@ var Plotly = (() => {
         }
         return modDateFormat(fmt, x, formatter, calendar);
       };
-      var THREEDAYS = 3 * ONEDAY;
+      var THREEDAYS = 3 * ONEDAY2;
       exports.incrementMonth = function(ms, dMonth, calendar) {
         calendar = isWorldCalendar(calendar) && calendar;
-        var timeMs = mod2(ms, ONEDAY);
+        var timeMs = mod2(ms, ONEDAY2);
         ms = Math.round(ms - timeMs);
         if (calendar) {
           try {
-            var dateJD = Math.round(ms / ONEDAY) + EPOCHJD;
+            var dateJD = Math.round(ms / ONEDAY2) + EPOCHJD2;
             var calInstance = Registry.getComponentMethod("calendars", "getCal")(calendar);
             var cDate = calInstance.fromJD(dateJD);
             if (dMonth % 12) calInstance.add(cDate, dMonth, "m");
             else calInstance.add(cDate, dMonth / 12, "y");
-            return (cDate.toJD() - EPOCHJD) * ONEDAY + timeMs;
+            return (cDate.toJD() - EPOCHJD2) * ONEDAY2 + timeMs;
           } catch (e) {
             Loggers.error("invalid ms " + ms + " in calendar " + calendar);
           }
@@ -18165,10 +18268,10 @@ var Plotly = (() => {
             blankCount++;
             continue;
           }
-          if (di % ONEDAY) continue;
+          if (di % ONEDAY2) continue;
           if (calInstance) {
             try {
-              d = calInstance.fromJD(di / ONEDAY + EPOCHJD);
+              d = calInstance.fromJD(di / ONEDAY2 + EPOCHJD2);
               if (d.day() === 1) {
                 if (d.month() === 1) exactYears++;
                 else exactMonths++;
@@ -18212,7 +18315,7 @@ var Plotly = (() => {
       var isNumeric2 = require_fast_isnumeric();
       var loggers = require_loggers();
       var identity = require_identity2();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var roundingError = 1e-9;
       exports.findBin = function(val, bins, linelow) {
         if (isNumeric2(bins.start)) {
@@ -18769,9 +18872,9 @@ var Plotly = (() => {
     "src/lib/clear_responsive.js"(exports, module) {
       "use strict";
       module.exports = function clearResponsive(gd) {
-        if (gd._responsiveChartHandler) {
-          window.removeEventListener("resize", gd._responsiveChartHandler);
-          delete gd._responsiveChartHandler;
+        if (gd._clearResponsive) {
+          gd._clearResponsive();
+          delete gd._clearResponsive;
         }
       };
     }
@@ -18977,14 +19080,14 @@ var Plotly = (() => {
   function cleanNumber(v) {
     if (typeof v === "string") v = v.replace(JUNK, "");
     if ((0, import_fast_isnumeric.default)(v)) return Number(v);
-    return import_numerical.BADNUM;
+    return BADNUM;
   }
-  var import_fast_isnumeric, import_numerical, JUNK, clean_number_default;
+  var import_fast_isnumeric, JUNK, clean_number_default;
   var init_clean_number = __esm({
     "src/lib/clean_number.ts"() {
       "use strict";
       import_fast_isnumeric = __toESM(require_fast_isnumeric());
-      import_numerical = __toESM(require_numerical());
+      init_numerical();
       JUNK = /^['"%,$#\s']+|[, ]|['"%,$#\s']+$/g;
       clean_number_default = cleanNumber;
     }
@@ -19026,11 +19129,12 @@ var Plotly = (() => {
       var utcFormat = require_d3_time_format().utcFormat;
       var d3Format = require_d3_format().format;
       var isNumeric2 = require_fast_isnumeric();
-      var numConstants = require_numerical();
+      var numConstants = (init_numerical(), __toCommonJS(numerical_exports));
       var MAX_SAFE = numConstants.FP_SAFE;
       var MIN_SAFE = -MAX_SAFE;
       var BADNUM2 = numConstants.BADNUM;
-      var lib = module.exports = {};
+      var lib = {};
+      module.exports = lib;
       lib.adjustFormat = function adjustFormat(formatStr) {
         if (!formatStr || /^\d[.]\df/.test(formatStr) || /[.]\d%/.test(formatStr)) return formatStr;
         if (formatStr === "0.f") return "~f";
@@ -19675,18 +19779,18 @@ var Plotly = (() => {
             }
           }
           if (value === void 0) {
-            const { count, max, name } = opts;
+            const { count, max, name: name4 } = opts;
             const fallbackValue = fallback === false ? match : fallback;
             if (count < max) {
               lib.warn(
                 [
-                  `Variable '${key}' in ${name} could not be found!`,
+                  `Variable '${key}' in ${name4} could not be found!`,
                   "Please verify that the template is correct.",
                   `Using value: '${fallbackValue}'.`
                 ].join(" ")
               );
             }
-            if (count === max) lib.warn(`Too many '${name}' warnings - additional warnings will be suppressed.`);
+            if (count === max) lib.warn(`Too many '${name4}' warnings - additional warnings will be suppressed.`);
             opts.count++;
             return fallbackValue;
           }
@@ -20258,10 +20362,10 @@ var Plotly = (() => {
         }
         return ret;
       }
-      function once(emitter, name) {
+      function once(emitter, name4) {
         return new Promise(function(resolve, reject) {
           function errorListener(err) {
-            emitter.removeListener(name, resolver);
+            emitter.removeListener(name4, resolver);
             reject(err);
           }
           function resolver() {
@@ -20271,8 +20375,8 @@ var Plotly = (() => {
             resolve([].slice.call(arguments));
           }
           ;
-          eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
-          if (name !== "error") {
+          eventTargetAgnosticAddListener(emitter, name4, resolver, { once: true });
+          if (name4 !== "error") {
             addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
           }
         });
@@ -20282,17 +20386,17 @@ var Plotly = (() => {
           eventTargetAgnosticAddListener(emitter, "error", handler, flags);
         }
       }
-      function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+      function eventTargetAgnosticAddListener(emitter, name4, listener, flags) {
         if (typeof emitter.on === "function") {
           if (flags.once) {
-            emitter.once(name, listener);
+            emitter.once(name4, listener);
           } else {
-            emitter.on(name, listener);
+            emitter.on(name4, listener);
           }
         } else if (typeof emitter.addEventListener === "function") {
-          emitter.addEventListener(name, function wrapListener(arg) {
+          emitter.addEventListener(name4, function wrapListener(arg) {
             if (flags.once) {
-              emitter.removeEventListener(name, wrapListener);
+              emitter.removeEventListener(name4, wrapListener);
             }
             listener(arg);
           });
@@ -20633,7 +20737,7 @@ var Plotly = (() => {
         return recurseIntoValObject(valObject, parts, 1);
       };
       function layoutHeadAttr(fullLayout, head) {
-        var i, key, _module, attributes3;
+        var i, key, _module, attributes4;
         var basePlotModules = fullLayout._basePlotModules;
         if (basePlotModules) {
           var out;
@@ -20651,9 +20755,9 @@ var Plotly = (() => {
         var modules = fullLayout._modules;
         if (modules) {
           for (i = 0; i < modules.length; i++) {
-            attributes3 = modules[i].layoutAttributes;
-            if (attributes3 && head in attributes3) {
-              return attributes3[head];
+            attributes4 = modules[i].layoutAttributes;
+            if (attributes4 && head in attributes4) {
+              return attributes4[head];
             }
           }
         }
@@ -20709,40 +20813,40 @@ var Plotly = (() => {
       function getTraceAttributes(type) {
         var _module, basePlotModule;
         _module = Registry.modules[type]._module, basePlotModule = _module.basePlotModule;
-        var attributes3 = {};
-        attributes3.type = null;
+        var attributes4 = {};
+        attributes4.type = null;
         var copyBaseAttributes = extendDeepAll({}, baseAttributes);
         var copyModuleAttributes = extendDeepAll({}, _module.attributes);
         exports.crawl(copyModuleAttributes, function(attr, attrName, attrs, level, fullAttrString) {
           nestedProperty(copyBaseAttributes, fullAttrString).set(void 0);
           if (attr === void 0) nestedProperty(copyModuleAttributes, fullAttrString).set(void 0);
         });
-        extendDeepAll(attributes3, copyBaseAttributes);
+        extendDeepAll(attributes4, copyBaseAttributes);
         if (Registry.traceIs(type, "noOpacity")) {
-          delete attributes3.opacity;
+          delete attributes4.opacity;
         }
         if (!Registry.traceIs(type, "showLegend")) {
-          delete attributes3.showlegend;
-          delete attributes3.legendgroup;
+          delete attributes4.showlegend;
+          delete attributes4.legendgroup;
         }
         if (Registry.traceIs(type, "noHover")) {
-          delete attributes3.hoverinfo;
-          delete attributes3.hoverlabel;
+          delete attributes4.hoverinfo;
+          delete attributes4.hoverlabel;
         }
         if (!_module.selectPoints) {
-          delete attributes3.selectedpoints;
+          delete attributes4.selectedpoints;
         }
-        extendDeepAll(attributes3, copyModuleAttributes);
+        extendDeepAll(attributes4, copyModuleAttributes);
         if (basePlotModule.attributes) {
-          extendDeepAll(attributes3, basePlotModule.attributes);
+          extendDeepAll(attributes4, basePlotModule.attributes);
         }
-        attributes3.type = type;
+        attributes4.type = type;
         var out = {
           meta: _module.meta || {},
           categories: _module.categories || {},
           animatable: Boolean(_module.animatable),
           type,
-          attributes: formatAttributes(attributes3)
+          attributes: formatAttributes(attributes4)
         };
         if (_module.layoutAttributes) {
           var layoutAttributes = {};
@@ -20877,8 +20981,8 @@ var Plotly = (() => {
         valType: "string",
         editType: "calc"
       };
-      exports.templatedArray = function(name, attrs) {
-        attrs._isLinkedToArray = name;
+      exports.templatedArray = function(name4, attrs) {
+        attrs._isLinkedToArray = name4;
         attrs.name = templateAttrs.name;
         attrs[TEMPLATEITEMNAME] = templateAttrs[TEMPLATEITEMNAME];
         return attrs;
@@ -20909,17 +21013,17 @@ var Plotly = (() => {
           // TODO: function to figure out what's left & what didn't work
         };
       };
-      exports.newContainer = function(container, name, baseName) {
+      exports.newContainer = function(container, name4, baseName) {
         var template = container._template;
-        var part = template && (template[name] || baseName && template[baseName]);
+        var part = template && (template[name4] || baseName && template[baseName]);
         if (!Lib.isPlainObject(part)) part = null;
-        var out = container[name] = { _template: part };
+        var out = container[name4] = { _template: part };
         return out;
       };
-      exports.arrayTemplater = function(container, name, inclusionAttr) {
+      exports.arrayTemplater = function(container, name4, inclusionAttr) {
         var template = container._template;
-        var defaultsTemplate = template && template[arrayDefaultKey(name)];
-        var templateItems = template && template[name];
+        var defaultsTemplate = template && template[arrayDefaultKey(name4)];
+        var templateItems = template && template[name4];
         if (!Array.isArray(templateItems) || !templateItems.length) {
           templateItems = [];
         }
@@ -20947,16 +21051,16 @@ var Plotly = (() => {
           var out = [];
           for (var i = 0; i < templateItems.length; i++) {
             var templateItem = templateItems[i];
-            var name2 = templateItem.name;
-            if (validItemName(name2) && !usedNames[name2]) {
+            var name5 = templateItem.name;
+            if (validItemName(name5) && !usedNames[name5]) {
               var outi = {
                 _template: templateItem,
-                name: name2,
-                _input: { _templateitemname: name2 }
+                name: name5,
+                _input: { _templateitemname: name5 }
               };
               outi[TEMPLATEITEMNAME] = templateItem[TEMPLATEITEMNAME];
               out.push(outi);
-              usedNames[name2] = 1;
+              usedNames[name5] = 1;
             }
           }
           return out;
@@ -20966,15 +21070,15 @@ var Plotly = (() => {
           defaultItems
         };
       };
-      function validItemName(name) {
-        return name && typeof name === "string";
+      function validItemName(name4) {
+        return name4 && typeof name4 === "string";
       }
-      function arrayDefaultKey(name) {
-        var lastChar = name.length - 1;
-        if (name.charAt(lastChar) !== "s") {
-          Lib.warn("bad argument to arrayDefaultKey: " + name);
+      function arrayDefaultKey(name4) {
+        var lastChar = name4.length - 1;
+        if (name4.charAt(lastChar) !== "s") {
+          Lib.warn("bad argument to arrayDefaultKey: " + name4);
         }
-        return name.slice(0, -1) + "defaults";
+        return name4.slice(0, -1) + "defaults";
       }
       exports.arrayDefaultKey = arrayDefaultKey;
       exports.arrayEditor = function(parentIn, containerStr, itemOut) {
@@ -21024,70 +21128,78 @@ var Plotly = (() => {
     }
   });
 
-  // src/plots/cartesian/constants.js
-  var require_constants2 = __commonJS({
-    "src/plots/cartesian/constants.js"(exports, module) {
+  // src/plots/cartesian/constants.ts
+  var constants_exports2 = {};
+  __export(constants_exports2, {
+    AX_ID_PATTERN: () => AX_ID_PATTERN,
+    AX_NAME_PATTERN: () => AX_NAME_PATTERN,
+    DFLTRANGEX: () => DFLTRANGEX,
+    DFLTRANGEY: () => DFLTRANGEY,
+    DRAGGERSIZE: () => DRAGGERSIZE,
+    HOUR_PATTERN: () => HOUR_PATTERN,
+    MINDRAG: () => MINDRAG,
+    MINZOOM: () => MINZOOM,
+    REDRAWDELAY: () => REDRAWDELAY,
+    SUBPLOT_PATTERN: () => SUBPLOT_PATTERN,
+    WEEKDAY_PATTERN: () => WEEKDAY_PATTERN,
+    attrRegex: () => attrRegex,
+    clipOnAxisFalseQuery: () => clipOnAxisFalseQuery,
+    idRegex: () => idRegex,
+    layerValue2layerClass: () => layerValue2layerClass,
+    traceLayerClasses: () => traceLayerClasses,
+    xAxisMatch: () => xAxisMatch,
+    yAxisMatch: () => yAxisMatch,
+    zindexSeparator: () => zindexSeparator
+  });
+  var idRegex, attrRegex, xAxisMatch, yAxisMatch, AX_ID_PATTERN, AX_NAME_PATTERN, SUBPLOT_PATTERN, HOUR_PATTERN, WEEKDAY_PATTERN, MINDRAG, MINZOOM, DRAGGERSIZE, REDRAWDELAY, DFLTRANGEX, DFLTRANGEY, traceLayerClasses, clipOnAxisFalseQuery, layerValue2layerClass, zindexSeparator;
+  var init_constants2 = __esm({
+    "src/plots/cartesian/constants.ts"() {
       "use strict";
-      var counterRegex = (init_regex(), __toCommonJS(regex_exports)).counter;
-      module.exports = {
-        idRegex: {
-          x: counterRegex("x", "( domain)?"),
-          y: counterRegex("y", "( domain)?")
-        },
-        attrRegex: counterRegex("[xy]axis"),
-        // axis match regular expression
-        xAxisMatch: counterRegex("xaxis"),
-        yAxisMatch: counterRegex("yaxis"),
-        // pattern matching axis ids and names
-        // note that this is more permissive than counterRegex, as
-        // id2name, name2id, and cleanId accept "x1" etc
-        AX_ID_PATTERN: /^[xyz][0-9]*( domain)?$/,
-        AX_NAME_PATTERN: /^[xyz]axis[0-9]*$/,
-        // and for 2D subplots
-        SUBPLOT_PATTERN: /^x([0-9]*)y([0-9]*)$/,
-        HOUR_PATTERN: "hour",
-        WEEKDAY_PATTERN: "day of week",
-        // pixels to move mouse before you stop clamping to starting point
-        MINDRAG: 8,
-        // smallest dimension allowed for a zoombox
-        MINZOOM: 20,
-        // width of axis drag regions
-        DRAGGERSIZE: 20,
-        // delay before a redraw (relayout) after smooth panning and zooming
-        REDRAWDELAY: 50,
-        // last resort axis ranges for x and y axes if we have no data
-        DFLTRANGEX: [-1, 6],
-        DFLTRANGEY: [-1, 4],
-        // Layers to keep trace types in the right order
-        // N.B. each  'unique' plot method must have its own layer
-        traceLayerClasses: [
-          "imagelayer",
-          "heatmaplayer",
-          "contourcarpetlayer",
-          "contourlayer",
-          "funnellayer",
-          "waterfalllayer",
-          "barlayer",
-          "carpetlayer",
-          "violinlayer",
-          "boxlayer",
-          "ohlclayer",
-          "scattercarpetlayer",
-          "scatterlayer"
-        ],
-        clipOnAxisFalseQuery: [
-          ".scatterlayer",
-          ".barlayer",
-          ".funnellayer",
-          ".waterfalllayer"
-        ],
-        layerValue2layerClass: {
-          "above traces": "above",
-          "below traces": "below"
-        },
-        zindexSeparator: "z"
-        // used for zindex of cartesian subplots e.g. xy, xyz2, xyz3, etc.
+      init_regex();
+      idRegex = {
+        x: counter("x", "( domain)?"),
+        y: counter("y", "( domain)?")
       };
+      attrRegex = counter("[xy]axis");
+      xAxisMatch = counter("xaxis");
+      yAxisMatch = counter("yaxis");
+      AX_ID_PATTERN = /^[xyz][0-9]*( domain)?$/;
+      AX_NAME_PATTERN = /^[xyz]axis[0-9]*$/;
+      SUBPLOT_PATTERN = /^x([0-9]*)y([0-9]*)$/;
+      HOUR_PATTERN = "hour";
+      WEEKDAY_PATTERN = "day of week";
+      MINDRAG = 8;
+      MINZOOM = 20;
+      DRAGGERSIZE = 20;
+      REDRAWDELAY = 50;
+      DFLTRANGEX = [-1, 6];
+      DFLTRANGEY = [-1, 4];
+      traceLayerClasses = [
+        "imagelayer",
+        "heatmaplayer",
+        "contourcarpetlayer",
+        "contourlayer",
+        "funnellayer",
+        "waterfalllayer",
+        "barlayer",
+        "carpetlayer",
+        "violinlayer",
+        "boxlayer",
+        "ohlclayer",
+        "scattercarpetlayer",
+        "scatterlayer"
+      ];
+      clipOnAxisFalseQuery = [
+        ".scatterlayer",
+        ".barlayer",
+        ".funnellayer",
+        ".waterfalllayer"
+      ];
+      layerValue2layerClass = {
+        "above traces": "above",
+        "below traces": "below"
+      };
+      zindexSeparator = "z";
     }
   });
 
@@ -21096,18 +21208,18 @@ var Plotly = (() => {
     "src/plots/cartesian/axis_ids.js"(exports) {
       "use strict";
       var Registry = require_registry();
-      var constants2 = require_constants2();
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
       exports.id2name = function id2name(id) {
         if (typeof id !== "string" || !id.match(constants2.AX_ID_PATTERN)) return;
         var axNum = id.split(" ")[0].slice(1);
         if (axNum === "1") axNum = "";
         return id.charAt(0) + "axis" + axNum;
       };
-      exports.name2id = function name2id(name) {
-        if (!name.match(constants2.AX_NAME_PATTERN)) return;
-        var axNum = name.slice(5);
+      exports.name2id = function name2id(name4) {
+        if (!name4.match(constants2.AX_NAME_PATTERN)) return;
+        var axNum = name4.slice(5);
         if (axNum === "1") axNum = "";
-        return name.charAt(0) + axNum;
+        return name4.charAt(0) + axNum;
       };
       exports.cleanId = function cleanId(id, axLetter, domainId) {
         var domainTest = /( domain)$/.test(id);
@@ -21238,7 +21350,7 @@ var Plotly = (() => {
     "src/plots/get_data.js"(exports) {
       "use strict";
       var Registry = require_registry();
-      var SUBPLOT_PATTERN = require_constants2().SUBPLOT_PATTERN;
+      var SUBPLOT_PATTERN2 = (init_constants2(), __toCommonJS(constants_exports2)).SUBPLOT_PATTERN;
       exports.getSubplotCalcData = function(calcData, type, subplotId) {
         var basePlotModule = Registry.subplotsRegistry[type];
         if (!basePlotModule) return [];
@@ -21605,7 +21717,7 @@ var Plotly = (() => {
       var Template = require_plot_template();
       var Lib = require_lib();
       var Color = require_color();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var axisIDs = require_axis_ids();
       var clearOutline = require_handle_outline().clearOutline;
       var scatterAttrs = require_layout_attributes3();
@@ -22020,9 +22132,9 @@ var Plotly = (() => {
         }
         var modules = this._modules || [];
         for (i = 0; i < modules.length; i++) {
-          var name = modules[i].name;
-          if (name === category) return true;
-          var _module = Registry.modules[name];
+          var name4 = modules[i].name;
+          if (name4 === category) return true;
+          var _module = Registry.modules[name4];
           if (_module && _module.categories[category]) return true;
         }
         return false;
@@ -22480,10 +22592,10 @@ var Plotly = (() => {
             newHeight = Math.round(factor * newHeight);
           }
         }
-        var minWidth = plots.layoutAttributes.width.min;
-        var minHeight = plots.layoutAttributes.height.min;
-        if (newWidth < minWidth) newWidth = minWidth;
-        if (newHeight < minHeight) newHeight = minHeight;
+        var minWidth3 = plots.layoutAttributes.width.min;
+        var minHeight3 = plots.layoutAttributes.height.min;
+        if (newWidth < minWidth3) newWidth = minWidth3;
+        if (newHeight < minHeight3) newHeight = minHeight3;
         var widthHasChanged = !layout.width && Math.abs(fullLayout.width - newWidth) > 1;
         var heightHasChanged = !layout.height && Math.abs(fullLayout.height - newHeight) > 1;
         if (heightHasChanged || widthHasChanged) {
@@ -22554,6 +22666,7 @@ var Plotly = (() => {
         }
         Lib.clearThrottle();
         Lib.clearResponsive(gd);
+        delete gd._fontLoadToken;
         delete gd.data;
         delete gd.layout;
         delete gd._fullData;
@@ -23700,72 +23813,75 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/xmlns_namespaces.js
-  var require_xmlns_namespaces = __commonJS({
-    "src/constants/xmlns_namespaces.js"(exports) {
+  // src/constants/xmlns_namespaces.ts
+  var xmlns_namespaces_exports = {};
+  __export(xmlns_namespaces_exports, {
+    svg: () => svg,
+    svgAttrs: () => svgAttrs,
+    xlink: () => xlink,
+    xmlns: () => xmlns
+  });
+  var xmlns, svg, xlink, svgAttrs;
+  var init_xmlns_namespaces = __esm({
+    "src/constants/xmlns_namespaces.ts"() {
       "use strict";
-      exports.xmlns = "http://www.w3.org/2000/xmlns/";
-      exports.svg = "http://www.w3.org/2000/svg";
-      exports.xlink = "http://www.w3.org/1999/xlink";
-      exports.svgAttrs = {
-        xmlns: exports.svg,
-        "xmlns:xlink": exports.xlink
+      xmlns = "http://www.w3.org/2000/xmlns/";
+      svg = "http://www.w3.org/2000/svg";
+      xlink = "http://www.w3.org/1999/xlink";
+      svgAttrs = {
+        xmlns: svg,
+        "xmlns:xlink": xlink
       };
     }
   });
 
-  // src/constants/alignment.js
-  var require_alignment = __commonJS({
-    "src/constants/alignment.js"(exports, module) {
+  // src/constants/alignment.ts
+  var alignment_exports = {};
+  __export(alignment_exports, {
+    CAP_SHIFT: () => CAP_SHIFT,
+    FROM_BL: () => FROM_BL,
+    FROM_BR: () => FROM_BR,
+    FROM_TL: () => FROM_TL,
+    LINE_SPACING: () => LINE_SPACING,
+    MID_SHIFT: () => MID_SHIFT,
+    OPPOSITE_SIDE: () => OPPOSITE_SIDE
+  });
+  var FROM_BL, FROM_TL, FROM_BR, LINE_SPACING, CAP_SHIFT, MID_SHIFT, OPPOSITE_SIDE;
+  var init_alignment = __esm({
+    "src/constants/alignment.ts"() {
       "use strict";
-      module.exports = {
-        // from bottom left: this is the origin of our paper-reference
-        // positioning system
-        FROM_BL: {
-          left: 0,
-          center: 0.5,
-          right: 1,
-          bottom: 0,
-          middle: 0.5,
-          top: 1
-        },
-        // from top left: this is the screen pixel positioning origin
-        FROM_TL: {
-          left: 0,
-          center: 0.5,
-          right: 1,
-          bottom: 1,
-          middle: 0.5,
-          top: 0
-        },
-        // from bottom right: sometimes you just need the opposite of ^^
-        FROM_BR: {
-          left: 1,
-          center: 0.5,
-          right: 0,
-          bottom: 0,
-          middle: 0.5,
-          top: 1
-        },
-        // multiple of fontSize to get the vertical offset between lines
-        LINE_SPACING: 1.3,
-        // multiple of fontSize to shift from the baseline
-        // to the cap (captical letter) line
-        // (to use when we don't calculate this shift from Drawing.bBox)
-        // This is an approximation since in reality cap height can differ
-        // from font to font. However, according to Wikipedia
-        //   an "average" font might have a cap height of 70% of the em
-        // https://en.wikipedia.org/wiki/Em_(typography)#History
-        CAP_SHIFT: 0.7,
-        // half the cap height (distance between baseline and cap line)
-        // of an "average" font (for more info see above).
-        MID_SHIFT: 0.35,
-        OPPOSITE_SIDE: {
-          left: "right",
-          right: "left",
-          top: "bottom",
-          bottom: "top"
-        }
+      FROM_BL = {
+        left: 0,
+        center: 0.5,
+        right: 1,
+        bottom: 0,
+        middle: 0.5,
+        top: 1
+      };
+      FROM_TL = {
+        left: 0,
+        center: 0.5,
+        right: 1,
+        bottom: 1,
+        middle: 0.5,
+        top: 0
+      };
+      FROM_BR = {
+        left: 1,
+        center: 0.5,
+        right: 0,
+        bottom: 0,
+        middle: 0.5,
+        top: 1
+      };
+      LINE_SPACING = 1.3;
+      CAP_SHIFT = 0.7;
+      MID_SHIFT = 0.35;
+      OPPOSITE_SIDE = {
+        left: "right",
+        right: "left",
+        top: "bottom",
+        bottom: "top"
       };
     }
   });
@@ -23777,8 +23893,8 @@ var Plotly = (() => {
       var d3 = require_d3();
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
-      var xmlnsNamespaces = require_xmlns_namespaces();
-      var LINE_SPACING = require_alignment().LINE_SPACING;
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
+      var LINE_SPACING2 = (init_alignment(), __toCommonJS(alignment_exports)).LINE_SPACING;
       var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
       var matchTex = (str) => str ? str.match(FIND_TEX) : null;
       exports.matchTex = matchTex;
@@ -24090,7 +24206,7 @@ var Plotly = (() => {
           var lineNode = document.createElementNS(xmlnsNamespaces.svg, "tspan");
           d3.select(lineNode).attr({
             class: "line",
-            dy: currentLine * LINE_SPACING + "em"
+            dy: currentLine * LINE_SPACING2 + "em"
           });
           containerNode.appendChild(lineNode);
           currentNode = lineNode;
@@ -24578,9 +24694,9 @@ var Plotly = (() => {
   var require_axis_format_attributes = __commonJS({
     "src/plots/cartesian/axis_format_attributes.js"(exports, module) {
       "use strict";
-      var docs = require_docs();
-      var FORMAT_LINK = docs.FORMAT_LINK;
-      var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
+      var docs = (init_docs(), __toCommonJS(docs_exports));
+      var FORMAT_LINK2 = docs.FORMAT_LINK;
+      var DATE_FORMAT_LINK2 = docs.DATE_FORMAT_LINK;
       function axisHoverFormat(x, noDates) {
         return {
           valType: "string",
@@ -24595,12 +24711,12 @@ var Plotly = (() => {
         return [
           "Sets the " + label + " formatting rule" + (x ? " for `" + x + "`" : ""),
           "using d3 formatting mini-languages",
-          "which are very similar to those in Python. For numbers, see: " + FORMAT_LINK + "."
+          "which are very similar to those in Python. For numbers, see: " + FORMAT_LINK2 + "."
         ].join(" ");
       }
       function descriptionWithDates(label, x) {
         return descriptionOnlyNumbers(label, x) + [
-          " And for dates see: " + DATE_FORMAT_LINK + ".",
+          " And for dates see: " + DATE_FORMAT_LINK2 + ".",
           "We add two items to d3's date formatter:",
           "*%h* for half of the year as a decimal number as well as",
           "*%{n}f* for fractional seconds",
@@ -24627,8 +24743,8 @@ var Plotly = (() => {
       var templatedArray = require_plot_template().templatedArray;
       var templateFormatStringDescription = require_template_attributes().templateFormatStringDescription;
       var descriptionWithDates = require_axis_format_attributes().descriptionWithDates;
-      var ONEDAY = require_numerical().ONEDAY;
-      var constants2 = require_constants2();
+      var ONEDAY2 = (init_numerical(), __toCommonJS(numerical_exports)).ONEDAY;
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
       var HOUR = constants2.HOUR_PATTERN;
       var DAY_OF_WEEK = constants2.WEEKDAY_PATTERN;
       var minorTickmode = {
@@ -24899,7 +25015,7 @@ var Plotly = (() => {
             valType: "number",
             editType: "calc",
             min: 0,
-            dflt: ONEDAY
+            dflt: ONEDAY2
           },
           /*
           gap: {
@@ -25407,10 +25523,13 @@ var Plotly = (() => {
             dflt: "rgba(0,0,0,0)"
           },
           // tick and title properties named and function exactly as in axes
+          // (except dtick: the colorbar axis is mocked as type *linear*, so the
+          // special *log*/*date* string forms documented on `dtick` - *L<f>*,
+          // *D1*, *D2*, *M<n>* - are silently discarded, see #7376)
           tickmode: axesAttrs.minor.tickmode,
           nticks: axesAttrs.nticks,
           tick0: axesAttrs.tick0,
-          dtick: axesAttrs.dtick,
+          dtick: extendFlat2({}, axesAttrs.dtick, {}),
           tickvals: axesAttrs.tickvals,
           ticktext: axesAttrs.ticktext,
           ticks: extendFlat2({}, axesAttrs.ticks, { dflt: "" }),
@@ -25648,14 +25767,14 @@ var Plotly = (() => {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var constants2 = require_numerical();
-      var ONEDAY = constants2.ONEDAY;
-      var ONEWEEK = constants2.ONEWEEK;
+      var constants2 = (init_numerical(), __toCommonJS(numerical_exports));
+      var ONEDAY2 = constants2.ONEDAY;
+      var ONEWEEK2 = constants2.ONEWEEK;
       exports.dtick = function(dtick, axType) {
         var isLog = axType === "log";
         var isDate = axType === "date";
         var isCat = axType === "category";
-        var dtickDflt = isDate ? ONEDAY : 1;
+        var dtickDflt = isDate ? ONEDAY2 : 1;
         if (!dtick) return dtickDflt;
         if (isNumeric2(dtick)) {
           dtick = Number(dtick);
@@ -25686,7 +25805,7 @@ var Plotly = (() => {
         if (axType === "date") {
           return Lib.cleanDate(
             tick0,
-            Lib.dateTick0(calendar, dtick % ONEWEEK === 0 ? 1 : 0)
+            Lib.dateTick0(calendar, dtick % ONEWEEK2 === 0 ? 1 : 0)
           );
         }
         if (dtick === "D1" || dtick === "D2") {
@@ -25758,9 +25877,9 @@ var Plotly = (() => {
         var lAttr = isMinor ? layoutAttributes.minor : layoutAttributes;
         var prefix = isMinor ? "minor." : "";
         var tickLen = Lib.coerce2(cIn, cOut, lAttr, "ticklen", isMinor ? (containerOut.ticklen || 5) * 0.6 : void 0);
-        var tickWidth = Lib.coerce2(cIn, cOut, lAttr, "tickwidth", isMinor ? containerOut.tickwidth || 1 : void 0);
-        var tickColor = Lib.coerce2(cIn, cOut, lAttr, "tickcolor", (isMinor ? containerOut.tickcolor : void 0) || cOut.color);
-        var showTicks = coerce(prefix + "ticks", !isMinor && options.outerTicks || tickLen || tickWidth || tickColor ? "outside" : "");
+        var tickWidth2 = Lib.coerce2(cIn, cOut, lAttr, "tickwidth", isMinor ? containerOut.tickwidth || 1 : void 0);
+        var tickColor2 = Lib.coerce2(cIn, cOut, lAttr, "tickcolor", (isMinor ? containerOut.tickcolor : void 0) || cOut.color);
+        var showTicks = coerce(prefix + "ticks", !isMinor && options.outerTicks || tickLen || tickWidth2 || tickColor2 ? "outside" : "");
         if (!showTicks) {
           delete cOut.ticklen;
           delete cOut.tickwidth;
@@ -25796,12 +25915,12 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Template = require_plot_template();
       module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
-        var name = opts.name;
+        var name4 = opts.name;
         var inclusionAttr = opts.inclusionAttr || "visible";
-        var previousContOut = parentObjOut[name];
-        var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [];
-        var contOut = parentObjOut[name] = [];
-        var templater = Template.arrayTemplater(parentObjOut, name, inclusionAttr);
+        var previousContOut = parentObjOut[name4];
+        var contIn = Lib.isArrayOrTypedArray(parentObjIn[name4]) ? parentObjIn[name4] : [];
+        var contOut = parentObjOut[name4] = [];
+        var templater = Template.arrayTemplater(parentObjOut, name4, inclusionAttr);
         var i, itemOut;
         for (i = 0; i < contIn.length; i++) {
           var itemIn = contIn[i];
@@ -25939,12 +26058,12 @@ var Plotly = (() => {
       var handleTickMarkDefaults = require_tick_mark_defaults();
       var handleTickLabelDefaults = require_tick_label_defaults();
       var handlePrefixSuffixDefaults = require_prefix_suffix_defaults();
-      var attributes3 = require_attributes7();
+      var attributes4 = require_attributes7();
       module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         var colorbarOut = Template.newContainer(containerOut, "colorbar");
         var colorbarIn = containerIn.colorbar || {};
         function coerce(attr, dflt) {
-          return Lib.coerce(colorbarIn, colorbarOut, attributes3, attr, dflt);
+          return Lib.coerce(colorbarIn, colorbarOut, attributes4, attr, dflt);
         }
         var margin = layout.margin || { t: 0, b: 0, l: 0, r: 0 };
         var w = layout.width - margin.l - margin.r;
@@ -26656,12 +26775,12 @@ var Plotly = (() => {
           n: 4,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r * 0.8 / sqrt2, 2);
-            var ne = "l" + rx + "," + rx;
-            var se = "l" + rx + ",-" + rx;
-            var sw = "l-" + rx + ",-" + rx;
-            var nw = "l-" + rx + "," + rx;
-            return align(angle, standoff, "M0," + rx + ne + se + sw + se + sw + nw + sw + nw + ne + nw + ne + "Z");
+            var rx3 = round(r * 0.8 / sqrt2, 2);
+            var ne = "l" + rx3 + "," + rx3;
+            var se = "l" + rx3 + ",-" + rx3;
+            var sw = "l-" + rx3 + ",-" + rx3;
+            var nw = "l-" + rx3 + "," + rx3;
+            return align(angle, standoff, "M0," + rx3 + ne + se + sw + se + sw + nw + sw + nw + ne + nw + ne + "Z");
           }
         },
         "triangle-up": {
@@ -26965,8 +27084,8 @@ var Plotly = (() => {
           n: 34,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            return align(angle, standoff, "M" + rx + "," + rx + "L-" + rx + ",-" + rx + "M" + rx + ",-" + rx + "L-" + rx + "," + rx);
+            var rx3 = round(r, 2);
+            return align(angle, standoff, "M" + rx3 + "," + rx3 + "L-" + rx3 + ",-" + rx3 + "M" + rx3 + ",-" + rx3 + "L-" + rx3 + "," + rx3);
           },
           needLine: true,
           noDot: true,
@@ -27073,8 +27192,8 @@ var Plotly = (() => {
           n: 43,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            return align(angle, standoff, "M" + rx + ",-" + rx + "L-" + rx + "," + rx);
+            var rx3 = round(r, 2);
+            return align(angle, standoff, "M" + rx3 + ",-" + rx3 + "L-" + rx3 + "," + rx3);
           },
           needLine: true,
           noDot: true,
@@ -27084,8 +27203,8 @@ var Plotly = (() => {
           n: 44,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            return align(angle, standoff, "M" + rx + "," + rx + "L-" + rx + ",-" + rx);
+            var rx3 = round(r, 2);
+            return align(angle, standoff, "M" + rx3 + "," + rx3 + "L-" + rx3 + ",-" + rx3);
           },
           needLine: true,
           noDot: true,
@@ -27095,9 +27214,9 @@ var Plotly = (() => {
           n: 45,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            var ry = round(r * 2, 2);
-            return align(angle, standoff, "M0,0L-" + rx + "," + ry + "H" + rx + "Z");
+            var rx3 = round(r, 2);
+            var ry3 = round(r * 2, 2);
+            return align(angle, standoff, "M0,0L-" + rx3 + "," + ry3 + "H" + rx3 + "Z");
           },
           backoff: 1,
           noDot: true
@@ -27106,9 +27225,9 @@ var Plotly = (() => {
           n: 46,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            var ry = round(r * 2, 2);
-            return align(angle, standoff, "M0,0L-" + rx + ",-" + ry + "H" + rx + "Z");
+            var rx3 = round(r, 2);
+            var ry3 = round(r * 2, 2);
+            return align(angle, standoff, "M0,0L-" + rx3 + ",-" + ry3 + "H" + rx3 + "Z");
           },
           noDot: true
         },
@@ -27116,9 +27235,9 @@ var Plotly = (() => {
           n: 47,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r * 2, 2);
-            var ry = round(r, 2);
-            return align(angle, standoff, "M0,0L" + rx + ",-" + ry + "V" + ry + "Z");
+            var rx3 = round(r * 2, 2);
+            var ry3 = round(r, 2);
+            return align(angle, standoff, "M0,0L" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           noDot: true
         },
@@ -27126,9 +27245,9 @@ var Plotly = (() => {
           n: 48,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r * 2, 2);
-            var ry = round(r, 2);
-            return align(angle, standoff, "M0,0L-" + rx + ",-" + ry + "V" + ry + "Z");
+            var rx3 = round(r * 2, 2);
+            var ry3 = round(r, 2);
+            return align(angle, standoff, "M0,0L-" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           noDot: true
         },
@@ -27136,9 +27255,9 @@ var Plotly = (() => {
           n: 49,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            var ry = round(r * 2, 2);
-            return align(angle, standoff, "M-" + rx + ",0H" + rx + "M0,0L-" + rx + "," + ry + "H" + rx + "Z");
+            var rx3 = round(r, 2);
+            var ry3 = round(r * 2, 2);
+            return align(angle, standoff, "M-" + rx3 + ",0H" + rx3 + "M0,0L-" + rx3 + "," + ry3 + "H" + rx3 + "Z");
           },
           backoff: 1,
           needLine: true,
@@ -27148,9 +27267,9 @@ var Plotly = (() => {
           n: 50,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r, 2);
-            var ry = round(r * 2, 2);
-            return align(angle, standoff, "M-" + rx + ",0H" + rx + "M0,0L-" + rx + ",-" + ry + "H" + rx + "Z");
+            var rx3 = round(r, 2);
+            var ry3 = round(r * 2, 2);
+            return align(angle, standoff, "M-" + rx3 + ",0H" + rx3 + "M0,0L-" + rx3 + ",-" + ry3 + "H" + rx3 + "Z");
           },
           needLine: true,
           noDot: true
@@ -27159,9 +27278,9 @@ var Plotly = (() => {
           n: 51,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r * 2, 2);
-            var ry = round(r, 2);
-            return align(angle, standoff, "M0,-" + ry + "V" + ry + "M0,0L" + rx + ",-" + ry + "V" + ry + "Z");
+            var rx3 = round(r * 2, 2);
+            var ry3 = round(r, 2);
+            return align(angle, standoff, "M0,-" + ry3 + "V" + ry3 + "M0,0L" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           needLine: true,
           noDot: true
@@ -27170,9 +27289,9 @@ var Plotly = (() => {
           n: 52,
           f: function(r, angle, standoff) {
             if (skipAngle(angle)) return emptyPath;
-            var rx = round(r * 2, 2);
-            var ry = round(r, 2);
-            return align(angle, standoff, "M0,-" + ry + "V" + ry + "M0,0L-" + rx + ",-" + ry + "V" + ry + "Z");
+            var rx3 = round(r * 2, 2);
+            var ry3 = round(r, 2);
+            return align(angle, standoff, "M0,-" + ry3 + "V" + ry3 + "M0,0L-" + rx3 + ",-" + ry3 + "V" + ry3 + "Z");
           },
           needLine: true,
           noDot: true
@@ -27299,14 +27418,15 @@ var Plotly = (() => {
       var Colorscale = require_colorscale();
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
-      var xmlnsNamespaces = require_xmlns_namespaces();
-      var alignment = require_alignment();
-      var LINE_SPACING = alignment.LINE_SPACING;
-      var DESELECTDIM = require_interactions().DESELECTDIM;
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
+      var alignment = (init_alignment(), __toCommonJS(alignment_exports));
+      var LINE_SPACING2 = alignment.LINE_SPACING;
+      var DESELECTDIM2 = (init_interactions(), __toCommonJS(interactions_exports)).DESELECTDIM;
       var subTypes = require_subtypes();
       var makeBubbleSizeFn = require_make_bubble_size_func();
       var appendArrayPointValue = require_helpers2().appendArrayPointValue;
-      var drawing = module.exports = {};
+      var drawing = {};
+      module.exports = drawing;
       drawing.font = function(s, font) {
         var variant = font.variant;
         var style = font.style;
@@ -28016,7 +28136,7 @@ var Plotly = (() => {
             if (d.selected) {
               return smoIsDefined ? smo : base;
             } else {
-              return usmoIsDefined ? usmo : DESELECTDIM * base;
+              return usmoIsDefined ? usmo : DESELECTDIM2 * base;
             }
           };
         }
@@ -28066,7 +28186,7 @@ var Plotly = (() => {
             return stc || base;
           } else {
             if (utc) return utc;
-            else return stc ? base : Color.addOpacity(base, DESELECTDIM);
+            else return stc ? base : Color.addOpacity(base, DESELECTDIM2);
           }
         };
         return out;
@@ -28128,7 +28248,7 @@ var Plotly = (() => {
         var v = textPosition.indexOf("top") !== -1 ? "top" : textPosition.indexOf("bottom") !== -1 ? "bottom" : "middle";
         var h = textPosition.indexOf("left") !== -1 ? "end" : textPosition.indexOf("right") !== -1 ? "start" : "middle";
         var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
-        var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
+        var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING2 + 1;
         var dx = TEXTOFFSETSIGN[h] * r;
         var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r + (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
         s.attr("text-anchor", h);
@@ -28635,8 +28755,8 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var Color = require_color();
       var svgTextUtils = require_svg_text_utils();
-      var interactConstants = require_interactions();
-      var OPPOSITE_SIDE = require_alignment().OPPOSITE_SIDE;
+      var interactConstants = (init_interactions(), __toCommonJS(interactions_exports));
+      var OPPOSITE_SIDE2 = (init_alignment(), __toCommonJS(alignment_exports)).OPPOSITE_SIDE;
       var numStripRE = / [XY][0-9]* /;
       var SUBTITLE_PADDING_MATHJAX_EM = 1.6;
       var SUBTITLE_PADDING_EM = 1.6;
@@ -28647,7 +28767,7 @@ var Plotly = (() => {
         var placeholder = options.placeholder;
         var traceIndex = options.traceIndex;
         var avoid = options.avoid || {};
-        var attributes3 = options.attributes;
+        var attributes4 = options.attributes;
         var transform = options.transform;
         var group = options.containerGroup;
         var opacity = 1;
@@ -28742,7 +28862,7 @@ var Plotly = (() => {
           if (transform) {
             transformVal = "";
             if (transform.rotate) {
-              transformVal += "rotate(" + [transform.rotate, attributes3.x, attributes3.y] + ")";
+              transformVal += "rotate(" + [transform.rotate, attributes4.x, attributes4.y] + ")";
             }
             if (transform.offset || hColorbarMoveTitle) {
               transformVal += strTranslate(0, (transform.offset || 0) - (hColorbarMoveTitle || 0));
@@ -28772,13 +28892,13 @@ var Plotly = (() => {
             textcase: fontTextcase,
             shadow: fontShadow,
             lineposition: fontLineposition
-          }).attr(attributes3).call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
+          }).attr(attributes4).call(svgTextUtils.convertToTspans, gd, adjustSubtitlePosition);
           if (subtitleEl2 && !subtitleEl2.empty()) {
             var titleElMathGroup = group.select("." + titleClass + "-math-group");
             var titleElBbox2 = titleEl.node().getBBox();
             var titleElMathBbox = titleElMathGroup.node() ? titleElMathGroup.node().getBBox() : void 0;
             var subtitleY2 = titleElMathBbox ? titleElMathBbox.y + titleElMathBbox.height + SUBTITLE_PADDING_MATHJAX_EM * subFontSize : titleElBbox2.y + titleElBbox2.height + SUBTITLE_PADDING_EM * subFontSize;
-            var subtitleAttributes = Lib.extendFlat({}, attributes3, {
+            var subtitleAttributes = Lib.extendFlat({}, attributes4, {
               y: subtitleY2
             });
             subtitleEl2.attr("transform", transformVal);
@@ -28801,7 +28921,7 @@ var Plotly = (() => {
           var titleGroup = d3.select(titleElIn.node().parentNode);
           if (avoid && avoid.selection && avoid.side && txt) {
             titleGroup.attr("transform", null);
-            var backside = OPPOSITE_SIDE[avoid.side];
+            var backside = OPPOSITE_SIDE2[avoid.side];
             var shiftSign = avoid.side === "left" || avoid.side === "top" ? -1 : 1;
             var pad = isNumeric2(avoid.pad) ? avoid.pad : 2;
             var titlebb = Drawing.bBox(titleGroup.node());
@@ -28872,7 +28992,7 @@ var Plotly = (() => {
           }).on("cancel", function() {
             this.text(this.attr("data-unformatted")).call(titleLayout);
           }).on("input", function(d) {
-            this.text(d || " ").call(svgTextUtils.positionText, attributes3.x, attributes3.y);
+            this.text(d || " ").call(svgTextUtils.positionText, attributes4.x, attributes4.y);
           });
           if (subtitleEnabled) {
             if (subtitleEnabled && !txt) {
@@ -28919,19 +29039,19 @@ var Plotly = (() => {
       var dateTime2ms = Lib.dateTime2ms;
       var ensureNumber = Lib.ensureNumber;
       var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
-      var numConstants = require_numerical();
-      var FP_SAFE = numConstants.FP_SAFE;
+      var numConstants = (init_numerical(), __toCommonJS(numerical_exports));
+      var FP_SAFE2 = numConstants.FP_SAFE;
       var BADNUM2 = numConstants.BADNUM;
-      var LOG_CLIP = numConstants.LOG_CLIP;
-      var ONEWEEK = numConstants.ONEWEEK;
-      var ONEDAY = numConstants.ONEDAY;
-      var ONEHOUR = numConstants.ONEHOUR;
-      var ONEMIN = numConstants.ONEMIN;
-      var ONESEC = numConstants.ONESEC;
+      var LOG_CLIP2 = numConstants.LOG_CLIP;
+      var ONEWEEK2 = numConstants.ONEWEEK;
+      var ONEDAY2 = numConstants.ONEDAY;
+      var ONEHOUR2 = numConstants.ONEHOUR;
+      var ONEMIN2 = numConstants.ONEMIN;
+      var ONESEC2 = numConstants.ONESEC;
       var axisIds = require_axis_ids();
-      var constants2 = require_constants2();
-      var HOUR_PATTERN = constants2.HOUR_PATTERN;
-      var WEEKDAY_PATTERN = constants2.WEEKDAY_PATTERN;
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
+      var HOUR_PATTERN2 = constants2.HOUR_PATTERN;
+      var WEEKDAY_PATTERN2 = constants2.WEEKDAY_PATTERN;
       function fromLog(v) {
         return Math.pow(10, v);
       }
@@ -28947,7 +29067,7 @@ var Plotly = (() => {
           else if (v <= 0 && clip && ax.range && ax.range.length === 2) {
             var r0 = ax.range[0];
             var r1 = ax.range[1];
-            return 0.5 * (r0 + r1 - 2 * LOG_CLIP * Math.abs(r0 - r1));
+            return 0.5 * (r0 + r1 - 2 * LOG_CLIP2 * Math.abs(r0 - r1));
           } else return BADNUM2;
         }
         function dt2ms(v, _, calendar, opts) {
@@ -29293,8 +29413,8 @@ var Plotly = (() => {
                   break;
                 }
               }
-              if (range[i] < -FP_SAFE) range[i] = -FP_SAFE;
-              else if (range[i] > FP_SAFE) range[i] = FP_SAFE;
+              if (range[i] < -FP_SAFE2) range[i] = -FP_SAFE2;
+              else if (range[i] > FP_SAFE2) range[i] = FP_SAFE2;
               if (range[0] === range[1]) {
                 var inc = Math.max(1, Math.abs(range[0] * 1e-6));
                 range[0] -= inc;
@@ -29391,7 +29511,7 @@ var Plotly = (() => {
                 b0 = bnds[0];
                 b1 = bnds[1];
                 switch (pattern) {
-                  case WEEKDAY_PATTERN:
+                  case WEEKDAY_PATTERN2:
                     vDate = new Date(v);
                     vb = vDate.getUTCDay();
                     if (b0 > b1) {
@@ -29399,7 +29519,7 @@ var Plotly = (() => {
                       if (vb < b0) vb += 7;
                     }
                     break;
-                  case HOUR_PATTERN:
+                  case HOUR_PATTERN2:
                     vDate = new Date(v);
                     var hours = vDate.getUTCHours();
                     var minutes = vDate.getUTCMinutes();
@@ -29433,8 +29553,8 @@ var Plotly = (() => {
           var rangebreaksOut = [];
           if (!ax.rangebreaks) return rangebreaksOut;
           var rangebreaksIn = ax.rangebreaks.slice().sort(function(a, b) {
-            if (a.pattern === WEEKDAY_PATTERN && b.pattern === HOUR_PATTERN) return -1;
-            if (b.pattern === WEEKDAY_PATTERN && a.pattern === HOUR_PATTERN) return 1;
+            if (a.pattern === WEEKDAY_PATTERN2 && b.pattern === HOUR_PATTERN2) return -1;
+            if (b.pattern === WEEKDAY_PATTERN2 && a.pattern === HOUR_PATTERN2) return 1;
             return 0;
           });
           var addBreak = function(min, max) {
@@ -29474,15 +29594,15 @@ var Plotly = (() => {
                 var bndDelta;
                 var step;
                 switch (brk.pattern) {
-                  case WEEKDAY_PATTERN:
-                    step = ONEWEEK;
-                    bndDelta = ((b1 < b0 ? 7 : 0) + (b1 - b0)) * ONEDAY;
-                    t0 += b0 * ONEDAY - (t0Date.getUTCDay() * ONEDAY + t0Date.getUTCHours() * ONEHOUR + t0Date.getUTCMinutes() * ONEMIN + t0Date.getUTCSeconds() * ONESEC + t0Date.getUTCMilliseconds());
+                  case WEEKDAY_PATTERN2:
+                    step = ONEWEEK2;
+                    bndDelta = ((b1 < b0 ? 7 : 0) + (b1 - b0)) * ONEDAY2;
+                    t0 += b0 * ONEDAY2 - (t0Date.getUTCDay() * ONEDAY2 + t0Date.getUTCHours() * ONEHOUR2 + t0Date.getUTCMinutes() * ONEMIN2 + t0Date.getUTCSeconds() * ONESEC2 + t0Date.getUTCMilliseconds());
                     break;
-                  case HOUR_PATTERN:
-                    step = ONEDAY;
-                    bndDelta = ((b1 < b0 ? 24 : 0) + (b1 - b0)) * ONEHOUR;
-                    t0 += b0 * ONEHOUR - (t0Date.getUTCHours() * ONEHOUR + t0Date.getUTCMinutes() * ONEMIN + t0Date.getUTCSeconds() * ONESEC + t0Date.getUTCMilliseconds());
+                  case HOUR_PATTERN2:
+                    step = ONEDAY2;
+                    bndDelta = ((b1 < b0 ? 24 : 0) + (b1 - b0)) * ONEHOUR2;
+                    t0 += b0 * ONEHOUR2 - (t0Date.getUTCHours() * ONEHOUR2 + t0Date.getUTCMinutes() * ONEMIN2 + t0Date.getUTCSeconds() * ONESEC2 + t0Date.getUTCMilliseconds());
                     break;
                   default:
                     t0 = Math.min(bnds[0], bnds[1]);
@@ -29647,7 +29767,7 @@ var Plotly = (() => {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
       var isDateTime = Lib.isDateTime;
       var cleanNumber2 = Lib.cleanNumber;
@@ -29736,7 +29856,7 @@ var Plotly = (() => {
       var d3 = require_d3();
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var FP_SAFE = require_numerical().FP_SAFE;
+      var FP_SAFE2 = (init_numerical(), __toCommonJS(numerical_exports)).FP_SAFE;
       var Registry = require_registry();
       var Drawing = require_drawing();
       var axIds = require_axis_ids();
@@ -29890,7 +30010,7 @@ var Plotly = (() => {
           return pt.pad + (pt.extrapad ? extrappad : zero);
         };
       }
-      var TEXTPAD = 3;
+      var TEXTPAD2 = 3;
       function padInsideLabelsOnAnchorAxis(fullLayout, ax, max) {
         var pad = 0;
         var isX = ax._id.charAt(0) === "x";
@@ -29919,8 +30039,8 @@ var Plotly = (() => {
                   var t = anchorAxis._vals[i];
                   var bb = t.bb;
                   if (bb) {
-                    var w = 2 * TEXTPAD + bb.width;
-                    var h = 2 * TEXTPAD + bb.height;
+                    var w = 2 * TEXTPAD2 + bb.width;
+                    var h = 2 * TEXTPAD2 + bb.height;
                     pad = Math.max(
                       pad,
                       isX ? Math.max(w * cosA, h * sinA) : Math.max(h * cosA, w * sinA)
@@ -30042,13 +30162,13 @@ var Plotly = (() => {
             for (i = 0; i < len; i++) {
               v = data[i];
               if (v < vmin && v > 0) vmin = v;
-              if (v > vmax && v < FP_SAFE) vmax = v;
+              if (v > vmax && v < FP_SAFE2) vmax = v;
             }
           } else {
             for (i = 0; i < len; i++) {
               v = data[i];
-              if (v < vmin && v > -FP_SAFE) vmin = v;
-              if (v > vmax && v < FP_SAFE) vmax = v;
+              if (v < vmin && v > -FP_SAFE2) vmin = v;
+              if (v > vmax && v < FP_SAFE2) vmax = v;
             }
           }
           data = [vmin, vmax];
@@ -30120,7 +30240,7 @@ var Plotly = (() => {
         }
       }
       function goodNumber(v) {
-        return isNumeric2(v) && Math.abs(v) < FP_SAFE;
+        return isNumeric2(v) && Math.abs(v) < FP_SAFE2;
       }
       function lessOrEqual(v0, v1) {
         return v0 <= v1;
@@ -30200,26 +30320,26 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var axAttrs = require_layout_attributes4();
       var cleanTicks = require_clean_ticks();
-      var cartesianConstants = require_constants2();
-      var constants2 = require_numerical();
-      var ONEMAXYEAR = constants2.ONEMAXYEAR;
-      var ONEAVGYEAR = constants2.ONEAVGYEAR;
-      var ONEMINYEAR = constants2.ONEMINYEAR;
-      var ONEMAXQUARTER = constants2.ONEMAXQUARTER;
-      var ONEAVGQUARTER = constants2.ONEAVGQUARTER;
-      var ONEMINQUARTER = constants2.ONEMINQUARTER;
-      var ONEMAXMONTH = constants2.ONEMAXMONTH;
-      var ONEAVGMONTH = constants2.ONEAVGMONTH;
-      var ONEMINMONTH = constants2.ONEMINMONTH;
-      var ONEWEEK = constants2.ONEWEEK;
-      var ONEDAY = constants2.ONEDAY;
-      var HALFDAY = ONEDAY / 2;
-      var ONEHOUR = constants2.ONEHOUR;
-      var ONEMIN = constants2.ONEMIN;
-      var ONESEC = constants2.ONESEC;
-      var ONEMILLI = constants2.ONEMILLI;
-      var ONEMICROSEC = constants2.ONEMICROSEC;
-      var MINUS_SIGN = constants2.MINUS_SIGN;
+      var cartesianConstants = (init_constants2(), __toCommonJS(constants_exports2));
+      var constants2 = (init_numerical(), __toCommonJS(numerical_exports));
+      var ONEMAXYEAR2 = constants2.ONEMAXYEAR;
+      var ONEAVGYEAR2 = constants2.ONEAVGYEAR;
+      var ONEMINYEAR2 = constants2.ONEMINYEAR;
+      var ONEMAXQUARTER2 = constants2.ONEMAXQUARTER;
+      var ONEAVGQUARTER2 = constants2.ONEAVGQUARTER;
+      var ONEMINQUARTER2 = constants2.ONEMINQUARTER;
+      var ONEMAXMONTH2 = constants2.ONEMAXMONTH;
+      var ONEAVGMONTH2 = constants2.ONEAVGMONTH;
+      var ONEMINMONTH2 = constants2.ONEMINMONTH;
+      var ONEWEEK2 = constants2.ONEWEEK;
+      var ONEDAY2 = constants2.ONEDAY;
+      var HALFDAY = ONEDAY2 / 2;
+      var ONEHOUR2 = constants2.ONEHOUR;
+      var ONEMIN2 = constants2.ONEMIN;
+      var ONESEC2 = constants2.ONESEC;
+      var ONEMILLI2 = constants2.ONEMILLI;
+      var ONEMICROSEC2 = constants2.ONEMICROSEC;
+      var MINUS_SIGN2 = constants2.MINUS_SIGN;
       var BADNUM2 = constants2.BADNUM;
       var ZERO_PATH = { K: "zeroline" };
       var GRID_PATH = { K: "gridline", L: "path" };
@@ -30234,12 +30354,12 @@ var Plotly = (() => {
         top: ["t", "yt"],
         bottom: ["b", "yb"]
       };
-      var alignmentConstants = require_alignment();
-      var MID_SHIFT = alignmentConstants.MID_SHIFT;
-      var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
-      var LINE_SPACING = alignmentConstants.LINE_SPACING;
-      var OPPOSITE_SIDE = alignmentConstants.OPPOSITE_SIDE;
-      var TEXTPAD = 3;
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
+      var MID_SHIFT2 = alignmentConstants.MID_SHIFT;
+      var CAP_SHIFT2 = alignmentConstants.CAP_SHIFT;
+      var LINE_SPACING2 = alignmentConstants.LINE_SPACING;
+      var OPPOSITE_SIDE2 = alignmentConstants.OPPOSITE_SIDE;
+      var TEXTPAD2 = 3;
       var axes = module.exports = {};
       axes.setConvert = require_set_convert();
       var autoType = require_axis_autotype();
@@ -30580,9 +30700,9 @@ var Plotly = (() => {
         if (stats.exactDays > threshold) {
           var numMonths = Number(dtick.slice(1));
           if (stats.exactYears > threshold && numMonths % 12 === 0) {
-            binStart = axes.tickIncrement(binStart, "M6", "reverse") + ONEDAY * 1.5;
+            binStart = axes.tickIncrement(binStart, "M6", "reverse") + ONEDAY2 * 1.5;
           } else if (stats.exactMonths > threshold) {
-            binStart = axes.tickIncrement(binStart, "M1", "reverse") + ONEDAY * 15.5;
+            binStart = axes.tickIncrement(binStart, "M1", "reverse") + ONEDAY2 * 15.5;
           } else {
             binStart -= HALFDAY;
           }
@@ -30614,17 +30734,17 @@ var Plotly = (() => {
             var minorNum = numericMinor ? mockAx.dtick : +mockAx.dtick.substring(1);
             if (numericMajor && numericMinor) {
               if (!isMultiple(majorNum, minorNum)) {
-                if (majorNum === 2 * ONEWEEK && minorNum === 3 * ONEDAY) {
-                  mockAx.dtick = ONEWEEK;
-                } else if (majorNum === ONEWEEK && !(ax._input.minor || {}).nticks) {
-                  mockAx.dtick = ONEDAY;
+                if (majorNum === 2 * ONEWEEK2 && minorNum === 3 * ONEDAY2) {
+                  mockAx.dtick = ONEWEEK2;
+                } else if (majorNum === ONEWEEK2 && !(ax._input.minor || {}).nticks) {
+                  mockAx.dtick = ONEDAY2;
                 } else if (isClose(majorNum / minorNum, 2.5)) {
                   mockAx.dtick = majorNum / 2;
                 } else {
                   mockAx.dtick = majorNum;
                 }
-              } else if (majorNum === 2 * ONEWEEK && minorNum === 2 * ONEDAY) {
-                mockAx.dtick = ONEWEEK;
+              } else if (majorNum === 2 * ONEWEEK2 && minorNum === 2 * ONEDAY2) {
+                mockAx.dtick = ONEWEEK2;
               }
             } else if (String(ax.dtick).charAt(0) === "M") {
               if (numericMinor) {
@@ -30708,26 +30828,26 @@ var Plotly = (() => {
           var noDtick = ax._dtickInit !== ax.dtick;
           if (!/%[fLQsSMX]/.test(tickformat)) {
             if (/%[HI]/.test(tickformat)) {
-              definedDelta = ONEHOUR;
-              if (noDtick && !isMDate && ax.dtick < ONEHOUR) ax.dtick = ONEHOUR;
+              definedDelta = ONEHOUR2;
+              if (noDtick && !isMDate && ax.dtick < ONEHOUR2) ax.dtick = ONEHOUR2;
             } else if (/%p/.test(tickformat)) {
               definedDelta = HALFDAY;
               if (noDtick && !isMDate && ax.dtick < HALFDAY) ax.dtick = HALFDAY;
             } else if (/%[Aadejuwx]/.test(tickformat)) {
-              definedDelta = ONEDAY;
-              if (noDtick && !isMDate && ax.dtick < ONEDAY) ax.dtick = ONEDAY;
+              definedDelta = ONEDAY2;
+              if (noDtick && !isMDate && ax.dtick < ONEDAY2) ax.dtick = ONEDAY2;
             } else if (/%[UVW]/.test(tickformat)) {
-              definedDelta = ONEWEEK;
-              if (noDtick && !isMDate && ax.dtick < ONEWEEK) ax.dtick = ONEWEEK;
+              definedDelta = ONEWEEK2;
+              if (noDtick && !isMDate && ax.dtick < ONEWEEK2) ax.dtick = ONEWEEK2;
             } else if (/%[Bbm]/.test(tickformat)) {
-              definedDelta = ONEAVGMONTH;
-              if (noDtick && (isMDate ? nMonths(ax.dtick) < 1 : ax.dtick < ONEMINMONTH)) ax.dtick = "M1";
+              definedDelta = ONEAVGMONTH2;
+              if (noDtick && (isMDate ? nMonths(ax.dtick) < 1 : ax.dtick < ONEMINMONTH2)) ax.dtick = "M1";
             } else if (/%[q]/.test(tickformat)) {
-              definedDelta = ONEAVGQUARTER;
-              if (noDtick && (isMDate ? nMonths(ax.dtick) < 3 : ax.dtick < ONEMINQUARTER)) ax.dtick = "M3";
+              definedDelta = ONEAVGQUARTER2;
+              if (noDtick && (isMDate ? nMonths(ax.dtick) < 3 : ax.dtick < ONEMINQUARTER2)) ax.dtick = "M3";
             } else if (/%[Yy]/.test(tickformat)) {
-              definedDelta = ONEAVGYEAR;
-              if (noDtick && (isMDate ? nMonths(ax.dtick) < 12 : ax.dtick < ONEMINYEAR)) ax.dtick = "M12";
+              definedDelta = ONEAVGYEAR2;
+              if (noDtick && (isMDate ? nMonths(ax.dtick) < 12 : ax.dtick < ONEMINYEAR2)) ax.dtick = "M12";
             }
           }
         }
@@ -30757,32 +30877,32 @@ var Plotly = (() => {
           var actualDelta = Math.abs(B - A);
           var delta = definedDelta || actualDelta;
           var periodLength = 0;
-          if (delta >= ONEMINYEAR) {
-            if (actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
+          if (delta >= ONEMINYEAR2) {
+            if (actualDelta >= ONEMINYEAR2 && actualDelta <= ONEMAXYEAR2) {
               periodLength = actualDelta;
             } else {
-              periodLength = ONEAVGYEAR;
+              periodLength = ONEAVGYEAR2;
             }
-          } else if (definedDelta === ONEAVGQUARTER && delta >= ONEMINQUARTER) {
-            if (actualDelta >= ONEMINQUARTER && actualDelta <= ONEMAXQUARTER) {
+          } else if (definedDelta === ONEAVGQUARTER2 && delta >= ONEMINQUARTER2) {
+            if (actualDelta >= ONEMINQUARTER2 && actualDelta <= ONEMAXQUARTER2) {
               periodLength = actualDelta;
             } else {
-              periodLength = ONEAVGQUARTER;
+              periodLength = ONEAVGQUARTER2;
             }
-          } else if (delta >= ONEMINMONTH) {
-            if (actualDelta >= ONEMINMONTH && actualDelta <= ONEMAXMONTH) {
+          } else if (delta >= ONEMINMONTH2) {
+            if (actualDelta >= ONEMINMONTH2 && actualDelta <= ONEMAXMONTH2) {
               periodLength = actualDelta;
             } else {
-              periodLength = ONEAVGMONTH;
+              periodLength = ONEAVGMONTH2;
             }
-          } else if (definedDelta === ONEWEEK && delta >= ONEWEEK) {
-            periodLength = ONEWEEK;
-          } else if (delta >= ONEDAY) {
-            periodLength = ONEDAY;
+          } else if (definedDelta === ONEWEEK2 && delta >= ONEWEEK2) {
+            periodLength = ONEWEEK2;
+          } else if (delta >= ONEDAY2) {
+            periodLength = ONEDAY2;
           } else if (definedDelta === HALFDAY && delta >= HALFDAY) {
             periodLength = HALFDAY;
-          } else if (definedDelta === ONEHOUR && delta >= ONEHOUR) {
-            periodLength = ONEHOUR;
+          } else if (definedDelta === ONEHOUR2 && delta >= ONEHOUR2) {
+            periodLength = ONEHOUR2;
           }
           var inBetween;
           if (periodLength >= actualDelta) {
@@ -30801,7 +30921,7 @@ var Plotly = (() => {
             if (!periodLength) {
               tickVals[i].drop = true;
             }
-            if (inBetween && actualDelta > ONEWEEK) periodLength = actualDelta;
+            if (inBetween && actualDelta > ONEWEEK2) periodLength = actualDelta;
           }
           if (periodLength > 0 || // not instant
           i === 0) {
@@ -30881,7 +31001,7 @@ var Plotly = (() => {
             } else {
               if (type === "date") {
                 if (typeof ax.dtick === "string" && ax.dtick.charAt(0) === "M") {
-                  _dTick = ONEAVGMONTH * ax.dtick.substring(1);
+                  _dTick = ONEAVGMONTH2 * ax.dtick.substring(1);
                 }
               } else {
                 _dTick = ax._roughDTick;
@@ -31189,15 +31309,15 @@ var Plotly = (() => {
         if (ax.type === "date") {
           ax.tick0 = Lib.dateTick0(ax.calendar, 0);
           var roughX2 = 2 * roughDTick;
-          if (roughX2 > ONEAVGYEAR) {
-            roughDTick /= ONEAVGYEAR;
+          if (roughX2 > ONEAVGYEAR2) {
+            roughDTick /= ONEAVGYEAR2;
             base = getBase(10);
             ax.dtick = "M" + 12 * roundDTick(roughDTick, base, roundBase10);
-          } else if (roughX2 > ONEAVGMONTH) {
-            roughDTick /= ONEAVGMONTH;
+          } else if (roughX2 > ONEAVGMONTH2) {
+            roughDTick /= ONEAVGMONTH2;
             ax.dtick = "M" + roundDTick(roughDTick, 1, roundBase24);
-          } else if (roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
+          } else if (roughX2 > ONEDAY2) {
+            ax.dtick = roundDTick(roughDTick, ONEDAY2, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
             if (!isMinor) {
               var tickformat = axes.getTickFormat(ax);
               var isPeriod = ax.ticklabelmode === "period";
@@ -31209,12 +31329,12 @@ var Plotly = (() => {
               }
               if (isPeriod) ax._dowTick0 = ax.tick0;
             }
-          } else if (roughX2 > ONEHOUR) {
-            ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
-          } else if (roughX2 > ONEMIN) {
-            ax.dtick = roundDTick(roughDTick, ONEMIN, roundBase60);
-          } else if (roughX2 > ONESEC) {
-            ax.dtick = roundDTick(roughDTick, ONESEC, roundBase60);
+          } else if (roughX2 > ONEHOUR2) {
+            ax.dtick = roundDTick(roughDTick, ONEHOUR2, roundBase24);
+          } else if (roughX2 > ONEMIN2) {
+            ax.dtick = roundDTick(roughDTick, ONEMIN2, roundBase60);
+          } else if (roughX2 > ONESEC2) {
+            ax.dtick = roundDTick(roughDTick, ONESEC2, roundBase60);
           } else {
             base = getBase(10);
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
@@ -31270,9 +31390,9 @@ var Plotly = (() => {
           if (String(dtick).charAt(0) === "M") {
             if (tick0len > 10 || tick0str.slice(5) !== "01-01") ax._tickround = "d";
             else ax._tickround = +dtick.slice(1) % 12 === 0 ? "y" : "m";
-          } else if (dtick >= ONEDAY && tick0len <= 10 || dtick >= ONEDAY * 15) ax._tickround = "d";
-          else if (dtick >= ONEMIN && tick0len <= 16 || dtick >= ONEHOUR) ax._tickround = "M";
-          else if (dtick >= ONESEC && tick0len <= 19 || dtick >= ONEMIN) ax._tickround = "S";
+          } else if (dtick >= ONEDAY2 && tick0len <= 10 || dtick >= ONEDAY2 * 15) ax._tickround = "d";
+          else if (dtick >= ONEMIN2 && tick0len <= 16 || dtick >= ONEHOUR2) ax._tickround = "M";
+          else if (dtick >= ONESEC2 && tick0len <= 19 || dtick >= ONEMIN2) ax._tickround = "S";
           else {
             var tick1len = ax.l2r(tick0ms + dtick).replace(/^-/, "").length;
             ax._tickround = Math.max(tick0len, tick1len) - 20;
@@ -31422,7 +31542,7 @@ var Plotly = (() => {
         var logOffScale = ax.type === "log" && val <= 0;
         var tx = axes.tickText(ax, ax.c2l(logOffScale ? -val : val), "hover").text;
         if (logOffScale) {
-          return val === 0 ? "0" : MINUS_SIGN + tx;
+          return val === 0 ? "0" : MINUS_SIGN2 + tx;
         }
         return tx;
       };
@@ -31515,10 +31635,10 @@ var Plotly = (() => {
             out.text = parts[0];
             if (absP > 0) out.text += "x10";
             if (out.text === "1x10") out.text = "10";
-            if (p !== 0 && p !== 1) out.text += "<sup>" + (p > 0 ? "" : MINUS_SIGN) + absP + "</sup>";
+            if (p !== 0 && p !== 1) out.text += "<sup>" + (p > 0 ? "" : MINUS_SIGN2) + absP + "</sup>";
             out.fontSize *= 1.25;
           } else if ((exponentFormat === "e" || exponentFormat === "E") && absP > 2) {
-            out.text = parts[0] + exponentFormat + (p > 0 ? "+" : MINUS_SIGN) + absP;
+            out.text = parts[0] + exponentFormat + (p > 0 ? "+" : MINUS_SIGN2) + absP;
           } else {
             out.text = numFormat(Math.pow(10, x), ax, "", "fakehover");
             if (dtick === "D1" && ax._id.charAt(0) === "y") {
@@ -31595,7 +31715,7 @@ var Plotly = (() => {
                   "\u03C0"
                 ].join("");
               }
-              if (isNeg) out.text = MINUS_SIGN + out.text;
+              if (isNeg) out.text = MINUS_SIGN2 + out.text;
             }
           }
         } else {
@@ -31662,7 +31782,7 @@ var Plotly = (() => {
           exponent = ah._tickexponent;
           if (ax.hoverformat) tickformat = ax.hoverformat;
         }
-        if (tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
+        if (tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN2);
         if (exponentFormat === "none") exponent = 0;
         v = Math.abs(v);
         const e = Math.pow(10, -tickRound) / 2;
@@ -31687,7 +31807,7 @@ var Plotly = (() => {
         if (exponent && exponentFormat !== "hide") {
           if (shouldSwitchSIToPowerFormat(exponent, exponentFormat)) exponentFormat = "power";
           var signedExponent;
-          if (exponent < 0) signedExponent = MINUS_SIGN + -exponent;
+          if (exponent < 0) signedExponent = MINUS_SIGN2 + -exponent;
           else if (exponentFormat !== "power") signedExponent = "+" + exponent;
           else signedExponent = String(exponent);
           if (exponentFormat === "e" || exponentFormat === "E") {
@@ -31700,13 +31820,13 @@ var Plotly = (() => {
             v += exponentFormat === "SI extended" ? SIPREFIXES_EXTENDED[exponent / 3 + 10] : SIPREFIXES[exponent / 3 + 5];
           }
         }
-        if (isNeg) return MINUS_SIGN + v;
+        if (isNeg) return MINUS_SIGN2 + v;
         return v;
       }
       axes.getTickFormat = function(ax) {
         var i;
         function convertToMs(dtick) {
-          return typeof dtick !== "string" ? dtick : Number(dtick.replace("M", "")) * ONEAVGMONTH;
+          return typeof dtick !== "string" ? dtick : Number(dtick.replace("M", "")) * ONEAVGMONTH2;
         }
         function compareLogTicks(left, right) {
           var priority = ["L", "D"];
@@ -32054,7 +32174,7 @@ var Plotly = (() => {
           var pad = { x: 2, y: 10 }[axLetter];
           seq.push(function() {
             var bboxKey = { x: "height", y: "width" }[axLetter];
-            var standoff = getLabelLevelBbox()[bboxKey] + pad + (ax._tickAngles[axId + "tick"] ? ax.tickfont.size * LINE_SPACING : 0);
+            var standoff = getLabelLevelBbox()[bboxKey] + pad + (ax._tickAngles[axId + "tick"] ? ax.tickfont.size * LINE_SPACING2 : 0);
             return axes.drawLabels(gd, ax, {
               vals: getSecondaryLabelVals(ax, vals),
               layer: mainAxLayer,
@@ -32087,7 +32207,7 @@ var Plotly = (() => {
         }
         seq.push(function() {
           var s = ax.side.charAt(0);
-          var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
+          var sMirror = OPPOSITE_SIDE2[ax.side].charAt(0);
           var pos = axes.getPxPosition(gd, ax);
           var outsideTickLen = outsideTicks ? ax.ticklen : 0;
           var llbbox;
@@ -32367,18 +32487,18 @@ var Plotly = (() => {
         if (!isAligned && !isInside) return [0, 0];
         var side = ax.side;
         var u = isAligned ? (ax.tickwidth || 0) / 2 : 0;
-        var v = TEXTPAD;
+        var v = TEXTPAD2;
         var fontSize = ax.tickfont ? ax.tickfont.size : 12;
         if (isBottom || isTop) {
-          u += fontSize * CAP_SHIFT;
+          u += fontSize * CAP_SHIFT2;
           v += (ax.linewidth || 0) / 2;
         }
         if (isLeft || isRight) {
           u += (ax.linewidth || 0) / 2;
-          v += TEXTPAD;
+          v += TEXTPAD2;
         }
         if (isInside && side === "top") {
-          v -= fontSize * (1 - CAP_SHIFT);
+          v -= fontSize * (1 - CAP_SHIFT2);
         }
         if (isLeft || isTop) u = -u;
         if (side === "bottom" || side === "right") v = -v;
@@ -32448,17 +32568,17 @@ var Plotly = (() => {
           ff = endSide ? 1 : -0.2;
           if (Math.abs(tickangle) === 90) {
             if (insideTickLabels) {
-              ff += MID_SHIFT;
+              ff += MID_SHIFT2;
             } else {
               if (tickangle === -90 && side === "bottom") {
-                ff = CAP_SHIFT;
+                ff = CAP_SHIFT2;
               } else if (tickangle === 90 && side === "top") {
-                ff = MID_SHIFT;
+                ff = MID_SHIFT2;
               } else {
                 ff = 0.5;
               }
             }
-            xQ = MID_SHIFT / 2 * (tickangle / 90);
+            xQ = MID_SHIFT2 / 2 * (tickangle / 90);
           }
           out.xFn = function(d) {
             return d.dx + x0 + xQ * d.fontSize;
@@ -32488,7 +32608,7 @@ var Plotly = (() => {
           ff = 0;
           if (!insideTickLabels && Math.abs(tickangle) === 90) {
             if (tickangle === -90 && side === "left" || tickangle === 90 && side === "right") {
-              ff = CAP_SHIFT;
+              ff = CAP_SHIFT2;
             } else {
               ff = 0.5;
             }
@@ -32497,7 +32617,7 @@ var Plotly = (() => {
             var ang = isNumeric2(tickangle) ? +tickangle : 0;
             if (ang !== 0) {
               var rA = Lib.deg2rad(ang);
-              xQ = Math.abs(Math.sin(rA)) * CAP_SHIFT * flipIt;
+              xQ = Math.abs(Math.sin(rA)) * CAP_SHIFT2 * flipIt;
               ff = 0;
             }
           }
@@ -32505,7 +32625,7 @@ var Plotly = (() => {
             return d.dx + shift - (x0 + d.fontSize * ff) * flipIt + xQ * d.fontSize;
           };
           out.yFn = function(d) {
-            return d.dy + y0 + d.fontSize * MID_SHIFT;
+            return d.dy + y0 + d.fontSize * MID_SHIFT2;
           };
           out.anchorFn = function(d, a) {
             if (isNumeric2(a) && Math.abs(a) === 90) {
@@ -32671,7 +32791,7 @@ var Plotly = (() => {
             var anchor = labelFns.anchorFn(d, angle);
             var transform = opts.transFn.call(thisLabel.node(), d) + (isNumeric2(angle) && +angle !== 0 ? " rotate(" + angle + "," + labelFns.xFn(d) + "," + (labelFns.yFn(d) - d.fontSize / 2) + ")" : "");
             var nLines = svgTextUtils.lineCount(thisLabel);
-            var lineHeight = LINE_SPACING * d.fontSize;
+            var lineHeight = LINE_SPACING2 * d.fontSize;
             var anchorHeight = labelFns.heightFn(d, isNumeric2(angle) ? +angle : 0, (nLines - 1) * lineHeight);
             if (anchorHeight) {
               transform += strTranslate(0, anchorHeight);
@@ -32874,7 +32994,7 @@ var Plotly = (() => {
               var isRight = has("right");
               var isBottom = has("bottom");
               var isAligned = tickson !== "boundaries" && (isBottom || isLeft || isTop || isRight);
-              var pad = !isAligned ? 0 : (ax.tickwidth || 0) + 2 * TEXTPAD;
+              var pad = !isAligned ? 0 : (ax.tickwidth || 0) + 2 * TEXTPAD2;
               for (i = 0; i < lbbArray.length - 1; i++) {
                 if (Lib.bBoxIntersect(lbbArray[i], lbbArray[i + 1], pad)) {
                   autoangle = newAngle;
@@ -32937,7 +33057,7 @@ var Plotly = (() => {
           if (anchorAx.insiderange) {
             var BBs = computeTickLabelBoundingBoxes();
             var move = ax._id.charAt(0) === "y" ? BBs.labelsMaxW : BBs.labelsMaxH;
-            move += 2 * TEXTPAD;
+            move += 2 * TEXTPAD2;
             if (ax.ticklabelposition === "inside") {
               move += ax.ticklen || 0;
             }
@@ -33026,9 +33146,9 @@ var Plotly = (() => {
         var fontSize = ax.title.font.size;
         var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
         if (ax.title.hasOwnProperty("standoff")) {
-          return fontSize * (CAP_SHIFT + extraLines * LINE_SPACING);
+          return fontSize * (CAP_SHIFT2 + extraLines * LINE_SPACING2);
         } else {
-          return extraLines ? fontSize * (extraLines + 1) * LINE_SPACING : fontSize;
+          return extraLines ? fontSize * (extraLines + 1) * LINE_SPACING2 : fontSize;
         }
       }
       function drawTitle(gd, ax) {
@@ -33040,9 +33160,9 @@ var Plotly = (() => {
         var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
         if (ax.title.hasOwnProperty("standoff")) {
           if (ax.side === "bottom" || ax.side === "right") {
-            titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT;
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * CAP_SHIFT2;
           } else if (ax.side === "top" || ax.side === "left") {
-            titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT + extraLines * LINE_SPACING);
+            titleStandoff = ax._depth + ax.title.standoff + fontSize * (MID_SHIFT2 + extraLines * LINE_SPACING2);
           }
         } else {
           var isInside = insideTicklabelposition(ax);
@@ -33350,7 +33470,7 @@ var Plotly = (() => {
         return ax.autoshift ? axShifts[ax.overlaying][ax.side] : ax.shift || 0;
       }
       function periodCompatibleWithTickformat(period, tickformat) {
-        return /%f/.test(tickformat) ? period >= ONEMICROSEC : /%L/.test(tickformat) ? period >= ONEMILLI : /%[SX]/.test(tickformat) ? period >= ONESEC : /%M/.test(tickformat) ? period >= ONEMIN : /%[HI]/.test(tickformat) ? period >= ONEHOUR : /%p/.test(tickformat) ? period >= HALFDAY : /%[Aadejuwx]/.test(tickformat) ? period >= ONEDAY : /%[UVW]/.test(tickformat) ? period >= ONEWEEK : /%[Bbm]/.test(tickformat) ? period >= ONEMINMONTH : /%[q]/.test(tickformat) ? period >= ONEMINQUARTER : /%[Yy]/.test(tickformat) ? period >= ONEMINYEAR : true;
+        return /%f/.test(tickformat) ? period >= ONEMICROSEC2 : /%L/.test(tickformat) ? period >= ONEMILLI2 : /%[SX]/.test(tickformat) ? period >= ONESEC2 : /%M/.test(tickformat) ? period >= ONEMIN2 : /%[HI]/.test(tickformat) ? period >= ONEHOUR2 : /%p/.test(tickformat) ? period >= HALFDAY : /%[Aadejuwx]/.test(tickformat) ? period >= ONEDAY2 : /%[UVW]/.test(tickformat) ? period >= ONEWEEK2 : /%[Bbm]/.test(tickformat) ? period >= ONEMINMONTH2 : /%[q]/.test(tickformat) ? period >= ONEMINQUARTER2 : /%[Yy]/.test(tickformat) ? period >= ONEMINYEAR2 : true;
       }
     }
   });
@@ -33519,7 +33639,7 @@ var Plotly = (() => {
       var Events = require_events2();
       var throttle = require_throttle();
       var getGraphDiv = require_dom().getGraphDiv;
-      var hoverConstants = require_constants();
+      var hoverConstants = (init_constants(), __toCommonJS(constants_exports));
       var unhover = module.exports = {};
       unhover.wrapped = function(gd, evt, subplot) {
         var _a;
@@ -33569,7 +33689,7 @@ var Plotly = (() => {
       var hasHover = require_has_hover();
       var supportsPassive = require_has_passive_events();
       var removeElement = require_lib().removeElement;
-      var constants2 = require_constants2();
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
       var dragElement = module.exports = {};
       dragElement.align = require_align();
       dragElement.getCursor = require_cursor();
@@ -33991,14 +34111,14 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Template = require_plot_template();
       var plotsAttrs = require_attributes2();
-      var attributes3 = require_attributes9();
+      var attributes4 = require_attributes9();
       var basePlotLayoutAttributes = require_layout_attributes2();
       var helpers = require_helpers3();
       function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
         var containerIn = layoutIn[legendId] || {};
         var containerOut = Template.newContainer(layoutOut, legendId);
         function coerce(attr, dflt) {
-          return Lib.coerce(containerIn, containerOut, attributes3, attr, dflt);
+          return Lib.coerce(containerIn, containerOut, attributes4, attr, dflt);
         }
         var itemFont = Lib.coerceFont(coerce, "font", layoutOut.font);
         coerce("bgcolor", layoutOut.paper_bgcolor);
@@ -34466,21 +34586,28 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/legend/constants.js
-  var require_constants3 = __commonJS({
-    "src/components/legend/constants.js"(exports, module) {
+  // src/components/legend/constants.ts
+  var constants_exports3 = {};
+  __export(constants_exports3, {
+    itemGap: () => itemGap,
+    scrollBarColor: () => scrollBarColor,
+    scrollBarEnterAttrs: () => scrollBarEnterAttrs,
+    scrollBarMargin: () => scrollBarMargin,
+    scrollBarMinHeight: () => scrollBarMinHeight,
+    scrollBarWidth: () => scrollBarWidth,
+    titlePad: () => titlePad
+  });
+  var scrollBarWidth, scrollBarMinHeight, scrollBarColor, scrollBarMargin, scrollBarEnterAttrs, titlePad, itemGap;
+  var init_constants3 = __esm({
+    "src/components/legend/constants.ts"() {
       "use strict";
-      module.exports = {
-        scrollBarWidth: 6,
-        scrollBarMinHeight: 20,
-        scrollBarColor: "#808BA4",
-        scrollBarMargin: 4,
-        scrollBarEnterAttrs: { rx: 20, ry: 3, width: 0, height: 0 },
-        // number of px between legend title and (left) side of legend (always in x direction and from inner border)
-        titlePad: 2,
-        // number of px between each legend item (x and/or y direction)
-        itemGap: 5
-      };
+      scrollBarWidth = 6;
+      scrollBarMinHeight = 20;
+      scrollBarColor = "#808BA4";
+      scrollBarMargin = 4;
+      scrollBarEnterAttrs = { rx: 20, ry: 3, width: 0, height: 0 };
+      titlePad = 2;
+      itemGap = 5;
     }
   });
 
@@ -34717,7 +34844,7 @@ var Plotly = (() => {
       var subTypes = require_subtypes();
       var stylePie = require_style_one();
       var pieCastOption = require_helpers4().castOption;
-      var constants2 = require_constants3();
+      var constants2 = (init_constants3(), __toCommonJS(constants_exports3));
       var CST_MARKER_SIZE = 12;
       var CST_LINE_WIDTH = 5;
       var CST_MARKER_LINE_WIDTH = 2;
@@ -35240,11 +35367,11 @@ var Plotly = (() => {
       var svgTextUtils = require_svg_text_utils();
       var handleItemClick = require_handle_click().handleItemClick;
       var handleTitleClick = require_handle_click().handleTitleClick;
-      var constants2 = require_constants3();
-      var alignmentConstants = require_alignment();
-      var LINE_SPACING = alignmentConstants.LINE_SPACING;
-      var FROM_TL = alignmentConstants.FROM_TL;
-      var FROM_BR = alignmentConstants.FROM_BR;
+      var constants2 = (init_constants3(), __toCommonJS(constants_exports3));
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
+      var LINE_SPACING2 = alignmentConstants.LINE_SPACING;
+      var FROM_TL2 = alignmentConstants.FROM_TL;
+      var FROM_BR2 = alignmentConstants.FROM_BR;
       var getLegendData = require_get_legend_data();
       var style = require_style();
       var helpers = require_helpers3();
@@ -35275,7 +35402,7 @@ var Plotly = (() => {
       function horizontalAlignTitle(titleEl, legendObj, bw) {
         if (legendObj.title.side !== "top center" && legendObj.title.side !== "top right") return;
         var font = legendObj.title.font;
-        var lineHeight = font.size * LINE_SPACING;
+        var lineHeight = font.size * LINE_SPACING2;
         var titleOffset = 0;
         var textNode = titleEl.node();
         var width = Drawing.bBox(textNode).width;
@@ -35434,14 +35561,14 @@ var Plotly = (() => {
             if (!inHover) {
               var lx, ly;
               if (isPaperX) {
-                lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                lx = gs.l + gs.w * legendObj.x - FROM_TL2[getXanchor(legendObj)] * legendObj._width;
               } else {
-                lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                lx = fullLayout.width * legendObj.x - FROM_TL2[getXanchor(legendObj)] * legendObj._width;
               }
               if (isPaperY) {
-                ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL2[getYanchor(legendObj)] * legendObj._effHeight;
               } else {
-                ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                ly = fullLayout.height * (1 - legendObj.y) - FROM_TL2[getYanchor(legendObj)] * legendObj._effHeight;
               }
               var expMargin = expandMargin(gd, legendId, lx, ly);
               if (expMargin) return;
@@ -35670,27 +35797,27 @@ var Plotly = (() => {
         var isPieLike = Registry.traceIs(trace, "pie-like");
         var isEditable = !legendObj._inHover && gd._context.edits.legendText && !isPieLike;
         var maxNameLength = legendObj._maxNameLength;
-        var name, font;
+        var name4, font;
         if (legendItem.groupTitle) {
-          name = legendItem.groupTitle.text;
+          name4 = legendItem.groupTitle.text;
           font = legendItem.groupTitle.font;
         } else {
           font = legendObj.font;
           if (!legendObj.entries) {
-            name = isPieLike ? legendItem.label : trace.name;
+            name4 = isPieLike ? legendItem.label : trace.name;
             if (trace._meta) {
-              name = Lib.templateString(name, trace._meta);
+              name4 = Lib.templateString(name4, trace._meta);
             }
           } else {
-            name = legendItem.text;
+            name4 = legendItem.text;
           }
         }
         var textEl = Lib.ensureSingle(g, "text", legendId + "text");
-        textEl.attr("text-anchor", "start").call(Drawing.font, font).text(isEditable ? ensureLength(name, maxNameLength) : name);
+        textEl.attr("text-anchor", "start").call(Drawing.font, font).text(isEditable ? ensureLength(name4, maxNameLength) : name4);
         var textGap = legendObj.indentation + legendObj.itemwidth + constants2.itemGap * 2;
         svgTextUtils.positionText(textEl, textGap, 0);
         if (isEditable) {
-          textEl.call(svgTextUtils.makeEditable, { gd, text: name }).call(textLayout, g, gd, legendObj).on("edit", function(newName) {
+          textEl.call(svgTextUtils.makeEditable, { gd, text: name4 }).call(textLayout, g, gd, legendObj).on("edit", function(newName) {
             this.text(ensureLength(newName, maxNameLength)).call(textLayout, g, gd, legendObj);
             var update = {};
             update.name = newName;
@@ -35824,7 +35951,7 @@ var Plotly = (() => {
         } else {
           font = legendObj.font;
         }
-        var lineHeight = font.size * LINE_SPACING;
+        var lineHeight = font.size * LINE_SPACING2;
         var height, width;
         if (mathjaxNode) {
           var mathjaxBB = Drawing.bBox(mathjaxNode);
@@ -35899,9 +36026,9 @@ var Plotly = (() => {
         var isFraction = legendObj.entrywidthmode === "fraction";
         var bw = legendObj.borderwidth;
         var bw2 = 2 * bw;
-        var itemGap = constants2.itemGap;
-        var textGap = legendObj.indentation + legendObj.itemwidth + itemGap * 2;
-        var endPad = 2 * (bw + itemGap);
+        var itemGap2 = constants2.itemGap;
+        var textGap = legendObj.indentation + legendObj.itemwidth + itemGap2 * 2;
+        var endPad = 2 * (bw + itemGap2);
         var yanchor = getYanchor(legendObj);
         var isBelowPlotArea = legendObj.y < 0 || legendObj.y === 0 && yanchor === "top";
         var isAbovePlotArea = legendObj.y > 1 || legendObj.y === 1 && yanchor === "bottom";
@@ -35923,13 +36050,13 @@ var Plotly = (() => {
             Drawing.setTranslate(
               this,
               bw + titleSize[0],
-              bw + titleSize[1] + legendObj._height + h / 2 + itemGap
+              bw + titleSize[1] + legendObj._height + h / 2 + itemGap2
             );
             legendObj._height += h;
             legendObj._width = Math.max(legendObj._width, d[0].width);
           });
           toggleRectWidth = textGap + legendObj._width;
-          legendObj._width += itemGap + textGap + bw2;
+          legendObj._width += itemGap2 + textGap + bw2;
           legendObj._height += endPad;
           if (isGrouped) {
             groups.each(function(d, i) {
@@ -35969,13 +36096,13 @@ var Plotly = (() => {
                 Drawing.setTranslate(
                   this,
                   titleSize[0],
-                  titleSize[1] + bw + itemGap + h / 2 + offsetY2
+                  titleSize[1] + bw + itemGap2 + h / 2 + offsetY2
                 );
                 offsetY2 += h;
                 maxWidthInGroup = Math.max(maxWidthInGroup, w);
                 legendGroupWidths[d[0].trace.legendgroup] = maxWidthInGroup;
               });
-              var next = maxWidthInGroup + itemGap;
+              var next = maxWidthInGroup + itemGap2;
               if (
                 // not on the first column already
                 groupOffsetX > 0 && // goes beyound limit
@@ -35995,7 +36122,7 @@ var Plotly = (() => {
             legendObj._height = groupOffsetY + maxGroupHeightInRow + endPad;
           } else {
             var nTraces = traces.size();
-            var oneRowLegend = combinedItemWidth + bw2 + (nTraces - 1) * itemGap < legendObj._maxWidth;
+            var oneRowLegend = combinedItemWidth + bw2 + (nTraces - 1) * itemGap2 < legendObj._maxWidth;
             var maxItemHeightInRow = 0;
             var offsetX = 0;
             var offsetY = 0;
@@ -36005,9 +36132,9 @@ var Plotly = (() => {
               var w = getTraceWidth(d, legendObj, textGap, isGrouped);
               var next = oneRowLegend ? w : maxItemWidth;
               if (!isFraction) {
-                next += itemGap;
+                next += itemGap2;
               }
-              if (next + bw + offsetX - itemGap >= legendObj._maxWidth) {
+              if (next + bw + offsetX - itemGap2 >= legendObj._maxWidth) {
                 maxRowWidth = Math.max(maxRowWidth, rowWidth);
                 offsetX = 0;
                 offsetY += maxItemHeightInRow;
@@ -36017,9 +36144,9 @@ var Plotly = (() => {
               Drawing.setTranslate(
                 this,
                 titleSize[0] + bw + offsetX,
-                titleSize[1] + bw + offsetY + h / 2 + itemGap
+                titleSize[1] + bw + offsetY + h / 2 + itemGap2
               );
-              rowWidth = offsetX + w + itemGap;
+              rowWidth = offsetX + w + itemGap2;
               offsetX += next;
               maxItemHeightInRow = Math.max(maxItemHeightInRow, h);
             });
@@ -36057,7 +36184,7 @@ var Plotly = (() => {
           }
           var w = isEditable ? textGap : toggleRectWidth || traceWidth;
           if (!isVertical && !isFraction) {
-            w += itemGap / 2;
+            w += itemGap2 / 2;
           }
           Drawing.setRect(traceToggle, 0, -h / 2, w, h);
         });
@@ -36098,10 +36225,10 @@ var Plotly = (() => {
           return Plots.autoMargin(gd, legendId, {
             x: legendObj.x,
             y: legendObj.y,
-            l: legendObj._width * FROM_TL[xanchor],
-            r: legendObj._width * FROM_BR[xanchor],
-            b: legendObj._effHeight * FROM_BR[yanchor],
-            t: legendObj._effHeight * FROM_TL[yanchor]
+            l: legendObj._width * FROM_TL2[xanchor],
+            r: legendObj._width * FROM_BR2[xanchor],
+            b: legendObj._effHeight * FROM_BR2[yanchor],
+            t: legendObj._effHeight * FROM_TL2[yanchor]
           });
         } else if (isPaperX) {
           gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
@@ -36141,19 +36268,19 @@ var Plotly = (() => {
       var Color = require_color();
       var dragElement = require_dragelement();
       var Axes = require_axes();
-      var zindexSeparator = require_constants2().zindexSeparator;
+      var zindexSeparator2 = (init_constants2(), __toCommonJS(constants_exports2)).zindexSeparator;
       var Registry = require_registry();
       var helpers = require_helpers2();
-      var constants2 = require_constants();
+      var constants2 = (init_constants(), __toCommonJS(constants_exports));
       var legendSupplyDefaults = require_defaults3();
       var legendDraw = require_draw();
-      var YANGLE = constants2.YANGLE;
-      var YA_RADIANS = Math.PI * YANGLE / 180;
+      var YANGLE2 = constants2.YANGLE;
+      var YA_RADIANS = Math.PI * YANGLE2 / 180;
       var YFACTOR = 1 / Math.sin(YA_RADIANS);
       var YSHIFTX = Math.cos(YA_RADIANS);
       var YSHIFTY = Math.sin(YA_RADIANS);
-      var HOVERARROWSIZE = constants2.HOVERARROWSIZE;
-      var HOVERTEXTPAD = constants2.HOVERTEXTPAD;
+      var HOVERARROWSIZE2 = constants2.HOVERARROWSIZE;
+      var HOVERTEXTPAD2 = constants2.HOVERTEXTPAD;
       var multipleHoverPoints = {
         box: true,
         ohlc: true,
@@ -36289,7 +36416,7 @@ var Plotly = (() => {
       function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         if (!subplot) subplot = "xy";
         if (typeof subplot === "string") {
-          subplot = subplot.split(zindexSeparator)[0];
+          subplot = subplot.split(zindexSeparator2)[0];
         }
         var subplots = Array.isArray(subplot) ? subplot : [subplot];
         var spId;
@@ -36914,11 +37041,11 @@ var Plotly = (() => {
             ltext.attr("text-anchor", "middle").call(
               svgTextUtils.positionText,
               0,
-              xa.side === "top" ? outerTop - tbb2.bottom - HOVERARROWSIZE - HOVERTEXTPAD : outerTop - tbb2.top + HOVERARROWSIZE + HOVERTEXTPAD
+              xa.side === "top" ? outerTop - tbb2.bottom - HOVERARROWSIZE2 - HOVERTEXTPAD2 : outerTop - tbb2.top + HOVERARROWSIZE2 + HOVERTEXTPAD2
             );
             lx2 = xa._offset + (c0.x0 + c0.x1) / 2;
             ly2 = ya._offset + (xa.side === "top" ? 0 : ya._length);
-            var halfWidth = tbb2.width / 2 + HOVERTEXTPAD;
+            var halfWidth = tbb2.width / 2 + HOVERTEXTPAD2;
             var tooltipMidX = lx2;
             if (lx2 < halfWidth) {
               tooltipMidX = halfWidth;
@@ -36927,17 +37054,17 @@ var Plotly = (() => {
             }
             lpath.attr(
               "d",
-              "M" + (lx2 - tooltipMidX) + ",0L" + (lx2 - tooltipMidX + HOVERARROWSIZE) + "," + topsign + HOVERARROWSIZE + "H" + halfWidth + "v" + topsign + (HOVERTEXTPAD * 2 + tbb2.height) + "H" + -halfWidth + "V" + topsign + HOVERARROWSIZE + "H" + (lx2 - tooltipMidX - HOVERARROWSIZE) + "Z"
+              "M" + (lx2 - tooltipMidX) + ",0L" + (lx2 - tooltipMidX + HOVERARROWSIZE2) + "," + topsign + HOVERARROWSIZE2 + "H" + halfWidth + "v" + topsign + (HOVERTEXTPAD2 * 2 + tbb2.height) + "H" + -halfWidth + "V" + topsign + HOVERARROWSIZE2 + "H" + (lx2 - tooltipMidX - HOVERARROWSIZE2) + "Z"
             );
             lx2 = tooltipMidX;
             commonLabelRect.minX = lx2 - halfWidth;
             commonLabelRect.maxX = lx2 + halfWidth;
             if (xa.side === "top") {
-              commonLabelRect.minY = ly2 - (HOVERTEXTPAD * 2 + tbb2.height);
-              commonLabelRect.maxY = ly2 - HOVERTEXTPAD;
+              commonLabelRect.minY = ly2 - (HOVERTEXTPAD2 * 2 + tbb2.height);
+              commonLabelRect.maxY = ly2 - HOVERTEXTPAD2;
             } else {
-              commonLabelRect.minY = ly2 + HOVERTEXTPAD;
-              commonLabelRect.maxY = ly2 + (HOVERTEXTPAD * 2 + tbb2.height);
+              commonLabelRect.minY = ly2 + HOVERTEXTPAD2;
+              commonLabelRect.maxY = ly2 + (HOVERTEXTPAD2 * 2 + tbb2.height);
             }
           } else {
             var anchor;
@@ -36958,24 +37085,24 @@ var Plotly = (() => {
             ltext.attr("text-anchor", anchor);
             lpath.attr(
               "d",
-              "M0,0L" + leftsign + HOVERARROWSIZE + "," + HOVERARROWSIZE + "V" + (HOVERTEXTPAD + tbb2.height / 2) + "h" + leftsign + (HOVERTEXTPAD * 2 + tbb2.width) + "V-" + (HOVERTEXTPAD + tbb2.height / 2) + "H" + leftsign + HOVERARROWSIZE + "V-" + HOVERARROWSIZE + "Z"
+              "M0,0L" + leftsign + HOVERARROWSIZE2 + "," + HOVERARROWSIZE2 + "V" + (HOVERTEXTPAD2 + tbb2.height / 2) + "h" + leftsign + (HOVERTEXTPAD2 * 2 + tbb2.width) + "V-" + (HOVERTEXTPAD2 + tbb2.height / 2) + "H" + leftsign + HOVERARROWSIZE2 + "V-" + HOVERARROWSIZE2 + "Z"
             );
-            commonLabelRect.minY = ly2 - (HOVERTEXTPAD + tbb2.height / 2);
-            commonLabelRect.maxY = ly2 + (HOVERTEXTPAD + tbb2.height / 2);
+            commonLabelRect.minY = ly2 - (HOVERTEXTPAD2 + tbb2.height / 2);
+            commonLabelRect.maxY = ly2 + (HOVERTEXTPAD2 + tbb2.height / 2);
             if (ya.side === "right") {
-              commonLabelRect.minX = lx2 + HOVERARROWSIZE;
-              commonLabelRect.maxX = lx2 + HOVERARROWSIZE + (HOVERTEXTPAD * 2 + tbb2.width);
+              commonLabelRect.minX = lx2 + HOVERARROWSIZE2;
+              commonLabelRect.maxX = lx2 + HOVERARROWSIZE2 + (HOVERTEXTPAD2 * 2 + tbb2.width);
             } else {
-              commonLabelRect.minX = lx2 - HOVERARROWSIZE - (HOVERTEXTPAD * 2 + tbb2.width);
-              commonLabelRect.maxX = lx2 - HOVERARROWSIZE;
+              commonLabelRect.minX = lx2 - HOVERARROWSIZE2 - (HOVERTEXTPAD2 * 2 + tbb2.width);
+              commonLabelRect.maxX = lx2 - HOVERARROWSIZE2;
             }
             var halfHeight = tbb2.height / 2;
             var lty = outerTop - tbb2.top - halfHeight;
             var clipId = "clip" + fullLayout._uid + "commonlabel" + ya._id;
             var clipPath;
-            if (lx2 < tbb2.width + 2 * HOVERTEXTPAD + HOVERARROWSIZE) {
-              clipPath = "M-" + (HOVERARROWSIZE + HOVERTEXTPAD) + "-" + halfHeight + "h-" + (tbb2.width - HOVERTEXTPAD) + "V" + halfHeight + "h" + (tbb2.width - HOVERTEXTPAD) + "Z";
-              var ltx = tbb2.width - lx2 + HOVERTEXTPAD;
+            if (lx2 < tbb2.width + 2 * HOVERTEXTPAD2 + HOVERARROWSIZE2) {
+              clipPath = "M-" + (HOVERARROWSIZE2 + HOVERTEXTPAD2) + "-" + halfHeight + "h-" + (tbb2.width - HOVERTEXTPAD2) + "V" + halfHeight + "h" + (tbb2.width - HOVERTEXTPAD2) + "Z";
+              var ltx = tbb2.width - lx2 + HOVERTEXTPAD2;
               svgTextUtils.positionText(ltext, ltx, lty);
               if (anchor === "end") {
                 ltext.selectAll("tspan").each(function() {
@@ -36989,7 +37116,7 @@ var Plotly = (() => {
                 });
               }
             } else {
-              svgTextUtils.positionText(ltext, sgn * (HOVERTEXTPAD + HOVERARROWSIZE), lty);
+              svgTextUtils.positionText(ltext, sgn * (HOVERTEXTPAD2 + HOVERARROWSIZE2), lty);
               clipPath = null;
             }
             var textClip = fullLayout._topclips.selectAll("#" + clipId).data(clipPath ? [0] : []);
@@ -37038,10 +37165,10 @@ var Plotly = (() => {
             if (pt.hoverinfo === "none") continue;
             var texts = getHoverLabelText(pt, true, hovermode, fullLayout, t0);
             var text = texts[0];
-            var name = texts[1];
-            pt.name = name;
-            if (name !== "") {
-              pt.text = name + " : " + text;
+            var name4 = texts[1];
+            pt.name = name4;
+            if (name4 !== "") {
+              pt.text = name4 + " : " + text;
             } else {
               pt.text = text;
             }
@@ -37076,8 +37203,8 @@ var Plotly = (() => {
           legendDraw(gd, mockLegend);
           var legendContainer = container.select("g.legend");
           var tbb = getBoundingClientRect(gd, legendContainer.node());
-          var tWidth = tbb.width + 2 * HOVERTEXTPAD;
-          var tHeight = tbb.height + 2 * HOVERTEXTPAD;
+          var tWidth = tbb.width + 2 * HOVERTEXTPAD2;
+          var tHeight = tbb.height + 2 * HOVERTEXTPAD2;
           var winningPoint = groupedHoverData[0];
           var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
           var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
@@ -37085,8 +37212,8 @@ var Plotly = (() => {
           var lyBottom, lyTop;
           if (axLetter === "y") {
             if (pointWon) {
-              lyTop = avgY - HOVERTEXTPAD;
-              lyBottom = avgY + HOVERTEXTPAD;
+              lyTop = avgY - HOVERTEXTPAD2;
+              lyBottom = avgY + HOVERTEXTPAD2;
             } else {
               lyTop = Math.min.apply(
                 null,
@@ -37111,8 +37238,8 @@ var Plotly = (() => {
           var lxRight, lxLeft;
           if (axLetter === "x") {
             if (pointWon) {
-              lxRight = avgX + HOVERTEXTPAD;
-              lxLeft = avgX - HOVERTEXTPAD;
+              lxRight = avgX + HOVERTEXTPAD2;
+              lxLeft = avgX - HOVERTEXTPAD2;
             } else {
               lxRight = Math.max.apply(
                 null,
@@ -37154,7 +37281,7 @@ var Plotly = (() => {
               lx = 0;
             }
           }
-          lx += HOVERTEXTPAD;
+          lx += HOVERTEXTPAD2;
           if (lyBottom + tHeight < outerHeight && lyBottom >= 0) {
             ly = lyBottom;
           } else if (lyTop + tHeight < outerHeight && lyTop >= 0) {
@@ -37168,7 +37295,7 @@ var Plotly = (() => {
               ly = 0;
             }
           }
-          ly += HOVERTEXTPAD;
+          ly += HOVERTEXTPAD2;
           legendContainer.attr("transform", strTranslate(lx - 1, ly - 1));
           return legendContainer;
         }
@@ -37204,7 +37331,7 @@ var Plotly = (() => {
           var contrastColor = d.borderColor || Color.contrast(numsColor);
           var texts2 = getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g);
           var text2 = texts2[0];
-          var name2 = texts2[1];
+          var name5 = texts2[1];
           var tx = g.select("text.nums").call(Drawing.font, {
             family: d.fontFamily || fontFamily,
             size: d.fontSize || fontSize,
@@ -37219,7 +37346,7 @@ var Plotly = (() => {
           var tx2 = g.select("text.name");
           var tx2width = 0;
           var tx2height = 0;
-          if (name2 && name2 !== text2) {
+          if (name5 && name5 !== text2) {
             tx2.call(Drawing.font, {
               family: d.fontFamily || fontFamily,
               size: d.fontSize || fontSize,
@@ -37230,10 +37357,10 @@ var Plotly = (() => {
               textcase: d.fontTextcase || fontTextcase,
               lineposition: d.fontLineposition || fontLineposition,
               shadow: d.fontShadow || fontShadow
-            }).text(name2).attr("data-notex", 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
+            }).text(name5).attr("data-notex", 1).call(svgTextUtils.positionText, 0, 0).call(svgTextUtils.convertToTspans, gd);
             var t2bb = getBoundingClientRect(gd, tx2.node());
-            tx2width = t2bb.width + 2 * HOVERTEXTPAD;
-            tx2height = t2bb.height + 2 * HOVERTEXTPAD;
+            tx2width = t2bb.width + 2 * HOVERTEXTPAD2;
+            tx2height = t2bb.height + 2 * HOVERTEXTPAD2;
           } else {
             tx2.remove();
             g.select("rect").remove();
@@ -37250,13 +37377,13 @@ var Plotly = (() => {
           var tbbWidth = tbb2.width / fullLayout._invScaleX;
           var tbbHeight = tbb2.height / fullLayout._invScaleY;
           d.ty0 = (outerTop - tbb2.top) / fullLayout._invScaleY;
-          d.bx = tbbWidth + 2 * HOVERTEXTPAD;
-          d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD, tx2height);
+          d.bx = tbbWidth + 2 * HOVERTEXTPAD2;
+          d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD2, tx2height);
           d.anchor = "start";
           d.txwidth = tbbWidth;
           d.tx2width = tx2width;
           d.offset = 0;
-          var txTotalWidth = (tbbWidth + HOVERARROWSIZE + HOVERTEXTPAD + tx2width) * fullLayout._invScaleX;
+          var txTotalWidth = (tbbWidth + HOVERARROWSIZE2 + HOVERTEXTPAD2 + tx2width) * fullLayout._invScaleX;
           var anchorStartOK, anchorEndOK;
           if (rotateLabels) {
             d.pos = htx;
@@ -37294,7 +37421,7 @@ var Plotly = (() => {
           }
           tx.attr("text-anchor", d.anchor);
           if (tx2width) tx2.attr("text-anchor", d.anchor);
-          g.attr("transform", strTranslate(htx, hty) + (rotateLabels ? strRotate(YANGLE) : ""));
+          g.attr("transform", strTranslate(htx, hty) + (rotateLabels ? strRotate(YANGLE2) : ""));
         });
         return {
           hoverLabels,
@@ -37303,12 +37430,12 @@ var Plotly = (() => {
       }
       function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         var _a, _b;
-        var name = "";
+        var name4 = "";
         var text = "";
         if (d.nameOverride !== void 0) d.name = d.nameOverride;
         if (d.name) {
           if (d.trace._meta) d.name = Lib.templateString(d.name, d.trace._meta);
-          name = plainText(d.name, d.nameLength);
+          name4 = plainText(d.name, d.nameLength);
         }
         var h0 = hovermode.charAt(0);
         var h1 = h0 === "x" ? "y" : "x";
@@ -37331,8 +37458,8 @@ var Plotly = (() => {
         }
         if (d.extraText !== void 0) text += (text ? "<br>" : "") + d.extraText;
         if (g && text === "" && !d.hovertemplate) {
-          if (name === "") g.remove();
-          text = name;
+          if (name4 === "") g.remove();
+          text = name4;
         }
         if ((_b = (_a = d.trace) == null ? void 0 : _a.hoverlabel) == null ? void 0 : _b.split) d.hovertemplate = "";
         const { hovertemplate = false } = d;
@@ -37350,11 +37477,11 @@ var Plotly = (() => {
             template: hovertemplate
           });
           text = text.replace(EXTRA_STRING_REGEX, (_, extra) => {
-            name = plainText(extra, d.nameLength);
+            name4 = plainText(extra, d.nameLength);
             return "";
           });
         }
-        return [text, name];
+        return [text, name4];
       }
       function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabelBoundingBox) {
         var axKey = rotateLabels ? "xa" : "ya";
@@ -37395,10 +37522,10 @@ var Plotly = (() => {
               labelMax = labelMin + (axIsX ? pY(d.by) : pX(d.bx));
             } else {
               if (axIsX) {
-                labelMin = d.crossPos + pY(HOVERARROWSIZE + offsets.y) - pY(d.by / 2 - HOVERARROWSIZE);
+                labelMin = d.crossPos + pY(HOVERARROWSIZE2 + offsets.y) - pY(d.by / 2 - HOVERARROWSIZE2);
                 labelMax = labelMin + pY(d.by);
               } else {
-                var startX = pX(horzSign * HOVERARROWSIZE + offsets.x);
+                var startX = pX(horzSign * HOVERARROWSIZE2 + offsets.x);
                 var endX = startX + pX(horzSign * d.bx);
                 labelMin = d.crossPos + Math.min(startX, endX);
                 labelMax = d.crossPos + Math.max(startX, endX);
@@ -37539,12 +37666,12 @@ var Plotly = (() => {
       }
       function getTextShiftX(hoverLabel) {
         var alignShift = { start: 1, end: -1, middle: 0 }[hoverLabel.anchor];
-        var textShiftX = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
-        var text2ShiftX = textShiftX + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD);
+        var textShiftX = alignShift * (HOVERARROWSIZE2 + HOVERTEXTPAD2);
+        var text2ShiftX = textShiftX + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD2);
         var isMiddle = hoverLabel.anchor === "middle";
         if (isMiddle) {
           textShiftX -= hoverLabel.tx2width / 2;
-          text2ShiftX += hoverLabel.txwidth / 2 + HOVERTEXTPAD;
+          text2ShiftX += hoverLabel.txwidth / 2 + HOVERTEXTPAD2;
         }
         return {
           alignShift,
@@ -37575,29 +37702,29 @@ var Plotly = (() => {
           if (isMiddle) {
             pathStr = "M-" + pX(d.bx / 2 + d.tx2width / 2) + "," + pY(offsetY - d.by / 2) + "h" + pX(d.bx) + "v" + pY(d.by) + "h-" + pX(d.bx) + "Z";
           } else if (showArrow) {
-            pathStr = "M0,0L" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(HOVERARROWSIZE + offsetY) + "v" + pY(d.by / 2 - HOVERARROWSIZE) + "h" + pX(horzSign * d.bx) + "v-" + pY(d.by) + "H" + pX(horzSign * HOVERARROWSIZE + offsetX) + "V" + pY(offsetY - HOVERARROWSIZE) + "Z";
+            pathStr = "M0,0L" + pX(horzSign * HOVERARROWSIZE2 + offsetX) + "," + pY(HOVERARROWSIZE2 + offsetY) + "v" + pY(d.by / 2 - HOVERARROWSIZE2) + "h" + pX(horzSign * d.bx) + "v-" + pY(d.by) + "H" + pX(horzSign * HOVERARROWSIZE2 + offsetX) + "V" + pY(offsetY - HOVERARROWSIZE2) + "Z";
           } else {
-            pathStr = "M" + pX(horzSign * HOVERARROWSIZE + offsetX) + "," + pY(offsetY - d.by / 2) + "h" + pX(horzSign * d.bx) + "v" + pY(d.by) + "h" + pX(-horzSign * d.bx) + "Z";
+            pathStr = "M" + pX(horzSign * HOVERARROWSIZE2 + offsetX) + "," + pY(offsetY - d.by / 2) + "h" + pX(horzSign * d.bx) + "v" + pY(d.by) + "h" + pX(-horzSign * d.bx) + "Z";
           }
           g.select("path").attr("d", pathStr);
           var posX = offsetX + shiftX.textShiftX;
-          var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
+          var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD2;
           var textAlign = d.textAlign || "auto";
           if (textAlign !== "auto") {
             if (textAlign === "left" && anchor !== "start") {
               tx.attr("text-anchor", "start");
-              posX = isMiddle ? -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD : -d.bx - HOVERTEXTPAD;
+              posX = isMiddle ? -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD2 : -d.bx - HOVERTEXTPAD2;
             } else if (textAlign === "right" && anchor !== "end") {
               tx.attr("text-anchor", "end");
-              posX = isMiddle ? d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD : d.bx + HOVERTEXTPAD;
+              posX = isMiddle ? d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD2 : d.bx + HOVERTEXTPAD2;
             }
           }
           tx.call(svgTextUtils.positionText, pX(posX), pY(posY));
           if (d.tx2width) {
             g.select("text.name").call(
               svgTextUtils.positionText,
-              pX(shiftX.text2ShiftX + shiftX.alignShift * HOVERTEXTPAD + offsetX),
-              pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD)
+              pX(shiftX.text2ShiftX + shiftX.alignShift * HOVERTEXTPAD2 + offsetX),
+              pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD2)
             );
             g.select("rect").call(
               Drawing.setRect,
@@ -37972,11 +38099,11 @@ var Plotly = (() => {
     "src/components/fx/defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var attributes3 = require_attributes();
+      var attributes4 = require_attributes();
       var handleHoverLabelDefaults = require_hoverlabel_defaults();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var opts = Lib.extendFlat({}, layout.hoverlabel);
         if (traceOut.hovertemplate) opts.namelength = -1;
@@ -38131,7 +38258,7 @@ var Plotly = (() => {
       module.exports = {
         moduleType: "component",
         name: "fx",
-        constants: require_constants(),
+        constants: (init_constants(), __toCommonJS(constants_exports)),
         schema: {
           layout: layoutAttributes
         },
@@ -38415,21 +38542,30 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/shapes/draw_newshape/constants.js
-  var require_constants4 = __commonJS({
-    "src/components/shapes/draw_newshape/constants.js"(exports, module) {
+  // src/components/shapes/draw_newshape/constants.ts
+  var constants_exports4 = {};
+  __export(constants_exports4, {
+    CIRCLE_SIDES: () => CIRCLE_SIDES,
+    SQRT2: () => SQRT2,
+    cos45: () => cos45,
+    i000: () => i000,
+    i090: () => i090,
+    i180: () => i180,
+    i270: () => i270,
+    sin45: () => sin45
+  });
+  var CIRCLE_SIDES, i000, i090, i180, i270, cos45, sin45, SQRT2;
+  var init_constants4 = __esm({
+    "src/components/shapes/draw_newshape/constants.ts"() {
       "use strict";
-      var CIRCLE_SIDES = 32;
-      module.exports = {
-        CIRCLE_SIDES,
-        i000: 0,
-        i090: CIRCLE_SIDES / 4,
-        i180: CIRCLE_SIDES / 2,
-        i270: CIRCLE_SIDES / 4 * 3,
-        cos45: Math.cos(Math.PI / 4),
-        sin45: Math.sin(Math.PI / 4),
-        SQRT2: Math.sqrt(2)
-      };
+      CIRCLE_SIDES = 32;
+      i000 = 0;
+      i090 = CIRCLE_SIDES / 4;
+      i180 = CIRCLE_SIDES / 2;
+      i270 = CIRCLE_SIDES / 4 * 3;
+      cos45 = Math.cos(Math.PI / 4);
+      sin45 = Math.sin(Math.PI / 4);
+      SQRT2 = Math.sqrt(2);
     }
   });
 
@@ -38484,9 +38620,9 @@ var Plotly = (() => {
     "src/components/shapes/draw_newshape/helpers.js"(exports) {
       "use strict";
       var parseSvgPath = require_dist();
-      var constants2 = require_constants4();
-      var CIRCLE_SIDES = constants2.CIRCLE_SIDES;
-      var SQRT2 = constants2.SQRT2;
+      var constants2 = (init_constants4(), __toCommonJS(constants_exports4));
+      var CIRCLE_SIDES2 = constants2.CIRCLE_SIDES;
+      var SQRT22 = constants2.SQRT2;
       var cartesianHelpers = require_helpers6();
       var p2r = cartesianHelpers.p2r;
       var r2p = cartesianHelpers.r2p;
@@ -38587,20 +38723,20 @@ var Plotly = (() => {
               break;
             case "A":
               w = "L";
-              var rx = +cmd[i][1];
-              var ry = +cmd[i][2];
+              var rx3 = +cmd[i][1];
+              var ry3 = +cmd[i][2];
               if (!+cmd[i][4]) {
-                rx = -rx;
-                ry = -ry;
+                rx3 = -rx3;
+                ry3 = -ry3;
               }
-              var cenX = x - rx;
+              var cenX = x - rx3;
               var cenY = y;
-              for (k = 1; k <= CIRCLE_SIDES / 2; k++) {
-                var t = 2 * Math.PI * k / CIRCLE_SIDES;
+              for (k = 1; k <= CIRCLE_SIDES2 / 2; k++) {
+                var t = 2 * Math.PI * k / CIRCLE_SIDES2;
                 newPos.push([
                   w,
-                  cenX + rx * Math.cos(t),
-                  cenY + ry * Math.sin(t)
+                  cenX + rx3 * Math.cos(t),
+                  cenY + ry3 * Math.sin(t)
                 ]);
               }
               break;
@@ -38686,8 +38822,8 @@ var Plotly = (() => {
       };
       exports.pointsOnEllipse = function(cell) {
         var len = cell.length;
-        if (len !== CIRCLE_SIDES + 1) return false;
-        len = CIRCLE_SIDES;
+        if (len !== CIRCLE_SIDES2 + 1) return false;
+        len = CIRCLE_SIDES2;
         for (var i = 0; i < len; i++) {
           var k = (len * 2 - i) % len;
           var k2 = (len / 2 + k) % len;
@@ -38709,16 +38845,16 @@ var Plotly = (() => {
         });
         var cx = (pos.x1 + pos.x0) / 2;
         var cy = (pos.y1 + pos.y0) / 2;
-        var rx = (pos.x1 - pos.x0) / 2;
-        var ry = (pos.y1 - pos.y0) / 2;
-        if (!rx) rx = ry = ry / SQRT2;
-        if (!ry) ry = rx = rx / SQRT2;
+        var rx3 = (pos.x1 - pos.x0) / 2;
+        var ry3 = (pos.y1 - pos.y0) / 2;
+        if (!rx3) rx3 = ry3 = ry3 / SQRT22;
+        if (!ry3) ry3 = rx3 = rx3 / SQRT22;
         var cell = [];
-        for (var i = 0; i < CIRCLE_SIDES; i++) {
-          var t = i * 2 * Math.PI / CIRCLE_SIDES;
+        for (var i = 0; i < CIRCLE_SIDES2; i++) {
+          var t = i * 2 * Math.PI / CIRCLE_SIDES2;
           cell.push([
-            cx + rx * Math.cos(t),
-            cy + ry * Math.sin(t)
+            cx + rx3 * Math.cos(t),
+            cy + ry3 * Math.sin(t)
           ]);
         }
         return cell;
@@ -38734,7 +38870,7 @@ var Plotly = (() => {
         y0 -= dy;
         var cx = (x0 + x1) / 2;
         var cy = (y0 + y1) / 2;
-        var scale = SQRT2;
+        var scale = SQRT22;
         dx *= scale;
         dy *= scale;
         return {
@@ -38769,13 +38905,13 @@ var Plotly = (() => {
       var dragHelpers = require_helpers5();
       var drawMode = dragHelpers.drawMode;
       var openMode = dragHelpers.openMode;
-      var constants2 = require_constants4();
-      var i000 = constants2.i000;
-      var i090 = constants2.i090;
-      var i180 = constants2.i180;
-      var i270 = constants2.i270;
-      var cos45 = constants2.cos45;
-      var sin45 = constants2.sin45;
+      var constants2 = (init_constants4(), __toCommonJS(constants_exports4));
+      var i0002 = constants2.i000;
+      var i0902 = constants2.i090;
+      var i1802 = constants2.i180;
+      var i2702 = constants2.i270;
+      var cos452 = constants2.cos45;
+      var sin452 = constants2.sin45;
       var cartesianHelpers = require_helpers6();
       var p2r = cartesianHelpers.p2r;
       var r2p = cartesianHelpers.r2p;
@@ -38919,14 +39055,14 @@ var Plotly = (() => {
           newShape.y1 = cell[1][2];
         } else if (cell && dragmode === "drawcircle") {
           newShape.type = "circle";
-          var xA = cell[i000][1];
-          var xB = cell[i090][1];
-          var xC = cell[i180][1];
-          var xD = cell[i270][1];
-          var yA = cell[i000][2];
-          var yB = cell[i090][2];
-          var yC = cell[i180][2];
-          var yD = cell[i270][2];
+          var xA = cell[i0002][1];
+          var xB = cell[i0902][1];
+          var xC = cell[i1802][1];
+          var xD = cell[i2702][1];
+          var yA = cell[i0002][2];
+          var yB = cell[i0902][2];
+          var yC = cell[i1802][2];
+          var yD = cell[i2702][2];
           var xDateOrLog = plotinfo.xaxis && (plotinfo.xaxis.type === "date" || plotinfo.xaxis.type === "log");
           var yDateOrLog = plotinfo.yaxis && (plotinfo.yaxis.type === "date" || plotinfo.yaxis.type === "log");
           if (xDateOrLog) {
@@ -38943,13 +39079,13 @@ var Plotly = (() => {
           }
           var x0 = (xB + xD) / 2;
           var y0 = (yA + yC) / 2;
-          var rx = (xD - xB + xC - xA) / 2;
-          var ry = (yD - yB + yC - yA) / 2;
+          var rx3 = (xD - xB + xC - xA) / 2;
+          var ry3 = (yD - yB + yC - yA) / 2;
           var pos = ellipseOver({
             x0,
             y0,
-            x1: x0 + rx * cos45,
-            y1: y0 + ry * sin45
+            x1: x0 + rx3 * cos452,
+            y1: y0 + ry3 * sin452
           });
           if (xDateOrLog) {
             pos.x0 = p2r(plotinfo.xaxis, pos.x0);
@@ -39077,56 +39213,56 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/shapes/constants.js
-  var require_constants5 = __commonJS({
-    "src/components/shapes/constants.js"(exports, module) {
+  // src/components/shapes/constants.ts
+  var constants_exports5 = {};
+  __export(constants_exports5, {
+    numParams: () => numParams,
+    paramIsX: () => paramIsX,
+    paramIsY: () => paramIsY,
+    paramRE: () => paramRE,
+    segmentRE: () => segmentRE
+  });
+  var segmentRE, paramRE, paramIsX, paramIsY, numParams;
+  var init_constants5 = __esm({
+    "src/components/shapes/constants.ts"() {
       "use strict";
-      module.exports = {
-        segmentRE: /[MLHVQCTSZ][^MLHVQCTSZ]*/g,
-        paramRE: /[^\s,]+/g,
-        // which numbers in each path segment are x (or y) values
-        // drawn is which param is a drawn point, as opposed to a
-        // control point (which doesn't count toward autorange.
-        // TODO: this means curved paths could extend beyond the
-        // autorange bounds. This is a bit tricky to get right
-        // unless we revert to bounding boxes, but perhaps there's
-        // a calculation we could do...)
-        paramIsX: {
-          M: { 0: true, drawn: 0 },
-          L: { 0: true, drawn: 0 },
-          H: { 0: true, drawn: 0 },
-          V: {},
-          Q: { 0: true, 2: true, drawn: 2 },
-          C: { 0: true, 2: true, 4: true, drawn: 4 },
-          T: { 0: true, drawn: 0 },
-          S: { 0: true, 2: true, drawn: 2 },
-          // A: {0: true, 5: true},
-          Z: {}
-        },
-        paramIsY: {
-          M: { 1: true, drawn: 1 },
-          L: { 1: true, drawn: 1 },
-          H: {},
-          V: { 0: true, drawn: 0 },
-          Q: { 1: true, 3: true, drawn: 3 },
-          C: { 1: true, 3: true, 5: true, drawn: 5 },
-          T: { 1: true, drawn: 1 },
-          S: { 1: true, 3: true, drawn: 3 },
-          // A: {1: true, 6: true},
-          Z: {}
-        },
-        numParams: {
-          M: 2,
-          L: 2,
-          H: 1,
-          V: 1,
-          Q: 4,
-          C: 6,
-          T: 2,
-          S: 4,
-          // A: 7,
-          Z: 0
-        }
+      segmentRE = /[MLHVQCTSZ][^MLHVQCTSZ]*/g;
+      paramRE = /[^\s,]+/g;
+      paramIsX = {
+        M: { 0: true, drawn: 0 },
+        L: { 0: true, drawn: 0 },
+        H: { 0: true, drawn: 0 },
+        V: {},
+        Q: { 0: true, 2: true, drawn: 2 },
+        C: { 0: true, 2: true, 4: true, drawn: 4 },
+        T: { 0: true, drawn: 0 },
+        S: { 0: true, 2: true, drawn: 2 },
+        // A: {0: true, 5: true},
+        Z: {}
+      };
+      paramIsY = {
+        M: { 1: true, drawn: 1 },
+        L: { 1: true, drawn: 1 },
+        H: {},
+        V: { 0: true, drawn: 0 },
+        Q: { 1: true, 3: true, drawn: 3 },
+        C: { 1: true, 3: true, 5: true, drawn: 5 },
+        T: { 1: true, drawn: 1 },
+        S: { 1: true, 3: true, drawn: 3 },
+        // A: {1: true, 6: true},
+        Z: {}
+      };
+      numParams = {
+        M: 2,
+        L: 2,
+        H: 1,
+        V: 1,
+        Q: 4,
+        C: 6,
+        T: 2,
+        S: 4,
+        // A: 7,
+        Z: 0
       };
     }
   });
@@ -39135,7 +39271,7 @@ var Plotly = (() => {
   var require_helpers8 = __commonJS({
     "src/components/shapes/helpers.js"(exports) {
       "use strict";
-      var constants2 = require_constants5();
+      var constants2 = (init_constants5(), __toCommonJS(constants_exports5));
       var Lib = require_lib();
       var Axes = require_axes();
       exports.rangeToShapePosition = function(ax) {
@@ -39386,11 +39522,11 @@ var Plotly = (() => {
         if (shapeType === "rect") return "M" + x0 + "," + y0 + "H" + x1 + "V" + y1 + "H" + x0 + "Z";
         var cx = (x0 + x1) / 2;
         var cy = (y0 + y1) / 2;
-        var rx = Math.abs(cx - x0);
-        var ry = Math.abs(cy - y0);
-        var rArc = "A" + rx + "," + ry;
-        var rightPt = cx + rx + "," + cy;
-        var topPt = cx + "," + (cy - ry);
+        var rx3 = Math.abs(cx - x0);
+        var ry3 = Math.abs(cy - y0);
+        var rArc = "A" + rx3 + "," + ry3;
+        var rightPt = cx + rx3 + "," + cy;
+        var topPt = cx + "," + (cy - ry3);
         return "M" + rightPt + rArc + " 0 1,1 " + topPt + rArc + " 0 0,1 " + rightPt + "Z";
       };
       function convertPath(options, x2p, y2p) {
@@ -39458,7 +39594,7 @@ var Plotly = (() => {
       var helpers = require_helpers8();
       var getPathString = helpers.getPathString;
       var shapeLabelTexttemplateVars = require_label_texttemplate();
-      var FROM_TL = require_alignment().FROM_TL;
+      var FROM_TL2 = (init_alignment(), __toCommonJS(alignment_exports)).FROM_TL;
       module.exports = function drawLabel(gd, index, options, shapeGroup) {
         shapeGroup.selectAll(".shape-label").remove();
         if (!(options.label.text || options.label.texttemplate)) return;
@@ -39679,7 +39815,7 @@ var Plotly = (() => {
             texty = texty + paddingY;
           }
         }
-        var shiftFraction = FROM_TL[yanchor];
+        var shiftFraction = FROM_TL2[yanchor];
         var baselineAdjust = shapeOptions.label.font.size;
         var textHeight = textBB.height;
         var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
@@ -39701,11 +39837,11 @@ var Plotly = (() => {
       var selectMode = dragHelpers.selectMode;
       var Registry = require_registry();
       var Color = require_color();
-      var constants2 = require_constants4();
-      var i000 = constants2.i000;
-      var i090 = constants2.i090;
-      var i180 = constants2.i180;
-      var i270 = constants2.i270;
+      var constants2 = (init_constants4(), __toCommonJS(constants_exports4));
+      var i0002 = constants2.i000;
+      var i0902 = constants2.i090;
+      var i1802 = constants2.i180;
+      var i2702 = constants2.i270;
       var handleOutline = require_handle_outline();
       var clearOutlineControllers = handleOutline.clearOutlineControllers;
       var helpers = require_helpers7();
@@ -39857,7 +39993,7 @@ var Plotly = (() => {
             var len = cell.length;
             for (var j = 0; j < len; j++) {
               if (cell[j][0] === "Z") continue;
-              if (onEllipse && j !== i000 && j !== i090 && j !== i180 && j !== i270) {
+              if (onEllipse && j !== i0002 && j !== i0902 && j !== i1802 && j !== i2702) {
                 continue;
               }
               var rectSelection = onRect && dragOptions.isActiveSelection;
@@ -40005,7 +40141,7 @@ var Plotly = (() => {
       var dragElement = require_dragelement();
       var Fx = require_fx();
       var setCursor = require_setcursor();
-      var constants2 = require_constants5();
+      var constants2 = (init_constants5(), __toCommonJS(constants_exports5));
       var helpers = require_helpers8();
       var getPathString = helpers.getPathString;
       module.exports = {
@@ -40647,7 +40783,8 @@ var Plotly = (() => {
       var confirmCloudDialog = require_dialog();
       var Lib = require_lib();
       var _ = Lib._;
-      var modeBarButtons = module.exports = {};
+      var modeBarButtons = {};
+      module.exports = modeBarButtons;
       modeBarButtons.toImage = {
         name: "toImage",
         title: function(gd) {
@@ -41363,7 +41500,7 @@ var Plotly = (() => {
   });
 
   // src/components/modebar/constants.js
-  var require_constants6 = __commonJS({
+  var require_constants = __commonJS({
     "src/components/modebar/constants.js"(exports, module) {
       "use strict";
       var modeBarButtons = require_buttons();
@@ -41386,9 +41523,9 @@ var Plotly = (() => {
       var foreButtons = [];
       var addToForeButtons = function(b) {
         if (backButtons.indexOf(b._cat || b.name) !== -1) return;
-        var name = b.name;
+        var name4 = b.name;
         var _cat = (b._cat || b.name).toLowerCase();
-        if (foreButtons.indexOf(name) === -1) foreButtons.push(name);
+        if (foreButtons.indexOf(name4) === -1) foreButtons.push(name4);
         if (foreButtons.indexOf(_cat) === -1) foreButtons.push(_cat);
       };
       buttonList.forEach(function(k) {
@@ -41408,12 +41545,12 @@ var Plotly = (() => {
   __export(attributes_exports, {
     default: () => attributes_default
   });
-  var import_constants, attributes, attributes_default;
+  var import_constants, attributes2, attributes_default;
   var init_attributes = __esm({
     "src/components/modebar/attributes.ts"() {
       "use strict";
-      import_constants = __toESM(require_constants6());
-      attributes = {
+      import_constants = __toESM(require_constants());
+      attributes2 = {
         editType: "modebar",
         orientation: {
           valType: "enumerated",
@@ -41471,7 +41608,7 @@ var Plotly = (() => {
           ].join(" ")
         }
       };
-      attributes_default = attributes;
+      attributes_default = attributes2;
     }
   });
 
@@ -41482,12 +41619,12 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Color = require_color();
       var Template = require_plot_template();
-      var attributes3 = (init_attributes(), __toCommonJS(attributes_exports)).default;
+      var attributes4 = (init_attributes(), __toCommonJS(attributes_exports)).default;
       module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         var containerIn = layoutIn.modebar || {};
         var containerOut = Template.newContainer(layoutOut, "modebar");
         function coerce(attr, dflt) {
-          return Lib.coerce(containerIn, containerOut, attributes3, attr, dflt);
+          return Lib.coerce(containerIn, containerOut, attributes4, attr, dflt);
         }
         coerce("orientation");
         coerce("bgcolor", Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
@@ -41748,7 +41885,7 @@ var Plotly = (() => {
       var isUnifiedHover = require_helpers2().isUnifiedHover;
       var createModeBar = require_modebar();
       var modeBarButtons = require_buttons();
-      var DRAW_MODES = require_constants6().DRAW_MODES;
+      var DRAW_MODES = require_constants().DRAW_MODES;
       var extendDeep = require_lib().extendDeep;
       module.exports = function manageModeBar(gd) {
         var fullLayout = gd._fullLayout;
@@ -41789,13 +41926,13 @@ var Plotly = (() => {
         var fullLayout = gd._fullLayout;
         var fullData = gd._fullData;
         var context = gd._context;
-        function match(name, B) {
+        function match(name4, B) {
           if (typeof B === "string") {
-            if (B.toLowerCase() === name.toLowerCase()) return true;
+            if (B.toLowerCase() === name4.toLowerCase()) return true;
           } else {
             var v0 = B.name;
             var v1 = B._cat || B.name;
-            if (v0 === name || v1 === name.toLowerCase()) return true;
+            if (v0 === name4 || v1 === name4.toLowerCase()) return true;
           }
           return false;
         }
@@ -41836,8 +41973,8 @@ var Plotly = (() => {
           if (!newGroup.length) return;
           var out = [];
           for (var i2 = 0; i2 < newGroup.length; i2++) {
-            var name = newGroup[i2];
-            var B = modeBarButtons[name];
+            var name4 = newGroup[i2];
+            var B = modeBarButtons[name4];
             var v0 = B.name.toLowerCase();
             var v1 = (B._cat || B.name).toLowerCase();
             var found = false;
@@ -41849,7 +41986,7 @@ var Plotly = (() => {
               }
             }
             if (found) continue;
-            out.push(modeBarButtons[name]);
+            out.push(modeBarButtons[name4]);
           }
           groups.push(out);
         }
@@ -42040,10 +42177,10 @@ var Plotly = (() => {
   var require_scale_zoom = __commonJS({
     "src/plots/cartesian/scale_zoom.js"(exports, module) {
       "use strict";
-      var FROM_BL = require_alignment().FROM_BL;
+      var FROM_BL2 = (init_alignment(), __toCommonJS(alignment_exports)).FROM_BL;
       module.exports = function scaleZoom(ax, factor, centerFraction) {
         if (centerFraction === void 0) {
-          centerFraction = FROM_BL[ax.constraintoward || "center"];
+          centerFraction = FROM_BL2[ax.constraintoward || "center"];
         }
         var rangeLinear = [ax.r2l(ax.range[0]), ax.r2l(ax.range[1])];
         var center = rangeLinear[0] + (rangeLinear[1] - rangeLinear[0]) * centerFraction;
@@ -42066,8 +42203,8 @@ var Plotly = (() => {
       var layoutAttributes = require_layout_attributes4();
       var scaleZoom = require_scale_zoom();
       var setConvert = require_set_convert();
-      var ALMOST_EQUAL = require_numerical().ALMOST_EQUAL;
-      var FROM_BL = require_alignment().FROM_BL;
+      var ALMOST_EQUAL2 = (init_numerical(), __toCommonJS(numerical_exports)).ALMOST_EQUAL;
+      var FROM_BL2 = (init_alignment(), __toCommonJS(alignment_exports)).FROM_BL;
       exports.handleDefaults = function(layoutIn, layoutOut, opts) {
         var axIds = opts.axIds;
         var axHasImage = opts.axHasImage;
@@ -42394,7 +42531,7 @@ var Plotly = (() => {
             maxScale = Math.max(maxScale, normScale);
             if (ax.constrain === "domain") hasAnyDomainConstraint = true;
           }
-          if (minScale > ALMOST_EQUAL * maxScale && !hasAnyDomainConstraint) continue;
+          if (minScale > ALMOST_EQUAL2 * maxScale && !hasAnyDomainConstraint) continue;
           for (j = 0; j < axisIDs.length; j++) {
             axisID = axisIDs[j];
             normScale = normScales[axisID];
@@ -42487,7 +42624,7 @@ var Plotly = (() => {
       };
       function updateDomain(ax, factor) {
         var inputDomain = ax._inputDomain;
-        var centerFraction = FROM_BL[ax.constraintoward];
+        var centerFraction = FROM_BL2[ax.constraintoward];
         var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
         ax.domain = ax._input.domain = [
           center + (inputDomain[0] - center) / factor,
@@ -42513,7 +42650,7 @@ var Plotly = (() => {
       var Titles = require_titles();
       var ModeBar = require_modebar2();
       var Axes = require_axes();
-      var alignmentConstants = require_alignment();
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
       var axisConstraints = require_constraints();
       var enforceAxisConstraints = axisConstraints.enforce;
       var cleanAxisConstraints = axisConstraints.clean;
@@ -42521,7 +42658,7 @@ var Plotly = (() => {
       var SVG_TEXT_ANCHOR_START = "start";
       var SVG_TEXT_ANCHOR_MIDDLE = "middle";
       var SVG_TEXT_ANCHOR_END = "end";
-      var zindexSeparator = require_constants2().zindexSeparator;
+      var zindexSeparator2 = (init_constants2(), __toCommonJS(constants_exports2)).zindexSeparator;
       exports.layoutStyles = function(gd) {
         return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
       };
@@ -42592,7 +42729,7 @@ var Plotly = (() => {
             var xDomain = plotinfo.xaxis.domain;
             var yDomain = plotinfo.yaxis.domain;
             var plotgroup = plotinfo.plotgroup;
-            if (overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator) === -1) {
+            if (overlappingDomain(xDomain, yDomain, lowerDomains) && subplot.indexOf(zindexSeparator2) === -1) {
               var pgNode = plotgroup.node();
               var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, "rect", "bg");
               pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
@@ -44444,7 +44581,7 @@ var Plotly = (() => {
     "src/lib/polygon.js"(exports, module) {
       "use strict";
       var dot = require_matrix().dot;
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var polygon = module.exports = {};
       polygon.tester = function tester(ptsIn) {
         var pts = ptsIn.slice();
@@ -44595,20 +44732,22 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/selections/constants.js
-  var require_constants7 = __commonJS({
-    "src/components/selections/constants.js"(exports, module) {
+  // src/components/selections/constants.ts
+  var constants_exports6 = {};
+  __export(constants_exports6, {
+    BENDPX: () => BENDPX,
+    MINSELECT: () => MINSELECT,
+    SELECTDELAY: () => SELECTDELAY,
+    SELECTID: () => SELECTID
+  });
+  var BENDPX, MINSELECT, SELECTDELAY, SELECTID;
+  var init_constants6 = __esm({
+    "src/components/selections/constants.ts"() {
       "use strict";
-      module.exports = {
-        // max pixels off straight before a lasso select line counts as bent
-        BENDPX: 1.5,
-        // smallest dimension allowed for a select box
-        MINSELECT: 12,
-        // throttling limit (ms) for selectPoints calls
-        SELECTDELAY: 100,
-        // cache ID suffix for throttle
-        SELECTID: "-select"
-      };
+      BENDPX = 1.5;
+      MINSELECT = 12;
+      SELECTDELAY = 100;
+      SELECTID = "-select";
     }
   });
 
@@ -44630,7 +44769,7 @@ var Plotly = (() => {
       var openMode = dragHelpers.openMode;
       var selectMode = dragHelpers.selectMode;
       var shapeHelpers = require_helpers8();
-      var shapeConstants = require_constants5();
+      var shapeConstants = (init_constants5(), __toCommonJS(constants_exports5));
       var displayOutlines = require_display_outlines();
       var clearOutline = require_handle_outline().clearOutline;
       var newShapeHelpers = require_helpers7();
@@ -44646,8 +44785,8 @@ var Plotly = (() => {
       var getFromId = require_axis_ids().getFromId;
       var clearGlCanvases = require_clear_gl_canvases();
       var redrawReglTraces = require_subroutines().redrawReglTraces;
-      var constants2 = require_constants7();
-      var MINSELECT = constants2.MINSELECT;
+      var constants2 = (init_constants6(), __toCommonJS(constants_exports6));
+      var MINSELECT2 = constants2.MINSELECT;
       var filteredPolygon = libPolygon.filter;
       var polygonTester = libPolygon.tester;
       var helpers = require_helpers6();
@@ -44769,9 +44908,9 @@ var Plotly = (() => {
             if (isSelectMode) {
               var q = fullLayout.selectdirection;
               if (q === "any") {
-                if (dy < Math.min(dx * 0.6, MINSELECT)) {
+                if (dy < Math.min(dx * 0.6, MINSELECT2)) {
                   direction = "h";
-                } else if (dx < Math.min(dy * 0.6, MINSELECT)) {
+                } else if (dx < Math.min(dy * 0.6, MINSELECT2)) {
                   direction = "v";
                 } else {
                   direction = "d";
@@ -44826,7 +44965,7 @@ var Plotly = (() => {
               currentPolygon.xmax = isLineOrEllipse ? x1 : Math.max(x0, x1);
               currentPolygon.ymin = Math.min(start, end);
               currentPolygon.ymax = Math.max(start, end);
-              corners.attr("d", "M" + currentPolygon.xmin + "," + (y0 - MINSELECT) + "h-4v" + 2 * MINSELECT + "h4ZM" + (currentPolygon.xmax - 1) + "," + (y0 - MINSELECT) + "h4v" + 2 * MINSELECT + "h-4Z");
+              corners.attr("d", "M" + currentPolygon.xmin + "," + (y0 - MINSELECT2) + "h-4v" + 2 * MINSELECT2 + "h4ZM" + (currentPolygon.xmax - 1) + "," + (y0 - MINSELECT2) + "h4v" + 2 * MINSELECT2 + "h-4Z");
             } else if (direction === "v") {
               currentPolygon = isLineOrEllipse ? handleEllipse(isEllipse, [start, y1], [end, y1]) : (
                 // using y1 instead of y0 allows adjusting the line while drawing
@@ -44836,7 +44975,7 @@ var Plotly = (() => {
               currentPolygon.xmax = Math.max(start, end);
               currentPolygon.ymin = isLineOrEllipse ? y1 : Math.min(y0, y1);
               currentPolygon.ymax = isLineOrEllipse ? y1 : Math.max(y0, y1);
-              corners.attr("d", "M" + (x0 - MINSELECT) + "," + currentPolygon.ymin + "v-4h" + 2 * MINSELECT + "v4ZM" + (x0 - MINSELECT) + "," + (currentPolygon.ymax - 1) + "v4h" + 2 * MINSELECT + "v-4Z");
+              corners.attr("d", "M" + (x0 - MINSELECT2) + "," + currentPolygon.ymin + "v-4h" + 2 * MINSELECT2 + "v4ZM" + (x0 - MINSELECT2) + "," + (currentPolygon.ymax - 1) + "v4h" + 2 * MINSELECT2 + "v-4Z");
             } else if (direction === "d") {
               currentPolygon = isLineOrEllipse ? handleEllipse(isEllipse, [x0, y0], [x1, y1]) : [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
               currentPolygon.xmin = Math.min(x0, x1);
@@ -45824,48 +45963,28 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/axis_placeable_objects.js
-  var require_axis_placeable_objects = __commonJS({
-    "src/constants/axis_placeable_objects.js"(exports, module) {
+  // src/constants/axis_placeable_objects.ts
+  var axis_placeable_objects_exports = {};
+  __export(axis_placeable_objects_exports, {
+    axisRefDescription: () => axisRefDescription
+  });
+  function axisRefDescription(axisname, lower, upper) {
+    return [
+      `If set to a ${axisname} axis id (e.g. *${axisname}* or *${axisname}2*),`,
+      `the \`${axisname}\` position refers to a ${axisname} coordinate.`,
+      `If set to *paper*, the \`${axisname}\` position refers to the distance from the`,
+      `${lower} of the plotting area in normalized coordinates where *0* (*1*) corresponds`,
+      `to the ${lower} (${upper}). If set to a ${axisname} axis ID followed by *domain*`,
+      `(separated by a space), the position behaves like for *paper*, but refers to the`,
+      `distance in fractions of the domain length from the ${lower} of the domain of that`,
+      `axis: e.g., *${axisname}2 domain* refers to the domain of the second ${axisname}`,
+      `axis and a ${axisname} position of 0.5 refers to the point between the ${lower}`,
+      `and the ${upper} of the domain of the second ${axisname} axis.`
+    ].join(" ");
+  }
+  var init_axis_placeable_objects = __esm({
+    "src/constants/axis_placeable_objects.ts"() {
       "use strict";
-      module.exports = {
-        axisRefDescription: function(axisname, lower, upper) {
-          return [
-            "If set to a",
-            axisname,
-            "axis id (e.g. *" + axisname + "* or",
-            "*" + axisname + "2*), the `" + axisname + "` position refers to a",
-            axisname,
-            "coordinate. If set to *paper*, the `" + axisname + "`",
-            "position refers to the distance from the",
-            lower,
-            "of the plotting",
-            "area in normalized coordinates where *0* (*1*) corresponds to the",
-            lower,
-            "(" + upper + "). If set to a",
-            axisname,
-            "axis ID followed by",
-            "*domain* (separated by a space), the position behaves like for",
-            "*paper*, but refers to the distance in fractions of the domain",
-            "length from the",
-            lower,
-            "of the domain of that axis: e.g.,",
-            "*" + axisname + "2 domain* refers to the domain of the second",
-            axisname,
-            "axis and a",
-            axisname,
-            "position of 0.5 refers to the",
-            "point between the",
-            lower,
-            "and the",
-            upper,
-            "of the domain of the",
-            "second",
-            axisname,
-            "axis."
-          ].join(" ");
-        }
-      };
     }
   });
 
@@ -45875,9 +45994,9 @@ var Plotly = (() => {
       "use strict";
       var ARROWPATHS = require_arrow_paths();
       var fontAttrs = require_font_attributes();
-      var cartesianConstants = require_constants2();
+      var cartesianConstants = (init_constants2(), __toCommonJS(constants_exports2));
       var templatedArray = require_plot_template().templatedArray;
-      var axisPlaceableObjs = require_axis_placeable_objects();
+      var axisPlaceableObjs = (init_axis_placeable_objects(), __toCommonJS(axis_placeable_objects_exports));
       module.exports = templatedArray("annotation", {
         visible: {
           valType: "boolean",
@@ -46124,22 +46243,24 @@ var Plotly = (() => {
     }
   });
 
-  // src/traces/scatter/constants.js
-  var require_constants8 = __commonJS({
-    "src/traces/scatter/constants.js"(exports, module) {
+  // src/traces/scatter/constants.ts
+  var constants_exports7 = {};
+  __export(constants_exports7, {
+    PTS_LINESONLY: () => PTS_LINESONLY,
+    eventDataKeys: () => eventDataKeys,
+    maxScreensAway: () => maxScreensAway,
+    minTolerance: () => minTolerance,
+    toleranceGrowth: () => toleranceGrowth
+  });
+  var PTS_LINESONLY, minTolerance, toleranceGrowth, maxScreensAway, eventDataKeys;
+  var init_constants7 = __esm({
+    "src/traces/scatter/constants.ts"() {
       "use strict";
-      module.exports = {
-        PTS_LINESONLY: 20,
-        // fixed parameters of clustering and clipping algorithms
-        // fraction of clustering tolerance "so close we don't even consider it a new point"
-        minTolerance: 0.2,
-        // how fast does clustering tolerance increase as you get away from the visible region
-        toleranceGrowth: 10,
-        // number of viewport sizes away from the visible region
-        // at which we clip all lines to the perimeter
-        maxScreensAway: 20,
-        eventDataKeys: []
-      };
+      PTS_LINESONLY = 20;
+      minTolerance = 0.2;
+      toleranceGrowth = 10;
+      maxScreensAway = 20;
+      eventDataKeys = [];
     }
   });
 
@@ -46168,7 +46289,7 @@ var Plotly = (() => {
       var dash = require_attributes4().dash;
       var pattern = require_attributes4().pattern;
       var Drawing = require_drawing();
-      var constants2 = require_constants8();
+      var constants2 = (init_constants7(), __toCommonJS(constants_exports7));
       var extendFlat2 = require_extend().extendFlat;
       var makeFillcolorAttr = require_fillcolor_attribute();
       function axisPeriod(axis) {
@@ -46577,7 +46698,7 @@ var Plotly = (() => {
       var extendFlat2 = require_extend().extendFlat;
       var overrideAll = require_edit_types().overrideAll;
       var templatedArray = require_plot_template().templatedArray;
-      var axisPlaceableObjs = require_axis_placeable_objects();
+      var axisPlaceableObjs = (init_axis_placeable_objects(), __toCommonJS(axis_placeable_objects_exports));
       module.exports = overrideAll(templatedArray("selection", {
         type: {
           valType: "enumerated",
@@ -46629,7 +46750,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Axes = require_axes();
       var handleArrayContainerDefaults = require_array_container_defaults();
-      var attributes3 = require_attributes12();
+      var attributes4 = require_attributes12();
       var helpers = require_helpers8();
       module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         handleArrayContainerDefaults(layoutIn, layoutOut, {
@@ -46649,7 +46770,7 @@ var Plotly = (() => {
       };
       function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(selectionIn, selectionOut, attributes3, attr, dflt);
+          return Lib.coerce(selectionIn, selectionOut, attributes4, attr, dflt);
         }
         var path = coerce("path");
         var dfltType = path ? "path" : "rect";
@@ -46727,7 +46848,7 @@ var Plotly = (() => {
           var array = layoutIn[containerArrayName];
           if (!Array.isArray(array)) return;
           var Cartesian = Registry.subplotsRegistry.cartesian;
-          var idRegex = Cartesian.idRegex;
+          var idRegex2 = Cartesian.idRegex;
           var subplots = layoutOut._subplots;
           var xaList = subplots.xaxis;
           var yaList = subplots.yaxis;
@@ -46738,8 +46859,8 @@ var Plotly = (() => {
             if (!Lib.isPlainObject(itemi)) continue;
             var xref = axisIds.cleanId(itemi.xref, "x", false);
             var yref = axisIds.cleanId(itemi.yref, "y", false);
-            var hasXref = idRegex.x.test(xref);
-            var hasYref = idRegex.y.test(yref);
+            var hasXref = idRegex2.x.test(xref);
+            var hasYref = idRegex2.y.test(yref);
             if (hasXref || hasYref) {
               if (!hasCartesian) Lib.pushUnique(layoutOut._basePlotModules, Cartesian);
               var newAxis = false;
@@ -46805,7 +46926,7 @@ var Plotly = (() => {
       var helpers = require_helpers5();
       var selectingOrDrawing = helpers.selectingOrDrawing;
       var freeMode = helpers.freeMode;
-      var FROM_TL = require_alignment().FROM_TL;
+      var FROM_TL2 = (init_alignment(), __toCommonJS(alignment_exports)).FROM_TL;
       var clearGlCanvases = require_clear_gl_canvases();
       var redrawReglTraces = require_subroutines().redrawReglTraces;
       var Plots = require_plots();
@@ -46814,9 +46935,9 @@ var Plotly = (() => {
       var clearOutline = require_selections().clearOutline;
       var selectOnClick = require_selections().selectOnClick;
       var scaleZoom = require_scale_zoom();
-      var constants2 = require_constants2();
-      var MINDRAG = constants2.MINDRAG;
-      var MINZOOM = constants2.MINZOOM;
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
+      var MINDRAG2 = constants2.MINDRAG;
+      var MINZOOM2 = constants2.MINZOOM;
       var SHOWZOOMOUTTIP = true;
       function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var zoomlayer = gd._fullLayout._zoomlayer;
@@ -47037,7 +47158,7 @@ var Plotly = (() => {
             corners.attr("d", "M0,0Z");
           }
           if (links.isSubplotConstrained) {
-            if (dx > MINZOOM || dy > MINZOOM) {
+            if (dx > MINZOOM2 || dy > MINZOOM2) {
               zoomMode = "xy";
               if (dx / pw > dy / ph) {
                 dy = dx * ph / pw;
@@ -47053,7 +47174,7 @@ var Plotly = (() => {
               noZoom();
             }
           } else if (matches.isSubplotConstrained) {
-            if (dx > MINZOOM || dy > MINZOOM) {
+            if (dx > MINZOOM2 || dy > MINZOOM2) {
               zoomMode = "xy";
               var r0 = Math.min(box.l / pw, (ph - box.b) / ph);
               var r1 = Math.max(box.r / pw, (ph - box.t) / ph);
@@ -47065,8 +47186,8 @@ var Plotly = (() => {
             } else {
               noZoom();
             }
-          } else if (!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
-            if (dx < MINDRAG || !xActive) {
+          } else if (!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG2), MINZOOM2)) {
+            if (dx < MINDRAG2 || !xActive) {
               noZoom();
             } else {
               box.t = 0;
@@ -47074,7 +47195,7 @@ var Plotly = (() => {
               zoomMode = "x";
               corners.attr("d", xCorners(box, y0));
             }
-          } else if (!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
+          } else if (!xActive || dx < Math.min(dy * 0.6, MINZOOM2)) {
             box.l = 0;
             box.r = pw;
             zoomMode = "y";
@@ -47111,7 +47232,7 @@ var Plotly = (() => {
         }
         var scrollViewBox = [0, 0, pw, ph];
         var redrawTimer = null;
-        var REDRAWDELAY = constants2.REDRAWDELAY;
+        var REDRAWDELAY2 = constants2.REDRAWDELAY;
         var mainplot = plotinfo.mainplot ? gd._fullLayout._plots[plotinfo.mainplot] : plotinfo;
         function zoomWheel(e) {
           if (!gd._context._scrollZoom.cartesian && !gd._fullLayout._enablescrollzoom) {
@@ -47171,7 +47292,7 @@ var Plotly = (() => {
             if (!gd._fullLayout) return;
             scrollViewBox = [0, 0, pw, ph];
             dragTail();
-          }, REDRAWDELAY);
+          }, REDRAWDELAY2);
           e.preventDefault();
           return;
         }
@@ -47519,7 +47640,7 @@ var Plotly = (() => {
           return 0;
         }
         function getShift(ax, scaleFactor, from) {
-          return ax._length * (1 - scaleFactor) * FROM_TL[from || ax.constraintoward || "middle"];
+          return ax._length * (1 - scaleFactor) * FROM_TL2[from || ax.constraintoward || "middle"];
         }
         return dragger;
       }
@@ -47650,13 +47771,13 @@ var Plotly = (() => {
         }
       }
       function xCorners(box, y0) {
-        return "M" + (box.l - 0.5) + "," + (y0 - MINZOOM - 0.5) + "h-3v" + (2 * MINZOOM + 1) + "h3ZM" + (box.r + 0.5) + "," + (y0 - MINZOOM - 0.5) + "h3v" + (2 * MINZOOM + 1) + "h-3Z";
+        return "M" + (box.l - 0.5) + "," + (y0 - MINZOOM2 - 0.5) + "h-3v" + (2 * MINZOOM2 + 1) + "h3ZM" + (box.r + 0.5) + "," + (y0 - MINZOOM2 - 0.5) + "h3v" + (2 * MINZOOM2 + 1) + "h-3Z";
       }
       function yCorners(box, x0) {
-        return "M" + (x0 - MINZOOM - 0.5) + "," + (box.t - 0.5) + "v-3h" + (2 * MINZOOM + 1) + "v3ZM" + (x0 - MINZOOM - 0.5) + "," + (box.b + 0.5) + "v3h" + (2 * MINZOOM + 1) + "v-3Z";
+        return "M" + (x0 - MINZOOM2 - 0.5) + "," + (box.t - 0.5) + "v-3h" + (2 * MINZOOM2 + 1) + "v3ZM" + (x0 - MINZOOM2 - 0.5) + "," + (box.b + 0.5) + "v3h" + (2 * MINZOOM2 + 1) + "v-3Z";
       }
       function xyCorners(box) {
-        var clen = Math.floor(Math.min(box.b - box.t, box.r - box.l, MINZOOM) / 2);
+        var clen = Math.floor(Math.min(box.b - box.t, box.r - box.l, MINZOOM2) / 2);
         return "M" + (box.l - 3.5) + "," + (box.t - 0.5 + clen) + "h3v" + -clen + "h" + clen + "v-3h-" + (clen + 3) + "ZM" + (box.r + 3.5) + "," + (box.t - 0.5 + clen) + "h-3v" + -clen + "h" + -clen + "v-3h" + (clen + 3) + "ZM" + (box.r + 3.5) + "," + (box.b + 0.5 - clen) + "h-3v" + clen + "h" + -clen + "v3h" + (clen + 3) + "ZM" + (box.l - 3.5) + "," + (box.b + 0.5 - clen) + "h3v" + clen + "h" + clen + "v3h-" + (clen + 3) + "Z";
       }
       function calcLinks(gd, groups, xaHash, yaHash, exclude) {
@@ -47767,7 +47888,7 @@ var Plotly = (() => {
       var dragElement = require_dragelement();
       var setCursor = require_setcursor();
       var makeDragBox = require_dragbox().makeDragBox;
-      var DRAGGERSIZE = require_constants2().DRAGGERSIZE;
+      var DRAGGERSIZE2 = (init_constants2(), __toCommonJS(constants_exports2)).DRAGGERSIZE;
       exports.initInteractions = function initInteractions(gd) {
         var fullLayout = gd._fullLayout;
         if (gd._context.staticPlot) {
@@ -47817,10 +47938,10 @@ var Plotly = (() => {
               makeDragBox(
                 gd,
                 plotinfo,
-                xa._offset - DRAGGERSIZE,
-                ya._offset - DRAGGERSIZE,
-                DRAGGERSIZE,
-                DRAGGERSIZE,
+                xa._offset - DRAGGERSIZE2,
+                ya._offset - DRAGGERSIZE2,
+                DRAGGERSIZE2,
+                DRAGGERSIZE2,
                 "n",
                 "w"
               );
@@ -47828,19 +47949,19 @@ var Plotly = (() => {
                 gd,
                 plotinfo,
                 xa._offset + xa._length,
-                ya._offset - DRAGGERSIZE,
-                DRAGGERSIZE,
-                DRAGGERSIZE,
+                ya._offset - DRAGGERSIZE2,
+                DRAGGERSIZE2,
+                DRAGGERSIZE2,
                 "n",
                 "e"
               );
               makeDragBox(
                 gd,
                 plotinfo,
-                xa._offset - DRAGGERSIZE,
+                xa._offset - DRAGGERSIZE2,
                 ya._offset + ya._length,
-                DRAGGERSIZE,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
+                DRAGGERSIZE2,
                 "s",
                 "w"
               );
@@ -47849,8 +47970,8 @@ var Plotly = (() => {
                 plotinfo,
                 xa._offset + xa._length,
                 ya._offset + ya._length,
-                DRAGGERSIZE,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
+                DRAGGERSIZE2,
                 "s",
                 "e"
               );
@@ -47859,14 +47980,14 @@ var Plotly = (() => {
           if (gd._context.showAxisDragHandles) {
             if (subplot === xa._mainSubplot) {
               var y0 = xa._mainLinePosition;
-              if (xa.side === "top") y0 -= DRAGGERSIZE;
+              if (xa.side === "top") y0 -= DRAGGERSIZE2;
               makeDragBox(
                 gd,
                 plotinfo,
                 xa._offset + xa._length * 0.1,
                 y0,
                 xa._length * 0.8,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
                 "",
                 "ew"
               );
@@ -47876,7 +47997,7 @@ var Plotly = (() => {
                 xa._offset,
                 y0,
                 xa._length * 0.1,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
                 "",
                 "w"
               );
@@ -47886,20 +48007,20 @@ var Plotly = (() => {
                 xa._offset + xa._length * 0.9,
                 y0,
                 xa._length * 0.1,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
                 "",
                 "e"
               );
             }
             if (subplot === ya._mainSubplot) {
               var x0 = ya._mainLinePosition;
-              if (ya.side !== "right") x0 -= DRAGGERSIZE;
+              if (ya.side !== "right") x0 -= DRAGGERSIZE2;
               makeDragBox(
                 gd,
                 plotinfo,
                 x0,
                 ya._offset + ya._length * 0.1,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
                 ya._length * 0.8,
                 "ns",
                 ""
@@ -47909,7 +48030,7 @@ var Plotly = (() => {
                 plotinfo,
                 x0,
                 ya._offset + ya._length * 0.9,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
                 ya._length * 0.1,
                 "s",
                 ""
@@ -47919,7 +48040,7 @@ var Plotly = (() => {
                 plotinfo,
                 x0,
                 ya._offset,
-                DRAGGERSIZE,
+                DRAGGERSIZE2,
                 ya._length * 0.1,
                 "n",
                 ""
@@ -48314,15 +48435,15 @@ var Plotly = (() => {
         delete dirContainer.showlegend;
         return (typeof dirName === "string" || typeof dirName === "number") && String(dirName);
       }
-      function commonPrefix(name1, name2, show1, show2) {
+      function commonPrefix(name1, name22, show1, show2) {
         if (show1 && !show2) return name1;
-        if (show2 && !show1) return name2;
-        if (!name1.trim()) return name2;
-        if (!name2.trim()) return name1;
-        var minLen = Math.min(name1.length, name2.length);
+        if (show2 && !show1) return name22;
+        if (!name1.trim()) return name22;
+        if (!name22.trim()) return name1;
+        var minLen = Math.min(name1.length, name22.length);
         var i;
         for (i = 0; i < minLen; i++) {
-          if (name1.charAt(i) !== name2.charAt(i)) break;
+          if (name1.charAt(i) !== name22.charAt(i)) break;
         }
         var out = name1.slice(0, i);
         return out.trim();
@@ -48487,14 +48608,14 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var Color = require_color();
       var initInteractions = require_graph_interact().initInteractions;
-      var xmlnsNamespaces = require_xmlns_namespaces();
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
       var clearOutline = require_selections().clearOutline;
       var dfltConfig = require_plot_config().dfltConfig;
       var manageArrays = require_manage_arrays();
       var helpers = require_helpers9();
       var subroutines = require_subroutines();
       var editTypes = require_edit_types();
-      var AX_NAME_PATTERN = require_constants2().AX_NAME_PATTERN;
+      var AX_NAME_PATTERN2 = (init_constants2(), __toCommonJS(constants_exports2)).AX_NAME_PATTERN;
       var numericNameWarningCount = 0;
       var numericNameWarningCountLimit = 5;
       function _doPlot(gd, data, layout, config) {
@@ -48552,15 +48673,32 @@ var Plotly = (() => {
           gd.calcdata[i][0].trace = gd._fullData[i];
         }
         if (gd._context.responsive) {
-          if (!gd._responsiveChartHandler) {
-            gd._responsiveChartHandler = function() {
+          if (!gd._clearResponsive) {
+            const resizeIfShown = () => {
               if (!Lib.isHidden(gd)) Plots.resize(gd);
             };
-            window.addEventListener("resize", gd._responsiveChartHandler);
+            if (gd._context.fillFrame || typeof ResizeObserver === "undefined") {
+              window.addEventListener("resize", resizeIfShown);
+              gd._clearResponsive = () => window.removeEventListener("resize", resizeIfShown);
+            } else {
+              let previousWidth = gd.offsetWidth;
+              let previousHeight = gd.offsetHeight;
+              const observer = new ResizeObserver(() => {
+                const width = gd.offsetWidth;
+                const height = gd.offsetHeight;
+                const changed = Math.abs(width - previousWidth) > 1 || Math.abs(height - previousHeight) > 1;
+                previousWidth = width;
+                previousHeight = height;
+                if (changed && width && height) resizeIfShown();
+              });
+              observer.observe(gd);
+              gd._clearResponsive = () => observer.disconnect();
+            }
           }
         } else {
           Lib.clearResponsive(gd);
         }
+        const unloadedFaces = document.fonts ? [...document.fonts].filter((face) => face.status !== "loaded") : [];
         var oldMargins = Lib.extendFlat({}, fullLayout._size);
         var drawFrameworkCalls = 0;
         function drawFramework() {
@@ -48706,8 +48844,23 @@ var Plotly = (() => {
         var plotDone = Lib.syncOrAsync(seq, gd);
         if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
         return plotDone.then(function() {
+          redrawAfterFontLoads(gd, unloadedFaces);
           emitAfterPlot(gd);
           return gd;
+        });
+      }
+      function redrawAfterFontLoads(gd, unloadedFaces) {
+        return __async(this, null, function* () {
+          const faces = unloadedFaces.filter((face) => ["loaded", "loading"].includes(face.status));
+          if (!faces.length) return;
+          const token = {};
+          gd._fontLoadToken = token;
+          yield Promise.all(faces.map((face) => face.loaded.catch(() => {
+          })));
+          if (gd._fontLoadToken !== token) return;
+          delete gd._fontLoadToken;
+          Drawing.savedBBoxes = {};
+          exports._doPlot(gd);
         });
       }
       function emitAfterPlot(gd) {
@@ -49698,7 +49851,7 @@ var Plotly = (() => {
               doextra(ptrunk + ".range", null);
             }
             nestedProperty(fullLayout, ptrunk + "._inputRange").set(null);
-          } else if (pleaf.match(AX_NAME_PATTERN)) {
+          } else if (pleaf.match(AX_NAME_PATTERN2)) {
             var fullProp = nestedProperty(fullLayout, ai).get();
             var newType = (vi || {}).type;
             if (!newType || newType === "-") newType = "linear";
@@ -50055,10 +50208,10 @@ var Plotly = (() => {
             configChanged = !helpers.collectionsAreEqual(oldConfig, gd._context);
           }
           if (configChanged) {
-            const eventListeners = gd._ev.eventNames().map((name2) => [name2, gd._ev.listeners(name2)]);
+            const eventListeners = gd._ev.eventNames().map((name5) => [name5, gd._ev.listeners(name5)]);
             plotDone = exports.newPlot(gd, data, layout, config).then(() => {
-              for (const [name2, callbacks] of eventListeners) {
-                callbacks.forEach((cb) => gd.on(name2, cb));
+              for (const [name5, callbacks] of eventListeners) {
+                callbacks.forEach((cb) => gd.on(name5, cb));
               }
               return exports.react(gd, data, layout, config);
             });
@@ -50081,10 +50234,10 @@ var Plotly = (() => {
               gd.calcdata = void 0;
               var allNames = Object.getOwnPropertyNames(newFullLayout);
               for (var q = 0; q < allNames.length; q++) {
-                var name = allNames[q];
-                var start = name.substring(0, 5);
+                var name4 = allNames[q];
+                var start = name4.substring(0, 5);
                 if (start === "xaxis" || start === "yaxis") {
-                  var emptyCategories = newFullLayout[name]._emptyCategories;
+                  var emptyCategories = newFullLayout[name4]._emptyCategories;
                   if (emptyCategories) emptyCategories();
                 }
               }
@@ -50616,13 +50769,13 @@ var Plotly = (() => {
         for (i = frameList.length - 1; i >= 0; i--) {
           if (!Lib.isPlainObject(frameList[i])) continue;
           var lookupName = frameList[i].name;
-          var name = (_frameHash[lookupName] || _frameHashLocal[lookupName] || {}).name;
+          var name4 = (_frameHash[lookupName] || _frameHashLocal[lookupName] || {}).name;
           var newName = frameList[i].name;
-          var collisionPresent = _frameHash[name] || _frameHashLocal[name];
-          if (name && newName && typeof newName === "number" && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
+          var collisionPresent = _frameHash[name4] || _frameHashLocal[name4];
+          if (name4 && newName && typeof newName === "number" && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
             numericNameWarningCount++;
             Lib.warn(
-              'addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name + '" with a frame whose name of type "number" also equates to "' + name + '". This is valid but may potentially lead to unexpected behavior since all plotly.js frame names are stored internally as strings.'
+              'addFrames: overwriting frame "' + (_frameHash[name4] || _frameHashLocal[name4]).name + '" with a frame whose name of type "number" also equates to "' + name4 + '". This is valid but may potentially lead to unexpected behavior since all plotly.js frame names are stored internally as strings.'
             );
             if (numericNameWarningCount === numericNameWarningCountLimit) {
               Lib.warn(
@@ -50822,8 +50975,8 @@ var Plotly = (() => {
           Registry.getComponentMethod("colorbar", "draw")(gd);
         };
       };
-      exports.encodeSVG = function(svg) {
-        return "data:image/svg+xml," + encodeURIComponent(svg);
+      exports.encodeSVG = function(svg2) {
+        return "data:image/svg+xml," + encodeURIComponent(svg2);
       };
       exports.encodeJSON = function(json) {
         return "data:application/json," + encodeURIComponent(json);
@@ -50887,7 +51040,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Drawing = require_drawing();
       var Color = require_color();
-      var xmlnsNamespaces = require_xmlns_namespaces();
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
       var DOUBLEQUOTE_REGEX = /"/g;
       var DUMMY_SUB = "TOBESTRIPPED";
       var DUMMY_REGEX = new RegExp(`("${DUMMY_SUB})|(${DUMMY_SUB}")|(&quot;${DUMMY_SUB})|(${DUMMY_SUB}&quot;)`, "g");
@@ -50912,12 +51065,12 @@ var Plotly = (() => {
       }
       module.exports = function toSVG(gd, format, scale) {
         var fullLayout = gd._fullLayout;
-        var svg = fullLayout._paper;
+        var svg2 = fullLayout._paper;
         var toppaper = fullLayout._toppaper;
         var width = fullLayout.width;
         var height = fullLayout.height;
         var i;
-        svg.insert("rect", ":first-child").call(Drawing.setRect, 0, 0, width, height).call(Color.fill, fullLayout.paper_bgcolor);
+        svg2.insert("rect", ":first-child").call(Drawing.setRect, 0, 0, width, height).call(Color.fill, fullLayout.paper_bgcolor);
         var basePlotModules = fullLayout._basePlotModules || [];
         for (i = 0; i < basePlotModules.length; i++) {
           var _module = basePlotModules[i];
@@ -50928,14 +51081,14 @@ var Plotly = (() => {
           var topGroups = Array.prototype.slice.call(nodes);
           for (i = 0; i < topGroups.length; i++) {
             var topGroup = topGroups[i];
-            if (topGroup.childNodes.length) svg.node().appendChild(topGroup);
+            if (topGroup.childNodes.length) svg2.node().appendChild(topGroup);
           }
         }
         if (fullLayout._draggers) {
           fullLayout._draggers.remove();
         }
-        svg.node().style.background = "";
-        svg.selectAll("text").attr({ "data-unformatted": null, "data-math": null }).each(function() {
+        svg2.node().style.background = "";
+        svg2.selectAll("text").attr({ "data-unformatted": null, "data-math": null }).each(function() {
           var txt = d3.select(this);
           if (this.style.visibility === "hidden" || this.style.display === "none") {
             txt.remove();
@@ -50960,7 +51113,7 @@ var Plotly = (() => {
             txt.style("font-variant", void 0);
           }
         });
-        svg.selectAll(".gradient_filled,.pattern_filled").each(function() {
+        svg2.selectAll(".gradient_filled,.pattern_filled").each(function() {
           var pt = d3.select(this);
           var fill = this.style.fill;
           if (fill && fill.indexOf("url(") !== -1) {
@@ -50972,14 +51125,14 @@ var Plotly = (() => {
           }
         });
         if (format === "pdf" || format === "eps") {
-          svg.selectAll("#MathJax_SVG_glyphs path").attr("stroke-width", 0);
+          svg2.selectAll("#MathJax_SVG_glyphs path").attr("stroke-width", 0);
         }
         if (format === "svg" && scale) {
-          svg.attr("width", scale * width);
-          svg.attr("height", scale * height);
-          svg.attr("viewBox", "0 0 " + width + " " + height);
+          svg2.attr("width", scale * width);
+          svg2.attr("height", scale * height);
+          svg2.attr("viewBox", "0 0 " + width + " " + height);
         }
-        var s = new window.XMLSerializer().serializeToString(svg.node());
+        var s = new window.XMLSerializer().serializeToString(svg2.node());
         s = htmlEntityDecode(s);
         s = xmlEntityEncode(s);
         s = s.replace(DUMMY_REGEX, "'");
@@ -50999,7 +51152,7 @@ var Plotly = (() => {
         var ev = opts.emitter || new EventEmitter();
         var promise = new Promise(function(resolve, reject) {
           var Image2 = window.Image;
-          var svg = opts.svg;
+          var svg2 = opts.svg;
           var format = opts.format || "png";
           var canvas = opts.canvas;
           var scale = opts.scale || 1;
@@ -51011,9 +51164,9 @@ var Plotly = (() => {
           var img = new Image2();
           var svgBlob, url;
           if (format === "svg" || Lib.isSafari()) {
-            url = helpers.encodeSVG(svg);
+            url = helpers.encodeSVG(svg2);
           } else {
-            svgBlob = helpers.createBlob(svg, "svg");
+            svgBlob = helpers.createBlob(svg2, "svg");
             url = helpers.createObjectURL(svgBlob);
           }
           canvas.width = w1;
@@ -51081,34 +51234,7 @@ var Plotly = (() => {
       var toSVG = require_tosvg();
       var svgToImg = require_svgtoimg();
       var version = require_version().version;
-      var attrs = {
-        format: {
-          valType: "enumerated",
-          values: ["png", "jpeg", "webp", "svg", "full-json"],
-          dflt: "png"
-        },
-        width: {
-          valType: "number",
-          min: 1
-        },
-        height: {
-          valType: "number",
-          min: 1
-        },
-        scale: {
-          valType: "number",
-          min: 0,
-          dflt: 1
-        },
-        setBackground: {
-          valType: "any",
-          dflt: false
-        },
-        imageDataOnly: {
-          valType: "boolean",
-          dflt: false
-        }
-      };
+      var attrs = (init_to_image_attributes(), __toCommonJS(to_image_attributes_exports)).default;
       function toImage(gd, opts) {
         opts = opts || {};
         var data;
@@ -51174,7 +51300,7 @@ var Plotly = (() => {
         }
         function convert() {
           return new Promise(function(resolve, reject) {
-            var svg = toSVG(clonedGd, format, scale);
+            var svg2 = toSVG(clonedGd, format, scale);
             var width2 = clonedGd._fullLayout.width;
             var height2 = clonedGd._fullLayout.height;
             function cleanup() {
@@ -51195,9 +51321,9 @@ var Plotly = (() => {
             cleanup();
             if (format === "svg") {
               if (imageDataOnly) {
-                return resolve(svg);
+                return resolve(svg2);
               } else {
-                return resolve(helpers.encodeSVG(svg));
+                return resolve(helpers.encodeSVG(svg2));
               }
             }
             var canvas = document.createElement("canvas");
@@ -51208,7 +51334,7 @@ var Plotly = (() => {
               height: height2,
               scale,
               canvas,
-              svg,
+              svg: svg2,
               // ask svgToImg to return a Promise
               //  rather than EventEmitter
               //  leave EventEmitter for backward
@@ -51496,9 +51622,9 @@ var Plotly = (() => {
         var parts = splitKey(key);
         return schema[parts.keyMinusId];
       }
-      var idRegex = Lib.counterRegex("([a-z]+)");
+      var idRegex2 = Lib.counterRegex("([a-z]+)");
       function splitKey(key) {
-        var idMatch = key.match(idRegex);
+        var idMatch = key.match(idRegex2);
         return {
           keyMinusId: idMatch && idMatch[1],
           id: idMatch && idMatch[2]
@@ -51527,7 +51653,7 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var helpers = require_helpers10();
-      function fileSaver(url, name, format) {
+      function fileSaver(url, name4, format) {
         var saveLink = document.createElement("a");
         var canUseSaveLink = "download" in saveLink;
         var promise = new Promise(function(resolve, reject) {
@@ -51537,18 +51663,18 @@ var Plotly = (() => {
             blob = helpers.createBlob(url, format);
             objectUrl = helpers.createObjectURL(blob);
             saveLink.href = objectUrl;
-            saveLink.download = name;
+            saveLink.download = name4;
             document.body.appendChild(saveLink);
             saveLink.click();
             document.body.removeChild(saveLink);
             helpers.revokeObjectURL(objectUrl);
             blob = null;
-            return resolve(name);
+            return resolve(name4);
           }
           if (Lib.isSafari()) {
             var prefix = format === "svg" ? "," : ";base64,";
             helpers.octetStream(prefix + encodeURIComponent(url));
-            return resolve(name);
+            return resolve(name4);
           }
           reject(new Error("download error"));
         });
@@ -51599,8 +51725,8 @@ var Plotly = (() => {
           promise.then(function(result) {
             if (_gd) _gd._snapshotInProgress = false;
             return fileSaver(result, filename, opts.format);
-          }).then(function(name) {
-            resolve(name);
+          }).then(function(name4) {
+            resolve(name4);
           }).catch(function(err) {
             if (_gd) _gd._snapshotInProgress = false;
             reject(err);
@@ -51741,9 +51867,9 @@ var Plotly = (() => {
             for (var i = 0; i < child.length; i++) {
               var item = child[i];
               if (isPlainObject(item)) {
-                var name = item.name;
-                if (name) {
-                  if (!usedNames[name]) {
+                var name4 = item.name;
+                if (name4) {
+                  if (!usedNames[name4]) {
                     walkStyleKeys(
                       item,
                       templateOut,
@@ -51752,7 +51878,7 @@ var Plotly = (() => {
                       getNextPath(child, namedIndex, nextBasePath)
                     );
                     namedIndex++;
-                    usedNames[name] = 1;
+                    usedNames[name4] = 1;
                   }
                 } else if (!dfltDone) {
                   var dfltKey = Template.arrayDefaultKey(key);
@@ -52027,10 +52153,10 @@ var Plotly = (() => {
     "src/traces/scatter/period_defaults.js"(exports, module) {
       "use strict";
       var dateTick0 = require_lib().dateTick0;
-      var numConstants = require_numerical();
-      var ONEWEEK = numConstants.ONEWEEK;
+      var numConstants = (init_numerical(), __toCommonJS(numerical_exports));
+      var ONEWEEK2 = numConstants.ONEWEEK;
       function getPeriod0Dflt(period, calendar) {
-        if (period % ONEWEEK === 0) {
+        if (period % ONEWEEK2 === 0) {
           return dateTick0(calendar, 1);
         }
         return dateTick0(calendar, 0);
@@ -52294,8 +52420,8 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var Registry = require_registry();
-      var attributes3 = require_attributes11();
-      var constants2 = require_constants8();
+      var attributes4 = require_attributes11();
+      var constants2 = (init_constants7(), __toCommonJS(constants_exports7));
       var subTypes = require_subtypes();
       var handleXYDefaults = require_xy_defaults();
       var handlePeriodDefaults = require_period_defaults();
@@ -52308,7 +52434,7 @@ var Plotly = (() => {
       var coercePattern = require_lib().coercePattern;
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
         if (!len) traceOut.visible = false;
@@ -52416,12 +52542,12 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var handleGroupingDefaults = require_grouping_defaults();
-      var attributes3 = require_attributes11();
+      var attributes4 = require_attributes11();
       module.exports = function crossTraceDefaults(fullData, fullLayout) {
         var traceIn, traceOut, i;
         var scattermode = fullLayout.scattermode;
         function coerce(attr) {
-          return Lib.coerce(traceOut._input, traceOut, attributes3, attr);
+          return Lib.coerce(traceOut._input, traceOut, attributes4, attr);
         }
         if (fullLayout.scattermode === "group") {
           for (i = 0; i < fullData.length; i++) {
@@ -52478,8 +52604,8 @@ var Plotly = (() => {
       var Lib = require_lib();
       var dateTime2ms = Lib.dateTime2ms;
       var incrementMonth = Lib.incrementMonth;
-      var constants2 = require_numerical();
-      var ONEAVGMONTH = constants2.ONEAVGMONTH;
+      var constants2 = (init_numerical(), __toCommonJS(numerical_exports));
+      var ONEAVGMONTH2 = constants2.ONEAVGMONTH;
       module.exports = function alignPeriod(trace, ax, axLetter, vals) {
         if (ax.type !== "date") return { vals };
         var alignment = trace[axLetter + "periodalignment"];
@@ -52508,7 +52634,7 @@ var Plotly = (() => {
           var v = vals[i];
           var nEstimated, startTime, endTime;
           if (mPeriod) {
-            nEstimated = Math.round((v - base) / (mPeriod * ONEAVGMONTH));
+            nEstimated = Math.round((v - base) / (mPeriod * ONEAVGMONTH2));
             endTime = incrementMonth(base, mPeriod * nEstimated, calendar);
             while (endTime > v) {
               endTime = incrementMonth(endTime, -mPeriod, calendar);
@@ -52644,7 +52770,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Axes = require_axes();
       var alignPeriod = require_align_period();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var subTypes = require_subtypes();
       var calcColorscale = require_colorscale_calc();
       var arraysToCalcdata = require_arrays_to_calcdata();
@@ -52911,19 +53037,18 @@ var Plotly = (() => {
     }
   });
 
-  // src/traces/bar/constants.js
-  var require_constants9 = __commonJS({
-    "src/traces/bar/constants.js"(exports, module) {
+  // src/traces/bar/constants.ts
+  var constants_exports8 = {};
+  __export(constants_exports8, {
+    TEXTPAD: () => TEXTPAD,
+    eventDataKeys: () => eventDataKeys2
+  });
+  var TEXTPAD, eventDataKeys2;
+  var init_constants8 = __esm({
+    "src/traces/bar/constants.ts"() {
       "use strict";
-      module.exports = {
-        // padding in pixels around text
-        TEXTPAD: 3,
-        // 'value' and 'label' are not really necessary for bar traces,
-        // but they were made available to `texttemplate` (maybe by accident)
-        // via tokens `%{value}` and `%{label}` starting in 1.50.0,
-        // so let's include them in the event data also.
-        eventDataKeys: ["value", "label"]
-      };
+      TEXTPAD = 3;
+      eventDataKeys2 = ["value", "label"];
     }
   });
 
@@ -52933,13 +53058,13 @@ var Plotly = (() => {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
       var { isArrayOrTypedArray } = require_lib();
-      var { BADNUM: BADNUM2 } = require_numerical();
+      var { BADNUM: BADNUM2 } = (init_numerical(), __toCommonJS(numerical_exports));
       var Registry = require_registry();
       var Axes = require_axes();
       var { getAxisGroup } = require_constraints();
       var Sieve = require_sieve();
-      var { TEXTPAD } = require_constants9();
-      var { LINE_SPACING } = require_alignment();
+      var { TEXTPAD: TEXTPAD2 } = (init_constants8(), __toCommonJS(constants_exports8));
+      var { LINE_SPACING: LINE_SPACING2 } = (init_alignment(), __toCommonJS(alignment_exports));
       var { BR_TAG_ALL } = require_svg_text_utils();
       function crossTraceCalc(gd, plotinfo) {
         var xa = plotinfo.xaxis;
@@ -53497,7 +53622,7 @@ var Plotly = (() => {
           } else {
             nLines = isArrayOrTypedArray(trace.text) ? Math.max(...trace.text.map((t) => countLines(t))) : countLines(trace.text);
           }
-          const padAmount = trace.outsidetextfont.size * LINE_SPACING * nLines + TEXTPAD;
+          const padAmount = trace.outsidetextfont.size * LINE_SPACING2 * nLines + TEXTPAD2;
           return {
             // ppadplus corresponds to the negative-direction bars and
             // ppadminus corresponds to the positive-direction bars (for some reason)
@@ -53757,15 +53882,15 @@ var Plotly = (() => {
     "src/traces/scatter/line_points.js"(exports, module) {
       "use strict";
       var Drawing = require_drawing();
-      var numConstants = require_numerical();
+      var numConstants = (init_numerical(), __toCommonJS(numerical_exports));
       var BADNUM2 = numConstants.BADNUM;
-      var LOG_CLIP = numConstants.LOG_CLIP;
-      var LOG_CLIP_PLUS = LOG_CLIP + 0.5;
-      var LOG_CLIP_MINUS = LOG_CLIP - 0.5;
+      var LOG_CLIP2 = numConstants.LOG_CLIP;
+      var LOG_CLIP_PLUS = LOG_CLIP2 + 0.5;
+      var LOG_CLIP_MINUS = LOG_CLIP2 - 0.5;
       var Lib = require_lib();
       var segmentsIntersect = Lib.segmentsIntersect;
       var constrain = Lib.constrain;
-      var constants2 = require_constants8();
+      var constants2 = (init_constants7(), __toCommonJS(constants_exports7));
       module.exports = function linePoints(d, opts) {
         var trace = opts.trace || {};
         var xa = opts.xaxis;
@@ -53782,7 +53907,7 @@ var Plotly = (() => {
         var linear = shape === "linear";
         var fill = trace.fill && trace.fill !== "none";
         var segments = [];
-        var minTolerance = constants2.minTolerance;
+        var minTolerance2 = constants2.minTolerance;
         var len = d.length;
         var pts = new Array(len);
         var pti = 0;
@@ -53844,11 +53969,11 @@ var Plotly = (() => {
           var dy = pt1[1] - pt2[1];
           return Math.sqrt(dx * dx + dy * dy);
         }
-        var maxScreensAway = constants2.maxScreensAway;
-        var xEdge0 = -xLen * maxScreensAway;
-        var xEdge1 = xLen * (1 + maxScreensAway);
-        var yEdge0 = -yLen * maxScreensAway;
-        var yEdge1 = yLen * (1 + maxScreensAway);
+        var maxScreensAway2 = constants2.maxScreensAway;
+        var xEdge0 = -xLen * maxScreensAway2;
+        var xEdge1 = xLen * (1 + maxScreensAway2);
+        var yEdge0 = -yLen * maxScreensAway2;
+        var yEdge1 = yLen * (1 + maxScreensAway2);
         var edges = [
           [xEdge0, yEdge0, xEdge1, yEdge0],
           [xEdge1, yEdge0, xEdge1, yEdge1],
@@ -54028,7 +54153,7 @@ var Plotly = (() => {
             }
             var nextPt = getPt(i + 1);
             clusterRefDist = ptDist(clusterHighPt, clusterStartPt);
-            if (!(fill && (pti === 0 || pti === len - 1)) && clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance) continue;
+            if (!(fill && (pti === 0 || pti === len - 1)) && clusterRefDist < getTolerance(clusterHighPt, nextPt) * minTolerance2) continue;
             clusterUnitVector = [
               (clusterHighPt[0] - clusterStartPt[0]) / clusterRefDist,
               (clusterHighPt[1] - clusterStartPt[1]) / clusterRefDist
@@ -55187,8 +55312,8 @@ var Plotly = (() => {
       var handleLineGridDefaults = require_line_grid_defaults();
       var handleRangeDefaults = require_range_defaults();
       var setConvert = require_set_convert();
-      var DAY_OF_WEEK = require_constants2().WEEKDAY_PATTERN;
-      var HOUR = require_constants2().HOUR_PATTERN;
+      var DAY_OF_WEEK = (init_constants2(), __toCommonJS(constants_exports2)).WEEKDAY_PATTERN;
+      var HOUR = (init_constants2(), __toCommonJS(constants_exports2)).HOUR_PATTERN;
       module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
         var letter = options.letter;
         var font = options.font || {};
@@ -55521,7 +55646,7 @@ var Plotly = (() => {
       var axisIds = require_axis_ids();
       var id2name = axisIds.id2name;
       var name2id = axisIds.name2id;
-      var AX_ID_PATTERN = require_constants2().AX_ID_PATTERN;
+      var AX_ID_PATTERN2 = (init_constants2(), __toCommonJS(constants_exports2)).AX_ID_PATTERN;
       var Registry = require_registry();
       var traceIs = Registry.traceIs;
       var getComponentMethod = Registry.getComponentMethod;
@@ -55650,7 +55775,7 @@ var Plotly = (() => {
         var missingMatchedAxisIds = [];
         function addMissingMatchedAxis() {
           var matchesIn = axLayoutIn.matches;
-          if (AX_ID_PATTERN.test(matchesIn) && allAxisIds.indexOf(matchesIn) === -1) {
+          if (AX_ID_PATTERN2.test(matchesIn) && allAxisIds.indexOf(matchesIn) === -1) {
             missingMatchedAxisIdsLookup[matchesIn] = axLayoutIn.type;
             missingMatchedAxisIds = Object.keys(missingMatchedAxisIdsLookup);
           }
@@ -55946,15 +56071,15 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var getModuleCalcData = require_get_data().getModuleCalcData;
       var axisIds = require_axis_ids();
-      var constants2 = require_constants2();
-      var xmlnsNamespaces = require_xmlns_namespaces();
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
       var ensureSingle = Lib.ensureSingle;
       function ensureSingleAndAddDatum(parent, nodeType, className) {
         return Lib.ensureSingle(parent, nodeType, className, function(s) {
           s.datum(className);
         });
       }
-      var zindexSeparator = constants2.zindexSeparator;
+      var zindexSeparator2 = constants2.zindexSeparator;
       exports.name = "cartesian";
       exports.attr = ["xaxis", "yaxis"];
       exports.idRoot = ["x", "y"];
@@ -56043,8 +56168,8 @@ var Plotly = (() => {
             var subplotInfo = fullLayout._plots[subplot];
             if (z > 0) {
               var idWithZ = subplotInfo.id;
-              if (idWithZ.indexOf(zindexSeparator) !== -1) continue;
-              idWithZ += zindexSeparator + (z + 1);
+              if (idWithZ.indexOf(zindexSeparator2) !== -1) continue;
+              idWithZ += zindexSeparator2 + (z + 1);
               subplotInfo = Lib.extendFlat({}, subplotInfo, {
                 id: idWithZ,
                 plot: fullLayout._cartesianlayer.selectAll(".subplot").select("." + idWithZ)
@@ -56071,7 +56196,7 @@ var Plotly = (() => {
         }
       };
       function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
-        var traceLayerClasses = constants2.traceLayerClasses;
+        var traceLayerClasses2 = constants2.traceLayerClasses;
         var fullLayout = gd._fullLayout;
         var zindices = fullLayout._zindices;
         var modules = fullLayout._modules;
@@ -56082,10 +56207,10 @@ var Plotly = (() => {
           var zorder2 = zindices[z];
           for (var i = 0; i < modules.length; i++) {
             _module = modules[i];
-            var name = _module.name;
-            var categories = Registry.modules[name].categories;
+            var name4 = _module.name;
+            var categories = Registry.modules[name4].categories;
             if (categories.svg) {
-              var classBaseName = _module.layerName || name + "layer";
+              var classBaseName = _module.layerName || name4 + "layer";
               var className = classBaseName + (z ? Number(z) + 1 : "");
               var plotMethod = _module.plot;
               cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod, zorder2);
@@ -56093,7 +56218,7 @@ var Plotly = (() => {
               cdSubplot = cdModuleAndOthers[1];
               if (cdModule.length) {
                 layerData.push({
-                  i: traceLayerClasses.indexOf(classBaseName),
+                  i: traceLayerClasses2.indexOf(classBaseName),
                   zindex: z,
                   className,
                   plotMethod,
@@ -56187,7 +56312,7 @@ var Plotly = (() => {
         } else if (oldSubplotList.cartesian) {
           for (i = 0; i < oldSubplotList.cartesian.length; i++) {
             var oldSubplotId = oldSubplotList.cartesian[i];
-            if (oldSubplotId.indexOf(zindexSeparator) !== -1) continue;
+            if (oldSubplotId.indexOf(zindexSeparator2) !== -1) continue;
             if (!newPlots[oldSubplotId]) {
               var selector = "." + oldSubplotId + ",." + oldSubplotId + "-x,." + oldSubplotId + "-y";
               oldFullLayout._cartesianlayer.selectAll(selector).remove();
@@ -56221,7 +56346,7 @@ var Plotly = (() => {
           var newSubplotData = [];
           for (i = 0; i < len; i++) {
             newSubplotData[i] = initialSubplotData[i].slice();
-            newSubplotData[i][0] += zindexSeparator + (z + 1);
+            newSubplotData[i][0] += zindexSeparator2 + (z + 1);
           }
           subplotData = subplotData.concat(newSubplotData);
         }
@@ -56233,7 +56358,7 @@ var Plotly = (() => {
         subplotLayers.exit().call(purgeSubplotLayers, fullLayout);
         subplotLayers.each(function(d) {
           var id = d[0];
-          var posZ = id.indexOf(zindexSeparator);
+          var posZ = id.indexOf(zindexSeparator2);
           var hasZ = posZ !== -1;
           var idWithoutZ = hasZ ? id.slice(0, posZ) : id;
           var plotinfo = fullLayout._plots[id];
@@ -56302,7 +56427,7 @@ var Plotly = (() => {
           var d = [];
           for (var z = 1; z <= numZ; z++) {
             var zStr = "";
-            if (z > 1) zStr += zindexSeparator + z;
+            if (z > 1) zStr += zindexSeparator2 + z;
             d.push(id + zStr);
             for (j = 0; j < plotinfo.overlays.length; j++) {
               d.push(plotinfo.overlays[j].id + zStr);
@@ -56322,7 +56447,7 @@ var Plotly = (() => {
         var fullLayout = gd._fullLayout;
         var plotgroup = plotinfo.plotgroup;
         var id = plotinfo.id;
-        var posZ = id.indexOf(zindexSeparator);
+        var posZ = id.indexOf(zindexSeparator2);
         var hasZ = posZ !== -1;
         var xLayer = constants2.layerValue2layerClass[plotinfo.xaxis.layer];
         var yLayer = constants2.layerValue2layerClass[plotinfo.yaxis.layer];
@@ -57302,7 +57427,7 @@ var Plotly = (() => {
       var Axes = require_axes();
       var handleArrayContainerDefaults = require_array_container_defaults();
       var handleAnnotationCommonDefaults = require_common_defaults();
-      var attributes3 = require_attributes10();
+      var attributes4 = require_attributes10();
       module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         handleArrayContainerDefaults(layoutIn, layoutOut, {
           name: "annotations",
@@ -57311,7 +57436,7 @@ var Plotly = (() => {
       };
       function handleAnnotationDefaults(annIn, annOut, fullLayout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(annIn, annOut, attributes3, attr, dflt);
+          return Lib.coerce(annIn, annOut, attributes4, attr, dflt);
         }
         var visible = coerce("visible");
         var clickToShow = coerce("clicktoshow");
@@ -57562,7 +57687,7 @@ var Plotly = (() => {
       var Axes = require_axes();
       var handleArrayContainerDefaults = require_array_container_defaults();
       var handleAnnotationCommonDefaults = require_common_defaults();
-      var attributes3 = require_attributes14();
+      var attributes4 = require_attributes14();
       module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
         handleArrayContainerDefaults(sceneLayoutIn, sceneLayoutOut, {
           name: "annotations",
@@ -57572,7 +57697,7 @@ var Plotly = (() => {
       };
       function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
         function coerce(attr, dflt) {
-          return Lib.coerce(annIn, annOut, attributes3, attr, dflt);
+          return Lib.coerce(annIn, annOut, attributes4, attr, dflt);
         }
         function coercePosition(axLetter) {
           var axName = axLetter + "axis";
@@ -57743,11 +57868,11 @@ var Plotly = (() => {
       function includeGL3D(layoutIn, layoutOut) {
         var GL3D = Registry.subplotsRegistry.gl3d;
         if (!GL3D) return;
-        var attrRegex = GL3D.attrRegex;
+        var attrRegex2 = GL3D.attrRegex;
         var keys = Object.keys(layoutIn);
         for (var i = 0; i < keys.length; i++) {
           var k = keys[i];
-          if (attrRegex.test(k) && (layoutIn[k].annotations || []).length) {
+          if (attrRegex2.test(k) && (layoutIn[k].annotations || []).length) {
             Lib.pushUnique(layoutOut._basePlotModules, GL3D);
             Lib.pushUnique(layoutOut._subplots.gl3d, k);
           }
@@ -57760,13 +57885,13 @@ var Plotly = (() => {
   var require_attributes15 = __commonJS({
     "src/components/shapes/attributes.js"(exports, module) {
       "use strict";
-      var cartesianConstants = require_constants2();
+      var cartesianConstants = (init_constants2(), __toCommonJS(constants_exports2));
       var fontAttrs = require_font_attributes();
       var scatterLineAttrs = require_attributes11().line;
       var dash = require_attributes4().dash;
       var extendFlat2 = require_extend().extendFlat;
       var templatedArray = require_plot_template().templatedArray;
-      var axisPlaceableObjs = require_axis_placeable_objects();
+      var axisPlaceableObjs = (init_axis_placeable_objects(), __toCommonJS(axis_placeable_objects_exports));
       var basePlotAttributes = require_attributes2();
       var annAttrs = require_attributes10();
       var { shapeTexttemplateAttrs, templatefallbackAttrs: templatefallbackAttrs2 } = require_template_attributes();
@@ -57981,7 +58106,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Axes = require_axes();
       var handleArrayContainerDefaults = require_array_container_defaults();
-      var attributes3 = require_attributes15();
+      var attributes4 = require_attributes15();
       var helpers = require_helpers8();
       module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         handleArrayContainerDefaults(layoutIn, layoutOut, {
@@ -57994,7 +58119,7 @@ var Plotly = (() => {
       }
       function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(shapeIn, shapeOut, attributes3, attr, dflt);
+          return Lib.coerce(shapeIn, shapeOut, attributes4, attr, dflt);
         }
         shapeOut._isShape = true;
         var visible = coerce("visible");
@@ -58206,7 +58331,7 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var Axes = require_axes();
-      var constants2 = require_constants5();
+      var constants2 = (init_constants5(), __toCommonJS(constants_exports5));
       var helpers = require_helpers8();
       module.exports = function calcAutorange(gd) {
         var fullLayout = gd._fullLayout;
@@ -58377,9 +58502,9 @@ var Plotly = (() => {
   var require_attributes16 = __commonJS({
     "src/components/images/attributes.js"(exports, module) {
       "use strict";
-      var cartesianConstants = require_constants2();
+      var cartesianConstants = (init_constants2(), __toCommonJS(constants_exports2));
       var templatedArray = require_plot_template().templatedArray;
-      var axisPlaceableObjs = require_axis_placeable_objects();
+      var axisPlaceableObjs = (init_axis_placeable_objects(), __toCommonJS(axis_placeable_objects_exports));
       module.exports = templatedArray("image", {
         visible: {
           valType: "boolean",
@@ -58471,18 +58596,18 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Axes = require_axes();
       var handleArrayContainerDefaults = require_array_container_defaults();
-      var attributes3 = require_attributes16();
-      var name = "images";
+      var attributes4 = require_attributes16();
+      var name4 = "images";
       module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         var opts = {
-          name,
+          name: name4,
           handleItemDefaults: imageDefaults
         };
         handleArrayContainerDefaults(layoutIn, layoutOut, opts);
       };
       function imageDefaults(imageIn, imageOut, fullLayout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(imageIn, imageOut, attributes3, attr, dflt);
+          return Lib.coerce(imageIn, imageOut, attributes4, attr, dflt);
         }
         var source = coerce("source");
         var visible = coerce("visible", !!source);
@@ -58518,7 +58643,7 @@ var Plotly = (() => {
       var Drawing = require_drawing();
       var Axes = require_axes();
       var axisIds = require_axis_ids();
-      var xmlnsNamespaces = require_xmlns_namespaces();
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
       module.exports = function draw(gd) {
         var fullLayout = gd._fullLayout;
         var imageDataAbove = [];
@@ -58760,60 +58885,72 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/updatemenus/constants.js
-  var require_constants10 = __commonJS({
-    "src/components/updatemenus/constants.js"(exports, module) {
+  // src/components/updatemenus/constants.ts
+  var constants_exports9 = {};
+  __export(constants_exports9, {
+    activeColor: () => activeColor,
+    arrowOffsetX: () => arrowOffsetX,
+    arrowPadX: () => arrowPadX,
+    arrowSymbol: () => arrowSymbol,
+    autoMarginIdRoot: () => autoMarginIdRoot,
+    blankHeaderOpts: () => blankHeaderOpts,
+    buttonClassName: () => buttonClassName,
+    containerClassName: () => containerClassName,
+    dropdownButtonClassName: () => dropdownButtonClassName,
+    dropdownButtonGroupClassName: () => dropdownButtonGroupClassName,
+    gapButton: () => gapButton,
+    gapButtonHeader: () => gapButtonHeader,
+    headerArrowClassName: () => headerArrowClassName,
+    headerClassName: () => headerClassName,
+    headerGroupClassName: () => headerGroupClassName,
+    hoverColor: () => hoverColor,
+    itemRectClassName: () => itemRectClassName,
+    itemTextClassName: () => itemTextClassName,
+    menuIndexAttrName: () => menuIndexAttrName,
+    minHeight: () => minHeight,
+    minWidth: () => minWidth,
+    name: () => name,
+    rx: () => rx,
+    ry: () => ry,
+    textOffsetX: () => textOffsetX,
+    textOffsetY: () => textOffsetY,
+    textPadX: () => textPadX
+  });
+  var name, containerClassName, headerGroupClassName, headerClassName, headerArrowClassName, dropdownButtonGroupClassName, dropdownButtonClassName, buttonClassName, itemRectClassName, itemTextClassName, menuIndexAttrName, autoMarginIdRoot, blankHeaderOpts, minWidth, minHeight, textPadX, arrowPadX, rx, ry, textOffsetX, textOffsetY, arrowOffsetX, gapButtonHeader, gapButton, activeColor, hoverColor, arrowSymbol;
+  var init_constants9 = __esm({
+    "src/components/updatemenus/constants.ts"() {
       "use strict";
-      module.exports = {
-        // layout attribute name
-        name: "updatemenus",
-        // class names
-        containerClassName: "updatemenu-container",
-        headerGroupClassName: "updatemenu-header-group",
-        headerClassName: "updatemenu-header",
-        headerArrowClassName: "updatemenu-header-arrow",
-        dropdownButtonGroupClassName: "updatemenu-dropdown-button-group",
-        dropdownButtonClassName: "updatemenu-dropdown-button",
-        buttonClassName: "updatemenu-button",
-        itemRectClassName: "updatemenu-item-rect",
-        itemTextClassName: "updatemenu-item-text",
-        // DOM attribute name in button group keeping track
-        // of active update menu
-        menuIndexAttrName: "updatemenu-active-index",
-        // id root pass to Plots.autoMargin
-        autoMarginIdRoot: "updatemenu-",
-        // options when 'active: -1'
-        blankHeaderOpts: { label: "  " },
-        // min item width / height
-        minWidth: 30,
-        minHeight: 30,
-        // padding around item text
-        textPadX: 24,
-        arrowPadX: 16,
-        // item rect radii
-        rx: 2,
-        ry: 2,
-        // item  text x offset off left edge
-        textOffsetX: 12,
-        // item  text y offset (w.r.t. middle)
-        textOffsetY: 3,
-        // arrow offset off right edge
-        arrowOffsetX: 4,
-        // gap between header and buttons
-        gapButtonHeader: 5,
-        // gap between between buttons
-        gapButton: 2,
-        // color given to active buttons
-        activeColor: "#F4FAFF",
-        // color given to hovered buttons
-        hoverColor: "#F4FAFF",
-        // symbol for menu open arrow
-        arrowSymbol: {
-          left: "\u25C4",
-          right: "\u25BA",
-          up: "\u25B2",
-          down: "\u25BC"
-        }
+      name = "updatemenus";
+      containerClassName = "updatemenu-container";
+      headerGroupClassName = "updatemenu-header-group";
+      headerClassName = "updatemenu-header";
+      headerArrowClassName = "updatemenu-header-arrow";
+      dropdownButtonGroupClassName = "updatemenu-dropdown-button-group";
+      dropdownButtonClassName = "updatemenu-dropdown-button";
+      buttonClassName = "updatemenu-button";
+      itemRectClassName = "updatemenu-item-rect";
+      itemTextClassName = "updatemenu-item-text";
+      menuIndexAttrName = "updatemenu-active-index";
+      autoMarginIdRoot = "updatemenu-";
+      blankHeaderOpts = { label: "  " };
+      minWidth = 30;
+      minHeight = 30;
+      textPadX = 24;
+      arrowPadX = 16;
+      rx = 2;
+      ry = 2;
+      textOffsetX = 12;
+      textOffsetY = 3;
+      arrowOffsetX = 4;
+      gapButtonHeader = 5;
+      gapButton = 2;
+      activeColor = "#F4FAFF";
+      hoverColor = "#F4FAFF";
+      arrowSymbol = {
+        left: "\u25C4",
+        right: "\u25BA",
+        up: "\u25B2",
+        down: "\u25BC"
       };
     }
   });
@@ -58936,20 +59073,20 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var handleArrayContainerDefaults = require_array_container_defaults();
-      var attributes3 = require_attributes17();
-      var constants2 = require_constants10();
-      var name = constants2.name;
-      var buttonAttrs = attributes3.buttons;
+      var attributes4 = require_attributes17();
+      var constants2 = (init_constants9(), __toCommonJS(constants_exports9));
+      var name4 = constants2.name;
+      var buttonAttrs = attributes4.buttons;
       module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
         var opts = {
-          name,
+          name: name4,
           handleItemDefaults: menuDefaults
         };
         handleArrayContainerDefaults(layoutIn, layoutOut, opts);
       };
       function menuDefaults(menuIn, menuOut, layoutOut) {
         function coerce(attr, dflt) {
-          return Lib.coerce(menuIn, menuOut, attributes3, attr, dflt);
+          return Lib.coerce(menuIn, menuOut, attributes4, attr, dflt);
         }
         var buttons = handleArrayContainerDefaults(menuIn, menuOut, {
           name: "buttons",
@@ -59299,8 +59436,8 @@ var Plotly = (() => {
       var Lib = require_lib();
       var svgTextUtils = require_svg_text_utils();
       var arrayEditor = require_plot_template().arrayEditor;
-      var LINE_SPACING = require_alignment().LINE_SPACING;
-      var constants2 = require_constants10();
+      var LINE_SPACING2 = (init_alignment(), __toCommonJS(alignment_exports)).LINE_SPACING;
+      var constants2 = (init_constants9(), __toCommonJS(constants_exports9));
       var ScrollBox = require_scrollbox();
       module.exports = function draw(gd) {
         var fullLayout = gd._fullLayout;
@@ -59595,7 +59732,7 @@ var Plotly = (() => {
           var text = button.select("." + constants2.itemTextClassName);
           var tWidth = text.node() && Drawing.bBox(text.node()).width;
           var wEff = Math.max(tWidth + constants2.textPadX, constants2.minWidth);
-          var tHeight = menuOpts.font.size * LINE_SPACING;
+          var tHeight = menuOpts.font.size * LINE_SPACING2;
           var tLines = svgTextUtils.lineCount(text);
           var hEff = Math.max(tHeight * tLines, constants2.minHeight) + constants2.textOffsetY;
           hEff = Math.ceil(hEff);
@@ -59688,7 +59825,7 @@ var Plotly = (() => {
           width: overrideOpts.width || (isVertical ? dims.width1 : dims.widths[index]),
           height: finalHeight
         });
-        var tHeight = menuOpts.font.size * LINE_SPACING;
+        var tHeight = menuOpts.font.size * LINE_SPACING2;
         var tLines = svgTextUtils.lineCount(text);
         var spanOffset = (tLines - 1) * tHeight / 2;
         svgTextUtils.positionText(
@@ -59713,7 +59850,7 @@ var Plotly = (() => {
   var require_updatemenus = __commonJS({
     "src/components/updatemenus/index.js"(exports, module) {
       "use strict";
-      var constants2 = require_constants10();
+      var constants2 = (init_constants9(), __toCommonJS(constants_exports9));
       module.exports = {
         moduleType: "component",
         name: constants2.name,
@@ -59724,74 +59861,108 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/sliders/constants.js
-  var require_constants11 = __commonJS({
-    "src/components/sliders/constants.js"(exports, module) {
+  // src/components/sliders/constants.ts
+  var constants_exports10 = {};
+  __export(constants_exports10, {
+    arrowOffsetX: () => arrowOffsetX2,
+    autoMarginIdRoot: () => autoMarginIdRoot2,
+    containerClassName: () => containerClassName2,
+    currentValueClass: () => currentValueClass,
+    currentValueInset: () => currentValueInset,
+    currentValuePadding: () => currentValuePadding,
+    gripBgActiveColor: () => gripBgActiveColor,
+    gripBgColor: () => gripBgColor,
+    gripBorder: () => gripBorder,
+    gripBorderColor: () => gripBorderColor,
+    gripBorderWidth: () => gripBorderWidth,
+    gripHeight: () => gripHeight,
+    gripRadius: () => gripRadius,
+    gripRectClass: () => gripRectClass,
+    gripWidth: () => gripWidth,
+    groupClassName: () => groupClassName,
+    inputAreaClass: () => inputAreaClass,
+    inputProxyClass: () => inputProxyClass,
+    labelClass: () => labelClass,
+    labelGroupClass: () => labelGroupClass,
+    labelOffset: () => labelOffset,
+    labelPadding: () => labelPadding,
+    labelsClass: () => labelsClass,
+    menuIndexAttrName: () => menuIndexAttrName2,
+    minHeight: () => minHeight2,
+    minWidth: () => minWidth2,
+    minorTickColor: () => minorTickColor,
+    minorTickLength: () => minorTickLength,
+    minorTickOffset: () => minorTickOffset,
+    name: () => name2,
+    railBgColor: () => railBgColor,
+    railBorder: () => railBorder,
+    railBorderColor: () => railBorderColor,
+    railBorderWidth: () => railBorderWidth,
+    railHeight: () => railHeight,
+    railInset: () => railInset,
+    railRadius: () => railRadius,
+    railRectClass: () => railRectClass,
+    railTouchRectClass: () => railTouchRectClass,
+    railWidth: () => railWidth,
+    stepInset: () => stepInset,
+    textPadX: () => textPadX2,
+    tickColor: () => tickColor,
+    tickLength: () => tickLength,
+    tickOffset: () => tickOffset,
+    tickRectClass: () => tickRectClass,
+    tickWidth: () => tickWidth
+  });
+  var name2, containerClassName2, groupClassName, inputAreaClass, railRectClass, railTouchRectClass, gripRectClass, tickRectClass, inputProxyClass, labelsClass, labelGroupClass, labelClass, currentValueClass, railHeight, menuIndexAttrName2, autoMarginIdRoot2, minWidth2, minHeight2, textPadX2, arrowOffsetX2, railRadius, railWidth, railBorder, railBorderWidth, railBorderColor, railBgColor, railInset, stepInset, gripRadius, gripWidth, gripHeight, gripBorder, gripBorderWidth, gripBorderColor, gripBgColor, gripBgActiveColor, labelPadding, labelOffset, tickWidth, tickColor, tickOffset, tickLength, minorTickOffset, minorTickColor, minorTickLength, currentValuePadding, currentValueInset;
+  var init_constants10 = __esm({
+    "src/components/sliders/constants.ts"() {
       "use strict";
-      module.exports = {
-        // layout attribute name
-        name: "sliders",
-        // class names
-        containerClassName: "slider-container",
-        groupClassName: "slider-group",
-        inputAreaClass: "slider-input-area",
-        railRectClass: "slider-rail-rect",
-        railTouchRectClass: "slider-rail-touch-rect",
-        gripRectClass: "slider-grip-rect",
-        tickRectClass: "slider-tick-rect",
-        inputProxyClass: "slider-input-proxy",
-        labelsClass: "slider-labels",
-        labelGroupClass: "slider-label-group",
-        labelClass: "slider-label",
-        currentValueClass: "slider-current-value",
-        railHeight: 5,
-        // DOM attribute name in button group keeping track
-        // of active update menu
-        menuIndexAttrName: "slider-active-index",
-        // id root pass to Plots.autoMargin
-        autoMarginIdRoot: "slider-",
-        // min item width / height
-        minWidth: 30,
-        minHeight: 30,
-        // padding around item text
-        textPadX: 40,
-        // arrow offset off right edge
-        arrowOffsetX: 4,
-        railRadius: 2,
-        railWidth: 5,
-        railBorder: 4,
-        railBorderWidth: 1,
-        railBorderColor: "#bec8d9",
-        railBgColor: "#f8fafc",
-        // The distance of the rail from the edge of the touchable area
-        // Slightly less than the step inset because of the curved edges
-        // of the rail
-        railInset: 8,
-        // The distance from the extremal tick marks to the edge of the
-        // touchable area. This is basically the same as the grip radius,
-        // but for other styles it wouldn't really need to be.
-        stepInset: 10,
-        gripRadius: 10,
-        gripWidth: 20,
-        gripHeight: 20,
-        gripBorder: 20,
-        gripBorderWidth: 1,
-        gripBorderColor: "#bec8d9",
-        gripBgColor: "#f6f8fa",
-        gripBgActiveColor: "#dbdde0",
-        labelPadding: 8,
-        labelOffset: 0,
-        tickWidth: 1,
-        tickColor: "#333",
-        tickOffset: 25,
-        tickLength: 7,
-        minorTickOffset: 25,
-        minorTickColor: "#333",
-        minorTickLength: 4,
-        // Extra space below the current value label:
-        currentValuePadding: 8,
-        currentValueInset: 0
-      };
+      name2 = "sliders";
+      containerClassName2 = "slider-container";
+      groupClassName = "slider-group";
+      inputAreaClass = "slider-input-area";
+      railRectClass = "slider-rail-rect";
+      railTouchRectClass = "slider-rail-touch-rect";
+      gripRectClass = "slider-grip-rect";
+      tickRectClass = "slider-tick-rect";
+      inputProxyClass = "slider-input-proxy";
+      labelsClass = "slider-labels";
+      labelGroupClass = "slider-label-group";
+      labelClass = "slider-label";
+      currentValueClass = "slider-current-value";
+      railHeight = 5;
+      menuIndexAttrName2 = "slider-active-index";
+      autoMarginIdRoot2 = "slider-";
+      minWidth2 = 30;
+      minHeight2 = 30;
+      textPadX2 = 40;
+      arrowOffsetX2 = 4;
+      railRadius = 2;
+      railWidth = 5;
+      railBorder = 4;
+      railBorderWidth = 1;
+      railBorderColor = "#bec8d9";
+      railBgColor = "#f8fafc";
+      railInset = 8;
+      stepInset = 10;
+      gripRadius = 10;
+      gripWidth = 20;
+      gripHeight = 20;
+      gripBorder = 20;
+      gripBorderWidth = 1;
+      gripBorderColor = "#bec8d9";
+      gripBgColor = "#f6f8fa";
+      gripBgActiveColor = "#dbdde0";
+      labelPadding = 8;
+      labelOffset = 0;
+      tickWidth = 1;
+      tickColor = "#333";
+      tickOffset = 25;
+      tickLength = 7;
+      minorTickOffset = 25;
+      minorTickColor = "#333";
+      minorTickLength = 4;
+      currentValuePadding = 8;
+      currentValueInset = 0;
     }
   });
 
@@ -59805,7 +59976,7 @@ var Plotly = (() => {
       var overrideAll = require_edit_types().overrideAll;
       var animationAttrs = require_animation_attributes();
       var templatedArray = require_plot_template().templatedArray;
-      var constants2 = require_constants11();
+      var constants2 = (init_constants10(), __toCommonJS(constants_exports10));
       var stepsAttrs = templatedArray("step", {
         visible: {
           valType: "boolean",
@@ -59961,19 +60132,19 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var handleArrayContainerDefaults = require_array_container_defaults();
-      var attributes3 = require_attributes18();
-      var constants2 = require_constants11();
-      var name = constants2.name;
-      var stepAttrs = attributes3.steps;
+      var attributes4 = require_attributes18();
+      var constants2 = (init_constants10(), __toCommonJS(constants_exports10));
+      var name4 = constants2.name;
+      var stepAttrs = attributes4.steps;
       module.exports = function slidersDefaults(layoutIn, layoutOut) {
         handleArrayContainerDefaults(layoutIn, layoutOut, {
-          name,
+          name: name4,
           handleItemDefaults: sliderDefaults
         });
       };
       function sliderDefaults(sliderIn, sliderOut, layoutOut) {
         function coerce(attr, dflt) {
-          return Lib.coerce(sliderIn, sliderOut, attributes3, attr, dflt);
+          return Lib.coerce(sliderIn, sliderOut, attributes4, attr, dflt);
         }
         var steps = handleArrayContainerDefaults(sliderIn, sliderOut, {
           name: "steps",
@@ -60053,11 +60224,11 @@ var Plotly = (() => {
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
       var arrayEditor = require_plot_template().arrayEditor;
-      var constants2 = require_constants11();
-      var alignmentConstants = require_alignment();
-      var LINE_SPACING = alignmentConstants.LINE_SPACING;
-      var FROM_TL = alignmentConstants.FROM_TL;
-      var FROM_BR = alignmentConstants.FROM_BR;
+      var constants2 = (init_constants10(), __toCommonJS(constants_exports10));
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
+      var LINE_SPACING2 = alignmentConstants.LINE_SPACING;
+      var FROM_TL2 = alignmentConstants.FROM_TL;
+      var FROM_BR2 = alignmentConstants.FROM_BR;
       module.exports = function draw(gd) {
         var staticPlot = gd._context.staticPlot;
         var fullLayout = gd._fullLayout;
@@ -60189,18 +60360,18 @@ var Plotly = (() => {
         dims.ly = Math.round(dims.ly);
         var marginOpts = {
           y: sliderOpts.y,
-          b: dims.height * FROM_BR[yanchor],
-          t: dims.height * FROM_TL[yanchor]
+          b: dims.height * FROM_BR2[yanchor],
+          t: dims.height * FROM_TL2[yanchor]
         };
         if (sliderOpts.lenmode === "fraction") {
           marginOpts.l = 0;
-          marginOpts.xl = sliderOpts.x - sliderOpts.len * FROM_TL[xanchor];
+          marginOpts.xl = sliderOpts.x - sliderOpts.len * FROM_TL2[xanchor];
           marginOpts.r = 0;
-          marginOpts.xr = sliderOpts.x + sliderOpts.len * FROM_BR[xanchor];
+          marginOpts.xr = sliderOpts.x + sliderOpts.len * FROM_BR2[xanchor];
         } else {
           marginOpts.x = sliderOpts.x;
-          marginOpts.l = dims.outerLength * FROM_TL[xanchor];
-          marginOpts.r = dims.outerLength * FROM_BR[xanchor];
+          marginOpts.l = dims.outerLength * FROM_TL2[xanchor];
+          marginOpts.r = dims.outerLength * FROM_BR2[xanchor];
         }
         Plots.autoMargin(gd, autoMarginId(sliderOpts), marginOpts);
       }
@@ -60251,7 +60422,7 @@ var Plotly = (() => {
         }
         text.call(Drawing.font, sliderOpts.currentvalue.font).text(str).call(svgTextUtils.convertToTspans, sliderOpts._gd);
         var lines = svgTextUtils.lineCount(text);
-        var y0 = (dims.currentValueMaxLines + 1 - lines) * sliderOpts.currentvalue.font.size * LINE_SPACING;
+        var y0 = (dims.currentValueMaxLines + 1 - lines) * sliderOpts.currentvalue.font.size * LINE_SPACING2;
         svgTextUtils.positionText(text, x0, y0);
         return text;
       }
@@ -60293,7 +60464,7 @@ var Plotly = (() => {
             normalizedValueToPosition(sliderOpts, d.fraction),
             constants2.tickOffset + sliderOpts.ticklen + // position is the baseline of the top line of text only, even
             // if the label spans multiple lines
-            sliderOpts.font.size * LINE_SPACING + constants2.labelOffset + dims.currentValueTotalHeight
+            sliderOpts.font.size * LINE_SPACING2 + constants2.labelOffset + dims.currentValueTotalHeight
           );
         });
       }
@@ -60470,7 +60641,7 @@ var Plotly = (() => {
   var require_sliders = __commonJS({
     "src/components/sliders/index.js"(exports, module) {
       "use strict";
-      var constants2 = require_constants11();
+      var constants2 = (init_constants10(), __toCommonJS(constants_exports10));
       module.exports = {
         moduleType: "component",
         name: constants2.name,
@@ -60563,41 +60734,66 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/rangeslider/constants.js
-  var require_constants12 = __commonJS({
-    "src/components/rangeslider/constants.js"(exports, module) {
+  // src/components/rangeslider/constants.ts
+  var constants_exports11 = {};
+  __export(constants_exports11, {
+    bgClassName: () => bgClassName,
+    containerClassName: () => containerClassName3,
+    extraPad: () => extraPad,
+    grabAreaCursor: () => grabAreaCursor,
+    grabAreaFill: () => grabAreaFill,
+    grabAreaMaxClassName: () => grabAreaMaxClassName,
+    grabAreaMinClassName: () => grabAreaMinClassName,
+    grabAreaWidth: () => grabAreaWidth,
+    grabberMaxClassName: () => grabberMaxClassName,
+    grabberMinClassName: () => grabberMinClassName,
+    handleMaxClassName: () => handleMaxClassName,
+    handleMinClassName: () => handleMinClassName,
+    handleRadius: () => handleRadius,
+    handleStrokeWidth: () => handleStrokeWidth,
+    handleWidth: () => handleWidth,
+    maskColor: () => maskColor,
+    maskMaxClassName: () => maskMaxClassName,
+    maskMaxOppAxisClassName: () => maskMaxOppAxisClassName,
+    maskMinClassName: () => maskMinClassName,
+    maskMinOppAxisClassName: () => maskMinOppAxisClassName,
+    maskOppAxisColor: () => maskOppAxisColor,
+    name: () => name3,
+    rangePlotClassName: () => rangePlotClassName,
+    slideBoxClassName: () => slideBoxClassName,
+    slideBoxCursor: () => slideBoxCursor,
+    slideBoxFill: () => slideBoxFill
+  });
+  var name3, containerClassName3, bgClassName, rangePlotClassName, maskMinClassName, maskMaxClassName, slideBoxClassName, grabberMinClassName, grabAreaMinClassName, handleMinClassName, grabberMaxClassName, grabAreaMaxClassName, handleMaxClassName, maskMinOppAxisClassName, maskMaxOppAxisClassName, maskColor, maskOppAxisColor, slideBoxFill, slideBoxCursor, grabAreaFill, grabAreaCursor, grabAreaWidth, handleWidth, handleRadius, handleStrokeWidth, extraPad;
+  var init_constants11 = __esm({
+    "src/components/rangeslider/constants.ts"() {
       "use strict";
-      module.exports = {
-        // attribute container name
-        name: "rangeslider",
-        // class names
-        containerClassName: "rangeslider-container",
-        bgClassName: "rangeslider-bg",
-        rangePlotClassName: "rangeslider-rangeplot",
-        maskMinClassName: "rangeslider-mask-min",
-        maskMaxClassName: "rangeslider-mask-max",
-        slideBoxClassName: "rangeslider-slidebox",
-        grabberMinClassName: "rangeslider-grabber-min",
-        grabAreaMinClassName: "rangeslider-grabarea-min",
-        handleMinClassName: "rangeslider-handle-min",
-        grabberMaxClassName: "rangeslider-grabber-max",
-        grabAreaMaxClassName: "rangeslider-grabarea-max",
-        handleMaxClassName: "rangeslider-handle-max",
-        maskMinOppAxisClassName: "rangeslider-mask-min-opp-axis",
-        maskMaxOppAxisClassName: "rangeslider-mask-max-opp-axis",
-        // style constants
-        maskColor: "rgba(0,0,0,0.4)",
-        maskOppAxisColor: "rgba(0,0,0,0.2)",
-        slideBoxFill: "transparent",
-        slideBoxCursor: "ew-resize",
-        grabAreaFill: "transparent",
-        grabAreaCursor: "col-resize",
-        grabAreaWidth: 10,
-        handleWidth: 4,
-        handleRadius: 1,
-        handleStrokeWidth: 1,
-        extraPad: 15
-      };
+      name3 = "rangeslider";
+      containerClassName3 = "rangeslider-container";
+      bgClassName = "rangeslider-bg";
+      rangePlotClassName = "rangeslider-rangeplot";
+      maskMinClassName = "rangeslider-mask-min";
+      maskMaxClassName = "rangeslider-mask-max";
+      slideBoxClassName = "rangeslider-slidebox";
+      grabberMinClassName = "rangeslider-grabber-min";
+      grabAreaMinClassName = "rangeslider-grabarea-min";
+      handleMinClassName = "rangeslider-handle-min";
+      grabberMaxClassName = "rangeslider-grabber-max";
+      grabAreaMaxClassName = "rangeslider-grabarea-max";
+      handleMaxClassName = "rangeslider-handle-max";
+      maskMinOppAxisClassName = "rangeslider-mask-min-opp-axis";
+      maskMaxOppAxisClassName = "rangeslider-mask-max-opp-axis";
+      maskColor = "rgba(0,0,0,0.4)";
+      maskOppAxisColor = "rgba(0,0,0,0.2)";
+      slideBoxFill = "transparent";
+      slideBoxCursor = "ew-resize";
+      grabAreaFill = "transparent";
+      grabAreaCursor = "col-resize";
+      grabAreaWidth = 10;
+      handleWidth = 4;
+      handleRadius = 1;
+      handleStrokeWidth = 1;
+      extraPad = 15;
     }
   });
 
@@ -60607,11 +60803,11 @@ var Plotly = (() => {
       "use strict";
       var axisIDs = require_axis_ids();
       var svgTextUtils = require_svg_text_utils();
-      var constants2 = require_constants12();
-      var LINE_SPACING = require_alignment().LINE_SPACING;
-      var name = constants2.name;
+      var constants2 = (init_constants11(), __toCommonJS(constants_exports11));
+      var LINE_SPACING2 = (init_alignment(), __toCommonJS(alignment_exports)).LINE_SPACING;
+      var name4 = constants2.name;
       function isVisible(ax) {
-        var rangeSlider = ax && ax[name];
+        var rangeSlider = ax && ax[name4];
         return rangeSlider && rangeSlider.visible;
       }
       exports.isVisible = isVisible;
@@ -60623,8 +60819,8 @@ var Plotly = (() => {
           var ax = axes[i];
           if (isVisible(ax)) {
             rangeSliderData.push(ax);
-            var opts = ax[name];
-            opts._id = name + ax._id;
+            var opts = ax[name4];
+            opts._id = name4 + ax._id;
             opts._height = (fullLayout.height - margin.b - margin.t) * opts.thickness;
             opts._offsetShift = Math.floor(opts.borderwidth / 2);
           }
@@ -60633,7 +60829,7 @@ var Plotly = (() => {
       };
       exports.autoMarginOpts = function(gd, ax) {
         var fullLayout = gd._fullLayout;
-        var opts = ax[name];
+        var opts = ax[name4];
         var axLetter = ax._id.charAt(0);
         var bottomDepth = 0;
         var titleHeight = 0;
@@ -60642,7 +60838,7 @@ var Plotly = (() => {
           if (ax.title.text !== fullLayout._dfltTitle[axLetter]) {
             titleHeight = 1.5 * ax.title.font.size + 10 + opts._offsetShift;
             var extraLines = (ax.title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
-            titleHeight += extraLines * ax.title.font.size * LINE_SPACING;
+            titleHeight += extraLines * ax.title.font.size * LINE_SPACING2;
           }
         }
         return {
@@ -60665,7 +60861,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Template = require_plot_template();
       var axisIds = require_axis_ids();
-      var attributes3 = require_attributes19();
+      var attributes4 = require_attributes19();
       var oppAxisAttrs = require_oppaxis_attributes();
       module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         var axIn = layoutIn[axName];
@@ -60677,7 +60873,7 @@ var Plotly = (() => {
         var containerIn = axIn.rangeslider;
         var containerOut = Template.newContainer(axOut, "rangeslider");
         function coerce(attr, dflt) {
-          return Lib.coerce(containerIn, containerOut, attributes3, attr, dflt);
+          return Lib.coerce(containerIn, containerOut, attributes4, attr, dflt);
         }
         var rangeContainerIn, rangeContainerOut;
         function coerceRange(attr, dflt) {
@@ -60725,7 +60921,7 @@ var Plotly = (() => {
       "use strict";
       var listAxes = require_axis_ids().list;
       var getAutoRange = require_autorange().getAutoRange;
-      var constants2 = require_constants12();
+      var constants2 = (init_constants11(), __toCommonJS(constants_exports11));
       module.exports = function calcAutorange(gd) {
         var axes = listAxes(gd, "x", true);
         for (var i = 0; i < axes.length; i++) {
@@ -60756,7 +60952,7 @@ var Plotly = (() => {
       var axisIDs = require_axis_ids();
       var dragElement = require_dragelement();
       var setCursor = require_setcursor();
-      var constants2 = require_constants12();
+      var constants2 = (init_constants11(), __toCommonJS(constants_exports11));
       module.exports = function(gd) {
         var fullLayout = gd._fullLayout;
         var rangeSliderData = fullLayout._rangeSliderData;
@@ -61320,22 +61516,26 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/rangeselector/constants.js
-  var require_constants13 = __commonJS({
-    "src/components/rangeselector/constants.js"(exports, module) {
+  // src/components/rangeselector/constants.ts
+  var constants_exports12 = {};
+  __export(constants_exports12, {
+    darkAmount: () => darkAmount,
+    lightAmount: () => lightAmount,
+    minButtonWidth: () => minButtonWidth,
+    rx: () => rx2,
+    ry: () => ry2,
+    yPad: () => yPad
+  });
+  var yPad, minButtonWidth, rx2, ry2, lightAmount, darkAmount;
+  var init_constants12 = __esm({
+    "src/components/rangeselector/constants.ts"() {
       "use strict";
-      module.exports = {
-        // 'y' position pad above counter axis domain
-        yPad: 0.02,
-        // minimum button width (regardless of text size)
-        minButtonWidth: 30,
-        // buttons rect radii
-        rx: 3,
-        ry: 3,
-        // light fraction used to compute the 'activecolor' default
-        lightAmount: 25,
-        darkAmount: 10
-      };
+      yPad = 0.02;
+      minButtonWidth = 30;
+      rx2 = 3;
+      ry2 = 3;
+      lightAmount = 25;
+      darkAmount = 10;
     }
   });
 
@@ -61347,13 +61547,13 @@ var Plotly = (() => {
       var Color = require_color();
       var Template = require_plot_template();
       var handleArrayContainerDefaults = require_array_container_defaults();
-      var attributes3 = require_attributes20();
-      var constants2 = require_constants13();
+      var attributes4 = require_attributes20();
+      var constants2 = (init_constants12(), __toCommonJS(constants_exports12));
       module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
         var selectorIn = containerIn.rangeselector || {};
         var selectorOut = Template.newContainer(containerOut, "rangeselector");
         function coerce(attr, dflt) {
-          return Lib.coerce(selectorIn, selectorOut, attributes3, attr, dflt);
+          return Lib.coerce(selectorIn, selectorOut, attributes4, attr, dflt);
         }
         var buttons = handleArrayContainerDefaults(selectorIn, selectorOut, {
           name: "buttons",
@@ -61378,7 +61578,7 @@ var Plotly = (() => {
       function buttonDefaults(buttonIn, buttonOut, selectorOut, opts) {
         var calendar = opts.calendar;
         function coerce(attr, dflt) {
-          return Lib.coerce(buttonIn, buttonOut, attributes3.buttons, attr, dflt);
+          return Lib.coerce(buttonIn, buttonOut, attributes4.buttons, attr, dflt);
         }
         var visible = coerce("visible");
         if (visible) {
@@ -61461,11 +61661,11 @@ var Plotly = (() => {
       var strTranslate = Lib.strTranslate;
       var svgTextUtils = require_svg_text_utils();
       var axisIds = require_axis_ids();
-      var alignmentConstants = require_alignment();
-      var LINE_SPACING = alignmentConstants.LINE_SPACING;
-      var FROM_TL = alignmentConstants.FROM_TL;
-      var FROM_BR = alignmentConstants.FROM_BR;
-      var constants2 = require_constants13();
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
+      var LINE_SPACING2 = alignmentConstants.LINE_SPACING;
+      var FROM_TL2 = alignmentConstants.FROM_TL;
+      var FROM_BR2 = alignmentConstants.FROM_BR;
+      var constants2 = (init_constants12(), __toCommonJS(constants_exports12));
       var getUpdateObject = require_get_update_object();
       module.exports = function draw(gd) {
         var fullLayout = gd._fullLayout;
@@ -61563,7 +61763,7 @@ var Plotly = (() => {
         buttons.each(function() {
           var button = d3.select(this);
           var text = button.select(".selector-text");
-          var tHeight = opts.font.size * LINE_SPACING;
+          var tHeight = opts.font.size * LINE_SPACING2;
           var hEff = Math.max(tHeight * svgTextUtils.lineCount(text), 16) + 3;
           height = Math.max(height, hEff);
         });
@@ -61572,7 +61772,7 @@ var Plotly = (() => {
           var rect = button.select(".selector-rect");
           var text = button.select(".selector-text");
           var tWidth = text.node() && Drawing.bBox(text.node()).width;
-          var tHeight = opts.font.size * LINE_SPACING;
+          var tHeight = opts.font.size * LINE_SPACING2;
           var tLines = svgTextUtils.lineCount(text);
           var wEff = Math.max(tWidth + 10, constants2.minButtonWidth);
           button.attr("transform", strTranslate(borderWidth + width, borderWidth));
@@ -61617,10 +61817,10 @@ var Plotly = (() => {
         Plots.autoMargin(gd, axName + "-range-selector", {
           x: opts.x,
           y: opts.y,
-          l: width * FROM_TL[xanchor],
-          r: width * FROM_BR[xanchor],
-          b: height * FROM_BR[yanchor],
-          t: height * FROM_TL[yanchor]
+          l: width * FROM_TL2[xanchor],
+          r: width * FROM_BR2[xanchor],
+          b: height * FROM_BR2[yanchor],
+          t: height * FROM_TL2[yanchor]
         });
         selector.attr("transform", strTranslate(lx, ly));
       }
@@ -61718,7 +61918,7 @@ var Plotly = (() => {
       var Lib = require_lib();
       var counterRegex = (init_regex(), __toCommonJS(regex_exports)).counter;
       var domainAttrs = require_domain().attributes;
-      var cartesianIdRegex = require_constants2().idRegex;
+      var cartesianIdRegex = (init_constants2(), __toCommonJS(constants_exports2)).idRegex;
       var Template = require_plot_template();
       var gridAttrs = {
         rows: {
@@ -62089,13 +62289,13 @@ var Plotly = (() => {
       var Registry = require_registry();
       var Lib = require_lib();
       var Template = require_plot_template();
-      var attributes3 = require_attributes21();
+      var attributes4 = require_attributes21();
       module.exports = function(traceIn, traceOut, defaultColor, opts) {
         var objName = "error_" + opts.axis;
         var containerOut = Template.newContainer(traceOut, objName);
         var containerIn = traceIn[objName] || {};
         function coerce(attr, dflt) {
-          return Lib.coerce(containerIn, containerOut, attributes3, attr, dflt);
+          return Lib.coerce(containerIn, containerOut, attributes4, attr, dflt);
         }
         var hasErrorBars = containerIn.array !== void 0 || containerIn.value !== void 0 || containerIn.type === "sqrt";
         var visible = coerce("visible", hasErrorBars);
@@ -62378,18 +62578,18 @@ var Plotly = (() => {
       "use strict";
       var Lib = require_lib();
       var overrideAll = require_edit_types().overrideAll;
-      var attributes3 = require_attributes21();
+      var attributes4 = require_attributes21();
       var xyAttrs = {
-        error_x: Lib.extendFlat({}, attributes3),
-        error_y: Lib.extendFlat({}, attributes3)
+        error_x: Lib.extendFlat({}, attributes4),
+        error_y: Lib.extendFlat({}, attributes4)
       };
       delete xyAttrs.error_x.copy_zstyle;
       delete xyAttrs.error_y.copy_zstyle;
       delete xyAttrs.error_y.copy_ystyle;
       var xyzAttrs = {
-        error_x: Lib.extendFlat({}, attributes3),
-        error_y: Lib.extendFlat({}, attributes3),
-        error_z: Lib.extendFlat({}, attributes3)
+        error_x: Lib.extendFlat({}, attributes4),
+        error_y: Lib.extendFlat({}, attributes4),
+        error_z: Lib.extendFlat({}, attributes4)
       };
       delete xyzAttrs.error_x.copy_ystyle;
       delete xyzAttrs.error_y.copy_ystyle;
@@ -62427,25 +62627,28 @@ var Plotly = (() => {
     }
   });
 
-  // src/components/colorbar/constants.js
-  var require_constants14 = __commonJS({
-    "src/components/colorbar/constants.js"(exports, module) {
+  // src/components/colorbar/constants.ts
+  var constants_exports13 = {};
+  __export(constants_exports13, {
+    cn: () => cn
+  });
+  var cn;
+  var init_constants13 = __esm({
+    "src/components/colorbar/constants.ts"() {
       "use strict";
-      module.exports = {
-        cn: {
-          colorbar: "colorbar",
-          cbbg: "cbbg",
-          cbfill: "cbfill",
-          cbfills: "cbfills",
-          cbline: "cbline",
-          cblines: "cblines",
-          cbaxis: "cbaxis",
-          cbtitleunshift: "cbtitleunshift",
-          cbtitle: "cbtitle",
-          cboutline: "cboutline",
-          crisp: "crisp",
-          jsPlaceholder: "js-placeholder"
-        }
+      cn = {
+        colorbar: "colorbar",
+        cbbg: "cbbg",
+        cbfill: "cbfill",
+        cbfills: "cbfills",
+        cbline: "cbline",
+        cblines: "cblines",
+        cbaxis: "cbaxis",
+        cbtitleunshift: "cbtitleunshift",
+        cbtitle: "cbtitle",
+        cboutline: "cboutline",
+        crisp: "crisp",
+        jsPlaceholder: "js-placeholder"
       };
     }
   });
@@ -62471,31 +62674,31 @@ var Plotly = (() => {
       var handleAxisDefaults = require_axis_defaults();
       var handleAxisPositionDefaults = require_position_defaults();
       var axisLayoutAttrs = require_layout_attributes4();
-      var alignmentConstants = require_alignment();
-      var LINE_SPACING = alignmentConstants.LINE_SPACING;
-      var FROM_TL = alignmentConstants.FROM_TL;
-      var FROM_BR = alignmentConstants.FROM_BR;
-      var cn = require_constants14().cn;
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
+      var LINE_SPACING2 = alignmentConstants.LINE_SPACING;
+      var FROM_TL2 = alignmentConstants.FROM_TL;
+      var FROM_BR2 = alignmentConstants.FROM_BR;
+      var cn2 = (init_constants13(), __toCommonJS(constants_exports13)).cn;
       function draw(gd) {
         var fullLayout = gd._fullLayout;
-        var colorBars = fullLayout._infolayer.selectAll("g." + cn.colorbar).data(makeColorBarData(gd), function(opts) {
+        var colorBars = fullLayout._infolayer.selectAll("g." + cn2.colorbar).data(makeColorBarData(gd), function(opts) {
           return opts._id;
         });
         colorBars.enter().append("g").attr("class", function(opts) {
           return opts._id;
-        }).classed(cn.colorbar, true);
+        }).classed(cn2.colorbar, true);
         colorBars.each(function(opts) {
           var g = d3.select(this);
-          Lib.ensureSingle(g, "rect", cn.cbbg);
-          Lib.ensureSingle(g, "g", cn.cbfills);
-          Lib.ensureSingle(g, "g", cn.cblines);
-          Lib.ensureSingle(g, "g", cn.cbaxis, function(s) {
-            s.classed(cn.crisp, true);
+          Lib.ensureSingle(g, "rect", cn2.cbbg);
+          Lib.ensureSingle(g, "g", cn2.cbfills);
+          Lib.ensureSingle(g, "g", cn2.cblines);
+          Lib.ensureSingle(g, "g", cn2.cbaxis, function(s) {
+            s.classed(cn2.crisp, true);
           });
-          Lib.ensureSingle(g, "g", cn.cbtitleunshift, function(s) {
-            s.append("g").classed(cn.cbtitle, true);
+          Lib.ensureSingle(g, "g", cn2.cbtitleunshift, function(s) {
+            s.append("g").classed(cn2.cbtitle, true);
           });
-          Lib.ensureSingle(g, "rect", cn.cboutline);
+          Lib.ensureSingle(g, "rect", cn2.cboutline);
           var done = drawColorBar(g, opts, gd);
           if (done && done.then) (gd._promises || []).push(done);
           if (gd._context.edits.colorbarPosition) {
@@ -62678,10 +62881,10 @@ var Plotly = (() => {
         ax.domain = insetDomainEnd(insetDomainStart([vFrac, vFrac + lenFrac], padFrac), padFrac);
         ax.setScale();
         g.attr("transform", strTranslate(Math.round(gs.l), Math.round(gs.t)));
-        var titleCont = g.select("." + cn.cbtitleunshift).attr("transform", strTranslate(-Math.round(gs.l), -Math.round(gs.t)));
+        var titleCont = g.select("." + cn2.cbtitleunshift).attr("transform", strTranslate(-Math.round(gs.l), -Math.round(gs.t)));
         var ticklabelposition = ax.ticklabelposition;
         var titleFontSize = ax.title.font.size;
-        var axLayer = g.select("." + cn.cbaxis);
+        var axLayer = g.select("." + cn2.cbaxis);
         var titleEl;
         var titleHeight = 0;
         var titleWidth = 0;
@@ -62692,7 +62895,7 @@ var Plotly = (() => {
             traceIndex: opts._traceIndex,
             _meta: opts._meta,
             placeholder: fullLayout._dfltTitle.colorbar,
-            containerGroup: g.select("." + cn.cbtitle)
+            containerGroup: g.select("." + cn2.cbtitle)
           };
           var otherClass = titleClass.charAt(0) === "h" ? titleClass.slice(1) : "h" + titleClass;
           g.selectAll("." + otherClass + ",." + otherClass + "-math-group").remove();
@@ -62733,7 +62936,7 @@ var Plotly = (() => {
               }
               if (titleSide === "top") {
                 var nlines = title.text.split("<br>").length;
-                y = gs.t + posH * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
+                y = gs.t + posH * pos + 10 - thickPx - LINE_SPACING2 * titleFontSize * nlines;
               }
             }
             drawTitle((isVertical ? (
@@ -62756,13 +62959,13 @@ var Plotly = (() => {
         }
         function drawAxis() {
           if (!isVertical && !topOrBottom || isVertical && topOrBottom) {
-            var titleGroup = g.select("." + cn.cbtitle);
+            var titleGroup = g.select("." + cn2.cbtitle);
             var titleText = titleGroup.select("text");
             var titleTrans = [-outlinewidth / 2, outlinewidth / 2];
             var mathJaxNode = titleGroup.select(".h" + ax._id + "title-math-group").node();
             var lineSize = 15.6;
             if (titleText.node()) {
-              lineSize = parseInt(titleText.node().style.fontSize, 10) * LINE_SPACING;
+              lineSize = parseInt(titleText.node().style.fontSize, 10) * LINE_SPACING2;
             }
             var bb;
             if (mathJaxNode) {
@@ -62772,7 +62975,7 @@ var Plotly = (() => {
               if (titleHeight > lineSize) {
                 titleTrans[1] -= (titleHeight - lineSize) / 2;
               }
-            } else if (titleText.node() && !titleText.classed(cn.jsPlaceholder)) {
+            } else if (titleText.node() && !titleText.classed(cn2.jsPlaceholder)) {
               bb = Drawing.bBox(titleText.node());
               titleWidth = bb.width;
               titleHeight = bb.height;
@@ -62801,7 +63004,7 @@ var Plotly = (() => {
               }
             }
           }
-          g.selectAll("." + cn.cbfills + ",." + cn.cblines).attr(
+          g.selectAll("." + cn2.cbfills + ",." + cn2.cblines).attr(
             "transform",
             isVertical ? strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))) : strTranslate(Math.round(gs.w * ax.domain[0]), 0)
           );
@@ -62809,8 +63012,8 @@ var Plotly = (() => {
             "transform",
             isVertical ? strTranslate(0, Math.round(-gs.t)) : strTranslate(Math.round(-gs.l), 0)
           );
-          var fills = g.select("." + cn.cbfills).selectAll("rect." + cn.cbfill).attr("style", "").data(fillLevels);
-          fills.enter().append("rect").classed(cn.cbfill, true).attr("style", "");
+          var fills = g.select("." + cn2.cbfills).selectAll("rect." + cn2.cbfill).attr("style", "").data(fillLevels);
+          fills.enter().append("rect").classed(cn2.cbfill, true).attr("style", "");
           fills.exit().remove();
           var zBounds = zrange.map(ax.c2p).map(Math.round).sort(function(a, b) {
             return a - b;
@@ -62831,8 +63034,8 @@ var Plotly = (() => {
               fillEl.attr("fill", Color.hexString(colorString));
             }
           });
-          var lines = g.select("." + cn.cblines).selectAll("path." + cn.cbline).data(line.color && line.width ? lineLevels : []);
-          lines.enter().append("path").classed(cn.cbline, true);
+          var lines = g.select("." + cn2.cblines).selectAll("path." + cn2.cbline).data(line.color && line.width ? lineLevels : []);
+          lines.enter().append("path").classed(cn2.cbline, true);
           lines.exit().remove();
           lines.each(function(d) {
             var a = uPx;
@@ -62871,7 +63074,7 @@ var Plotly = (() => {
           var topSideVertical = isVertical && titleSide === "top";
           var rightSideHorizontal = !isVertical && titleSide === "right";
           var moveY = 0;
-          if (titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
+          if (titleEl.node() && !titleEl.classed(cn2.jsPlaceholder)) {
             var _titleHeight;
             var mathJaxNode = titleCont.select(".h" + ax._id + "title-math-group").node();
             if (mathJaxNode && (isVertical && topOrBottom || !isVertical && !topOrBottom)) {
@@ -62908,9 +63111,9 @@ var Plotly = (() => {
           var extraW = borderwidth + outlinewidth;
           var lx = (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0);
           var ly = (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle);
-          g.select("." + cn.cbbg).attr("x", lx).attr("y", ly).attr(isVertical ? "width" : "height", Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx + extraW, 2)).call(Color.fill, bgcolor).call(Color.stroke, opts.bordercolor).style("stroke-width", borderwidth);
+          g.select("." + cn2.cbbg).attr("x", lx).attr("y", ly).attr(isVertical ? "width" : "height", Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx + extraW, 2)).call(Color.fill, bgcolor).call(Color.stroke, opts.bordercolor).style("stroke-width", borderwidth);
           var moveX = rightSideHorizontal ? Math.max(titleWidth2 - 10, 0) : 0;
-          g.selectAll("." + cn.cboutline).attr("x", (isVertical ? uPx : vPx + xpad) + moveX).attr("y", (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0)).attr(isVertical ? "width" : "height", Math.max(thickPx, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx - (isVertical ? 2 * ypad + titleHeight : 2 * xpad + moveX), 2)).call(Color.stroke, opts.outlinecolor).style({
+          g.selectAll("." + cn2.cboutline).attr("x", (isVertical ? uPx : vPx + xpad) + moveX).attr("y", (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0)).attr(isVertical ? "width" : "height", Math.max(thickPx, 2)).attr(isVertical ? "height" : "width", Math.max(lenPx - (isVertical ? 2 * ypad + titleHeight : 2 * xpad + moveX), 2)).call(Color.stroke, opts.outlinecolor).style({
             fill: "none",
             "stroke-width": outlinewidth
           });
@@ -62925,10 +63128,10 @@ var Plotly = (() => {
           if (!isVertical && (borderwidth || Color.opacity(bgcolor) && !Color.equals(fullLayout.paper_bgcolor, bgcolor))) {
             var tickLabels = axLayer.selectAll("text");
             var numTicks = tickLabels[0].length;
-            var border = g.select("." + cn.cbbg).node();
+            var border = g.select("." + cn2.cbbg).node();
             var oBb = Drawing.bBox(border);
             var oTr = Drawing.getTranslate(g);
-            var TEXTPAD = 2;
+            var TEXTPAD2 = 2;
             tickLabels.each(function(d, i) {
               var first = 0;
               var last = numTicks - 1;
@@ -62938,12 +63141,12 @@ var Plotly = (() => {
                 var deltaX;
                 if (i === last) {
                   var iRight = iBb.right + iTr.x;
-                  var oRight = oBb.right + oTr.x + vPx - borderwidth - TEXTPAD + optsX;
+                  var oRight = oBb.right + oTr.x + vPx - borderwidth - TEXTPAD2 + optsX;
                   deltaX = oRight - iRight;
                   if (deltaX > 0) deltaX = 0;
                 } else if (i === first) {
                   var iLeft = iBb.left + iTr.x;
-                  var oLeft = oBb.left + oTr.x + vPx + borderwidth + TEXTPAD;
+                  var oLeft = oBb.left + oTr.x + vPx + borderwidth + TEXTPAD2;
                   deltaX = oLeft - iLeft;
                   if (deltaX < 0) deltaX = 0;
                 }
@@ -62961,10 +63164,10 @@ var Plotly = (() => {
             });
           }
           var marginOpts = {};
-          var lFrac = FROM_TL[xanchor];
-          var rFrac = FROM_BR[xanchor];
-          var tFrac = FROM_TL[yanchor];
-          var bFrac = FROM_BR[yanchor];
+          var lFrac = FROM_TL2[xanchor];
+          var rFrac = FROM_BR2[xanchor];
+          var tFrac = FROM_TL2[yanchor];
+          var bFrac = FROM_BR2[yanchor];
           var extraThickness = outerThickness - thickPx;
           if (isVertical) {
             if (lenmode === "pixels") {
@@ -63444,7 +63647,7 @@ var Plotly = (() => {
         function wait() {
           var delay = helpers.getDelay(clonedGd._fullLayout);
           setTimeout(function() {
-            var svg = toSVG(clonedGd);
+            var svg2 = toSVG(clonedGd);
             var canvas = document.createElement("canvas");
             canvas.id = Lib.randstr();
             ev = svgToImg({
@@ -63453,7 +63656,7 @@ var Plotly = (() => {
               height: clonedGd._fullLayout.height,
               canvas,
               emitter: ev,
-              svg
+              svg: svg2
             });
             ev.clean = function() {
               if (clonedGd) document.body.removeChild(clonedGd);
@@ -63500,15 +63703,15 @@ var Plotly = (() => {
       var plotApi = require_plot_api2();
       var methodNames = Object.keys(plotApi);
       for (i = 0; i < methodNames.length; i++) {
-        name = methodNames[i];
-        if (name.charAt(0) !== "_") exports[name] = plotApi[name];
+        name4 = methodNames[i];
+        if (name4.charAt(0) !== "_") exports[name4] = plotApi[name4];
         register({
           moduleType: "apiMethod",
-          name,
-          fn: plotApi[name]
+          name: name4,
+          fn: plotApi[name4]
         });
       }
-      var name;
+      var name4;
       var i;
       register(require_scatter());
       register([
@@ -63575,7 +63778,7 @@ var Plotly = (() => {
       var { hovertemplateAttrs: hovertemplateAttrs2, texttemplateAttrs, templatefallbackAttrs: templatefallbackAttrs2 } = require_template_attributes();
       var colorScaleAttrs = require_attributes8();
       var fontAttrs = require_font_attributes();
-      var constants2 = require_constants9();
+      var constants2 = (init_constants8(), __toCommonJS(constants_exports8));
       var pattern = require_attributes4().pattern;
       var extendFlat2 = require_extend().extendFlat;
       var textFontAttrs = fontAttrs({
@@ -63803,11 +64006,11 @@ var Plotly = (() => {
       var handlePeriodDefaults = require_period_defaults();
       var handleStyleDefaults = require_style_defaults();
       var handleGroupingDefaults = require_grouping_defaults();
-      var attributes3 = require_attributes22();
+      var attributes4 = require_attributes22();
       var coerceFont = Lib.coerceFont;
       function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
         if (!len) {
@@ -63845,7 +64048,7 @@ var Plotly = (() => {
       function crossTraceDefaults(fullData, fullLayout) {
         var traceIn, traceOut;
         function coerce(attr, dflt) {
-          return Lib.coerce(traceOut._input, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceOut._input, traceOut, attributes4, attr, dflt);
         }
         for (var i = 0; i < fullData.length; i++) {
           traceOut = fullData[i];
@@ -64185,10 +64388,10 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Registry = require_registry();
       var resizeText = require_uniform_text().resizeText;
-      var attributes3 = require_attributes22();
-      var attributeTextFont = attributes3.textfont;
-      var attributeInsideTextFont = attributes3.insidetextfont;
-      var attributeOutsideTextFont = attributes3.outsidetextfont;
+      var attributes4 = require_attributes22();
+      var attributeTextFont = attributes4.textfont;
+      var attributeInsideTextFont = attributes4.insidetextfont;
+      var attributeOutsideTextFont = attributes4.outsidetextfont;
       var helpers = require_helpers12();
       function style(gd) {
         var s = d3.select(gd).selectAll('g[class^="barlayer"]').selectAll("g.trace");
@@ -64394,12 +64597,12 @@ var Plotly = (() => {
       var clearMinTextSize = uniformText.clearMinTextSize;
       var style = require_style4();
       var helpers = require_helpers12();
-      var constants2 = require_constants9();
-      var attributes3 = require_attributes22();
-      var attributeText = attributes3.text;
-      var attributeTextPosition = attributes3.textposition;
+      var constants2 = (init_constants8(), __toCommonJS(constants_exports8));
+      var attributes4 = require_attributes22();
+      var attributeText = attributes4.text;
+      var attributeTextPosition = attributes4.textposition;
       var appendArrayPointValue = require_helpers2().appendArrayPointValue;
-      var TEXTPAD = constants2.TEXTPAD;
+      var TEXTPAD2 = constants2.TEXTPAD;
       function keyFunc(d) {
         return d.id;
       }
@@ -64645,7 +64848,7 @@ var Plotly = (() => {
         var calcBar = cd[i];
         var isOutmostBar = !inStackOrRelativeMode || calcBar._outmost;
         var hasB = calcBar.hasB;
-        var barIsRounded = r && r - overhead > TEXTPAD;
+        var barIsRounded = r && r - overhead > TEXTPAD2;
         if (!text || textPosition === "none" || (calcBar.isBlank || x0 === x1 || y0 === y1) && (textPosition === "auto" || textPosition === "inside")) {
           bar.select("text").remove();
           return;
@@ -64675,8 +64878,8 @@ var Plotly = (() => {
         }
         var lx = Math.abs(x1 - x0);
         var ly = Math.abs(y1 - y0);
-        var barWidth = lx - 2 * TEXTPAD;
-        var barHeight = ly - 2 * TEXTPAD;
+        var barWidth = lx - 2 * TEXTPAD2;
+        var barHeight = ly - 2 * TEXTPAD2;
         var textSelection;
         var textBB;
         var textWidth;
@@ -64805,7 +65008,7 @@ var Plotly = (() => {
         var textHeight = textBB.height;
         var lx = Math.abs(x1 - x0);
         var ly = Math.abs(y1 - y0);
-        var textpad = lx > 2 * TEXTPAD && ly > 2 * TEXTPAD ? TEXTPAD : 0;
+        var textpad = lx > 2 * TEXTPAD2 && ly > 2 * TEXTPAD2 ? TEXTPAD2 : 0;
         lx -= 2 * textpad;
         ly -= 2 * textpad;
         var rotate = getRotateFromAngle(angle);
@@ -64814,7 +65017,7 @@ var Plotly = (() => {
         }
         var t = getRotatedTextSize(textBB, rotate);
         var scale, padForRounding;
-        if (r && r - overhead > TEXTPAD) {
+        if (r && r - overhead > TEXTPAD2) {
           var scaleAndPad = scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, hasB);
           scale = scaleAndPad.scale;
           padForRounding = scaleAndPad.pad;
@@ -64827,7 +65030,7 @@ var Plotly = (() => {
         }
         var textX = textBB.left * toLeft + textBB.right * toRight;
         var textY = (textBB.top + textBB.bottom) / 2;
-        var targetX = (x0 + TEXTPAD) * toLeft + (x1 - TEXTPAD) * toRight;
+        var targetX = (x0 + TEXTPAD2) * toLeft + (x1 - TEXTPAD2) * toRight;
         var targetY = (y0 + y1) / 2;
         var anchorX = 0;
         var anchorY = 0;
@@ -64867,9 +65070,9 @@ var Plotly = (() => {
         };
       }
       function scaleTextForRoundedBar(x0, x1, y0, y1, t, r, overhead, isHorizontal, hasB) {
-        var barWidth = Math.max(0, Math.abs(x1 - x0) - 2 * TEXTPAD);
-        var barHeight = Math.max(0, Math.abs(y1 - y0) - 2 * TEXTPAD);
-        var R = r - TEXTPAD;
+        var barWidth = Math.max(0, Math.abs(x1 - x0) - 2 * TEXTPAD2);
+        var barHeight = Math.max(0, Math.abs(y1 - y0) - 2 * TEXTPAD2);
+        var R = r - TEXTPAD2;
         var clippedR = overhead ? R - Math.sqrt(R * R - (R - overhead) * (R - overhead)) : R;
         var rX = hasB ? R * 2 : isHorizontal ? R - overhead : 2 * clippedR;
         var rY = hasB ? R * 2 : isHorizontal ? 2 * clippedR : R - overhead;
@@ -64923,9 +65126,9 @@ var Plotly = (() => {
         var ly = Math.abs(y1 - y0);
         var textpad;
         if (isHorizontal) {
-          textpad = ly > 2 * TEXTPAD ? TEXTPAD : 0;
+          textpad = ly > 2 * TEXTPAD2 ? TEXTPAD2 : 0;
         } else {
-          textpad = lx > 2 * TEXTPAD ? TEXTPAD : 0;
+          textpad = lx > 2 * TEXTPAD2 ? TEXTPAD2 : 0;
         }
         var scale = 1;
         if (constrained) {
@@ -65152,7 +65355,7 @@ var Plotly = (() => {
       var fillText = require_lib().fillText;
       var getLineWidth = require_helpers12().getLineWidth;
       var hoverLabelText = require_axes().hoverLabelText;
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       function hoverPoints(pointData, xval, yval, hovermode, opts) {
         var barPointData = hoverOnBars(pointData, xval, yval, hovermode, opts);
         if (barPointData) {
@@ -65684,10 +65887,10 @@ var Plotly = (() => {
       var handlePeriodDefaults = require_period_defaults();
       var handleGroupingDefaults = require_grouping_defaults();
       var autoType = require_axis_autotype();
-      var attributes3 = require_attributes23();
+      var attributes4 = require_attributes23();
       function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         handleSampleDefaults(traceIn, traceOut, coerce, layout);
         if (traceOut.visible === false) return;
@@ -65729,7 +65932,7 @@ var Plotly = (() => {
           if (notchspan && notchspan.length) {
             notchedDflt = true;
           }
-        } else if (Lib.validate(traceIn.notchwidth, attributes3.notchwidth)) {
+        } else if (Lib.validate(traceIn.notchwidth, attributes4.notchwidth)) {
           notchedDflt = true;
         }
         var notched = coerce("notched", notchedDflt);
@@ -65749,7 +65952,7 @@ var Plotly = (() => {
           return dims;
         }
         function valid(astr) {
-          return Lib.validate(traceIn[astr], attributes3[astr]);
+          return Lib.validate(traceIn[astr], attributes4[astr]);
         }
         var y = coerce("y");
         var x = coerce("x");
@@ -65883,7 +66086,7 @@ var Plotly = (() => {
       }
       function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         var prefix = opts.prefix;
-        var outlierColorDflt = Lib.coerce2(traceIn, traceOut, attributes3, "marker.outliercolor");
+        var outlierColorDflt = Lib.coerce2(traceIn, traceOut, attributes4, "marker.outliercolor");
         var lineoutliercolor = coerce("marker.line.outliercolor");
         var modeDflt = "outliers";
         if (traceOut._hasPreCompStats) {
@@ -65925,7 +66128,7 @@ var Plotly = (() => {
       function crossTraceDefaults(fullData, fullLayout) {
         var traceIn, traceOut;
         function coerce(attr) {
-          return Lib.coerce(traceOut._input, traceOut, attributes3, attr);
+          return Lib.coerce(traceOut._input, traceOut, attributes4, attr);
         }
         for (var i = 0; i < fullData.length; i++) {
           traceOut = fullData[i];
@@ -65991,7 +66194,7 @@ var Plotly = (() => {
       var Axes = require_axes();
       var alignPeriod = require_align_period();
       var Lib = require_lib();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var _ = Lib._;
       module.exports = function calc(gd, trace) {
         var fullLayout = gd._fullLayout;
@@ -67328,10 +67531,10 @@ var Plotly = (() => {
       var handlePeriodDefaults = require_period_defaults();
       var handleStyleDefaults = require_style_defaults2();
       var colorscaleDefaults = require_defaults2();
-      var attributes3 = require_attributes24();
+      var attributes4 = require_attributes24();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var validData = handleXYZDefaults(traceIn, traceOut, coerce, layout);
         if (!validData) {
@@ -67467,7 +67670,7 @@ var Plotly = (() => {
   var require_bin_label_vals = __commonJS({
     "src/traces/histogram/bin_label_vals.js"(exports, module) {
       "use strict";
-      var numConstants = require_numerical();
+      var numConstants = (init_numerical(), __toCommonJS(numerical_exports));
       var oneYear = numConstants.ONEAVGYEAR;
       var oneMonth = numConstants.ONEAVGMONTH;
       var oneDay = numConstants.ONEDAY;
@@ -68206,7 +68409,7 @@ var Plotly = (() => {
     "src/traces/heatmap/convert_column_xyz.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       var alignPeriod = require_align_period();
       module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
         var colLen = trace._length;
@@ -68281,7 +68484,7 @@ var Plotly = (() => {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       module.exports = function clean2dArray(zOld, trace, xa, ya) {
         var rowlen, collen, getCollen, old2new, i, j;
         function cleanZvalue(v) {
@@ -68603,7 +68806,7 @@ var Plotly = (() => {
       var interp2d = require_interp2d();
       var findEmpties = require_find_empties();
       var makeBoundArray = require_make_bound_array();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       module.exports = function calc(gd, trace) {
         var xa = Axes.getFromId(gd, trace.xaxis || "x");
         var ya = Axes.getFromId(gd, trace.yaxis || "y");
@@ -68755,11 +68958,17 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/pixelated_image.js
-  var require_pixelated_image = __commonJS({
-    "src/constants/pixelated_image.js"(exports) {
+  // src/constants/pixelated_image.ts
+  var pixelated_image_exports = {};
+  __export(pixelated_image_exports, {
+    CSS_DECLARATIONS: () => CSS_DECLARATIONS,
+    STYLE: () => STYLE
+  });
+  var CSS_DECLARATIONS, STYLE;
+  var init_pixelated_image = __esm({
+    "src/constants/pixelated_image.ts"() {
       "use strict";
-      exports.CSS_DECLARATIONS = [
+      CSS_DECLARATIONS = [
         ["image-rendering", "optimizeSpeed"],
         ["image-rendering", "-moz-crisp-edges"],
         ["image-rendering", "-o-crisp-edges"],
@@ -68768,9 +68977,7 @@ var Plotly = (() => {
         ["image-rendering", "crisp-edges"],
         ["image-rendering", "pixelated"]
       ];
-      exports.STYLE = exports.CSS_DECLARATIONS.map(function(d) {
-        return d.join(": ") + "; ";
-      }).join("");
+      STYLE = CSS_DECLARATIONS.map((d) => d.join(": ") + "; ").join("");
     }
   });
 
@@ -68778,7 +68985,7 @@ var Plotly = (() => {
   var require_supports_pixelated_image = __commonJS({
     "src/lib/supports_pixelated_image.js"(exports, module) {
       "use strict";
-      var constants2 = require_pixelated_image();
+      var constants2 = (init_pixelated_image(), __toCommonJS(pixelated_image_exports));
       var Drawing = require_drawing();
       var Lib = require_lib();
       var _supportsPixelated = null;
@@ -68826,14 +69033,14 @@ var Plotly = (() => {
       var Color = require_color();
       var extractOpts = require_colorscale().extractOpts;
       var makeColorScaleFuncFromTrace = require_colorscale().makeColorScaleFuncFromTrace;
-      var xmlnsNamespaces = require_xmlns_namespaces();
-      var alignmentConstants = require_alignment();
-      var LINE_SPACING = alignmentConstants.LINE_SPACING;
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
+      var alignmentConstants = (init_alignment(), __toCommonJS(alignment_exports));
+      var LINE_SPACING2 = alignmentConstants.LINE_SPACING;
       var supportsPixelatedImage = require_supports_pixelated_image();
-      var PIXELATED_IMAGE_STYLE = require_pixelated_image().STYLE;
-      var labelClass = "heatmap-label";
+      var PIXELATED_IMAGE_STYLE = (init_pixelated_image(), __toCommonJS(pixelated_image_exports)).STYLE;
+      var labelClass2 = "heatmap-label";
       function selectLabels(plotGroup) {
-        return plotGroup.selectAll("g." + labelClass);
+        return plotGroup.selectAll("g." + labelClass2);
       }
       function removeLabels(plotGroup) {
         selectLabels(plotGroup).remove();
@@ -69210,8 +69417,8 @@ var Plotly = (() => {
                 minH -= yGap;
                 minW /= maxC;
                 minH /= maxL;
-                minW /= LINE_SPACING / 2;
-                minH /= LINE_SPACING;
+                minW /= LINE_SPACING2 / 2;
+                minH /= LINE_SPACING2;
                 fontSize = Math.min(Math.floor(minW), Math.floor(minH), globalFontSize);
               }
             }
@@ -69220,10 +69427,10 @@ var Plotly = (() => {
               return d2.x;
             };
             var yFn = function(d2) {
-              return d2.y - fontSize * (d2.l * LINE_SPACING / 2 - 1);
+              return d2.y - fontSize * (d2.l * LINE_SPACING2 / 2 - 1);
             };
             var labels = selectLabels(plotGroup).data(textData);
-            labels.enter().append("g").classed(labelClass, 1).append("text").attr("text-anchor", "middle").each(function(d2) {
+            labels.enter().append("g").classed(labelClass2, 1).append("text").attr("text-anchor", "middle").each(function(d2) {
               var thisLabel = d3.select(this);
               var fontColor = font.color;
               if (!fontColor || fontColor === "auto") {
@@ -69499,13 +69706,16 @@ var Plotly = (() => {
     }
   });
 
-  // src/traces/histogram/constants.js
-  var require_constants15 = __commonJS({
-    "src/traces/histogram/constants.js"(exports, module) {
+  // src/traces/histogram/constants.ts
+  var constants_exports14 = {};
+  __export(constants_exports14, {
+    eventDataKeys: () => eventDataKeys3
+  });
+  var eventDataKeys3;
+  var init_constants14 = __esm({
+    "src/traces/histogram/constants.ts"() {
       "use strict";
-      module.exports = {
-        eventDataKeys: ["binNumber"]
-      };
+      eventDataKeys3 = ["binNumber"];
     }
   });
 
@@ -69518,7 +69728,7 @@ var Plotly = (() => {
       var { hovertemplateAttrs: hovertemplateAttrs2, texttemplateAttrs, templatefallbackAttrs: templatefallbackAttrs2 } = require_template_attributes();
       var fontAttrs = require_font_attributes();
       var makeBinAttrs = require_bin_attributes();
-      var constants2 = require_constants15();
+      var constants2 = (init_constants14(), __toCommonJS(constants_exports14));
       var extendFlat2 = require_extend().extendFlat;
       module.exports = {
         x: {
@@ -69640,10 +69850,10 @@ var Plotly = (() => {
       var Color = require_color();
       var handleText = require_defaults19().handleText;
       var handleStyleDefaults = require_style_defaults();
-      var attributes3 = require_attributes25();
+      var attributes4 = require_attributes25();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var x = coerce("x");
         var y = coerce("y");
@@ -70082,10 +70292,10 @@ var Plotly = (() => {
       var handleStyleDefaults = require_style_defaults2();
       var colorscaleDefaults = require_defaults2();
       var handleHeatmapLabelDefaults = require_label_defaults();
-      var attributes3 = require_attributes26();
+      var attributes4 = require_attributes26();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         handleSampleDefaults(traceIn, traceOut, coerce, layout);
         if (traceOut.visible === false) return;
@@ -70156,31 +70366,38 @@ var Plotly = (() => {
     }
   });
 
-  // src/constants/filter_ops.js
-  var require_filter_ops = __commonJS({
-    "src/constants/filter_ops.js"(exports, module) {
+  // src/constants/filter_ops.ts
+  var filter_ops_exports = {};
+  __export(filter_ops_exports, {
+    COMPARISON_OPS: () => COMPARISON_OPS,
+    COMPARISON_OPS2: () => COMPARISON_OPS2,
+    CONSTRAINT_REDUCTION: () => CONSTRAINT_REDUCTION,
+    INTERVAL_OPS: () => INTERVAL_OPS,
+    SET_OPS: () => SET_OPS
+  });
+  var COMPARISON_OPS, COMPARISON_OPS2, INTERVAL_OPS, SET_OPS, CONSTRAINT_REDUCTION;
+  var init_filter_ops = __esm({
+    "src/constants/filter_ops.ts"() {
       "use strict";
-      module.exports = {
-        COMPARISON_OPS: ["=", "!=", "<", ">=", ">", "<="],
-        COMPARISON_OPS2: ["=", "<", ">=", ">", "<="],
-        INTERVAL_OPS: ["[]", "()", "[)", "(]", "][", ")(", "](", ")["],
-        SET_OPS: ["{}", "}{"],
-        CONSTRAINT_REDUCTION: {
-          // for contour constraints, open/closed endpoints are equivalent
-          "=": "=",
-          "<": "<",
-          "<=": "<",
-          ">": ">",
-          ">=": ">",
-          "[]": "[]",
-          "()": "[]",
-          "[)": "[]",
-          "(]": "[]",
-          "][": "][",
-          ")(": "][",
-          "](": "][",
-          ")[": "]["
-        }
+      COMPARISON_OPS = ["=", "!=", "<", ">=", ">", "<="];
+      COMPARISON_OPS2 = ["=", "<", ">=", ">", "<="];
+      INTERVAL_OPS = ["[]", "()", "[)", "(]", "][", ")(", "](", ")["];
+      SET_OPS = ["{}", "}{"];
+      CONSTRAINT_REDUCTION = {
+        // For contour constraints, open/closed endpoints are equivalent
+        "=": "=",
+        "<": "<",
+        "<=": "<",
+        ">": ">",
+        ">=": ">",
+        "[]": "[]",
+        "()": "[]",
+        "[)": "[]",
+        "(]": "[]",
+        "][": "][",
+        ")(": "][",
+        "](": "][",
+        ")[": "]["
       };
     }
   });
@@ -70198,9 +70415,9 @@ var Plotly = (() => {
       var dash = require_attributes4().dash;
       var fontAttrs = require_font_attributes();
       var extendFlat2 = require_extend().extendFlat;
-      var filterOps = require_filter_ops();
-      var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
-      var INTERVAL_OPS = filterOps.INTERVAL_OPS;
+      var filterOps = (init_filter_ops(), __toCommonJS(filter_ops_exports));
+      var COMPARISON_OPS22 = filterOps.COMPARISON_OPS2;
+      var INTERVAL_OPS2 = filterOps.INTERVAL_OPS;
       var scatterLineAttrs = scatterAttrs.line;
       module.exports = extendFlat2(
         {
@@ -70306,7 +70523,7 @@ var Plotly = (() => {
             },
             operation: {
               valType: "enumerated",
-              values: [].concat(COMPARISON_OPS2).concat(INTERVAL_OPS),
+              values: [].concat(COMPARISON_OPS22).concat(INTERVAL_OPS2),
               dflt: "=",
               editType: "calc"
             },
@@ -70476,13 +70693,13 @@ var Plotly = (() => {
       var handleContoursDefaults = require_contours_defaults();
       var handleStyleDefaults = require_style_defaults3();
       var handleHeatmapLabelDefaults = require_label_defaults();
-      var attributes3 = require_attributes28();
+      var attributes4 = require_attributes28();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         function coerce2(attr) {
-          return Lib.coerce2(traceIn, traceOut, attributes3, attr);
+          return Lib.coerce2(traceIn, traceOut, attributes4, attr);
         }
         handleSampleDefaults(traceIn, traceOut, coerce, layout);
         if (traceOut.visible === false) return;
@@ -70610,79 +70827,77 @@ var Plotly = (() => {
     }
   });
 
-  // src/traces/contour/constants.js
-  var require_constants16 = __commonJS({
-    "src/traces/contour/constants.js"(exports, module) {
+  // src/traces/contour/constants.ts
+  var constants_exports15 = {};
+  __export(constants_exports15, {
+    BOTTOMSTART: () => BOTTOMSTART,
+    CHOOSESADDLE: () => CHOOSESADDLE,
+    LABELDISTANCE: () => LABELDISTANCE,
+    LABELINCREASE: () => LABELINCREASE,
+    LABELMAX: () => LABELMAX,
+    LABELMIN: () => LABELMIN,
+    LABELOPTIMIZER: () => LABELOPTIMIZER,
+    LEFTSTART: () => LEFTSTART,
+    NEWDELTA: () => NEWDELTA,
+    RIGHTSTART: () => RIGHTSTART,
+    SADDLEREMAINDER: () => SADDLEREMAINDER,
+    TOPSTART: () => TOPSTART
+  });
+  var BOTTOMSTART, TOPSTART, LEFTSTART, RIGHTSTART, NEWDELTA, CHOOSESADDLE, SADDLEREMAINDER, LABELDISTANCE, LABELINCREASE, LABELMIN, LABELMAX, LABELOPTIMIZER;
+  var init_constants15 = __esm({
+    "src/traces/contour/constants.ts"() {
       "use strict";
-      module.exports = {
-        // some constants to help with marching squares algorithm
-        // where does the path start for each index?
-        BOTTOMSTART: [1, 9, 13, 104, 713],
-        TOPSTART: [4, 6, 7, 104, 713],
-        LEFTSTART: [8, 12, 14, 208, 1114],
-        RIGHTSTART: [2, 3, 11, 208, 1114],
-        // which way [dx,dy] do we leave a given index?
-        // saddles are already disambiguated
-        NEWDELTA: [
-          null,
-          [-1, 0],
-          [0, -1],
-          [-1, 0],
-          [1, 0],
-          null,
-          [0, -1],
-          [-1, 0],
-          [0, 1],
-          [0, 1],
-          null,
-          [0, 1],
-          [1, 0],
-          [1, 0],
-          [0, -1]
-        ],
-        // for each saddle, the first index here is used
-        // for dx||dy<0, the second for dx||dy>0
-        CHOOSESADDLE: {
-          104: [4, 1],
-          208: [2, 8],
-          713: [7, 13],
-          1114: [11, 14]
-        },
-        // after one index has been used for a saddle, which do we
-        // substitute to be used up later?
-        SADDLEREMAINDER: { 1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11 },
-        // length of a contour, as a multiple of the plot area diagonal, per label
-        LABELDISTANCE: 2,
-        // number of contour levels after which we start increasing the number of
-        // labels we draw. Many contours means they will generally be close
-        // together, so it will be harder to follow a long way to find a label
-        LABELINCREASE: 10,
-        // minimum length of a contour line, as a multiple of the label length,
-        // at which we draw *any* labels
-        LABELMIN: 3,
-        // max number of labels to draw on a single contour path, no matter how long
-        LABELMAX: 10,
-        // constants for the label position cost function
-        LABELOPTIMIZER: {
-          // weight given to edge proximity
-          EDGECOST: 1,
-          // weight given to the angle off horizontal
-          ANGLECOST: 1,
-          // weight given to distance from already-placed labels
-          NEIGHBORCOST: 5,
-          // cost multiplier for labels on the same level
-          SAMELEVELFACTOR: 10,
-          // minimum distance (as a multiple of the label length)
-          // for labels on the same level
-          SAMELEVELDISTANCE: 5,
-          // maximum cost before we won't even place the label
-          MAXCOST: 100,
-          // number of evenly spaced points to look at in the first
-          // iteration of the search
-          INITIALSEARCHPOINTS: 10,
-          // number of binary search iterations after the initial wide search
-          ITERATIONS: 5
-        }
+      BOTTOMSTART = [1, 9, 13, 104, 713];
+      TOPSTART = [4, 6, 7, 104, 713];
+      LEFTSTART = [8, 12, 14, 208, 1114];
+      RIGHTSTART = [2, 3, 11, 208, 1114];
+      NEWDELTA = [
+        null,
+        [-1, 0],
+        [0, -1],
+        [-1, 0],
+        [1, 0],
+        null,
+        [0, -1],
+        [-1, 0],
+        [0, 1],
+        [0, 1],
+        null,
+        [0, 1],
+        [1, 0],
+        [1, 0],
+        [0, -1]
+      ];
+      CHOOSESADDLE = {
+        104: [4, 1],
+        208: [2, 8],
+        713: [7, 13],
+        1114: [11, 14]
+      };
+      SADDLEREMAINDER = { 1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11 };
+      LABELDISTANCE = 2;
+      LABELINCREASE = 10;
+      LABELMIN = 3;
+      LABELMAX = 10;
+      LABELOPTIMIZER = {
+        // Weight given to edge proximity
+        EDGECOST: 1,
+        // Weight given to the angle off horizontal
+        ANGLECOST: 1,
+        // Weight given to distance from already-placed labels
+        NEIGHBORCOST: 5,
+        // Cost multiplier for labels on the same level
+        SAMELEVELFACTOR: 10,
+        // Minimum distance (as a multiple of the label length)
+        // for labels on the same level
+        SAMELEVELDISTANCE: 5,
+        // Maximum cost before we won't even place the label
+        MAXCOST: 100,
+        // Number of evenly spaced points to look at in the first
+        // iteration of the search
+        INITIALSEARCHPOINTS: 10,
+        // Number of binary search iterations after the initial wide search
+        ITERATIONS: 5
       };
     }
   });
@@ -70691,7 +70906,7 @@ var Plotly = (() => {
   var require_make_crossings = __commonJS({
     "src/traces/contour/make_crossings.js"(exports, module) {
       "use strict";
-      var constants2 = require_constants16();
+      var constants2 = (init_constants15(), __toCommonJS(constants_exports15));
       module.exports = function makeCrossings(pathinfo) {
         var z = pathinfo[0].z;
         var m = z.length;
@@ -70754,7 +70969,7 @@ var Plotly = (() => {
     "src/traces/contour/find_all_paths.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var constants2 = require_constants16();
+      var constants2 = (init_constants15(), __toCommonJS(constants_exports15));
       module.exports = function findAllPaths(pathinfo, xtol, ytol) {
         var cnt, startLoc, i, pi, j;
         xtol = xtol || 0.01;
@@ -70970,7 +71185,7 @@ var Plotly = (() => {
   var require_constraint_mapping = __commonJS({
     "src/traces/contour/constraint_mapping.js"(exports, module) {
       "use strict";
-      var filterOps = require_filter_ops();
+      var filterOps = (init_filter_ops(), __toCommonJS(filter_ops_exports));
       var isNumeric2 = require_fast_isnumeric();
       module.exports = {
         "[]": makeRangeSettings("[]"),
@@ -71231,7 +71446,7 @@ var Plotly = (() => {
       var emptyPathinfo = require_empty_pathinfo();
       var convertToConstraints = require_convert_to_constraints();
       var closeBoundaries = require_close_boundaries();
-      var constants2 = require_constants16();
+      var constants2 = (init_constants15(), __toCommonJS(constants_exports15));
       var costConstants = constants2.LABELOPTIMIZER;
       exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         var xa = plotinfo.xaxis;
@@ -71993,15 +72208,15 @@ var Plotly = (() => {
       var Color = require_color();
       var addOpacity = Color.addOpacity;
       var opacity = Color.opacity;
-      var filterOps = require_filter_ops();
+      var filterOps = (init_filter_ops(), __toCommonJS(filter_ops_exports));
       var isArrayOrTypedArray = require_lib().isArrayOrTypedArray;
-      var CONSTRAINT_REDUCTION = filterOps.CONSTRAINT_REDUCTION;
-      var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
+      var CONSTRAINT_REDUCTION2 = filterOps.CONSTRAINT_REDUCTION;
+      var COMPARISON_OPS22 = filterOps.COMPARISON_OPS2;
       module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, opts) {
         var contours = traceOut.contours;
         var showLines, lineColor, fillColor;
         var operation = coerce("contours.operation");
-        contours._operation = CONSTRAINT_REDUCTION[operation];
+        contours._operation = CONSTRAINT_REDUCTION2[operation];
         handleConstraintValueDefaults(coerce, contours);
         if (operation === "=") {
           showLines = contours.showlines = true;
@@ -72023,7 +72238,7 @@ var Plotly = (() => {
       };
       function handleConstraintValueDefaults(coerce, contours) {
         var zvalue;
-        if (COMPARISON_OPS2.indexOf(contours.operation) === -1) {
+        if (COMPARISON_OPS22.indexOf(contours.operation) === -1) {
           coerce("contours.value", [0, 1]);
           if (!isArrayOrTypedArray(contours.value)) {
             if (isNumeric2(contours.value)) {
@@ -72068,13 +72283,13 @@ var Plotly = (() => {
       var handleContoursDefaults = require_contours_defaults();
       var handleStyleDefaults = require_style_defaults3();
       var handleHeatmapLabelDefaults = require_label_defaults();
-      var attributes3 = require_attributes27();
+      var attributes4 = require_attributes27();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         function coerce2(attr) {
-          return Lib.coerce2(traceIn, traceOut, attributes3, attr);
+          return Lib.coerce2(traceIn, traceOut, attributes4, attr);
         }
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
         if (!len) {
@@ -72232,17 +72447,17 @@ var Plotly = (() => {
     "src/traces/scatterternary/defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var constants2 = require_constants8();
+      var constants2 = (init_constants7(), __toCommonJS(constants_exports7));
       var subTypes = require_subtypes();
       var handleMarkerDefaults = require_marker_defaults();
       var handleLineDefaults = require_line_defaults();
       var handleLineShapeDefaults = require_line_shape_defaults();
       var handleTextDefaults = require_text_defaults();
       var handleFillColorDefaults = require_fillcolor_defaults();
-      var attributes3 = require_attributes29();
+      var attributes4 = require_attributes29();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var a = coerce("a");
         var b = coerce("b");
@@ -72511,7 +72726,7 @@ var Plotly = (() => {
       var selectOnClick = require_selections().selectOnClick;
       var clearOutline = require_selections().clearOutline;
       var clearSelectionsCache = require_selections().clearSelectionsCache;
-      var constants2 = require_constants2();
+      var constants2 = (init_constants2(), __toCommonJS(constants_exports2));
       function Ternary(options, fullLayout) {
         this.id = options.id;
         this.graphDiv = options.graphDiv;
@@ -73307,8 +73522,8 @@ var Plotly = (() => {
       var attr = exports.attr = "subplot";
       exports.idRoot = TERNARY;
       exports.idRegex = exports.attrRegex = counterRegex(TERNARY);
-      var attributes3 = exports.attributes = {};
-      attributes3[attr] = {
+      var attributes4 = exports.attributes = {};
+      attributes4[attr] = {
         valType: "subplotid",
         dflt: "ternary",
         editType: "calc"
@@ -73553,13 +73768,13 @@ var Plotly = (() => {
       var Lib = require_lib();
       var Color = require_color();
       var boxDefaults = require_defaults20();
-      var attributes3 = require_attributes30();
+      var attributes4 = require_attributes30();
       module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         function coerce2(attr, dflt) {
-          return Lib.coerce2(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce2(traceIn, traceOut, attributes4, attr, dflt);
         }
         boxDefaults.handleSampleDefaults(traceIn, traceOut, coerce, layout);
         if (traceOut.visible === false) return;
@@ -73672,7 +73887,7 @@ var Plotly = (() => {
       var Axes = require_axes();
       var boxCalc = require_calc6();
       var helpers = require_helpers13();
-      var BADNUM2 = require_numerical().BADNUM;
+      var BADNUM2 = (init_numerical(), __toCommonJS(numerical_exports)).BADNUM;
       module.exports = function calc(gd, trace) {
         var cd = boxCalc(gd, trace);
         if (cd[0].t.empty) return cd;
@@ -74128,64 +74343,59 @@ var Plotly = (() => {
     }
   });
 
-  // src/traces/image/constants.js
-  var require_constants17 = __commonJS({
-    "src/traces/image/constants.js"(exports, module) {
+  // src/traces/image/constants.ts
+  var constants_exports16 = {};
+  __export(constants_exports16, {
+    colormodel: () => colormodel
+  });
+  var colormodel;
+  var init_constants16 = __esm({
+    "src/traces/image/constants.ts"() {
       "use strict";
-      module.exports = {
-        colormodel: {
-          // min and max define the numerical range accepted in CSS
-          // If z(min|max)Dflt are not defined, z(min|max) will default to min/max
-          rgb: {
-            min: [0, 0, 0],
-            max: [255, 255, 255],
-            fmt: function(c) {
-              return c.slice(0, 3);
-            },
-            suffix: ["", "", ""]
+      colormodel = {
+        rgb: {
+          min: [0, 0, 0],
+          max: [255, 255, 255],
+          fmt: (c) => c.slice(0, 3),
+          suffix: ["", "", ""]
+        },
+        rgba: {
+          min: [0, 0, 0, 0],
+          max: [255, 255, 255, 1],
+          fmt: (c) => c.slice(0, 4),
+          suffix: ["", "", "", ""]
+        },
+        rgba256: {
+          colormodel: "rgba",
+          // Because rgba256 is not an accept colormodel in CSS
+          zminDflt: [0, 0, 0, 0],
+          zmaxDflt: [255, 255, 255, 255],
+          min: [0, 0, 0, 0],
+          max: [255, 255, 255, 1],
+          fmt: (c) => c.slice(0, 4),
+          suffix: ["", "", "", ""]
+        },
+        hsl: {
+          min: [0, 0, 0],
+          max: [360, 100, 100],
+          fmt: (c) => {
+            const p = c.slice(0, 3);
+            p[1] = p[1] + "%";
+            p[2] = p[2] + "%";
+            return p;
           },
-          rgba: {
-            min: [0, 0, 0, 0],
-            max: [255, 255, 255, 1],
-            fmt: function(c) {
-              return c.slice(0, 4);
-            },
-            suffix: ["", "", "", ""]
+          suffix: ["\xB0", "%", "%"]
+        },
+        hsla: {
+          min: [0, 0, 0, 0],
+          max: [360, 100, 100, 1],
+          fmt: (c) => {
+            const p = c.slice(0, 4);
+            p[1] = p[1] + "%";
+            p[2] = p[2] + "%";
+            return p;
           },
-          rgba256: {
-            colormodel: "rgba",
-            // because rgba256 is not an accept colormodel in CSS
-            zminDflt: [0, 0, 0, 0],
-            zmaxDflt: [255, 255, 255, 255],
-            min: [0, 0, 0, 0],
-            max: [255, 255, 255, 1],
-            fmt: function(c) {
-              return c.slice(0, 4);
-            },
-            suffix: ["", "", "", ""]
-          },
-          hsl: {
-            min: [0, 0, 0],
-            max: [360, 100, 100],
-            fmt: function(c) {
-              var p = c.slice(0, 3);
-              p[1] = p[1] + "%";
-              p[2] = p[2] + "%";
-              return p;
-            },
-            suffix: ["\xB0", "%", "%"]
-          },
-          hsla: {
-            min: [0, 0, 0, 0],
-            max: [360, 100, 100, 1],
-            fmt: function(c) {
-              var p = c.slice(0, 4);
-              p[1] = p[1] + "%";
-              p[2] = p[2] + "%";
-              return p;
-            },
-            suffix: ["\xB0", "%", "%", ""]
-          }
+          suffix: ["\xB0", "%", "%", ""]
         }
       };
     }
@@ -74196,7 +74406,7 @@ var Plotly = (() => {
   __export(attributes_exports2, {
     default: () => attributes_default2
   });
-  var import_extend, import_attributes, import_template_attributes, import_attributes2, import_constants2, cm, zminDesc, zmaxDesc, attributes2, attributes_default2;
+  var import_extend, import_attributes, import_template_attributes, import_attributes2, cm, zminDesc, zmaxDesc, attributes3, attributes_default2;
   var init_attributes2 = __esm({
     "src/traces/image/attributes.ts"() {
       "use strict";
@@ -74204,16 +74414,16 @@ var Plotly = (() => {
       import_attributes = __toESM(require_attributes2());
       import_template_attributes = __toESM(require_template_attributes());
       import_attributes2 = __toESM(require_attributes11());
-      import_constants2 = __toESM(require_constants17());
+      init_constants16();
       cm = ["rgb", "rgba", "rgba256", "hsl", "hsla"];
       zminDesc = [];
       zmaxDesc = [];
-      for (const name of cm) {
-        const cr = import_constants2.colormodel[name];
-        zminDesc.push(`For the \`${name}\` colormodel, it is [${(cr.zminDflt || cr.min).join(", ")}].`);
-        zmaxDesc.push(`For the \`${name}\` colormodel, it is [${(cr.zmaxDflt || cr.max).join(", ")}].`);
+      for (const name4 of cm) {
+        const cr = colormodel[name4];
+        zminDesc.push(`For the \`${name4}\` colormodel, it is [${(cr.zminDflt || cr.min).join(", ")}].`);
+        zmaxDesc.push(`For the \`${name4}\` colormodel, it is [${(cr.zmaxDflt || cr.max).join(", ")}].`);
       }
-      attributes2 = {
+      attributes3 = {
         source: {
           valType: "string",
           editType: "calc",
@@ -74332,7 +74542,7 @@ var Plotly = (() => {
         hovertemplatefallback: (0, import_template_attributes.templatefallbackAttrs)(),
         zorder: import_attributes2.zorder
       };
-      attributes_default2 = attributes2;
+      attributes_default2 = attributes3;
     }
   });
 
@@ -74341,12 +74551,12 @@ var Plotly = (() => {
     "src/traces/image/defaults.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var attributes3 = (init_attributes2(), __toCommonJS(attributes_exports2)).default;
-      var constants2 = require_constants17();
+      var attributes4 = (init_attributes2(), __toCommonJS(attributes_exports2)).default;
+      var constants2 = (init_constants16(), __toCommonJS(constants_exports16));
       var dataUri = require_helpers10().IMAGE_URL_PREFIX;
       module.exports = function supplyDefaults(traceIn, traceOut) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         coerce("source");
         if (traceOut.source && !traceOut.source.match(dataUri)) delete traceOut.source;
@@ -75987,9 +76197,9 @@ var Plotly = (() => {
       }
       E(
         "ERR_BUFFER_OUT_OF_BOUNDS",
-        function(name) {
-          if (name) {
-            return `${name} is outside of buffer bounds`;
+        function(name4) {
+          if (name4) {
+            return `${name4} is outside of buffer bounds`;
           }
           return "Attempt to access memory outside buffer bounds";
         },
@@ -75997,8 +76207,8 @@ var Plotly = (() => {
       );
       E(
         "ERR_INVALID_ARG_TYPE",
-        function(name, actual) {
-          return `The "${name}" argument must be of type number. Received type ${typeof actual}`;
+        function(name4, actual) {
+          return `The "${name4}" argument must be of type number. Received type ${typeof actual}`;
         },
         TypeError
       );
@@ -76053,9 +76263,9 @@ var Plotly = (() => {
         }
         checkBounds(buf, offset, byteLength2);
       }
-      function validateNumber(value, name) {
+      function validateNumber(value, name4) {
         if (typeof value !== "number") {
-          throw new errors.ERR_INVALID_ARG_TYPE(name, "number", value);
+          throw new errors.ERR_INVALID_ARG_TYPE(name4, "number", value);
         }
       }
       function boundsError(value, length, type) {
@@ -76827,26 +77037,26 @@ var Plotly = (() => {
         }
       }
       var errorProto;
-      var doEval = function doEval2(name) {
+      var doEval = function doEval2(name4) {
         var value;
-        if (name === "%AsyncFunction%") {
+        if (name4 === "%AsyncFunction%") {
           value = getEvalledConstructor("async function () {}");
-        } else if (name === "%GeneratorFunction%") {
+        } else if (name4 === "%GeneratorFunction%") {
           value = getEvalledConstructor("function* () {}");
-        } else if (name === "%AsyncGeneratorFunction%") {
+        } else if (name4 === "%AsyncGeneratorFunction%") {
           value = getEvalledConstructor("async function* () {}");
-        } else if (name === "%AsyncGenerator%") {
+        } else if (name4 === "%AsyncGenerator%") {
           var fn = doEval2("%AsyncGeneratorFunction%");
           if (fn) {
             value = fn.prototype;
           }
-        } else if (name === "%AsyncIteratorPrototype%") {
+        } else if (name4 === "%AsyncIteratorPrototype%") {
           var gen = doEval2("%AsyncGenerator%");
           if (gen && getProto) {
             value = getProto(gen.prototype);
           }
         }
-        INTRINSICS[name] = value;
+        INTRINSICS[name4] = value;
         return value;
       };
       var LEGACY_ALIASES = {
@@ -76926,8 +77136,8 @@ var Plotly = (() => {
         });
         return result;
       };
-      var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
-        var intrinsicName = name;
+      var getBaseIntrinsic = function getBaseIntrinsic2(name4, allowMissing) {
+        var intrinsicName = name4;
         var alias;
         if (hasOwn(LEGACY_ALIASES, intrinsicName)) {
           alias = LEGACY_ALIASES[intrinsicName];
@@ -76939,7 +77149,7 @@ var Plotly = (() => {
             value = doEval(intrinsicName);
           }
           if (typeof value === "undefined" && !allowMissing) {
-            throw new $TypeError("intrinsic " + name + " exists, but is not available. Please file an issue!");
+            throw new $TypeError("intrinsic " + name4 + " exists, but is not available. Please file an issue!");
           }
           return {
             alias,
@@ -76947,19 +77157,19 @@ var Plotly = (() => {
             value
           };
         }
-        throw new $SyntaxError("intrinsic " + name + " does not exist!");
+        throw new $SyntaxError("intrinsic " + name4 + " does not exist!");
       };
-      module.exports = function GetIntrinsic(name, allowMissing) {
-        if (typeof name !== "string" || name.length === 0) {
+      module.exports = function GetIntrinsic(name4, allowMissing) {
+        if (typeof name4 !== "string" || name4.length === 0) {
           throw new $TypeError("intrinsic name must be a non-empty string");
         }
         if (arguments.length > 1 && typeof allowMissing !== "boolean") {
           throw new $TypeError('"allowMissing" argument must be a boolean');
         }
-        if ($exec(/^%?[^%]*%?$/, name) === null) {
+        if ($exec(/^%?[^%]*%?$/, name4) === null) {
           throw new $SyntaxError("`%` may not be present anywhere but at the beginning and end of the intrinsic name");
         }
-        var parts = stringToPath(name);
+        var parts = stringToPath(name4);
         var intrinsicBaseName = parts.length > 0 ? parts[0] : "";
         var intrinsic = getBaseIntrinsic("%" + intrinsicBaseName + "%", allowMissing);
         var intrinsicRealName = intrinsic.name;
@@ -76987,7 +77197,7 @@ var Plotly = (() => {
           } else if (value != null) {
             if (!(part in value)) {
               if (!allowMissing) {
-                throw new $TypeError("base intrinsic for " + name + " exists, but the property is not available.");
+                throw new $TypeError("base intrinsic for " + name4 + " exists, but the property is not available.");
               }
               return void undefined2;
             }
@@ -77020,12 +77230,12 @@ var Plotly = (() => {
       var GetIntrinsic = require_get_intrinsic();
       var callBindBasic = require_call_bind_apply_helpers();
       var $indexOf = callBindBasic([GetIntrinsic("%String.prototype.indexOf%")]);
-      module.exports = function callBoundIntrinsic(name, allowMissing) {
+      module.exports = function callBoundIntrinsic(name4, allowMissing) {
         var intrinsic = (
           /** @type {(this: unknown, ...args: unknown[]) => unknown} */
-          GetIntrinsic(name, !!allowMissing)
+          GetIntrinsic(name4, !!allowMissing)
         );
-        if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+        if (typeof intrinsic === "function" && $indexOf(name4, ".prototype.") > -1) {
           return callBindBasic(
             /** @type {const} */
             [intrinsic]
@@ -77623,7 +77833,7 @@ var Plotly = (() => {
           var fn = arr.slice || arr.set;
           if (fn) {
             var bound = (
-              /** @type {BoundSlice | BoundSet} */
+              /** @type {typeof BoundSlice | typeof BoundSet} */
               // @ts-expect-error TODO FIXME
               callBind(fn)
             );
@@ -77660,12 +77870,12 @@ var Plotly = (() => {
           /** @type {Record<`$${TypedArrayName}`, Getter>} */
           cache,
           /** @param {Getter} getter @param {`$${TypedArrayName}`} name */
-          function(getter, name) {
+          function(getter, name4) {
             if (!found) {
               try {
                 getter(value);
                 found = /** @type {TypedArrayName} */
-                $slice(name, 1);
+                $slice(name4, 1);
               } catch (e) {
               }
             }
@@ -77676,7 +77886,7 @@ var Plotly = (() => {
       function isTATag(tag) {
         return $indexOf(typedArrays, tag) > -1;
       }
-      module.exports = function whichTypedArray(value) {
+      function whichTypedArray(value) {
         if (!value || typeof value !== "object") {
           return false;
         }
@@ -77694,7 +77904,8 @@ var Plotly = (() => {
           return null;
         }
         return tryTypedArrays(value);
-      };
+      }
+      module.exports = whichTypedArray;
     }
   });
 
@@ -78135,8 +78346,8 @@ var Plotly = (() => {
         }
         if (keys.length === 0) {
           if (isFunction(value)) {
-            var name = value.name ? ": " + value.name : "";
-            return ctx.stylize("[Function" + name + "]", "special");
+            var name4 = value.name ? ": " + value.name : "";
+            return ctx.stylize("[Function" + name4 + "]", "special");
           }
           if (isRegExp(value)) {
             return ctx.stylize(RegExp.prototype.toString.call(value), "regexp");
@@ -78236,7 +78447,7 @@ var Plotly = (() => {
         return output;
       }
       function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-        var name, str, desc;
+        var name4, str, desc;
         desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
         if (desc.get) {
           if (desc.set) {
@@ -78250,7 +78461,7 @@ var Plotly = (() => {
           }
         }
         if (!hasOwnProperty(visibleKeys, key)) {
-          name = "[" + key + "]";
+          name4 = "[" + key + "]";
         }
         if (!str) {
           if (ctx.seen.indexOf(desc.value) < 0) {
@@ -78274,20 +78485,20 @@ var Plotly = (() => {
             str = ctx.stylize("[Circular]", "special");
           }
         }
-        if (isUndefined(name)) {
+        if (isUndefined(name4)) {
           if (array && key.match(/^\d+$/)) {
             return str;
           }
-          name = JSON.stringify("" + key);
-          if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-            name = name.slice(1, -1);
-            name = ctx.stylize(name, "name");
+          name4 = JSON.stringify("" + key);
+          if (name4.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+            name4 = name4.slice(1, -1);
+            name4 = ctx.stylize(name4, "name");
           } else {
-            name = name.replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
-            name = ctx.stylize(name, "string");
+            name4 = name4.replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
+            name4 = ctx.stylize(name4, "string");
           }
         }
-        return name + ": " + str;
+        return name4 + ": " + str;
       }
       function reduceToSingleString(output, base, braces) {
         var numLinesEst = 0;
@@ -78906,10 +79117,10 @@ var Plotly = (() => {
           return str.indexOf(search, start) !== -1;
         }
       }
-      createErrorType("ERR_INVALID_OPT_VALUE", function(name, value) {
-        return 'The value "' + value + '" is invalid for option "' + name + '"';
+      createErrorType("ERR_INVALID_OPT_VALUE", function(name4, value) {
+        return 'The value "' + value + '" is invalid for option "' + name4 + '"';
       }, TypeError);
-      createErrorType("ERR_INVALID_ARG_TYPE", function(name, expected, actual) {
+      createErrorType("ERR_INVALID_ARG_TYPE", function(name4, expected, actual) {
         var determiner;
         if (typeof expected === "string" && startsWith(expected, "not ")) {
           determiner = "must not be";
@@ -78918,22 +79129,22 @@ var Plotly = (() => {
           determiner = "must be";
         }
         var msg;
-        if (endsWith(name, " argument")) {
-          msg = "The ".concat(name, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
+        if (endsWith(name4, " argument")) {
+          msg = "The ".concat(name4, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
         } else {
-          var type = includes(name, ".") ? "property" : "argument";
-          msg = 'The "'.concat(name, '" ').concat(type, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
+          var type = includes(name4, ".") ? "property" : "argument";
+          msg = 'The "'.concat(name4, '" ').concat(type, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
         }
         msg += ". Received type ".concat(typeof actual);
         return msg;
       }, TypeError);
       createErrorType("ERR_STREAM_PUSH_AFTER_EOF", "stream.push() after EOF");
-      createErrorType("ERR_METHOD_NOT_IMPLEMENTED", function(name) {
-        return "The " + name + " method is not implemented";
+      createErrorType("ERR_METHOD_NOT_IMPLEMENTED", function(name4) {
+        return "The " + name4 + " method is not implemented";
       });
       createErrorType("ERR_STREAM_PREMATURE_CLOSE", "Premature close");
-      createErrorType("ERR_STREAM_DESTROYED", function(name) {
-        return "Cannot call " + name + " after a stream was destroyed";
+      createErrorType("ERR_STREAM_DESTROYED", function(name4) {
+        return "Cannot call " + name4 + " after a stream was destroyed";
       });
       createErrorType("ERR_MULTIPLE_CALLBACK", "Callback called multiple times");
       createErrorType("ERR_STREAM_CANNOT_PIPE", "Cannot pipe, not readable");
@@ -78959,8 +79170,8 @@ var Plotly = (() => {
         var hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
         if (hwm != null) {
           if (!(isFinite(hwm) && Math.floor(hwm) === hwm) || hwm < 0) {
-            var name = isDuplex ? duplexKey : "highWaterMark";
-            throw new ERR_INVALID_OPT_VALUE(name, hwm);
+            var name4 = isDuplex ? duplexKey : "highWaterMark";
+            throw new ERR_INVALID_OPT_VALUE(name4, hwm);
           }
           return Math.floor(hwm);
         }
@@ -78996,13 +79207,13 @@ var Plotly = (() => {
         }
         return deprecated;
       }
-      function config(name) {
+      function config(name4) {
         try {
           if (!window.localStorage) return false;
         } catch (_) {
           return false;
         }
-        var val = window.localStorage[name];
+        var val = window.localStorage[name4];
         if (null == val) return false;
         return String(val).toLowerCase() === "true";
       }
@@ -81350,8 +81561,8 @@ var Plotly = (() => {
         }
         if (keys.length === 0) {
           if (isFunction(value)) {
-            var name = value.name ? ": " + value.name : "";
-            return ctx.stylize("[Function" + name + "]", "special");
+            var name4 = value.name ? ": " + value.name : "";
+            return ctx.stylize("[Function" + name4 + "]", "special");
           }
           if (isRegExp(value)) {
             return ctx.stylize(RegExp.prototype.toString.call(value), "regexp");
@@ -81451,7 +81662,7 @@ var Plotly = (() => {
         return output;
       }
       function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-        var name, str, desc;
+        var name4, str, desc;
         desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
         if (desc.get) {
           if (desc.set) {
@@ -81465,7 +81676,7 @@ var Plotly = (() => {
           }
         }
         if (!hasOwnProperty(visibleKeys, key)) {
-          name = "[" + key + "]";
+          name4 = "[" + key + "]";
         }
         if (!str) {
           if (ctx.seen.indexOf(desc.value) < 0) {
@@ -81489,20 +81700,20 @@ var Plotly = (() => {
             str = ctx.stylize("[Circular]", "special");
           }
         }
-        if (isUndefined(name)) {
+        if (isUndefined(name4)) {
           if (array && key.match(/^\d+$/)) {
             return str;
           }
-          name = JSON.stringify("" + key);
-          if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-            name = name.slice(1, -1);
-            name = ctx.stylize(name, "name");
+          name4 = JSON.stringify("" + key);
+          if (name4.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+            name4 = name4.slice(1, -1);
+            name4 = ctx.stylize(name4, "name");
           } else {
-            name = name.replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
-            name = ctx.stylize(name, "string");
+            name4 = name4.replace(/'/g, "\\'").replace(/\\"/g, '"').replace(/(^"|"$)/g, "'");
+            name4 = ctx.stylize(name4, "string");
           }
         }
-        return name + ": " + str;
+        return name4 + ": " + str;
       }
       function reduceToSingleString(output, base, braces) {
         var numLinesEst = 0;
@@ -81893,9 +82104,9 @@ var Plotly = (() => {
         }
       }
       createErrorType("ERR_AMBIGUOUS_ARGUMENT", 'The "%s" argument is ambiguous. %s', TypeError);
-      createErrorType("ERR_INVALID_ARG_TYPE", function(name, expected, actual) {
+      createErrorType("ERR_INVALID_ARG_TYPE", function(name4, expected, actual) {
         if (assert === void 0) assert = require_assert();
-        assert(typeof name === "string", "'name' must be a string");
+        assert(typeof name4 === "string", "'name' must be a string");
         var determiner;
         if (typeof expected === "string" && startsWith(expected, "not ")) {
           determiner = "must not be";
@@ -81904,32 +82115,32 @@ var Plotly = (() => {
           determiner = "must be";
         }
         var msg;
-        if (endsWith(name, " argument")) {
-          msg = "The ".concat(name, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
+        if (endsWith(name4, " argument")) {
+          msg = "The ".concat(name4, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
         } else {
-          var type = includes(name, ".") ? "property" : "argument";
-          msg = 'The "'.concat(name, '" ').concat(type, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
+          var type = includes(name4, ".") ? "property" : "argument";
+          msg = 'The "'.concat(name4, '" ').concat(type, " ").concat(determiner, " ").concat(oneOf(expected, "type"));
         }
         msg += ". Received type ".concat(_typeof(actual));
         return msg;
       }, TypeError);
-      createErrorType("ERR_INVALID_ARG_VALUE", function(name, value) {
+      createErrorType("ERR_INVALID_ARG_VALUE", function(name4, value) {
         var reason = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "is invalid";
         if (util === void 0) util = require_util2();
         var inspected = util.inspect(value);
         if (inspected.length > 128) {
           inspected = "".concat(inspected.slice(0, 128), "...");
         }
-        return "The argument '".concat(name, "' ").concat(reason, ". Received ").concat(inspected);
+        return "The argument '".concat(name4, "' ").concat(reason, ". Received ").concat(inspected);
       }, TypeError, RangeError);
-      createErrorType("ERR_INVALID_RETURN_VALUE", function(input, name, value) {
+      createErrorType("ERR_INVALID_RETURN_VALUE", function(input, name4, value) {
         var type;
         if (value && value.constructor && value.constructor.name) {
           type = "instance of ".concat(value.constructor.name);
         } else {
           type = "type ".concat(_typeof(value));
         }
-        return "Expected ".concat(input, ' to be returned from the "').concat(name, '"') + " function but got ".concat(type, ".");
+        return "Expected ".concat(input, ' to be returned from the "').concat(name4, '"') + " function but got ".concat(type, ".");
       }, TypeError);
       createErrorType("ERR_MISSING_ARGS", function() {
         for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -82578,9 +82789,9 @@ var Plotly = (() => {
               theKeys.push(String(j));
             }
           } else {
-            for (var name in object) {
-              if (!(skipProto && name === "prototype") && has.call(object, name)) {
-                theKeys.push(String(name));
+            for (var name4 in object) {
+              if (!(skipProto && name4 === "prototype") && has.call(object, name4)) {
+                theKeys.push(String(name4));
               }
             }
           }
@@ -82778,9 +82989,9 @@ var Plotly = (() => {
       var GetIntrinsic = require_get_intrinsic();
       var callBind = require_call_bind();
       var $indexOf = callBind(GetIntrinsic("String.prototype.indexOf"));
-      module.exports = function callBoundIntrinsic(name, allowMissing) {
-        var intrinsic = GetIntrinsic(name, !!allowMissing);
-        if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+      module.exports = function callBoundIntrinsic(name4, allowMissing) {
+        var intrinsic = GetIntrinsic(name4, !!allowMissing);
+        if (typeof intrinsic === "function" && $indexOf(name4, ".prototype.") > -1) {
           return callBind(intrinsic);
         }
         return intrinsic;
@@ -82801,10 +83012,10 @@ var Plotly = (() => {
         return typeof fn === "function" && toStr.call(fn) === "[object Function]";
       };
       var supportsDescriptors = require_has_property_descriptors()();
-      var defineProperty = function(object, name, value, predicate) {
-        if (name in object) {
+      var defineProperty = function(object, name4, value, predicate) {
+        if (name4 in object) {
           if (predicate === true) {
-            if (object[name] === value) {
+            if (object[name4] === value) {
               return;
             }
           } else if (!isFunction(predicate) || !predicate()) {
@@ -82812,9 +83023,9 @@ var Plotly = (() => {
           }
         }
         if (supportsDescriptors) {
-          defineDataProperty(object, name, value, true);
+          defineDataProperty(object, name4, value, true);
         } else {
-          defineDataProperty(object, name, value);
+          defineDataProperty(object, name4, value);
         }
       };
       var defineProperties = function(object, map) {
@@ -84073,14 +84284,14 @@ var Plotly = (() => {
       function fmtLong(ms) {
         return plural(ms, d, "day") || plural(ms, h, "hour") || plural(ms, m, "minute") || plural(ms, s, "second") || ms + " ms";
       }
-      function plural(ms, n, name) {
+      function plural(ms, n, name4) {
         if (ms < n) {
           return;
         }
         if (ms < n * 1.5) {
-          return Math.floor(ms / n) + " " + name;
+          return Math.floor(ms / n) + " " + name4;
         }
-        return Math.ceil(ms / n) + " " + name + "s";
+        return Math.ceil(ms / n) + " " + name4 + "s";
       }
     }
   });
@@ -84169,15 +84380,15 @@ var Plotly = (() => {
       function disable() {
         exports.enable("");
       }
-      function enabled(name) {
+      function enabled(name4) {
         var i, len;
         for (i = 0, len = exports.skips.length; i < len; i++) {
-          if (exports.skips[i].test(name)) {
+          if (exports.skips[i].test(name4)) {
             return false;
           }
         }
         for (i = 0, len = exports.names.length; i < len; i++) {
-          if (exports.names[i].test(name)) {
+          if (exports.names[i].test(name4)) {
             return true;
           }
         }
@@ -84429,12 +84640,44 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/probe-image-size/lib/common.js
+  // node_modules/probe-image-size/lib/common/read_le_be.js
+  var require_read_le_be = __commonJS({
+    "node_modules/probe-image-size/lib/common/read_le_be.js"(exports) {
+      "use strict";
+      exports.readUInt16LE = function(data, offset) {
+        return data[offset] | data[offset + 1] << 8;
+      };
+      exports.readUInt16BE = function(data, offset) {
+        return data[offset] << 8 | data[offset + 1];
+      };
+      exports.readInt16LE = function(data, offset) {
+        return exports.readUInt16LE(data, offset) << 16 >> 16;
+      };
+      exports.readInt16BE = function(data, offset) {
+        return exports.readUInt16BE(data, offset) << 16 >> 16;
+      };
+      exports.readUInt32LE = function(data, offset) {
+        return (data[offset] | data[offset + 1] << 8 | data[offset + 2] << 16) + data[offset + 3] * 16777216;
+      };
+      exports.readUInt32BE = function(data, offset) {
+        return data[offset] * 16777216 + (data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
+      };
+      exports.readInt32LE = function(data, offset) {
+        return exports.readUInt32LE(data, offset) | 0;
+      };
+      exports.readInt32BE = function(data, offset) {
+        return exports.readUInt32BE(data, offset) | 0;
+      };
+    }
+  });
+
+  // node_modules/probe-image-size/lib/common/index.js
   var require_common = __commonJS({
-    "node_modules/probe-image-size/lib/common.js"(exports) {
+    "node_modules/probe-image-size/lib/common/index.js"(exports) {
       "use strict";
       var Transform = require_stream_browserify().Transform;
       var streamParser = require_stream_parser();
+      var readLeBe = require_read_le_be();
       function ParserStream() {
         Transform.call(this, { readableObjectMode: true });
       }
@@ -84463,30 +84706,6 @@ var Plotly = (() => {
         }
         return arr;
       };
-      exports.readUInt16LE = function(data, offset) {
-        return data[offset] | data[offset + 1] << 8;
-      };
-      exports.readUInt16BE = function(data, offset) {
-        return data[offset] << 8 | data[offset + 1];
-      };
-      exports.readInt16LE = function(data, offset) {
-        return exports.readUInt16LE(data, offset) << 16 >> 16;
-      };
-      exports.readInt16BE = function(data, offset) {
-        return exports.readUInt16BE(data, offset) << 16 >> 16;
-      };
-      exports.readUInt32LE = function(data, offset) {
-        return (data[offset] | data[offset + 1] << 8 | data[offset + 2] << 16) + data[offset + 3] * 16777216;
-      };
-      exports.readUInt32BE = function(data, offset) {
-        return data[offset] * 16777216 + (data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3]);
-      };
-      exports.readInt32LE = function(data, offset) {
-        return exports.readUInt32LE(data, offset) | 0;
-      };
-      exports.readInt32BE = function(data, offset) {
-        return exports.readUInt32BE(data, offset) | 0;
-      };
       function ProbeError(message, code, statusCode) {
         Error.call(this);
         if (Error.captureStackTrace) {
@@ -84502,6 +84721,14 @@ var Plotly = (() => {
       ProbeError.prototype = Object.create(Error.prototype);
       ProbeError.prototype.constructor = ProbeError;
       exports.ProbeError = ProbeError;
+      exports.readUInt16LE = readLeBe.readUInt16LE;
+      exports.readUInt16BE = readLeBe.readUInt16BE;
+      exports.readInt16LE = readLeBe.readInt16LE;
+      exports.readInt16BE = readLeBe.readInt16BE;
+      exports.readUInt32LE = readLeBe.readUInt32LE;
+      exports.readUInt32BE = readLeBe.readUInt32BE;
+      exports.readInt32LE = readLeBe.readInt32LE;
+      exports.readInt32BE = readLeBe.readInt32BE;
     }
   });
 
@@ -85173,96 +85400,92 @@ var Plotly = (() => {
     }
   });
 
-  // node_modules/probe-image-size/lib/parse_sync/svg.js
-  var require_svg = __commonJS({
-    "node_modules/probe-image-size/lib/parse_sync/svg.js"(exports, module) {
+  // node_modules/probe-image-size/lib/common/svg_header.js
+  var require_svg_header = __commonJS({
+    "node_modules/probe-image-size/lib/common/svg_header.js"(exports) {
       "use strict";
-      function isWhiteSpace(chr) {
-        return chr === 32 || chr === 9 || chr === 13 || chr === 10;
-      }
+      exports.MAX_DATA_LENGTH = 1024 * 10;
+      var attr_name = "[a-zA-Z_:][a-zA-Z0-9:._-]*";
+      var unquoted = "[^\"'=<>`\\x00-\\x20]+";
+      var single_quoted = "'[^']*'";
+      var double_quoted = '"[^"]*"';
+      var attr_value = "(?:" + unquoted + "|" + single_quoted + "|" + double_quoted + ")";
+      var attribute = "(?:\\s+" + attr_name + "(?:\\s*=\\s*" + attr_value + ")?)";
+      var pi = "<[?][\\s\\S]*?[?]>";
+      var comment = "<!--(?:[^-]|-[^-]|--[^>])*-->";
+      var cdata = "<!\\[CDATA\\[[\\s\\S]*?\\]\\]>";
+      var doctype = "<![A-Za-z][^[>]*(?:\\[[\\s\\S]*?\\][^>]*)?>";
+      var PROLOG_RE = new RegExp("^(?:\\s+|" + pi + "|" + comment + "|" + cdata + "|" + doctype + ")*");
+      var ROOT_RE = new RegExp("^<(" + attr_name + ")(" + attribute + "*)\\s*/?>");
+      var ATTR_RE = new RegExp(
+        "\\s+(" + attr_name + ")(?:\\s*=\\s*(?:(" + unquoted + `)|'([^']*)'|"([^"]*)"))?`,
+        "g"
+      );
+      var SVG_UNITS_RE = /in$|mm$|cm$|pt$|pc$|px$|em$|ex$/;
       function isFinitePositive(val) {
         return typeof val === "number" && isFinite(val) && val > 0;
       }
-      function canBeSvg(buf) {
-        var i = 0;
-        var max = buf.length;
-        if (buf[0] === 239 && buf[1] === 187 && buf[2] === 191) i = 3;
-        while (i < max && isWhiteSpace(buf[i])) i++;
-        if (i === max) return false;
-        return buf[i] === 60;
-      }
-      var SVG_HEADER_RE = /<[-_.:a-zA-Z0-9][^>]*>/;
-      var SVG_TAG_RE = /^<([-_.:a-zA-Z0-9]+:)?svg\s/;
-      var SVG_WIDTH_RE = /[^-]\bwidth="([^%]+?)"|[^-]\bwidth='([^%]+?)'/;
-      var SVG_HEIGHT_RE = /\bheight="([^%]+?)"|\bheight='([^%]+?)'/;
-      var SVG_VIEWBOX_RE = /\bview[bB]ox="(.+?)"|\bview[bB]ox='(.+?)'/;
-      var SVG_UNITS_RE = /in$|mm$|cm$|pt$|pc$|px$|em$|ex$/;
-      function svgAttrs(str) {
-        var width = str.match(SVG_WIDTH_RE);
-        var height = str.match(SVG_HEIGHT_RE);
-        var viewbox = str.match(SVG_VIEWBOX_RE);
-        return {
-          width: width && (width[1] || width[2]),
-          height: height && (height[1] || height[2]),
-          viewbox: viewbox && (viewbox[1] || viewbox[2])
-        };
-      }
       function units(str) {
-        if (!SVG_UNITS_RE.test(str)) return "px";
-        return str.match(SVG_UNITS_RE)[0];
+        var suffix = str.slice(-2);
+        var m = suffix.match(SVG_UNITS_RE);
+        return m === null ? "px" : m[0];
       }
-      module.exports = function(data) {
-        if (!canBeSvg(data)) return;
-        var str = "";
-        for (var i = 0; i < data.length; i++) {
-          str += String.fromCharCode(data[i]);
+      exports.parse = function(str) {
+        var prolog = str.match(PROLOG_RE)[0];
+        var root = ROOT_RE.exec(prolog.length ? str.slice(prolog.length) : str);
+        if (!root) return;
+        var tag = root[1];
+        if (tag !== "svg" && tag.slice(-4) !== ":svg") return;
+        var attrs = {};
+        var m;
+        ATTR_RE.lastIndex = 0;
+        while ((m = ATTR_RE.exec(root[2])) !== null) {
+          attrs[m[1]] = m[2] !== void 0 ? m[2] : m[3] !== void 0 ? m[3] : m[4];
         }
-        var svgTag = (str.match(SVG_HEADER_RE) || [""])[0];
-        if (!SVG_TAG_RE.test(svgTag)) return;
-        var attrs = svgAttrs(svgTag);
-        var width = parseFloat(attrs.width);
-        var height = parseFloat(attrs.height);
-        if (attrs.width && attrs.height) {
+        var wAttr = attrs.width;
+        var hAttr = attrs.height;
+        var vbAttr = attrs.viewBox || attrs.viewbox;
+        if (wAttr && wAttr.indexOf("%") !== -1) wAttr = void 0;
+        if (hAttr && hAttr.indexOf("%") !== -1) hAttr = void 0;
+        var width = parseFloat(wAttr);
+        var height = parseFloat(hAttr);
+        if (wAttr && hAttr) {
           if (!isFinitePositive(width) || !isFinitePositive(height)) return;
           return {
             width,
             height,
             type: "svg",
             mime: "image/svg+xml",
-            wUnits: units(attrs.width),
-            hUnits: units(attrs.height)
+            wUnits: units(wAttr),
+            hUnits: units(hAttr)
           };
         }
-        var parts = (attrs.viewbox || "").split(" ");
-        var viewbox = {
-          width: parts[2],
-          height: parts[3]
-        };
-        var vbWidth = parseFloat(viewbox.width);
-        var vbHeight = parseFloat(viewbox.height);
+        var parts = (vbAttr || "").trim().split(/[\s,]+/);
+        var vbWidth = parseFloat(parts[2]);
+        var vbHeight = parseFloat(parts[3]);
         if (!isFinitePositive(vbWidth) || !isFinitePositive(vbHeight)) return;
-        if (units(viewbox.width) !== units(viewbox.height)) return;
+        if (units(parts[2]) !== units(parts[3])) return;
         var ratio = vbWidth / vbHeight;
-        if (attrs.width) {
+        if (wAttr) {
           if (!isFinitePositive(width)) return;
           return {
             width,
             height: width / ratio,
             type: "svg",
             mime: "image/svg+xml",
-            wUnits: units(attrs.width),
-            hUnits: units(attrs.width)
+            wUnits: units(wAttr),
+            hUnits: units(wAttr)
           };
         }
-        if (attrs.height) {
+        if (hAttr) {
           if (!isFinitePositive(height)) return;
           return {
             width: height * ratio,
             height,
             type: "svg",
             mime: "image/svg+xml",
-            wUnits: units(attrs.height),
-            hUnits: units(attrs.height)
+            wUnits: units(hAttr),
+            hUnits: units(hAttr)
           };
         }
         return {
@@ -85270,9 +85493,28 @@ var Plotly = (() => {
           height: vbHeight,
           type: "svg",
           mime: "image/svg+xml",
-          wUnits: units(viewbox.width),
-          hUnits: units(viewbox.height)
+          wUnits: units(parts[2]),
+          hUnits: units(parts[3])
         };
+      };
+    }
+  });
+
+  // node_modules/probe-image-size/lib/parse_sync/svg.js
+  var require_svg = __commonJS({
+    "node_modules/probe-image-size/lib/parse_sync/svg.js"(exports, module) {
+      "use strict";
+      var parseSvgHeader = require_svg_header().parse;
+      var MAX_DATA_LENGTH = require_svg_header().MAX_DATA_LENGTH;
+      module.exports = function(data) {
+        var start = 0;
+        if (data[0] === 239 && data[1] === 187 && data[2] === 191) start = 3;
+        var str = "";
+        var max = Math.min(data.length, start + MAX_DATA_LENGTH);
+        for (var i = start; i < max; i++) {
+          str += String.fromCharCode(data[i]);
+        }
+        return parseSvgHeader(str);
       };
     }
   });
@@ -85485,7 +85727,7 @@ var Plotly = (() => {
     "src/traces/image/calc.js"(exports, module) {
       "use strict";
       var Lib = require_lib();
-      var constants2 = require_constants17();
+      var constants2 = (init_constants16(), __toCommonJS(constants_exports16));
       var isNumeric2 = require_fast_isnumeric();
       var Axes = require_axes();
       var maxRowLength = require_lib().maxRowLength;
@@ -85569,10 +85811,10 @@ var Plotly = (() => {
       var d3 = require_d3();
       var Lib = require_lib();
       var strTranslate = Lib.strTranslate;
-      var xmlnsNamespaces = require_xmlns_namespaces();
-      var constants2 = require_constants17();
+      var xmlnsNamespaces = (init_xmlns_namespaces(), __toCommonJS(xmlns_namespaces_exports));
+      var constants2 = (init_constants16(), __toCommonJS(constants_exports16));
       var supportsPixelatedImage = require_supports_pixelated_image();
-      var PIXELATED_IMAGE_STYLE = require_pixelated_image().STYLE;
+      var PIXELATED_IMAGE_STYLE = (init_pixelated_image(), __toCommonJS(pixelated_image_exports)).STYLE;
       module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
@@ -85774,7 +86016,7 @@ var Plotly = (() => {
       var Fx = require_fx();
       var Lib = require_lib();
       var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
-      var constants2 = require_constants17();
+      var constants2 = (init_constants16(), __toCommonJS(constants_exports16));
       module.exports = function hoverPoints(pointData, xval, yval) {
         var cd0 = pointData.cd[0];
         var trace = cd0.trace;
@@ -86092,7 +86334,7 @@ var Plotly = (() => {
       "use strict";
       var isNumeric2 = require_fast_isnumeric();
       var Lib = require_lib();
-      var attributes3 = require_attributes31();
+      var attributes4 = require_attributes31();
       var handleDomainDefaults = require_domain().defaults;
       var handleText = require_defaults19().handleText;
       var coercePattern = require_lib().coercePattern;
@@ -86134,7 +86376,7 @@ var Plotly = (() => {
       }
       function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         function coerce(attr, dflt) {
-          return Lib.coerce(traceIn, traceOut, attributes3, attr, dflt);
+          return Lib.coerce(traceIn, traceOut, attributes4, attr, dflt);
         }
         var labels = coerce("labels");
         var values = coerce("values");
@@ -86421,7 +86663,7 @@ var Plotly = (() => {
       var uniformText = require_uniform_text();
       var recordMinTextSize = uniformText.recordMinTextSize;
       var clearMinTextSize = uniformText.clearMinTextSize;
-      var TEXTPAD = require_constants9().TEXTPAD;
+      var TEXTPAD2 = (init_constants8(), __toCommonJS(constants_exports8)).TEXTPAD;
       var helpers = require_helpers4();
       var eventData = require_event_data6();
       var isValidTextValue = require_lib().isValidTextValue;
@@ -86906,7 +87148,7 @@ var Plotly = (() => {
         return start > angle && angle > stop || start < angle && angle < stop;
       }
       function calcRadTransform(textBB, r, ring, halfAngle, midAngle) {
-        r = Math.max(0, r - 2 * TEXTPAD);
+        r = Math.max(0, r - 2 * TEXTPAD2);
         var a = textBB.width / textBB.height;
         var s = calcMaxHalfSize(a, halfAngle, r, ring);
         return {
@@ -86916,7 +87158,7 @@ var Plotly = (() => {
         };
       }
       function calcTanTransform(textBB, r, ring, halfAngle, midAngle) {
-        r = Math.max(0, r - 2 * TEXTPAD);
+        r = Math.max(0, r - 2 * TEXTPAD2);
         var a = textBB.height / textBB.width;
         var s = calcMaxHalfSize(a, halfAngle, r, ring);
         return {
@@ -86986,17 +87228,17 @@ var Plotly = (() => {
         } else if (trace.title.position.indexOf("bottom") !== -1) {
           topMiddle.y += (1 + maxPull) * cd0.r;
         }
-        var rx = applyAspectRatio(cd0.r, cd0.trace.aspectratio);
+        var rx3 = applyAspectRatio(cd0.r, cd0.trace.aspectratio);
         var maxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]) / 2;
         if (trace.title.position.indexOf("left") !== -1) {
-          maxWidth = maxWidth + rx;
-          topMiddle.x -= (1 + maxPull) * rx;
+          maxWidth = maxWidth + rx3;
+          topMiddle.x -= (1 + maxPull) * rx3;
           translate.tx += cd0.titleBox.width / 2;
         } else if (trace.title.position.indexOf("center") !== -1) {
           maxWidth *= 2;
         } else if (trace.title.position.indexOf("right") !== -1) {
-          maxWidth = maxWidth + rx;
-          topMiddle.x += (1 + maxPull) * rx;
+          maxWidth = maxWidth + rx3;
+          topMiddle.x += (1 + maxPull) * rx3;
           translate.tx -= cd0.titleBox.width / 2;
         }
         scaleX = maxWidth / cd0.titleBox.width;
@@ -87105,12 +87347,12 @@ var Plotly = (() => {
           if (trace.title.text && trace.title.position !== "middle center") {
             height -= getTitleSpace(cd0, plotSize);
           }
-          var rx = width / 2;
-          var ry = height / 2;
+          var rx3 = width / 2;
+          var ry3 = height / 2;
           if (trace.type === "funnelarea" && !trace.scalegroup) {
-            ry /= trace.aspectratio;
+            ry3 /= trace.aspectratio;
           }
-          cd0.r = Math.min(rx, ry) / (1 + getMaxPull(trace));
+          cd0.r = Math.min(rx3, ry3) / (1 + getMaxPull(trace));
           cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
           cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - height / 2;
           if (trace.title.text && trace.title.position.indexOf("bottom") !== -1) {
@@ -87135,16 +87377,16 @@ var Plotly = (() => {
               if (trace.type === "pie") {
                 area = cd0.r * cd0.r;
               } else if (trace.type === "funnelarea") {
-                var rx, ry;
+                var rx3, ry3;
                 if (trace.aspectratio > 1) {
-                  rx = cd0.r;
-                  ry = rx / trace.aspectratio;
+                  rx3 = cd0.r;
+                  ry3 = rx3 / trace.aspectratio;
                 } else {
-                  ry = cd0.r;
-                  rx = ry * trace.aspectratio;
+                  ry3 = cd0.r;
+                  rx3 = ry3 * trace.aspectratio;
                 }
-                rx *= (1 + trace.baseratio) / 2;
-                area = rx * ry;
+                rx3 *= (1 + trace.baseratio) / 2;
+                area = rx3 * ry3;
               }
               min = Math.min(min, area / cd0.vTotal);
             }
@@ -87446,16 +87688,16 @@ var Plotly = (() => {
             @param [language=''] {string} The language code to use for localisation (default is English).
             @return {Calendar} The calendar and localisation.
             @throws Error if calendar not found. */
-        instance: function(name, language) {
-          name = (name || "gregorian").toLowerCase();
+        instance: function(name4, language) {
+          name4 = (name4 || "gregorian").toLowerCase();
           language = language || "";
-          var cal = this._localCals[name + "-" + language];
-          if (!cal && this.calendars[name]) {
-            cal = new this.calendars[name](language);
-            this._localCals[name + "-" + language] = cal;
+          var cal = this._localCals[name4 + "-" + language];
+          if (!cal && this.calendars[name4]) {
+            cal = new this.calendars[name4](language);
+            this._localCals[name4 + "-" + language] = cal;
           }
           if (!cal) {
-            throw (this.local.invalidCalendar || this.regionalOptions[""].invalidCalendar).replace(/\{0\}/, name);
+            throw (this.local.invalidCalendar || this.regionalOptions[""].invalidCalendar).replace(/\{0\}/, name4);
           }
           return cal;
         },
@@ -95225,10 +95467,10 @@ var Plotly = (() => {
       "use strict";
       var calendars = require_calendars();
       var Lib = require_lib();
-      var constants2 = require_numerical();
-      var EPOCHJD = constants2.EPOCHJD;
-      var ONEDAY = constants2.ONEDAY;
-      var attributes3 = {
+      var constants2 = (init_numerical(), __toCommonJS(numerical_exports));
+      var EPOCHJD2 = constants2.EPOCHJD;
+      var ONEDAY2 = constants2.ONEDAY;
+      var attributes4 = {
         valType: "enumerated",
         values: Lib.sortObjectKeys(calendars.calendars),
         editType: "calc",
@@ -95236,7 +95478,7 @@ var Plotly = (() => {
       };
       var handleDefaults = function(contIn, contOut, attr, dflt) {
         var attrs = {};
-        attrs[attr] = attributes3;
+        attrs[attr] = attributes4;
         return Lib.coerce(contIn, contOut, attrs, attr, dflt);
       };
       var handleTraceDefaults = function(traceIn, traceOut, coords, layout) {
@@ -95329,7 +95571,7 @@ var Plotly = (() => {
         x: { 0: "mm/dd/yyyy", "-": "mm/dd/yyyy" }
       };
       function worldCalFmt(fmt, x, calendar) {
-        var dateJD = Math.floor((x + 0.05) / ONEDAY) + EPOCHJD;
+        var dateJD = Math.floor((x + 0.05) / ONEDAY2) + EPOCHJD2;
         var cDate = getCal(calendar).fromJD(dateJD);
         var i = 0;
         var modifier, directive, directiveLen, directiveObj, replacementPart;
@@ -95364,7 +95606,7 @@ var Plotly = (() => {
         return calendarObj;
       }
       function makeAttrs(description) {
-        return Lib.extendFlat({}, attributes3, { description });
+        return Lib.extendFlat({}, attributes4, { description });
       }
       function makeTraceAttrsDescription(coord) {
         return "Sets the calendar system to use with `" + coord + "` date data.";
@@ -95429,7 +95671,7 @@ var Plotly = (() => {
             }
           }
         },
-        layoutAttributes: attributes3,
+        layoutAttributes: attributes4,
         handleDefaults,
         handleTraceDefaults,
         CANONICAL_SUNDAY,
