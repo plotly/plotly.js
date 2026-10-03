@@ -9,7 +9,21 @@ To see all merged commits on the main branch that will be part of the next plotl
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
-## [X.Y.Z] -- UNRELEASED
+## [4.1.2] -- 2026-10-05
+
+### Changed
+- Use `ResizeObserver` for responsive chart resizing instead of listening for window resize events [[#8017](https://github.com/plotly/plotly.js/pull/8017)], with thanks to @Lexachoc for the contribution!
+- Describe `config.toImageButtonOptions` in the plot schema [[#8066](https://github.com/plotly/plotly.js/pull/8066)]
+
+### Fixed
+- Fix modebar hover colors not updating after `color` or `activecolor` changes [[#8024](https://github.com/plotly/plotly.js/pull/8024)], with thanks to @Lexachoc for the contribution!
+- Correct the image export types: `format` now accepts `full-json`, `width` and `height` accept `null`, and `ToImgopts.format`, `ToImgopts.width`, `ToImgopts.height` and `DownloadImgopts.filename` are optional because `toImage` and `downloadImage` supply them [[#8066](https://github.com/plotly/plotly.js/pull/8066)]
+- Pick the trace drawn last on a hover tie in `scattergl` and `splom` (matching `scatter`) [[#8079](https://github.com/plotly/plotly.js/pull/8079)]
+- Allow typed arrays in the types for `arrayOk` number and color attributes [[#8087](https://github.com/plotly/plotly.js/pull/8087)]
+- Redraw plots when a font that they use finishes loading [[#8094](https://github.com/plotly/plotly.js/pull/8094)]
+
+
+## [4.1.1] -- 2026-09-14
 
 ### Changed
 - Update `maplibre-gl` to v6 to address [CVE-2026-85061](https://github.com/advisories/GHSA-jrc7-96c5-q579) [[#8035](https://github.com/plotly/plotly.js/pull/8035)]
