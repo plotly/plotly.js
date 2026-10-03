@@ -12,7 +12,7 @@ Do every step below for each release, unless indicated otherwise.
 - Run `git switch main && git pull`
 - Run `git status` and confirm that the working tree is clean
 - Run `git switch -c release-vX.Y.Z`, where `X.Y.Z` is the new version number
-- Run `npx check-node-version --node 22 --npm 10`
+- Run `npx check-node-version --node 22 --npm 10` to confirm the tooling versions before you install
 - Run `npm ci`
 - Run `npm run preversion`
 - Update the version number and the release date in [README.md](README.md) and [CITATION.cff](CITATION.cff). Skip this step for a release candidate.
@@ -28,7 +28,7 @@ Do every step below for each release, unless indicated otherwise.
   - Correct typos and add missing entries and extra details
   - Open `https://github.com/plotly/plotly.js/compare/vX.Y.Q...main` to view every commit since the previous release `vX.Y.Q`
   - Confirm that every draftlog entry uses the link template `[[#1234](https://github.com/plotly/plotly.js/pull/1234)]`
-  - Credit a community contributor at the end of that entry: **', with thanks to @plotly-user for the contribution!'**
+  - Credit a community contributor at the end of that entry: **', with thanks to @<USERNAME> for the contribution!'**
 - Run `npm run empty-draftlogs` to empty the `draftlogs/` folder. Skip this step for a release candidate.
 - Run `git add -u . && git commit -m "chore: Updates for release vX.Y.Z"`
 
@@ -61,7 +61,7 @@ Do every step below for each release, unless indicated otherwise.
 ## Publish the release
 
 - Run `git switch main && git pull` after the pull request merges
-- Run `git describe --tags` and confirm that the output reads `vX.Y.Z`
+- Run `git branch --contains vX.Y.Z` and confirm that the output includes `main`
 
 ### Publish to npm
 
@@ -85,8 +85,10 @@ Do every step below for each release, unless indicated otherwise.
 
 ### Publish to the Plotly CDN
 
-- Run `which aws` to determine if the AWS CLI is installed on your system
-- If the command returns no path, install the CLI. You can run `pip install awscli`, or `brew install awscli` on macOS.
+- Run `aws --version` and confirm that the output starts with `aws-cli/2`
+- If the command is not found, or the output shows version 1, install AWS CLI v2:
+  - On macOS, run `brew install awscli`
+  - On Linux or Windows, follow the [AWS CLI install guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 - Run `./tasks/cdn_publish.sh` to upload the new release files to the CDN bucket on S3
 - If that step fails with an authentication error, run `aws configure` and enter the credentials for the plotly.js CDN bucket
 
