@@ -1,0 +1,1 @@
+- Make scatter error bars follow marker opacity during selection and deselection [[#0](https://github.com/plotly/plotly.js/pull/0)]
