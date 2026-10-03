@@ -1064,6 +1064,17 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
 
+    if (legendObj._inHover) {
+        const textRight = legendObj._width - bw2 - itemGap - titleSize[0];
+        traces.each(function (d) {
+            if (d[0].textAlign !== 'right') return;
+            d3.select(this)
+                .select('.' + legendId + 'text')
+                .attr('text-anchor', 'end')
+                .call(svgTextUtils.positionText, textRight);
+        });
+    }
+
     // align legend title horizontally
     var titleEl = scrollBox.select('.' + legendId + 'titletext');
     if(titleEl.node()) {
