@@ -7395,6 +7395,51 @@ describe('hovermode: (x|y)unified', function () {
             .then(done, done.fail);
     });
 
+    it('should align item text with hoverlabel.align', (done) => {
+        const getItems = () => {
+            const items = [];
+            getHoverLabel()
+                .selectAll('g.traces text.legendtext')
+                .each(function () {
+                    const bBox = this.getBoundingClientRect();
+                    items.push({ anchor: this.getAttribute('text-anchor'), left: bBox.left, right: bBox.right });
+                });
+            return items;
+        };
+
+        Plotly.newPlot(gd, [{ y: [1, 2, 3] }, { y: [1000000, 2000000, 3000000] }], {
+            hovermode: 'x unified',
+            hoverlabel: { align: 'right' },
+            showlegend: false,
+            width: 500,
+            height: 500
+        })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['end', 'end']);
+                expect(short.right).toBeCloseTo(long.right, 0);
+                expect(short.left).toBeGreaterThan(long.left);
+
+                return Plotly.relayout(gd, 'hoverlabel.align', 'left');
+            })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['start', 'start']);
+                expect(short.left).toBeCloseTo(long.left, 0);
+
+                return Plotly.restyle(gd, 'hoverlabel.align', 'right', [0]);
+            })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['end', 'start']);
+                expect(short.right).toBeCloseTo(long.right, 0);
+            })
+            .then(done, done.fail);
+    });
+
     it('should work with hovertemplate', function (done) {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.data[0].hovertemplate = 'hovertemplate: %{y:0.2f}';
