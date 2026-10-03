@@ -59,6 +59,7 @@ export type {
     ModeBarButton,
     ModeBarButtonAny,
     ModeBarDefaultButtons,
+    LayoutUpdate,
     Template
 } from '../src/types/core/layout';
 
