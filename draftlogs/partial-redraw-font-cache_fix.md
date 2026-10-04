@@ -1,0 +1,1 @@
+- Refresh text measurements cached during web font loading [[#PR_NUMBER](https://github.com/plotly/plotly.js/pull/PR_NUMBER)]
