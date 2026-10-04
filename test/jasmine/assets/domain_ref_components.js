@@ -20,24 +20,15 @@ var Lib = require('../../../src/lib');
 var Axes = require('../../../src/plots/cartesian/axes');
 var axisIds = require('../../../src/plots/cartesian/axis_ids');
 var testImage = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
-var iterable = require('extra-iterable');
 
 var testMock = require('../assets/domain_ref_base.json');
 
 // NOTE: this tolerance is in pixels
 var EQUALITY_TOLERANCE = 1e-2;
 
-// Make an array from a finite iterable (for environments not having
-// Array.from)
-function iterToArray(iter) {
-    var a = [];
-    var v;
-    // when done is true v.value is undefined
-    for(v = iter.next(); !v.done; v = iter.next()) {
-        a.push(v.value);
-    }
-    return a;
-}
+// Every combination of one item from each array, with the last array varying fastest
+const cartesianProduct = (arrays) =>
+    arrays.reduce((acc, arr) => acc.flatMap((combo) => arr.map((v) => [...combo, v])), [[]]);
 
 // some made-up values for testing
 // NOTE: The pixel values are intentionally set so that 2*pixel is never greater
@@ -739,9 +730,9 @@ function comboTestDescriptions(testCombos, desribe) {
 }
 
 function annotationTestCombos() {
-    var testCombos = iterToArray(iterable.cartesianProduct([
+    var testCombos = cartesianProduct([
         axisTypes, axisTypes, axisPairs, aroPositionsX, aroPositionsY, arrowAxis
-    ]));
+    ]);
     testCombos = testCombos.map(
         function(c, i) {
             return c.concat(['graph-' + i]);
@@ -761,14 +752,14 @@ function annotationTestDescriptions() {
 }
 
 function imageTestCombos() {
-    var testCombos = iterToArray(iterable.cartesianProduct(
+    var testCombos = cartesianProduct(
         [
             axisTypes, axisTypes, axisPairs,
             // axis reference types are contained in here
             aroPositionsX, aroPositionsY,
             xAnchors, yAnchors
         ]
-    ));
+    );
     testCombos = testCombos.map(
         function(c, i) {
             return c.concat(['graph-' + i]);
@@ -788,13 +779,13 @@ function imageTestDescriptions() {
 }
 
 function shapeTestCombos() {
-    var testCombos = iterToArray(iterable.cartesianProduct(
+    var testCombos = cartesianProduct(
         [
             axisTypes, axisTypes, axisPairs,
             // axis reference types are contained in here
             aroPositionsX, aroPositionsY, shapeTypes
         ]
-    ));
+    );
     testCombos = testCombos.map(
         function(c, i) {
             return c.concat(['graph-' + i]);
