@@ -1,0 +1,1 @@
+- Fix scattergl text hidden by selected markers [[#PR_NUMBER](https://github.com/plotly/plotly.js/pull/PR_NUMBER)]

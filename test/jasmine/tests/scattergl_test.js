@@ -325,6 +325,52 @@ describe('end-to-end scattergl tests', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should keep text above selected markers and restore normal trace ordering', async () => {
+        function redPixels(selector) {
+            const pixels = readPixel(gd.querySelector(selector), 170, 170, 60, 60);
+            let count = 0;
+            for (let i = 0; i < pixels.length; i += 4) {
+                if (pixels[i] > 150 && pixels[i + 1] < 100 && pixels[i + 2] < 100) count++;
+            }
+            return count;
+        }
+
+        await Plotly.newPlot(gd, [{
+            type: 'scattergl', mode: 'markers+text', x: [0], y: [0],
+            text: ['M'], textposition: 'middle center', textfont: { color: 'red', size: 40 },
+            marker: { color: 'blue', size: 80 }, selectedpoints: [0]
+        }], {
+            width: 400, height: 400, margin: { l: 0, r: 0, t: 0, b: 0 },
+            xaxis: { range: [-1, 1] }, yaxis: { range: [-1, 1] }, dragmode: 'pan', showlegend: false
+        }, { plotGlPixelRatio: 1 });
+        expect(redPixels('.gl-canvas-focus')).toBeGreaterThan(30);
+        expect(redPixels('.gl-canvas-context')).toBe(0);
+        const scene = gd._fullLayout._plots.xy._scene;
+        const focusText = scene.glText[0];
+
+        await Plotly.restyle(gd, 'selectedpoints', null);
+        expect(redPixels('.gl-canvas-context')).toBeGreaterThan(30);
+        expect(redPixels('.gl-canvas-focus')).toBe(0);
+        const contextText = scene.glText[0];
+
+        await Plotly.relayout(gd, 'dragmode', 'select');
+        await Plotly.restyle(gd, 'selectedpoints', [[0]]);
+        expect(redPixels('.gl-canvas-focus')).toBeGreaterThan(30);
+        expect(scene.glText[0]).toBe(focusText, 'reuse text buffers when returning to selection');
+        await Plotly.restyle(gd, 'selectedpoints', null);
+        await Plotly.relayout(gd, 'dragmode', 'pan');
+        expect(scene.glText[0]).toBe(contextText, 'reuse text buffers when returning to pan');
+        expect(redPixels('.gl-canvas-context')).toBeGreaterThan(30);
+        expect(redPixels('.gl-canvas-focus')).toBe(0);
+        await Plotly.addTraces(gd, {
+            type: 'scattergl', mode: 'markers', x: [0], y: [0], marker: { color: 'blue', size: 80 }
+        });
+        expect(redPixels('.gl-canvas-context')).toBe(0, 'later traces still cover earlier text outside selection mode');
+        expect(redPixels('.gl-canvas-focus')).toBe(0);
+        await Plotly.deleteTraces(gd, [1]);
+        expect(redPixels('.gl-canvas-context')).toBeGreaterThan(30);
+    });
+
     it('@gl should update selected points', function(done) {
         // #2298
         var dat = [{
