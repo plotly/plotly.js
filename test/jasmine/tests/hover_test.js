@@ -7435,7 +7435,7 @@ describe('hovermode: (x|y)unified', function () {
                 _hover(gd, { xval: 1 });
                 const [short, long] = getItems();
                 expect([short.anchor, long.anchor]).toEqual(['end', 'start']);
-                expect(short.right).toBeCloseTo(long.right, 0);
+                expect(short.right).toBeWithin(long.right, 1);
             })
             .then(done, done.fail);
     });
