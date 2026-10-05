@@ -438,7 +438,7 @@ export interface ColorBar {
 
 export interface HoverLabel {
     /**
-     * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+     * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
      * @default 'auto'
      */
     align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
@@ -1577,7 +1577,7 @@ export interface CandlestickData {
     hoverinfo?: 'x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
@@ -6074,7 +6074,7 @@ export interface OhlcData {
     hoverinfo?: 'x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
@@ -16182,7 +16182,7 @@ export interface Layout {
     hoverdistance?: number;
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto';
