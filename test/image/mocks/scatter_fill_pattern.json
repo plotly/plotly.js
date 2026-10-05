@@ -64,6 +64,7 @@
       "rows": 1,
       "columns": 2,
       "pattern": "independent"
-    }
+    },
+    "legend": { "itemheight": 20 }
   }
 }

@@ -219,6 +219,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData, legendCount) {
     coerce('indentation');
     coerce('itemsizing');
     coerce('itemwidth');
+    coerce('itemheight');
 
     coerce('itemclick');
     coerce('itemdoubleclick');
