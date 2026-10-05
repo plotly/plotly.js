@@ -3015,12 +3015,13 @@ axes.drawOne = function(gd, ax, opts) {
 function filterPush(push, automargin) {
     if(!push) return;
 
-    var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
+    // Anchor coordinates locate enabled margin constraints. They do not enable margin growth.
+    const keepMargin = Object.keys(MARGIN_MAPPING).reduce((data, nextKey) => {
         if(automargin.indexOf(nextKey) !== -1) {
             MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1;});
         }
         return data;
-    }, {});
+    }, { x: 1, y: 1 });
     Object.keys(push).forEach(function(key) {
         if(!keepMargin[key]) {
             if(key.length === 1) push[key] = 0;
