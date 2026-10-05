@@ -5,6 +5,7 @@ var Lib = require('../../lib');
 
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
+var Color = require('../../components/color');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 // Stroke each arrow path according to the trace colorscale, using marker.color
@@ -33,6 +34,29 @@ function colorscaleStroke(paths, trace) {
     });
 }
 
+// A color-string array is not a colorscale. Apply each string here, because
+// `lineGroupStyle` paints an array as black.
+const strokeArrowColors = (paths, trace) => {
+    if(trace._hasColorscale) {
+        colorscaleStroke(paths, trace);
+        return;
+    }
+
+    const markerColor = (trace.marker || {}).color;
+    if(!Lib.isArrayOrTypedArray(markerColor)) return;
+
+    paths.style('stroke', function(cdi) {
+        if(markerColor.length > cdi.i) {
+            const color = markerColor[cdi.i];
+            if(Color.isValid(color)) {
+                cdi.mcc = color;
+                return color;
+            }
+        }
+        return this.style.stroke;
+    });
+};
+
 function style(gd) {
     var s = d3.select(gd).selectAll('g.trace.quiver');
     s.each(function(d) {
@@ -49,7 +73,6 @@ function styleArrows(gd, cd, sel) {
     var marker = trace.marker || {};
     var markerLine = marker.line || {};
     var lineColor = Lib.isArrayOrTypedArray(marker.color) ? undefined : marker.color;
-    var hasColorscale = trace._hasColorscale;
 
     if(!sel) return;
 
@@ -78,7 +101,7 @@ function styleArrows(gd, cd, sel) {
                 // color, so we keep each arrow's color and dim unselected arrows
                 // via stroke-opacity instead.
                 Drawing.lineGroupStyle(path, lineWidth, lineColor, markerLine.dash);
-                if(hasColorscale) colorscaleStroke(path, trace);
+                strokeArrowColors(path, trace);
                 path.style('stroke-opacity', dim ? DESELECTDIM : 1);
             }
         });
@@ -87,7 +110,7 @@ function styleArrows(gd, cd, sel) {
     } else {
         var paths = sel.selectAll('path.js-line');
         paths.call(Drawing.lineGroupStyle, markerLine.width, lineColor, markerLine.dash);
-        if(hasColorscale) colorscaleStroke(paths, trace);
+        strokeArrowColors(paths, trace);
         paths.style('stroke-opacity', 1);
         Drawing.textPointStyle(sel.selectAll('text'), trace, gd);
     }
@@ -96,5 +119,6 @@ function styleArrows(gd, cd, sel) {
 module.exports = {
     style: style,
     styleOnSelect: styleOnSelect,
-    colorscaleStroke: colorscaleStroke
+    colorscaleStroke: colorscaleStroke,
+    strokeArrowColors: strokeArrowColors
 };
