@@ -2,6 +2,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
+const { dfltFillHeight } = require('./constants');
 
 
 module.exports = {
@@ -140,6 +141,18 @@ module.exports = {
         dflt: 30,
         editType: 'legend',
         description: 'Sets the width (in px) of the legend item symbols (the part other than the title.text).',
+    },
+    itemheight: {
+        valType: 'number',
+        min: dfltFillHeight,
+        dflt: dfltFillHeight,
+        editType: 'legend',
+        description: [
+            'Sets the height (in px) of the legend item fill swatch.',
+            'A taller swatch shows more of a trace *fill* or *fillpattern*.',
+            'Only traces with a *fill* use this value.',
+            'Every legend item grows to fit, so a larger value makes every row taller.'
+        ].join(' ')
     },
     itemclick: {
         valType: 'enumerated',
