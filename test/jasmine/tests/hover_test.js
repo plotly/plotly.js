@@ -7396,6 +7396,8 @@ describe('hovermode: (x|y)unified', function () {
     });
 
     it('should align item text with hoverlabel.align', (done) => {
+        // DEBUG: remove before merge
+        let debugStep = 0;
         const getItems = () => {
             const items = [];
             getHoverLabel()
@@ -7403,7 +7405,40 @@ describe('hovermode: (x|y)unified', function () {
                 .each(function () {
                     const bBox = this.getBoundingClientRect();
                     items.push({ anchor: this.getAttribute('text-anchor'), left: bBox.left, right: bBox.right });
+
+                    // DEBUG: compare the cached width that sized the box with fresh measurements
+                    const savedBBoxes = Drawing.savedBBoxes;
+                    Drawing.savedBBoxes = {};
+                    const freshWidth = Drawing.bBox(this).width;
+                    Drawing.savedBBoxes = savedBBoxes;
+                    const style = window.getComputedStyle(this);
+                    console.log(
+                        '[DEBUG 8104]',
+                        JSON.stringify({
+                            step: debugStep,
+                            text: this.textContent,
+                            anchor: this.getAttribute('text-anchor'),
+                            x: this.getAttribute('x'),
+                            cachedWidth: this.parentNode.__data__[0].width,
+                            freshWidth,
+                            renderedWidth: bBox.width,
+                            textLength: this.getComputedTextLength(),
+                            left: bBox.left,
+                            right: bBox.right,
+                            font: style.fontFamily + ' ' + style.fontSize
+                        })
+                    );
                 });
+            const bg = getHoverLabel().select('rect.bg').node();
+            console.log(
+                '[DEBUG 8104]',
+                JSON.stringify({
+                    step: debugStep++,
+                    boxWidth: bg && bg.getAttribute('width'),
+                    userAgent: navigator.userAgent,
+                    fonts: [...document.fonts].map((f) => f.family + ' ' + f.weight + ' ' + f.status)
+                })
+            );
             return items;
         };
 
