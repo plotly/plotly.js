@@ -7401,11 +7401,17 @@ describe('hovermode: (x|y)unified', function () {
             getHoverLabel()
                 .selectAll('g.traces text.legendtext')
                 .each(function () {
-                    const bBox = this.getBoundingClientRect();
-                    items.push({ anchor: this.getAttribute('text-anchor'), left: bBox.left, right: bBox.right });
+                    const { left, right } = this.getBoundingClientRect();
+                    items.push({
+                        anchor: this.getAttribute('text-anchor'),
+                        left,
+                        right,
+                        x: this.getAttribute('x')
+                    });
                 });
             return items;
         };
+        let rightAlignedShort;
 
         Plotly.newPlot(gd, [{ y: [1, 2, 3] }, { y: [1000000, 2000000, 3000000] }], {
             hovermode: 'x unified',
@@ -7418,8 +7424,10 @@ describe('hovermode: (x|y)unified', function () {
                 _hover(gd, { xval: 1 });
                 const [short, long] = getItems();
                 expect([short.anchor, long.anchor]).toEqual(['end', 'end']);
-                expect(short.right).toBeCloseTo(long.right, 0);
+                // Compare anchor positions because the text rect can extend past the anchor by a font-dependent amount
+                expect(short.x).toBe(long.x);
                 expect(short.left).toBeGreaterThan(long.left);
+                rightAlignedShort = short;
 
                 return Plotly.relayout(gd, 'hoverlabel.align', 'left');
             })
@@ -7435,7 +7443,9 @@ describe('hovermode: (x|y)unified', function () {
                 _hover(gd, { xval: 1 });
                 const [short, long] = getItems();
                 expect([short.anchor, long.anchor]).toEqual(['end', 'start']);
-                expect(short.right).toBeWithin(long.right, 1);
+                // Same text and box as the first step, so the right-aligned item must not move
+                expect(short.x).toBe(rightAlignedShort.x);
+                expect(short.right).toBeCloseTo(rightAlignedShort.right, 0);
             })
             .then(done, done.fail);
     });
