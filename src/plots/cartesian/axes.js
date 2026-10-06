@@ -1205,18 +1205,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // For each major tick, find the minor tick `ticklabelIndex` steps away.
         // This minor tick will be labeled instead of the major tick.
 
-        const labelTickValsAscending = minorTickVals
-        .map((minor) => {
-            // if there is a major tick at the same position, prefer it over the minor tick because overlapping minor ticks are stripped away
-            // if both minor and major ticks are drawn on the same side.
-            const major = findOverlappingTick(minor, tickVals);
-            if (major) {
-                return major;
-            }
-            return minor;
-        })
-        .slice()
-        .sort((a, b) => a.value - b.value);
+        // if a minor tick coincides with a major tick, prefer it over the minor tick
+        // because overlapping minor ticks are stripped away if both minor and major ticks are drawn on the same side.
+        const filteredMinors = minorTickVals.filter((minor) => findOverlappingTick(minor, tickVals) == null);
+        const labelTickValsAscending = tickVals.concat(filteredMinors)
+            .slice()
+            .sort((a, b) => a.value - b.value);
 
         if (isPeriod && tickVals.length) {
             // first major tick was just added for period handling
