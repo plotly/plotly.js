@@ -1176,7 +1176,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
         // add 10e6 to eliminate problematic digits
         const epsilon = 10e6;
-        for (var i = 0; i < majorTicks.length; i++) {
+        for (let i = 0; i < majorTicks.length; i++) {
             if (epsilon + majorTicks[i].value === epsilon + minorTick.value) {
                 return majorTicks[i];
             }
@@ -1190,7 +1190,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     if(!minorTickVals || minorTickVals.length < 3) {
         ax._useTicklabelIndex = false;
     } else {
-        var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
+        const diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
             ax._useTicklabelIndex = false;
             // remove previously added tick before tick0 for handling ticklabelindex positioning
