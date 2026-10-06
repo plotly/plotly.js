@@ -262,6 +262,16 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     return multiHover ? hoverLabel : hoverLabel.node();
 };
 
+// Helper function for use with spikeline logic
+// Returns true if either axis has spikeline settings which allow a spikeline to be drawn
+// to a point that is not currently hovered over; returns false otherwise.
+function canSpikeToNonHoveredPoint(xa, ya) {
+    return Boolean(
+        (xa?.showspikes && xa.spikesnap !== 'hovered data') ||
+        (ya?.showspikes && ya.spikesnap !== 'hovered data')
+    );
+}
+
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if (!subplot) subplot = 'xy';
@@ -658,53 +668,58 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 distance = hoverData[0].distance;
             }
 
-            // Now if there is range to look in, find the points to draw the spikelines
-            // Do it only if there is no hoverData
-            if (hasCartesian && spikedistance !== 0) {
-                if (hoverData.length === 0) {
-                    pointData.distance = spikedistance;
-                    pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
-                        hoverLayer: fullLayout._hoverlayer
+            // If there is no hoverData, and if the axis spikeline settings permit us to draw
+            // a spikeline to the nearest non-hovered point, search for points to spike to.
+            // This search is _expensive_ (especially when spikedistance is -1 which requires
+            // a search over all points), so we should only do it when absolutely required
+            if (hasCartesian
+                && hoverData.length === 0
+                && spikedistance !== 0
+                && canSpikeToNonHoveredPoint(pointData.xa, pointData.ya)
+            ) {
+                // Find the points to draw the spikelines
+                pointData.distance = spikedistance;
+                pointData.index = false;
+                var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
+                    hoverLayer: fullLayout._hoverlayer
+                });
+                if (closestPoints) {
+                    closestPoints = closestPoints.filter(function (point) {
+                        // some hover points, like scatter fills, do not allow spikes,
+                        // so will generate a hover point but without a valid spikeDistance
+                        return point.spikeDistance <= spikedistance;
                     });
-                    if (closestPoints) {
-                        closestPoints = closestPoints.filter(function (point) {
-                            // some hover points, like scatter fills, do not allow spikes,
-                            // so will generate a hover point but without a valid spikeDistance
-                            return point.spikeDistance <= spikedistance;
-                        });
-                    }
-                    if (closestPoints && closestPoints.length) {
-                        var tmpPoint;
-                        var closestVPoints = closestPoints.filter(function (point) {
-                            return point.xa.showspikes && point.xa.spikesnap !== 'hovered data';
-                        });
-                        if (closestVPoints.length) {
-                            var closestVPt = closestVPoints[0];
-                            if (isNumeric(closestVPt.x0) && isNumeric(closestVPt.y0)) {
-                                tmpPoint = fillSpikePoint(closestVPt);
-                                if (
-                                    !spikePoints.vLinePoint ||
-                                    spikePoints.vLinePoint.spikeDistance > tmpPoint.spikeDistance
-                                ) {
-                                    spikePoints.vLinePoint = tmpPoint;
-                                }
+                }
+                if (closestPoints?.length) {
+                    var tmpPoint;
+                    var closestVPoints = closestPoints.filter(function (point) {
+                        return point.xa.showspikes && point.xa.spikesnap !== 'hovered data';
+                    });
+                    if (closestVPoints.length) {
+                        var closestVPt = closestVPoints[0];
+                        if (isNumeric(closestVPt.x0) && isNumeric(closestVPt.y0)) {
+                            tmpPoint = fillSpikePoint(closestVPt);
+                            if (
+                                !spikePoints.vLinePoint ||
+                                spikePoints.vLinePoint.spikeDistance > tmpPoint.spikeDistance
+                            ) {
+                                spikePoints.vLinePoint = tmpPoint;
                             }
                         }
+                    }
 
-                        var closestHPoints = closestPoints.filter(function (point) {
-                            return point.ya.showspikes && point.ya.spikesnap !== 'hovered data';
-                        });
-                        if (closestHPoints.length) {
-                            var closestHPt = closestHPoints[0];
-                            if (isNumeric(closestHPt.x0) && isNumeric(closestHPt.y0)) {
-                                tmpPoint = fillSpikePoint(closestHPt);
-                                if (
-                                    !spikePoints.hLinePoint ||
-                                    spikePoints.hLinePoint.spikeDistance > tmpPoint.spikeDistance
-                                ) {
-                                    spikePoints.hLinePoint = tmpPoint;
-                                }
+                    var closestHPoints = closestPoints.filter(function (point) {
+                        return point.ya.showspikes && point.ya.spikesnap !== 'hovered data';
+                    });
+                    if (closestHPoints.length) {
+                        var closestHPt = closestHPoints[0];
+                        if (isNumeric(closestHPt.x0) && isNumeric(closestHPt.y0)) {
+                            tmpPoint = fillSpikePoint(closestHPt);
+                            if (
+                                !spikePoints.hLinePoint ||
+                                spikePoints.hLinePoint.spikeDistance > tmpPoint.spikeDistance
+                            ) {
+                                spikePoints.hLinePoint = tmpPoint;
                             }
                         }
                     }
@@ -1156,26 +1171,26 @@ function createHoverText(hoverData, opts) {
             lpath.attr(
                 'd',
                 'M' +
-                    (lx - tooltipMidX) +
-                    ',0' +
-                    'L' +
-                    (lx - tooltipMidX + HOVERARROWSIZE) +
-                    ',' +
-                    topsign +
-                    HOVERARROWSIZE +
-                    'H' +
-                    halfWidth +
-                    'v' +
-                    topsign +
-                    (HOVERTEXTPAD * 2 + tbb.height) +
-                    'H' +
-                    -halfWidth +
-                    'V' +
-                    topsign +
-                    HOVERARROWSIZE +
-                    'H' +
-                    (lx - tooltipMidX - HOVERARROWSIZE) +
-                    'Z'
+                (lx - tooltipMidX) +
+                ',0' +
+                'L' +
+                (lx - tooltipMidX + HOVERARROWSIZE) +
+                ',' +
+                topsign +
+                HOVERARROWSIZE +
+                'H' +
+                halfWidth +
+                'v' +
+                topsign +
+                (HOVERTEXTPAD * 2 + tbb.height) +
+                'H' +
+                -halfWidth +
+                'V' +
+                topsign +
+                HOVERARROWSIZE +
+                'H' +
+                (lx - tooltipMidX - HOVERARROWSIZE) +
+                'Z'
             );
 
             lx = tooltipMidX;
@@ -1212,24 +1227,24 @@ function createHoverText(hoverData, opts) {
             lpath.attr(
                 'd',
                 'M0,0' +
-                    'L' +
-                    leftsign +
-                    HOVERARROWSIZE +
-                    ',' +
-                    HOVERARROWSIZE +
-                    'V' +
-                    (HOVERTEXTPAD + tbb.height / 2) +
-                    'h' +
-                    leftsign +
-                    (HOVERTEXTPAD * 2 + tbb.width) +
-                    'V-' +
-                    (HOVERTEXTPAD + tbb.height / 2) +
-                    'H' +
-                    leftsign +
-                    HOVERARROWSIZE +
-                    'V-' +
-                    HOVERARROWSIZE +
-                    'Z'
+                'L' +
+                leftsign +
+                HOVERARROWSIZE +
+                ',' +
+                HOVERARROWSIZE +
+                'V' +
+                (HOVERTEXTPAD + tbb.height / 2) +
+                'h' +
+                leftsign +
+                (HOVERTEXTPAD * 2 + tbb.width) +
+                'V-' +
+                (HOVERTEXTPAD + tbb.height / 2) +
+                'H' +
+                leftsign +
+                HOVERARROWSIZE +
+                'V-' +
+                HOVERARROWSIZE +
+                'Z'
             );
 
             commonLabelRect.minY = ly - (HOVERTEXTPAD + tbb.height / 2);
@@ -1312,12 +1327,12 @@ function createHoverText(hoverData, opts) {
         var mainText = !unifiedhovertitleText
             ? t0
             : Lib.hovertemplateString({
-                  data:
-                      hovermode === 'x unified' ? [{ xa: item0.xa, x: item0.xVal }] : [{ ya: item0.ya, y: item0.yVal }],
-                  fallback: item0.trace.hovertemplatefallback,
-                  locale: fullLayout._d3locale,
-                  template: unifiedhovertitleText
-              });
+                data:
+                    hovermode === 'x unified' ? [{ xa: item0.xa, x: item0.xVal }] : [{ ya: item0.ya, y: item0.yVal }],
+                fallback: item0.trace.hovertemplatefallback,
+                locale: fullLayout._d3locale,
+                template: unifiedhovertitleText
+            });
 
         var mockLayoutIn = {
             showlegend: true,
@@ -2182,12 +2197,12 @@ function cleanPoint(d, hovermode) {
 
     var getVal = Array.isArray(index)
         ? function (calcKey, traceKey) {
-              var v = Lib.castOption(cd0, index, calcKey);
-              return pass(v) ? v : Lib.extractOption({}, trace, '', traceKey);
-          }
+            var v = Lib.castOption(cd0, index, calcKey);
+            return pass(v) ? v : Lib.extractOption({}, trace, '', traceKey);
+        }
         : function (calcKey, traceKey) {
-              return Lib.extractOption(cd, trace, calcKey, traceKey);
-          };
+            return Lib.extractOption(cd, trace, calcKey, traceKey);
+        };
 
     function fill(key, calcKey, traceKey) {
         var val = getVal(calcKey, traceKey);
