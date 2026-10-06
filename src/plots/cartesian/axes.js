@@ -1229,8 +1229,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         const smallerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
                         const absLabelIndex = Math.abs(labelIndex);
                         const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
-                        if (absLabelIndex <= smallerTicks.length - 1) {
-                            var tickToLabel = smallerTicks[labeledTickIndex];
+                        if (absLabelIndex < smallerTicks.length) {
+                            const tickToLabel = smallerTicks[labeledTickIndex];
                             allTicklabelVals.push(tickToLabel);
                             if (isPeriod) {
                                 tickToLabel.periodEndTick = smallerTicks[labeledTickIndex + 1];
@@ -1238,10 +1238,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         }
                     } else { // labelIndex >= 0
                         const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
-                        if (labelIndex < largerTicks.length - 1) {
-                            var tickToLabel = largerTicks[labelIndex]
+                        if (labelIndex < largerTicks.length) {
+                            const tickToLabel = largerTicks[labelIndex]
                             allTicklabelVals.push(tickToLabel);
-                            if (isPeriod) {
+                            if (isPeriod && largerTicks[labelIndex + 1]) {
                                 tickToLabel.periodEndTick = largerTicks[labelIndex + 1];
                             }
                         }
