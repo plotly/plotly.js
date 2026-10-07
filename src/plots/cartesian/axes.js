@@ -911,7 +911,7 @@ function positionPeriodTicks(tickVals, ax, definedDelta) {
                 a = i;
                 b = i;
             }
-    
+
             A = tickVals[a].value;
             B = tickVals[b].value;
         }
@@ -1208,11 +1208,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         // For each major tick, find the minor tick `ticklabelIndex` steps away.
         // This minor tick will be labeled instead of the major tick.
 
-        // if a minor tick coincides with a major tick, prefer it over the minor tick
+        // if a minor tick coincides with a major tick, drop the minor tick and keep the major one
         // because overlapping minor ticks are stripped away if both minor and major ticks are drawn on the same side.
         const filteredMinors = minorTickVals.filter((minor) => findOverlappingTick(minor, tickVals) == null);
         const labelTickValsAscending = tickVals.concat(filteredMinors)
-            .slice()
             .sort((a, b) => a.value - b.value);
 
         if (isPeriod && tickVals.length) {
@@ -1236,7 +1235,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     } else { // labelIndex >= 0
                         const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
                         if (labelIndex < largerTicks.length) {
-                            const tickToLabel = largerTicks[labelIndex]
+                            const tickToLabel = largerTicks[labelIndex];
                             allTicklabelVals.push(tickToLabel);
                             if (isPeriod && largerTicks[labelIndex + 1]) {
                                 tickToLabel.periodEndTick = largerTicks[labelIndex + 1];
@@ -1244,7 +1243,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         }
                     }
                 });
-                 // Skip the major tick label since the label moved to a minor tick
+                // Skip the major tick label since the label moved to a minor tick
                 majorTick.skipLabel = true;
             }
         });
