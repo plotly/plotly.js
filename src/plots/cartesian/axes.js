@@ -920,7 +920,10 @@ function positionPeriodTicks(tickVals, ax, definedDelta) {
         var delta = definedDelta || actualDelta;
         var periodLength = 0;
 
-        if(delta >= ONEMINYEAR) {
+        if (tickVals[i].periodEndTick != null) {
+            // the period end is known exactly, so there is nothing to infer
+            periodLength = actualDelta;
+        } else if(delta >= ONEMINYEAR) {
             if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
                 periodLength = actualDelta;
             } else {
