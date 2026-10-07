@@ -882,30 +882,48 @@ function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
     ax._definedDelta = definedDelta;
 }
 
+/**
+ * Calculates the period label position for each tick in tickVals.
+ * @param {array} tickVals: the list of ticks for which to position the period labels
+ * @param {object} ax: the axis of the ticks
+ * @param {number} definedDelta: the defined distance between two ticks
+ */
 function positionPeriodTicks(tickVals, ax, definedDelta) {
     for(var i = 0; i < tickVals.length; i++) {
         var v = tickVals[i].value;
-
-        var a = i;
-        var b = i + 1;
-        if(i < tickVals.length - 1) {
-            a = i;
-            b = i + 1;
-        } else if(i > 0) {
-            a = i - 1;
-            b = i;
+        var A, B;
+        if (tickVals[i].periodEndTick != null) {
+            // Will be set when ticklabelindex is used because labeled periods can
+            // have unlabeled periods between each other
+            A = tickVals[i].value;
+            B = tickVals[i].periodEndTick.value;
         } else {
-            a = i;
-            b = i;
+            // Use the next tick in tickVals as the period end tick
+            var a = i;
+            var b = i + 1;
+            if(i < tickVals.length - 1) {
+                a = i;
+                b = i + 1;
+            } else if(i > 0) {
+                a = i - 1;
+                b = i;
+            } else {
+                a = i;
+                b = i;
+            }
+
+            A = tickVals[a].value;
+            B = tickVals[b].value;
         }
 
-        var A = tickVals[a].value;
-        var B = tickVals[b].value;
         var actualDelta = Math.abs(B - A);
         var delta = definedDelta || actualDelta;
         var periodLength = 0;
 
-        if(delta >= ONEMINYEAR) {
+        if (tickVals[i].periodEndTick != null) {
+            // the period end is known exactly, so there is nothing to infer
+            periodLength = actualDelta;
+        } else if(delta >= ONEMINYEAR) {
             if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
                 periodLength = actualDelta;
             } else {
@@ -978,6 +996,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var isReversed = ax.range[0] > ax.range[1];
     var ticklabelIndex = (!ax.ticklabelindex || Lib.isArrayOrTypedArray(ax.ticklabelindex)) ?
         ax.ticklabelindex : [ax.ticklabelindex];
+    ax._useTicklabelIndex = ticklabelIndex != null && ticklabelIndex !== 0;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -997,7 +1016,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
     // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
-    var calcMinor = hasMinor || ticklabelIndex;
+    var calcMinor = hasMinor || ax._useTicklabelIndex;
 
     // calc major first
     for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
@@ -1099,7 +1118,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        if((major || ticklabelIndex) && isPeriod) {
+        if((major || ax._useTicklabelIndex) && isPeriod) {
             // if major: add one item to label period before tick0
             // if minor: add one item for ticklabelindex positioning. positionPeriodTicks requires
             // at least 2 ticks to calculate the period length, so we add a dummy tick, ensuring
@@ -1156,93 +1175,104 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    function findOverlappingTick(minorTick, majorTicks) {
+        const majorTick = majorTicks.find((majorTick) => majorTick.value === minorTick.value);
+        if (majorTick != null) {
+            return majorTick;
+        }
+        // add 10e6 to eliminate problematic digits
+        const epsilon = 10e6;
+        for (let i = 0; i < majorTicks.length; i++) {
+            if (epsilon + majorTicks[i].value === epsilon + minorTick.value) {
+                return majorTicks[i];
+            }
+        }
+        return null;
+    };
+
     // check if ticklabelIndex makes sense, otherwise ignore it.
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
     if(!minorTickVals || minorTickVals.length < 3) {
-        ticklabelIndex = false;
+        ax._useTicklabelIndex = false;
     } else {
-        var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
+        const diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
-            ticklabelIndex = false;
+            ax._useTicklabelIndex = false;
             // remove previously added tick before tick0 for handling ticklabelindex positioning
             minorTickVals = minorTickVals.slice(1);
         }
     }
+
     // Determine for which ticks to draw labels
-    if(!ticklabelIndex) {
+    if(!ax._useTicklabelIndex) {
         allTicklabelVals = tickVals;
     } else {
-        // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
-        // steps away from each major tick. For those minor ticks we want to draw the label.
+        // For each major tick, find the minor tick `ticklabelIndex` steps away.
+        // This minor tick will be labeled instead of the major tick.
 
-        var allTickVals = tickVals.concat(minorTickVals);
-        if(isPeriod && tickVals.length) {
+        // if a minor tick coincides with a major tick, drop the minor tick and keep the major one
+        // because overlapping minor ticks are stripped away if both minor and major ticks are drawn on the same side.
+        const filteredMinors = minorTickVals.filter((minor) => findOverlappingTick(minor, tickVals) == null);
+        const labelTickValsAscending = tickVals.concat(filteredMinors)
+            .sort((a, b) => a.value - b.value);
+
+        if (isPeriod && tickVals.length) {
             // first major tick was just added for period handling
-            allTickVals = allTickVals.slice(1);
+            tickVals[0].skipLabel = true;
         }
-
-        allTickVals =
-            allTickVals
-            .sort(function(a, b) { return a.value - b.value; })
-            .filter(function(tick, index, self) {
-                return index === 0 || tick.value !== self[index - 1].value;
-            });
-
-        var majorTickIndices =
-            allTickVals
-            .map(function(item, index) {
-                return item.minor === undefined && !item.skipLabel ? index : null;
-            })
-            .filter(function(index) { return index !== null; });
-
-        majorTickIndices.forEach(function(majorIdx) {
-            ticklabelIndex.map(function(nextLabelIdx) {
-                var minorIdx = majorIdx + nextLabelIdx;
-                if(minorIdx >= 0 && minorIdx < allTickVals.length) {
-                    Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
-                }
-            });
+        tickVals.forEach(function(majorTick) {
+            if (!majorTick.skipLabel) {
+                ticklabelIndex.forEach((labelIndex) => {
+                    if (labelIndex < 0) {
+                        const smallerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
+                        const absLabelIndex = Math.abs(labelIndex);
+                        const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
+                        if (absLabelIndex < smallerTicks.length) {
+                            const tickToLabel = smallerTicks[labeledTickIndex];
+                            allTicklabelVals.push(tickToLabel);
+                            if (isPeriod) {
+                                tickToLabel.periodEndTick = smallerTicks[labeledTickIndex + 1];
+                            }
+                        }
+                    } else { // labelIndex >= 0
+                        const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
+                        if (labelIndex < largerTicks.length) {
+                            const tickToLabel = largerTicks[labelIndex];
+                            allTicklabelVals.push(tickToLabel);
+                            if (isPeriod && largerTicks[labelIndex + 1]) {
+                                tickToLabel.periodEndTick = largerTicks[labelIndex + 1];
+                            }
+                        }
+                    }
+                });
+                // Skip the major tick label since the label moved to a minor tick
+                majorTick.skipLabel = true;
+            }
         });
-        tickVals.forEach(function(tick) {
-            tick.skipLabel = allTicklabelVals.indexOf(tick) === -1;
-        });
+        allTicklabelVals.forEach((t) => t.skipLabel = false);
     }
 
     if(hasMinor) {
-        var canOverlap =
+        var allowedToOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
             (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
 
-        if(!canOverlap) {
+        if(!allowedToOverlap) {
             // remove duplicate minors
-
-            var majorValues = tickVals.map(function(d) { return d.value; });
-
             var list = [];
             for(var k = 0; k < minorTickVals.length; k++) {
-                var T = minorTickVals[k];
-                var v = T.value;
-                if(majorValues.indexOf(v) !== -1) {
-                    continue;
+                if (findOverlappingTick(minorTickVals[k], tickVals) == null) {
+                    list.push(minorTickVals[k]);
                 }
-                var found = false;
-                for(var q = 0; !found && (q < tickVals.length); q++) {
-                    if(
-                        // add 10e6 to eliminate problematic digits
-                        10e6 + tickVals[q].value ===
-                        10e6 + v
-                    ) {
-                        found = true;
-                    }
-                }
-                if(!found) list.push(T);
             }
             minorTickVals = list;
         }
     }
 
-    if(isPeriod) positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
+    if(isPeriod) {
+        positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
+    }
 
     var i;
     if(ax.rangebreaks) {
@@ -1328,7 +1358,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var _value = tickVals[i].value;
 
         if(_minor) {
-            if(ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
+            if(ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
                 t = { x: _value };
@@ -1346,7 +1376,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    if(isPeriod && ticklabelIndex && minorTicks.length) {
+    if(isPeriod && ax._useTicklabelIndex && minorTicks.length) {
         // drop very first minor tick that we added to handle ticklabelindex
         minorTicks[0].noTick = true;
     }
