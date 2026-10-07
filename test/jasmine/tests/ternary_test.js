@@ -787,6 +787,30 @@ describe('ternary spikelines', function() {
         .then(done, done.fail);
     });
 
+    it('uses a contrasting default spike color against background', function(done) {
+        var trace = Lib.extendDeep({}, data[0], {
+            marker: {color: 'white'}
+        });
+        var options = {
+            ternary: {
+                sum: 100,
+                bgcolor: '#eee', // light gray
+                aaxis: {showspikes: true}
+            }
+        };
+
+        Plotly.newPlot(gd, [trace], options).then(function() {
+            hoverAt(-35, 49);
+
+            var line = gd.querySelector('.ternary-spikes line');
+            var labelBox = gd.querySelector('.ternary-spikelabel path');
+
+            expect(line.style.stroke).toBe(rgb('#444'));
+            expect(labelBox.style.fill).toBe(rgb('#444'));
+        })
+        .then(done, done.fail);
+    });
+
     it('keeps redrawn spikes behind the hover label', function(done) {
         Plotly.newPlot(gd, data, layout).then(function() {
             hoverAt(-35, 49);
@@ -1002,9 +1026,9 @@ describe('ternary defaults', function() {
     it('defaults spikes off and coerces each enabled axis independently', function() {
         layoutIn = {ternary: {
             aaxis: {showspikes: true},
-            baxis: {showspikes: true, spikecolor: 'red', spikethickness: 2,
+            baxis: {spikecolor: 'red', spikethickness: 2,
                 spikedash: 'dot', spikemode: 'across+marker', spikesnap: 'cursor'},
-            caxis: {spikecolor: 'blue'}
+            caxis: {showspikes: false, spikecolor: 'blue'}
         }};
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         var ternary = layoutOut.ternary;
@@ -1013,6 +1037,7 @@ describe('ternary defaults', function() {
         expect(ternary.aaxis.spikemode).toBe('toaxis');
         expect(ternary.aaxis.spikethickness).toBe(3);
         expect(ternary.aaxis.spikedash).toBe('dash');
+        expect(ternary.baxis.showspikes).toBe(true);
         expect(ternary.baxis.spikecolor).toBe('red');
         expect(ternary.baxis.spikethickness).toBe(2);
         expect(ternary.baxis.spikedash).toBe('dot');
@@ -1020,6 +1045,7 @@ describe('ternary defaults', function() {
         expect(ternary.baxis.spikesnap).toBe('cursor');
         expect(ternary.caxis.showspikes).toBe(false);
         expect(ternary.caxis.spikecolor).toBeUndefined();
+        expect(ternary.caxis.spikethickness).toBeUndefined();
     });
 
     it('should coerce \'min\' values to 0 and delete them for user data if they contradict', function() {

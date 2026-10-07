@@ -179,6 +179,8 @@ proto.drawSpikelines = function (hoverPoint, spikePoint, cursorXVal, cursorYVal)
 
     const span = this.sum - axes[0].min - axes[1].min - axes[2].min;
 
+    const contrastColor = Color.combine(fullLayout[this.id].bgcolor, fullLayout.paper_bgcolor);
+
     let layer;
 
     for(let i = 0; i < axes.length; i++) {
@@ -235,7 +237,11 @@ proto.drawSpikelines = function (hoverPoint, spikePoint, cursorXVal, cursorYVal)
             [this.w * (1 + fc) / 2, this.h * fc, this.w * fc, this.h] // caxis
         ][i];
 
-        const color = axis.spikecolor || selectedPoint.color || axis.color;
+        const pointColor = selectedPoint.color || axis.color;
+        const dfltColor = Color.wcagContrast(pointColor, contrastColor) < 1.5
+                ? Color.contrast(contrastColor)
+                : pointColor;
+        const color = axis.spikecolor || dfltColor;
         const thickness = axis.spikethickness;
         const mode = axis.spikemode;
 

@@ -14752,7 +14752,7 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
-         * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
          * @default false
          */
         showspikes?: boolean;
@@ -14941,7 +14941,7 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
-         * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
          * @default false
          */
         showspikes?: boolean;
@@ -15135,7 +15135,7 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
-         * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
          * @default false
          */
         showspikes?: boolean;

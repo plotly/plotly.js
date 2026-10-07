@@ -63,7 +63,12 @@ var ternaryAxesAttrs = {
         ].join(' ')
     },
     // spikelines
-    showspikes: axesAttrs.showspikes,
+    showspikes: extendFlat({}, axesAttrs.showspikes, {
+        description: [
+            'Determines whether or not spikes (aka droplines) are drawn for this axis.',
+            'Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.',
+        ].join(' ')
+    }),
     spikecolor: axesAttrs.spikecolor,
     spikethickness: axesAttrs.spikethickness,
     spikedash: axesAttrs.spikedash,
