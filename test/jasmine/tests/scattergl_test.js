@@ -2,6 +2,7 @@ var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 
 var ScatterGl = require('../../../src/traces/scattergl');
+var ScatterGlHelpers = require('../../../src/traces/scattergl/helpers');
 var TOO_MANY_POINTS = require('../../../src/traces/scattergl/constants').TOO_MANY_POINTS;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -10,6 +11,37 @@ var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
 var checkTextTemplate = require('../assets/check_texttemplate');
+
+describe('scattergl marker symbol variants', function() {
+    var symbolCases = [
+        {symbols: ['circle', 0, '0'], isOpen: false, isDot: false},
+        {symbols: ['circle-open', 100, '100'], isOpen: true, isDot: false},
+        {symbols: ['circle-dot', 200, '200'], isOpen: false, isDot: true},
+        {symbols: ['circle-open-dot', 300, '300'], isOpen: true, isDot: true}
+    ];
+
+    it('should detect open symbol variants', function() {
+        symbolCases.forEach(function(symbolCase) {
+            symbolCase.symbols.forEach(function(symbol) {
+                expect(ScatterGlHelpers.isOpenSymbol(symbol)).toBe(
+                    symbolCase.isOpen,
+                    'symbol: ' + JSON.stringify(symbol)
+                );
+            });
+        });
+    });
+
+    it('should detect dot symbol variants', function() {
+        symbolCases.forEach(function(symbolCase) {
+            symbolCase.symbols.forEach(function(symbol) {
+                expect(ScatterGlHelpers.isDotSymbol(symbol)).toBe(
+                    symbolCase.isDot,
+                    'symbol: ' + JSON.stringify(symbol)
+                );
+            });
+        });
+    });
+});
 
 describe('end-to-end scattergl tests', function() {
     var gd;
