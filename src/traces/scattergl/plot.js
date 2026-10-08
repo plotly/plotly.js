@@ -27,11 +27,21 @@ function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var t = gs.t * plotGlPixelRatio;
     var w = gs.w * plotGlPixelRatio;
     var h = gs.h * plotGlPixelRatio;
+
+    // `domainpad` takes pixels off the plot area that `domain` knows nothing about.
+    // Add it to the expressions below rather than rebuilding the rect from _offset
+    // and _length: that would round trip through pixel space and shift this rect by
+    // a fraction of a pixel even on plots with no padding at all.
+    var padL = (xaxis._padStart || 0) * plotGlPixelRatio;
+    var padR = (xaxis._padEnd || 0) * plotGlPixelRatio;
+    var padT = (yaxis._padStart || 0) * plotGlPixelRatio;
+    var padB = (yaxis._padEnd || 0) * plotGlPixelRatio;
+
     return [
-        l + xaxis.domain[0] * w,
-        b + yaxis.domain[0] * h,
-        (width - r) - (1 - xaxis.domain[1]) * w,
-        (height - t) - (1 - yaxis.domain[1]) * h
+        l + xaxis.domain[0] * w + padL,
+        b + yaxis.domain[0] * h + padB,
+        (width - r) - (1 - xaxis.domain[1]) * w - padR,
+        (height - t) - (1 - yaxis.domain[1]) * h - padT
     ];
 }
 
