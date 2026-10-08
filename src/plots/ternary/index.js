@@ -2,6 +2,7 @@
 
 var Ternary = require('./ternary');
 
+var Registry = require('../../registry');
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
 var TERNARY = 'ternary';
@@ -64,9 +65,25 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     for(var i = 0; i < oldTernaryKeys.length; i++) {
         var oldTernaryKey = oldTernaryKeys[i];
         var oldTernary = oldFullLayout[oldTernaryKey]._subplot;
+        var newTernary = newFullLayout[oldTernaryKey];
 
-        if(!newFullLayout[oldTernaryKey] && !!oldTernary) {
+        if(oldTernary && oldTernary._scene) {
+            var hasRegl = newFullData.some(function(trace) {
+                return (
+                    trace.visible === true &&
+                    trace.subplot === oldTernaryKey &&
+                    Registry.traceIs(trace, 'regl')
+                );
+            });
+
+            if(!newTernary || !hasRegl) {
+                oldTernary._scene.destroy();
+            }
+        }
+
+        if(!newTernary && oldTernary) {
             oldTernary.plotContainer.remove();
+            if(oldTernary.topPlotContainer) oldTernary.topPlotContainer.remove();
             oldTernary.clipDef.remove();
             oldTernary.clipDefRelative.remove();
             oldTernary.layers['a-title'].remove();
@@ -75,6 +92,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 };
+
+exports.toSVG = require('../cartesian').toSVG;
 
 exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;

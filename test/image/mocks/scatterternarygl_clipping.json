@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+      "type": "scatterternarygl",
+      "mode": "lines+markers",
+      "a": [
+        70,
+        15,
+        15,
+        70
+      ],
+      "b": [
+        15,
+        70,
+        15,
+        15
+      ],
+      "c": [
+        15,
+        15,
+        70,
+        15
+      ],
+      "line": {
+        "color": "#e11",
+        "width": 7
+      },
+      "marker": {
+        "color": "#e11",
+        "size": 24,
+        "line": {
+          "color": "#7f0000",
+          "width": 2
+        }
+      }
+    }
+  ],
+  "layout": {
+    "ternary": {
+      "sum": 100,
+      "aaxis": {
+        "title": {
+          "text": "A"
+        },
+        "min": 15,
+        "showgrid": true,
+        "showline": true,
+        "linecolor": "#333",
+        "linewidth": 3,
+        "layer": "above traces"
+      },
+      "baxis": {
+        "title": {
+          "text": "B"
+        },
+        "min": 15,
+        "showgrid": true,
+        "showline": true,
+        "linecolor": "#333",
+        "linewidth": 3,
+        "layer": "above traces"
+      },
+      "caxis": {
+        "title": {
+          "text": "C"
+        },
+        "min": 15,
+        "showgrid": true,
+        "showline": true,
+        "linecolor": "#333",
+        "linewidth": 3,
+        "layer": "above traces"
+      }
+    },
+    "showlegend": false,
+    "width": 700,
+    "height": 500,
+    "autosize": false
+  }
+}

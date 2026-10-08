@@ -51,6 +51,12 @@ export interface PlotScatterDataPoint {
  * numbers.
  */
 export interface PlotDatum {
+    /** Normalized ternary component a. */
+    a?: number;
+    /** Normalized ternary component b. */
+    b?: number;
+    /** Normalized ternary component c. */
+    c?: number;
     /** Index of the trace producing this point. */
     curveNumber: number;
     /** The trace this point belongs to. */

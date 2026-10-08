@@ -1,0 +1,99 @@
+{
+  "data": [
+    {
+      "type": "scatterternarygl",
+      "mode": "markers+text",
+      "a": [
+        75,
+        70,
+        75,
+        5,
+        10,
+        10,
+        20,
+        10,
+        15,
+        10,
+        20
+      ],
+      "b": [
+        25,
+        10,
+        20,
+        60,
+        80,
+        90,
+        70,
+        20,
+        5,
+        10,
+        10
+      ],
+      "c": [
+        0,
+        20,
+        5,
+        35,
+        10,
+        0,
+        10,
+        70,
+        80,
+        80,
+        70
+      ],
+      "text": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11"
+      ],
+      "textposition": "top center",
+      "marker": {
+        "size": 12,
+        "color": "#636efa",
+        "line": {
+          "color": "#222",
+          "width": 1
+        }
+      }
+    }
+  ],
+  "layout": {
+    "ternary": {
+      "sum": 100,
+      "aaxis": {
+        "title": {
+          "text": "A"
+        },
+        "showline": true,
+        "showgrid": true
+      },
+      "baxis": {
+        "title": {
+          "text": "B"
+        },
+        "showline": true,
+        "showgrid": true
+      },
+      "caxis": {
+        "title": {
+          "text": "C"
+        },
+        "showline": true,
+        "showgrid": true
+      }
+    },
+    "showlegend": false,
+    "width": 700,
+    "height": 500,
+    "autosize": false
+  }
+}

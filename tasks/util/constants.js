@@ -127,6 +127,7 @@ var partialBundleTraces = {
         'scatterpolargl',
         'scattersmith',
         'scatterternary',
+        'scatterternarygl',
         'splom',
         'streamtube',
         'sunburst',
