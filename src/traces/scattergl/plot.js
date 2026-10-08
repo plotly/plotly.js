@@ -81,32 +81,6 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
         if(scene.fill2d === true) {
             scene.fill2d = createLine(regl);
         }
-        if(scene.glText === true) {
-            scene.glText = new Array(count);
-            for(i = 0; i < count; i++) {
-                scene.glText[i] = new Text(regl);
-            }
-        }
-
-        // update main marker options
-        if(scene.glText) {
-            if(count > scene.glText.length) {
-                // add gl text marker
-                var textsToAdd = count - scene.glText.length;
-                for(i = 0; i < textsToAdd; i++) {
-                    scene.glText.push(new Text(regl));
-                }
-            } else if(count < scene.glText.length) {
-                // remove gl text marker
-                var textsToRemove = scene.glText.length - count;
-                var removedTexts = scene.glText.splice(count, textsToRemove);
-                removedTexts.forEach(function(text) { text.destroy(); });
-            }
-
-            for(i = 0; i < count; i++) {
-                scene.glText[i].update(scene.textOptions[i]);
-            }
-        }
         if(scene.line2d) {
             scene.line2d.update(scene.lineOptions);
             scene.lineOptions = scene.lineOptions.map(function(lineOptions) {
@@ -307,6 +281,16 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
         } else {
             stash.xpx = stash.ypx = null;
         }
+    }
+
+    if (scene.glText && (scene.dirty || scene.glTextOnFocus !== isSelectMode)) {
+        const textRegl = isSelectMode ? fullLayout._glcanvas.data()[1].regl : regl;
+        // Keep one set per canvas so mode changes reuse WebGL text buffers.
+        scene.glText = scene.glTextLayers[isSelectMode ? 1 : 0];
+        scene.glTextOnFocus = isSelectMode;
+        while (scene.glText.length < count) scene.glText.push(new Text(textRegl));
+        if (scene.glText.length > count) scene.glText.splice(count).forEach(text => text.destroy());
+        for (let i = 0; i < count; i++) scene.glText[i].update(scene.textOptions[i]);
     }
 
     if(isSelectMode) {
