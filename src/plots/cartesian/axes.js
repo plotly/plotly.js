@@ -1969,7 +1969,8 @@ function tickTextObj(ax, x, text) {
 
 function formatDate(ax, out, hover, extraPrecision) {
     var tr = ax._useTicklabelIndex ? ax.minor._tickround : ax._tickround;
-    var fmt = ax._useTicklabelIndex ? "" : (hover && ax.hoverformat) || axes.getTickFormat(ax);
+    var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
+
     // Only apply extra precision if no explicit format was provided.
     extraPrecision = !fmt && extraPrecision;
 
