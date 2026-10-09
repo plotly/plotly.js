@@ -720,8 +720,7 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // this could always be done but the additional information on the minor
         // axis is just necessary when using ticklabelindex.
         autoTickRound(mockAx);
-        delete mockAx.minor; // prevent self-reference
-        Lib.extendFlat(ax.minor, mockAx);
+        ax.minor._tickround = mockAx._tickround;
     }
 };
 
