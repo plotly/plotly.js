@@ -726,7 +726,7 @@ describe('heatmap plot', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         function getImageURL() {
-            return d3Select('.hm > image').attr('href');
+            return d3Select('.hm > image').node()._dataUrl;
         }
 
         var imageURLs = [];
@@ -753,6 +753,68 @@ describe('heatmap plot', function() {
             expect(imageURLs[1]).toEqual(imageURLs[3]);
         })
         .then(done, done.fail);
+    });
+
+    it('should show a blob URL and revoke the blob URLs that it no longer shows', function(done) {
+        const getImage = () => d3Select('.hm > image');
+        const revoked = [];
+        const revokeObjectURL = URL.revokeObjectURL;
+        spyOn(URL, 'revokeObjectURL').and.callFake((url) => {
+            revoked.push(url);
+            revokeObjectURL.call(URL, url);
+        });
+
+        const hrefs = [];
+        const expectRevoked = () => {
+            hrefs.forEach((href) => expect(revoked).toContain(href));
+        };
+
+        Plotly.newPlot(gd, [{ type: 'heatmap', z: [[1, 2], [3, 4]] }])
+            .then(() => {
+                hrefs.push(getImage().attr('href'));
+                expect(hrefs[0]).toMatch(/^blob:/);
+                expect(getImage().node()._dataUrl).toMatch(/^data:image\/png;base64,/);
+
+                return Plotly.restyle(gd, 'colorscale', 'Greens');
+            })
+            .then(() => {
+                const href = getImage().attr('href');
+                expect(href).toMatch(/^blob:/);
+                expect(revoked).toContain(hrefs[0]);
+                expect(revoked).not.toContain(href);
+                hrefs.push(href);
+
+                return Plotly.react(gd, [{ type: 'scatter', y: [1, 2] }]);
+            })
+            .then(() => {
+                expectRevoked();
+                expect(gd._imageBlobNodes).toBeUndefined();
+
+                return Plotly.react(gd, [{ type: 'heatmap', z: [[1, 2], [3, 4]] }]);
+            })
+            .then(() => {
+                hrefs.push(getImage().attr('href'));
+                Plotly.purge(gd);
+                expectRevoked();
+            })
+            .then(done, done.fail);
+    });
+
+    it('should put a data URL in an exported SVG', function(done) {
+        const expectDataUrl = (svg) => {
+            expect(svg).toContain('data:image/png;base64,');
+            expect(svg).not.toContain('blob:');
+        };
+
+        Plotly.newPlot(gd, [{ type: 'heatmap', z: [[1, 2], [3, 4]] }])
+            .then(() => Plotly.toImage(gd, { format: 'svg' }))
+            .then((url) => {
+                expectDataUrl(decodeURIComponent(url));
+
+                // Call toSVG last because it modifies the plot DOM.
+                expectDataUrl(Plotly.Snapshot.toSVG(gd));
+            })
+            .then(done, done.fail);
     });
 
     it('draws canvas with correct margins', function(done) {
