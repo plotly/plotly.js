@@ -444,16 +444,43 @@ export interface HoverLabel {
     align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
     /** Sets the background color of the hover labels for this trace */
     bgcolor?: Color | Color[] | TypedArray;
+    /** Sets the background color of the secondary hover label for this trace. */
+    bgnamecolor?: Color;
     /** Sets the border color of the hover labels for this trace. */
     bordercolor?: Color | Color[] | TypedArray;
+    /**
+     * Sets the padding (in px) between the text and the border of the hover labels for this trace.
+     * @default 3
+     * Minimum: 0
+     */
+    borderpad?: number;
+    /**
+     * Sets the border radius (in px) of the hover labels for this trace.
+     * @default 0
+     * Minimum: 0
+     */
+    borderradius?: number;
+    /**
+     * Sets the border width (in px) of the hover labels for this trace.
+     * @default 1
+     * Minimum: 0
+     */
+    borderwidth?: number;
     /** Sets the font used in hover labels. */
     font?: FontArray;
+    /** Sets the text color of the secondary hover label for this trace. */
+    namecolor?: Color;
     /**
      * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
      * @default 15
      * Minimum: -1
      */
     namelength?: number | number[] | TypedArray;
+    /**
+     * Sets the shadow of the hover labels for this trace.
+     * @default 'none'
+     */
+    shadow?: string;
     /**
      * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
      * @default true
@@ -1583,16 +1610,43 @@ export interface CandlestickData {
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
         /** Sets the background color of the hover labels for this trace */
         bgcolor?: Color | Color[] | TypedArray;
+        /** Sets the background color of the secondary hover label for this trace. */
+        bgnamecolor?: Color;
         /** Sets the border color of the hover labels for this trace. */
         bordercolor?: Color | Color[] | TypedArray;
+        /**
+         * Sets the padding (in px) between the text and the border of the hover labels for this trace.
+         * @default 3
+         * Minimum: 0
+         */
+        borderpad?: number;
+        /**
+         * Sets the border radius (in px) of the hover labels for this trace.
+         * @default 0
+         * Minimum: 0
+         */
+        borderradius?: number;
+        /**
+         * Sets the border width (in px) of the hover labels for this trace.
+         * @default 1
+         * Minimum: 0
+         */
+        borderwidth?: number;
         /** Sets the font used in hover labels. */
         font?: FontArray;
+        /** Sets the text color of the secondary hover label for this trace. */
+        namecolor?: Color;
         /**
          * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
          * @default 15
          * Minimum: -1
          */
         namelength?: number | number[] | TypedArray;
+        /**
+         * Sets the shadow of the hover labels for this trace.
+         * @default 'none'
+         */
+        shadow?: string;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
@@ -6080,16 +6134,43 @@ export interface OhlcData {
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
         /** Sets the background color of the hover labels for this trace */
         bgcolor?: Color | Color[] | TypedArray;
+        /** Sets the background color of the secondary hover label for this trace. */
+        bgnamecolor?: Color;
         /** Sets the border color of the hover labels for this trace. */
         bordercolor?: Color | Color[] | TypedArray;
+        /**
+         * Sets the padding (in px) between the text and the border of the hover labels for this trace.
+         * @default 3
+         * Minimum: 0
+         */
+        borderpad?: number;
+        /**
+         * Sets the border radius (in px) of the hover labels for this trace.
+         * @default 0
+         * Minimum: 0
+         */
+        borderradius?: number;
+        /**
+         * Sets the border width (in px) of the hover labels for this trace.
+         * @default 1
+         * Minimum: 0
+         */
+        borderwidth?: number;
         /** Sets the font used in hover labels. */
         font?: FontArray;
+        /** Sets the text color of the secondary hover label for this trace. */
+        namecolor?: Color;
         /**
          * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
          * @default 15
          * Minimum: -1
          */
         namelength?: number | number[] | TypedArray;
+        /**
+         * Sets the shadow of the hover labels for this trace.
+         * @default 'none'
+         */
+        shadow?: string;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
@@ -16269,18 +16350,45 @@ export interface Layout {
         align?: 'left' | 'right' | 'auto';
         /** Sets the background color of all hover labels on graph */
         bgcolor?: Color;
+        /** Sets the background color of all secondary hover labels on graph. */
+        bgnamecolor?: Color;
         /** Sets the border color of all hover labels on graph. */
         bordercolor?: Color;
+        /**
+         * Sets the padding (in px) between the text and the border of all hover labels on graph.
+         * @default 3
+         * Minimum: 0
+         */
+        borderpad?: number;
+        /**
+         * Sets the border radius (in px) of all hover labels on graph.
+         * @default 0
+         * Minimum: 0
+         */
+        borderradius?: number;
+        /**
+         * Sets the border width (in px) of all hover labels on graph.
+         * @default 1
+         * Minimum: 0
+         */
+        borderwidth?: number;
         /** Sets the default hover label font used by all traces on the graph. */
         font?: Font;
         /** Sets the font for group titles in hover (unified modes). Defaults to `hoverlabel.font`. */
         grouptitlefont?: Font;
+        /** Sets the text color of all secondary hover labels on graph. */
+        namecolor?: Color;
         /**
          * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
          * @default 15
          * Minimum: -1
          */
         namelength?: number;
+        /**
+         * Sets the shadow of all hover labels on graph. Use *none* to disable the shadow, or provide CSS `drop-shadow` arguments such as *0 2px 4px rgba(0, 0, 0, 0.2)*.
+         * @default 'none'
+         */
+        shadow?: string;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
