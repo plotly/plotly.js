@@ -371,8 +371,12 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            // [ [cnt, {$cat: index}], for 1,2 ]
-            var seen = [[0, {}], [0, {}]];
+            // [cnt, {$cat: index}] for the first (parent) level
+            var seen0 = [0, Object.create(null)];
+            // {$parentCat: [cnt, {$cat: index}]} for the second (child) level,
+            // tracked *per parent* so that each parent keeps the child order
+            // found in its own data rather than sharing one global order
+            var seen1 = Object.create(null);
             // [ [arrayIn[0][i], arrayIn[1][i]], for i .. N ]
             var list = [];
 
@@ -391,11 +395,14 @@ module.exports = function setConvert(ax, fullLayout) {
                             if(isValidCategory(v0) && isValidCategory(v1)) {
                                 list.push([v0, v1]);
 
-                                if(!(v0 in seen[0][1])) {
-                                    seen[0][1][v0] = seen[0][0]++;
+                                if(!(v0 in seen0[1])) {
+                                    seen0[1][v0] = seen0[0]++;
+                                    seen1[v0] = [0, Object.create(null)];
                                 }
-                                if(!(v1 in seen[1][1])) {
-                                    seen[1][1][v1] = seen[1][0]++;
+
+                                var seenUnder = seen1[v0];
+                                if(!(v1 in seenUnder[1])) {
+                                    seenUnder[1][v1] = seenUnder[0]++;
                                 }
                             }
                         }
@@ -404,12 +411,12 @@ module.exports = function setConvert(ax, fullLayout) {
             }
 
             list.sort(function(a, b) {
-                var ind0 = seen[0][1];
+                var ind0 = seen0[1];
                 var d = ind0[a[0]] - ind0[b[0]];
                 if(d) return d;
 
-                var ind1 = seen[1][1];
-                return ind1[a[1]] - ind1[b[1]];
+                // same parent, so the two rows share a child-index map
+                return seen1[a[0]][1][a[1]] - seen1[b[0]][1][b[1]];
             });
 
             for(i = 0; i < list.length; i++) {
