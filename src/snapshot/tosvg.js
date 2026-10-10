@@ -7,6 +7,9 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+
+const { restoreImageDataUrls } = require('../lib/image_href');
+
 var DOUBLEQUOTE_REGEX = /"/g;
 var DUMMY_SUB = 'TOBESTRIPPED';
 // Match TOBESTRIPPED adjacent to either a literal " or its entity form &quot;.
@@ -178,6 +181,9 @@ module.exports = function toSVG(gd, format, scale) {
 
     // Fix quotations around font strings and gradient URLs
     s = s.replace(DUMMY_REGEX, "'");
+
+    // Embed the image data so the exported SVG does not depend on temporary blob URLs.
+    s = restoreImageDataUrls(svg.node(), s);
 
     return s;
 };
