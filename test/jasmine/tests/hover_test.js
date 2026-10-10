@@ -5231,6 +5231,119 @@ describe('Test hover label custom styling:', function () {
             })
             .then(done, done.fail);
     });
+
+    it('should apply extended hoverlabel styling', function (done) {
+        var gd = createGraphDiv();
+        var borderPad = 10;
+
+        Plotly.newPlot(
+            gd,
+            [
+                {
+                    x: [1, 2, 3],
+                    y: [1, 2, 1],
+                    hovertemplate: 'value: %{y}<extra>secondary</extra>'
+                }
+            ],
+            {
+                hovermode: 'x',
+                width: 500,
+                height: 400,
+                margin: { l: 50, r: 50, t: 50, b: 50 },
+                hoverlabel: {
+                    borderwidth: 4,
+                    borderradius: 8,
+                    borderpad: borderPad,
+                    namecolor: 'white',
+                    bgnamecolor: 'black',
+                    shadow: '0 2px 4px rgba(0, 0, 0, 0.25)'
+                }
+            }
+        )
+            .then(function () {
+                _hover(gd, { xval: 2 });
+
+                var label = d3Select('g.hovertext');
+                var path = label.select('path');
+                var nameRect = label.select('rect');
+                var nameText = label.select('text.name');
+                var labelData = label.datum();
+
+                expect(path.attr('d')).toContain('Q');
+                expect(path.node().style.strokeWidth).toBe('4px');
+                expect(labelData.bx - labelData.txwidth).toBeCloseTo(2 * borderPad, 5);
+
+                expect(nameRect.node().style.fill).toBe('rgb(0, 0, 0)');
+                expect(nameText.node().style.fill).toBe('rgb(255, 255, 255)');
+                expect(Number(nameRect.attr('rx'))).toBeGreaterThan(0);
+                expect(Number(nameRect.attr('ry'))).toBeGreaterThan(0);
+                expect(label.node().style.filter).toContain('drop-shadow');
+
+                var commonLabel = d3Select('g.axistext');
+                var commonPath = commonLabel.select('path');
+
+                expect(commonPath.attr('d')).toContain('Q');
+                expect(commonPath.node().style.strokeWidth).toBe('4px');
+                expect(commonLabel.node().style.filter).toContain('drop-shadow');
+            })
+            .then(done, done.fail);
+    });
+
+    it('should choose a contrasting secondary-label text color when only bgnamecolor is set', function (done) {
+        var gd = createGraphDiv();
+
+        Plotly.newPlot(
+            gd,
+            [
+                {
+                    x: [1],
+                    y: [1],
+                    hovertemplate: 'value: %{y}<extra>secondary</extra>'
+                }
+            ],
+            {
+                hoverlabel: {
+                    bgnamecolor: 'black'
+                }
+            }
+        )
+            .then(function () {
+                _hover(gd, [{ curveNumber: 0, pointNumber: 0 }]);
+
+                var label = d3Select('g.hovertext');
+                expect(label.select('rect').node().style.fill).toBe('rgb(0, 0, 0)');
+                expect(label.select('text.name').node().style.fill).toBe('rgb(255, 255, 255)');
+            })
+            .then(done, done.fail);
+    });
+
+    it('should round a hoverlabel without an arrow', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.newPlot(
+            gd,
+            [
+                {
+                    x: [1, 2, 3],
+                    y: [1, 2, 1]
+                }
+            ],
+            {
+                hoverlabel: {
+                    borderradius: 8,
+                    showarrow: false
+                }
+            }
+        )
+            .then(function () {
+                _hover(gd, [{ curveNumber: 0, pointNumber: 1 }]);
+
+                var path = d3Select('g.hovertext').select('path');
+                expect(path.attr('d')).toContain('Q');
+                expect(path.attr('d')).not.toMatch(/^M0,0L/);
+            })
+            .then(done, done.fail);
+    });
 });
 
 describe('hover distance', function () {
@@ -7249,6 +7362,58 @@ describe('hovermode: (x|y)unified', function () {
             })
             .then(done, done.fail);
     });
+
+    it('should apply border width, border radius, padding and shadow to unified hover', function (done) {
+        var defaultPad = 3;
+        var customPad = 10;
+        var initialWidth;
+        var initialHeight;
+
+        Plotly.newPlot(
+            gd,
+            [
+                { x: [1, 2, 3], y: [1, 2, 3], name: 'A' },
+                { x: [1, 2, 3], y: [3, 2, 1], name: 'B' }
+            ],
+            {
+                hovermode: 'x unified',
+                showlegend: false,
+                hoverlabel: {
+                    borderwidth: 4,
+                    borderradius: 9,
+                    borderpad: defaultPad,
+                    shadow: '0 2px 4px rgba(0, 0, 0, 0.25)'
+                }
+            }
+        )
+            .then(function () {
+                _hover(gd, { xval: 2 });
+
+                var hover = getHoverLabel();
+                var bg = hover.select('rect.bg');
+
+                expect(Number(bg.attr('rx'))).toBe(9);
+                expect(Number(bg.attr('ry'))).toBe(9);
+                expect(bg.node().style.strokeWidth).toBe('4px');
+                expect(hover.node().style.filter).toContain('drop-shadow');
+
+                initialWidth = Number(bg.attr('width'));
+                initialHeight = Number(bg.attr('height'));
+
+                return Plotly.relayout(gd, 'hoverlabel.borderpad', customPad);
+            })
+            .then(function () {
+                _hover(gd, { xval: 2 });
+
+                var bg = getHoverLabel().select('rect.bg');
+                var padIncrease = 2 * (customPad - defaultPad);
+
+                expect(Number(bg.attr('width'))).toBeCloseTo(initialWidth + padIncrease, 5);
+                expect(Number(bg.attr('height'))).toBeCloseTo(initialHeight + padIncrease, 5);
+            })
+            .then(done, done.fail);
+    });
+
 
     it('should use hoverlabel.font or legend.font or layout.font', function (done) {
         function assertFont(fontFamily, fontSize, fontColor) {

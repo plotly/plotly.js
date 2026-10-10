@@ -104,6 +104,20 @@ exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
  *      'left' or 'right' for which side of the x/y box to try to put this on first
  *    - borderColor (optional):
  *      color for the border, defaults to strongest contrast with color
+ *    - borderWidth (optional):
+ *      width of the border in pixels
+ *    - borderRadius (optional):
+ *      radius of the hover label corners in pixels
+ *    - borderPad (optional):
+ *      padding between the label text and border in pixels
+ *    - nameColor (optional):
+ *      color for the secondary label text
+ *    - bgNameColor (optional):
+ *      background color for the secondary label
+ *    - shadow (optional):
+ *      CSS drop-shadow parameters for the hover label
+ *    - showArrow (optional):
+ *      whether to draw the arrow pointing to the data
  *    - fontFamily (optional):
  *      string, the font for this label, defaults to constants.HOVERFONT
  *    - fontSize (optional):
@@ -193,6 +207,13 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 
             // optional extra bits of styling
             borderColor: hoverItem.borderColor,
+            borderWidth: hoverItem.borderWidth,
+            borderRadius: hoverItem.borderRadius,
+            borderPad: hoverItem.borderPad,
+            nameColor: hoverItem.nameColor,
+            bgNameColor: hoverItem.bgNameColor,
+            shadow: hoverItem.shadow,
+            showArrow: hoverItem.showArrow,
             fontFamily: hoverItem.fontFamily,
             fontSize: hoverItem.fontSize,
             fontColor: hoverItem.fontColor,
@@ -1056,6 +1077,205 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
+function applyHoverShadow(selection, shadow) {
+    var filter = shadow && shadow !== 'none' ? 'drop-shadow(' + shadow + ')' : null;
+    selection.style('filter', filter);
+}
+
+function roundedRectPath(x0, y0, x1, y1, radius, roundLeft, roundRight, pX, pY) {
+    var left = Math.min(x0, x1);
+    var right = Math.max(x0, x1);
+    var top = Math.min(y0, y1);
+    var bottom = Math.max(y0, y1);
+
+    var r = Math.max(0, Math.min(radius, (right - left) / 2, (bottom - top) / 2));
+    var leftRadius = roundLeft ? r : 0;
+    var rightRadius = roundRight ? r : 0;
+
+    var path = 'M' + pX(left + leftRadius) + ',' + pY(top);
+    path += 'H' + pX(right - rightRadius);
+
+    if(rightRadius) {
+        path += 'Q' + pX(right) + ',' + pY(top) + ' ' + pX(right) + ',' + pY(top + rightRadius);
+    }
+
+    path += 'V' + pY(bottom - rightRadius);
+
+    if(rightRadius) {
+        path += 'Q' + pX(right) + ',' + pY(bottom) + ' ' + pX(right - rightRadius) + ',' + pY(bottom);
+    }
+
+    path += 'H' + pX(left + leftRadius);
+
+    if(leftRadius) {
+        path += 'Q' + pX(left) + ',' + pY(bottom) + ' ' + pX(left) + ',' + pY(bottom - leftRadius);
+    }
+
+    path += 'V' + pY(top + leftRadius);
+
+    if(leftRadius) {
+        path += 'Q' + pX(left) + ',' + pY(top) + ' ' + pX(left + leftRadius) + ',' + pY(top);
+    }
+
+    return path + 'Z';
+}
+
+function roundedSideArrowPath(width, height, horzSign, offsetX, offsetY, radius, roundOppositeSide, pX, pY) {
+    var nearX = horzSign * HOVERARROWSIZE + offsetX;
+    var top = offsetY - height / 2;
+    var bottom = offsetY + height / 2;
+
+    // clamp the corners next to the arrow so they do not overlap its base
+    var arrowSideRadius = Math.max(
+        0,
+        Math.min(radius, width / 2, height / 2 - HOVERARROWSIZE)
+    );
+    var oppositeSideRadius = roundOppositeSide ? Math.max(0, Math.min(radius, width / 2, height / 2)) : 0;
+
+    function x(u) {
+        return pX(nearX + horzSign * u);
+    }
+
+    var path = 'M0,0L' + x(0) + ',' + pY(offsetY + HOVERARROWSIZE);
+    path += 'V' + pY(bottom - arrowSideRadius);
+
+    if(arrowSideRadius) {
+        path +=
+            'Q' +
+            x(0) +
+            ',' +
+            pY(bottom) +
+            ' ' +
+            x(arrowSideRadius) +
+            ',' +
+            pY(bottom);
+    }
+
+    path += 'H' + x(width - oppositeSideRadius);
+
+    if(oppositeSideRadius) {
+        path +=
+            'Q' +
+            x(width) +
+            ',' +
+            pY(bottom) +
+            ' ' +
+            x(width) +
+            ',' +
+            pY(bottom - oppositeSideRadius);
+    }
+
+    path += 'V' + pY(top + oppositeSideRadius);
+
+    if(oppositeSideRadius) {
+        path +=
+            'Q' +
+            x(width) +
+            ',' +
+            pY(top) +
+            ' ' +
+            x(width - oppositeSideRadius) +
+            ',' +
+            pY(top);
+    }
+
+    path += 'H' + x(arrowSideRadius);
+
+    if(arrowSideRadius) {
+        path +=
+            'Q' +
+            x(0) +
+            ',' +
+            pY(top) +
+            ' ' +
+            x(0) +
+            ',' +
+            pY(top + arrowSideRadius);
+    }
+
+    path += 'V' + pY(offsetY - HOVERARROWSIZE) + 'Z';
+    return path;
+}
+
+function roundedTopBottomArrowPath(tipX, width, height, vertSign, radius) {
+    var left = -width / 2;
+    var right = width / 2;
+    var nearY = vertSign * HOVERARROWSIZE;
+    var farY = vertSign * (HOVERARROWSIZE + height);
+
+    var maxRadius = Math.max(0, Math.min(radius, width / 2, height / 2));
+    var nearLeftRadius = Math.min(
+        maxRadius,
+        Math.max(0, tipX - HOVERARROWSIZE - left)
+    );
+    var nearRightRadius = Math.min(
+        maxRadius,
+        Math.max(0, right - tipX - HOVERARROWSIZE)
+    );
+
+    var path = 'M' + tipX + ',0';
+    path += 'L' + (tipX + HOVERARROWSIZE) + ',' + nearY;
+    path += 'H' + (right - nearRightRadius);
+
+    if(nearRightRadius) {
+        path +=
+            'Q' +
+            right +
+            ',' +
+            nearY +
+            ' ' +
+            right +
+            ',' +
+            (nearY + vertSign * nearRightRadius);
+    }
+
+    path += 'V' + (farY - vertSign * maxRadius);
+
+    if(maxRadius) {
+        path +=
+            'Q' +
+            right +
+            ',' +
+            farY +
+            ' ' +
+            (right - maxRadius) +
+            ',' +
+            farY;
+    }
+
+    path += 'H' + (left + maxRadius);
+
+    if(maxRadius) {
+        path +=
+            'Q' +
+            left +
+            ',' +
+            farY +
+            ' ' +
+            left +
+            ',' +
+            (farY - vertSign * maxRadius);
+    }
+
+    path += 'V' + (nearY + vertSign * nearLeftRadius);
+
+    if(nearLeftRadius) {
+        path +=
+            'Q' +
+            left +
+            ',' +
+            nearY +
+            ' ' +
+            (left + nearLeftRadius) +
+            ',' +
+            nearY;
+    }
+
+    path += 'H' + (tipX - HOVERARROWSIZE) + 'Z';
+    return path;
+}
+
+
 function createHoverText(hoverData, opts) {
     var gd = opts.gd;
     var fullLayout = gd._fullLayout;
@@ -1152,6 +1372,10 @@ function createHoverText(hoverData, opts) {
 
         var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
         var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
+        var commonBorderWidth = commonLabelOpts.borderwidth === undefined ? 1 : commonLabelOpts.borderwidth;
+        var commonBorderRadius = commonLabelOpts.borderradius || 0;
+        var commonBorderPad = commonLabelOpts.borderpad ?? HOVERTEXTPAD;
+        var commonShadow = commonLabelOpts.shadow;
         var contrastColor = Color.contrast(commonBgColor);
         var commonLabelOptsFont = commonLabelOpts.font;
         var commonLabelFont = {
@@ -1168,7 +1392,8 @@ function createHoverText(hoverData, opts) {
 
         lpath.style({
             fill: commonBgColor,
-            stroke: commonStroke
+            stroke: commonStroke,
+            'stroke-width': commonBorderWidth + 'px'
         });
 
         ltext
@@ -1191,14 +1416,14 @@ function createHoverText(hoverData, opts) {
                     svgTextUtils.positionText,
                     0,
                     xa.side === 'top'
-                        ? outerTop - tbb.bottom - HOVERARROWSIZE - HOVERTEXTPAD
-                        : outerTop - tbb.top + HOVERARROWSIZE + HOVERTEXTPAD
+                        ? outerTop - tbb.bottom - HOVERARROWSIZE - commonBorderPad
+                        : outerTop - tbb.top + HOVERARROWSIZE + commonBorderPad
                 );
 
             lx = xa._offset + (c0.x0 + c0.x1) / 2;
             ly = ya._offset + (xa.side === 'top' ? 0 : ya._length);
 
-            var halfWidth = tbb.width / 2 + HOVERTEXTPAD;
+            var halfWidth = tbb.width / 2 + commonBorderPad;
 
             var tooltipMidX = lx;
             if (lx < halfWidth) {
@@ -1207,29 +1432,40 @@ function createHoverText(hoverData, opts) {
                 tooltipMidX = fullLayout.width - halfWidth;
             }
 
+            var commonHeight = commonBorderPad * 2 + tbb.height;
+            var commonTipX = lx - tooltipMidX;
+
             lpath.attr(
                 'd',
-                'M' +
-                    (lx - tooltipMidX) +
-                    ',0' +
-                    'L' +
-                    (lx - tooltipMidX + HOVERARROWSIZE) +
-                    ',' +
-                    topsign +
-                    HOVERARROWSIZE +
-                    'H' +
-                    halfWidth +
-                    'v' +
-                    topsign +
-                    (HOVERTEXTPAD * 2 + tbb.height) +
-                    'H' +
-                    -halfWidth +
-                    'V' +
-                    topsign +
-                    HOVERARROWSIZE +
-                    'H' +
-                    (lx - tooltipMidX - HOVERARROWSIZE) +
-                    'Z'
+                commonBorderRadius
+                    ? roundedTopBottomArrowPath(
+                        commonTipX,
+                        halfWidth * 2,
+                        commonHeight,
+                        xa.side === 'top' ? -1 : 1,
+                        commonBorderRadius
+                    )
+                    : 'M' +
+                          commonTipX +
+                          ',0' +
+                          'L' +
+                          (commonTipX + HOVERARROWSIZE) +
+                          ',' +
+                          topsign +
+                          HOVERARROWSIZE +
+                          'H' +
+                          halfWidth +
+                          'v' +
+                          topsign +
+                          commonHeight +
+                          'H' +
+                          -halfWidth +
+                          'V' +
+                          topsign +
+                          HOVERARROWSIZE +
+                          'H' +
+                          (commonTipX - HOVERARROWSIZE) +
+                          'Z'
             );
 
             lx = tooltipMidX;
@@ -1237,11 +1473,11 @@ function createHoverText(hoverData, opts) {
             commonLabelRect.maxX = lx + halfWidth;
             if (xa.side === 'top') {
                 // label on negative y side
-                commonLabelRect.minY = ly - (HOVERTEXTPAD * 2 + tbb.height);
-                commonLabelRect.maxY = ly - HOVERTEXTPAD;
+                commonLabelRect.minY = ly - (commonBorderPad * 2 + tbb.height);
+                commonLabelRect.maxY = ly - commonBorderPad;
             } else {
-                commonLabelRect.minY = ly + HOVERTEXTPAD;
-                commonLabelRect.maxY = ly + (HOVERTEXTPAD * 2 + tbb.height);
+                commonLabelRect.minY = ly + commonBorderPad;
+                commonLabelRect.maxY = ly + (commonBorderPad * 2 + tbb.height);
             }
         } else {
             var anchor;
@@ -1263,37 +1499,52 @@ function createHoverText(hoverData, opts) {
 
             ltext.attr('text-anchor', anchor);
 
+            var commonWidth = commonBorderPad * 2 + tbb.width;
+            var commonBoxHeight = commonBorderPad * 2 + tbb.height;
+
             lpath.attr(
                 'd',
-                'M0,0' +
-                    'L' +
-                    leftsign +
-                    HOVERARROWSIZE +
-                    ',' +
-                    HOVERARROWSIZE +
-                    'V' +
-                    (HOVERTEXTPAD + tbb.height / 2) +
-                    'h' +
-                    leftsign +
-                    (HOVERTEXTPAD * 2 + tbb.width) +
-                    'V-' +
-                    (HOVERTEXTPAD + tbb.height / 2) +
-                    'H' +
-                    leftsign +
-                    HOVERARROWSIZE +
-                    'V-' +
-                    HOVERARROWSIZE +
-                    'Z'
+                commonBorderRadius
+                    ? roundedSideArrowPath(
+                        commonWidth,
+                        commonBoxHeight,
+                        sgn,
+                        0,
+                        0,
+                        commonBorderRadius,
+                        true,
+                        Lib.identity,
+                        Lib.identity
+                      )
+                    : 'M0,0' +
+                          'L' +
+                          leftsign +
+                          HOVERARROWSIZE +
+                          ',' +
+                          HOVERARROWSIZE +
+                          'V' +
+                          (commonBorderPad + tbb.height / 2) +
+                          'h' +
+                          leftsign +
+                          commonWidth +
+                          'V-' +
+                          (commonBorderPad + tbb.height / 2) +
+                          'H' +
+                          leftsign +
+                          HOVERARROWSIZE +
+                          'V-' +
+                          HOVERARROWSIZE +
+                          'Z'
             );
 
-            commonLabelRect.minY = ly - (HOVERTEXTPAD + tbb.height / 2);
-            commonLabelRect.maxY = ly + (HOVERTEXTPAD + tbb.height / 2);
+            commonLabelRect.minY = ly - (commonBorderPad + tbb.height / 2);
+            commonLabelRect.maxY = ly + (commonBorderPad + tbb.height / 2);
             if (ya.side === 'right') {
                 commonLabelRect.minX = lx + HOVERARROWSIZE;
-                commonLabelRect.maxX = lx + HOVERARROWSIZE + (HOVERTEXTPAD * 2 + tbb.width);
+                commonLabelRect.maxX = lx + HOVERARROWSIZE + (commonBorderPad * 2 + tbb.width);
             } else {
                 // label on negative x side
-                commonLabelRect.minX = lx - HOVERARROWSIZE - (HOVERTEXTPAD * 2 + tbb.width);
+                commonLabelRect.minX = lx - HOVERARROWSIZE - (commonBorderPad * 2 + tbb.width);
                 commonLabelRect.maxX = lx - HOVERARROWSIZE;
             }
 
@@ -1302,21 +1553,22 @@ function createHoverText(hoverData, opts) {
             var clipId = 'clip' + fullLayout._uid + 'commonlabel' + ya._id;
             var clipPath;
 
-            if (lx < tbb.width + 2 * HOVERTEXTPAD + HOVERARROWSIZE) {
+            if (lx < tbb.width + 2 * commonBorderPad + HOVERARROWSIZE) {
+                var clippedTextWidth = Math.max(0, tbb.width - commonBorderPad);
                 clipPath =
                     'M-' +
-                    (HOVERARROWSIZE + HOVERTEXTPAD) +
+                    (HOVERARROWSIZE + commonBorderPad) +
                     '-' +
                     halfHeight +
                     'h-' +
-                    (tbb.width - HOVERTEXTPAD) +
+                    clippedTextWidth +
                     'V' +
                     halfHeight +
                     'h' +
-                    (tbb.width - HOVERTEXTPAD) +
+                    clippedTextWidth +
                     'Z';
 
-                var ltx = tbb.width - lx + HOVERTEXTPAD;
+                var ltx = tbb.width - lx + commonBorderPad;
                 svgTextUtils.positionText(ltext, ltx, lty);
 
                 // shift each line (except the longest) so that start-of-line
@@ -1333,7 +1585,7 @@ function createHoverText(hoverData, opts) {
                     });
                 }
             } else {
-                svgTextUtils.positionText(ltext, sgn * (HOVERTEXTPAD + HOVERARROWSIZE), lty);
+                svgTextUtils.positionText(ltext, sgn * (commonBorderPad + HOVERARROWSIZE), lty);
                 clipPath = null;
             }
 
@@ -1345,6 +1597,7 @@ function createHoverText(hoverData, opts) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
+        applyHoverShadow(label, commonShadow);
     });
 
     // Show a single hover label
@@ -1358,6 +1611,7 @@ function createHoverText(hoverData, opts) {
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
         var font = hoverlabel.font;
+        var unifiedBorderPad = hoverlabel.borderpad ?? HOVERTEXTPAD;
 
         var item0 = groupedHoverData[0];
 
@@ -1380,7 +1634,7 @@ function createHoverText(hoverData, opts) {
                 font: font,
                 bgcolor: hoverlabel.bgcolor,
                 bordercolor: hoverlabel.bordercolor,
-                borderwidth: 1,
+                borderwidth: hoverlabel.borderwidth,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
                 orientation: 'v'
@@ -1446,6 +1700,24 @@ function createHoverText(hoverData, opts) {
 
         // Position the hover
         var legendContainer = container.select('g.legend');
+        var unifiedBg = legendContainer.select('rect.bg');
+        // unified hover reuses the legend renderer, so adjust its background
+        // relative to the hardcoded hover text padding without changing item layout
+        var borderPadDelta = unifiedBorderPad - HOVERTEXTPAD;
+        if(!unifiedBg.empty() && borderPadDelta) {
+            var bgX = Number(unifiedBg.attr('x')) || 0;
+            var bgY = Number(unifiedBg.attr('y')) || 0;
+            var bgWidth = Number(unifiedBg.attr('width')) || 0;
+            var bgHeight = Number(unifiedBg.attr('height')) || 0;
+
+            unifiedBg.attr({
+                x: bgX - borderPadDelta,
+                y: bgY - borderPadDelta,
+                width: Math.max(0, bgWidth + 2 * borderPadDelta),
+                height: Math.max(0, bgHeight + 2 * borderPadDelta)
+            });
+        }
+
         var tbb = getBoundingClientRect(gd, legendContainer.node());
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
@@ -1559,6 +1831,14 @@ function createHoverText(hoverData, opts) {
         ly += HOVERTEXTPAD;
 
         legendContainer.attr('transform', strTranslate(lx - 1, ly - 1));
+
+        if(!unifiedBg.empty()) {
+            unifiedBg
+                .attr('rx', hoverlabel.borderradius || 0)
+                .attr('ry', hoverlabel.borderradius || 0);
+        }
+        applyHoverShadow(legendContainer, hoverlabel.shadow);
+
         return legendContainer;
     }
 
@@ -1609,9 +1889,19 @@ function createHoverText(hoverData, opts) {
         // color for 'nums' part of the label
         var numsColor = Color.combine(Color.opacity(color0) ? color0 : Color.defaultLine, bgColor);
         // color for 'name' part of the label
-        var nameColor = Color.combine(Color.opacity(dColor) ? dColor : Color.defaultLine, bgColor);
+        var fallbackNameColor = Color.combine(Color.opacity(dColor) ? dColor : Color.defaultLine, bgColor);
+        var hoverlabel = d.trace?.hoverlabel;
+        var borderPad = d.borderPad ?? hoverlabel?.borderpad ?? HOVERTEXTPAD;
+        var bgNameColor = d.bgNameColor ?? hoverlabel?.bgnamecolor;
+        var nameColor = d.nameColor ?? hoverlabel?.namecolor;
+        var nameBg = bgNameColor || Color.addOpacity(bgColor, 0.8);
+        if(nameColor === undefined) {
+            nameColor = bgNameColor ? Color.contrast(nameBg) : fallbackNameColor;
+        }
+
         // find a contrasting color for border and text
         var contrastColor = d.borderColor || Color.contrast(numsColor);
+        var borderWidth = d.borderWidth ?? hoverlabel?.borderwidth ?? 1;
 
         var texts = getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g);
         var text = texts[0];
@@ -1642,6 +1932,8 @@ function createHoverText(hoverData, opts) {
 
         // secondary label for non-empty 'name'
         if (name && name !== text) {
+            g.select('rect').call(Color.fill, nameBg);
+
             tx2.call(Drawing.font, {
                 family: d.fontFamily || fontFamily,
                 size: d.fontSize || fontSize,
@@ -1659,8 +1951,8 @@ function createHoverText(hoverData, opts) {
                 .call(svgTextUtils.convertToTspans, gd);
 
             var t2bb = getBoundingClientRect(gd, tx2.node());
-            tx2width = t2bb.width + 2 * HOVERTEXTPAD;
-            tx2height = t2bb.height + 2 * HOVERTEXTPAD;
+            tx2width = t2bb.width + 2 * borderPad;
+            tx2height = t2bb.height + 2 * borderPad;
         } else {
             tx2.remove();
             g.select('rect').remove();
@@ -1668,7 +1960,8 @@ function createHoverText(hoverData, opts) {
 
         g.select('path').style({
             fill: numsColor,
-            stroke: contrastColor
+            stroke: contrastColor,
+            'stroke-width': borderWidth + 'px'
         });
 
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
@@ -1681,14 +1974,15 @@ function createHoverText(hoverData, opts) {
         var tbbHeight = tbb.height / fullLayout._invScaleY;
 
         d.ty0 = (outerTop - tbb.top) / fullLayout._invScaleY;
-        d.bx = tbbWidth + 2 * HOVERTEXTPAD;
-        d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD, tx2height);
+        d.bx = tbbWidth + 2 * borderPad;
+        d.by = Math.max(tbbHeight + 2 * borderPad, tx2height);
         d.anchor = 'start';
         d.txwidth = tbbWidth;
         d.tx2width = tx2width;
+        d.borderPad = borderPad;
         d.offset = 0;
 
-        var txTotalWidth = (tbbWidth + HOVERARROWSIZE + HOVERTEXTPAD + tx2width) * fullLayout._invScaleX;
+        var txTotalWidth = (tbbWidth + HOVERARROWSIZE + borderPad + tx2width) * fullLayout._invScaleX;
         var anchorStartOK, anchorEndOK;
 
         if (rotateLabels) {
@@ -2097,14 +2391,15 @@ function getHoverLabelOffsets(hoverLabel, rotateLabels) {
  * Calculate the shift in x for text and text2 elements
  */
 function getTextShiftX(hoverLabel) {
+    var borderPad = hoverLabel.borderPad ?? HOVERTEXTPAD;
     var alignShift = { start: 1, end: -1, middle: 0 }[hoverLabel.anchor];
-    var textShiftX = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
-    var text2ShiftX = textShiftX + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD);
+    var textShiftX = alignShift * (HOVERARROWSIZE + borderPad);
+    var text2ShiftX = textShiftX + alignShift * (hoverLabel.txwidth + borderPad);
 
     var isMiddle = hoverLabel.anchor === 'middle';
     if (isMiddle) {
         textShiftX -= hoverLabel.tx2width / 2;
-        text2ShiftX += hoverLabel.txwidth / 2 + HOVERTEXTPAD;
+        text2ShiftX += hoverLabel.txwidth / 2 + borderPad;
     }
 
     return {
@@ -2139,69 +2434,116 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var isMiddle = anchor === 'middle';
         // Get 'showarrow' attribute value from trace hoverlabel settings;
         // if trace has no hoverlabel settings, we should show the arrow by default
-        var showArrow = 'hoverlabel' in d.trace ? d.trace.hoverlabel.showarrow : true;
+        var hoverlabel = d.trace?.hoverlabel;
+        var showArrow = d.showArrow ?? hoverlabel?.showarrow ?? true;
+        var borderRadius = d.borderRadius ?? hoverlabel?.borderradius ?? 0;
+        var borderPad = d.borderPad ?? hoverlabel?.borderpad ?? HOVERTEXTPAD;
+        var shadow = d.shadow ?? hoverlabel?.shadow ?? 'none';
+        var hasSecondaryLabel = !!d.tx2width;
 
         var pathStr;
-        if (isMiddle) {
-            // middle aligned: rect centered on data
-            pathStr =
-                'M-' +
-                pX(d.bx / 2 + d.tx2width / 2) +
-                ',' +
-                pY(offsetY - d.by / 2) +
-                'h' +
-                pX(d.bx) +
-                'v' +
-                pY(d.by) +
-                'h-' +
-                pX(d.bx) +
-                'Z';
+        if (!borderRadius) {
+            if (isMiddle) {
+                // middle aligned: rect centered on data
+                pathStr =
+                    'M-' +
+                    pX(d.bx / 2 + d.tx2width / 2) +
+                    ',' +
+                    pY(offsetY - d.by / 2) +
+                    'h' +
+                    pX(d.bx) +
+                    'v' +
+                    pY(d.by) +
+                    'h-' +
+                    pX(d.bx) +
+                    'Z';
+            } else if (showArrow) {
+                // left or right aligned: side rect with arrow to data
+                pathStr =
+                    'M0,0L' +
+                    pX(horzSign * HOVERARROWSIZE + offsetX) +
+                    ',' +
+                    pY(HOVERARROWSIZE + offsetY) +
+                    'v' +
+                    pY(d.by / 2 - HOVERARROWSIZE) +
+                    'h' +
+                    pX(horzSign * d.bx) +
+                    'v-' +
+                    pY(d.by) +
+                    'H' +
+                    pX(horzSign * HOVERARROWSIZE + offsetX) +
+                    'V' +
+                    pY(offsetY - HOVERARROWSIZE) +
+                    'Z';
+            } else {
+                // left or right aligned: side rect without arrow
+                pathStr =
+                    'M' +
+                    pX(horzSign * HOVERARROWSIZE + offsetX) +
+                    ',' +
+                    pY(offsetY - d.by / 2) +
+                    'h' +
+                    pX(horzSign * d.bx) +
+                    'v' +
+                    pY(d.by) +
+                    'h' +
+                    pX(-horzSign * d.bx) +
+                    'Z';
+            }
+        } else if (isMiddle) {
+            var middleLeft = -d.bx / 2 - d.tx2width / 2;
+            pathStr = roundedRectPath(
+                middleLeft,
+                offsetY - d.by / 2,
+                middleLeft + d.bx,
+                offsetY + d.by / 2,
+                borderRadius,
+                true,
+                !hasSecondaryLabel,
+                pX,
+                pY
+            );
         } else if (showArrow) {
-            // left or right aligned: side rect with arrow to data
-            pathStr =
-                'M0,0L' +
-                pX(horzSign * HOVERARROWSIZE + offsetX) +
-                ',' +
-                pY(HOVERARROWSIZE + offsetY) +
-                'v' +
-                pY(d.by / 2 - HOVERARROWSIZE) +
-                'h' +
-                pX(horzSign * d.bx) +
-                'v-' +
-                pY(d.by) +
-                'H' +
-                pX(horzSign * HOVERARROWSIZE + offsetX) +
-                'V' +
-                pY(offsetY - HOVERARROWSIZE) +
-                'Z';
+            pathStr = roundedSideArrowPath(
+                d.bx,
+                d.by,
+                horzSign,
+                offsetX,
+                offsetY,
+                borderRadius,
+                !hasSecondaryLabel,
+                pX,
+                pY
+            );
         } else {
-            // left or right aligned: side rect without arrow
-            pathStr =
-                'M' +
-                pX(horzSign * HOVERARROWSIZE + offsetX) +
-                ',' +
-                pY(offsetY - d.by / 2) +
-                'h' +
-                pX(horzSign * d.bx) +
-                'v' +
-                pY(d.by) +
-                'h' +
-                pX(-horzSign * d.bx) +
-                'Z';
+            var nearX = horzSign * HOVERARROWSIZE + offsetX;
+            var farX = nearX + horzSign * d.bx;
+            pathStr = roundedRectPath(
+                nearX,
+                offsetY - d.by / 2,
+                farX,
+                offsetY + d.by / 2,
+                borderRadius,
+                !hasSecondaryLabel || horzSign === 1,
+                !hasSecondaryLabel || horzSign === -1,
+                pX,
+                pY
+            );
         }
+
         g.select('path').attr('d', pathStr);
 
         var posX = offsetX + shiftX.textShiftX;
-        var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
+        var posY = offsetY + d.ty0 - d.by / 2 + borderPad;
         var textAlign = d.textAlign || 'auto';
 
         if (textAlign !== 'auto') {
             if (textAlign === 'left' && anchor !== 'start') {
                 tx.attr('text-anchor', 'start');
-                posX = isMiddle ? -d.bx / 2 - d.tx2width / 2 + HOVERTEXTPAD : -d.bx - HOVERTEXTPAD;
+                posX = isMiddle ? -d.bx / 2 - d.tx2width / 2 + borderPad : -d.bx - borderPad;
             } else if (textAlign === 'right' && anchor !== 'end') {
                 tx.attr('text-anchor', 'end');
-                posX = isMiddle ? d.bx / 2 - d.tx2width / 2 - HOVERTEXTPAD : d.bx + HOVERTEXTPAD;
+                posX = isMiddle ? d.bx / 2 - d.tx2width / 2 - borderPad : d.bx + borderPad;
             }
         }
 
@@ -2210,17 +2552,38 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         if (d.tx2width) {
             g.select('text.name').call(
                 svgTextUtils.positionText,
-                pX(shiftX.text2ShiftX + shiftX.alignShift * HOVERTEXTPAD + offsetX),
-                pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD)
+                pX(shiftX.text2ShiftX + shiftX.alignShift * borderPad + offsetX),
+                pY(offsetY + d.ty0 - d.by / 2 + borderPad)
             );
-            g.select('rect').call(
+
+            var rectX = shiftX.text2ShiftX + ((shiftX.alignShift - 1) * d.tx2width) / 2 + offsetX;
+            var rectWidth = d.tx2width;
+            var nameRectRadius = Math.max(
+                0,
+                Math.min(borderRadius, d.tx2width / 2, (d.by + 2) / 2)
+            );
+
+            // Let the secondary rect overlap the main path so only its outer corners remain rounded.
+            // The main path is drawn on top.
+            if(nameRectRadius) {
+                if(isMiddle || anchor === 'start') rectX -= nameRectRadius;
+                rectWidth += nameRectRadius;
+            }
+
+            var nameRect = g.select('rect').call(
                 Drawing.setRect,
-                pX(shiftX.text2ShiftX + ((shiftX.alignShift - 1) * d.tx2width) / 2 + offsetX),
+                pX(rectX),
                 pY(offsetY - d.by / 2 - 1),
-                pX(d.tx2width),
+                pX(rectWidth),
                 pY(d.by + 2)
             );
+
+            nameRect
+                .attr('rx', pX(nameRectRadius))
+                .attr('ry', pY(nameRectRadius));
         }
+
+        applyHoverShadow(g, shadow);
     });
 }
 

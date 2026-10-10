@@ -173,6 +173,57 @@ module.exports = {
                 'Sets the border color of all hover labels on graph.'
             ].join(' ')
         },
+        borderwidth: {
+            valType: 'number',
+            min: 0,
+            dflt: 1,
+            editType: 'none',
+            description: [
+                'Sets the border width (in px) of all hover labels on graph.'
+            ].join(' ')
+        },
+        borderradius: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'none',
+            description: [
+                'Sets the border radius (in px) of all hover labels on graph.'
+            ].join(' ')
+        },
+        borderpad: {
+            valType: 'number',
+            min: 0,
+            dflt: constants.HOVERTEXTPAD,
+            editType: 'none',
+            description: [
+                'Sets the padding (in px) between the text and the border of all hover labels on graph.'
+            ].join(' ')
+        },
+        namecolor: {
+            valType: 'color',
+            editType: 'none',
+            description: [
+                'Sets the text color of all secondary hover labels on graph.'
+            ].join(' ')
+        },
+        bgnamecolor: {
+            valType: 'color',
+            editType: 'none',
+            description: [
+                'Sets the background color of all secondary hover labels on graph.'
+            ].join(' ')
+        },
+        shadow: {
+            valType: 'string',
+            dflt: 'none',
+            editType: 'none',
+            description: [
+                'Sets the shadow of all hover labels on graph.',
+                'Use *none* to disable the shadow, or provide CSS `drop-shadow` arguments',
+                'such as *0 2px 4px rgba(0, 0, 0, 0.2)*.'
+            ].join(' ')
+        },
         font: font,
         grouptitlefont: fontAttrs({
             editType: 'none',
@@ -214,7 +265,6 @@ module.exports = {
                 'pointing to the data point.'
             ].join(' ')
         },
-
         editType: 'none'
     },
     selectdirection: {

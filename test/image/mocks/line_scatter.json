@@ -33,5 +33,19 @@
       "line": { "width": 10, "color": "red" },
       "marker": { "size": 20, "color": "blue" }
     }
-  ]
+  ],
+  "layout": {
+    "hoverlabel": {
+      "borderwidth": 5,
+      "borderradius": 20,
+      "namecolor": "red",
+      "bgnamecolor": "yellow",
+      "shadow": "0 10px 4px rgba(0, 0, 0, 0.2)",
+      "borderpad": 15
+    },
+  "title": {
+    "text": "layout.hovermode='['x', 'y', 'closest', false, 'x unified', 'y unified']'"
+  },
+    "hovermode": "y"
+  }
 }
