@@ -1895,8 +1895,14 @@ function createHoverText(hoverData, opts) {
         var bgNameColor = d.bgNameColor ?? hoverlabel?.bgnamecolor;
         var nameColor = d.nameColor ?? hoverlabel?.namecolor;
         var nameBg = bgNameColor || Color.addOpacity(bgColor, 0.8);
+        // if(nameColor === undefined) {
+        //     nameColor = bgNameColor ? Color.contrast(nameBg) : fallbackNameColor;
+        // }
         if(nameColor === undefined) {
-            nameColor = bgNameColor ? Color.contrast(nameBg) : fallbackNameColor;
+            nameColor =
+                Color.wcagContrast(fallbackNameColor, nameBg) < 4.5
+                    ? Color.contrast(nameBg)
+                    : fallbackNameColor;
         }
 
         // find a contrasting color for border and text

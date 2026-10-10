@@ -5128,14 +5128,14 @@ describe('Test hover label custom styling:', function () {
             .then(function () {
                 _hover(gd, { xval: gd._fullData[0].x[0] });
                 assertNameLabel({
-                    color: ['rgb(31, 119, 180)', 'rgb(255, 127, 14)']
+                    color: ['rgb(31, 119, 180)', 'rgb(68, 68, 68)']
                 });
                 return Plotly.restyle(gd, 'marker.color', ['red', 'blue']);
             })
             .then(function () {
                 _hover(gd, { xval: gd._fullData[0].x[0] });
                 assertNameLabel({
-                    color: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']
+                    color: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)']
                 });
                 return Plotly.relayout(gd, 'hoverlabel.bgcolor', 'white');
             })
@@ -5143,15 +5143,15 @@ describe('Test hover label custom styling:', function () {
                 _hover(gd, { xval: gd._fullData[0].x[0] });
                 // should not affect the name font color
                 assertNameLabel({
-                    color: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']
+                    color: ['rgb(68, 68, 68)', 'rgb(0, 0, 255)']
                 });
                 return Plotly.restyle(gd, 'marker.color', ['rgba(255,0,0,0.1)', 'rgba(0,0,255,0.1)']);
             })
             .then(function () {
                 _hover(gd, { xval: gd._fullData[0].x[0] });
-                // should blend with plot_bgcolor
+                // blended trace colors have insufficient contrast, so use a contrasting color
                 assertNameLabel({
-                    color: ['rgb(255, 179, 179)', 'rgb(179, 179, 255)']
+                    color: ['rgb(68, 68, 68)', 'rgb(68, 68, 68)']
                 });
                 return Plotly.restyle(gd, 'marker.color', ['rgba(255,0,0,0)', 'rgba(0,0,255,0)']);
             })
