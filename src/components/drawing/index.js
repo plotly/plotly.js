@@ -1378,7 +1378,9 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
     var textPosition = getTextPosition(d, trace);
 
     var offset;
-    if (isAuto && textPosition) {
+    // Skip the box for an *auto* label that the placement did not reach yet,
+    // because the placement measures every label in one pass right after this draw
+    if (isAuto && textPosition && d._tpAuto !== undefined) {
         var symbol = d.mx || (trace.marker || {}).symbol;
         var bb = drawing.textPointBBox(s);
         offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, bb, d._tpAutoGap);
