@@ -4,6 +4,7 @@ var Scatter = require('../../../src/traces/scatter');
 var makeBubbleSizeFn = require('../../../src/traces/scatter/make_bubble_size_func');
 var linePoints = require('../../../src/traces/scatter/line_points');
 var Lib = require('../../../src/lib');
+const Drawing = require('../../../src/components/drawing');
 var Plots = require('../../../src/plots/plots');
 
 var Plotly = require('../../../lib/index');
@@ -1038,6 +1039,33 @@ describe('end-to-end scatter tests', function() {
                 expect(hiddenLabelCount()).toBe(0);
             })
             .then(done, done.fail);
+        });
+
+        it('should measure each label once, whatever position it takes', (done) => {
+            // Give every label unique text, so that no earlier spec shares a cached box
+            const prefix = 'measured once ' + Math.random() + ' ';
+            const trace = makeStack(20);
+            trace.text = trace.text.map((t) => prefix + t);
+
+            Drawing.makeTester();
+            const tester = Drawing.tester.node();
+            // Each cache miss appends a clone of the label to the tester, so the appends count the measurements
+            spyOn(tester, 'appendChild').and.callThrough();
+            const measured = () =>
+                tester.appendChild.calls.allArgs().filter((args) => {
+                    const text = args[0].getAttribute && args[0].getAttribute('data-unformatted');
+                    return text && text.indexOf(prefix) === 0;
+                }).length;
+
+            Plotly.newPlot(gd, [trace], layout)
+                .then(() => {
+                    expect(measured()).toBe(20, 'measurements after the first draw');
+                    return Plotly.relayout(gd, 'xaxis.range', [1, 3]);
+                })
+                .then(() => {
+                    expect(measured()).toBe(20, 'measurements after a relayout');
+                })
+                .then(done, done.fail);
         });
 
         it('should draw the leader lines at the new point positions after an animation', function(done) {

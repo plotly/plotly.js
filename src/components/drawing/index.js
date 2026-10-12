@@ -1335,19 +1335,33 @@ function getTextPosition(d, trace) {
 /**
  * Measure a text label, from its `<text>` node or from the MathJax render that replaces it.
  *
+ * Caches the box without `text-anchor` in the key, so a label reuses its first measurement at every position.
+ *
  * @param s - d3 selection of one `<text>` element, inside its own `<g>`
- * @returns the label box from `drawing.bBox`, with `top` and `bottom` relative to the text anchor
+ * @returns `width`, `height`, and the `top` and `bottom` of the box relative to the text anchor, in px
  */
 drawing.textPointBBox = function (s) {
-    var math = d3.select(s.node().parentNode).select('g.text-math-group');
-    if (!math.size()) return drawing.bBox(s.node());
-
-    var bb = drawing.bBox(math.node());
-    // the MathJax svg is placed in the frame of the `<text>` node
-    bb.top = +math.select('svg').attr('y') - +s.attr('y');
-    bb.bottom = bb.top + bb.height;
-    return bb;
+    const node = s.node();
+    const math = d3.select(node.parentNode).select('g.text-math-group');
+    let bb;
+    if (math.size()) {
+        bb = drawing.bBox(math.node());
+        // the MathJax svg is placed in the frame of the `<text>` node
+        bb.top = +math.select('svg').attr('y') - +s.attr('y');
+        bb.bottom = bb.top + bb.height;
+    } else {
+        bb = drawing.bBox(node, false, textPointHash(node));
+    }
+    // The key has no anchor, so `left` and `right` can belong to another anchor
+    return { width: bb.width, height: bb.height, top: bb.top, bottom: bb.bottom };
 };
+
+// Leave `text-anchor` out of the `nodeHash` key, because the anchor moves a label box sideways but keeps its size
+function textPointHash(node) {
+    const text = node.getAttribute('data-unformatted');
+    if (text === null) return;
+    return 'textpoint~' + text + node.getAttribute('data-math') + node.getAttribute('style');
+}
 
 /**
  * Position a text label relative to its point, and join its leader line.
