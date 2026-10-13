@@ -1070,6 +1070,104 @@ describe('end-to-end scatter tests', function() {
                 .then(done, done.fail);
         });
 
+        describe('in a subplot with axis labels inside the plot area', () => {
+            const size = { width: 480, height: 440, margin: { l: 50, r: 50, t: 50, b: 50 }, showlegend: false };
+            const names = (n) => Array.from({ length: n }, (_, i) => 'pt ' + i);
+            const ternaryEdges = () => {
+                const out = { a: [], b: [], c: [] };
+                for (let i = 0; i <= 20; i++) {
+                    const t = i / 20;
+                    out.a.push(t, 0.001);
+                    out.b.push(1 - t, t);
+                    out.c.push(0.001, 1 - t);
+                }
+                return out;
+            };
+            const carpetEdges = () => {
+                const out = { a: [], b: [] };
+                for (let i = 0; i < 9; i++) {
+                    out.a.push(4 + i * 0.25, 4);
+                    out.b.push(1, 1 + i * 0.25);
+                }
+                return out;
+            };
+
+            // Points along the edges, where the axis labels are
+            const figures = {
+                scatterpolar: () => ({
+                    data: [
+                        {
+                            type: 'scatterpolar',
+                            theta: Array.from({ length: 36 }, (_, i) => i * 10),
+                            r: Array.from({ length: 36 }, (_, i) => 9.3 + (i % 3) * 0.3),
+                            text: names(36)
+                        }
+                    ],
+                    layout: { polar: { radialaxis: { range: [0, 10], title: { text: 'radius' } } } }
+                }),
+                scatterternary: () => {
+                    const e = ternaryEdges();
+                    return { data: [{ type: 'scatterternary', a: e.a, b: e.b, c: e.c, text: names(e.a.length) }] };
+                },
+                scattersmith: () => ({
+                    data: [
+                        {
+                            type: 'scattersmith',
+                            real: Array.from({ length: 24 }, (_, i) => (i % 4) * 0.2),
+                            imag: Array.from({ length: 24 }, (_, i) => Math.tan((i / 24 - 0.5) * Math.PI * 0.95) * 2),
+                            text: names(24)
+                        }
+                    ]
+                }),
+                scattercarpet: () => {
+                    const e = carpetEdges();
+                    return {
+                        data: [
+                            {
+                                type: 'carpet',
+                                a: [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6],
+                                b: [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3],
+                                y: [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10],
+                                aaxis: { tickprefix: 'a = ', smoothing: 0, title: { text: 'A axis' } },
+                                baxis: { tickprefix: 'b = ', smoothing: 0, title: { text: 'B axis' } }
+                            },
+                            { type: 'scattercarpet', a: e.a, b: e.b, text: names(e.a.length) }
+                        ]
+                    };
+                }
+            };
+
+            // Count the visible labels that cover other text of the graph, such as a tick label or an axis title
+            function labelsOnOtherText() {
+                const others = [];
+                d3SelectAll('text').each(function () {
+                    if (this.closest('.textpoint') || !this.textContent.trim()) return;
+                    const r = this.getBoundingClientRect();
+                    if (r.width) others.push(r);
+                });
+                return visibleLabelBoxes().filter((a) =>
+                    others.some((b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top)
+                ).length;
+            }
+
+            Object.keys(figures).forEach((type) => {
+                it('should keep the ' + type + ' labels clear of the axis labels', (done) => {
+                    const fig = figures[type]();
+                    const trace = fig.data[fig.data.length - 1];
+                    trace.mode = 'markers+text';
+                    trace.textposition = 'auto';
+
+                    Plotly.newPlot(gd, fig.data, Lib.extendFlat({}, size, fig.layout))
+                        .then(() => {
+                            expect(labelsOnOtherText()).toBe(0, 'labels on axis text');
+                            expect(visibleLabelBoxes().length).toBeGreaterThan(trace.text.length / 2, 'visible labels');
+                            expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps');
+                        })
+                        .then(done, done.fail);
+                });
+            });
+        });
+
         it('should draw the leader lines at the new point positions after an animation', function(done) {
             function leaderPaths() {
                 var out = [];

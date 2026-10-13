@@ -678,7 +678,8 @@ module.exports = {
             'sits close to the label, the label moves farther out with a leader',
             'line back to the point. A label with no free position is hidden.',
             'Labels are placed in the order of `textpriority`.',
-            'Auto placement considers markers and text labels only.',
+            'Auto placement considers markers, text labels, and the axis labels',
+            'that sit inside polar, ternary, smith, and carpet plot areas.',
             'It does not avoid annotations, shapes, images, or the legend.'
         ].join(' ')
     },

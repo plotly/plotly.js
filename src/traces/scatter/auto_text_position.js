@@ -10,7 +10,7 @@ const subTypes = require('./subtypes');
  *
  * Every drawn marker and every label with a fixed position blocks the *auto*
  * labels, which `Lib.placeLabels` then places by `textpriority`, trace order,
- * and data order.
+ * and data order. The text in `plotinfo.axisLayers` blocks them too.
  *
  * Sets `_tpAuto`, `_tpAutoGap`, and `_tpAutoLeader` on every calcdata point
  * with an *auto* position and repositions its `<text>` node. Does nothing
@@ -20,7 +20,8 @@ const subTypes = require('./subtypes');
  * and the whole pass runs again once every pending render is done.
  *
  * @param gd - the graph div
- * @param plotinfo - the subplot, with `xaxis` and `yaxis`
+ * @param plotinfo - the subplot, with `xaxis` and `yaxis`, and optional `axisLayers`, the d3 selections
+ *   of the axis layers that sit inside the plot area
  * @param traceGroups - d3 selection of the `g.trace` groups, bound to calcdata
  */
 module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
@@ -34,7 +35,8 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
     const xa = plotinfo.xaxis;
     const ya = plotinfo.yaxis;
     const markers = [];
-    const fixed = [];
+    // Read the axis text before the label measurements, which write to the tester and force a layout each
+    const fixed = axisTextBoxes(plotinfo.axisLayers, traceGroups.node());
     const labels = [];
     let pending = false;
 
@@ -116,6 +118,37 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
         gd._promises.push(Promise.all(gd._promises).then(() => autoTextPosition(gd, plotinfo, traceGroups)));
     }
 };
+
+/**
+ * Measure the text in some axis layers, in the frame of the trace groups.
+ *
+ * Reads the rendered boxes, so the call forces a layout when the page has changes to lay out.
+ *
+ * @param layers - d3 selections of the axis layers, or undefined; an entry can be undefined or empty
+ * @param frame - a `g.trace` node, whose user space holds the point positions
+ * @returns the boxes as `{x0, y0, x1, y1}`, or none when the frame is not rendered
+ */
+function axisTextBoxes(layers, frame) {
+    const boxes = [];
+    const ctm = layers && frame && frame.getScreenCTM();
+    if (!ctm || !ctm.a || !ctm.d) return boxes;
+
+    for (const layer of layers) {
+        if (!layer || layer.empty()) continue;
+        // A MathJax render replaces its hidden `<text>` node
+        layer.selectAll('text, g[class*="-math-group"]').each(function () {
+            const r = this.getBoundingClientRect();
+            if (!r.width || !r.height) return;
+            boxes.push({
+                x0: (r.left - ctm.e) / ctm.a,
+                y0: (r.top - ctm.f) / ctm.d,
+                x1: (r.right - ctm.e) / ctm.a,
+                y1: (r.bottom - ctm.f) / ctm.d
+            });
+        });
+    }
+    return boxes;
+}
 
 function hasAutoTextPosition(trace) {
     const tp = trace.textposition;
