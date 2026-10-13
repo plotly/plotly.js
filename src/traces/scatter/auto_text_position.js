@@ -130,7 +130,8 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
  */
 function axisTextBoxes(layers, frame) {
     const boxes = [];
-    const ctm = layers && frame && frame.getScreenCTM();
+    // Skip the matrix without layers, because reading it forces a layout
+    const ctm = layers?.length && frame?.getScreenCTM();
     if (!ctm || !ctm.a || !ctm.d) return boxes;
 
     for (const layer of layers) {

@@ -1134,6 +1134,21 @@ describe('end-to-end scatter tests', function() {
                             { type: 'scattercarpet', a: e.a, b: e.b, text: names(e.a.length) }
                         ]
                     };
+                },
+                scatter: () => {
+                    const x = [];
+                    const y = [];
+                    for (let i = 0; i <= 10; i++) {
+                        x.push(i, 0.3);
+                        y.push(0.3, i);
+                    }
+                    return {
+                        data: [{ type: 'scatter', x, y, text: names(x.length) }],
+                        layout: {
+                            xaxis: { ticklabelposition: 'inside', range: [0, 10] },
+                            yaxis: { ticklabelposition: 'inside', range: [0, 10] }
+                        }
+                    };
                 }
             };
 

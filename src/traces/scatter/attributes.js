@@ -679,7 +679,7 @@ module.exports = {
             'line back to the point. A label with no free position is hidden.',
             'Labels are placed in the order of `textpriority`.',
             'Auto placement considers markers, text labels, and the axis labels',
-            'that sit inside polar, ternary, smith, and carpet plot areas.',
+            'that sit inside the plot area.',
             'It does not avoid annotations, shapes, images, or the legend.'
         ].join(' ')
     },
