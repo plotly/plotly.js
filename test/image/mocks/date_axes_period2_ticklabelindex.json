@@ -44,7 +44,7 @@
   "layout": {
     "showlegend": false,
     "width": 600,
-    "height": 500,
+    "height": 740,
     "yaxis": {
       "domain": [0, 0.04]
     },
