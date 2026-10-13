@@ -57,6 +57,8 @@ exports.convertToTspans = function(_context, gd, _callback) {
             svgClass = _context.attr('class') + '-math';
             parent.select('svg.' + svgClass).remove();
         }
+        // A failed render left the source text hidden, so show it again
+        _context.style('display', null);
         _context.text('')
             .style('white-space', 'pre');
 
