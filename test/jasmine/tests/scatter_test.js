@@ -1030,6 +1030,8 @@ describe('end-to-end scatter tests', function() {
             })
             .then(function() {
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                // A fixed position must show the labels that *auto* hid
+                expect(hiddenLabelCount()).toBeGreaterThan(0, 'hidden labels before the switch');
                 return Plotly.restyle(gd, 'textposition', 'top center');
             })
             .then(function() {

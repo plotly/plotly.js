@@ -1399,10 +1399,16 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
     // fix the overall text group position
     s.attr('text-anchor', offset.anchor);
     if (!dontTouchParent) {
-        // the whole group, so that a MathJax render is hidden with its source text
-        group.style('display', textPosition === null ? 'none' : null);
+        // Write `display` on the whole group, so that a MathJax render is hidden with its source text.
+        // Skip the write for a label without an inline `display`, because only *auto* sets one.
+        if (isAuto || group.node().style.display) group.style('display', textPosition === null ? 'none' : null);
         group.attr('transform', strTranslate(offset.dx, offset.dy));
     }
+
+    // Skip the join when no leader is due and none is left over, because only *auto* draws leaders
+    const first = group.node().firstChild;
+    const hasLeader = first && first.nodeName === 'path' && first.classList.contains('textleader');
+    if (!d._tpAutoLeader && !hasLeader) return;
 
     var leader = group.selectAll('path.textleader').data(d._tpAutoLeader ? [d._tpAutoLeader] : []);
     leader.exit().remove();
