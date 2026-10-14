@@ -1070,6 +1070,30 @@ describe('end-to-end scatter tests', function() {
                 .then(done, done.fail);
         });
 
+        it('should read textpriority from a typed array and count other values as 0', (done) => {
+            // In a stack, the label placed first takes *top center* on the first ring, the smallest gap of all
+            const firstPlaced = () => {
+                const cd = gd.calcdata[0];
+                const gaps = cd.filter((d) => d._tpAuto).map((d) => d._tpAutoGap);
+                return cd.findIndex((d) => d._tpAuto === 'top center' && d._tpAutoGap === Math.min(...gaps));
+            };
+            const stack = (textpriority) => Lib.extendFlat(makeStack(12), { textpriority });
+
+            Plotly.newPlot(gd, [stack(new Float64Array([0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0]))], layout)
+                .then(() => {
+                    expect(firstPlaced()).toBe(5, 'typed array');
+                    return Plotly.newPlot(gd, [stack(['high', 'high', 'high', 7, 0, 0, 0, 0, 0, 0, 0, 0])], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(3, 'strings count as 0');
+                    return Plotly.newPlot(gd, [stack(new Float64Array([0, 4]))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(1, 'typed array shorter than the data');
+                })
+                .then(done, done.fail);
+        });
+
         it('should leave the *auto* labels out of the range slider and place the main plot', (done) => {
             const x = [];
             const y = [];

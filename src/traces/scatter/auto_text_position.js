@@ -87,7 +87,8 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
                 owner: d,
                 radius: d.mrc || 0,
                 fontSize: Drawing.textPointFontSize(d, trace),
-                priority: Lib.extractOption(d, trace, 'tP', 'textpriority'),
+                // A value that is not a number, or a point past the end of a short array, counts as 0
+                priority: +Lib.extractOption(d, trace, 'tP', 'textpriority') || 0,
                 onPoint,
                 // `_tpAuto` survives a relayout, so a pan or zoom keeps the labels in place where it can
                 prefer: d._tpAuto || undefined,
