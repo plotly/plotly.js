@@ -14,7 +14,8 @@ const subTypes = require('./subtypes');
  *
  * Sets `_tpAuto`, `_tpAutoGap`, and `_tpAutoLeader` on every calcdata point
  * with an *auto* position and repositions its `<text>` node. Does nothing
- * when no trace of the subplot uses *auto*.
+ * when no trace of the subplot uses *auto*, or in the plot of a range slider,
+ * where labels are never placed.
  *
  * A label that MathJax has not rendered yet has no box, so it is skipped,
  * and the whole pass runs again once every pending render is done.
@@ -25,6 +26,9 @@ const subTypes = require('./subtypes');
  * @param traceGroups - d3 selection of the `g.trace` groups, bound to calcdata
  */
 module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
+    // The slider shares the calcdata with the main plot, so a pass here would replace the main plot's results
+    if (plotinfo.isRangePlot) return;
+
     let hasAuto = false;
     traceGroups.each((cd) => {
         const trace = cd[0].trace;

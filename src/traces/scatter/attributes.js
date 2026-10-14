@@ -677,6 +677,8 @@ module.exports = {
             'When the positions next to the point are taken, or another point',
             'sits close to the label, the label moves farther out with a leader',
             'line back to the point. A label with no free position is hidden.',
+            'In a trace without markers or lines, a label sits on its point when',
+            'it can, and moves out the same way when another label is in the way.',
             'Labels are placed in the order of `textpriority`.',
             'Auto placement considers markers, text labels, and the axis labels',
             'that sit inside the plot area.',

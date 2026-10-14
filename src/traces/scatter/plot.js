@@ -518,6 +518,13 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             if(showText) textFilter = showFilter;
         }
 
+        // Keep *auto* labels out of the range slider until #8118 settles which labels the slider draws.
+        // Labels are never placed in the slider, so an *auto* label there would borrow the main plot's placement.
+        if (showText && plotinfo.isRangePlot) {
+            const baseTextFilter = textFilter;
+            textFilter = (d) => baseTextFilter(d).filter((v) => (v.tp || trace.textposition) !== 'auto');
+        }
+
         // marker points
 
         selection = points.selectAll('path.point');

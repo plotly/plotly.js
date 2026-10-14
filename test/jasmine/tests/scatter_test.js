@@ -1070,6 +1070,29 @@ describe('end-to-end scatter tests', function() {
                 .then(done, done.fail);
         });
 
+        it('should leave the *auto* labels out of the range slider and place the main plot', (done) => {
+            const x = [];
+            const y = [];
+            for (let i = 0; i < 60; i++) {
+                x.push(i);
+                y.push(Math.sin(i / 4) * 5);
+            }
+            const sliderLabels = () => d3SelectAll('.rangeslider-container .textpoint').size();
+
+            Plotly.newPlot(
+                gd,
+                [{ mode: 'lines+markers+text', textposition: 'auto', x, y, text: x.map((v) => 'pt ' + v) }],
+                { width: 640, height: 480, showlegend: false, xaxis: { rangeslider: { visible: true } } }
+            )
+                .then(() => {
+                    expect(sliderLabels()).toBe(0, 'auto labels in the slider');
+                    // The slider's own placement used to replace this one and hide most labels
+                    expect(hiddenLabelCount()).toBeLessThan(20, 'hidden labels in the main plot');
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps');
+                })
+                .then(done, done.fail);
+        });
+
         describe('in a subplot with axis labels inside the plot area', () => {
             const size = { width: 480, height: 440, margin: { l: 50, r: 50, t: 50, b: 50 }, showlegend: false };
             const names = (n) => Array.from({ length: n }, (_, i) => 'pt ' + i);
