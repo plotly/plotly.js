@@ -622,6 +622,35 @@ describe('contour plotting and editing', function() {
         .then(done, done.fail);
     });
 
+    it('should recompute autocontour levels from the new z on react when coloring is *none*', function(done) {
+        // https://github.com/plotly/plotly.js/issues/8117
+        // with contours.coloring 'none' the colorscale attributes are not coerced,
+        // so setContours must not reuse the zmin/zmax relinked from the previous full trace
+        function _trace(z) {
+            return {type: 'contour', z: z, contours: {coloring: 'none'}};
+        }
+
+        function _assertLevels(msg, start, end, size) {
+            var contours = gd._fullData[0].contours;
+            expect(contours.start).toBe(start, msg + ' start');
+            expect(contours.end).toBe(end, msg + ' end');
+            expect(contours.size).toBe(size, msg + ' size');
+            expect(gd.querySelectorAll('.contourlevel path').length).toBeGreaterThan(0, msg + ' no contour lines drawn');
+        }
+
+        Plotly.newPlot(gd, [_trace([[1, 2, 3], [4, 5, 6], [7, 8, 9]])])
+        .then(function() {
+            _assertLevels('initial', 2, 8, 1);
+
+            // new trace object and new z array, with a completely different range
+            return Plotly.react(gd, [_trace([[4100, 4200, 4300], [4400, 4500, 4600], [4700, 4800, 4900]])]);
+        })
+        .then(function() {
+            _assertLevels('after react', 4200, 4800, 100);
+        })
+        .then(done, done.fail);
+    });
+
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
