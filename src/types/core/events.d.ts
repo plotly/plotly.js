@@ -17,6 +17,7 @@ import type {
 } from '../generated/schema';
 import type { Datum } from '../lib/common';
 import type { Config } from './config';
+import type { LayoutUpdate } from './layout';
 
 // ---------------------------------------------------------------------------
 // Point / datum types in events
@@ -149,10 +150,11 @@ export interface PlotRestyleEventUpdate {
 export type PlotRestyleEvent = [PlotRestyleEventUpdate, number[]];
 
 /**
- * Payload for `plotly_relayout`. Carries a `Partial<Layout>` plus a few
- * common bracketed axis-range/autorange keys that flatten nested updates.
+ * Payload for `plotly_relayout`. Carries a `LayoutUpdate`, so any attribute
+ * path is a valid key, plus typed values for a few common axis-range and
+ * autorange keys that flatten nested updates.
  */
-export interface PlotRelayoutEvent extends Partial<Layout> {
+export interface PlotRelayoutEvent extends LayoutUpdate {
     /** New x-axis range minimum, when the user changed the range. */
     'xaxis.range[0]'?: number;
     /** New x-axis range maximum, when the user changed the range. */
