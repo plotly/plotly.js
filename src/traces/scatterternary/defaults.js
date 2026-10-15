@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var coercePattern = require('../../lib').coercePattern;
 
 var constants = require('../scatter/constants');
 var subTypes = require('../scatter/subtypes');
@@ -85,6 +86,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if (traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if (!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+        coercePattern(coerce, 'fillpattern', traceOut.fillcolor, false);
     }
 
     if (traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
