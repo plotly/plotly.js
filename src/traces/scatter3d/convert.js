@@ -10,8 +10,8 @@ var Lib = require('../../lib');
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color').formatColor;
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
-var DASH_PATTERNS = require('../../constants/gl3d_dashes');
-var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
+var DASH_PATTERNS = require('../../constants/gl3d_dashes').default;
+var MARKER_SYMBOLS = require('../../constants/gl3d_markers').default;
 
 var Axes = require('../../plots/cartesian/axes');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;

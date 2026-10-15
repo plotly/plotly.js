@@ -1619,6 +1619,31 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
+        it('changes hover icon colors', function(done) {
+            Plotly.newPlot(gd, [], {
+                modebar: {
+                    color: colors[0],
+                    activecolor: colors[1]
+                }
+            })
+            .then(function() {
+                button = selectButton(gd._fullLayout._modeBar, targetBtn);
+
+                // intentionally swap colors to verify hover handlers use the updated values
+                return Plotly.relayout(gd, {
+                    'modebar.color': colors[1],
+                    'modebar.activecolor': colors[0]
+                });
+            })
+            .then(function() {
+                button.node.dispatchEvent(new window.MouseEvent('mouseenter'));
+                checkButtonColor(button, colors[0]);
+                button.node.dispatchEvent(new window.MouseEvent('mouseleave'));
+                checkButtonColor(button, colors[1]);
+            })
+            .then(done, done.fail);
+        });
+
         it('changes background color (displayModeBar: hover)', function(done) {
             Plotly.newPlot(gd, [], {modebar: { bgcolor: colors[0]}})
             .then(function() {

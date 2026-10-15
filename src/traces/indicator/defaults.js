@@ -5,7 +5,7 @@ var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var Template = require('../../plot_api/plot_template');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
-var cn = require('./constants.js');
+var cn = require('./constants');
 
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');

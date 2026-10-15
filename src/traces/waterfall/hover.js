@@ -3,7 +3,7 @@
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
-var delta = require('../../constants/delta.js');
+var delta = require('../../constants/delta');
 
 var DIRSYMBOL = {
     increasing: delta.INCREASING.SYMBOL,

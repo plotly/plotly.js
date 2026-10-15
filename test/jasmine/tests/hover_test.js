@@ -3281,7 +3281,7 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
         assertFirstPointOn(gd, 'x', 'y');
         expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
-            nums: ['1', '1', '1', '1'],
+            nums: ['1', '4', '4', '4'],
             name: ['', '', '', ''],
             axis: '1'
         });
@@ -3289,20 +3289,20 @@ describe('splom hover *axis* hoversubplots splom points on same position should 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'xy2');
         assertFirstPointOn(gd, 'x', 'y2');
-        expect(gd._hoverdata.length).toBe(3);
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
-            nums: ['1', '2', '2'],
-            name: ['', '', ''],
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
             axis: '1'
         });
 
         Lib.clearThrottle();
         Plotly.Fx.hover(gd, {}, 'xy3');
         assertFirstPointOn(gd, 'x', 'y3');
-        expect(gd._hoverdata.length).toBe(3);
+        expect(gd._hoverdata.length).toBe(4);
         assertHoverLabelContent({
-            nums: ['1', '2', '2'],
-            name: ['', '', ''],
+            nums: ['1', '3', '3', '3'],
+            name: ['', '', '', ''],
             axis: '1'
         });
 
@@ -5617,6 +5617,44 @@ describe('hover working with zorder', function () {
     });
 });
 
+describe('hover on points at the same position', () => {
+    afterEach(destroyGraphDiv);
+
+    ['scatter', 'scattergl', 'splom'].forEach((type) => {
+        const makeTrace = (x, y) =>
+            type === 'splom' ? { type, dimensions: [{ values: x }, { values: y }] } : { type, x, y };
+        // splom plots dimension 0 against dimension 1 on subplot xy2
+        const subplot = type === 'splom' ? 'xy2' : 'xy';
+
+        it(`picks the trace drawn last for ${type} in closest hovermode`, async () => {
+            const gd = createGraphDiv();
+            await Plotly.newPlot(gd, {
+                data: [makeTrace([0, 1, 2], [1, 0, 1]), makeTrace([0, 1, 2], [2, 0, 2])],
+                layout: { width: 400, height: 400, hovermode: 'closest' }
+            });
+
+            Fx.hover(gd, { xval: 1, yval: 0 }, subplot);
+
+            expect(gd._hoverdata.length).toEqual(1);
+            expect(gd._hoverdata[0].curveNumber).toEqual(1);
+            expect(gd._hoverdata[0].pointNumber).toEqual(1);
+        });
+
+        it(`picks the point drawn last for ${type} in x hovermode`, async () => {
+            const gd = createGraphDiv();
+            await Plotly.newPlot(gd, {
+                data: [makeTrace([0, 1, 1, 2], [1, 0, 0, 1])],
+                layout: { width: 400, height: 400, hovermode: 'x' }
+            });
+
+            Fx.hover(gd, { xval: 1, yval: 0 }, subplot);
+
+            expect(gd._hoverdata.length).toEqual(1);
+            expect(gd._hoverdata[0].pointNumber).toEqual(2);
+        });
+    });
+});
+
 describe('hover label rotation:', function () {
     var gd;
 
@@ -7422,6 +7460,61 @@ describe('hovermode: (x|y)unified', function () {
                 _hover(gd, { xval: 0 });
 
                 assertFont('Mono', '20px', 'rgb(255, 127, 0)');
+            })
+            .then(done, done.fail);
+    });
+
+    it('should align item text with hoverlabel.align', (done) => {
+        const getItems = () => {
+            const items = [];
+            getHoverLabel()
+                .selectAll('g.traces text.legendtext')
+                .each(function () {
+                    const { left, right } = this.getBoundingClientRect();
+                    items.push({
+                        anchor: this.getAttribute('text-anchor'),
+                        left,
+                        right,
+                        x: this.getAttribute('x')
+                    });
+                });
+            return items;
+        };
+        let rightAlignedShort;
+
+        Plotly.newPlot(gd, [{ y: [1, 2, 3] }, { y: [1000000, 2000000, 3000000] }], {
+            hovermode: 'x unified',
+            hoverlabel: { align: 'right' },
+            showlegend: false,
+            width: 500,
+            height: 500
+        })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['end', 'end']);
+                // Compare anchor positions because the text rect can extend past the anchor by a font-dependent amount
+                expect(short.x).toBe(long.x);
+                expect(short.left).toBeGreaterThan(long.left);
+                rightAlignedShort = short;
+
+                return Plotly.relayout(gd, 'hoverlabel.align', 'left');
+            })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['start', 'start']);
+                expect(short.left).toBeCloseTo(long.left, 0);
+
+                return Plotly.restyle(gd, 'hoverlabel.align', 'right', [0]);
+            })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['end', 'start']);
+                // Same text and box as the first step, so the right-aligned item must not move
+                expect(short.x).toBe(rightAlignedShort.x);
+                expect(short.right).toBeCloseTo(rightAlignedShort.right, 0);
             })
             .then(done, done.fail);
     });

@@ -24,7 +24,7 @@ interface FitBoundsTrace extends Pick<ScattermapData, 'subplot' | 'visible'> {
  *     that isn't implemented here.
  *
  * @param fullData - The full data array (post supply-defaults)
- * @param subplotId - e.g. `'map'`, `'map2'`
+ * @param subplotId - Subplot id, for example `'map'` or `'map2'`
  */
 export function getMapFitBounds(fullData: FitBoundsTrace[], subplotId: string): LonLatBox | null {
     const coordinates: [number, number][] = [];

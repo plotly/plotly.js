@@ -3,16 +3,16 @@
 const NUMBER_REGEX = '([2-9]|[1-9][0-9]+)?';
 
 /**
- * make a regex for matching counter ids/names ie xaxis, xaxis2, xaxis10...
+ * Make a regex for matching counter ids/names, for example xaxis, xaxis2, xaxis10
  *
- * @param head - the head of the pattern, eg 'x' matches 'x', 'x2', 'x10' etc.
- *      'xy' is a special case for cartesian subplots: it matches 'x2y3' etc
- * @param tail - a fixed piece after the id
- *      eg counterRegex('scene', '.annotations') for scene2.annotations etc.
- * @param openEnded - if true, the string may continue past the match.
- * @param matchBeginning - if false, the string may start before the match.
+ * @param head - The head of the pattern, for example 'x' matches 'x', 'x2', 'x10'.
+ *      'xy' is a special case for cartesian subplots: it matches 'x2y3'.
+ * @param tail - A fixed piece after the id.
+ *      For example, counterRegex('scene', '.annotations') for scene2.annotations.
+ * @param openEnded - If true, the string may continue past the match
+ * @param matchBeginning - If false, the string may start before the match
  */
-export function counter(head: string, tail: string = '', openEnded: boolean, matchBeginning: boolean) {
+export function counter(head: string, tail: string = '', openEnded?: boolean, matchBeginning?: boolean) {
     const fullTail = tail + (openEnded ? '' : '$');
     const startWithPrefix = matchBeginning === false ? '' : '^';
     return head === 'xy'
