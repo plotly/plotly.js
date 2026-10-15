@@ -250,45 +250,12 @@ function setFillStyle(sel, trace, gd, forLegend) {
             gradientID = 'legendfill-' + trace.uid;
         }
 
-        if (!forLegend && (fillgradient.start !== undefined || fillgradient.stop !== undefined)) {
-            var start, stop;
-            if (direction === 'horizontal') {
-                start = {
-                    x: fillgradient.start,
-                    y: 0
-                };
-                stop = {
-                    x: fillgradient.stop,
-                    y: 0
-                };
-            } else if (direction === 'vertical') {
-                start = {
-                    x: 0,
-                    y: fillgradient.start
-                };
-                stop = {
-                    x: 0,
-                    y: fillgradient.stop
-                };
-            }
-
-            start.x = trace._xA.c2p(start.x === undefined ? trace._extremes.x.min[0].val : start.x, true);
-            start.y = trace._yA.c2p(start.y === undefined ? trace._extremes.y.min[0].val : start.y, true);
-
-            stop.x = trace._xA.c2p(stop.x === undefined ? trace._extremes.x.max[0].val : stop.x, true);
-            stop.y = trace._yA.c2p(stop.y === undefined ? trace._extremes.y.max[0].val : stop.y, true);
-            sel.call(
-                gradientWithBounds,
-                gd,
-                gradientID,
-                'linear',
-                fillgradient.colorscale,
-                'fill',
-                start,
-                stop,
-                true,
-                false
-            );
+        if (
+            !forLegend &&
+            direction !== 'radial' &&
+            (fillgradient.start !== undefined || fillgradient.stop !== undefined)
+        ) {
+            axisGradient(sel, trace, gd, fillgradient, gradientID, 'fill');
         } else {
             if (direction === 'horizontal') {
                 direction = direction + 'reversed';
@@ -298,6 +265,47 @@ function setFillStyle(sel, trace, gd, forLegend) {
     } else if (trace.fillcolor) {
         sel.call(Color.fill, trace.fillcolor);
     }
+}
+
+/**
+ * Apply a linear gradient that follows one axis of a cartesian trace.
+ *
+ * @param sel - d3 selection to apply the gradient to
+ * @param trace - the full trace. It must have `_xA`, `_yA` and `_extremes`.
+ * @param gd - the graph div
+ * @param gradient - a `fillgradient` container with `type` *horizontal* or *vertical*
+ * @param gradientID - an identifier for the gradient, unique in the plot
+ * @param prop - 'fill' or 'stroke'
+ *
+ * If `gradient.start` or `gradient.stop` is undefined, the gradient uses the lowest or highest
+ * value of the trace along the axis.
+ */
+function axisGradient(sel, trace, gd, gradient, gradientID, prop) {
+    const isHorizontal = gradient.type === 'horizontal';
+    const ax = isHorizontal ? trace._xA : trace._yA;
+    const extremes = trace._extremes[ax._id];
+
+    let startPx;
+    if (gradient.start !== undefined) {
+        startPx = ax.c2p(gradient.start, true);
+    } else {
+        let min = Infinity;
+        for (const item of extremes.min) min = Math.min(min, item.val);
+        startPx = ax.l2p(min);
+    }
+
+    let stopPx;
+    if (gradient.stop !== undefined) {
+        stopPx = ax.c2p(gradient.stop, true);
+    } else {
+        let max = -Infinity;
+        for (const item of extremes.max) max = Math.max(max, item.val);
+        stopPx = ax.l2p(max);
+    }
+
+    const start = isHorizontal ? { x: startPx, y: 0 } : { x: 0, y: startPx };
+    const stop = isHorizontal ? { x: stopPx, y: 0 } : { x: 0, y: stopPx };
+    gradientWithBounds(sel, gd, gradientID, 'linear', gradient.colorscale, prop, start, stop, true, false);
 }
 
 // Same as fillGroupStyle, except in this case the selection may be a transition
@@ -506,7 +514,6 @@ function gradientWithBounds(sel, gd, gradientID, type, colorscale, prop, start, 
         .append(info.node)
         .each(function () {
             var el = d3.select(this);
-            if (info.attrs) el.attr(info.attrs);
 
             el.attr('id', fullID);
 
@@ -522,6 +529,9 @@ function gradientWithBounds(sel, gd, gradientID, type, colorscale, prop, start, 
                 });
             });
         });
+
+    // Set the bounds on every call: user-space bounds move with the axis range.
+    if (info.attrs) gradient.attr(info.attrs);
 
     sel.style(prop, getFullUrl(fullID, gd)).style(prop + '-opacity', null);
 
