@@ -274,11 +274,14 @@ proto.updateActiveButton = function(buttonClicked) {
         // Use 'data-toggle' and 'buttonClicked' to toggle buttons
         // that have no one-to-one equivalent in fullLayout
         if(isToggleButton) {
-            if(dataAttr === dataAttrClicked) {
-                var isActive = !button3.classed('active');
+            var isActive = button3.classed('active');
+
+            if(buttonClicked !== undefined && dataAttr === dataAttrClicked) {
+                isActive = !isActive;
                 button3.classed('active', isActive);
-                updateButtonStyle(button, isActive);
             }
+
+            updateButtonStyle(button, isActive);
         } else {
             var val = (dataAttr === null) ?
                 dataAttr :
