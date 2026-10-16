@@ -2845,10 +2845,36 @@
           "editType": "none",
           "valType": "color"
         },
+        "bgnamecolor": {
+          "description": "Sets the background color of all secondary hover labels on graph.",
+          "editType": "none",
+          "valType": "color"
+        },
         "bordercolor": {
           "description": "Sets the border color of all hover labels on graph.",
           "editType": "none",
           "valType": "color"
+        },
+        "borderpad": {
+          "description": "Sets the padding (in px) between the text and the border of all hover labels on graph.",
+          "dflt": 3,
+          "editType": "none",
+          "min": 0,
+          "valType": "number"
+        },
+        "borderradius": {
+          "description": "Sets the border radius (in px) of all hover labels on graph.",
+          "dflt": 0,
+          "editType": "none",
+          "min": 0,
+          "valType": "number"
+        },
+        "borderwidth": {
+          "description": "Sets the border width (in px) of all hover labels on graph.",
+          "dflt": 1,
+          "editType": "none",
+          "min": 0,
+          "valType": "number"
         },
         "editType": "none",
         "font": {
@@ -3031,6 +3057,11 @@
             "valType": "integer"
           }
         },
+        "namecolor": {
+          "description": "Sets the text color of all secondary hover labels on graph.",
+          "editType": "none",
+          "valType": "color"
+        },
         "namelength": {
           "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
           "dflt": 15,
@@ -3039,6 +3070,12 @@
           "valType": "integer"
         },
         "role": "object",
+        "shadow": {
+          "description": "Sets the shadow of all hover labels on graph. Use *none* to disable the shadow, or provide CSS `drop-shadow` arguments such as *0 2px 4px rgba(0, 0, 0, 0.2)*.",
+          "dflt": "none",
+          "editType": "none",
+          "valType": "string"
+        },
         "showarrow": {
           "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
           "dflt": true,
@@ -16220,11 +16257,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -16325,6 +16388,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -16334,6 +16402,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -18089,11 +18163,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -18194,6 +18294,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -18203,6 +18308,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -19485,11 +19596,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -19590,6 +19727,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -19599,6 +19741,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -20855,11 +21003,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -20960,6 +21134,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -20969,6 +21148,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -23690,11 +23875,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -23795,6 +24006,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -23804,6 +24020,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -24830,11 +25052,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -24935,6 +25183,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -24944,6 +25197,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -25999,11 +26258,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -26104,6 +26389,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -26113,6 +26403,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -27414,11 +27710,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -27519,6 +27841,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -27528,6 +27855,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -30044,11 +30377,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -30149,6 +30508,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -30158,6 +30522,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -30582,11 +30952,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -30687,6 +31083,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -30696,6 +31097,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -32325,11 +32732,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -32430,6 +32863,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -32439,6 +32877,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -33841,11 +34285,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -33946,6 +34416,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -33955,6 +34430,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -34866,11 +35347,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -34971,6 +35478,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -34980,6 +35492,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -37328,11 +37846,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -37433,6 +37977,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -37442,6 +37991,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -38898,11 +39453,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -39003,6 +39584,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -39012,6 +39598,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -39713,11 +40305,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -39818,6 +40436,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -39827,6 +40450,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -41444,11 +42073,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -41549,6 +42204,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -41558,6 +42218,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -43806,11 +44472,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -43911,6 +44603,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -43920,6 +44617,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -45191,11 +45894,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -45296,6 +46025,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -45305,6 +46039,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -45861,11 +46601,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -45966,6 +46732,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -45975,6 +46746,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -49098,11 +49875,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -49203,6 +50006,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -49212,6 +50020,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -50146,11 +50960,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -50251,6 +51091,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -50260,6 +51105,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -51579,11 +52430,37 @@
             "editType": "calc",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "calc",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "calc",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "calc",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "calc",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "calc",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "calc",
           "font": {
@@ -51684,6 +52561,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "calc",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -51693,6 +52575,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "calc",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -51934,11 +52822,37 @@
               "editType": "calc",
               "valType": "color"
             },
+            "bgnamecolor": {
+              "description": "Sets the background color of the secondary hover label for this trace.",
+              "editType": "calc",
+              "valType": "color"
+            },
             "bordercolor": {
               "arrayOk": true,
               "description": "Sets the border color of the hover labels for this trace.",
               "editType": "calc",
               "valType": "color"
+            },
+            "borderpad": {
+              "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+              "dflt": 3,
+              "editType": "calc",
+              "min": 0,
+              "valType": "number"
+            },
+            "borderradius": {
+              "description": "Sets the border radius (in px) of the hover labels for this trace.",
+              "dflt": 0,
+              "editType": "calc",
+              "min": 0,
+              "valType": "number"
+            },
+            "borderwidth": {
+              "description": "Sets the border width (in px) of the hover labels for this trace.",
+              "dflt": 1,
+              "editType": "calc",
+              "min": 0,
+              "valType": "number"
             },
             "editType": "calc",
             "font": {
@@ -52039,6 +52953,11 @@
                 "valType": "integer"
               }
             },
+            "namecolor": {
+              "description": "Sets the text color of the secondary hover label for this trace.",
+              "editType": "calc",
+              "valType": "color"
+            },
             "namelength": {
               "arrayOk": true,
               "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -52048,6 +52967,12 @@
               "valType": "integer"
             },
             "role": "object",
+            "shadow": {
+              "description": "Sets the shadow of the hover labels for this trace.",
+              "dflt": "none",
+              "editType": "calc",
+              "valType": "string"
+            },
             "showarrow": {
               "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
               "dflt": true,
@@ -52206,11 +53131,37 @@
               "editType": "calc",
               "valType": "color"
             },
+            "bgnamecolor": {
+              "description": "Sets the background color of the secondary hover label for this trace.",
+              "editType": "calc",
+              "valType": "color"
+            },
             "bordercolor": {
               "arrayOk": true,
               "description": "Sets the border color of the hover labels for this trace.",
               "editType": "calc",
               "valType": "color"
+            },
+            "borderpad": {
+              "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+              "dflt": 3,
+              "editType": "calc",
+              "min": 0,
+              "valType": "number"
+            },
+            "borderradius": {
+              "description": "Sets the border radius (in px) of the hover labels for this trace.",
+              "dflt": 0,
+              "editType": "calc",
+              "min": 0,
+              "valType": "number"
+            },
+            "borderwidth": {
+              "description": "Sets the border width (in px) of the hover labels for this trace.",
+              "dflt": 1,
+              "editType": "calc",
+              "min": 0,
+              "valType": "number"
             },
             "editType": "calc",
             "font": {
@@ -52311,6 +53262,11 @@
                 "valType": "integer"
               }
             },
+            "namecolor": {
+              "description": "Sets the text color of the secondary hover label for this trace.",
+              "editType": "calc",
+              "valType": "color"
+            },
             "namelength": {
               "arrayOk": true,
               "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -52320,6 +53276,12 @@
               "valType": "integer"
             },
             "role": "object",
+            "shadow": {
+              "description": "Sets the shadow of the hover labels for this trace.",
+              "dflt": "none",
+              "editType": "calc",
+              "valType": "string"
+            },
             "showarrow": {
               "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
               "dflt": true,
@@ -52929,11 +53891,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -53034,6 +54022,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -53043,6 +54036,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -55422,11 +56421,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -55527,6 +56552,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -55536,6 +56566,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -57657,11 +58693,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -57762,6 +58824,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -57771,6 +58838,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -59736,11 +60809,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -59841,6 +60940,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -59850,6 +60954,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -61943,11 +63053,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -62048,6 +63184,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -62057,6 +63198,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -64051,11 +65198,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -64156,6 +65329,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -64165,6 +65343,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -65383,11 +66567,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -65488,6 +66698,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -65497,6 +66712,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -67478,11 +68699,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -67583,6 +68830,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -67592,6 +68844,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -69427,11 +70685,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -69532,6 +70816,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -69541,6 +70830,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -71506,11 +72801,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -71611,6 +72932,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -71620,6 +72946,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -73606,11 +74938,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -73711,6 +75069,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -73720,6 +75083,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -76042,11 +77411,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -76147,6 +77542,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -76156,6 +77556,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -76711,11 +78117,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -76816,6 +78248,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -76825,6 +78262,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -79191,11 +80634,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -79296,6 +80765,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -79305,6 +80779,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -80199,11 +81679,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -80304,6 +81810,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -80313,6 +81824,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -80617,11 +82134,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -80722,6 +82265,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -80731,6 +82279,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -82423,11 +83977,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -82528,6 +84108,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -82537,6 +84122,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -84411,11 +86002,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -84516,6 +86133,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -84525,6 +86147,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
@@ -85220,11 +86848,37 @@
             "editType": "none",
             "valType": "color"
           },
+          "bgnamecolor": {
+            "description": "Sets the background color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "bordercolor": {
             "arrayOk": true,
             "description": "Sets the border color of the hover labels for this trace.",
             "editType": "none",
             "valType": "color"
+          },
+          "borderpad": {
+            "description": "Sets the padding (in px) between the text and the border of the hover labels for this trace.",
+            "dflt": 3,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderradius": {
+            "description": "Sets the border radius (in px) of the hover labels for this trace.",
+            "dflt": 0,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
+          },
+          "borderwidth": {
+            "description": "Sets the border width (in px) of the hover labels for this trace.",
+            "dflt": 1,
+            "editType": "none",
+            "min": 0,
+            "valType": "number"
           },
           "editType": "none",
           "font": {
@@ -85325,6 +86979,11 @@
               "valType": "integer"
             }
           },
+          "namecolor": {
+            "description": "Sets the text color of the secondary hover label for this trace.",
+            "editType": "none",
+            "valType": "color"
+          },
           "namelength": {
             "arrayOk": true,
             "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
@@ -85334,6 +86993,12 @@
             "valType": "integer"
           },
           "role": "object",
+          "shadow": {
+            "description": "Sets the shadow of the hover labels for this trace.",
+            "dflt": "none",
+            "editType": "none",
+            "valType": "string"
+          },
           "showarrow": {
             "description": "Sets whether or not to show the hover label arrow/triangle pointing to the data point.",
             "dflt": true,
