@@ -271,14 +271,48 @@ const contrast = (cstr, lightAmount, darkAmount) => {
     }
 };
 
+// `stroke` and `fill` run once per data point. Most points of a trace repeat
+// one specifier, so a second parse of that specifier wastes the work. A caller
+// that loops over points passes a `cache`. Every other caller passes nothing
+// and parses each time. The cache belongs to the loop, so a cache that filled
+// up never outlives the trace that filled it. Only a string serves as a key,
+// because the other specifiers repeat by identity, not by value.
+//
+// The bound covers one loop. A trace with a distinct color per point writes an
+// entry per point, and no later point reads that entry.
+const MAX_MEMO_SIZE = 1000;
+
+const computeStyle = (cstr) => {
+    // One `parse` yields the two values, so a miss costs one parse, not two.
+    // With a distinct color per point, every lookup is a miss.
+    const c = parse(cstr);
+    // Force alpha to 1 in the color, so that the string drops it.
+    return [formatRgb({ ...c, alpha: 1 }), c.alpha];
+};
+
+const styleOf = (cstr, cache) => {
+    if (cache === undefined || typeof cstr !== 'string') return computeStyle(cstr);
+
+    let value = cache.get(cstr);
+    if (value === undefined) {
+        value = computeStyle(cstr);
+        if (cache.size < MAX_MEMO_SIZE) cache.set(cstr, value);
+    }
+
+    return value;
+};
+
 /**
  * Apply `stroke` and `stroke-opacity` styles to a D3 selection.
  *
  * @param {Selection} s - D3 selection
  * @param {*} cstr - Color specifier
+ * @param {Map} [cache] - Cache of the styles of specifiers seen before. A caller
+ *   that loops over points passes one cache for the whole loop.
  */
-const stroke = (s, cstr) => {
-    s.style({ stroke: rgb(cstr), 'stroke-opacity': parse(cstr).alpha });
+const stroke = (s, cstr, cache) => {
+    const style = styleOf(cstr, cache);
+    s.style({ stroke: style[0], 'stroke-opacity': style[1] });
 };
 
 /**
@@ -286,9 +320,12 @@ const stroke = (s, cstr) => {
  *
  * @param {Selection} s - D3 selection
  * @param {*} cstr - Color specifier
+ * @param {Map} [cache] - Cache of the styles of specifiers seen before. A caller
+ *   that loops over points passes one cache for the whole loop.
  */
-const fill = (s, cstr) => {
-    s.style({ fill: rgb(cstr), 'fill-opacity': parse(cstr).alpha });
+const fill = (s, cstr, cache) => {
+    const style = styleOf(cstr, cache);
+    s.style({ fill: style[0], 'fill-opacity': style[1] });
 };
 
 /**
