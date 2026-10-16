@@ -98,6 +98,9 @@ var attrs = module.exports = overrideAll({
     caxis: ternaryAxesAttrs
 }, 'plot', 'from-root');
 
+// ternary.sum is used by calc to normalize
+attrs.sum.editType = 'calc';
+
 // set uirevisions outside of `overrideAll` so we can get `editType: none`
 attrs.uirevision = {
     valType: 'any',
