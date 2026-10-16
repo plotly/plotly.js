@@ -23,6 +23,8 @@ var frameAttrs = require('./frame_attributes');
 
 var getModuleCalcData = require('../plots/get_data').getModuleCalcData;
 
+const { releaseImageHrefs } = require('../lib/image_href');
+
 var relinkPrivateKeys = Lib.relinkPrivateKeys;
 var _ = Lib._;
 
@@ -1472,6 +1474,9 @@ plots.purge = function(gd) {
 
     // Cancel the pending redraw for web fonts
     delete gd._fontLoadToken;
+
+    // Release all image blob URLs before the graph div loses its plot state.
+    releaseImageHrefs(gd);
 
     // data and layout
     delete gd.data;

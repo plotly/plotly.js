@@ -286,7 +286,8 @@ describe('image plot', function() {
     });
 
     function getImageURL() {
-        return d3Select(sel).attr('href');
+        const node = d3Select(sel).node();
+        return node._dataUrl || d3Select(node).attr('href');
     }
 
     [
