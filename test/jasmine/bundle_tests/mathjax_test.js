@@ -358,8 +358,6 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 var gd3 = d3Select(gd);
                 var link = gd3.select('g.hovertext .nums-math-group a');
 
-                // MathJax still wraps the text in an <a>; only the
-                // javascript: url must be gone, not the tex rendering.
                 expect(link.size()).toBe(1, 'link exists');
                 expect(link.attr('href')).toBe(null, 'javascript: url stripped');
             })
@@ -512,11 +510,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     expect(d3Select(this).attr('d')).not.toContain('NaN');
                 });
 
-                // hoverAvoidOverlaps must have pushed the two labels apart,
-                // since both points sit at the exact same (x, y). The
-                // separation is applied inside each label (an offset on
-                // text.nums), not to the outer <g>'s own transform, so
-                // compare each label's on-screen position, not its <g>.
+                // hoverAvoidOverlaps must have pushed the two labels apart
                 var tops = [];
                 hoverTexts.select('path').each(function() {
                     tops.push(this.getBoundingClientRect().top);
@@ -555,6 +549,46 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
 
                 expect(mathGroup.size()).toBe(1, 'unified hover title math group');
                 expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha^2$');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should still typeset a pure-tex unified hover row after hovering a plain-text row', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2],
+                    y: [1, 2],
+                    marker: {size: 20},
+                    hovertemplate: ['plain<extra></extra>', '$\\alpha$<extra></extra>']
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'x unified',
+                    hoverdistance: -1
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                expect(d3Select(gd).selectAll('g.legend [class*="legendtext-math-group"]').size())
+                    .toBe(0, 'plain-text row is not typeset');
+
+                _hover(250, 200);
+                return delay(30)();
+            })
+            .then(function() {
+                var mathGroup = d3Select(gd).select('g.legend [class*="legendtext-math-group"]');
+
+                expect(mathGroup.size()).toBe(1, 'pure-tex row typeset after the plain-text one');
+                expect(mathGroup.attr('data-unformatted')).toBe('$\\alpha$');
             })
             .then(done, done.fail);
         });

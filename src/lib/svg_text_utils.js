@@ -28,10 +28,6 @@ exports.matchTex = matchTex;
  * Checks whether a string is *entirely* a single tex expression, with no
  * literal text before or after the $...$ delimiters.
  *
- * convertToTspans only ever typesets the delimited part of a matchTex()
- * result (tex[2]); any surrounding text (tex[1], tex[3]) is silently
- * dropped. That's safe here because there is none to drop.
- *
  * @param {string} str: the string to check for tex
  * @return {boolean} true if the whole string is one tex expression
  */
@@ -105,8 +101,7 @@ function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor,
 
 /**
  * Removes an unsafe href/xlink:href from every <a> MathJax's \href{url}{...}
- * macro produced inside newSvg. MathJax copies the tex argument into the
- * link verbatim, with no scheme check of its own.
+ * macro produced inside newSvg.
  *
  * @param {d3 selection} newSvg: the typeset <svg>, already inserted into
  *   the document (or a fragment), so selectAll can walk its descendants
@@ -210,11 +205,6 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
                 mathjaxGroup.node().appendChild(newSvg.node());
 
-                // MathJax's \href{url}{...} macro copies the url into an
-                // <a> verbatim, with no scheme check, so a javascript: url
-                // in tex source becomes a live, clickable XSS vector.
-                // Apply the same protocol allowlist used for pseudo-HTML
-                // <a href> tags elsewhere in this file (sanitizeHref).
                 sanitizeMathJaxLinks(newSvg);
 
                 // stitch the glyph defs
@@ -256,12 +246,6 @@ exports.convertToTspans = function(_context, gd, _callback) {
  * Repositions an existing MathJax-typeset group, previously inserted by
  * convertToTspans, to match its source <text> node's *current* x/y and
  * text-anchor.
- *
- * convertToTspans positions a math group once, at typeset time, from the
- * source node's x/y at that instant; it never revisits that position. A
- * caller that moves the source <text> afterward (e.g. once it learns the
- * math group's real size and needs to redo layout that depended on it)
- * needs this to make the rendered group follow.
  *
  * @param {d3 selection} _context: the source <text> element
  */

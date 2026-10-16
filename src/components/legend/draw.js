@@ -733,11 +733,7 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
 
 
 function textLayout(s, g, gd, legendObj, aTitle) {
-    // unified hover keeps MathJax off unless the whole label is one tex
-    // expression: convertToTspans only typesets the delimited part of a
-    // match, silently dropping any surrounding text, which most unified
-    // hover labels have (e.g. a trace name next to a formatted value).
-    if(legendObj._inHover && !svgTextUtils.isPureTex(s.text())) s.attr('data-notex', true);
+    if(legendObj._inHover) s.attr('data-notex', svgTextUtils.isPureTex(s.text()) ? null : true);
     svgTextUtils.convertToTspans(s, gd, function() {
         computeTextDimensions(g, gd, legendObj, aTitle);
     });

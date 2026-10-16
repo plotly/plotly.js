@@ -262,18 +262,11 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     fixVerticalOverlap();
     alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
-    // Pure-tex label parts are typeset by MathJax asynchronously, so the
-    // sizes used just above can be stale. Once every such part has its
-    // final size, redo the same (idempotent) overlap/alignment pass.
     if (hoverText.mathjaxPromise) {
         hoverText.mathjaxPromise.then(function () {
             fixVerticalOverlap();
             alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
-            // alignHoverText just moved text.nums/text.name to their final
-            // spot; convertToTspans positioned each math group once
-            // already, from the pre-final placeholder position, so make
-            // them follow.
             hoverLabel.each(function () {
                 var g = d3.select(this);
                 svgTextUtils.repositionMathGroup(g.select('text.nums'));
@@ -984,9 +977,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
 
-        // Pure-tex label parts are typeset by MathJax asynchronously, so the
-        // sizes used just above can be stale. Once every such part has its
-        // final size, redo the same (idempotent) overlap/alignment pass.
         if (hoverText.mathjaxPromise) {
             hoverText.mathjaxPromise.then(function () {
                 // A newer hover call already replaced this one; nothing to fix.
@@ -994,10 +984,6 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
                 alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
 
-                // alignHoverText just moved text.nums/text.name to their
-                // final spot; convertToTspans positioned each math group
-                // once already, from the pre-final placeholder position, so
-                // make them follow.
                 hoverLabels.each(function () {
                     var g = d3.select(this);
                     svgTextUtils.repositionMathGroup(g.select('text.nums'));
@@ -1063,9 +1049,6 @@ function createHoverText(hoverData, opts) {
     // Early exit if no labels are drawn
     if (hoverData.length === 0) return [[]];
 
-    // Resolved once every label whose text is pure tex has been typeset by
-    // MathJax and repositioned using its final size. Empty when no label
-    // contains tex, so the common (non-math) case pays nothing extra.
     var mathjaxPromises = [];
 
     // opts.fontFamily/Size are used for the common label
@@ -1174,19 +1157,11 @@ function createHoverText(hoverData, opts) {
             mathjaxPromises.push(
                 new Promise(function (resolve) {
                     onCommonLabelReady = function () {
-                        // Unified hover discards this whole g.hovertext
-                        // structure synchronously and draws a legend-based
-                        // label instead (see below); by the time MathJax
-                        // resolves there may be nothing left to reposition.
                         if (!ltext.node().parentNode) {
                             resolve();
                             return;
                         }
                         positionCommonLabel();
-                        // positionCommonLabel just moved ltext to its final
-                        // spot; convertToTspans positioned the math group
-                        // once already, from ltext's pre-final placeholder
-                        // position, so make it follow.
                         svgTextUtils.repositionMathGroup(ltext);
                         resolve();
                     };
@@ -1201,21 +1176,9 @@ function createHoverText(hoverData, opts) {
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd, onCommonLabelReady);
 
-        // Position immediately with whatever size is available now (the
-        // final tex size isn't ready yet, but every field below must be a
-        // real number before hoverAvoidOverlaps/alignHoverText run, or the
-        // NaNs they produce stick around even after the tex-triggered
-        // re-run corrects the inputs). onCommonLabelReady repeats this once
-        // MathJax has typeset the label.
         positionCommonLabel();
 
         function positionCommonLabel() {
-            // tbb below reads *absolute* screen position, which is only
-            // meaningful measured from this neutral state (no outer
-            // transform, text at its own local origin) -- the same state
-            // this label started from the first time this ran. A tex label
-            // reruns this after it already moved things once; reset first
-            // so the two runs measure the same way.
             label.attr('transform', '');
             svgTextUtils.positionText(ltext, 0, 0);
             svgTextUtils.repositionMathGroup(ltext);
@@ -1670,10 +1633,6 @@ function createHoverText(hoverData, opts) {
                 new Promise(function (resolve) {
                     onLabelPartReady = function () {
                         if (--pendingLabelParts === 0) {
-                            // Unified hover discards this whole g.hovertext
-                            // structure synchronously and draws a legend-
-                            // based label instead; by the time MathJax
-                            // resolves there may be nothing left to redo.
                             if (g.node().parentNode) finalizePosition();
                             resolve();
                         }
@@ -1725,21 +1684,9 @@ function createHoverText(hoverData, opts) {
             g.select('rect').remove();
         }
 
-        // Position immediately with whatever size is available now (the
-        // final tex size isn't ready yet, but every field this sets must be
-        // a real number before hoverAvoidOverlaps/alignHoverText run, or the
-        // NaNs they produce stick around even after the tex-triggered
-        // re-run corrects the inputs). onLabelPartReady repeats this once
-        // every tex part has been typeset by MathJax.
         finalizePosition();
 
         function finalizePosition() {
-            // tbb/t2bb below read *absolute* screen position, which is only
-            // meaningful measured from this neutral state (no outer
-            // transform, text at its own local origin) -- the same state
-            // this label started from the first time this ran. A tex label
-            // reruns this after alignHoverText has already moved things
-            // once; reset first so the two runs measure the same way.
             g.attr('transform', '');
             tx.call(svgTextUtils.positionText, 0, 0);
             svgTextUtils.repositionMathGroup(tx);
