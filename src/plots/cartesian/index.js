@@ -220,6 +220,11 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     var layerData = [];
     var zoomScaleQueryParts = [];
 
+    // Keep the labels of text traces clear of the tick labels that sit inside the plot area
+    plotinfo.axisLayers = [plotinfo.xaxis, plotinfo.yaxis]
+        .filter((ax) => (ax.ticklabelposition || '').indexOf('inside') !== -1)
+        .map((ax) => fullLayout._plots[ax._mainSubplot][ax._id.charAt(0) + 'axislayer']);
+
     // Plot each zorder group in ascending order
     for(var z = 0; z < zindices.length; z++) {
         var zorder = zindices[z];

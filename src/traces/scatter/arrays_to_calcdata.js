@@ -13,6 +13,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     Lib.mergeArray(trace.hovertext, cd, 'htx');
     Lib.mergeArray(trace.customdata, cd, 'data');
     Lib.mergeArray(trace.textposition, cd, 'tp');
+    Lib.mergeArray(trace.textpriority, cd, 'tP');
     if(trace.textfont) {
         Lib.mergeArrayCastPositive(trace.textfont.size, cd, 'ts');
         Lib.mergeArray(trace.textfont.color, cd, 'tc');

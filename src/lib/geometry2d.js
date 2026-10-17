@@ -232,3 +232,351 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     }
     return pt;
 };
+
+// candidate positions of a label, in order of preference
+const POSITIONS = [
+    'top center',
+    'bottom center',
+    'middle right',
+    'middle left',
+    'top right',
+    'top left',
+    'bottom right',
+    'bottom left'
+];
+
+// a label that may sit on its point tries that first
+const POSITIONS_ON_POINT = ['middle center', ...POSITIONS];
+
+// ring 0 touches the point, every ring after it adds LEADER_STEP
+// font sizes of distance and a leader line back to the point
+const LEADER_RINGS = 6;
+const LEADER_STEP = 1;
+
+// a label without a leader line must keep CLUSTER_GAP font sizes
+// from every other marker, or a reader cannot tell which point is its own
+const CLUSTER_GAP = 1;
+
+// minimum px between a label and anything else
+const PAD = 2;
+
+// markers within NEIGHBOR_RADIUS font sizes of a point push its label
+// to the far side, so labels around a cluster point away from it
+const NEIGHBOR_RADIUS = 3;
+
+// side of one cell of the spatial index, in px
+const CELL_SIZE = 64;
+
+/**
+ * Place labels around their points, so that no label covers a marker,
+ * another label, or a leader line, and every label stays inside the area.
+ *
+ * Labels are placed in order of decreasing `priority`, then in the given
+ * order, so an earlier label wins a contested spot. Every label takes the
+ * first free candidate: the eight positions next to the point first, then
+ * the same positions farther out with a leader line back to the point.
+ * The positions are tried in the order that points away from the markers
+ * near the point, and in a fixed order when there are none. A position
+ * next to the point is used only when no other marker sits close to the
+ * label, so a leader line shows which point the label belongs to whenever
+ * that is in doubt. A label with no free candidate, or with its point
+ * outside the area, is hidden.
+ *
+ * @param opts.width - the width of the area in px
+ * @param opts.height - the height of the area in px
+ * @param opts.markers - the marker boxes, as `{x0, y0, x1, y1, owner}`;
+ *   a label may cover the marker with its own `owner`
+ * @param opts.fixed - the other boxes that labels stay clear of, as `{x0, y0, x1, y1}`
+ * @param opts.labels - the labels to place, each with:
+ *   `x`, `y` - the point in px;
+ *   `owner` - the value that links the label to its marker, the label itself when absent;
+ *   `radius` - the marker radius in px, or 0;
+ *   `fontSize` - the font size in px, which scales the leader step and the clearance from other markers;
+ *   `priority` - a number, higher first, 0 when absent;
+ *   `onPoint` - true when the label may also sit on its point;
+ *   `prefer`, `preferGap` - the position and gap the label had before: the label goes back next to
+ *     its point at that position when it can, else it stays where it was, and only then it searches again;
+ *   `rect(position, gap)` - the box of the label at a `textposition` value, `gap` px farther
+ *     from the point, as `{x0, y0, x1, y1, leader}`, with `leader` as `[x0, y0, x1, y1]`
+ *     from the marker edge to the box when `gap` is above 0, else null
+ * @returns one entry per label, in the given order: `{position, gap, leader}`,
+ *   or null when the label is hidden
+ */
+exports.placeLabels = function placeLabels(opts) {
+    const index = makeIndex(opts.width, opts.height);
+    const markers = opts.markers || [];
+    const fixed = opts.fixed || [];
+    const labels = opts.labels;
+
+    for (let i = 0; i < markers.length; i++) {
+        const m = markers[i];
+        const rect = makeRect(m.x0 - PAD, m.y0 - PAD, m.x1 + PAD, m.y1 + PAD, m.owner);
+        rect.isMarker = true;
+        insert(index, rect);
+    }
+    for (let i = 0; i < fixed.length; i++) {
+        const f = fixed[i];
+        insert(index, makeRect(f.x0, f.y0, f.x1, f.y1, f.owner));
+    }
+
+    const results = new Array(labels.length);
+    const order = sortLabels(labels);
+    for (let i = 0; i < order.length; i++) {
+        results[order[i]] = placeOne(index, labels[order[i]]);
+    }
+    return results;
+};
+
+// the order in which the labels are placed: by priority, high to low, then as given
+function sortLabels(labels) {
+    const order = labels.map((label, i) => i);
+    order.sort((a, b) => (labels[b].priority || 0) - (labels[a].priority || 0) || a - b);
+    return order;
+}
+
+function placeOne(index, label) {
+    const owner = label.owner === undefined ? label : label.owner;
+    const step = LEADER_STEP * label.fontSize;
+    const rings = step ? LEADER_RINGS : 0;
+
+    // a point outside the area gets no label, even when a candidate box would fit inside
+    if (label.x < 0 || label.x > index.width || label.y < 0 || label.y > index.height) return null;
+
+    // a label that was placed before does not step ring by ring on a redraw, so a pan does not shuffle leader lines
+    if (label.prefer) {
+        const out =
+            tryCandidate(index, label, owner, label.prefer, 0, rings) ||
+            (label.preferGap && tryCandidate(index, label, owner, label.prefer, label.preferGap, rings));
+        if (out) return out;
+    }
+
+    const positions = orderPositions(index, label, owner);
+
+    for (let ring = 0; ring <= rings; ring++) {
+        const gap = ring * step;
+
+        for (let k = 0; k < positions.length; k++) {
+            const out = tryCandidate(index, label, owner, positions[k], gap, rings);
+            if (out) return out;
+        }
+    }
+
+    return null;
+}
+
+// take a candidate when its box and leader line are free, and it is not ambiguous
+function tryCandidate(index, label, owner, pos, gap, rings) {
+    if (gap && pos === 'middle center') return null;
+
+    const box = label.rect(pos, gap);
+    const rect = makeRect(box.x0, box.y0, box.x1, box.y1, owner);
+    if (!rectIsFree(index, rect)) return null;
+    if (!gap && rings && isAmbiguous(index, rect, CLUSTER_GAP * label.fontSize)) return null;
+
+    const seg = box.leader;
+    const line = seg ? makeLine(seg[0], seg[1], seg[2], seg[3], owner) : null;
+    if (line && !lineIsFree(index, line, label.x, label.y)) return null;
+
+    insert(index, rect);
+    if (line) insert(index, line);
+    return { position: pos, gap, leader: seg || null };
+}
+
+// the candidate positions of a label, sorted so that the ones that point
+// away from the nearby markers come first; ties keep the default order
+function orderPositions(index, label, owner) {
+    const positions = label.onPoint ? POSITIONS_ON_POINT : POSITIONS;
+    const r = ((label.radius || 0) + NEIGHBOR_RADIUS * label.fontSize) ** 2;
+    const b = cellBounds(
+        index,
+        label.x - Math.sqrt(r),
+        label.y - Math.sqrt(r),
+        label.x + Math.sqrt(r),
+        label.y + Math.sqrt(r)
+    );
+    const cells = index.cells;
+    let ax = 0;
+    let ay = 0;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const cell = cells[row * index.ncols + col];
+            if (!cell) continue;
+
+            for (let i = 0; i < cell.length; i++) {
+                const ob = cell[i];
+                if (!ob.isMarker || ob.owner === owner) continue;
+                const dx = label.x - (ob.x0 + ob.x1) / 2;
+                const dy = label.y - (ob.y0 + ob.y1) / 2;
+                const d2 = dx * dx + dy * dy;
+                if (!d2 || d2 > r) continue;
+                // nearer markers push harder
+                ax += dx / d2;
+                ay += dy / d2;
+            }
+        }
+    }
+
+    let out = positions;
+    if (ax || ay) {
+        const scored = positions.map((pos, k) => {
+            const sx = pos.indexOf('right') !== -1 ? 1 : pos.indexOf('left') !== -1 ? -1 : 0;
+            const sy = pos.indexOf('bottom') !== -1 ? 1 : pos.indexOf('top') !== -1 ? -1 : 0;
+            const norm = Math.sqrt(sx * sx + sy * sy) || 1;
+            return { pos, k, score: (sx * ax + sy * ay) / norm };
+        });
+        scored.sort((a, b) => b.score - a.score || a.k - b.k);
+        out = scored.map((s) => s.pos);
+    }
+
+    const prefer = label.prefer;
+    if (prefer && out.indexOf(prefer) > 0) out = [prefer, ...out.filter((pos) => pos !== prefer)];
+    return out;
+}
+
+// true when another marker sits within `margin` px of a label box,
+// measured from the nearest edge or corner of the box
+function isAmbiguous(index, rect, margin) {
+    const b = cellBounds(index, rect.x0 - margin, rect.y0 - margin, rect.x1 + margin, rect.y1 + margin);
+    const cells = index.cells;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const cell = cells[row * index.ncols + col];
+            if (!cell) continue;
+
+            for (let i = 0; i < cell.length; i++) {
+                const ob = cell[i];
+                if (!ob.isMarker || ob.owner === rect.owner) continue;
+                const dx = Math.max(0, ob.x0 - rect.x1, rect.x0 - ob.x1);
+                const dy = Math.max(0, ob.y0 - rect.y1, rect.y0 - ob.y1);
+                if (dx * dx + dy * dy < margin * margin) return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function makeRect(x0, y0, x1, y1, owner) {
+    return { x0, y0, x1, y1, owner, isLine: false, isMarker: false };
+}
+
+function makeLine(x0, y0, x1, y1, owner) {
+    return { x0, y0, x1, y1, owner, isLine: true, isMarker: false };
+}
+
+function makeIndex(width, height) {
+    return {
+        width,
+        height,
+        ncols: Math.max(1, Math.ceil(width / CELL_SIZE)),
+        nrows: Math.max(1, Math.ceil(height / CELL_SIZE)),
+        cells: []
+    };
+}
+
+// the cells that cover a box, clamped to the grid, as [col0, row0, col1, row1]
+function cellBounds(index, x0, y0, x1, y1) {
+    const maxCol = index.ncols - 1;
+    const maxRow = index.nrows - 1;
+    return [
+        constrain(Math.floor(Math.min(x0, x1) / CELL_SIZE), 0, maxCol),
+        constrain(Math.floor(Math.min(y0, y1) / CELL_SIZE), 0, maxRow),
+        constrain(Math.floor(Math.max(x0, x1) / CELL_SIZE), 0, maxCol),
+        constrain(Math.floor(Math.max(y0, y1) / CELL_SIZE), 0, maxRow)
+    ];
+}
+
+function insert(index, ob) {
+    const b = cellBounds(index, ob.x0, ob.y0, ob.x1, ob.y1);
+    const cells = index.cells;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const id = row * index.ncols + col;
+            if (!cells[id]) cells[id] = [];
+            cells[id].push(ob);
+        }
+    }
+}
+
+// a label box is free when it stays inside the area
+// and hits nothing but the marker of its own point
+function rectIsFree(index, rect) {
+    const x0 = rect.x0 - PAD;
+    const y0 = rect.y0 - PAD;
+    const x1 = rect.x1 + PAD;
+    const y1 = rect.y1 + PAD;
+    if (x0 < 0 || y0 < 0 || x1 > index.width || y1 > index.height) return false;
+
+    const b = cellBounds(index, x0, y0, x1, y1);
+    const cells = index.cells;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const cell = cells[row * index.ncols + col];
+            if (!cell) continue;
+
+            for (let i = 0; i < cell.length; i++) {
+                const ob = cell[i];
+                if (ob.owner === rect.owner) continue;
+                const hit = ob.isLine
+                    ? lineHitsRect(ob, x0, y0, x1, y1)
+                    : ob.x0 < x1 && ob.x1 > x0 && ob.y0 < y1 && ob.y1 > y0;
+                if (hit) return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+// a leader line is free when it crosses nothing but the marker of its own point
+// and the obstacles that already cover the point (px, py), which no candidate can escape
+function lineIsFree(index, line, px, py) {
+    const b = cellBounds(index, line.x0, line.y0, line.x1, line.y1);
+    const cells = index.cells;
+
+    for (let row = b[1]; row <= b[3]; row++) {
+        for (let col = b[0]; col <= b[2]; col++) {
+            const cell = cells[row * index.ncols + col];
+            if (!cell) continue;
+
+            for (let i = 0; i < cell.length; i++) {
+                const ob = cell[i];
+                if (ob.owner === line.owner) continue;
+                let hit;
+                if (ob.isLine) {
+                    hit = segmentsIntersect(line.x0, line.y0, line.x1, line.y1, ob.x0, ob.y0, ob.x1, ob.y1);
+                } else if (!pointInRect(px, py, ob.x0, ob.y0, ob.x1, ob.y1)) {
+                    hit = lineHitsRect(line, ob.x0, ob.y0, ob.x1, ob.y1);
+                }
+                if (hit) return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function lineHitsRect(line, x0, y0, x1, y1) {
+    if (pointInRect(line.x0, line.y0, x0, y0, x1, y1)) return true;
+    if (pointInRect(line.x1, line.y1, x0, y0, x1, y1)) return true;
+
+    const { x0: ax, y0: ay, x1: bx, y1: by } = line;
+    return !!(
+        segmentsIntersect(ax, ay, bx, by, x0, y0, x1, y0) ||
+        segmentsIntersect(ax, ay, bx, by, x1, y0, x1, y1) ||
+        segmentsIntersect(ax, ay, bx, by, x1, y1, x0, y1) ||
+        segmentsIntersect(ax, ay, bx, by, x0, y1, x0, y0)
+    );
+}
+
+function pointInRect(x, y, x0, y0, x1, y1) {
+    return x > x0 && x < x1 && y > y0 && y < y1;
+}
+
+function constrain(v, v0, v1) {
+    return Math.max(v0, Math.min(v1, v));
+}
