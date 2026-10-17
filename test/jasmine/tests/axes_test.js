@@ -1187,6 +1187,34 @@ describe('Test axes', function() {
             _assertMatchingAxes(['xaxis4', 'yaxis4'], false, [-1, 3]);
         });
 
+        it('should not turn off autorange in match groups that have no set range', function() {
+            // shared x and y axes on a 2x2 grid, with a range on every x axis
+            layoutIn = {
+                xaxis: {matches: 'x3', range: [0, 100]},
+                xaxis2: {matches: 'x4', range: [0, 100]},
+                xaxis3: {range: [0, 100]},
+                xaxis4: {range: [0, 100]},
+                yaxis: {},
+                yaxis2: {matches: 'y'},
+                yaxis3: {},
+                yaxis4: {matches: 'y3'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
+            layoutOut._subplots.xaxis.push('x2', 'x3', 'x4');
+            layoutOut._subplots.yaxis.push('y2', 'y3', 'y4');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut._axisMatchGroups.length).toBe(4);
+
+            ['xaxis', 'xaxis2', 'xaxis3', 'xaxis4'].forEach((axName) => {
+                expect(layoutOut[axName].autorange).withContext(axName).toBe(false);
+            });
+            ['yaxis', 'yaxis2', 'yaxis3', 'yaxis4'].forEach((axName) => {
+                expect(layoutOut[axName].autorange).withContext(axName).toBe(true);
+            });
+        });
+
         it('should match set axis range value for matching axes even when matching a *missing* axis', function() {
             layoutIn = {
                 // N.B. xaxis is set, but does not correspond to a subplot
