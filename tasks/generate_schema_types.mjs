@@ -48,7 +48,8 @@ const COMMON_TYPE_ANCHORS = [
         match: (key, _path, values) => key === 'yref' && values.length === 2 && values.includes('container')
     },
     { name: 'PatternShape', match: (key, path) => key === 'shape' && /\.pattern\.shape$/.test(path) },
-    { name: 'TransitionEasing', match: (key) => key === 'easing' }
+    { name: 'TransitionEasing', match: (key) => key === 'easing' },
+    { name: 'ToImageFormat', match: (_key, path) => path === 'config.toImageButtonOptions.format' }
 ];
 
 /**
@@ -59,6 +60,9 @@ const VALUES_TO_COMMON_TYPE = new Map();
 
 /** Attribute name patterns that should use a specific common type. */
 const ATTR_NAME_OVERRIDES = new Map([['marker.symbol', 'MarkerSymbol']]);
+
+/** Value types whose `arrayOk` form also accepts a `TypedArray` */
+const NUMERIC_ARRAY_OK_VAL_TYPES = new Set(['number', 'integer', 'angle', 'color']);
 
 /**
  * Shared interfaces wrapped inside `export namespace _internal { ... }`.
@@ -116,6 +120,7 @@ function discoverCommonTypes(schema) {
     visit(schema.traces, 'traces');
     visit(schema.layout, 'layout');
     if (schema.animation) visit(schema.animation, 'animation');
+    if (schema.config) visit(schema.config, 'config');
 
     // For each anchor, pick the largest value set. When sizes tie, the first
     // match wins. The superset rule handles axis-type-style cases where
@@ -480,7 +485,9 @@ function valTypeToTS(attr, attrPath) {
     if (attr.arrayOk) {
         // Wrap in parens if base contains '|' to avoid ambiguity
         const needsParens = base.includes('|');
-        return needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+        const arrayType = needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+        // A typed array holds only numbers, so allow one only for value types that accept numeric values
+        return NUMERIC_ARRAY_OK_VAL_TYPES.has(valType) ? `${arrayType} | TypedArray` : arrayType;
     }
 
     return base;
@@ -1389,14 +1396,30 @@ export function generateSchemaTypes(schema, outputPath) {
         // references `edits?: Edits` instead of re-inlining the subtree.
         sharedTypes.set(containerFingerprint(schema.config.edits), 'Edits');
     }
+    if (schema.config && schema.config.toImageButtonOptions) {
+        // The runtime reads `null` for `width` and `height` as the current graph
+        // size. A `number` valType cannot express that, so widen the two fields
+        // here rather than in `core/config.d.ts`.
+        const toImageButtonProps = attrsToProperties(
+            schema.config.toImageButtonOptions,
+            '    ',
+            'toImageButtonOptions',
+            sharedTypes,
+            { width: 'number | null', height: 'number | null' }
+        );
+        extraInterfaces.push({ name: 'ToImageButtonOptions', properties: toImageButtonProps });
+
+        // Register the fingerprint so the ConfigBase emission below references
+        // `toImageButtonOptions?: ToImageButtonOptions` instead of re-inlining the subtree.
+        sharedTypes.set(containerFingerprint(schema.config.toImageButtonOptions), 'ToImageButtonOptions');
+    }
     if (schema.config) {
         // Generate the schema-derived Config building block. Fields whose
-        // schema valType is `any` (locales, modeBarButtons, setBackground,
-        // toImageButtonOptions, ...) come through as `any` and are
-        // overridden with precise types in `core/config.d.ts`'s `Config`
-        // via Omit/intersection. The schema is fundamentally unable to
-        // describe functions or arbitrary-key maps, so those overrides are
-        // permanent.
+        // schema valType is `any` (locales, modeBarButtons, setBackground, ...)
+        // come through as `any` and are overridden with precise types in
+        // `core/config.d.ts`'s `Config` via Omit/intersection. The schema is
+        // fundamentally unable to describe functions or arbitrary-key maps, so
+        // those overrides are permanent.
         const configProps = attrsToProperties(schema.config, '    ', 'config', sharedTypes);
         extraInterfaces.push({ name: 'ConfigBase', properties: configProps });
     }
