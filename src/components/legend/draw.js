@@ -824,7 +824,9 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         legendObj._titleHeight = height;
     } else { // legend item
         legendItem.lineHeight = lineHeight;
-        legendItem.height = Math.max(height, 16) + 3;
+        // A taller fill swatch keeps the space that the default row gives the default swatch
+        const fillItemHeight = constants.itemMinHeight + legendObj.itemheight - constants.dfltFillHeight;
+        legendItem.height = Math.max(height, constants.itemMinHeight, fillItemHeight) + constants.itemHeightPad;
         legendItem.width = width;
     }
 }
@@ -1063,6 +1065,17 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
+
+    if (legendObj._inHover) {
+        const textRight = legendObj._width - bw2 - itemGap - titleSize[0];
+        traces.each(function (d) {
+            if (d[0].textAlign !== 'right') return;
+            d3.select(this)
+                .select('.' + legendId + 'text')
+                .attr('text-anchor', 'end')
+                .call(svgTextUtils.positionText, textRight);
+        });
+    }
 
     // align legend title horizontally
     var titleEl = scrollBox.select('.' + legendId + 'titletext');

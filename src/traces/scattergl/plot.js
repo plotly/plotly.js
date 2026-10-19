@@ -6,6 +6,7 @@ var createError = require('regl-error2d');
 var Text = require('gl-text');
 
 var Lib = require('../../lib');
+const { rgbaString } = require('../../components/color');
 var selectMode = require('../../components/dragelement/helpers').selectMode;
 var prepareRegl = require('../../lib/prepare_regl');
 
@@ -226,7 +227,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
                                     if(isNaN(xx) || isNaN(yy)) continue;
                                     pos.push(xx, yy);
                                 }
-                                fillOptions.fill = nextTrace.fillcolor;
+                                fillOptions.fill = rgbaString(nextTrace.fillcolor);
                             }
                         }
                     }

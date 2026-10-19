@@ -284,7 +284,7 @@ export function prependTraces(
 /** Render the plot to a data URI or SVG string. */
 export function toImage(root: RootOrData, opts?: ToImgopts): Promise<string>;
 /** Render the plot and trigger a browser download. */
-export function downloadImage(root: RootOrData, opts: DownloadImgopts): Promise<string>;
+export function downloadImage(root: RootOrData, opts?: DownloadImgopts): Promise<string>;
 
 /**
  * Reconcile the plot's current state with the supplied figure. Comparable

@@ -282,6 +282,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var plots = fullLayout._plots || [];
     var plotinfo = plots[subplot];
     var hasCartesian = fullLayout._has('cartesian');
+    var hasTernary = fullLayout._has('ternary');
 
     var hovermode = evt.hovermode || fullLayout.hovermode;
     var hovermodeHasX = (hovermode || '').charAt(0) === 'x';
@@ -376,11 +377,14 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
 
     var itemnum, curvenum, cd, trace, subplotId, subploti, _mode, xval, yval, pointData, closedataPreviousLength;
 
-    // spikePoints: the set of candidate points we've found to draw spikes to
+    // cartesian candidate points for drawing spikes
     var spikePoints = {
         hLinePoint: null,
         vLinePoint: null
     };
+
+    // candidate spike points for ternary subplots
+    const ternarySpikePoints = {};
 
     // does subplot have one (or more) horizontal traces?
     // This is used to determine whether we rotate the labels or not
@@ -658,6 +662,36 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 distance = hoverData[0].distance;
             }
 
+            if (Registry.traceIs(trace, 'ternary') && spikedistance !== 0) {
+                const ternary = pointData.subplot;
+                
+                // as in Cartesian, 'hovered data' relies only on the normal hover result, while
+                // 'data' and 'cursor' need a closest data point
+                const needsClosestPoint = ['aaxis', 'baxis', 'caxis'].some((name) =>
+                    ternary[name].showspikes && ternary[name].spikesnap !== 'hovered data');
+
+                if (needsClosestPoint) {
+                    // may be undefined when no point is found within hoverdistance
+                    let spikePoint = newPoints?.[0];
+
+                    // reuse the normal hover candidate when available
+                    // otherwise search again using spikedistance
+                    if (!Number.isFinite(spikePoint?.spikeDistance)) {
+                        const spikeData = Lib.extendFlat({}, pointData, {distance: spikedistance, index: false});
+                        const closestPoints = trace._module.hoverPoints(spikeData, xval, yval, 'closest');
+                        spikePoint = closestPoints && closestPoints[0];
+                    }
+
+                    const previousSpikePoint = ternarySpikePoints[subplotId];
+
+                    if (spikePoint && spikePoint.index !== undefined && spikePoint.index !== false &&
+                        spikePoint.spikeDistance <= spikedistance &&
+                        (!previousSpikePoint || spikePoint.spikeDistance < previousSpikePoint.spikeDistance)) {
+                        ternarySpikePoints[subplotId] = spikePoint;
+                    }
+                }
+            }
+
             // Now if there is range to look in, find the points to draw the spikelines
             // Do it only if there is no hoverData
             if (hasCartesian && spikedistance !== 0) {
@@ -714,6 +748,21 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     }
 
     findHoverPoints();
+
+    function updateTernarySpikelines() {
+        fullLayout._hoverlayer.selectAll('.ternary-spikes').remove();
+
+        if (spikedistance === 0) return;
+        for (let i = 0; i < subplots.length; i++) {
+            const id = subplots[i];
+            const ternary = fullLayout[id] && fullLayout[id]._subplot;
+            if (ternary && ternary.drawSpikelines) {
+                const point = hoverData.find((d) => d.trace.subplot === id &&
+                    d.index !== undefined && d.index !== false && d.spikeDistance <= spikedistance);
+                ternary.drawSpikelines(point, ternarySpikePoints[id], xvalArray && xvalArray[i], yvalArray && yvalArray[i]);
+            }
+        }
+    }
 
     function selectClosestPoint(pointsData, spikedistance, spikeOnWinning) {
         var resultPoint = null;
@@ -829,6 +878,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             // See dragelement/unhover.js.
             gd._hoverAnywhereActive = true;
         }
+
+        if (hasTernary) updateTernarySpikelines();
+
         return result;
     }
 
@@ -837,6 +889,8 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             createSpikelines(gd, spikePoints, spikelineOpts);
         }
     }
+
+    if (hasTernary) updateTernarySpikelines();
 
     if (
         helpers.isXYhover(_mode) &&
