@@ -287,7 +287,8 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 expect(cd[n]._tpAuto).toBe(null, 'label outside the plot area');
 
                 gd3.selectAll('.textpoint').each(function(d) {
-                    var rect = d3Select(this).select('.text-math-group svg').node().getBoundingClientRect();
+                    // Measure the group, because Firefox reports the nested svg in its viewBox units
+                    const rect = d3Select(this).select('.text-math-group').node().getBoundingClientRect();
                     if(d._tpAuto === null) expect(rect.width).toBe(0, 'hidden label ' + d.i);
                     else boxes.push(rect);
                 });
