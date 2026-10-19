@@ -138,6 +138,21 @@ describe('placeLabels', function() {
         expect(out[0].gap).toBe(0);
     });
 
+    it('counts a marker just outside the area, and ignores one far outside', function() {
+        var a = label(195, 100);
+        var out = place([a], {markers: [marker(a)]});
+        expect(out[0].position).toBe('middle left');
+        expect(out[0].gap).toBe(0);
+
+        // 10px from the point, so a leader line must show which point owns the label
+        out = place([a], {markers: [marker(a), {x0: 200, y0: 95, x1: 210, y1: 105, owner: {}}]});
+        expect(out[0].gap).toBeGreaterThan(0);
+
+        out = place([a], {markers: [marker(a), {x0: 995, y0: 95, x1: 1005, y1: 105, owner: {}}]});
+        expect(out[0].position).toBe('middle left');
+        expect(out[0].gap).toBe(0);
+    });
+
     it('hides a label outside the area', function() {
         var out = place([label(300, 100)]);
         expect(out[0]).toBe(null);

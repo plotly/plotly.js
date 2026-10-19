@@ -1127,6 +1127,56 @@ describe('end-to-end scatter tests', function() {
                 .then(done, done.fail);
         });
 
+        it('should draw no label for an *auto* point outside the plot area, and draw it again in view', (done) => {
+            const x = [];
+            const y = [];
+            const textposition = [];
+            for (let i = 0; i < 40; i++) {
+                x.push(i);
+                y.push(Math.sin(i / 3) * 3);
+                // A label with a fixed position is drawn wherever its point is
+                textposition.push(i % 7 === 0 ? 'bottom center' : 'auto');
+            }
+            const nFixed = textposition.filter((p) => p !== 'auto').length;
+            const isAuto = (d) => textposition[d.i] === 'auto';
+            const textPointCount = () => d3SelectAll('.textpoint').size();
+            const view = (range) => Plotly.relayout(gd, 'xaxis.range', range);
+
+            Plotly.newPlot(
+                gd,
+                [{ mode: 'markers+text', x, y, text: x.map((v) => 'pt ' + v), textposition }],
+                { width: 640, height: 420, showlegend: false, xaxis: { range: [0, 40] }, yaxis: { range: [-4, 4] } }
+            )
+                .then(() => {
+                    expect(textPointCount()).toBe(40, 'labels in the full view');
+                    return view([10.5, 19.5]);
+                })
+                .then(() => {
+                    const cd = gd.calcdata[0];
+                    const outside = cd.filter((d) => isAuto(d) && (d.x < 10.5 || d.x > 19.5));
+                    const inside = cd.filter((d) => isAuto(d) && d.x > 10.5 && d.x < 19.5);
+
+                    // The nodes of the *auto* labels in view, and of every fixed label
+                    expect(textPointCount()).toBe(inside.length + nFixed, 'labels after a zoom');
+                    expect(inside.length).toBe(8, 'auto points in view');
+                    // A label that comes back into view has no position to keep
+                    outside.forEach((d) => {
+                        expect(d._tpAuto).toBe(null, 'position of point ' + d.i);
+                        expect(d._tpAutoGap).toBe(0, 'gap of point ' + d.i);
+                        expect(d._tpAutoLeader).toBe(null, 'leader of point ' + d.i);
+                    });
+                    inside.forEach((d) => expect(typeof d._tpAuto).toBe('string', 'position of point ' + d.i));
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps after a zoom');
+                    return view([0, 40]);
+                })
+                .then(() => {
+                    expect(textPointCount()).toBe(40, 'labels after zooming back out');
+                    expect(hiddenLabelCount()).toBeLessThan(5, 'hidden labels after zooming back out');
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps after zooming back out');
+                })
+                .then(done, done.fail);
+        });
+
         describe('in a subplot with axis labels inside the plot area', () => {
             const size = { width: 480, height: 440, margin: { l: 50, r: 50, t: 50, b: 50 }, showlegend: false };
             const names = (n) => Array.from({ length: n }, (_, i) => 'pt ' + i);

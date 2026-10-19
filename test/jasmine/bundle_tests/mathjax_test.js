@@ -283,7 +283,8 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 var cd = gd.calcdata[0];
                 var boxes = [gd3.select('.point').node().getBoundingClientRect()];
 
-                expect(gd3.selectAll('.textpoint .text-math-group').size()).toBe(n + 1, 'math groups');
+                // The point outside the plot area has no label to render
+                expect(gd3.selectAll('.textpoint .text-math-group').size()).toBe(n, 'math groups');
                 expect(cd[n]._tpAuto).toBe(null, 'label outside the plot area');
 
                 gd3.selectAll('.textpoint').each(function(d) {
