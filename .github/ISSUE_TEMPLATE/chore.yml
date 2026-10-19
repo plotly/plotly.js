@@ -1,0 +1,15 @@
+name: Chore
+description: Track maintenance work for plotly.js (dependency bumps, build/CI, internal refactors)
+title: "[CHORE]: "
+labels: "chore,plotly-internal"
+
+body:
+  - type: textarea
+    attributes:
+      label: Instructions
+      description: >
+        Use this template for maintenance work that does not change end-user behavior: dependency updates, build pipeline changes, CI/CD adjustments, internal refactors, lint/format/typing cleanup.
+
+        Add a clear description of the update that should be made including **why**.
+      placeholder: >
+        For user-facing bugs use the **Bug report** template, and for new functionality use the **Feature request** template.

@@ -1,0 +1,13 @@
+name: Documentation Improvement
+description: Report an issue with the official documentation, including the API reference at https://plotly.com/javascript/reference. Alternatively, just open a PR with the suggested change.
+title: "[DOCS]: "
+labels: "documentation"
+
+body:
+  - type: textarea
+    attributes:
+      label: Instructions
+      description: >
+        Describe what is missing or inaccurate in the Plotly documentation.
+
+        Consider just opening a PR with the suggested text changes in place.
