@@ -5,7 +5,7 @@ var Lib = require('../../lib');
 
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
-var Color = require('../../components/color');
+const Color = require('../../components/color');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 // Stroke each arrow path according to the trace colorscale, using marker.color
@@ -37,18 +37,18 @@ function colorscaleStroke(paths, trace) {
 // A color-string array is not a colorscale. Apply each string here, because
 // `lineGroupStyle` paints an array as black.
 const strokeArrowColors = (paths, trace) => {
-    if(trace._hasColorscale) {
+    if (trace._hasColorscale) {
         colorscaleStroke(paths, trace);
         return;
     }
 
     const markerColor = (trace.marker || {}).color;
-    if(!Lib.isArrayOrTypedArray(markerColor)) return;
+    if (!Lib.isArrayOrTypedArray(markerColor)) return;
 
-    paths.style('stroke', function(cdi) {
-        if(markerColor.length > cdi.i) {
+    paths.style('stroke', function (cdi) {
+        if (markerColor.length > cdi.i) {
             const color = markerColor[cdi.i];
-            if(Color.isValid(color)) {
+            if (Color.isValid(color)) {
                 cdi.mcc = color;
                 return color;
             }
@@ -117,8 +117,8 @@ function styleArrows(gd, cd, sel) {
 }
 
 module.exports = {
-    style: style,
-    styleOnSelect: styleOnSelect,
-    colorscaleStroke: colorscaleStroke,
-    strokeArrowColors: strokeArrowColors
+    style,
+    styleOnSelect,
+    colorscaleStroke,
+    strokeArrowColors
 };

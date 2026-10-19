@@ -4,7 +4,7 @@ var d3 = require('@plotly/d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var strokeArrowColors = require('./style').strokeArrowColors;
+const { strokeArrowColors } = require('./style');
 
 // Fixed arrowhead wedge angle (radians). Arrow direction is fully
 // determined by u,v (see angPx below); this constant only controls the
