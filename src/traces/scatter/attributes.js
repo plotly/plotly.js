@@ -663,12 +663,45 @@ module.exports = {
             'middle right',
             'bottom left',
             'bottom center',
-            'bottom right'
+            'bottom right',
+            'auto'
         ],
         dflt: 'middle center',
         arrayOk: true,
         editType: 'calc',
-        description: ['Sets the positions of the `text` elements', 'with respects to the (x,y) coordinates.'].join(' ')
+        description: [
+            'Sets the positions of the `text` elements',
+            'with respects to the (x,y) coordinates.',
+            'With *auto*, each label takes the first position around its point',
+            'that overlaps no marker and no other label on the subplot.',
+            'When the positions next to the point are taken, or another point',
+            'sits close to the label, the label moves farther out with a leader',
+            'line back to the point. A label with no free position is hidden.',
+            'In a trace without markers or lines, a label sits on its point when',
+            'it can, and moves out the same way when another label is in the way.',
+            'Labels are placed in the order of `textrank`.',
+            'Auto placement considers markers, text labels, and the axis labels',
+            'that sit inside the plot area.',
+            'It does not avoid annotations, shapes, images, or the legend.'
+        ].join(' ')
+    },
+    textrank: {
+        valType: 'number',
+        dflt: 1000,
+        arrayOk: true,
+        editType: 'calc',
+        description: [
+            'Sets the placement rank of the `text` elements',
+            'with `textposition` *auto*, per point or for the whole trace.',
+            'A label with a smaller rank takes its position',
+            'before the labels of larger rank on the subplot,',
+            'so it stays next to its point and is hidden last.',
+            'The default rank is 1000, so that you can use ranks less than 1000',
+            'to place certain labels before all unranked labels,',
+            'and ranks greater than 1000 to place certain labels after them.',
+            'A rank can be a fraction, which puts a label between two others.',
+            'Labels of equal rank are placed in trace and data order.'
+        ].join(' ')
     },
     textfont: fontAttrs({
         editType: 'calc',

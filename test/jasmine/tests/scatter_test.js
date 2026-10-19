@@ -4,6 +4,7 @@ var Scatter = require('../../../src/traces/scatter');
 var makeBubbleSizeFn = require('../../../src/traces/scatter/make_bubble_size_func');
 var linePoints = require('../../../src/traces/scatter/line_points');
 var Lib = require('../../../src/lib');
+const Drawing = require('../../../src/components/drawing');
 var Plots = require('../../../src/plots/plots');
 
 var Plotly = require('../../../lib/index');
@@ -46,6 +47,45 @@ describe('Test scatter', function() {
 
         beforeEach(function() {
             traceOut = {};
+        });
+
+        it('should accept *auto* textposition', function() {
+            traceIn = {
+                x: [1, 2],
+                y: [1, 2],
+                mode: 'markers+text',
+                text: ['a', 'b'],
+                textposition: 'auto'
+            };
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textposition).toBe('auto');
+        });
+
+        it('should coerce textrank with *auto* textposition only', function() {
+            traceIn = {
+                x: [1, 2],
+                y: [1, 2],
+                mode: 'markers+text',
+                text: ['a', 'b'],
+                textposition: 'auto',
+                textrank: [2, 1]
+            };
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textrank).toEqual([2, 1]);
+
+            traceIn.textposition = ['top center', 'auto'];
+            delete traceIn.textrank;
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textrank).toBe(1000);
+
+            traceIn.textposition = 'top center';
+            traceIn.textrank = [2, 1];
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.textrank).toBeUndefined();
         });
 
         it('should set visible to false when x and y are empty', function() {
@@ -696,6 +736,590 @@ describe('end-to-end scatter tests', function() {
         }]).then(function() {
             expect(d3SelectAll('.textpoint').size()).toBe(3);
         }).then(done, done.fail);
+    });
+
+    describe('with textposition *auto*', function() {
+        var layout = {
+            width: 500,
+            height: 500,
+            margin: {l: 50, r: 50, t: 50, b: 50},
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]}
+        };
+
+        function visibleLabelBoxes() {
+            var boxes = [];
+            d3SelectAll('.textpoint').each(function() {
+                if(this.style.display !== 'none') boxes.push(this.querySelector('text').getBoundingClientRect());
+            });
+            return boxes;
+        }
+
+        function hiddenLabelCount() {
+            return d3SelectAll('.textpoint').filter(function() {
+                return this.style.display === 'none';
+            }).size();
+        }
+
+        function countOverlaps(boxes) {
+            var n = 0;
+            for(var i = 0; i < boxes.length; i++) {
+                for(var j = i + 1; j < boxes.length; j++) {
+                    var a = boxes[i];
+                    var b = boxes[j];
+                    if(a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top) n++;
+                }
+            }
+            return n;
+        }
+
+        function textPointTransforms() {
+            var out = [];
+            d3SelectAll('.textpoint').each(function() {
+                out.push(d3Select(this).attr('transform'));
+            });
+            return out;
+        }
+
+        function makeStack(n) {
+            var x = [];
+            var y = [];
+            var text = [];
+            for(var i = 0; i < n; i++) {
+                x.push(2);
+                y.push(2);
+                text.push('label ' + i);
+            }
+            return {mode: 'markers+text', textposition: 'auto', x: x, y: y, text: text, marker: {size: 10}};
+        }
+
+        it('should place labels without overlaps, add leader lines and hide the rest', function(done) {
+            Plotly.newPlot(gd, [makeStack(40)], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                var hidden = 0;
+                var leaders = 0;
+                for(var i = 0; i < cd.length; i++) {
+                    if(cd[i]._tpAuto === null) hidden++;
+                    else if(cd[i]._tpAutoGap > 0) leaders++;
+                }
+
+                // the stacked markers block every position next to the point,
+                // so even the first label moves out with a leader line
+                expect(cd[0]._tpAuto).toBe('top center');
+                expect(cd[0]._tpAutoGap).toBeGreaterThan(0);
+                expect(hidden).toBeGreaterThan(0);
+                expect(leaders).toBeGreaterThan(0);
+
+                var boxes = visibleLabelBoxes();
+                expect(boxes.length).toBe(40 - hidden);
+                expect(countOverlaps(boxes)).toBe(0);
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(leaders);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should place the labels with the smallest textrank first', function(done) {
+            var stack = makeStack(3);
+            stack.textrank = [1000, 1000, 1];
+
+            Plotly.newPlot(gd, [stack], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[2]._tpAuto).toBe('top center');
+                expect(cd[0]._tpAuto).not.toBe('top center');
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+
+                // a trace-wide rank puts a whole trace ahead of the others
+                return Plotly.newPlot(gd, [makeStack(1), Lib.extendFlat(makeStack(1), {textrank: 1})], layout);
+            })
+            .then(function() {
+                expect(gd.calcdata[1][0]._tpAuto).toBe('top center');
+                expect(gd.calcdata[0][0]._tpAuto).not.toBe('top center');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should keep the position of a label across a zoom while it is free', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: [2],
+                y: [2],
+                text: ['auto']
+            }, {
+                mode: 'markers+text',
+                textposition: 'bottom center',
+                x: [2],
+                y: [2.25],
+                text: ['fixed']
+            }], layout)
+            .then(function() {
+                // the fixed label hangs over the point, so the *auto* label goes below it
+                expect(gd.calcdata[0][0]._tpAuto).toBe('bottom center');
+                return Plotly.relayout(gd, {'xaxis.range': [1.5, 2.5], 'yaxis.range': [1.5, 2.5]});
+            })
+            .then(function() {
+                // the zoom frees the top, but the label stays where it was
+                expect(gd.calcdata[0][0]._tpAuto).toBe('bottom center');
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                expect(gd.calcdata[0][0]._tpAuto).toBe('bottom center');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should let an isolated label take the first candidate', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: [1, 3],
+                y: [1, 3],
+                text: ['a', 'b']
+            }], layout)
+            .then(function() {
+                expect(gd.calcdata[0][0]._tpAuto).toBe('top center');
+                expect(gd.calcdata[0][1]._tpAuto).toBe('top center');
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(0);
+                expect(hiddenLabelCount()).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should add a leader line to every label in a cluster', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: [1, 1.05, 3],
+                y: [1, 1.05, 3],
+                text: ['a', 'b', 'c']
+            }], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAutoGap).toBeGreaterThan(0);
+                expect(cd[1]._tpAutoGap).toBeGreaterThan(0);
+                expect(cd[2]._tpAutoGap).toBe(0);
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(2);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should place text-only labels on their point first', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'text',
+                textposition: 'auto',
+                x: [1, 1, 1],
+                y: [1, 1, 1],
+                text: ['a', 'b', 'c']
+            }], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAuto).toBe('middle center');
+                expect(cd[1]._tpAutoGap).toBeGreaterThan(0);
+                expect(cd[2]._tpAutoGap).toBeGreaterThan(0);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(2);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should respect fixed labels and per-point *auto* values', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: ['top center', 'auto'],
+                x: [2, 2],
+                y: [2, 2],
+                text: ['fixed', 'auto']
+            }], layout)
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAuto).toBeUndefined();
+                expect(cd[1]._tpAuto).toBe('bottom center');
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should place labels again after a zoom', function(done) {
+            var x = [];
+            var y = [];
+            var text = [];
+            for(var i = 0; i < 8; i++) {
+                x.push(2 + 0.02 * i);
+                y.push(2 + 0.02 * (i % 3));
+                text.push('point ' + i);
+            }
+
+            function countHidden() {
+                var n = 0;
+                gd.calcdata[0].forEach(function(d) {
+                    if(d._tpAuto === null) n++;
+                });
+                return n;
+            }
+
+            function countArrows() {
+                var n = 0;
+                gd.calcdata[0].forEach(function(d) {
+                    if(d._tpAutoGap > 0) n++;
+                });
+                return n;
+            }
+
+            var hiddenAtStart;
+            var arrowsAtStart;
+
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                textposition: 'auto',
+                x: x,
+                y: y,
+                text: text
+            }], layout)
+            .then(function() {
+                hiddenAtStart = countHidden();
+                arrowsAtStart = countArrows();
+                expect(arrowsAtStart).toBeGreaterThan(0);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.relayout(gd, {'xaxis.range': [1.8, 2.4], 'yaxis.range': [1.8, 2.4]});
+            })
+            .then(function() {
+                expect(countHidden()).toBe(0);
+                expect(countArrows()).toBeLessThan(arrowsAtStart);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                // the last three points fall outside this range
+                return Plotly.relayout(gd, {'xaxis.range': [1.8, 2.09], 'yaxis.range': [1.8, 2.4]});
+            })
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[5]._tpAuto).toBe(null);
+                expect(cd[6]._tpAuto).toBe(null);
+                expect(cd[7]._tpAuto).toBe(null);
+                expect(cd[0]._tpAuto).not.toBe(null);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                expect(countHidden()).toBe(hiddenAtStart);
+                expect(countArrows()).toBe(arrowsAtStart);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should keep the placement across style edits and selection', function(done) {
+            var transforms;
+
+            Plotly.newPlot(gd, [makeStack(12)], layout)
+            .then(function() {
+                transforms = textPointTransforms();
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.restyle(gd, 'textfont.color', 'red');
+            })
+            .then(function() {
+                expect(textPointTransforms()).toEqual(transforms);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.restyle(gd, 'selectedpoints', [[0, 1]]);
+            })
+            .then(function() {
+                expect(textPointTransforms()).toEqual(transforms);
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.relayout(gd, 'xaxis.range', [1, 3]);
+            })
+            .then(function() {
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                // A fixed position must show the labels that *auto* hid
+                expect(hiddenLabelCount()).toBeGreaterThan(0, 'hidden labels before the switch');
+                return Plotly.restyle(gd, 'textposition', 'top center');
+            })
+            .then(function() {
+                var cd = gd.calcdata[0];
+                expect(cd[0]._tpAuto).toBeUndefined();
+                expect(d3SelectAll('.textpoint path.textleader').size()).toBe(0);
+                expect(hiddenLabelCount()).toBe(0);
+            })
+            .then(done, done.fail);
+        });
+
+        it('should measure each label once, whatever position it takes', (done) => {
+            // Give every label unique text, so that no earlier spec shares a cached box
+            const prefix = 'measured once ' + Math.random() + ' ';
+            const trace = makeStack(20);
+            trace.text = trace.text.map((t) => prefix + t);
+
+            Drawing.makeTester();
+            const tester = Drawing.tester.node();
+            // Each cache miss appends a clone of the label to the tester, so the appends count the measurements
+            spyOn(tester, 'appendChild').and.callThrough();
+            const measured = () =>
+                tester.appendChild.calls.allArgs().filter((args) => {
+                    const text = args[0].getAttribute && args[0].getAttribute('data-unformatted');
+                    return text && text.indexOf(prefix) === 0;
+                }).length;
+
+            Plotly.newPlot(gd, [trace], layout)
+                .then(() => {
+                    expect(measured()).toBe(20, 'measurements after the first draw');
+                    return Plotly.relayout(gd, 'xaxis.range', [1, 3]);
+                })
+                .then(() => {
+                    expect(measured()).toBe(20, 'measurements after a relayout');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should read textrank from a typed array, and count other values as the default rank', (done) => {
+            // In a stack, the label placed first takes *top center* on the first ring, the smallest gap of all
+            const firstPlaced = () => {
+                const cd = gd.calcdata[0];
+                const gaps = cd.filter((d) => d._tpAuto).map((d) => d._tpAutoGap);
+                return cd.findIndex((d) => d._tpAuto === 'top center' && d._tpAutoGap === Math.min(...gaps));
+            };
+            const stack = (textrank) => Lib.extendFlat(makeStack(12), { textrank });
+            // All labels have the default rank, 1000, except the ones given by index
+            const ranks = (byIndex) => Array.from({ length: 12 }, (_, i) => (i in byIndex ? byIndex[i] : 1000));
+
+            Plotly.newPlot(gd, [stack(new Float64Array(ranks({ 5: 1 })))], layout)
+                .then(() => {
+                    expect(firstPlaced()).toBe(5, 'typed array');
+                    return Plotly.newPlot(gd, [stack(ranks({ 0: 'high', 1: 'high', 2: 'high', 3: 7 }))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(3, 'strings get the default rank');
+                    return Plotly.newPlot(gd, [stack(new Float64Array([1000, 4]))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(1, 'typed array shorter than the data');
+                    return Plotly.newPlot(gd, [stack(ranks({ 7: 0 }))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(7, 'a rank of 0 is a rank, not a missing value');
+                    return Plotly.newPlot(gd, [stack(ranks({ 4: 2.5, 6: 2.4 }))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(6, 'a fraction ranks between two integers');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should leave the *auto* labels out of the range slider and place the main plot', (done) => {
+            const x = [];
+            const y = [];
+            for (let i = 0; i < 60; i++) {
+                x.push(i);
+                y.push(Math.sin(i / 4) * 5);
+            }
+            const sliderLabels = () => d3SelectAll('.rangeslider-container .textpoint').size();
+
+            Plotly.newPlot(
+                gd,
+                [{ mode: 'lines+markers+text', textposition: 'auto', x, y, text: x.map((v) => 'pt ' + v) }],
+                { width: 640, height: 480, showlegend: false, xaxis: { rangeslider: { visible: true } } }
+            )
+                .then(() => {
+                    expect(sliderLabels()).toBe(0, 'auto labels in the slider');
+                    // The slider's own placement used to replace this one and hide most labels
+                    expect(hiddenLabelCount()).toBeLessThan(20, 'hidden labels in the main plot');
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should draw no label for an *auto* point outside the plot area, and draw it again in view', (done) => {
+            const x = [];
+            const y = [];
+            const textposition = [];
+            for (let i = 0; i < 40; i++) {
+                x.push(i);
+                y.push(Math.sin(i / 3) * 3);
+                // A label with a fixed position is drawn wherever its point is
+                textposition.push(i % 7 === 0 ? 'bottom center' : 'auto');
+            }
+            const nFixed = textposition.filter((p) => p !== 'auto').length;
+            const isAuto = (d) => textposition[d.i] === 'auto';
+            const textPointCount = () => d3SelectAll('.textpoint').size();
+            const view = (range) => Plotly.relayout(gd, 'xaxis.range', range);
+
+            Plotly.newPlot(
+                gd,
+                [{ mode: 'markers+text', x, y, text: x.map((v) => 'pt ' + v), textposition }],
+                { width: 640, height: 420, showlegend: false, xaxis: { range: [0, 40] }, yaxis: { range: [-4, 4] } }
+            )
+                .then(() => {
+                    expect(textPointCount()).toBe(40, 'labels in the full view');
+                    return view([10.5, 19.5]);
+                })
+                .then(() => {
+                    const cd = gd.calcdata[0];
+                    const outside = cd.filter((d) => isAuto(d) && (d.x < 10.5 || d.x > 19.5));
+                    const inside = cd.filter((d) => isAuto(d) && d.x > 10.5 && d.x < 19.5);
+
+                    // The nodes of the *auto* labels in view, and of every fixed label
+                    expect(textPointCount()).toBe(inside.length + nFixed, 'labels after a zoom');
+                    expect(inside.length).toBe(8, 'auto points in view');
+                    // A label that comes back into view has no position to keep
+                    outside.forEach((d) => {
+                        expect(d._tpAuto).toBe(null, 'position of point ' + d.i);
+                        expect(d._tpAutoGap).toBe(0, 'gap of point ' + d.i);
+                        expect(d._tpAutoLeader).toBe(null, 'leader of point ' + d.i);
+                    });
+                    inside.forEach((d) => expect(typeof d._tpAuto).toBe('string', 'position of point ' + d.i));
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps after a zoom');
+                    return view([0, 40]);
+                })
+                .then(() => {
+                    expect(textPointCount()).toBe(40, 'labels after zooming back out');
+                    expect(hiddenLabelCount()).toBeLessThan(5, 'hidden labels after zooming back out');
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps after zooming back out');
+                })
+                .then(done, done.fail);
+        });
+
+        describe('in a subplot with axis labels inside the plot area', () => {
+            const size = { width: 480, height: 440, margin: { l: 50, r: 50, t: 50, b: 50 }, showlegend: false };
+            const names = (n) => Array.from({ length: n }, (_, i) => 'pt ' + i);
+            const ternaryEdges = () => {
+                const out = { a: [], b: [], c: [] };
+                for (let i = 0; i <= 20; i++) {
+                    const t = i / 20;
+                    out.a.push(t, 0.001);
+                    out.b.push(1 - t, t);
+                    out.c.push(0.001, 1 - t);
+                }
+                return out;
+            };
+            const carpetEdges = () => {
+                const out = { a: [], b: [] };
+                for (let i = 0; i < 9; i++) {
+                    out.a.push(4 + i * 0.25, 4);
+                    out.b.push(1, 1 + i * 0.25);
+                }
+                return out;
+            };
+
+            // Points along the edges, where the axis labels are
+            const figures = {
+                scatterpolar: () => ({
+                    data: [
+                        {
+                            type: 'scatterpolar',
+                            theta: Array.from({ length: 36 }, (_, i) => i * 10),
+                            r: Array.from({ length: 36 }, (_, i) => 9.3 + (i % 3) * 0.3),
+                            text: names(36)
+                        }
+                    ],
+                    layout: { polar: { radialaxis: { range: [0, 10], title: { text: 'radius' } } } }
+                }),
+                scatterternary: () => {
+                    const e = ternaryEdges();
+                    return { data: [{ type: 'scatterternary', a: e.a, b: e.b, c: e.c, text: names(e.a.length) }] };
+                },
+                scattersmith: () => ({
+                    data: [
+                        {
+                            type: 'scattersmith',
+                            real: Array.from({ length: 24 }, (_, i) => (i % 4) * 0.2),
+                            imag: Array.from({ length: 24 }, (_, i) => Math.tan((i / 24 - 0.5) * Math.PI * 0.95) * 2),
+                            text: names(24)
+                        }
+                    ]
+                }),
+                scattercarpet: () => {
+                    const e = carpetEdges();
+                    return {
+                        data: [
+                            {
+                                type: 'carpet',
+                                a: [4, 4, 4, 4.5, 4.5, 4.5, 5, 5, 5, 6, 6, 6],
+                                b: [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3],
+                                y: [2, 3.5, 4, 3, 4.5, 5, 5.5, 6.5, 7.5, 8, 8.5, 10],
+                                aaxis: { tickprefix: 'a = ', smoothing: 0, title: { text: 'A axis' } },
+                                baxis: { tickprefix: 'b = ', smoothing: 0, title: { text: 'B axis' } }
+                            },
+                            { type: 'scattercarpet', a: e.a, b: e.b, text: names(e.a.length) }
+                        ]
+                    };
+                },
+                scatter: () => {
+                    const x = [];
+                    const y = [];
+                    for (let i = 0; i <= 10; i++) {
+                        x.push(i, 0.3);
+                        y.push(0.3, i);
+                    }
+                    return {
+                        data: [{ type: 'scatter', x, y, text: names(x.length) }],
+                        layout: {
+                            xaxis: { ticklabelposition: 'inside', range: [0, 10] },
+                            yaxis: { ticklabelposition: 'inside', range: [0, 10] }
+                        }
+                    };
+                }
+            };
+
+            // Count the visible labels that cover other text of the graph, such as a tick label or an axis title
+            function labelsOnOtherText() {
+                const others = [];
+                d3SelectAll('text').each(function () {
+                    if (this.closest('.textpoint') || !this.textContent.trim()) return;
+                    const r = this.getBoundingClientRect();
+                    if (r.width) others.push(r);
+                });
+                return visibleLabelBoxes().filter((a) =>
+                    others.some((b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top)
+                ).length;
+            }
+
+            Object.keys(figures).forEach((type) => {
+                it('should keep the ' + type + ' labels clear of the axis labels', (done) => {
+                    const fig = figures[type]();
+                    const trace = fig.data[fig.data.length - 1];
+                    trace.mode = 'markers+text';
+                    trace.textposition = 'auto';
+
+                    Plotly.newPlot(gd, fig.data, Lib.extendFlat({}, size, fig.layout))
+                        .then(() => {
+                            expect(labelsOnOtherText()).toBe(0, 'labels on axis text');
+                            expect(visibleLabelBoxes().length).toBeGreaterThan(trace.text.length / 2, 'visible labels');
+                            expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps');
+                        })
+                        .then(done, done.fail);
+                });
+            });
+        });
+
+        it('should draw the leader lines at the new point positions after an animation', function(done) {
+            function leaderPaths() {
+                var out = [];
+                d3SelectAll('.textpoint path.textleader').each(function() {
+                    out.push(d3Select(this).attr('d'));
+                });
+                return out;
+            }
+
+            var animated;
+
+            Plotly.newPlot(gd, [makeStack(3)], layout)
+            .then(function() {
+                expect(leaderPaths().length).toBe(3);
+                return Plotly.animate(gd, [{data: [{x: [1, 1, 1], y: [3, 3, 3]}]}], {
+                    frame: {redraw: false, duration: 100},
+                    transition: {duration: 100}
+                });
+            })
+            .then(function() {
+                animated = leaderPaths();
+                expect(animated.length).toBe(3);
+                return Plotly.redraw(gd);
+            })
+            .then(function() {
+                // a full redraw draws the leader lines where the animation should have left them
+                expect(leaderPaths()).toEqual(animated);
+            })
+            .then(done, done.fail);
+        });
     });
 
     it('should remove all point and text nodes on blank data', function(done) {
