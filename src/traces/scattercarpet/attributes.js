@@ -110,7 +110,7 @@ module.exports = {
 
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
-    textpriority: scatterAttrs.textpriority,
+    textrank: scatterAttrs.textrank,
 
     selected: scatterAttrs.selected,
     unselected: scatterAttrs.unselected,

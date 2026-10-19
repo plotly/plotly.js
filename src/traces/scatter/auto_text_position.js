@@ -4,12 +4,14 @@ const d3 = require('@plotly/d3');
 const Lib = require('../../lib');
 const Drawing = require('../../components/drawing');
 const subTypes = require('./subtypes');
+const isNumeric = require('fast-isnumeric');
+const { textrank } = require('./attributes');
 
 /**
  * Resolve the *auto* text positions of all scatter traces on one subplot.
  *
  * Every drawn marker and every label with a fixed position blocks the *auto*
- * labels, which `Lib.placeLabels` then places by `textpriority`, trace order,
+ * labels, which `Lib.placeLabels` then places by `textrank`, trace order,
  * and data order. The text in `plotinfo.axisLayers` blocks them too.
  *
  * Sets `_tpAuto`, `_tpAutoGap`, and `_tpAutoLeader` on every calcdata point
@@ -77,6 +79,7 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
             }
 
             const pos = d.tp || trace.textposition;
+            const rank = Lib.extractOption(d, trace, 'tR', 'textrank');
             const x = xa.c2p(d.x);
             const y = ya.c2p(d.y);
             const label = {
@@ -87,8 +90,10 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
                 owner: d,
                 radius: d.mrc || 0,
                 fontSize: Drawing.textPointFontSize(d, trace),
-                // A value that is not a number, or a point past the end of a short array, counts as 0
-                priority: +Lib.extractOption(d, trace, 'tP', 'textpriority') || 0,
+                // `Lib.placeLabels` places the largest priority first and `textrank` puts the smallest rank first,
+                // so the priority is the rank with its sign reversed.
+                // A value that is not a number, or a point past the end of a short array, gets the default rank.
+                priority: -(isNumeric(rank) ? +rank : textrank.dflt),
                 onPoint,
                 // `_tpAuto` survives a relayout, so a pan or zoom keeps the labels in place where it can
                 prefer: d._tpAuto || undefined,

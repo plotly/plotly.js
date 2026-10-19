@@ -679,24 +679,28 @@ module.exports = {
             'line back to the point. A label with no free position is hidden.',
             'In a trace without markers or lines, a label sits on its point when',
             'it can, and moves out the same way when another label is in the way.',
-            'Labels are placed in the order of `textpriority`.',
+            'Labels are placed in the order of `textrank`.',
             'Auto placement considers markers, text labels, and the axis labels',
             'that sit inside the plot area.',
             'It does not avoid annotations, shapes, images, or the legend.'
         ].join(' ')
     },
-    textpriority: {
+    textrank: {
         valType: 'number',
-        dflt: 0,
+        dflt: 1000,
         arrayOk: true,
         editType: 'calc',
         description: [
-            'Sets the placement priority of the `text` elements',
+            'Sets the placement rank of the `text` elements',
             'with `textposition` *auto*, per point or for the whole trace.',
-            'A label with a higher priority takes its position',
-            'before the labels of lower priority on the subplot,',
+            'A label with a smaller rank takes its position',
+            'before the labels of larger rank on the subplot,',
             'so it stays next to its point and is hidden last.',
-            'Labels of equal priority are placed in trace and data order.'
+            'The default rank is 1000, so that you can use ranks less than 1000',
+            'to place certain labels before all unranked labels,',
+            'and ranks greater than 1000 to place certain labels after them.',
+            'A rank can be a fraction, which puts a label between two others.',
+            'Labels of equal rank are placed in trace and data order.'
         ].join(' ')
     },
     textfont: fontAttrs({

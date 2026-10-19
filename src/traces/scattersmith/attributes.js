@@ -50,7 +50,7 @@ module.exports = {
     cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, { dflt: false }),
 
     textposition: scatterAttrs.textposition,
-    textpriority: scatterAttrs.textpriority,
+    textrank: scatterAttrs.textrank,
     textfont: scatterAttrs.textfont,
 
     fill: extendFlat({}, scatterAttrs.fill, {

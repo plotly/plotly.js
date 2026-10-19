@@ -62,30 +62,30 @@ describe('Test scatter', function() {
             expect(traceOut.textposition).toBe('auto');
         });
 
-        it('should coerce textpriority with *auto* textposition only', function() {
+        it('should coerce textrank with *auto* textposition only', function() {
             traceIn = {
                 x: [1, 2],
                 y: [1, 2],
                 mode: 'markers+text',
                 text: ['a', 'b'],
                 textposition: 'auto',
-                textpriority: [2, 1]
+                textrank: [2, 1]
             };
             traceOut = {visible: true};
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.textpriority).toEqual([2, 1]);
+            expect(traceOut.textrank).toEqual([2, 1]);
 
             traceIn.textposition = ['top center', 'auto'];
-            delete traceIn.textpriority;
+            delete traceIn.textrank;
             traceOut = {visible: true};
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.textpriority).toBe(0);
+            expect(traceOut.textrank).toBe(1000);
 
             traceIn.textposition = 'top center';
-            traceIn.textpriority = [2, 1];
+            traceIn.textrank = [2, 1];
             traceOut = {visible: true};
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.textpriority).toBeUndefined();
+            expect(traceOut.textrank).toBeUndefined();
         });
 
         it('should set visible to false when x and y are empty', function() {
@@ -819,9 +819,9 @@ describe('end-to-end scatter tests', function() {
             .then(done, done.fail);
         });
 
-        it('should place the labels with the highest textpriority first', function(done) {
+        it('should place the labels with the smallest textrank first', function(done) {
             var stack = makeStack(3);
-            stack.textpriority = [0, 0, 1];
+            stack.textrank = [1000, 1000, 1];
 
             Plotly.newPlot(gd, [stack], layout)
             .then(function() {
@@ -830,8 +830,8 @@ describe('end-to-end scatter tests', function() {
                 expect(cd[0]._tpAuto).not.toBe('top center');
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
 
-                // a trace-wide priority puts a whole trace ahead of the others
-                return Plotly.newPlot(gd, [makeStack(1), Lib.extendFlat(makeStack(1), {textpriority: 1})], layout);
+                // a trace-wide rank puts a whole trace ahead of the others
+                return Plotly.newPlot(gd, [makeStack(1), Lib.extendFlat(makeStack(1), {textrank: 1})], layout);
             })
             .then(function() {
                 expect(gd.calcdata[1][0]._tpAuto).toBe('top center');
@@ -1070,26 +1070,36 @@ describe('end-to-end scatter tests', function() {
                 .then(done, done.fail);
         });
 
-        it('should read textpriority from a typed array and count other values as 0', (done) => {
+        it('should read textrank from a typed array, and count other values as the default rank', (done) => {
             // In a stack, the label placed first takes *top center* on the first ring, the smallest gap of all
             const firstPlaced = () => {
                 const cd = gd.calcdata[0];
                 const gaps = cd.filter((d) => d._tpAuto).map((d) => d._tpAutoGap);
                 return cd.findIndex((d) => d._tpAuto === 'top center' && d._tpAutoGap === Math.min(...gaps));
             };
-            const stack = (textpriority) => Lib.extendFlat(makeStack(12), { textpriority });
+            const stack = (textrank) => Lib.extendFlat(makeStack(12), { textrank });
+            // All labels have the default rank, 1000, except the ones given by index
+            const ranks = (byIndex) => Array.from({ length: 12 }, (_, i) => (i in byIndex ? byIndex[i] : 1000));
 
-            Plotly.newPlot(gd, [stack(new Float64Array([0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0]))], layout)
+            Plotly.newPlot(gd, [stack(new Float64Array(ranks({ 5: 1 })))], layout)
                 .then(() => {
                     expect(firstPlaced()).toBe(5, 'typed array');
-                    return Plotly.newPlot(gd, [stack(['high', 'high', 'high', 7, 0, 0, 0, 0, 0, 0, 0, 0])], layout);
+                    return Plotly.newPlot(gd, [stack(ranks({ 0: 'high', 1: 'high', 2: 'high', 3: 7 }))], layout);
                 })
                 .then(() => {
-                    expect(firstPlaced()).toBe(3, 'strings count as 0');
-                    return Plotly.newPlot(gd, [stack(new Float64Array([0, 4]))], layout);
+                    expect(firstPlaced()).toBe(3, 'strings get the default rank');
+                    return Plotly.newPlot(gd, [stack(new Float64Array([1000, 4]))], layout);
                 })
                 .then(() => {
                     expect(firstPlaced()).toBe(1, 'typed array shorter than the data');
+                    return Plotly.newPlot(gd, [stack(ranks({ 7: 0 }))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(7, 'a rank of 0 is a rank, not a missing value');
+                    return Plotly.newPlot(gd, [stack(ranks({ 4: 2.5, 6: 2.4 }))], layout);
+                })
+                .then(() => {
+                    expect(firstPlaced()).toBe(6, 'a fraction ranks between two integers');
                 })
                 .then(done, done.fail);
         });

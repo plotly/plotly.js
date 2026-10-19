@@ -11,7 +11,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
 
     var textposition = coerce('textposition');
     if (textposition === 'auto' || (Lib.isArrayOrTypedArray(textposition) && textposition.indexOf('auto') !== -1)) {
-        coerce('textpriority');
+        coerce('textrank');
     }
     Lib.coerceFont(coerce, 'textfont', opts.font || layout.font, opts);
 
