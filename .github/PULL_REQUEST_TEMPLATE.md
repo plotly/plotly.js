@@ -1,6 +1,6 @@
 Thanks for your interest in plotly.js!
 
-We value your contribution, including AI-generated code. But we only prioritize PRs that have a human motivation behind them.
+We're happy for your contribution, including AI-generated code. But we only prioritize PRs that have a human motivation behind them.
 
 To get your PR prioritized and reviewed faster, include a description, in your own words, of how this PR will help you in your own real-world project or day-to-day work.
 

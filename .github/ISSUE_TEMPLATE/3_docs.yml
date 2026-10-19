@@ -1,5 +1,5 @@
-name: Documentation Improvement
-description: Report an issue with the official documentation, including the API reference at https://plotly.com/javascript/reference. Alternatively, just open a PR with the suggested change.
+name: Documentation improvement
+description: Report an issue with the official documentation or API reference. Alternatively, just open a PR with the suggested change.
 title: "[DOCS]: "
 labels: "documentation"
 

@@ -12,4 +12,4 @@ body:
 
         Add a clear description of the update that should be made including **why**.
       placeholder: >
-        For user-facing bugs use the **Bug report** template, and for new functionality use the **Feature request** template.
+        For user-facing issues file a Bug Report instead. And for new functionality, file a Feature request.

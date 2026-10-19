@@ -1,14 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Issue with official examples
+  - name: Report an issue with the official examples
     url: https://github.com/plotly/documentation/issues
-    about: For issues found on the example pages from https://plotly.com/javascript/
-  - name: Community Forum
+    about: For problems found on the example pages at https://plotly.com/javascript/
+  - name: "How do I do ... ?"
     url: https://community.plotly.com/c/plotly-js/6
-    about: "How do I do ... ?"
+    about: Get help with usage on our Community Forum
   - name: Stack Overflow
     url: https://stackoverflow.com/questions/tagged/plotly
     about: Discuss on Stack Overflow using our `plotly` tag
-  - name: Blank issue
-    url: https://github.com/plotly/plotly.js/issues/new?template=BLANK_ISSUE
-    about: Internal use only
