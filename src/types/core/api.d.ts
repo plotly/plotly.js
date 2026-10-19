@@ -221,6 +221,13 @@ export function relayout(root: Root, layout: LayoutUpdate): Promise<PlotlyHTMLEl
  * @param val - New value of the attribute
  */
 export function relayout(root: Root, astr: string, val: any): Promise<PlotlyHTMLElement>;
+/**
+ * Update layout properties on an existing plot with either call form.
+ *
+ * This signature lets a wrapper read the parameter types with `Parameters<typeof relayout>`.
+ * It does not check that the value matches the form.
+ */
+export function relayout(root: Root, astr: string | LayoutUpdate, val?: any): Promise<PlotlyHTMLElement>;
 /** Re-render the plot at `root` from its current data/layout. */
 export function redraw(root: Root): Promise<PlotlyHTMLElement>;
 /** Remove a plot and its event listeners from the DOM. */
@@ -240,6 +247,18 @@ export function restyle(root: Root, aobj: DataUpdate, traces?: number[] | number
  * @param traces - Trace index/indices to update (defaults to all)
  */
 export function restyle(root: Root, astr: string, val: any, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+/**
+ * Update trace properties (style) on the existing plot with either call form.
+ *
+ * This signature lets a wrapper read the parameter types with `Parameters<typeof restyle>`.
+ * It does not check that the arguments match the form.
+ */
+export function restyle(
+    root: Root,
+    astr: string | DataUpdate,
+    val?: any,
+    traces?: number[] | number
+): Promise<PlotlyHTMLElement>;
 
 /**
  * Update both trace and layout properties in a single call.

@@ -1,7 +1,7 @@
 /**
  * Consumer-side checks for the `relayout`, `restyle` and `update` types.
  *
- * Nothing here runs. `npm run typecheck` compiles this file against the public entry point.
+ * Nothing here runs. `npm run test-types` compiles this file against the public entry point.
  * A line marked `@ts-expect-error` must fail to compile, so the build breaks if a type becomes too permissive.
  */
 
@@ -27,8 +27,11 @@ Plotly.relayout(gd, 'annotations[0].text', 'hello');
 Plotly.relayout(gd, { titl: 'abc' });
 // @ts-expect-error wrong value type on a known top-level key
 Plotly.relayout(gd, { autosize: 'yes' });
-// @ts-expect-error the string form needs a value
-Plotly.relayout(gd, 'xaxis.autorange');
+
+// A wrapper that reads the parameter types must see both call forms
+type RelayoutArg = Parameters<typeof Plotly.relayout>[1];
+export const relayoutObject: RelayoutArg = { autosize: true };
+export const relayoutPath: RelayoutArg = 'xaxis.autorange';
 
 // ---------------------------------------------------------------------------
 // restyle
@@ -45,8 +48,10 @@ Plotly.restyle(gd, 'marker.color', ['red', 'blue'], [0, 1]);
 Plotly.restyle(gd, { colr: 'red' });
 // @ts-expect-error wrong value type on a known top-level key
 Plotly.restyle(gd, { visible: 'maybe' });
-// @ts-expect-error the string form needs a value
-Plotly.restyle(gd, 'marker.color');
+
+type RestyleArg = Parameters<typeof Plotly.restyle>[1];
+export const restyleObject: RestyleArg = { visible: false };
+export const restylePath: RestyleArg = 'marker.color';
 
 // ---------------------------------------------------------------------------
 // update

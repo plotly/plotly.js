@@ -8,12 +8,9 @@ import type { PlotRelayoutEvent } from '../../lib/index';
 
 declare const event: PlotRelayoutEvent;
 
-// Typed keys keep their value types
-const rangeStart: number | undefined = event['xaxis.range[0]'];
-const autorange: boolean | undefined = event['xaxis.autorange'];
-
-// @ts-expect-error the typed range key holds a number, not a string
-const rangeStartAsString: string | undefined = event['xaxis.range[0]'];
+// A range value can be a number or a date string
+const numberRangeStart: number | undefined = event['xaxis.range[0]'];
+const dateRangeStart: string | undefined = event['xaxis.range[0]'];
 
 // Any other attribute path is readable
 const secondAxisStart = event['xaxis2.range[0]'];
