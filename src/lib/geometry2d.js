@@ -308,8 +308,13 @@ exports.placeLabels = function placeLabels(opts) {
     const fixed = opts.fixed || [];
     const labels = opts.labels;
 
+    // A marker farther from the area than any label can reach cannot block or push a label,
+    // and it would only pile up in the edge cells, which every nearby query scans
+    const reach = labels.reduce((r, l) => Math.max(r, (l.radius || 0) + NEIGHBOR_RADIUS * l.fontSize), 0) + 3 * PAD;
+
     for (let i = 0; i < markers.length; i++) {
         const m = markers[i];
+        if (m.x1 < -reach || m.x0 > opts.width + reach || m.y1 < -reach || m.y0 > opts.height + reach) continue;
         const rect = makeRect(m.x0 - PAD, m.y0 - PAD, m.x1 + PAD, m.y1 + PAD, m.owner);
         rect.isMarker = true;
         insert(index, rect);

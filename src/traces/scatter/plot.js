@@ -525,6 +525,24 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             textFilter = (d) => baseTextFilter(d).filter((v) => (v.tp || trace.textposition) !== 'auto');
         }
 
+        // An *auto* label is hidden when its point is off the plot area, so draw none for those points.
+        // The placement would reset them to hidden, so reset them here, and a point back in view has no preferred position.
+        const tp = trace.textposition;
+        if (showText && (tp === 'auto' || (Lib.isArrayOrTypedArray(tp) && tp.indexOf('auto') !== -1))) {
+            const baseFilter = textFilter;
+            textFilter = (d) =>
+                baseFilter(d).filter((v) => {
+                    if ((v.tp || tp) !== 'auto') return true;
+                    const x = xa.c2p(v.x);
+                    const y = ya.c2p(v.y);
+                    if (!(x < 0 || x > xa._length || y < 0 || y > ya._length)) return true;
+                    v._tpAuto = null;
+                    v._tpAutoGap = 0;
+                    v._tpAutoLeader = null;
+                    return false;
+                });
+        }
+
         // marker points
 
         selection = points.selectAll('path.point');
