@@ -925,6 +925,33 @@ describe('end-to-end scatter tests', function() {
             .then(done, done.fail);
         });
 
+        it('should place the labels on their points after a restyle to text only, and off them after a restyle back', (done) => {
+            const onPoint = () => gd.calcdata[0].filter((d) => d._tpAuto === 'middle center').length;
+
+            Plotly.newPlot(gd, [makeStack(3)], layout)
+                .then(() => {
+                    expect(onPoint()).toBe(0, 'labels on their points with markers');
+                    return Plotly.restyle(gd, 'mode', 'text');
+                })
+                .then(() => {
+                    const cd = gd.calcdata[0];
+                    expect(cd[0]._tpAuto).toBe('middle center', 'first label with text only');
+                    expect(cd[0]._tpAutoGap).toBe(0, 'gap of the first label');
+                    expect(onPoint()).toBe(1, 'labels on their points with text only');
+                    expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps with text only');
+                    // A line is an obstacle, so a trace with lines keeps its labels off the points
+                    return Plotly.restyle(gd, 'mode', 'lines+text');
+                })
+                .then(() => {
+                    expect(onPoint()).toBe(0, 'labels on their points with lines');
+                    return Plotly.restyle(gd, 'mode', 'markers+text');
+                })
+                .then(() => {
+                    expect(onPoint()).toBe(0, 'labels on their points after markers came back');
+                })
+                .then(done, done.fail);
+        });
+
         it('should respect fixed labels and per-point *auto* values', function(done) {
             Plotly.newPlot(gd, [{
                 mode: 'markers+text',
