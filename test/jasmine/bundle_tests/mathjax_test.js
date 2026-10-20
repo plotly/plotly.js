@@ -19,7 +19,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
 
         // TODO: `?config=` is not needed for MathJax v3 and onward,
         // should we adjust these tests?
-
+        
         // N.B. we have to load MathJax "dynamically" as Karma
         // does not undefined the MathJax's `?config=` parameter.
         //
