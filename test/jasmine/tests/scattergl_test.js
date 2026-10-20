@@ -744,7 +744,34 @@ describe('end-to-end scattergl tests', function() {
             .then(done);
     });
 
+    it('@gl should draw into the plot area that domainpad leaves, not the whole domain', (done) => {
+        const pixelRatio = 2;
 
+        Plotly.newPlot(gd, [{type: 'scattergl', x: [1, 2, 3], y: [1, 3, 2]}], {
+            width: 500,
+            height: 400,
+            margin: {l: 50, r: 50, t: 50, b: 50},
+            xaxis: {domainpad: {left: 30, right: 10}},
+            yaxis: {domainpad: {top: 40, bottom: 20}}
+        }, {plotGlPixelRatio: pixelRatio})
+        .then(() => {
+            const fullLayout = gd._fullLayout;
+            const xa = fullLayout.xaxis;
+            const ya = fullLayout.yaxis;
+
+            // regl measures in device pixels, from the bottom left corner of the canvas
+            const viewport = fullLayout._plots.xy._scene.scatter2d.groups[0].viewport;
+            expect(viewport.x).toBeCloseTo(xa._offset * pixelRatio, 3, 'x');
+            expect(viewport.y).toBeCloseTo((fullLayout.height - ya._offset - ya._length) * pixelRatio, 3, 'y');
+            expect(viewport.width).toBeCloseTo(xa._length * pixelRatio, 3, 'width');
+            expect(viewport.height).toBeCloseTo(ya._length * pixelRatio, 3, 'height');
+
+            // the viewport starts 30px in from the left margin and 20px up from the bottom margin
+            expect(viewport.x).toBeCloseTo((50 + 30) * pixelRatio, 3, 'left padding');
+            expect(viewport.y).toBeCloseTo((50 + 20) * pixelRatio, 3, 'bottom padding');
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('Test scattergl autorange:', function() {
