@@ -163,7 +163,7 @@ function axisTextBoxes(layers, frame) {
 
 function hasAutoTextPosition(trace) {
     const tp = trace.textposition;
-    return tp === 'auto' || (Lib.isArrayOrTypedArray(tp) && tp.indexOf('auto') !== -1);
+    return tp === 'auto' || (Lib.isArrayOrTypedArray(tp) && tp.includes('auto'));
 }
 
 // the box of a label at a given position and gap, plus its leader line, in the plot frame

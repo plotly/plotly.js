@@ -88,6 +88,28 @@ describe('Test scatter', function() {
             expect(traceOut.textrank).toBeUndefined();
         });
 
+        it('should not coerce textrank in traces without *auto* textposition, even if an array holds *auto*', () => {
+            const positions = ['auto', 'top center'];
+            const common = { mode: 'text', text: ['a', 'b'], textposition: positions };
+            const traces = {
+                scattergl: { x: [1, 2], y: [1, 2] },
+                scatterpolargl: { r: [1, 2], theta: [1, 2] },
+                scatter3d: { x: [1, 2], y: [1, 2], z: [1, 2] },
+                scattergeo: { lon: [1, 2], lat: [1, 2] }
+            };
+
+            Object.keys(traces).forEach((type) => {
+                const gd = { data: [Lib.extendFlat({ type }, common, traces[type])], layout: {} };
+                expect(() => supplyAllDefaults(gd)).not.toThrow();
+                expect(gd._fullData[0].textrank).toBeUndefined(type + ' textrank');
+            });
+
+            // A scatter trace with the same array keeps its textrank
+            const gd = { data: [{ type: 'scatter', x: [1, 2], y: [1, 2], mode: 'text', text: ['a', 'b'], textposition: positions }], layout: {} };
+            supplyAllDefaults(gd);
+            expect(gd._fullData[0].textrank).toBe(1000, 'scatter textrank');
+        });
+
         it('should set visible to false when x and y are empty', function() {
             traceIn = {};
             supplyDefaults(traceIn, traceOut, defaultColor, layout);

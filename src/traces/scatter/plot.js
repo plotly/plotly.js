@@ -528,7 +528,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // An *auto* label is hidden when its point is off the plot area, so draw none for those points.
         // The placement would reset them to hidden, so reset them here, and a point back in view has no preferred position.
         const tp = trace.textposition;
-        if (showText && (tp === 'auto' || (Lib.isArrayOrTypedArray(tp) && tp.indexOf('auto') !== -1))) {
+        if (showText && (tp === 'auto' || (Lib.isArrayOrTypedArray(tp) && tp.includes('auto')))) {
             const baseFilter = textFilter;
             textFilter = (d) =>
                 baseFilter(d).filter((v) => {
