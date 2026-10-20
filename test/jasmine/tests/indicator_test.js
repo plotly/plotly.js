@@ -11,7 +11,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 // var calc = require('../../../src/traces/indicator/calc').calc;
 var customAssertions = require('../assets/custom_assertions.js');
 var indicatorAttrs = require('../../../src/traces/indicator/attributes.js');
-var cn = require('../../../src/traces/indicator/constants.js');
+var cn = require('../../../src/traces/indicator/constants');
 
 describe('Indicator defaults', function() {
     function _supply(trace, layout) {

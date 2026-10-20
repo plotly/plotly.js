@@ -13,6 +13,109 @@ var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
 
 var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
 
+/**
+* Checks whether the given string contains LaTeX markup
+* (delimited by a pair of $ signs) and returns the match array if so.
+*
+* @param {string} str: the string to check for tex
+* @return {?Array} the regex match array (truthy) if the string contains tex,
+*   otherwise null (for an empty/missing string or when no tex delimiters are found).
+*/
+const matchTex = (str) => str ? str.match(FIND_TEX) : null;
+exports.matchTex = matchTex;
+
+/**
+ * Checks whether a string is *entirely* a single tex expression, with no
+ * literal text before or after the $...$ delimiters.
+ *
+ * @param {string} str: the string to check for tex
+ * @return {boolean} true if the whole string is one tex expression
+ */
+const isPureTex = (str) => {
+    var tex = matchTex(str);
+    return !!tex && !tex[1] && !tex[3];
+};
+exports.isPureTex = isPureTex;
+
+/**
+ * Positions a MathJax-typeset group against its source <text> node's x/y
+ * and text-anchor.
+ *
+ * @param {d3 selection} _context: the source <text> element
+ * @param {string} svgClass: the '<baseClass>-math' class used on newSvg
+ * @param {d3 selection} mathjaxGroup: the '<svgClass>-group' wrapper
+ * @param {d3 selection} newSvg: the typeset <svg>, already sized
+ * @param {string} textAnchor: _context's text-anchor to position against
+ * @param {number} fontSize: _context's font size, for the baseline offset
+ * @param {number} [width0]: the SVG's own reported width, to detect the
+ *   Firefox v82+ overflow bug (see link below); omit to skip that check
+ * @param {number} [height0]: same, for height
+ */
+function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, width0, height0) {
+    var g = newSvg.select('g');
+    var bb = g.node().getBoundingClientRect();
+    var w = bb.width;
+    var h = bb.height;
+    var w0 = width0 === undefined ? w : width0;
+    var h0 = height0 === undefined ? h : height0;
+
+    if(w > w0 || h > h0) {
+        // this happen in firefox v82+ | see https://bugzilla.mozilla.org/show_bug.cgi?id=1709251 addressed
+        // temporary fix:
+        newSvg.style('overflow', 'hidden');
+        bb = newSvg.node().getBoundingClientRect();
+        w = bb.width;
+        h = bb.height;
+    }
+
+    var x = +_context.attr('x');
+    var y = +_context.attr('y');
+
+    // font baseline is about 1/4 fontSize below centerline
+    var textHeight = fontSize || _context.node().getBoundingClientRect().height;
+    var dy = -textHeight / 4;
+
+    if(svgClass[0] === 'y') {
+        mathjaxGroup.attr({
+            transform: 'rotate(' + [-90, x, y] +
+            ')' + strTranslate(-w / 2, dy - h / 2)
+        });
+    } else if(svgClass[0] === 'l') {
+        y = dy - h / 2;
+    } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
+        x = 0;
+        y = dy;
+    } else {
+        x = x - w * (
+            textAnchor === 'middle' ? 0.5 :
+            textAnchor === 'end' ? 1 : 0
+        );
+        y = y + dy - h / 2;
+    }
+
+    newSvg.attr({
+        x: x,
+        y: y
+    });
+}
+
+/**
+ * Removes an unsafe href/xlink:href from every <a> MathJax's \href{url}{...}
+ * macro produced inside newSvg.
+ *
+ * @param {d3 selection} newSvg: the typeset <svg>, already inserted into
+ *   the document (or a fragment), so selectAll can walk its descendants
+ */
+function sanitizeMathJaxLinks(newSvg) {
+    newSvg.selectAll('a').each(function() {
+        var a = d3.select(this);
+        ['href', 'xlink:href'].forEach(function(attrName) {
+            var href = a.attr(attrName);
+            if(href) a.attr(attrName, sanitizeHref(href) || null);
+        });
+    });
+}
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
@@ -20,8 +123,10 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
         gd && gd._context.typesetMath &&
-        (typeof MathJax !== 'undefined') &&
-        str.match(FIND_TEX);
+        matchTex(str);
+
+    // Only complain about MathJax version once we know there's actually math to render
+    if(tex && !isMathJaxVersionSupported()) tex = null;
 
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
@@ -67,6 +172,10 @@ exports.convertToTspans = function(_context, gd, _callback) {
             _context.style('display', 'none');
             var fontSize = parseInt(_context.node().style.fontSize, 10);
             var config = {fontSize: fontSize};
+            // Capture the text-anchor value now, since the the callback function below
+            // will run async, and in the meantime the text-anchor may change
+            // which would result in a wrongly-positioned SVG
+            var textAnchor = _context.attr('text-anchor');
 
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
@@ -79,6 +188,13 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     return;
                 }
 
+                // Now that the MathJax render has finished, re-hide the source text.
+                // We hid it earlier, too, but since this callback runs async,
+                // another function may have made it visible again
+                // TODO: investigate this issue more deeply, there's probably a better
+                // solution than this band-aid fix
+                _context.style('display', 'none');
+
                 var mathjaxGroup = parent.append('g')
                     .classed(svgClass + '-group', true)
                     .attr({
@@ -88,6 +204,8 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     });
 
                 mathjaxGroup.node().appendChild(newSvg.node());
+
+                sanitizeMathJaxLinks(newSvg);
 
                 // stitch the glyph defs
                 if(_glyphDefs && _glyphDefs.node()) {
@@ -103,56 +221,17 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
-                .style({overflow: 'visible', 'pointer-events': 'none'});
+                .style({
+                    overflow: 'visible',
+                    'pointer-events': 'none',
+                    'font-size': config.fontSize + 'px',
+                });
 
                 var fill = _context.node().style.fill || 'black';
                 var g = newSvg.select('g');
                 g.attr({fill: fill, stroke: fill});
 
-                var bb = g.node().getBoundingClientRect();
-                var w = bb.width;
-                var h = bb.height;
-
-                if(w > w0 || h > h0) {
-                    // this happen in firefox v82+ | see https://bugzilla.mozilla.org/show_bug.cgi?id=1709251 addressed
-                    // temporary fix:
-                    newSvg.style('overflow', 'hidden');
-                    bb = newSvg.node().getBoundingClientRect();
-                    w = bb.width;
-                    h = bb.height;
-                }
-
-                var x = +_context.attr('x');
-                var y = +_context.attr('y');
-
-                // font baseline is about 1/4 fontSize below centerline
-                var textHeight = fontSize || _context.node().getBoundingClientRect().height;
-                var dy = -textHeight / 4;
-
-                if(svgClass[0] === 'y') {
-                    mathjaxGroup.attr({
-                        transform: 'rotate(' + [-90, x, y] +
-                        ')' + strTranslate(-w / 2, dy - h / 2)
-                    });
-                } else if(svgClass[0] === 'l') {
-                    y = dy - h / 2;
-                } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
-                    x = 0;
-                    y = dy;
-                } else {
-                    var anchor = _context.attr('text-anchor');
-
-                    x = x - w * (
-                        anchor === 'middle' ? 0.5 :
-                        anchor === 'end' ? 1 : 0
-                    );
-                    y = y + dy - h / 2;
-                }
-
-                newSvg.attr({
-                    x: x,
-                    y: y
-                });
+                positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, w0, h0);
 
                 if(_callback) _callback.call(_context, mathjaxGroup);
                 resolve(mathjaxGroup);
@@ -161,6 +240,45 @@ exports.convertToTspans = function(_context, gd, _callback) {
     } else showText();
 
     return _context;
+};
+
+/**
+ * Repositions an existing MathJax-typeset group, previously inserted by
+ * convertToTspans, to match its source <text> node's *current* x/y and
+ * text-anchor.
+ *
+ * @param {d3 selection} _context: the source <text> element
+ */
+exports.repositionMathGroup = function(_context) {
+    if(_context.empty()) return;
+
+    var svgClass = (_context.attr('class') ? _context.attr('class').split(' ')[0] : 'text') + '-math';
+    var parent = d3.select(_context.node().parentNode);
+    var mathjaxGroup = parent.select('g.' + svgClass + '-group');
+    var newSvg = mathjaxGroup.select('svg.' + svgClass);
+    if(mathjaxGroup.empty() || newSvg.empty()) return;
+
+    var textAnchor = _context.attr('text-anchor');
+    var fontSize = parseInt(_context.node().style.fontSize, 10);
+    positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize);
+};
+
+/**
+ * Finds the node whose bounding box represents a source <text> element's
+ * rendered content: the typeset MathJax group if convertToTspans replaced
+ * the text with one (the source itself is display:none in that case), or
+ * the <text> node otherwise.
+ *
+ * @param {d3 selection} textSel: the source <text> element
+ * @return {?Element} the node to measure, or null if textSel is empty
+ */
+exports.getMathOrTextNode = function(textSel) {
+    var node = textSel.node();
+    if(!node) return null;
+
+    var svgClass = (textSel.attr('class') ? textSel.attr('class').split(' ')[0] : 'text') + '-math';
+    var mathGroup = d3.select(node.parentNode).select('g.' + svgClass + '-group');
+    return mathGroup.empty() ? node : mathGroup.node();
 };
 
 
@@ -174,154 +292,106 @@ function cleanEscapesForTex(s) {
         .replace(GT_MATCH, '\\gt ');
 }
 
-var inlineMath = [['$', '$'], ['\\(', '\\)']];
+// Create a dedicated MathDocument just for Plotly.js,
+// to avoid interfering with any other MathJax on the page.
+// mathjaxSVGDocument is initialized on the first call to texToSVG(),
+// and reused for subsequent calls.
+var mathjaxSVGDocument = null;
+
+// Function which returns the major version of MathJax as an integer,
+// or null if MathJax is undefined or MathJax.version is falsy.
+const mathJaxMajorVersion = () => (typeof MathJax !== 'undefined' && MathJax.version) ? parseInt(MathJax.version.split('.')[0]) : null;
+
+// Only warn once per page about each of these conditions
+var warnedMissingMathJax = false;
+var warnedUnsupportedMathJax = false;
+
+// plotly.js is only compatible with MathJax v3 and v4.
+function isMathJaxVersionSupported() {
+    const version = mathJaxMajorVersion();
+    if(version === 3 || version === 4) return true;
+
+    if(version === null) {
+        if(!warnedMissingMathJax) {
+            warnedMissingMathJax = true;
+            Lib.warn('MathJax is not loaded. Math equations will not be rendered.');
+        }
+    } else if(!warnedUnsupportedMathJax) {
+        warnedUnsupportedMathJax = true;
+        Lib.warn('Unsupported MathJax version:', MathJax.version);
+    }
+    return false;
+}
 
 function texToSVG(_texString, _config, _callback) {
-    var MathJaxVersion = parseInt(
-        (MathJax.version || '').split('.')[0]
-    );
+    const MathJaxVersion = mathJaxMajorVersion();
 
-    if(
-        MathJaxVersion !== 2 &&
-        MathJaxVersion !== 3
-    ) {
-        Lib.warn('No MathJax version:', MathJax.version);
-        return;
-    }
+    var tmpDiv;
 
-    var originalRenderer,
-        originalConfig,
-        originalProcessSectionDelay,
-        tmpDiv;
-
-    var setConfig2 = function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
-
-        originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
-        if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 2.5+ but not 3+
-            MathJax.Hub.processSectionDelay = 0;
+    const initiateMathJax = function() {
+        if(!mathjaxSVGDocument) {
+            const SVG = MathJax._.output.svg_ts.SVG;
+            // fontCache 'local' keeps each rendered svg self-contained
+            const svgConfig = Lib.extendFlat({}, MathJax.config.svg, {fontCache: 'local'});
+            // MathJax v4 enables automatic inline linebreaking by default, which
+            // messes up our layout assumptions. Disabling it gives behavior consistent with v3.
+            if(MathJaxVersion === 4) {
+                svgConfig.linebreaks = Lib.extendFlat({}, svgConfig.linebreaks, {inline: false});
+            }
+            mathjaxSVGDocument = MathJax._.mathjax.mathjax.document(document, Lib.extendFlat({}, MathJax.config.options, {
+                InputJax: MathJax.startup.input,
+                OutputJax: new SVG(svgConfig)
+            }));
         }
 
-        return MathJax.Hub.Config({
-            messageStyle: 'none',
-            tex2jax: {
-                inlineMath: inlineMath
-            },
-            displayAlign: 'left',
-        });
-    };
-
-    var setConfig3 = function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.config);
-
-        if(!MathJax.config.tex) {
-            MathJax.config.tex = {};
-        }
-
-        MathJax.config.tex.inlineMath = inlineMath;
-    };
-
-    var setRenderer2 = function() {
-        originalRenderer = MathJax.Hub.config.menuSettings.renderer;
-        if(originalRenderer !== 'SVG') {
-            return MathJax.Hub.setRenderer('SVG');
-        }
-    };
-
-    var setRenderer3 = function() {
-        originalRenderer = MathJax.config.startup.output;
-        if(originalRenderer !== 'svg') {
-            MathJax.config.startup.output = 'svg';
-        }
-    };
-
-    var initiateMathJax = function() {
-        var randomID = 'math-output-' + Lib.randstr({}, 64);
+        const randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
             .style({
                 visibility: 'hidden',
                 position: 'absolute',
                 'font-size': _config.fontSize + 'px'
-            })
-            .text(cleanEscapesForTex(_texString));
+            });
 
-        var tmpNode = tmpDiv.node();
-
-        return MathJaxVersion === 2 ?
-            MathJax.Hub.Typeset(tmpNode) :
-            MathJax.typeset([tmpNode]);
+        // Strip $…$ delimiters and clean up escape charaters,
+        // then pass the result to MathDocument.convert() to get an SVG element back
+        const texMath = cleanEscapesForTex(_texString).replace(/^\$+|\$+$/g, '');
+        // handleRetriesFor() automatically retries a MathJax function if it fails
+        // due to a transient error (docs: https://docs.mathjax.org/en/v4.0/web/retry.html)
+        // handleRetriesFor() returns a promise which resolves to the result of the provided function
+        return MathJax._.mathjax.mathjax.handleRetriesFor(function() {
+            return mathjaxSVGDocument.convert(texMath, {
+                display: false
+            });
+        }).then(function(node) {
+            tmpDiv.node().appendChild(node);
+        });
     };
 
-    var finalizeMathJax = function() {
-        var sel = tmpDiv.select(
-            MathJaxVersion === 2 ? '.MathJax_SVG' : '.MathJax'
-        );
+    const finalizeMathJax = function() {
+        const sel = tmpDiv.select('.MathJax');
 
-        var node = !sel.empty() && tmpDiv.select('svg').node();
+        const node = !sel.empty() && tmpDiv.select('svg').node();
         if(!node) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
-            var nodeBBox = node.getBoundingClientRect();
-            var glyphDefs;
-            if(MathJaxVersion === 2) {
-                glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
-            } else {
-                glyphDefs = sel.select('defs');
-            }
+            const nodeBBox = node.getBoundingClientRect();
+            const glyphDefs = sel.select('defs');
             _callback(sel, glyphDefs, nodeBBox);
         }
 
         tmpDiv.remove();
     };
 
-    var resetRenderer2 = function() {
-        if(originalRenderer !== 'SVG') {
-            return MathJax.Hub.setRenderer(originalRenderer);
-        }
-    };
-
-    var resetRenderer3 = function() {
-        if(originalRenderer !== 'svg') {
-            MathJax.config.startup.output = originalRenderer;
-        }
-    };
-
-    var resetConfig2 = function() {
-        if(originalProcessSectionDelay !== undefined) {
-            MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
-        }
-        return MathJax.Hub.Config(originalConfig);
-    };
-
-    var resetConfig3 = function() {
-        MathJax.config = originalConfig;
-    };
-
-    if(MathJaxVersion === 2) {
-        MathJax.Hub.Queue(
-            setConfig2,
-            setRenderer2,
-            initiateMathJax,
-            finalizeMathJax,
-            resetRenderer2,
-            resetConfig2
-        );
-    } else if(MathJaxVersion === 3) {
-        setConfig3();
-        setRenderer3();
-        MathJax.startup.defaultReady();
-
-        MathJax.startup.promise.then(function() {
-            initiateMathJax();
-            finalizeMathJax();
-
-            resetRenderer3();
-            resetConfig3();
+    Promise.resolve()
+        .then(initiateMathJax)
+        .then(finalizeMathJax)
+        .catch((err) => {
+            Lib.log('MathJax typesetting failed.', _texString, err);
+            if(tmpDiv) tmpDiv.remove();
+            _callback();
         });
-    }
 }
 
 var TAG_STYLES = {

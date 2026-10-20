@@ -5,7 +5,7 @@ var Lib = require('../../lib');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var fillText = require('../../lib').fillText;
-var delta = require('../../constants/delta.js');
+var delta = require('../../constants/delta');
 
 var DIRSYMBOL = {
     increasing: delta.INCREASING.SYMBOL,

@@ -1,9 +1,10 @@
 # Exclude all hidden files and folders
 .*
 
-# Exclude all files in build/, except for plotcss.js and README.md
+# Exclude all files in build/, except for those required when bundling the package
 build/*
 !build/plotcss.js
+!build/maplibre_worker.js
 !build/README.md
 
 # Exclude these directories
@@ -14,3 +15,8 @@ stackgl_modules/node_modules
 tasks
 test
 topojson
+
+# Exclude the TypeScript files (but not declarations) because Node doesn't
+# parse TS when installed in node_modules.
+src/**/*.ts
+!src/**/*.d.ts

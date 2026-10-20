@@ -125,7 +125,7 @@ describe('plot schema', function() {
         var cnt = 0;
 
         var astrs = [
-            'xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox', 'map', 'polar', 'smith',
+            'xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'map', 'polar', 'smith',
             // not really a 'subplot' object but supports yaxis, yaxis2, yaxis3,
             // ... counters, so list it here
             'xaxis.rangeslider.yaxis',
@@ -162,7 +162,6 @@ describe('plot schema', function() {
             'xaxis.rangeselector.buttons',
             'updatemenus',
             'sliders',
-            'mapbox.layers',
             'map.layers'
         ];
 
@@ -290,6 +289,14 @@ describe('plot schema', function() {
     it('should list config attributes', function() {
         expect(plotSchema.config).toBeDefined();
         expect(plotSchema.config.scrollZoom).toBeDefined();
+    });
+
+    it('should describe every toImageButtonOptions key', () => {
+        const opts = plotSchema.config.toImageButtonOptions;
+        expect(opts.role).toBe('object');
+        expect(Object.keys(opts).sort()).toEqual(['description', 'filename', 'format', 'height', 'role', 'scale', 'width']);
+        expect(opts.format.values).toEqual(['png', 'jpeg', 'webp', 'svg', 'full-json']);
+        expect(opts.format.dflt).toBe('png');
     });
 
     it('should list trace-dependent & direction-dependent error bar attributes', function() {

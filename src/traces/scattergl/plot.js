@@ -6,6 +6,7 @@ var createError = require('regl-error2d');
 var Text = require('gl-text');
 
 var Lib = require('../../lib');
+const { rgbaString } = require('../../components/color');
 var selectMode = require('../../components/dragelement/helpers').selectMode;
 var prepareRegl = require('../../lib/prepare_regl');
 
@@ -236,7 +237,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
                                     if(isNaN(xx) || isNaN(yy)) continue;
                                     pos.push(xx, yy);
                                 }
-                                fillOptions.fill = nextTrace.fillcolor;
+                                fillOptions.fill = rgbaString(nextTrace.fillcolor);
                             }
                         }
                     }
@@ -290,7 +291,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                var selPts = scene.selectBatch[index] = Lib.selIndices2selPoints(trace);
+                var selPts = scene.selectBatch[index] = trace.selectedpoints;
 
                 var selDict = {};
                 for(j = 0; j < selPts.length; j++) {

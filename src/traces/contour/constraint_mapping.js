@@ -3,8 +3,9 @@
 var filterOps = require('../../constants/filter_ops');
 var isNumeric = require('fast-isnumeric');
 
-// This syntax conforms to the existing filter transform syntax, but we don't care
-// about open vs. closed intervals for simply drawing contours constraints:
+// This syntax uses the comparison and interval operations defined in
+// src/constants/filter_ops.js, but we don't care about open vs. closed intervals
+// for the purpose of drawing contours constraints
 module.exports = {
     '[]': makeRangeSettings('[]'),
     '][': makeRangeSettings(']['),
@@ -13,8 +14,7 @@ module.exports = {
     '=': makeInequalitySettings('=')
 };
 
-// This does not in any way shape or form support calendars. It's adapted from
-// transforms/filter.js.
+// This does not in any way shape or form support calendars
 function coerceValue(operation, value) {
     var hasArrayValue = Array.isArray(value);
 

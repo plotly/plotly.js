@@ -8,7 +8,7 @@ var colorAttrs = require('../../components/color/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
-var delta = require('../../constants/delta.js');
+var delta = require('../../constants/delta');
 var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var textFontAttrs = fontAttrs({
