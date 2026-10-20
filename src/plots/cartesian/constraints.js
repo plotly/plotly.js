@@ -633,13 +633,13 @@ exports.clean = function clean(gd, ax) {
     }
 };
 
-// `domainpad` in domain fractions rather than pixels, which is the unit
-// everything around the constraint solve is expressed in.
+// Get the `domainpad` of an axis as a fraction of the plot size.
+// The constraint solver works in domain fractions, not in pixels.
 function domainPadFraction(ax, fullLayout) {
-    var pad = ax.domainpad;
+    const pad = ax.domainpad;
     if(!pad) return 0;
 
-    var gs = fullLayout._size;
+    const gs = fullLayout._size;
     return ax._id.charAt(0) === 'y' ?
         ((pad.top || 0) + (pad.bottom || 0)) / gs.h :
         ((pad.left || 0) + (pad.right || 0)) / gs.w;
@@ -647,27 +647,25 @@ function domainPadFraction(ax, fullLayout) {
 
 function updateDomain(ax, factor, fullLayout) {
     var inputDomain = ax._inputDomain;
-    var inputSpan = inputDomain[1] - inputDomain[0];
-    var center = inputDomain[0] + inputSpan * FROM_BL[ax.constraintoward];
+    var centerFraction = FROM_BL[ax.constraintoward];
+    var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
 
-    // We have to divide the axis' drawn length by `factor`. With no padding that
-    // length is the domain span, so dividing the span does it. `domainpad` breaks
-    // the equivalence by taking a fixed number of pixels off the ends: the drawn
-    // length is (span - padding), and only that part scales. Divide it and add the
-    // padding back. If the padding covers the whole domain there is nothing left to
-    // scale, so fall through to the plain behaviour and let setScale clamp it.
-    var padFraction = domainPadFraction(ax, fullLayout);
-    var drawnSpan = inputSpan - padFraction;
-    var newSpan = drawnSpan > 0 ?
-        drawnSpan / factor + padFraction :
-        inputSpan / factor;
-
-    // grow or shrink about whichever edge or centre `constraintoward` asked for
-    var scale = newSpan / inputSpan;
+    // The constraint divides the drawn length of the axis by `factor`. Without padding,
+    // the drawn length is the domain span. `domainpad` removes a fixed number of pixels
+    // from the ends, so the drawn length is (span - padding), and only that part scales.
+    // Thus divide that part, then add the padding back. If the padding covers the full
+    // domain, nothing remains to scale, so divide the full span and let setScale clamp the padding.
+    let divisor = factor;
+    const padFraction = domainPadFraction(ax, fullLayout);
+    if(padFraction > 0) {
+        const inputSpan = inputDomain[1] - inputDomain[0];
+        const drawnSpan = inputSpan - padFraction;
+        if(drawnSpan > 0) divisor = inputSpan / (drawnSpan / factor + padFraction);
+    }
 
     ax.domain = ax._input.domain = [
-        center + (inputDomain[0] - center) * scale,
-        center + (inputDomain[1] - center) * scale
+        center + (inputDomain[0] - center) / divisor,
+        center + (inputDomain[1] - center) / divisor
     ];
     ax.setScale();
 }
