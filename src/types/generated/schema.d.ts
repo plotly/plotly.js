@@ -9850,13 +9850,13 @@ export interface ScatterternaryglData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'

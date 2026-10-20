@@ -73561,7 +73561,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
