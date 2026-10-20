@@ -1,5 +1,5 @@
-Autoscale                                                                                                                     // components/modebar/buttons.js:263
-Box Select                                                                                                                    // components/modebar/buttons.js:151
+Autoscale                                                                                                                     // components/modebar/buttons.js:264
+Box Select                                                                                                                    // components/modebar/buttons.js:152
 Cancel                                                                                                                        // components/modebar/share_chart/strings.js:27
 Click to enter Colorscale title                                                                                               // plots/plots.js:238
 Click to enter Component A title                                                                                              // plots/ternary/ternary.js:378
@@ -10,46 +10,46 @@ Click to enter Plot title                                                       
 Click to enter X axis title                                                                                                   // plots/plots.js:236
 Click to enter Y axis title                                                                                                   // plots/plots.js:237
 Click to enter radial axis title                                                                                              // plots/polar/polar.js:592
-Compare data on hover                                                                                                         // components/modebar/buttons.js:300
+Compare data on hover                                                                                                         // components/modebar/buttons.js:301
 Double-click on legend to isolate one trace                                                                                   // components/legend/handle_click.js:40
 Double-click to zoom back out                                                                                                 // plots/ternary/ternary.js:680
-Download plot                                                                                                                 // components/modebar/buttons.js:47
-Download plot as JSON                                                                                                         // components/modebar/buttons.js:75
-Download plot as a PNG                                                                                                        // components/modebar/buttons.js:45
-Draw circle                                                                                                                   // components/modebar/buttons.js:218
-Draw closed freeform                                                                                                          // components/modebar/buttons.js:174
-Draw line                                                                                                                     // components/modebar/buttons.js:196
-Draw open freeform                                                                                                            // components/modebar/buttons.js:185
-Draw rectangle                                                                                                                // components/modebar/buttons.js:207
-Erase active shape                                                                                                            // components/modebar/buttons.js:229
+Download plot                                                                                                                 // components/modebar/buttons.js:48
+Download plot as JSON                                                                                                         // components/modebar/buttons.js:76
+Download plot as a PNG                                                                                                        // components/modebar/buttons.js:46
+Draw circle                                                                                                                   // components/modebar/buttons.js:219
+Draw closed freeform                                                                                                          // components/modebar/buttons.js:175
+Draw line                                                                                                                     // components/modebar/buttons.js:197
+Draw open freeform                                                                                                            // components/modebar/buttons.js:186
+Draw rectangle                                                                                                                // components/modebar/buttons.js:208
+Erase active shape                                                                                                            // components/modebar/buttons.js:230
 If you don't have a Plotly Cloud account yet, you'll have a chance to create one.                                             // components/modebar/share_chart/strings.js:21
-Image download succeeded                                                                                                      // components/modebar/buttons.js:64
-JSON download succeeded                                                                                                       // components/modebar/buttons.js:81
-Lasso Select                                                                                                                  // components/modebar/buttons.js:163
-Orbital rotation                                                                                                              // components/modebar/buttons.js:410
-Pan                                                                                                                           // components/modebar/buttons.js:139
-Preparing image - this may take a few seconds                                                                                 // components/modebar/buttons.js:54
+Image download succeeded                                                                                                      // components/modebar/buttons.js:65
+JSON download succeeded                                                                                                       // components/modebar/buttons.js:82
+Lasso Select                                                                                                                  // components/modebar/buttons.js:164
+Orbital rotation                                                                                                              // components/modebar/buttons.js:411
+Pan                                                                                                                           // components/modebar/buttons.js:140
+Preparing image - this may take a few seconds                                                                                 // components/modebar/buttons.js:55
 Produced with Plotly.js                                                                                                       // components/modebar/modebar.js:329
-Reset                                                                                                                         // components/modebar/buttons.js:597
-Reset axes                                                                                                                    // components/modebar/buttons.js:275
-Reset camera to default                                                                                                       // components/modebar/buttons.js:453
-Reset camera to last save                                                                                                     // components/modebar/buttons.js:464
-Reset view                                                                                                                    // components/modebar/buttons.js:701
-Reset views                                                                                                                   // components/modebar/buttons.js:743
+Reset                                                                                                                         // components/modebar/buttons.js:598
+Reset axes                                                                                                                    // components/modebar/buttons.js:276
+Reset camera to default                                                                                                       // components/modebar/buttons.js:454
+Reset camera to last save                                                                                                     // components/modebar/buttons.js:465
+Reset view                                                                                                                    // components/modebar/buttons.js:702
+Reset views                                                                                                                   // components/modebar/buttons.js:744
 Share                                                                                                                         // components/modebar/share_chart/strings.js:28
 Share chart                                                                                                                   // components/modebar/share_chart/strings.js:17
-Share chart...                                                                                                                // components/modebar/buttons.js:92
-Show closest data on hover                                                                                                    // components/modebar/buttons.js:287
-Sorry, there was a problem downloading your JSON file!                                                                        // components/modebar/buttons.js:84
-Sorry, there was a problem downloading your image!                                                                            // components/modebar/buttons.js:67
+Share chart...                                                                                                                // components/modebar/buttons.js:93
+Show closest data on hover                                                                                                    // components/modebar/buttons.js:288
+Sorry, there was a problem downloading your JSON file!                                                                        // components/modebar/buttons.js:85
+Sorry, there was a problem downloading your image!                                                                            // components/modebar/buttons.js:68
 This chart will be sent to {serverUrl}.                                                                                       // components/modebar/share_chart/strings.js:24
 This chart will be uploaded to {Plotly Cloud} to create a sharing link. Only you can see it until you change its visibility.  // components/modebar/share_chart/strings.js:20
-Toggle Spike Lines                                                                                                            // components/modebar/buttons.js:764
-Toggle show closest data on hover                                                                                             // components/modebar/buttons.js:516
-Turntable rotation                                                                                                            // components/modebar/buttons.js:421
-Zoom                                                                                                                          // components/modebar/buttons.js:127
-Zoom in                                                                                                                       // components/modebar/buttons.js:239
-Zoom out                                                                                                                      // components/modebar/buttons.js:251
+Toggle Spike Lines                                                                                                            // components/modebar/buttons.js:765
+Toggle show closest data on hover                                                                                             // components/modebar/buttons.js:517
+Turntable rotation                                                                                                            // components/modebar/buttons.js:422
+Zoom                                                                                                                          // components/modebar/buttons.js:128
+Zoom in                                                                                                                       // components/modebar/buttons.js:240
+Zoom out                                                                                                                      // components/modebar/buttons.js:252
 close:                                                                                                                        // traces/ohlc/calc.js:108
 concentration:                                                                                                                // traces/sankey/plot.js:176
 high:                                                                                                                         // traces/ohlc/calc.js:106

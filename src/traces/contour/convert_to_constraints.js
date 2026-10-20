@@ -23,7 +23,7 @@ module.exports = function(pathinfo, operation) {
                 Lib.warn('Contour data invalid for the specified inequality operation.');
             }
 
-            // In this case there should be exactly one contour levels in pathinfo.
+            // In this case there should be exactly one contour level in pathinfo.
             // We flip all of the data. This will draw the contour as closed.
             pi0 = pathinfo[0];
 

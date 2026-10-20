@@ -8,10 +8,23 @@ inputs:
   uv-version:
     description: 'uv version to use'
     default: '0.11.2'
+  chrome-version:
+    description: 'Chrome version for Kaleido. The baselines depend on this version.'
+    default: '154.0.8037.92'
 
 runs:
   using: 'composite'
   steps:
+    # Pin Chrome so a runner image update does not change the rendered baselines
+    - uses: ./.github/actions/setup-chrome
+      with:
+        chrome-version: ${{ inputs.chrome-version }}
+
+    # Kaleido uses the Chrome at BROWSER_PATH instead of the Chrome of the runner
+    - name: Point Kaleido at the pinned Chrome
+      run: echo "BROWSER_PATH=$CHROME_BIN" >> $GITHUB_ENV
+      shell: bash
+
     - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
       with:
         python-version: ${{ inputs.python-version }}

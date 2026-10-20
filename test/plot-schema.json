@@ -2830,7 +2830,7 @@
       },
       "hoverlabel": {
         "align": {
-          "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+          "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
           "dflt": "auto",
           "editType": "none",
           "valType": "enumerated",
@@ -3469,6 +3469,13 @@
             "toggleothers",
             false
           ]
+        },
+        "itemheight": {
+          "description": "Sets the height (in px) of the legend item fill swatch. A taller swatch shows more of a trace *fill* or *fillpattern*. Only traces with a *fill* use this value. Every legend item grows to fit, so a larger value makes every row taller.",
+          "dflt": 6,
+          "editType": "legend",
+          "min": 6,
+          "valType": "number"
         },
         "itemsizing": {
           "description": "Determines if the legend items symbols scale with their corresponding *trace* attributes or remain *constant* independent of the symbol size on the graph.",
@@ -10816,6 +10823,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -10845,6 +10858,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the spike line width in pixels.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -11320,6 +11381,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -11349,6 +11416,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the spike line width in pixels.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -11830,6 +11945,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -11859,6 +11980,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the spike line width in pixels.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -16035,7 +16204,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -17904,7 +18073,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -19300,7 +19469,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -20670,7 +20839,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -23505,7 +23674,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -24645,7 +24814,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -25814,7 +25983,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -27110,7 +27279,7 @@
             "valType": "string"
           },
           "operation": {
-            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
+            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
             "dflt": "=",
             "editType": "calc",
             "valType": "enumerated",
@@ -27229,7 +27398,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -27549,7 +27718,7 @@
             "valType": "number"
           },
           "width": {
-            "description": "Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.",
+            "description": "Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.",
             "editType": "style+colorbars",
             "min": 0,
             "valType": "number"
@@ -27610,7 +27779,7 @@
             "editType": "style",
             "valType": "color"
           },
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font.",
           "editType": "plot",
           "family": {
             "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
@@ -27696,7 +27865,7 @@
           }
         },
         "texttemplate": {
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
           "dflt": "",
           "editType": "plot",
           "valType": "string"
@@ -28786,7 +28955,7 @@
             "valType": "string"
           },
           "operation": {
-            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
+            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
             "dflt": "=",
             "editType": "calc",
             "valType": "enumerated",
@@ -29047,7 +29216,7 @@
             "valType": "number"
           },
           "width": {
-            "description": "Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.",
+            "description": "Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.",
             "editType": "style+colorbars",
             "min": 0,
             "valType": "number"
@@ -29859,7 +30028,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -30397,7 +30566,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -32140,7 +32309,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -33656,7 +33825,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -34681,7 +34850,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -37143,7 +37312,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -38591,7 +38760,7 @@
             "valType": "string"
           },
           "operation": {
-            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
+            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
             "dflt": "=",
             "editType": "calc",
             "valType": "enumerated",
@@ -38713,7 +38882,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -39102,7 +39271,7 @@
             "editType": "style",
             "valType": "color"
           },
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font.",
           "editType": "plot",
           "family": {
             "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
@@ -39188,7 +39357,7 @@
           }
         },
         "texttemplate": {
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
           "dflt": "",
           "editType": "plot",
           "valType": "string"
@@ -39528,7 +39697,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -41259,7 +41428,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -43621,7 +43790,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -45006,7 +45175,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -45676,7 +45845,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -48913,7 +49082,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -49961,7 +50130,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -51394,7 +51563,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "calc",
             "valType": "enumerated",
@@ -51749,7 +51918,7 @@
           "hoverlabel": {
             "align": {
               "arrayOk": true,
-              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
               "dflt": "auto",
               "editType": "calc",
               "valType": "enumerated",
@@ -52021,7 +52190,7 @@
           "hoverlabel": {
             "align": {
               "arrayOk": true,
-              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
               "dflt": "auto",
               "editType": "calc",
               "valType": "enumerated",
@@ -52744,7 +52913,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -55237,7 +55406,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -57472,7 +57641,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -59551,7 +59720,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -61758,7 +61927,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -63866,7 +64035,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -65198,7 +65367,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -67293,7 +67462,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -69242,7 +69411,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -71395,7 +71564,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -73495,7 +73664,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -75931,7 +76100,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -76600,7 +76769,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -79080,7 +79249,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -80088,7 +80257,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -80506,7 +80675,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -82312,7 +82481,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -84300,7 +84469,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -85109,7 +85278,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
