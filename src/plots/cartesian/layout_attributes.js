@@ -1171,39 +1171,38 @@ module.exports = {
             min: 0,
             dflt: 0,
             editType: 'plot',
-            description: 'Pixels of space to reserve inside the left edge of the domain. Ignored on y axes.'
+            description: 'Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.'
         },
         right: {
             valType: 'number',
             min: 0,
             dflt: 0,
             editType: 'plot',
-            description: 'Pixels of space to reserve inside the right edge of the domain. Ignored on y axes.'
+            description: 'Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.'
         },
         top: {
             valType: 'number',
             min: 0,
             dflt: 0,
             editType: 'plot',
-            description: 'Pixels of space to reserve inside the top edge of the domain. Ignored on x axes.'
+            description: 'Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.'
         },
         bottom: {
             valType: 'number',
             min: 0,
             dflt: 0,
             editType: 'plot',
-            description: 'Pixels of space to reserve inside the bottom edge of the domain. Ignored on x axes.'
+            description: 'Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.'
         },
         editType: 'plot',
         description: [
-            'Reserves space inside the edges of `domain`, in pixels.',
-            'Because `domain` is a plot fraction, the space it leaves between subplots',
-            'grows and shrinks with the figure. `domainpad` stays the same size at any',
-            'figure height or width, which is what you want for anything sized in pixels',
-            'such as a subplot title.',
-            'x axes use `left` and `right`, y axes use `top` and `bottom`.',
-            'If the padding asks for more room than the domain has, it is scaled down',
-            'so the subplot keeps a usable size.'
+            'Sets the space in pixels to reserve inside the edges of `domain`.',
+            'Because `domain` is a fraction of the plot area, the gap between subplots',
+            'changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes,',
+            'so it can hold content with a fixed size, such as a subplot title.',
+            'x axes use `left` and `right`. y axes use `top` and `bottom`.',
+            'If the padding needs more room than the domain has, the two pads shrink by the same factor,',
+            'and the plot area keeps a length of at least 2 pixels.'
         ].join(' ')
     },
     position: {

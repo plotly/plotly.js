@@ -101,12 +101,11 @@ module.exports = function(gd) {
 
         var gs = fullLayout._size;
 
-        // the slider has to line up with the plot area above it, so take its width
-        // and position from the axis rather than working them out from `domain`
-        // again - `domainpad` moves the axis without touching `domain`
+        // The slider must line up with the plot area above it. `domainpad` moves the
+        // plot area but not `domain`, so get the width and position from the axis.
         opts._width = axisOpts._length;
 
-        var x = Math.round(axisOpts._offset);
+        const x = Math.round(axisOpts._offset);
 
         var y = Math.round(
             gs.t + gs.h * (1 - axisOpts._counterDomainMin) +

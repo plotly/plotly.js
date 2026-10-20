@@ -8546,10 +8546,10 @@ describe('test tickmode calculator', function() {
     });
 });
 
-describe('axis domainpad', function() {
-    var gd;
+describe('axis domainpad', () => {
+    let gd;
 
-    beforeEach(function() { gd = createGraphDiv(); });
+    beforeEach(() => { gd = createGraphDiv(); });
     afterEach(destroyGraphDiv);
 
     // two stacked subplots with a small gap between them - the shape that makes
@@ -8566,16 +8566,16 @@ describe('axis domainpad', function() {
         }, layoutPatch || {});
     }
 
-    var twoRowsData = [
+    const twoRowsData = [
         {y: [1, 2, 3], xaxis: 'x', yaxis: 'y'},
         {y: [3, 1, 2], xaxis: 'x2', yaxis: 'y2'}
     ];
 
-    it('should default every side to zero and leave the plot area alone', function(done) {
+    it('should default every side to zero and leave the plot area alone', (done) => {
         Plotly.newPlot(gd, twoRowsData, twoRows())
-        .then(function() {
-            var xa = gd._fullLayout.xaxis;
-            var ya = gd._fullLayout.yaxis;
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            const ya = gd._fullLayout.yaxis;
 
             expect(xa.domainpad.left).toBe(0);
             expect(xa.domainpad.right).toBe(0);
@@ -8589,12 +8589,12 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should only coerce the two sides that point along the axis', function(done) {
+    it('should only coerce the two sides that point along the axis', (done) => {
         Plotly.newPlot(gd, twoRowsData, twoRows({
             xaxis: {domain: [0, 1], anchor: 'y', domainpad: {left: 10, top: 99}},
             yaxis: {domain: [0, 0.49], anchor: 'x', domainpad: {top: 20, left: 99}}
         }))
-        .then(function() {
+        .then(() => {
             // the sides that mean something are kept
             expect(gd._fullLayout.xaxis.domainpad.left).toBe(10);
             expect(gd._fullLayout.yaxis.domainpad.top).toBe(20);
@@ -8605,26 +8605,26 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should take the padding off the plot area, one side at a time', function(done) {
-        var basicOffset, basicLength;
+    it('should take the padding off the plot area, one side at a time', (done) => {
+        let basicOffset, basicLength;
 
         Plotly.newPlot(gd, twoRowsData, twoRows())
-        .then(function() {
+        .then(() => {
             basicOffset = gd._fullLayout.yaxis2._offset;
             basicLength = gd._fullLayout.yaxis2._length;
 
             return Plotly.relayout(gd, {'yaxis2.domainpad.top': 30});
         })
-        .then(function() {
-            var ya2 = gd._fullLayout.yaxis2;
+        .then(() => {
+            const ya2 = gd._fullLayout.yaxis2;
             // padding the top pushes the plot area down and makes it shorter
             expect(ya2._offset).toBeCloseTo(basicOffset + 30, 2);
             expect(ya2._length).toBeCloseTo(basicLength - 30, 2);
 
             return Plotly.relayout(gd, {'yaxis2.domainpad.top': 0, 'yaxis2.domainpad.bottom': 30});
         })
-        .then(function() {
-            var ya2 = gd._fullLayout.yaxis2;
+        .then(() => {
+            const ya2 = gd._fullLayout.yaxis2;
             // padding the bottom leaves the top edge where it was
             expect(ya2._offset).toBeCloseTo(basicOffset, 2);
             expect(ya2._length).toBeCloseTo(basicLength - 30, 2);
@@ -8632,52 +8632,52 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should pad x axes from the left and the right', function(done) {
-        var basicOffset, basicLength;
+    it('should pad x axes from the left and the right', (done) => {
+        let basicOffset, basicLength;
 
         Plotly.newPlot(gd, twoRowsData, twoRows())
-        .then(function() {
+        .then(() => {
             basicOffset = gd._fullLayout.xaxis._offset;
             basicLength = gd._fullLayout.xaxis._length;
 
             return Plotly.relayout(gd, {'xaxis.domainpad.left': 15, 'xaxis.domainpad.right': 25});
         })
-        .then(function() {
-            var xa = gd._fullLayout.xaxis;
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
             expect(xa._offset).toBeCloseTo(basicOffset + 15, 2);
             expect(xa._length).toBeCloseTo(basicLength - 40, 2);
         })
         .then(done, done.fail);
     });
 
-    it('should reserve the same pixels whatever the figure height is', function(done) {
+    it('should reserve the same pixels whatever the figure height is', (done) => {
         // this is the point of the attribute - a plot fraction cannot do it
         Plotly.newPlot(gd, twoRowsData, twoRows({
             yaxis2: {domain: [0.51, 1], anchor: 'x2', domainpad: {top: 28}}
         }))
-        .then(function() {
+        .then(() => {
             expect(gd._fullLayout.yaxis2._offset).toBeCloseTo(48, 2);
             return Plotly.relayout(gd, {height: 300});
         })
-        .then(function() {
+        .then(() => {
             expect(gd._fullLayout.yaxis2._offset).toBeCloseTo(48, 2);
             return Plotly.relayout(gd, {height: 1200});
         })
-        .then(function() {
+        .then(() => {
             expect(gd._fullLayout.yaxis2._offset).toBeCloseTo(48, 2);
         })
         .then(done, done.fail);
     });
 
-    it('should scale the padding back rather than run the plot area down to nothing', function(done) {
+    it('should scale the padding back rather than run the plot area down to nothing', (done) => {
         // six rows each asking for 60px inside a 200px tall figure is far more
         // padding than there is room for. setScale throws on a negative length,
         // so the padding has to give way instead.
-        var data = [];
-        var layout = {width: 800, height: 200, margin: {l: 40, r: 20, t: 20, b: 40}};
+        const data = [];
+        const layout = {width: 800, height: 200, margin: {l: 40, r: 20, t: 20, b: 40}};
 
-        for(var i = 0; i < 6; i++) {
-            var num = i === 0 ? '' : (i + 1);
+        for(let i = 0; i < 6; i++) {
+            const num = i === 0 ? '' : (i + 1);
             data.push({y: [1, 2, 3], xaxis: 'x' + num, yaxis: 'y' + num});
             layout['xaxis' + (i + 1)] = {domain: [0, 1], anchor: 'y' + num};
             layout['yaxis' + (i + 1)] = {
@@ -8688,10 +8688,10 @@ describe('axis domainpad', function() {
         }
 
         Plotly.newPlot(gd, data, layout)
-        .then(function() {
-            for(var j = 1; j <= 6; j++) {
+        .then(() => {
+            for(let j = 1; j <= 6; j++) {
                 // the first axis is stored as `yaxis`, not `yaxis1`
-                var ya = gd._fullLayout[j === 1 ? 'yaxis' : 'yaxis' + j];
+                const ya = gd._fullLayout[j === 1 ? 'yaxis' : 'yaxis' + j];
                 expect(ya._length).toBeGreaterThan(0);
                 expect(isFinite(ya._m)).toBe(true);
             }
@@ -8699,7 +8699,7 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should give an overlaying axis the same padding as the axis underneath', function(done) {
+    it('should give an overlaying axis the same padding as the axis underneath', (done) => {
         Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [4, 5, 6], yaxis: 'y2'}
@@ -8710,9 +8710,9 @@ describe('axis domainpad', function() {
             yaxis: {domain: [0, 1], domainpad: {top: 30}},
             yaxis2: {overlaying: 'y', side: 'right'}
         })
-        .then(function() {
-            var ya = gd._fullLayout.yaxis;
-            var ya2 = gd._fullLayout.yaxis2;
+        .then(() => {
+            const ya = gd._fullLayout.yaxis;
+            const ya2 = gd._fullLayout.yaxis2;
 
             // the two have to end up on exactly the same plot area
             expect(ya2._offset).toBeCloseTo(ya._offset, 2);
@@ -8721,7 +8721,7 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should let a domain referenced annotation sit in the space it reserved', function(done) {
+    it('should let a domain referenced annotation sit in the space it reserved', (done) => {
         // this is how a subplot title stops running into the subplot above it
         Plotly.newPlot(gd, twoRowsData, twoRows({
             yaxis2: {domain: [0.51, 1], anchor: 'x2', domainpad: {top: 28}},
@@ -8734,13 +8734,13 @@ describe('axis domainpad', function() {
                 font: {size: 16}
             }]
         }))
-        .then(function() {
-            var ya2 = gd._fullLayout.yaxis2;
-            var annBox = d3Select(gd).select('.annotation').node().getBoundingClientRect();
-            var gdBox = gd.getBoundingClientRect();
+        .then(() => {
+            const ya2 = gd._fullLayout.yaxis2;
+            const annBox = d3Select(gd).select('.annotation').node().getBoundingClientRect();
+            const gdBox = gd.getBoundingClientRect();
 
-            var annTop = annBox.top - gdBox.top;
-            var annBottom = annBox.bottom - gdBox.top;
+            const annTop = annBox.top - gdBox.top;
+            const annBottom = annBox.bottom - gdBox.top;
 
             // the title ends where the plot area starts ...
             expect(annBottom).toBeCloseTo(ya2._offset, 0);
@@ -8750,7 +8750,7 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should keep a scaleanchor ratio exact when the padded axis is not the one that shrinks', function(done) {
+    it('should keep a scaleanchor ratio exact when the padded axis is not the one that shrinks', (done) => {
         // constrain:'domain' shrinks a domain until the two axes share a scale.
         // It works in domain fractions, and a fraction still maps straight onto
         // pixels for any axis without padding, so this case comes out exact.
@@ -8763,20 +8763,19 @@ describe('axis domainpad', function() {
                 domainpad: {top: 60}
             }
         })
-        .then(function() {
-            var xa = gd._fullLayout.xaxis;
-            var ya = gd._fullLayout.yaxis;
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            const ya = gd._fullLayout.yaxis;
             expect(Math.abs(ya._m) / Math.abs(xa._m)).toBeCloseTo(1, 6);
         })
         .then(done, done.fail);
     });
 
-    it('should keep a scaleanchor ratio exact when the domain constraint shrinks the padded axis', function(done) {
-        // The harder direction. The solver shrinks a domain fraction, assuming the
-        // drawn length rises and falls with it. domainpad takes a fixed number of
-        // pixels off the end, so only (span - padding) actually scales - which is
-        // what updateDomain now divides. Before that fix this came out about 2.3%
-        // wide. See https://github.com/plotly/plotly.js/issues/7835
+    it('should keep a scaleanchor ratio exact when the domain constraint shrinks the padded axis', (done) => {
+        // The solver shrinks a domain fraction, and it expects the drawn length to change
+        // in the same proportion. domainpad removes a fixed number of pixels from the end,
+        // so only (span - padding) scales. updateDomain must divide only that part,
+        // or the ratio comes out about 2.3% too wide.
         Plotly.newPlot(gd, [{x: [0, 10], y: [0, 10], mode: 'markers'}], {
             width: 800, height: 600, margin: {l: 40, r: 20, t: 20, b: 40},
             xaxis: {
@@ -8788,15 +8787,15 @@ describe('axis domainpad', function() {
                 scaleanchor: 'x', scaleratio: 1
             }
         })
-        .then(function() {
-            var xa = gd._fullLayout.xaxis;
-            var ya = gd._fullLayout.yaxis;
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
+            const ya = gd._fullLayout.yaxis;
             expect(Math.abs(ya._m) / Math.abs(xa._m)).toBeCloseTo(1, 6);
         })
         .then(done, done.fail);
     });
 
-    it('should keep a rangeslider lined up with the padded x axis', function(done) {
+    it('should keep a rangeslider lined up with the padded x axis', (done) => {
         // the slider maps to the x range, so it has to sit under the plot area,
         // not under the unpadded domain
         Plotly.newPlot(gd, [{y: [1, 2, 3]}], {
@@ -8808,13 +8807,13 @@ describe('axis domainpad', function() {
             },
             yaxis: {domain: [0, 1]}
         })
-        .then(function() {
-            var xa = gd._fullLayout.xaxis;
+        .then(() => {
+            const xa = gd._fullLayout.xaxis;
             expect(xa.rangeslider._width).toBeCloseTo(xa._length, 2);
 
-            var bg = d3Select(gd).select('.rangeslider-bg').node();
-            var bgBox = bg.getBoundingClientRect();
-            var gdBox = gd.getBoundingClientRect();
+            const bg = d3Select(gd).select('.rangeslider-bg').node();
+            const bgBox = bg.getBoundingClientRect();
+            const gdBox = gd.getBoundingClientRect();
 
             expect(bgBox.left - gdBox.left).toBeCloseTo(xa._offset, 0);
             expect(bgBox.right - gdBox.left).toBeCloseTo(xa._offset + xa._length, 0);
@@ -8822,22 +8821,22 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should land in the same place whatever kind of axis it is', function(done) {
-        // domainpad is pure geometry, so it should not care about axis type or how
-        // the subplot got its domain. Work the expected offset and length out here
-        // rather than reading them back, so the test is not just echoing setScale.
+    it('should land in the same place whatever kind of axis it is', (done) => {
+        // domainpad is geometry only, so the axis type and the source of the domain must
+        // not change the result. Calculate the expected offset and length here, and do
+        // not read them back from the axis, so that the test does not repeat setScale.
         function expected(ax, gs) {
-            var isY = ax._id.charAt(0) === 'y';
-            var pad = ax.domainpad || {};
-            var band = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
-            var p0 = (isY ? pad.top : pad.left) || 0;
-            var p1 = (isY ? pad.bottom : pad.right) || 0;
+            const isY = ax._id.charAt(0) === 'y';
+            const pad = ax.domainpad || {};
+            const band = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+            let p0 = (isY ? pad.top : pad.left) || 0;
+            let p1 = (isY ? pad.bottom : pad.right) || 0;
 
             // same backing off the clamp does when the pads do not fit
-            var total = p0 + p1;
-            var maxTotal = Math.max(0, band - 2);
+            const total = p0 + p1;
+            const maxTotal = Math.max(0, band - 2);
             if(total > maxTotal) {
-                var k = maxTotal / total;
+                const k = maxTotal / total;
                 p0 *= k;
                 p1 *= k;
             }
@@ -8849,15 +8848,15 @@ describe('axis domainpad', function() {
         }
 
         function check(label) {
-            var fl = gd._fullLayout;
-            var gs = fl._size;
+            const fl = gd._fullLayout;
+            const gs = fl._size;
 
-            Object.keys(fl).forEach(function(key) {
+            Object.keys(fl).forEach((key) => {
                 if(!/^[xy]axis[0-9]*$/.test(key)) return;
-                var ax = fl[key];
+                const ax = fl[key];
                 if(ax._offset === undefined) return;
 
-                var want = expected(ax, gs);
+                const want = expected(ax, gs);
                 expect(ax._offset).withContext(label + ' ' + key + ' offset').toBeCloseTo(want.offset, 2);
                 expect(ax._length).withContext(label + ' ' + key + ' length').toBeCloseTo(want.length, 2);
                 expect(ax._length).withContext(label + ' ' + key + ' length sign').toBeGreaterThan(0);
@@ -8865,10 +8864,10 @@ describe('axis domainpad', function() {
             });
 
             // and the subplot background has to sit exactly on its axes
-            for(var id in fl._plots) {
-                var sp = fl._plots[id];
+            for(const id in fl._plots) {
+                const sp = fl._plots[id];
                 if(!sp.bg) continue;
-                var node = sp.bg.node();
+                const node = sp.bg.node();
                 expect(+node.getAttribute('x')).withContext(label + ' bg x').toBeCloseTo(sp.xaxis._offset - gs.p, 1);
                 expect(+node.getAttribute('y')).withContext(label + ' bg y').toBeCloseTo(sp.yaxis._offset - gs.p, 1);
                 expect(+node.getAttribute('width')).withContext(label + ' bg w').toBeCloseTo(sp.xaxis._length + 2 * gs.p, 1);
@@ -8876,7 +8875,7 @@ describe('axis domainpad', function() {
             }
         }
 
-        var base = {width: 800, height: 600, margin: {l: 50, r: 25, t: 25, b: 45}};
+        const base = {width: 800, height: 600, margin: {l: 50, r: 25, t: 25, b: 45}};
 
         function plot(patch) {
             return Plotly.newPlot(gd, patch.data, Lib.extendDeep({}, base, patch.layout));
@@ -8889,7 +8888,7 @@ describe('axis domainpad', function() {
                 xaxis: {domain: [0, 1], domainpad: {left: 20}}
             }
         })
-        .then(function() {
+        .then(() => {
             check('log');
             return plot({
                 data: [{x: ['2020-01-01', '2020-06-01', '2021-01-01'], y: [1, 2, 3]}],
@@ -8899,7 +8898,7 @@ describe('axis domainpad', function() {
                 }
             });
         })
-        .then(function() {
+        .then(() => {
             check('date and reversed');
             return plot({
                 data: [{y: [1, 2, 3]}, {y: [3, 2, 1], xaxis: 'x2', yaxis: 'y2'}],
@@ -8911,7 +8910,7 @@ describe('axis domainpad', function() {
                 }
             });
         })
-        .then(function() {
+        .then(() => {
             check('inset');
             return plot({
                 data: [
@@ -8929,7 +8928,7 @@ describe('axis domainpad', function() {
                 }
             });
         })
-        .then(function() {
+        .then(() => {
             check('layout.grid');
             // pads far bigger than the band they sit in
             return plot({
@@ -8940,18 +8939,17 @@ describe('axis domainpad', function() {
                 }
             });
         })
-        .then(function() {
+        .then(() => {
             check('pad bigger than the band');
         })
         .then(done, done.fail);
     });
 
-    it('should leave every number exactly as it was when no padding is set', function(done) {
-        // The pad has to be a true no-op at its default. Rebuilding the plot rect
-        // from _offset and _length instead of adding the pad to `domain` shifted
-        // webgl output by a fraction of a pixel on unpadded plots, which is enough
-        // to move rasterised markers and fail an image baseline. Compare with ===,
-        // not toBeCloseTo, because that is the size of the mistake being guarded.
+    it('should leave every number exactly as it was when no padding is set', (done) => {
+        // At its default, the padding must have no effect at all. A rebuild of the plot rect
+        // from _offset and _length moves webgl output by a fraction of a pixel,
+        // and that is enough to move rasterized markers and fail an image baseline.
+        // Thus compare with ===, not with toBeCloseTo.
         Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [2, 1, 3], xaxis: 'x2', yaxis: 'y2'}
@@ -8962,17 +8960,17 @@ describe('axis domainpad', function() {
             xaxis2: {domain: [0.3448275862068966, 0.6551724137931034], anchor: 'y2'},
             yaxis2: {domain: [0, 0.3103448275862069], anchor: 'x2'}
         })
-        .then(function() {
-            var fl = gd._fullLayout;
-            var gs = fl._size;
+        .then(() => {
+            const fl = gd._fullLayout;
+            const gs = fl._size;
 
-            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(name) {
-                var ax = fl[name];
-                var isY = name.charAt(0) === 'y';
-                var wantOffset = isY ?
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach((name) => {
+                const ax = fl[name];
+                const isY = name.charAt(0) === 'y';
+                const wantOffset = isY ?
                     gs.t + (1 - ax.domain[1]) * gs.h :
                     gs.l + ax.domain[0] * gs.w;
-                var wantLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+                const wantLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
 
                 expect(ax._offset).withContext(name + ' offset').toBe(wantOffset);
                 expect(ax._length).withContext(name + ' length').toBe(wantLength);
@@ -8983,31 +8981,31 @@ describe('axis domainpad', function() {
         .then(done, done.fail);
     });
 
-    it('should not drift when the axis gets rescaled again and again', function(done) {
+    it('should not drift when the axis gets rescaled again and again', (done) => {
         // setScale runs several times per draw, so the padding has to be read
         // fresh each time rather than piled onto the previous result
         function offsetAndLength() {
-            var ya2 = gd._fullLayout.yaxis2;
+            const ya2 = gd._fullLayout.yaxis2;
             return [ya2._offset, ya2._length];
         }
-        var first;
+        let first;
 
         Plotly.newPlot(gd, twoRowsData, twoRows({
             yaxis2: {domain: [0.51, 1], anchor: 'x2', domainpad: {top: 28}}
         }))
-        .then(function() {
+        .then(() => {
             first = offsetAndLength();
             return Plotly.relayout(gd, {'yaxis2.range': [0, 5]});
         })
-        .then(function() {
+        .then(() => {
             expect(offsetAndLength()).toBeCloseToArray(first, 2);
             return Plotly.relayout(gd, {'yaxis2.autorange': true});
         })
-        .then(function() {
+        .then(() => {
             expect(offsetAndLength()).toBeCloseToArray(first, 2);
             return Plotly.restyle(gd, {y: [[5, 1, 9]]}, [1]);
         })
-        .then(function() {
+        .then(() => {
             expect(offsetAndLength()).toBeCloseToArray(first, 2);
         })
         .then(done, done.fail);

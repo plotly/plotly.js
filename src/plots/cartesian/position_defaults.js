@@ -84,9 +84,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         if(domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
         Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
 
-        // domainpad reserves pixels inside the domain edges. Only the two sides that
-        // point along this axis mean anything, so we skip the other two rather than
-        // let people set a value that silently does nothing.
+        // Only the two sides along this axis have an effect. Do not coerce the other two,
+        // so that a value with no effect never gets into fullLayout.
         if(letter === 'x') {
             coerce('domainpad.left');
             coerce('domainpad.right');

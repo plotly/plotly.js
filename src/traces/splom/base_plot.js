@@ -136,10 +136,10 @@ function makeGridData(gd) {
         var yLength = ya._length;
 
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
-        // we need to compute bottom-to-top offsets and slopes.
-        // `domainpad` is added on rather than folded in by reading _offset, so that
-        // an unpadded axis lands on exactly the pixel it always did:
-        var yOffset = gs.b + ya.domain[0] * gs.h + (ya._padEnd || 0);
+        // we need to compute bottom-to-top offsets and slopes:
+        // add the bottom `domainpad` to the domain math, because a read of _offset
+        // would move an axis with no padding by a fraction of a pixel
+        const yOffset = gs.b + ya.domain[0] * gs.h + (ya._padEnd || 0);
         var ym = -ya._m;
         var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
         var x, y;

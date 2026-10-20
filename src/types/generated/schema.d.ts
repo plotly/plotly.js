@@ -12199,6 +12199,33 @@ export interface LayoutAxis {
      * @default [0,1]
      */
     domain?: [number, number];
+    /** Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. */
+    domainpad?: {
+        /**
+         * Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        bottom?: number;
+        /**
+         * Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        left?: number;
+        /**
+         * Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        right?: number;
+        /**
+         * Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        top?: number;
+    };
     /**
      * Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*
      * Setting this also sets: tickmode = "linear"
