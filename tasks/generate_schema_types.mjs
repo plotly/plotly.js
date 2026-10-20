@@ -61,6 +61,9 @@ const VALUES_TO_COMMON_TYPE = new Map();
 /** Attribute name patterns that should use a specific common type. */
 const ATTR_NAME_OVERRIDES = new Map([['marker.symbol', 'MarkerSymbol']]);
 
+/** Value types whose `arrayOk` form also accepts a `TypedArray` */
+const NUMERIC_ARRAY_OK_VAL_TYPES = new Set(['number', 'integer', 'angle', 'color']);
+
 /**
  * Shared interfaces wrapped inside `export namespace _internal { ... }`.
  *
@@ -482,7 +485,9 @@ function valTypeToTS(attr, attrPath) {
     if (attr.arrayOk) {
         // Wrap in parens if base contains '|' to avoid ambiguity
         const needsParens = base.includes('|');
-        return needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+        const arrayType = needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+        // A typed array holds only numbers, so allow one only for value types that accept numeric values
+        return NUMERIC_ARRAY_OK_VAL_TYPES.has(valType) ? `${arrayType} | TypedArray` : arrayType;
     }
 
     return base;
