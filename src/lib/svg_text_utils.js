@@ -38,6 +38,30 @@ const isPureTex = (str) => {
 exports.isPureTex = isPureTex;
 
 /**
+ * Size of the typeset glyphs in their own coordinate system when an ancestor
+ * is rotated (e.g. a hover label in hovermode 'y'), where getBoundingClientRect
+ * would report the larger screen-space box of the rotated shape.
+ *
+ * @param {d3 selection} newSvg: the typeset <svg>
+ * @param {d3 selection} g: the <g> inside newSvg that holds the glyphs
+ * @return {?{width: number, height: number}} null if no ancestor is rotated
+ */
+function getUnrotatedSize(newSvg, g) {
+    var svgNode = newSvg.node();
+    var ctm = svgNode.getScreenCTM();
+    if(!ctm || (Math.abs(ctm.b) < 1e-6 && Math.abs(ctm.c) < 1e-6)) return null;
+
+    var bbox = g.node().getBBox();
+    var viewBox = svgNode.viewBox.baseVal;
+    // the glyphs are letterboxed, so they scale by the smaller of the two ratios
+    var scale = Math.min(
+        svgNode.width.baseVal.value / viewBox.width,
+        svgNode.height.baseVal.value / viewBox.height
+    );
+    return {width: bbox.width * scale, height: bbox.height * scale};
+}
+
+/**
  * Positions a MathJax-typeset group against its source <text> node's x/y
  * and text-anchor.
  *
@@ -53,7 +77,7 @@ exports.isPureTex = isPureTex;
  */
 function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, width0, height0) {
     var g = newSvg.select('g');
-    var bb = g.node().getBoundingClientRect();
+    var bb = getUnrotatedSize(newSvg, g) || g.node().getBoundingClientRect();
     var w = bb.width;
     var h = bb.height;
     var w0 = width0 === undefined ? w : width0;
