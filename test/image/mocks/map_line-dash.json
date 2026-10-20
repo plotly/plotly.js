@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "lat": [30, 20, 10, 20],
+      "line": { "width": 4 },
+      "lon": [10, 20, 30, 40],
+      "mode": "lines",
+      "name": "solid",
+      "type": "scattermap"
+    },
+    {
+      "lat": [20, 10, 0, 10],
+      "line": { "dash": "dash", "width": 4 },
+      "lon": [10, 20, 30, 40],
+      "mode": "lines",
+      "name": "dash",
+      "type": "scattermap"
+    },
+    {
+      "lat": [10, 0, -10, 0],
+      "line": { "dash": "dot", "width": 4 },
+      "lon": [10, 20, 30, 40],
+      "mode": "lines",
+      "name": "dot",
+      "type": "scattermap"
+    }
+  ],
+  "layout": {
+    "autosize": true,
+    "height": 450,
+    "map": {
+      "center": { "lat": 10, "lon": 25 },
+      "style": "streets",
+      "zoom": 1.5
+    },
+    "width": 700
+  }
+}

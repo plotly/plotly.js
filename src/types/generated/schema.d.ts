@@ -8774,7 +8774,21 @@ export interface ScattermapData {
      * Minimum: 0
      */
     legendwidth?: number;
-    line?: _internal.ErrorY;
+    line?: {
+        /** Sets the line color. */
+        color?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'solid'
+         */
+        dash?: Dash;
+        /**
+         * Sets the line width (in px).
+         * @default 2
+         * Minimum: 0
+         */
+        width?: number;
+    };
     /** Sets the longitude coordinates (in degrees East). */
     lon?: Datum[] | Datum[][] | TypedArray;
     marker?: {
