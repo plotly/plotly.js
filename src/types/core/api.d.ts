@@ -5,7 +5,7 @@
 import type { AnimationOpts, Data, Frame, Layout } from '../generated/schema';
 import type { Config, DownloadImgopts, ToImgopts } from './config';
 import type { PlotlyHTMLElement } from './events';
-import type { Icon, Template } from './layout';
+import type { DataUpdate, Icon, LayoutUpdate, Template } from './layout';
 
 // ---------------------------------------------------------------------------
 // Roots and request shapes
@@ -208,19 +208,57 @@ export function newPlot(
     figure: PlotlyDataLayoutConfig
 ): Promise<PlotlyHTMLElement>;
 
-/** Update layout properties on an existing plot. */
-export function relayout(root: Root, layout: Partial<Layout>): Promise<PlotlyHTMLElement>;
+/**
+ * Update layout properties on an existing plot with an update object.
+ *
+ * @param layout - Update object whose keys are layout properties or attribute paths
+ */
+export function relayout(root: Root, layout: LayoutUpdate): Promise<PlotlyHTMLElement>;
+/**
+ * Update one layout property on an existing plot with an attribute path.
+ *
+ * @param astr - Attribute path, for example `'xaxis.autorange'`
+ * @param val - New value of the attribute
+ */
+export function relayout(root: Root, astr: string, val: any): Promise<PlotlyHTMLElement>;
+/**
+ * Update layout properties on an existing plot with either call form.
+ *
+ * This signature lets a wrapper read the parameter types with `Parameters<typeof relayout>`.
+ * It does not check that the value matches the form.
+ */
+export function relayout(root: Root, astr: string | LayoutUpdate, val?: any): Promise<PlotlyHTMLElement>;
 /** Re-render the plot at `root` from its current data/layout. */
 export function redraw(root: Root): Promise<PlotlyHTMLElement>;
 /** Remove a plot and its event listeners from the DOM. */
 export function purge(root: Root): void;
 /**
- * Update trace properties (style) on the existing plot.
+ * Update trace properties (style) on the existing plot with an update object.
  *
- * @param aobj - Update object whose keys are attribute paths
+ * @param aobj - Update object whose keys are trace properties or attribute paths
  * @param traces - Trace index/indices to update (defaults to all)
  */
-export function restyle(root: Root, aobj: Data, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+export function restyle(root: Root, aobj: DataUpdate, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+/**
+ * Update one trace property on the existing plot with an attribute path.
+ *
+ * @param astr - Attribute path, for example `'marker.color'`
+ * @param val - New value of the attribute, or an array with one value for each trace
+ * @param traces - Trace index/indices to update (defaults to all)
+ */
+export function restyle(root: Root, astr: string, val: any, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+/**
+ * Update trace properties (style) on the existing plot with either call form.
+ *
+ * This signature lets a wrapper read the parameter types with `Parameters<typeof restyle>`.
+ * It does not check that the arguments match the form.
+ */
+export function restyle(
+    root: Root,
+    astr: string | DataUpdate,
+    val?: any,
+    traces?: number[] | number
+): Promise<PlotlyHTMLElement>;
 
 /**
  * Update both trace and layout properties in a single call.
@@ -231,8 +269,8 @@ export function restyle(root: Root, aobj: Data, traces?: number[] | number): Pro
  */
 export function update(
     root: Root,
-    traceUpdate: Data,
-    layoutUpdate: Partial<Layout>,
+    traceUpdate: DataUpdate,
+    layoutUpdate: LayoutUpdate,
     traces?: number[] | number
 ): Promise<PlotlyHTMLElement>;
 
@@ -284,7 +322,7 @@ export function prependTraces(
 /** Render the plot to a data URI or SVG string. */
 export function toImage(root: RootOrData, opts?: ToImgopts): Promise<string>;
 /** Render the plot and trigger a browser download. */
-export function downloadImage(root: RootOrData, opts: DownloadImgopts): Promise<string>;
+export function downloadImage(root: RootOrData, opts?: DownloadImgopts): Promise<string>;
 
 /**
  * Reconcile the plot's current state with the supplied figure. Comparable

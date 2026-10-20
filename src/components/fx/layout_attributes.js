@@ -188,7 +188,7 @@ module.exports = {
             editType: 'none',
             description: [
                 'Sets the horizontal alignment of the text content within hover label box.',
-                'Has an effect only if the hover label text spans more two or more lines'
+                'Has an effect only if the hover label text spans two or more lines'
             ].join(' ')
         },
         namelength: {

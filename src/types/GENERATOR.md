@@ -244,7 +244,7 @@ Summary:
 | `info_array` | tuple of element `valType`s when fixed-length; `T[]` when `freeLength`; `any[]` fallback |
 | `any` | `any` |
 
-`arrayOk: true` wraps the result in `T | T[]`.
+`arrayOk: true` wraps the result in `T | T[]`. For the `number`, `integer`, `angle`, and `color` value types, the union also includes `TypedArray`.
 
 Attribute name overrides via `ATTR_NAME_OVERRIDES` map specific attribute
 paths to a type alias regardless of valType (e.g. `marker.symbol` →
