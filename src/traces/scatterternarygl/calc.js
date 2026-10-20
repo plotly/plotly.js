@@ -4,7 +4,7 @@ const isNumeric = require('fast-isnumeric');
 const cluster = require('@plotly/point-cluster');
 
 const calcColorscale = require('../scatter/colorscale_calc');
-const TOO_MANY_POINTS  = require("../scattergl/constants");
+const TOO_MANY_POINTS  = require("../scattergl/constants").TOO_MANY_POINTS;
 
 module.exports = function calc(gd, trace) {
     const displaySum = gd._fullLayout[trace.subplot].sum;
