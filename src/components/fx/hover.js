@@ -2414,6 +2414,50 @@ function cleanPoint(d, hovermode) {
     return d;
 }
 
+/**
+ * Get the pixel span of a spike with spikemode 'across'.
+ *
+ * The span covers the plot areas of all counter axes of `ax`. Each plot area is the
+ * domain of the counter axis minus its `domainpad`. Thus the spike stops at the edge
+ * of the plot area, and the padding stays clear for content such as a subplot title.
+ *
+ * @param gd - the graph div
+ * @param ax - the full axis that shows the spike
+ * @param gs - the plot size, `fullLayout._size`
+ * @returns [start, end] in pixels: left to right for a y axis spike, top to bottom for an x axis spike
+ */
+function getAcrossSpikeSpan(gd, ax, gs) {
+    const isY = ax._id.charAt(0) === 'y';
+    let start = Infinity;
+    let end = -Infinity;
+
+    for (const counterId of ax._counterAxes || []) {
+        const counterAx = Axes.getFromId(gd, counterId);
+        if (!counterAx) continue;
+
+        const padStart = counterAx._padStart || 0;
+        const padEnd = counterAx._padEnd || 0;
+
+        if (isY) {
+            start = Math.min(start, gs.l + counterAx.domain[0] * gs.w + padStart);
+            end = Math.max(end, gs.l + counterAx.domain[1] * gs.w - padEnd);
+        } else {
+            // SVG measures y from the top, so the top edge of the domain comes first
+            start = Math.min(start, gs.t + (1 - counterAx.domain[1]) * gs.h + padStart);
+            end = Math.max(end, gs.t + (1 - counterAx.domain[0]) * gs.h - padEnd);
+        }
+    }
+
+    // a free axis sits outside the plot areas, and the spike must also reach that axis
+    if (ax.anchor === 'free') {
+        const position = isY ? gs.l + ax.position * gs.w : gs.t + (1 - ax.position) * gs.h;
+        start = Math.min(start, position);
+        end = Math.max(end, position);
+    }
+
+    return [start, end];
+}
+
 function createSpikelines(gd, closestPoints, opts) {
     var container = opts.container;
     var fullLayout = opts.fullLayout;
@@ -2463,14 +2507,9 @@ function createSpikelines(gd, closestPoints, opts) {
                 xEndSpike = hLinePointX;
             }
             if (yMode.indexOf('across') !== -1) {
-                var xAcross0 = ya._counterDomainMin;
-                var xAcross1 = ya._counterDomainMax;
-                if (ya.anchor === 'free') {
-                    xAcross0 = Math.min(xAcross0, ya.position);
-                    xAcross1 = Math.max(xAcross1, ya.position);
-                }
-                xBase = gs.l + xAcross0 * gs.w;
-                xEndSpike = gs.l + xAcross1 * gs.w;
+                const xSpan = getAcrossSpikeSpan(gd, ya, gs);
+                xBase = xSpan[0];
+                xEndSpike = xSpan[1];
             }
 
             // Foreground horizontal line (to y-axis)
@@ -2548,14 +2587,9 @@ function createSpikelines(gd, closestPoints, opts) {
                 yEndSpike = vLinePointY;
             }
             if (xMode.indexOf('across') !== -1) {
-                var yAcross0 = xa._counterDomainMin;
-                var yAcross1 = xa._counterDomainMax;
-                if (xa.anchor === 'free') {
-                    yAcross0 = Math.min(yAcross0, xa.position);
-                    yAcross1 = Math.max(yAcross1, xa.position);
-                }
-                yBase = gs.t + (1 - yAcross1) * gs.h;
-                yEndSpike = gs.t + (1 - yAcross0) * gs.h;
+                const ySpan = getAcrossSpikeSpan(gd, xa, gs);
+                yBase = ySpan[0];
+                yEndSpike = ySpan[1];
             }
 
             // Foreground vertical line (to x-axis)

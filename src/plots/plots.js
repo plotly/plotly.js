@@ -840,7 +840,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         // find "full" domain span of counter axes,
         // this loop can be costly, so only compute it when required
         if(ax._counterAxes.length && (
-            (ax.spikemode && ax.spikemode.indexOf('across') !== -1) ||
             (ax.automargin && ax.mirror && ax.anchor !== 'free') ||
             Registry.getComponentMethod('rangeslider', 'isVisible')(ax)
         )) {

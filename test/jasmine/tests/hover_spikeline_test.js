@@ -351,6 +351,61 @@ describe('spikeline hover', function() {
         .then(done, done.fail);
     });
 
+    it('stops "across" spikes at the padded plot area when the counter axes use domainpad', (done) => {
+        // Two stacked subplots share one x axis. With this padding, the plot areas are:
+        //   x:              50 + 20 = 70  to  350 - 30 = 320
+        //   yaxis2 (top):   50 + 40 = 90  to  250
+        //   yaxis (bottom):            250  to  450
+        // Thus the vertical spike must start at 90, not at the top of the domain (50).
+        // The horizontal spike must run from 70 to 320, not from 50 to 350.
+        const layout = {
+            width: 400,
+            height: 500,
+            margin: {l: 50, r: 50, t: 50, b: 50},
+            // a legend would push out the right margin and change the numbers above
+            showlegend: false,
+            hovermode: 'closest',
+            xaxis: {
+                showspikes: true,
+                spikemode: 'across',
+                spikesnap: 'data',
+                domainpad: {left: 20, right: 30}
+            },
+            yaxis: {
+                domain: [0, 0.5],
+                showspikes: true,
+                spikemode: 'across',
+                spikesnap: 'data'
+            },
+            yaxis2: {domain: [0.5, 1], domainpad: {top: 40}}
+        };
+
+        const spikeExtents = () => {
+            const extents = {};
+            d3SelectAll('line.spikeline').each(function() {
+                const line = d3Select(this);
+                const [x1, x2, y1, y2] = ['x1', 'x2', 'y1', 'y2'].map((attr) => +line.attr(attr));
+
+                if(x1 === x2) extents.vertical = [Math.min(y1, y2), Math.max(y1, y2)];
+                else extents.horizontal = [Math.min(x1, x2), Math.max(x1, x2)];
+            });
+            return extents;
+        };
+
+        Plotly.newPlot(gd, [
+            {x: [1, 2, 3], y: [1, 2, 3]},
+            {x: [1, 2, 3], y: [3, 2, 1], yaxis: 'y2'}
+        ], layout)
+        .then(() => {
+            _hover({xval: 2, yval: 2});
+
+            const extents = spikeExtents();
+            expect(extents.vertical).toBeCloseToArray([90, 450], 1);
+            expect(extents.horizontal).toBeCloseToArray([70, 320], 1);
+        })
+        .then(done, done.fail);
+    });
+
     it('increase the range of search for points to draw the spikelines on spikedistance change', function(done) {
         var _mock = makeMock('toaxis', 'closest');
         _mock.layout.spikedistance = 20;
