@@ -65,6 +65,7 @@
     "test-mock": "node tasks/test_mock.mjs",
     "test-image": "node test/image/compare_pixels_test.mjs",
     "test-export": "node test/image/export_test.js",
+    "test-types": "tsc --noEmit -p test/types",
     "test-syntax": "tsx tasks/test_syntax.js && npm run find-strings -- --no-output",
     "test-bundle": "node tasks/test_bundle.js",
     "test-plain-obj": "node tasks/test_plain_obj.mjs",
