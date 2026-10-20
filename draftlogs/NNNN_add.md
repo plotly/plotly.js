@@ -1,1 +1,0 @@
- - Add `line.dash` to `scattermap` traces to draw dashed and dotted lines on maps [[#NNNN](https://github.com/plotly/plotly.js/pull/NNNN)]
