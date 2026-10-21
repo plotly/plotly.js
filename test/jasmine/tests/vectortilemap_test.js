@@ -374,8 +374,9 @@ describe('Test vectortilemap interactions:', function () {
                 expect(hoverPts[0].id).toBe(1);
                 expect(hoverPts[0].z).toBe(120);
                 expect(hoverPts[0].properties.status).toBe('Producing');
-                expect(hoverPts[0].lon).toBeCloseTo(-80, 3);
-                expect(hoverPts[0].lat).toBeCloseTo(35, 1);
+                // tile coordinates are quantized: one unit of a zoom 0 tile is about 0.09 degrees
+                expect(hoverPts[0].lon).toBeCloseTo(-80, 0);
+                expect(hoverPts[0].lat).toBeCloseTo(35, 0);
 
                 hoverPts = undefined;
                 mouseEvent('mousemove', ...lonlatToPage(WELLS.W5));
