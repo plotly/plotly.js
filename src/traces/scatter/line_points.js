@@ -362,6 +362,7 @@ module.exports = function linePoints(d, opts) {
         clusterStartPt = getPt(i);
         if(!clusterStartPt) continue;
 
+        const segmentStart = i;
         pti = 0;
         lastFarPt = null;
         addPt(clusterStartPt);
@@ -457,7 +458,13 @@ module.exports = function linePoints(d, opts) {
         // to get fills right - repeat what we did at the start
         if(lastFarPt) updateEdge([lastXEdge || lastFarPt[0], lastYEdge || lastFarPt[1]]);
 
-        segments.push(pts.slice(0, pti));
+        const segment = pts.slice(0, pti);
+        if(opts.segmentInfo) {
+            segment.segmentIndex = segments.length;
+            segment.startIndex = segmentStart;
+            segment.endIndex = i;
+        }
+        segments.push(segment);
     }
 
 
@@ -484,6 +491,12 @@ module.exports = function linePoints(d, opts) {
                     newSegments[n] = [
                         start, [xy[0], xy[1]]
                     ];
+                    if(opts.segmentInfo) {
+                        // Marker backoff must not create gaps in the fill.
+                        newSegments[n].segmentIndex = j;
+                        newSegments[n].startIndex = segments[j].startIndex;
+                        newSegments[n].endIndex = segments[j].endIndex;
+                    }
                 }
             }
         }

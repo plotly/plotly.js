@@ -1,1 +1,1 @@
- - Keep to-zero scatter fills separate across missing data [[#PR_NUMBER](https://github.com/plotly/plotly.js/pull/PR_NUMBER)]
+ - Keep SVG to-zero scatter fills separate across missing data, including animations. Preserve continuous fills with marker backoff and anchor hover labels to each segment [[#PR_NUMBER](https://github.com/plotly/plotly.js/pull/PR_NUMBER)]

@@ -186,6 +186,9 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var pathfn, revpathbase, revpathfn;
     // variables used before and after the data join
     const fillpaths = [];
+    const fillends = [];
+    const filltopology = [];
+    const ownFillsegments = [];
 
     // thisPolygons always contains only the polygons of this trace only
     // whereas trace._polygons may be extended to include those of the previous
@@ -243,7 +246,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             shape: line.shape,
             backoff: line.backoff,
             simplify: line.simplify,
-            fill: trace.fill
+            fill: trace.fill,
+            segmentInfo: ownFillEl3 && ownFillDir
         });
 
         // since we already have the pixel segments here, use them to make
@@ -254,9 +258,21 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // need to redraw when you change hoveron...
         fillsegments = new Array(segments.length);
         var fillsegmentCount = 0;
+        let previousSegmentIndex;
         for(i = 0; i < segments.length; i++) {
             var curpoints;
             var pts = segments[i];
+            if(ownFillEl3 && ownFillDir) {
+                const segmentIndex = pts.segmentIndex;
+                if(segmentIndex !== previousSegmentIndex) {
+                    ownFillsegments.push(pts.slice());
+                } else {
+                    const ownFillpoints = ownFillsegments[ownFillsegments.length - 1];
+                    ownFillpoints.push.apply(ownFillpoints, pts);
+                }
+                previousSegmentIndex = segmentIndex;
+                pts.segmentIndex = ownFillsegments.length - 1;
+            }
             if(!curpoints || !ownFillDir) {
                 curpoints = pts.slice();
                 fillsegments[fillsegmentCount] = curpoints;
@@ -273,13 +289,21 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         fillsegments = trace._fillsegments;
 
         makeUpdate = function(isEnter) {
-            return function(pts, segmentIndex) {
+            return function(pts) {
                 thispath = pathfn(pts);
                 if(ownFillEl3 && ownFillDir) {
-                    const start = pts[0].slice();
+                    const segmentIndex = pts.segmentIndex;
                     const end = pts[pts.length - 1].slice();
-                    start[fillAxisIndex] = end[fillAxisIndex] = fillAxisZero;
-                    fillpaths[segmentIndex] = 'M' + end + 'L' + start + 'L' + thispath.slice(1) + 'Z';
+                    end[fillAxisIndex] = fillAxisZero;
+                    if(fillpaths[segmentIndex]) {
+                        fillpaths[segmentIndex] += `L${thispath.slice(1)}`;
+                    } else {
+                        const start = pts[0].slice();
+                        start[fillAxisIndex] = fillAxisZero;
+                        fillpaths[segmentIndex] = `M${start}L${thispath.slice(1)}`;
+                        filltopology[segmentIndex] = `${pts.startIndex}:${pts.endIndex}`;
+                    }
+                    fillends[segmentIndex] = `L${end}Z`;
                 }
                 thisrevpath = revpathfn(pts); // side-effect: reverses input
                 // calculate SVG path over all segments for fills
@@ -351,15 +375,16 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         if(!prevFillsegments || prevFillsegments.length === 0) {
             // if there are no fill segments of a previous trace, stretch the
             // polygon to the relevant axis
-            polygons = new Array(fillsegments.length);
-            for(i = 0; i < fillsegments.length; i++) {
-                var pt0 = fillsegments[i][0].slice();
-                var pt1 = fillsegments[i][fillsegments[i].length - 1].slice();
+            const zeroFillsegments = ownFillEl3 && ownFillDir ? ownFillsegments : fillsegments;
+            polygons = new Array(zeroFillsegments.length);
+            for(i = 0; i < zeroFillsegments.length; i++) {
+                const segment = zeroFillsegments[i];
+                const pt0 = segment[0].slice();
+                const pt1 = segment[segment.length - 1].slice();
 
                 pt0[fillAxisIndex] = pt1[fillAxisIndex] = fillAxisZero;
 
-                var zeropoints = [pt1, pt0];
-                var polypoints = zeropoints.concat(fillsegments[i]);
+                const polypoints = [pt1, pt0].concat(segment);
                 polygons[i] = polygonTester(polypoints);
             }
         } else {
@@ -387,9 +412,27 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         if(ownFillEl3) {
             ownFillEl3.datum(cdscatter);
             if(ownFillDir) {
-                // Start each segment on the axis so gaps stay empty.
-                transition(ownFillEl3).attr('d', fillpaths.join(''))
-                    .call(Drawing.singleFillStyle, gd);
+                for(i = 0; i < fillpaths.length; i++) {
+                    fillpaths[i] += fillends[i];
+                }
+                const fillpath = fillpaths.join('');
+                const topology = filltopology.join('|');
+                const fillNode = ownFillEl3.node();
+                const fillSelection = transition(ownFillEl3);
+                if(hasTransition) {
+                    fillSelection.attrTween('d', () => {
+                        const previousPath = fillNode.getAttribute('d') || '';
+                        const sameTopology = fillNode._fillTopology === topology &&
+                            previousPath.replace(/[^MLHVCSQTAZ]/gi, '') === fillpath.replace(/[^MLHVCSQTAZ]/gi, '');
+                        fillNode._fillTopology = topology;
+                        // D3 pairs numbers across subpaths when segment boundaries or path commands change.
+                        return sameTopology ? d3.interpolateString(previousPath, fillpath) : () => fillpath;
+                    });
+                } else {
+                    fillNode._fillTopology = topology;
+                    fillSelection.attr('d', fillpath);
+                }
+                fillSelection.call(Drawing.singleFillStyle, gd);
 
                 thisPolygons = makePolygonsToPrevious(null);
             } else {
@@ -442,7 +485,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
         trace._prevRevpath = revpath;
     } else {
-        if(ownFillEl3) clearFill(ownFillEl3);
+        if(ownFillEl3 && ownFillDir) {
+            ownFillEl3.node()._fillTopology = null;
+            ownFillEl3.interrupt().attr('d', 'M0,0Z');
+        } else if(ownFillEl3) clearFill(ownFillEl3);
         else if(tonext) clearFill(tonext);
         trace._prevRevpath = null;
     }
