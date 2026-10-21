@@ -83144,6 +83144,17 @@
           "editType": "calc",
           "valType": "data_array"
         },
+        "layertype": {
+          "description": "Sets how the trace draws the features of `sourcelayer` (map.layer.type). Use *fill* for polygons, *line* for lines and polygon outlines, and *circle* for points.",
+          "dflt": "fill",
+          "editType": "calc",
+          "valType": "enumerated",
+          "values": [
+            "fill",
+            "line",
+            "circle"
+          ]
+        },
         "legend": {
           "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
           "dflt": "legend",
@@ -83267,12 +83278,33 @@
           "min": 0,
           "valType": "number"
         },
+        "line": {
+          "color": {
+            "description": "Sets the line color, for a trace without `z` or `zkey`. Has an effect only when `layertype` is *line*.",
+            "editType": "plot",
+            "valType": "color"
+          },
+          "editType": "plot",
+          "role": "object",
+          "width": {
+            "description": "Sets the line width, in pixels. Has an effect only when `layertype` is *line*.",
+            "dflt": 1.5,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          }
+        },
         "locations": {
           "description": "Sets which tile features to color, using the value of the tile feature property set in `featureidkey`.",
           "editType": "calc",
           "valType": "data_array"
         },
         "marker": {
+          "color": {
+            "description": "Sets the fill or circle color, for a trace without `z` or `zkey`. Defaults to the trace color.",
+            "editType": "plot",
+            "valType": "color"
+          },
           "editType": "plot",
           "line": {
             "color": {
@@ -83295,14 +83327,22 @@
           },
           "opacity": {
             "arrayOk": false,
-            "description": "Sets the opacity of the locations.",
+            "description": "Sets the opacity of the fills, circles or lines.",
             "dflt": 1,
             "editType": "plot",
             "max": 1,
             "min": 0,
             "valType": "number"
           },
-          "role": "object"
+          "role": "object",
+          "size": {
+            "arrayOk": false,
+            "description": "Sets the circle diameter, in pixels. Has an effect only when `layertype` is *circle*.",
+            "dflt": 4,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          }
         },
         "maxzoom": {
           "description": "Sets the maximum zoom level (map.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
@@ -83337,9 +83377,29 @@
           "editType": "plot",
           "valType": "boolean"
         },
+        "selected": {
+          "editType": "plot",
+          "marker": {
+            "editType": "plot",
+            "opacity": {
+              "description": "Sets the marker opacity of selected points.",
+              "editType": "plot",
+              "max": 1,
+              "min": 0,
+              "valType": "number"
+            },
+            "role": "object"
+          },
+          "role": "object"
+        },
+        "selectedpoints": {
+          "description": "Array containing integer indices of selected points. Has an effect only for traces that support selections. Note that an empty array means an empty selection where the `unselected` are turned on for all points, whereas, any other non-array values means no selection all where the `selected` and `unselected` styles have no effect.",
+          "editType": "calc",
+          "valType": "any"
+        },
         "showlegend": {
           "description": "Determines whether or not an item corresponding to this trace is shown in the legend.",
-          "dflt": false,
+          "dflt": true,
           "editType": "style",
           "valType": "boolean"
         },
@@ -83389,6 +83449,21 @@
           "editType": "none",
           "valType": "any"
         },
+        "unselected": {
+          "editType": "plot",
+          "marker": {
+            "editType": "plot",
+            "opacity": {
+              "description": "Sets the marker opacity of unselected points, applied only when a selection exists.",
+              "editType": "plot",
+              "max": 1,
+              "min": 0,
+              "valType": "number"
+            },
+            "role": "object"
+          },
+          "role": "object"
+        },
         "visible": {
           "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
           "dflt": true,
@@ -83411,6 +83486,11 @@
           "editType": "calc",
           "impliedEdits": {},
           "valType": "boolean"
+        },
+        "zkey": {
+          "description": "Sets the tile feature property that holds the color values, for a trace without `locations` and `z`. The browser cannot read the range of a tile property, so `zmin` and `zmax` must also be set. Features with no numeric value in this property are hidden.",
+          "editType": "calc",
+          "valType": "string"
         },
         "zmax": {
           "description": "Sets the upper bound of the color domain. Value should have the same units as in `z` and if set, `zmin` must be set as well.",
@@ -83445,7 +83525,7 @@
         "showLegend"
       ],
       "meta": {
-        "description": "Draws the polygons of a Mapbox Vector Tile source, set in `source` and `sourcelayer`. The data that describes the location-to-color mapping is set in `locations` and `z`. The trace sends `z` to the map as feature state, so the tiles load once.",
+        "description": "Draws the polygons, lines or points of a Mapbox Vector Tile source, set in `source` and `sourcelayer`. The colors come from `locations` and `z`, which the trace sends to the map as feature state, from a numeric tile property set in `zkey`, or from one color.",
         "hr_name": "vector_tile_map"
       },
       "type": "vectortilemap"

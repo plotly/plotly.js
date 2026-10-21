@@ -9,13 +9,23 @@ import arraysToCalcdata from '../scatter/arrays_to_calcdata';
  * The first calcdata item holds `t.locToIndex`, a Map from the string form of
  * each valid location to its index in `locations`. Hover uses the Map to find
  * the data point of a rendered tile feature.
+ *
+ * A trace without `locations` returns one placeholder item, with an empty Map.
  */
 export default function calc(gd: any, trace: any) {
     const len = trace._length;
     const locations = trace.locations;
     const z = trace.z;
-    const calcTrace: any[] = new Array(len);
     const locToIndex = new Map<string, number>();
+
+    if (!len) {
+        if (trace._hasColorscale) {
+            colorscaleCalc(gd, trace, { vals: [trace.zmin, trace.zmax], containerStr: '', cLetter: 'z' });
+        }
+        return [{ loc: null, z: BADNUM, index: 0, t: { locToIndex } }];
+    }
+
+    const calcTrace: any[] = new Array(len);
 
     for (let i = 0; i < len; i++) {
         const loc = locations[i];
@@ -30,7 +40,7 @@ export default function calc(gd: any, trace: any) {
         }
     }
 
-    if (len) calcTrace[0].t = { locToIndex };
+    calcTrace[0].t = { locToIndex };
 
     arraysToCalcdata(calcTrace, trace);
     colorscaleCalc(gd, trace, {

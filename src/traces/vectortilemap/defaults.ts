@@ -11,27 +11,43 @@ const isValidSource = (source: unknown): boolean => {
     return true;
 };
 
+/**
+ * Coerce the trace attributes.
+ *
+ * A trace colors its features in one of three ways:
+ * - `locations` and `z`, sent to the map as feature state
+ * - `zkey`, a numeric tile property, with `zmin` and `zmax` set
+ * - one color, `marker.color` or `line.color`, which defaults to the trace color
+ */
 export default function supplyDefaults(traceIn: any, traceOut: any, defaultColor: string, layout: any) {
     const coerce = (attr: string, dflt?: unknown) => Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
 
     const source = coerce('source');
     const sourcelayer = coerce('sourcelayer');
-    const locations = coerce('locations');
-    const z = coerce('z');
-
-    if (
-        !isValidSource(source) ||
-        !sourcelayer ||
-        !Lib.isArrayOrTypedArray(locations) ||
-        !locations.length ||
-        !Lib.isArrayOrTypedArray(z) ||
-        !z.length
-    ) {
+    if (!isValidSource(source) || !sourcelayer) {
         traceOut.visible = false;
         return;
     }
 
-    traceOut._length = Math.min(locations.length, z.length);
+    const layertype = coerce('layertype');
+    const locations = coerce('locations');
+    const z = coerce('z');
+    const hasZ = Lib.isArrayOrTypedArray(locations) && locations.length && Lib.isArrayOrTypedArray(z) && z.length;
+
+    if (hasZ) {
+        traceOut._length = Math.min(locations.length, z.length);
+    } else {
+        delete traceOut.locations;
+        delete traceOut.z;
+        traceOut._length = null;
+
+        const zkey = coerce('zkey');
+        if (zkey && (traceIn.zmin === undefined || traceIn.zmax === undefined)) {
+            Lib.warn(`vectortilemap trace with zkey *${zkey}* needs zmin and zmax, and draws nothing without them.`);
+            traceOut.visible = false;
+            return;
+        }
+    }
 
     coerce('sourceattribution');
     coerce('featureidkey');
@@ -44,9 +60,21 @@ export default function supplyDefaults(traceIn: any, traceOut: any, defaultColor
     coerce('hovertemplate');
     coerce('hovertemplatefallback');
 
-    const mlw = coerce('marker.line.width');
-    if (mlw) coerce('marker.line.color');
     coerce('marker.opacity');
+    if (layertype === 'line') {
+        coerce('line.width');
+    } else {
+        if (layertype === 'circle') coerce('marker.size');
+        const mlw = coerce('marker.line.width', layertype === 'circle' ? 0 : undefined);
+        if (mlw) coerce('marker.line.color');
+    }
 
-    colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'z' });
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
+
+    traceOut._hasColorscale = Boolean(hasZ || traceOut.zkey);
+    if (traceOut._hasColorscale) {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, { prefix: '', cLetter: 'z' });
+    } else {
+        coerce(layertype === 'line' ? 'line.color' : 'marker.color', defaultColor);
+    }
 }

@@ -581,6 +581,7 @@ module.exports = function style(s, gd, legend) {
         var trace = d[0].trace;
 
         var useGradient;
+        var fixedColor;
         var ptsData = [];
         if (trace.visible) {
             switch (trace.type) {
@@ -596,6 +597,15 @@ module.exports = function style(s, gd, legend) {
                     ptsData = [['M-6,-6V6H6V-6Z']];
                     useGradient = true;
                     break;
+                case 'vectortilemap': {
+                    const layertype = trace.layertype;
+                    if (layertype === 'line') ptsData = [['M-12,-1.5H12V1.5H-12Z']];
+                    else if (layertype === 'circle') ptsData = [['M-5,0 a5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0']];
+                    else ptsData = [['M-6,-6V6H6V-6Z']];
+                    useGradient = trace._hasColorscale;
+                    if (!useGradient) fixedColor = layertype === 'line' ? trace.line.color : trace.marker.color;
+                    break;
+                }
                 case 'densitymap':
                     ptsData = [['M-6,0 a6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0']];
                     useGradient = 'radial';
@@ -667,7 +677,9 @@ module.exports = function style(s, gd, legend) {
             };
 
             var fillColor;
-            if (!colorscale) {
+            if (fixedColor) {
+                fillColor = fixedColor;
+            } else if (!colorscale) {
                 var color = trace.vertexcolor || trace.facecolor || trace.color;
                 fillColor = Lib.isArrayOrTypedArray(color) ? color[i] || color[0] : color;
             } else {

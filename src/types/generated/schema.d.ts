@@ -11002,6 +11002,11 @@ export interface VectortilemapData {
     /** Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type. */
     ids?: Datum[] | Datum[][] | TypedArray;
     /**
+     * Sets how the trace draws the features of `sourcelayer` (map.layer.type). Use *fill* for polygons, *line* for lines and polygon outlines, and *circle* for points.
+     * @default 'fill'
+     */
+    layertype?: 'fill' | 'line' | 'circle';
+    /**
      * Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.
      * @default 'legend'
      */
@@ -11019,16 +11024,25 @@ export interface VectortilemapData {
      * Minimum: 0
      */
     legendwidth?: number;
+    line?: _internal.ErrorY;
     /** Sets which tile features to color, using the value of the tile feature property set in `featureidkey`. */
     locations?: Datum[] | Datum[][] | TypedArray;
     marker?: {
+        /** Sets the fill or circle color, for a trace without `z` or `zkey`. Defaults to the trace color. */
+        color?: Color;
         line?: _internal.ErrorY;
         /**
-         * Sets the opacity of the locations.
+         * Sets the opacity of the fills, circles or lines.
          * @default 1
          * Range: [0, 1]
          */
         opacity?: number;
+        /**
+         * Sets the circle diameter, in pixels. Has an effect only when `layertype` is *circle*.
+         * @default 4
+         * Minimum: 0
+         */
+        size?: number;
     };
     /**
      * Sets the maximum zoom level (map.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.
@@ -11051,9 +11065,20 @@ export interface VectortilemapData {
      * @default false
      */
     reversescale?: boolean;
+    selected?: {
+        marker?: {
+            /**
+             * Sets the marker opacity of selected points.
+             * Range: [0, 1]
+             */
+            opacity?: number;
+        };
+    };
+    /** Array containing integer indices of selected points. Has an effect only for traces that support selections. Note that an empty array means an empty selection where the `unselected` are turned on for all points, whereas, any other non-array values means no selection all where the `selected` and `unselected` styles have no effect. */
+    selectedpoints?: any;
     /**
      * Determines whether or not an item corresponding to this trace is shown in the legend.
-     * @default false
+     * @default true
      */
     showlegend?: boolean;
     /**
@@ -11079,6 +11104,15 @@ export interface VectortilemapData {
     uid?: string;
     /** Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves. */
     uirevision?: any;
+    unselected?: {
+        marker?: {
+            /**
+             * Sets the marker opacity of unselected points, applied only when a selection exists.
+             * Range: [0, 1]
+             */
+            opacity?: number;
+        };
+    };
     /**
      * Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).
      * @default true
@@ -11091,6 +11125,8 @@ export interface VectortilemapData {
      * @default true
      */
     zauto?: boolean;
+    /** Sets the tile feature property that holds the color values, for a trace without `locations` and `z`. The browser cannot read the range of a tile property, so `zmin` and `zmax` must also be set. Features with no numeric value in this property are hidden. */
+    zkey?: string;
     /**
      * Sets the upper bound of the color domain. Value should have the same units as in `z` and if set, `zmin` must be set as well.
      * Setting this also sets: zauto = false
