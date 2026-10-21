@@ -908,6 +908,29 @@ describe('end-to-end scatter tests', function() {
         }).then(done, done.fail);
     });
 
+    ['tozeroy', 'tozerox'].forEach(fill => {
+        it(`keeps gaps empty for ${fill} fills`, done => {
+            const values = [2, 2, null, 2, 2];
+            const positions = [0, 1, 2, 3, 4];
+            const trace = {
+                x: fill === 'tozeroy' ? positions : values,
+                y: fill === 'tozeroy' ? values : positions,
+                fill
+            };
+
+            Plotly.newPlot(gd, [trace]).then(() => {
+                const path = d3Select(gd).select('.scatterlayer .js-fill').attr('d');
+                expect((path.match(/M/g) || []).length).toBe(2);
+                expect((path.match(/Z/g) || []).length).toBe(2);
+                return Plotly.restyle(gd, 'connectgaps', true);
+            }).then(() => {
+                const path = d3Select(gd).select('.scatterlayer .js-fill').attr('d');
+                expect((path.match(/M/g) || []).length).toBe(1);
+                expect((path.match(/Z/g) || []).length).toBe(1);
+            }).then(done, done.fail);
+        });
+    });
+
     it('clears fills tonext when either trace is emptied out', function(done) {
         var trace0 = {y: [1, 3, 5, 7]};
         var trace1 = {y: [1, 2, 3, 4], line: {width: 0}, mode: 'lines'};

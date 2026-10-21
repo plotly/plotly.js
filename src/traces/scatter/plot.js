@@ -185,7 +185,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     // functions for converting a point array to a path
     var pathfn, revpathbase, revpathfn;
     // variables used before and after the data join
-    var pt0, lastSegment, pt1;
+    const fillpaths = [];
 
     // thisPolygons always contains only the polygons of this trace only
     // whereas trace._polygons may be extended to include those of the previous
@@ -272,15 +272,15 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         trace._fillsegments = fillsegments.slice(0, fillsegmentCount);
         fillsegments = trace._fillsegments;
 
-        if(segments.length) {
-            pt0 = segments[0][0].slice();
-            lastSegment = segments[segments.length - 1];
-            pt1 = lastSegment[lastSegment.length - 1].slice();
-        }
-
         makeUpdate = function(isEnter) {
-            return function(pts) {
+            return function(pts, segmentIndex) {
                 thispath = pathfn(pts);
+                if(ownFillEl3 && ownFillDir) {
+                    const start = pts[0].slice();
+                    const end = pts[pts.length - 1].slice();
+                    start[fillAxisIndex] = end[fillAxisIndex] = fillAxisZero;
+                    fillpaths[segmentIndex] = 'M' + end + 'L' + start + 'L' + thispath.slice(1) + 'Z';
+                }
                 thisrevpath = revpathfn(pts); // side-effect: reverses input
                 // calculate SVG path over all segments for fills
                 if(!fullpath) {
@@ -386,28 +386,19 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     if(segments.length) {
         if(ownFillEl3) {
             ownFillEl3.datum(cdscatter);
-            if(pt0 && pt1) { // TODO(2023-12-10): this is always true if segments is not empty (?)
-                if(ownFillDir) {
-                    pt0[fillAxisIndex] = pt1[fillAxisIndex] = fillAxisZero;
+            if(ownFillDir) {
+                // Start each segment on the axis so gaps stay empty.
+                transition(ownFillEl3).attr('d', fillpaths.join(''))
+                    .call(Drawing.singleFillStyle, gd);
 
-                    // fill to zero: full trace path, plus extension of
-                    // the endpoints to the appropriate axis
-                    // For the sake of animations, wrap the points around so that
-                    // the points on the axes are the first two points. Otherwise
-                    // animations get a little crazy if the number of points changes.
-                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.slice(1))
-                        .call(Drawing.singleFillStyle, gd);
+                thisPolygons = makePolygonsToPrevious(null);
+            } else {
+                // fill to self: just join the path to itself
+                transition(ownFillEl3).attr('d', fullpath + 'Z')
+                    .call(Drawing.singleFillStyle, gd);
 
-                    // create hover polygons that extend to the axis as well.
-                    thisPolygons = makePolygonsToPrevious(null); // polygon to axis
-                } else {
-                    // fill to self: just join the path to itself
-                    transition(ownFillEl3).attr('d', fullpath + 'Z')
-                        .call(Drawing.singleFillStyle, gd);
-
-                    // and simply emit hover polygons for each segment
-                    thisPolygons = makeSelfPolygons();
-                }
+                // and simply emit hover polygons for each segment
+                thisPolygons = makeSelfPolygons();
             }
             trace._polygons = thisPolygons;
             trace._fillElement = ownFillEl3;
