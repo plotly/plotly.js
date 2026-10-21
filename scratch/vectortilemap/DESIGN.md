@@ -75,6 +75,17 @@ These findings come from reading `src/plots/map/`, `src/traces/{choroplethmap,sc
 1. **A new trace type.** One module with its own `calc`, `plot`, `hoverPoints` and `selectPoints`. Attribute names come from `choroplethmap`, `scattermap` and `map.layers`.
 2. **A tiles mode on `choroplethmap`, `scattermap`, and a new line trace.** For example `choroplethmap.source` as an alternative to `geojson`.
 
+### Why not `layout.map.layers`, or layers inside the existing traces
+
+`layout.map.layers` already has `sourcetype: 'vector'`, `source`, `sourcelayer`, `type`, `minzoom`, `maxzoom` and `below`. So one option is to give those layers colorscales, hover and events. It does not fit, for these reasons:
+
+- In plotly.js, everything that has data, hover, events, a legend item or a colorbar is a trace. `Fx.hover` walks `gd.calcdata`, which holds traces only. Click and selection events identify a point by `curveNumber` and `pointNumber`. The legend lists traces. A colorbar belongs to a trace or a `coloraxis`. A layout layer gets none of this. Making layers interactive means a second copy of the calc, hover, event, legend and colorbar machinery for layout items, or layers that secretly are traces.
+- Dash and plotly.py address data as `figure.data[i]`. A `Patch()` of `p["data"][0]["z"]`, `clickData.points[0].curveNumber`, `restyle`, `uirevision` and `plotly.express` all assume traces.
+- Edit types differ. A layout layer change runs the layout path, which has no `calc` step. `z`, `locations` and the colorscale range need `calc`.
+- Layers inside an existing trace (for example `choroplethmap.layers`) make one trace stand for several layers with their own styles. Then one `curveNumber` points at several things, one legend item toggles several things, and one colorbar must describe several value ranges.
+
+The two can live side by side. `map.layers` stays for context without interaction: reference outlines, a raster, a hand-styled overlay. `vectortilemap` is for data. The attribute names are the same, so moving a layer to a trace is a copy and a rename of `type` to `layertype`.
+
 ### Recommendation: one new trace type with `layertype`
 
 - The two modes share almost no code. `choroplethmap` hover, selection, `ct` event data and `selectedpoints` depend on the full geometry in the browser. A tiles mode needs a second `calc`, `plot`, `hoverPoints` and `selectPoints` behind one name.
@@ -128,8 +139,9 @@ Implemented in the prototype: P. Proposed: no mark.
 | `below` P | `choroplethmap.below` | |
 | `selected`, `unselected` P | `choroplethmap` | `marker.opacity` while a selection is active. |
 | `text`, `hovertext`, `hoverinfo`, `hovertemplate` P | `choroplethmap` | `hovertemplate` keys include `properties`. |
-| a client-side filter | none yet | See question 12. The demos split categories into server layers. |
-| zoom-dependent sizes and widths | none yet | See question 13. The demos needed a different `marker.size` for each view. |
+| `filters` P | the operations of the former filter transform | A templated array of `{key, operation, value, enabled}`. All enabled filters must pass. Operations: `=`, `!=`, `<`, `>=`, `>`, `<=`, `[]`, `()`, `[)`, `(]`, `][`, `)(`, `](`, `)[`, `{}`, `}{`. Converted to one MapLibre layer `filter`, so a change fetches no tile. |
+| `marker.sizestops`, `line.widthstops` P | MapLibre zoom stops | `[[zoom, pixels], ...]`, linear between stops. Replaces `marker.size` or `line.width`. Hover uses the size at the current zoom. |
+| `config.mapProtocols` P | `maplibregl.addProtocol` | A config option, not a trace attribute: `{name: loadFunction}`. Tiles and TileJSON with `name://` URLs load through the function. Makes PMTiles and embedded tiles possible. |
 | `selectedpoints` | `choroplethmap` | Not done: a selection by data index from code. |
 
 ## Coloring
@@ -369,8 +381,9 @@ Status: **answered** (an experiment or the code settles it, and the prototype fo
 9. **Feature-state cost** (answered). See the table in [Coloring](#coloring). Fine to 250k `locations`. At 1M, a full restyle freezes the main thread for 1.2 s. Recommendation: document the limit, and point large layers to `zkey`.
 10. **Image baseline** (open). The mock needs a baseline from the CI artifact.
 11. **Hover by point number** (open). `Fx.hover(gd, [{curveNumber, pointNumber}])` cannot find a position for a location that has no rendered feature. A server label point property could give one.
-12. **Client-side filter** (proposal). Esri users filter by attribute constantly. The demos split categories on the server, which costs a server change for each new category. Proposal: an attribute that keeps features whose property is in a list, for example `filterkey: 'status'` with `filtervalues: ['Active']`, converted to a MapLibre `filter`. A raw MapLibre expression pass-through is more powerful but not plotly style.
-13. **Zoom-dependent sizes** (proposal). A 2 px well dot at zoom 6 is a 6 px dot at zoom 11. The demos set a different `marker.size` for each view. Proposal: let `marker.size` and `line.width` take zoom stops, converted to a MapLibre `interpolate` on `['zoom']`. Name and shape need a decision.
+12. **Client-side filter** (implemented, names need a decision). `filters` reuses `operation` and `value` from the former filter transform, and `key` from `featureidkey` and `zkey`. In the standalone explorer, a pipeline status change, a spud year range or a well type change takes 100 to 220 ms and loads no tile. Alternative names: `target` (as in the filter transform) in place of `key`. A raw MapLibre expression pass-through stays out: it is not plotly style, and it ties the schema to one renderer.
+13. **Zoom-dependent sizes** (implemented, names need a decision). `marker.sizestops` and `line.widthstops`. The explorer grows wells from 1.6 px at zoom 5 to 8 px at zoom 13. Open: the same for `marker.opacity` and `marker.line.width`, and an exponential base in place of linear.
 14. **`properties` in Dash events** (proposal, for Dash). `dcc.Graph` drops object-valued event fields. A one-line change in its `filterEventData` copies `properties`, as it copies `bbox`. That also helps `choroplethmap` users today.
-15. **PMTiles and other protocols** (open). PMTiles on object storage is a common serverless choice. It needs `maplibregl.addProtocol`, which plotly.js does not expose. Options: expose a hook to register a protocol, or bundle the PMTiles protocol (about 10 kB).
+15. **PMTiles and other protocols** (implemented). `config.mapProtocols` registers MapLibre protocol functions: `{pmtiles: new pmtiles.Protocol().tile}` for PMTiles. The standalone explorer serves its embedded tiles with it. MapLibre keeps one global protocol list, so a protocol applies to every map on the page. Dash cannot send a function in `config`: a Dash app registers the protocol from an `assets/` script. Open: the Dash pattern for that.
+17. **Map subplots in `file://` pages** (found, not fixed here). MapLibre 6 creates its worker as a module worker. Chromium refuses a module worker from a `blob:` URL on an opaque-origin page: `file://` and `about:blank`, tested in Chromium 141. So any map subplot (`scattermap`, `choroplethmap`, `densitymap`) fails with "Worker failed to load" in an HTML file opened from disk, for example after `fig.write_html()`. A fix: build `build/maplibre_worker.js` as an IIFE, and add `#maplibre-worker.cjs` to the blob URL, which makes MapLibre start a classic worker. The standalone explorer uses that fix in its scratch build only. This is a separate bug for its own issue and pull request.
 16. **`marker` and `line` arrays** (open). Arrays for `marker.size`, `marker.opacity` and `line.width` could become feature state, as `z` does. Not done.

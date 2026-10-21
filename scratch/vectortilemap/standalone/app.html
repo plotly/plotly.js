@@ -1,0 +1,340 @@
+<title>Gulf Offshore Explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: the map fills the screen, a control panel docks on the right (below the map on phones). One dark look, like a control room display. */
+:root {
+  --bg: #08101f;
+  --panel: #0e1729;
+  --card: #131e34;
+  --line: #22304b;
+  --fg: #e7ebf3;
+  --muted: #93a0b8;
+  --accent: #ff8c42;
+  --cyan: #67e8f9;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 14px/1.5 var(--font-body); margin: 0; }
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 360px; height: 100%; }
+#map { min-width: 0; min-height: 0; }
+.panel {
+  background: var(--panel); border-left: 1px solid var(--line); overflow-y: auto;
+  padding-block: 18px 24px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 12px; align-content: start;
+}
+h1 { font: 800 21px/1.15 var(--font-display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 13px; display: grid; gap: 9px; }
+.card h2 { font: 500 11px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chk { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px 3px 8px; cursor: pointer; user-select: none; font-size: 12.5px; }
+.chk input { accent-color: var(--accent); margin: 0; }
+.chk:has(input:checked) { border-color: #3a4b6e; background: #18253f; }
+label.field { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); }
+select, input[type=range] { width: 100%; }
+select { background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; }
+.range-val { font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+.views { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+button { background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; font: 500 12.5px var(--font-body); cursor: pointer; text-align: left; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.stat { font: 12px/1.5 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.stat b { color: var(--cyan); font-weight: 500; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 0; font-size: 12.5px; }
+dt { color: var(--muted); }
+dd { margin: 0; overflow-wrap: anywhere; }
+.empty { color: var(--muted); font-size: 12.5px; }
+.note { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 62vh auto; height: auto; }
+  .panel { border-left: 0; border-top: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+}
+</style>
+
+<div class="app">
+  <div id="map"></div>
+  <aside class="panel">
+    <div>
+      <h1>Gulf of Mexico offshore explorer</h1>
+      <div class="sub">BOEM public data · plotly.js <code>vectortilemap</code> prototype · every tile is inside this file</div>
+    </div>
+
+    <section class="card">
+      <h2>Go to</h2>
+      <div class="views">
+        <button type="button" id="view-gulf">Whole Gulf</button>
+        <button type="button" id="view-mc">Mississippi Canyon</button>
+        <button type="button" id="view-gc">Green Canyon</button>
+        <button type="button" id="view-shelf">Louisiana shelf</button>
+      </div>
+      <div class="note">Well paths (surface to bottom hole) draw from zoom 9.</div>
+    </section>
+
+    <section class="card">
+      <h2>Pipelines</h2>
+      <div class="row" id="pipe-status"></div>
+      <label class="field" for="pipe-color">Color
+        <select id="pipe-color">
+          <option value="size_in">By diameter</option>
+          <option value="">One color</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Wells</h2>
+      <label class="field" for="spud-from">Spud year from <span class="range-val" id="spud-label"></span>
+        <input type="range" id="spud-from" min="1947" max="2025" value="1947">
+      </label>
+      <label class="field" for="spud-to">to
+        <input type="range" id="spud-to" min="1947" max="2025" value="2025">
+      </label>
+      <div class="row" id="well-type"></div>
+      <label class="field" for="well-color">Color
+        <select id="well-color">
+          <option value="water_depth_ft">By water depth</option>
+          <option value="spud_year">By spud year</option>
+          <option value="tvd_ft">By true vertical depth</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>Platforms</h2>
+      <div class="row" id="plat-status"></div>
+    </section>
+
+    <section class="card">
+      <h2>Last change</h2>
+      <div class="stat" id="stat">Loading tiles…</div>
+    </section>
+
+    <section class="card">
+      <h2>Clicked feature</h2>
+      <div id="clicked" class="empty">Click a well, a pipeline or a platform.</div>
+    </section>
+
+    <section class="card">
+      <h2>Selection</h2>
+      <div id="selection" class="empty">Pick box select or lasso select in the toolbar, then drag over the map.</div>
+    </section>
+
+    <div class="note">Basemap: Natural Earth. Data: BOEM, transformed from NAD27. Tiles made with DuckDB ST_AsMVT and served to MapLibre through <code>config.mapProtocols</code>.</div>
+  </aside>
+</div>
+
+<script>
+(() => {
+  const TILES = window.EMBEDDED_TILES;
+  const SETS = window.EMBEDDED_TILESETS;
+  let tileLoads = 0;
+
+  // Serve TileJSON and gzipped tiles from the strings embedded in this file
+  async function embedded(params) {
+    const path = params.url.slice('embedded://'.length);
+    if (path.endsWith('.json')) {
+      const name = path.slice(0, -5);
+      const ts = SETS[name];
+      return { data: { tilejson: '3.0.0', tiles: [`embedded://${name}/{z}/{x}/{y}`], minzoom: 0, maxzoom: ts.maxzoom, bounds: ts.bounds, vector_layers: ts.vector_layers } };
+    }
+    tileLoads++;
+    const b64 = TILES[path];
+    if (!b64) return { data: new ArrayBuffer(0) };
+    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return { data: await new Response(stream).arrayBuffer() };
+  }
+
+  const FONT = 'IBM Plex Sans, Segoe UI, system-ui, sans-serif';
+  const INK = '#e7ebf3';
+  const MUTED = '#93a0b8';
+  const PANEL = 'rgba(14,23,41,0.9)';
+  const GULF = 'embedded://gulf.json';
+  const BASE = 'embedded://base.json';
+  const dot = (c, t) => `<span style="color:${c}">●</span> <span style="color:${c}">${t}</span>`;
+
+  const PIPE_STATUS = ['Active', 'Out of service', 'Abandoned', 'Removed', 'Proposed'];
+  const WELL_TYPES = ['Development', 'Exploratory'];
+  const PLAT_STATUS = ['Installed', 'Removed'];
+  const WELL_COLOR = {
+    water_depth_ft: { title: 'Well water depth (ft)', min: 0, max: 7000, scale: [[0, '#d9f99d'], [0.08, '#67e8f9'], [0.4, '#818cf8'], [1, '#e879f9']] },
+    spud_year: { title: 'Well spud year', min: 1950, max: 2025, scale: [[0, '#1e3a8a'], [0.5, '#38bdf8'], [1, '#fef08a']] },
+    tvd_ft: { title: 'True vertical depth (ft)', min: 3000, max: 30000, scale: [[0, '#a7f3d0'], [0.5, '#34d399'], [1, '#0e7490']] }
+  };
+  const colorbar = (title, x) => ({
+    title: { text: title, side: 'top', font: { size: 11, color: MUTED } }, orientation: 'h', x, xanchor: 'right',
+    y: 0.025, yanchor: 'bottom', len: 0.3, thickness: 9, bgcolor: PANEL, bordercolor: 'rgba(255,255,255,0.08)',
+    borderwidth: 1, xpad: 12, ypad: 10, tickfont: { size: 10, color: INK }, outlinewidth: 0
+  });
+
+  const wellColor = WELL_COLOR.water_depth_ft;
+  const data = [
+    { type: 'vectortilemap', name: 'Land', source: BASE, sourcelayer: 'land', marker: { color: '#1c2638', opacity: 1, line: { width: 0 } }, hoverinfo: 'skip', showlegend: false },
+    { type: 'vectortilemap', name: 'States', source: BASE, sourcelayer: 'states', layertype: 'line', line: { color: '#2b3a57', widthstops: [[3, 0.4], [8, 1]] }, hoverinfo: 'skip', showlegend: false },
+    { type: 'vectortilemap', name: 'Borders', source: BASE, sourcelayer: 'borders', layertype: 'line', line: { color: '#3c4f75', widthstops: [[3, 0.8], [8, 1.6]] }, hoverinfo: 'skip', showlegend: false },
+    {
+      type: 'vectortilemap', name: 'Active leases', source: GULF, sourcelayer: 'leases', layertype: 'fill',
+      marker: { color: '#1e3a5f', opacity: 0.55, line: { width: 0.6, color: 'rgba(120,170,220,0.45)' } },
+      hovertemplate: `${dot('#7fb3e6', 'Lease %{properties.lease}')}<br>Block %{properties.block} · %{properties.status}<br>Effective %{properties.effective_year} · royalty %{properties.royalty_pct}%<extra></extra>`
+    },
+    {
+      type: 'vectortilemap', name: 'Pipelines', source: GULF, sourcelayer: 'pipelines', layertype: 'line',
+      zkey: 'size_in', zmin: 2, zmax: 30, colorscale: [[0, '#ffd166'], [0.45, '#ff8c42'], [1, '#ff3d6e']],
+      colorbar: colorbar('Pipeline diameter (in)', 0.985),
+      line: { color: '#ff8c42', width: 1, widthstops: [[5, 0.6], [8, 1.3], [11, 2.6], [13, 4]] }, marker: { opacity: 0.95 },
+      filters: [{ key: 'status', operation: '{}', value: ['Active'] }],
+      hovertemplate: `${dot('#ff8c42', 'Pipeline · %{properties.status}')}<br><b>%{properties.product}</b> · %{properties.size_in}" diameter<br>%{properties.operator}<br>Segment %{properties.segment}<extra></extra>`
+    },
+    {
+      type: 'vectortilemap', name: 'Well paths', source: GULF, sourcelayer: 'well_paths', layertype: 'line', minzoom: 9,
+      zkey: 'tvd_ft', zmin: 3000, zmax: 30000, colorscale: WELL_COLOR.tvd_ft.scale, showscale: false,
+      line: { width: 1.4, widthstops: [[9, 1.2], [13, 3]] }, marker: { opacity: 0.9 },
+      filters: [{ key: 'spud_year', operation: '[]', value: [1947, 2025] }, { key: 'well_type', operation: '{}', value: WELL_TYPES }],
+      hovertemplate: `${dot('#34d399', 'Well path')}<br><b>%{properties.name}</b> · %{properties.operator}<br>API %{properties.api} · %{properties.well_type} · spud %{properties.spud_year}<br>TVD %{properties.tvd_ft:,.0f} ft · %{properties.status}<extra></extra>`
+    },
+    {
+      type: 'vectortilemap', name: 'Wells', source: GULF, sourcelayer: 'wells', layertype: 'circle',
+      zkey: 'water_depth_ft', zmin: wellColor.min, zmax: wellColor.max, colorscale: wellColor.scale,
+      colorbar: colorbar(wellColor.title, 0.66),
+      marker: { size: 3, sizestops: [[5, 1.6], [8, 2.6], [10, 4.5], [13, 8]], opacity: 0.85, line: { width: 0 } },
+      filters: [{ key: 'spud_year', operation: '[]', value: [1947, 2025] }, { key: 'well_type', operation: '{}', value: WELL_TYPES }],
+      hovertemplate: `${dot('#67e8f9', 'Well · %{properties.well_type}')}<br><b>%{properties.name}</b> · %{properties.operator}<br>API %{properties.api} · spud %{properties.spud_year}<br>Water depth %{properties.water_depth_ft:,.0f} ft · TVD %{properties.tvd_ft:,.0f} ft<br>%{properties.status}<extra></extra>`,
+      hovertemplatefallback: '—'
+    },
+    {
+      type: 'vectortilemap', name: 'Platforms', source: GULF, sourcelayer: 'platforms', layertype: 'circle',
+      marker: { color: '#ffffff', size: 4, sizestops: [[5, 2.6], [8, 4], [10, 8], [13, 14]], opacity: 1, line: { width: 1, color: '#ff3d6e' } },
+      filters: [{ key: 'status', operation: '{}', value: ['Installed'] }],
+      hovertemplate: `${dot('#ff3d6e', 'Platform · %{properties.status}')}<br><b>Structure %{properties.structure}</b><br>Complex %{properties.complex_id} · installed %{properties.install_year}<extra></extra>`
+    }
+  ];
+  const T = { pipes: 4, paths: 5, wells: 6, plats: 7 };
+
+  const layout = {
+    paper_bgcolor: '#08101f', font: { family: FONT, color: INK }, margin: { l: 0, r: 0, t: 0, b: 0 },
+    dragmode: 'pan', showlegend: true,
+    legend: { x: 0.01, y: 0.99, bgcolor: PANEL, bordercolor: 'rgba(255,255,255,0.08)', borderwidth: 1, font: { size: 12, color: INK }, itemsizing: 'constant' },
+    hoverlabel: { bgcolor: 'rgba(14,23,41,0.96)', bordercolor: 'rgba(255,255,255,0.25)', font: { family: FONT, color: INK, size: 12.5 }, align: 'left' },
+    map: {
+      center: { lon: -90.6, lat: 27.4 }, zoom: 5.9,
+      style: { version: 8, sources: {}, layers: [{ id: 'ocean', type: 'background', paint: { 'background-color': '#071324' } }] }
+    }
+  };
+
+  const gd = document.getElementById('map');
+  const stat = document.getElementById('stat');
+
+  function chips(container, values, checked, onChange) {
+    const el = document.getElementById(container);
+    for (const v of values) {
+      const id = `${container}-${v.replace(/\W+/g, '-').toLowerCase()}`;
+      const label = document.createElement('label');
+      label.className = 'chk';
+      label.htmlFor = id;
+      label.innerHTML = `<input type="checkbox" id="${id}" value="${v}" ${checked.includes(v) ? 'checked' : ''}> ${v}`;
+      el.appendChild(label);
+    }
+    el.addEventListener('change', () => onChange([...el.querySelectorAll('input:checked')].map((i) => i.value)));
+  }
+
+  // Run one restyle or relayout, and report its time and the tile loads it caused
+  async function timed(label, fn) {
+    const before = tileLoads;
+    const t0 = performance.now();
+    await fn();
+    const map = gd._fullLayout.map._subplot.map;
+    await new Promise((r) => (map.loaded() ? r() : map.once('idle', r)));
+    stat.innerHTML = `${label}<br><b>${Math.round(performance.now() - t0)} ms</b> · <b>${tileLoads - before}</b> tile loads`;
+  }
+
+  function wireControls() {
+    chips('pipe-status', PIPE_STATUS, ['Active'], (v) => timed(`Pipelines: ${v.join(', ') || 'none'}`, () => Plotly.restyle(gd, { 'filters[0].value': [v] }, [T.pipes])));
+    chips('well-type', WELL_TYPES, WELL_TYPES, (v) => timed(`Well types: ${v.join(', ') || 'none'}`, () => Plotly.restyle(gd, { 'filters[1].value': [v] }, [T.wells, T.paths])));
+    chips('plat-status', PLAT_STATUS, ['Installed'], (v) => timed(`Platforms: ${v.join(', ') || 'none'}`, () => Plotly.restyle(gd, { 'filters[0].value': [v] }, [T.plats])));
+
+    const from = document.getElementById('spud-from');
+    const to = document.getElementById('spud-to');
+    const label = document.getElementById('spud-label');
+    const showRange = () => (label.textContent = `${Math.min(from.value, to.value)} to ${Math.max(from.value, to.value)}`);
+    showRange();
+    const applyRange = () => {
+      showRange();
+      const range = [+from.value, +to.value];
+      timed(`Spud years ${Math.min(...range)} to ${Math.max(...range)}`, () => Plotly.restyle(gd, { 'filters[0].value': [range] }, [T.wells, T.paths]));
+    };
+    from.addEventListener('input', showRange);
+    to.addEventListener('input', showRange);
+    from.addEventListener('change', applyRange);
+    to.addEventListener('change', applyRange);
+
+    document.getElementById('pipe-color').addEventListener('change', (e) => {
+      const byDiameter = e.target.value === 'size_in';
+      timed(byDiameter ? 'Pipelines by diameter' : 'Pipelines in one color', () =>
+        Plotly.restyle(gd, { zkey: byDiameter ? 'size_in' : null }, [T.pipes]));
+    });
+    document.getElementById('well-color').addEventListener('change', (e) => {
+      const c = WELL_COLOR[e.target.value];
+      timed(`Wells by ${c.title.toLowerCase()}`, () =>
+        Plotly.restyle(gd, { zkey: e.target.value, zmin: c.min, zmax: c.max, colorscale: [c.scale], 'colorbar.title.text': c.title }, [T.wells]));
+    });
+
+    const views = {
+      'view-gulf': { center: { lon: -90.6, lat: 27.4 }, zoom: 5.9 },
+      'view-mc': { center: { lon: -89.05, lat: 28.21 }, zoom: 10.2 },
+      'view-gc': { center: { lon: -90.6, lat: 27.35 }, zoom: 9.6 },
+      'view-shelf': { center: { lon: -90.9, lat: 28.75 }, zoom: 8.2 }
+    };
+    for (const id in views) {
+      document.getElementById(id).addEventListener('click', () =>
+        timed(document.getElementById(id).textContent, () => Plotly.relayout(gd, { 'map.center': views[id].center, 'map.zoom': views[id].zoom })));
+    }
+  }
+
+  function wireEvents() {
+    gd.on('plotly_click', (e) => {
+      const p = e.points[0];
+      const rows = Object.entries(p.properties || {})
+        .map(([k, v]) => `<dt>${k}</dt><dd>${typeof v === 'number' && !/year|segment|structure|complex|api/.test(k) ? v.toLocaleString() : v}</dd>`)
+        .join('');
+      document.getElementById('clicked').className = '';
+      document.getElementById('clicked').innerHTML =
+        `<div style="font-weight:600;margin-bottom:6px">${p.data.name} · feature ${p.id}</div><dl>${rows}<dt>lon, lat</dt><dd>${p.lon.toFixed(4)}, ${p.lat.toFixed(4)}</dd></dl>`;
+    });
+    gd.on('plotly_selected', (e) => {
+      const el = document.getElementById('selection');
+      if (!e) {
+        el.className = 'empty';
+        el.textContent = 'Selection cleared.';
+        return;
+      }
+      const byTrace = {};
+      for (const p of e.points) byTrace[p.data.name] = (byTrace[p.data.name] || 0) + 1;
+      el.className = '';
+      el.innerHTML = `<dl>${Object.entries(byTrace).map(([k, v]) => `<dt>${k}</dt><dd>${v.toLocaleString()}</dd>`).join('')}</dl>` +
+        '<div class="note" style="margin-top:6px">Counts of the rendered features. A Dash app sends the selection polygon to the server for the full count.</div>';
+    });
+  }
+
+  const t0 = performance.now();
+  Plotly.newPlot(gd, data, layout, { scrollZoom: true, displaylogo: false, responsive: true, mapProtocols: { embedded } })
+    .then(() => {
+      const map = gd._fullLayout.map._subplot.map;
+      return new Promise((r) => (map.loaded() ? r() : map.once('idle', r)));
+    })
+    .then(() => {
+      stat.innerHTML = `First draw<br><b>${Math.round(performance.now() - t0)} ms</b> · <b>${tileLoads}</b> tile loads`;
+      wireControls();
+      wireEvents();
+      window.__ready = true;
+    })
+    .catch((err) => {
+      stat.textContent = `The map could not load: ${err.message}`;
+    });
+})();
+</script>

@@ -82,6 +82,29 @@ TILESETS = {
             dict(name="crude_pipelines", table="crude_pipelines", cols="operator, pipeline", kind="line"),
         ],
     },
+    "base": {
+        "maxzoom": 10, "bounds": [-140, 5, -50, 60],
+        "layers": [
+            dict(name="land", table="ne_land", cols="id AS land_id", kind="polygon"),
+            dict(name="states", table="ne_states", cols="id AS line_id", kind="line"),
+            dict(name="borders", table="ne_borders", cols="name", kind="line"),
+        ],
+    },
+    "gulf": {
+        # the offshore data for the standalone page: one layer for each kind, so the page filters by status
+        "maxzoom": 9, "bounds": [-98, 23, -81, 31],
+        "layers": [
+            dict(name="leases", table="leases", cols="lease, block, status, effective_year, royalty_pct", kind="polygon"),
+            dict(name="pipelines", table="off_pipelines", cols="segment, operator, product, status, size_in", kind="line"),
+            dict(name="platforms", table="platforms", cols="complex_id, structure, install_year, status",
+                 kind="point", thin_below=8),
+            dict(name="wells", table="off_wells",
+                 cols="api, name, operator, status, well_type, spud_year, water_depth_ft, tvd_ft",
+                 kind="point", thin_below=9),
+            dict(name="well_paths", table="off_paths",
+                 cols="api, name, operator, status, well_type, spud_year, tvd_ft", kind="line", minzoom=9),
+        ],
+    },
     "hex": {
         "maxzoom": 12, "bounds": [-110, 35, -93, 42],
         "layers": [dict(name="hexes", table="hexes", cols="hex_id, h3, wells, active_wells", kind="polygon", simplify=False)],
