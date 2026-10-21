@@ -50,7 +50,8 @@ export default function selectPoints(searchInfo: any, selectionTester: any) {
         else byId.set(f.id, { feature: f, pieces: [f.geometry] });
     }
 
-    const contains = (lonlat: number[]) => selectionTester.contains([xa.c2p(lonlat), ya.c2p(lonlat)], null, null, searchInfo);
+    const contains = (lonlat: number[]) =>
+        selectionTester.contains([xa.c2p(lonlat), ya.c2p(lonlat)], null, null, searchInfo);
     const selectedIds = new Set<string | number>();
 
     for (const [id, { feature, pieces }] of byId) {

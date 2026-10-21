@@ -60,7 +60,10 @@ export function getSourceSpec(trace: any, fullData: any[]) {
         const layer = peer.sourcelayer;
         const key = getPromoteKey(peer);
         const states = key ? stateLayers.promoted : stateLayers.native;
-        if ((key && promoteId[layer] !== undefined && promoteId[layer] !== key) || (peer._length && states.has(layer))) {
+        if (
+            (key && promoteId[layer] !== undefined && promoteId[layer] !== key) ||
+            (peer._length && states.has(layer))
+        ) {
             ownUids.add(peer.uid);
             continue;
         }
@@ -198,7 +201,10 @@ export default function convert(calcTrace: any[], isSelecting = false) {
         outline.layout.visibility = 'none';
     }
 
-    return [{ role: 'fill', type: 'fill', layout: { visibility }, paint: { 'fill-color': color, 'fill-opacity': opacity } }, outline];
+    return [
+        { role: 'fill', type: 'fill', layout: { visibility }, paint: { 'fill-color': color, 'fill-opacity': opacity } },
+        outline
+    ];
 }
 
 /**

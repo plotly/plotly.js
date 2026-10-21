@@ -15,6 +15,9 @@ const HIT_SLOP = 3;
  * pixel in the index of the loaded tiles. A feature that is not rendered
  * (outside the view, or outside `minzoom` and `maxzoom`) cannot get hover.
  *
+ * The event data gets `lon` and `lat`: the point of a circle, or the cursor
+ * position on a line or a fill.
+ *
  * A circle reports its pixel distance to the cursor, so the closest point wins
  * across traces. A fill keeps the default distance, so points and lines drawn
  * above it win.
@@ -38,7 +41,12 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
     let r = 0;
     if (layertype === 'circle') r = trace.marker.size / 2 + (trace.marker.line.width || 0) + HIT_SLOP;
     else if (layertype === 'line') r = trace.line.width / 2 + HIT_SLOP;
-    const query = r ? [[px - r, py - r], [px + r, py + r]] : [px, py];
+    const query = r
+        ? [
+              [px - r, py - r],
+              [px + r, py + r]
+          ]
+        : [px, py];
 
     const features = subplot.map.queryRenderedFeatures(query, { layers: [glTrace.mainLayerId] });
 
@@ -46,6 +54,7 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
     let bestIndex: number | undefined;
     let bestDist = Infinity;
     let bestXY = [px, py];
+    let bestLonLat = lonlat;
     for (let i = 0; i < features.length; i++) {
         const f = features[i];
         let index: number | undefined;
@@ -69,11 +78,14 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
             bestIndex = index;
             bestDist = d;
             bestXY = [p.x, p.y];
+            bestLonLat = c;
         }
     }
     if (!best) return;
 
-    const pt = hasLocations ? cd[bestIndex!] : { loc: best.id, z: trace.zkey ? best.properties[trace.zkey] : undefined };
+    const pt = hasLocations
+        ? cd[bestIndex!]
+        : { loc: best.id, z: trace.zkey ? best.properties[trace.zkey] : undefined };
     const rad = layertype === 'circle' ? trace.marker.size / 2 : 0;
 
     pointData.x0 = bestXY[0] - rad;
@@ -86,6 +98,9 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
     pointData.id = best.id;
     pointData.location = pt.loc;
     pointData.properties = best.properties;
+    // the point of a circle, or the cursor position on a line or a fill
+    pointData.lon = bestLonLat[0];
+    pointData.lat = bestLonLat[1];
     pointData.color = makeFeatureColorFn(trace)(pt.z);
     if (pt.z !== undefined) {
         pointData.z = pt.z;

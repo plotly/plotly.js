@@ -150,7 +150,7 @@ const attributes = extendFlat(
 
         hoverinfo: (choroplethmapAttrs as any).hoverinfo,
         hovertemplate: hovertemplateAttrs({}, { keys: ['properties'] }),
-        hovertemplatefallback: templatefallbackAttrs(),
+        hovertemplatefallback: templatefallbackAttrs()
     },
 
     colorScaleAttrs('', {
