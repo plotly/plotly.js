@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+html, body { margin: 0; height: 100%; background: #0b1020; color: #e6e9ef; font-family: Inter, system-ui, sans-serif; }
+.app { display: flex; height: 100vh; }
+.map { flex: 1; height: 100vh; }
+.side { width: 380px; padding: 20px 18px; box-sizing: border-box; background: #0e1424; border-left: 1px solid #1f2937; overflow-y: auto; }
+.side h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: -0.2px; }
+.sub { color: #9aa3b2; font-size: 12.5px; margin-bottom: 16px; }
+.card { background: #121a2e; border: 1px solid #1f2a44; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; font-size: 13px; line-height: 1.5; }
+.card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #7c8aa5; margin-bottom: 8px; }
+.big { font-size: 15px; font-weight: 600; }
+.muted { color: #9aa3b2; font-size: 12px; margin-top: 6px; }
+.card ul { margin: 4px 0 0; padding-left: 18px; }
+.dash-slider-mark { color: #9aa3b2 !important; font-size: 11px; }
+.dash-slider-container input[type=number] { background: #0b1020; color: #e6e9ef; border: 1px solid #1f2a44; border-radius: 6px; }
+.dash-slider-range { background: #fbb61a !important; }

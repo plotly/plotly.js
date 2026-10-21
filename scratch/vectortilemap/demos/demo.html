@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>vectortilemap demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; background: #0b1020; overflow: hidden; }
+  #gd { width: 100vw; height: 100vh; }
+</style>
+<script src="/plotly.js"></script>
+<script src="/demos/demos.js"></script>
+</head>
+<body>
+<div id="gd"></div>
+<script>
+(async () => {
+  const q = new URLSearchParams(location.search);
+  const name = q.get('d') || 'wells';
+  const opts = Object.fromEntries(q.entries());
+  if (opts.decade) opts.decade = +opts.decade;
+  const fig = await window.DEMOS[name](opts);
+  fig.layout.width = innerWidth;
+  fig.layout.height = innerHeight;
+  const gd = document.getElementById('gd');
+  const t0 = performance.now();
+  await Plotly.newPlot(gd, fig.data, fig.layout, { scrollZoom: true, displaylogo: false });
+  if (fig.frames) await Plotly.addFrames(gd, fig.frames);
+  const map = gd._fullLayout.map._subplot.map;
+  await new Promise((r) => (map.loaded() ? r() : map.once('idle', r)));
+  window.__ready = { readyMs: Math.round(performance.now() - t0) };
+})().catch((e) => { window.__ready = { error: String(e) }; console.error(e); });
+</script>
+</body>
+</html>
