@@ -32,9 +32,9 @@ export function getMapFitBounds(fullData: FitBoundsTrace[], subplotId: string): 
     for (const trace of fullData) {
         if (trace.subplot !== subplotId || trace.visible !== true) continue;
 
-        // choroplethmap traces carry locations/geojson, not raw lon/lat; bail
+        // choroplethmap and vectortilemap traces carry locations, not raw lon/lat; bail
         // out rather than frame around a subset of the subplot's data.
-        if (trace.type === 'choroplethmap') return null;
+        if (trace.type === 'choroplethmap' || trace.type === 'vectortilemap') return null;
 
         const { lat, lon } = trace;
         if (!lon || !lat) continue;

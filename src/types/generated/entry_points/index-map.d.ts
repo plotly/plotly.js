@@ -6,8 +6,8 @@
 /**
  * Type surface of `plotly.js/lib/index-map`.
  *
- * It pre-registers the 4 trace modules of the map bundle:
- * choroplethmap, densitymap, scatter, scattermap.
+ * It pre-registers the 5 trace modules of the map bundle:
+ * choroplethmap, densitymap, scatter, scattermap, vectortilemap.
  *
  * The type surface is the same as the full bundle, so this re-exports the
  * main declaration. A trace that is not registered at runtime still

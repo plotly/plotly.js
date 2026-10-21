@@ -87,7 +87,8 @@ var partialBundleTraces = {
         'choroplethmap',
         'densitymap',
         'scatter',
-        'scattermap'
+        'scattermap',
+        'vectortilemap'
     ],
     strict: [
         'bar',
@@ -133,6 +134,7 @@ var partialBundleTraces = {
         'surface',
         'table',
         'treemap',
+        'vectortilemap',
         'violin',
         'volume',
         'waterfall'

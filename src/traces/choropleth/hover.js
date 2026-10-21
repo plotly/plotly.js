@@ -5,7 +5,7 @@ var attributes = require('./attributes');
 var fillText = require('../../lib').fillText;
 const { ANTIMERIDIAN_LON_SHIFT } = require('../../lib/geo_location_utils');
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var geo = pointData.subplot;
@@ -50,7 +50,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     makeHoverInfo(pointData, trace, pt);
 
     return [pointData];
-};
+}
 
 function makeHoverInfo(pointData, trace, pt) {
     if(trace.hovertemplate) return;
@@ -86,3 +86,6 @@ function makeHoverInfo(pointData, trace, pt) {
 
     pointData.extraText = text.join('<br>');
 }
+
+module.exports = hoverPoints;
+module.exports.makeHoverInfo = makeHoverInfo;

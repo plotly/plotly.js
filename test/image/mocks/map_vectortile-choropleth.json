@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "type": "vectortilemap",
+      "source": "data:application/json;base64,eyJ0aWxlanNvbiI6IjMuMC4wIiwidGlsZXMiOlsiZGF0YTphcHBsaWNhdGlvbi94LXByb3RvYnVmO2Jhc2U2NCxHdTBCZUFJS0IzTnhkV0Z5WlhNU0doSUVBQUFCQVJnREloQUpuQTYwR2hyakFRQUFsUUxrQVFBUEVob1NCQUFDQVFNWUF5SVFDWUFRdEJvYTR3RUFBSlVDNUFFQUR4SWFFZ1FBQkFFRkdBTWlFQW1jRHA0WUd1TUJBQUREQXVRQkFBOFNHaElFQUFZQkJ4Z0RJaEFKZ0JDZUdCcmpBUUFBd3dMa0FRQVBFaG9TQkFBSUFRa1lBeUlRQ2VRUnRCb2E0d0VBQUpVQzVBRUFEeG9FWTI5a1pSb0VibUZ0WlNJRENnRkJJZ2NLQlVGc2NHaGhJZ01LQVVJaUJ3b0ZRbkpoZG04aUF3b0JReUlKQ2dkRGFHRnliR2xsSWdNS0FVUWlCd29GUkdWc2RHRWlBd29CUlNJR0NnUkZZMmh2S0lBZyJdLCJtaW56b29tIjowLCJtYXh6b29tIjowfQ==",
+      "sourcelayer": "squares",
+      "featureidkey": "code",
+      "locations": ["A", "B", "C", "D"],
+      "z": [1, 2, 3, 4],
+      "colorscale": "Viridis",
+      "marker": {
+        "line": {
+          "width": 2,
+          "color": "white"
+        },
+        "opacity": 0.9
+      },
+      "hovertemplate": "%{properties.name}: %{z}<extra></extra>"
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 450,
+    "margin": {
+      "l": 20,
+      "r": 20,
+      "t": 20,
+      "b": 20
+    },
+    "map": {
+      "style": "white-bg",
+      "center": {
+        "lon": -95,
+        "lat": 40
+      },
+      "zoom": 2.2
+    }
+  }
+}

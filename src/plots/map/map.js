@@ -363,6 +363,7 @@ proto.fillBelowLookup = function (calcData, fullLayout) {
 
 var traceType2orderIndex = {
     choroplethmap: 0,
+    vectortilemap: 0,
     densitymap: 1,
     scattermap: 2
 };

@@ -34,7 +34,7 @@ export type TransitionEasing = 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'ci
 
 export type ToImageFormat = 'png' | 'jpeg' | 'webp' | 'svg' | 'full-json';
 
-export type TraceType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'quiver' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'violin' | 'volume' | 'waterfall';
+export type TraceType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'quiver' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'vectortilemap' | 'violin' | 'volume' | 'waterfall';
 
 /** @deprecated Renamed to TraceType. */
 export type PlotType = TraceType;
@@ -10961,6 +10961,150 @@ export interface TreemapData {
     visible?: true | false | 'legendonly';
 }
 
+export interface VectortilemapData {
+    /**
+     * Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `colorscale`. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.
+     * @default true
+     */
+    autocolorscale?: boolean;
+    /** Determines if the trace layers will be inserted before the layer with the specified ID. By default, vectortilemap traces are placed above the water layers. If set to '', the layers will be inserted above every existing layer. */
+    below?: string;
+    /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
+    coloraxis?: string;
+    colorbar?: ColorBar;
+    /**
+     * Sets the colorscale. The colorscale must be an array containing arrays mapping a normalized value to an rgb, rgba, hex, hsl, hsla, hwb, or named color string. At minimum, a mapping for the lowest (0) and highest (1) values are required. For example, `[[0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']]`. To control the bounds of the colorscale in color space, use `zmin` and `zmax`. Alternatively, `colorscale` may be a palette name string of the following list: Blackbody,Bluered,Blues,Cividis,Earth,Electric,Greens,Greys,Hot,Jet,Picnic,Portland,Rainbow,RdBu,Reds,Viridis,YlGnBu,YlOrRd.
+     * Setting this also sets: autocolorscale = false
+     */
+    colorscale?: ColorScale;
+    /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
+    customdata?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * Sets the tile feature property to match with the items in `locations`. The default *id* uses the feature id stored in the tile. Any other value names a feature property (map.source.promoteId), for example *GEOID*. A *properties.* prefix is permitted and ignored.
+     * @default 'id'
+     */
+    featureidkey?: string;
+    /**
+     * Determines what trace information appears on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
+     * @default 'all'
+     */
+    hoverinfo?: 'location' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('location' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
+    hoverlabel?: HoverLabel;
+    /** Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example "y: %{y}" as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown. Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, all attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variable `properties` Anything contained in tag `<extra>` is displayed in the secondary box, for example `<extra>%{fullData.name}</extra>`. To hide the secondary box completely, use an empty tag `<extra></extra>`. */
+    hovertemplate?: string | string[];
+    /**
+     * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
+     * @default '-'
+     */
+    hovertemplatefallback?: any;
+    /** Same as `text`. */
+    hovertext?: string | string[];
+    /** Assigns id labels to each datum. These ids for object constancy of data points during animation. Should be an array of strings, not numbers or any other type. */
+    ids?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.
+     * @default 'legend'
+     */
+    legend?: string;
+    /** Sets the legend group for this trace. Traces and shapes part of the same legend group hide/show at the same time when toggling legend items. */
+    legendgroup?: string;
+    legendgrouptitle?: LegendGroupTitle;
+    /**
+     * Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.
+     * @default 1000
+     */
+    legendrank?: number;
+    /**
+     * Sets the width (in px or fraction) of the legend for this trace.
+     * Minimum: 0
+     */
+    legendwidth?: number;
+    /** Sets which tile features to color, using the value of the tile feature property set in `featureidkey`. */
+    locations?: Datum[] | Datum[][] | TypedArray;
+    marker?: {
+        line?: _internal.ErrorY;
+        /**
+         * Sets the opacity of the locations.
+         * @default 1
+         * Range: [0, 1]
+         */
+        opacity?: number;
+    };
+    /**
+     * Sets the maximum zoom level (map.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.
+     * @default 24
+     * Range: [0, 24]
+     */
+    maxzoom?: number;
+    /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
+    meta?: any;
+    /**
+     * Sets the minimum zoom level (map.layer.minzoom). At zoom levels less than the minzoom, the layer will be hidden.
+     * @default 0
+     * Range: [0, 24]
+     */
+    minzoom?: number;
+    /** Sets the trace name. The trace name appears as the legend item and on hover. */
+    name?: string;
+    /**
+     * Reverses the color mapping if true. If true, `zmin` will correspond to the last color in the array and `zmax` will correspond to the first color.
+     * @default false
+     */
+    reversescale?: boolean;
+    /**
+     * Determines whether or not an item corresponding to this trace is shown in the legend.
+     * @default false
+     */
+    showlegend?: boolean;
+    /**
+     * Determines whether or not a colorbar is displayed for this trace.
+     * @default true
+     */
+    showscale?: boolean;
+    /** Sets the vector tile source for this trace. It can be a URL to a TileJSON document, or an array of tile URL templates with `{z}`, `{x}` and `{y}` placeholders. Tiles must be in the Mapbox Vector Tile format. */
+    source?: any;
+    /** Sets the attribution for this source. */
+    sourceattribution?: string;
+    /** Sets the layer of the vector tile source to draw (map.layer.source-layer). */
+    sourcelayer?: string;
+    /**
+     * Sets a reference between this trace's data coordinates and a map subplot. If *map* (the default value), the data refer to `layout.map`. If *map2*, the data refer to `layout.map2`, and so on.
+     * @default 'map'
+     */
+    subplot?: string;
+    /** Sets the text elements associated with each location. */
+    text?: string | string[];
+    type?: 'vectortilemap';
+    /** Assign an id to this trace, Use this to provide object constancy between traces during animations and transitions. */
+    uid?: string;
+    /** Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves. */
+    uirevision?: any;
+    /**
+     * Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).
+     * @default true
+     */
+    visible?: true | false | 'legendonly';
+    /** Sets the color values. The values apply to tile features through feature state, so a change to `z` does not fetch the tiles again. */
+    z?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * Determines whether or not the color domain is computed with respect to the input data (here in `z`) or the bounds set in `zmin` and `zmax` Defaults to `false` when `zmin` and `zmax` are set by the user.
+     * @default true
+     */
+    zauto?: boolean;
+    /**
+     * Sets the upper bound of the color domain. Value should have the same units as in `z` and if set, `zmin` must be set as well.
+     * Setting this also sets: zauto = false
+     */
+    zmax?: number;
+    /** Sets the mid-point of the color domain by scaling `zmin` and/or `zmax` to be equidistant to this point. Value should have the same units as in `z`. Has no effect when `zauto` is `false`. */
+    zmid?: number;
+    /**
+     * Sets the lower bound of the color domain. Value should have the same units as in `z` and if set, `zmax` must be set as well.
+     * Setting this also sets: zauto = false
+     */
+    zmin?: number;
+}
+
 export interface ViolinData {
     /** Set several traces linked to the same position axis or matching axes to the same alignmentgroup. This controls whether bars compute their positional range dependently or independently. */
     alignmentgroup?: string;
@@ -11844,6 +11988,7 @@ export type Data =
     | Partial<SurfaceData>
     | Partial<TableData>
     | Partial<TreemapData>
+    | Partial<VectortilemapData>
     | Partial<ViolinData>
     | Partial<VolumeData>
     | Partial<WaterfallData>;
