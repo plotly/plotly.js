@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "description": "The open source javascript graphing library that powers plotly",
+  "description": "The open source JavaScript graphing library that powers plotly.py and Plotly Dash",
   "main": "./dist/plotly.js",
   "authors": [
     "Plotly, Inc."
@@ -15,12 +15,9 @@
   ],
   "homepage": "https://plotly.com/",
   "ignore": [
-    "**/.*",
-    "bower_components",
-    "build",
-    "devtools",
-    "node_modules",
-    "tasks",
-    "test"
+    "**/*",
+    "!dist/**",
+    "!LICENSE",
+    "!README.md"
   ]
 }
