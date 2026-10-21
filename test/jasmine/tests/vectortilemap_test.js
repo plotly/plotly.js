@@ -460,4 +460,54 @@ describe('Test vectortilemap interactions:', function () {
             })
             .then(done, done.fail);
     });
+
+    it('@gl should match *locations* to feature ids with the MapLibre rule, so *001* matches id 1', function (done) {
+        var hoverPts;
+        var fig = Lib.extendDeep({}, mock);
+        fig.data = [fig.data[1]];
+        delete fig.data[0].zkey;
+        fig.data[0].locations = ['001', '002'];
+        fig.data[0].z = [10, 20];
+
+        plotAndWaitForTiles(fig)
+            .then(function () {
+                var map = getMap();
+                var source = gd._fullData[0]._glTrace.sourceId;
+                expect(map.getFeatureState({ source: source, sourceLayer: 'wells', id: '001' }).z).toBe(10);
+
+                gd.on('plotly_hover', function (d) {
+                    hoverPts = d.points;
+                });
+                mouseEvent('mousemove', ...lonlatToPage(WELLS.W1));
+            })
+            .then(delay(MOUSE_DELAY))
+            .then(function () {
+                expect(hoverPts[0].location).toBe('001');
+                expect(hoverPts[0].pointNumber).toBe(0);
+                expect(hoverPts[0].z).toBe(10);
+            })
+            .then(done, done.fail);
+    });
+
+    it('@gl should warn, and draw the other traces, when a tile server cannot be reached', function (done) {
+        spyOn(Lib, 'warn');
+        var fig = squaresFig();
+        fig.data.unshift({
+            type: 'vectortilemap',
+            source: ['http://127.0.0.1:9/{z}/{x}/{y}.pbf'],
+            sourcelayer: 'nothing',
+            layertype: 'line'
+        });
+
+        plotAndWaitForTiles(fig)
+            .then(function () {
+                return delay(500)();
+            })
+            .then(function () {
+                expect(Lib.warn).toHaveBeenCalled();
+                var squares = getMap().queryRenderedFeatures({ layers: [gd._fullData[1]._glTrace.mainLayerId] });
+                expect(squares.length).toBeGreaterThan(0, 'the squares trace draws');
+            })
+            .then(done, done.fail);
+    });
 });

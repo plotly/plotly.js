@@ -1,5 +1,6 @@
 import _Axes from '../../plots/cartesian/axes';
 import _choroplethHover from '../choropleth/hover';
+import { featureKey } from './calc';
 import { makeFeatureColorFn } from './convert';
 
 const Axes: any = _Axes;
@@ -59,7 +60,7 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
         const f = features[i];
         let index: number | undefined;
         if (hasLocations) {
-            index = locToIndex.get(String(f.id));
+            index = locToIndex.get(featureKey(f.id));
             if (index === undefined) continue;
         } else if (trace.zkey && typeof f.properties[trace.zkey] !== 'number') {
             continue;

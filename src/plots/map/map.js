@@ -456,9 +456,21 @@ proto.resolveOnRender = function (resolve) {
 };
 
 proto.rejectOnError = function (reject) {
+    var self = this;
     var map = this.map;
 
-    function handler() {
+    function handler(evt) {
+        // A tile server that fails for a vectortilemap trace leaves the other traces drawn
+        const tileSources = self._vectorTileSources;
+        if (evt && evt.sourceId && tileSources) {
+            for (const entry of tileSources.values()) {
+                if (entry.id === evt.sourceId) {
+                    Lib.warn(`Could not load a tile of source ${evt.sourceId}: ${evt.error && evt.error.message}`);
+                    map.once('error', handler);
+                    return;
+                }
+            }
+        }
         reject(new Error(constants.mapOnErrorMsg));
     }
 

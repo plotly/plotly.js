@@ -1,3 +1,5 @@
+import { featureKey } from './calc';
+
 /**
  * Select the rendered tile features inside a box or lasso selection.
  *
@@ -44,7 +46,7 @@ export default function selectPoints(searchInfo: any, selectionTester: any) {
     for (let i = 0; i < features.length; i++) {
         const f = features[i];
         if (f.id === undefined) continue;
-        if (hasLocations && !locToIndex.has(String(f.id))) continue;
+        if (hasLocations && !locToIndex.has(featureKey(f.id))) continue;
         const item = byId.get(f.id);
         if (item) item.pieces.push(f.geometry);
         else byId.set(f.id, { feature: f, pieces: [f.geometry] });
@@ -67,7 +69,7 @@ export default function selectPoints(searchInfo: any, selectionTester: any) {
         }
         if (!hit) continue;
 
-        const index = hasLocations ? locToIndex.get(String(id))! : null;
+        const index = hasLocations ? locToIndex.get(featureKey(id))! : null;
         selectedIds.add(id);
         selection.push({
             pointNumber: index,
