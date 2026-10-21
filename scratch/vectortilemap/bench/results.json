@@ -1,0 +1,1382 @@
+[
+ {
+  "method": "choroplethmap",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 3225,
+  "readyMs": 3230,
+  "longTasks": {
+   "n": 3,
+   "sum": 1437,
+   "max": 1199
+  },
+  "maxGapMs": 1214,
+  "geojsonMB": 23.2,
+  "heapMB": 212,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 3.1,
+   "maxMs": 13.3
+  },
+  "restyle": {
+   "promiseMs": 2487,
+   "idleMs": 2488,
+   "longTasks": {
+    "n": 1,
+    "sum": 1000,
+    "max": 1000
+   },
+   "maxGapMs": 1007,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 2433,
+   "idleMs": 2437,
+   "longTasks": {
+    "n": 1,
+    "sum": 944,
+    "max": 944
+   },
+   "maxGapMs": 958
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 2906,
+  "readyMs": 2910,
+  "longTasks": {
+   "n": 2,
+   "sum": 1232,
+   "max": 1114
+  },
+  "maxGapMs": 1121,
+  "geojsonMB": 23.2,
+  "heapMB": 210,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 3,
+   "maxMs": 10.4
+  },
+  "restyle": {
+   "promiseMs": 2341,
+   "idleMs": 2343,
+   "longTasks": {
+    "n": 1,
+    "sum": 858,
+    "max": 858
+   },
+   "maxGapMs": 871,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 2382,
+   "idleMs": 2387,
+   "longTasks": {
+    "n": 1,
+    "sum": 949,
+    "max": 949
+   },
+   "maxGapMs": 989
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 2880,
+  "readyMs": 2886,
+  "longTasks": {
+   "n": 2,
+   "sum": 1205,
+   "max": 1080
+  },
+  "maxGapMs": 1087,
+  "geojsonMB": 23.2,
+  "heapMB": 213,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.9,
+   "maxMs": 13.5
+  },
+  "restyle": {
+   "promiseMs": 2350,
+   "idleMs": 2351,
+   "longTasks": {
+    "n": 1,
+    "sum": 987,
+    "max": 987
+   },
+   "maxGapMs": 998,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 2160,
+   "idleMs": 2165,
+   "longTasks": {
+    "n": 1,
+    "sum": 860,
+    "max": 860
+   },
+   "maxGapMs": 867
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 407,
+  "readyMs": 425,
+  "longTasks": {
+   "n": 1,
+   "sum": 110,
+   "max": 110
+  },
+  "maxGapMs": 113,
+  "geojsonMB": 0,
+  "heapMB": 42,
+  "tileRequests": 4,
+  "tileKB": 156,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.1,
+   "maxMs": 12.1
+  },
+  "restyle": {
+   "promiseMs": 53,
+   "idleMs": 57,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 52,
+   "geojsonRequests": 0,
+   "featureStateMs": 2,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 40,
+   "idleMs": 40,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 34
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 448,
+  "readyMs": 465,
+  "longTasks": {
+   "n": 1,
+   "sum": 107,
+   "max": 107
+  },
+  "maxGapMs": 114,
+  "geojsonMB": 0,
+  "heapMB": 36,
+  "tileRequests": 4,
+  "tileKB": 156,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.2,
+   "maxMs": 13.8
+  },
+  "restyle": {
+   "promiseMs": 52,
+   "idleMs": 53,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 44,
+   "geojsonRequests": 0,
+   "featureStateMs": 2,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 52,
+   "idleMs": 53,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 47
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 470,
+  "readyMs": 472,
+  "longTasks": {
+   "n": 1,
+   "sum": 119,
+   "max": 119
+  },
+  "maxGapMs": 125,
+  "geojsonMB": 0,
+  "heapMB": 42,
+  "tileRequests": 4,
+  "tileKB": 156,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.4,
+   "maxMs": 16.3
+  },
+  "restyle": {
+   "promiseMs": 58,
+   "idleMs": 60,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 57,
+   "geojsonRequests": 0,
+   "featureStateMs": 3,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 38,
+   "idleMs": 44,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 36
+  },
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 402,
+  "readyMs": 408,
+  "longTasks": {
+   "n": 1,
+   "sum": 79,
+   "max": 79
+  },
+  "maxGapMs": 94,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 4,
+  "tileKB": 66,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 368,
+  "readyMs": 408,
+  "longTasks": {
+   "n": 1,
+   "sum": 87,
+   "max": 87
+  },
+  "maxGapMs": 99,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 4,
+  "tileKB": 137,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "counties",
+  "view": "national",
+  "plotMs": 451,
+  "readyMs": 458,
+  "longTasks": {
+   "n": 1,
+   "sum": 93,
+   "max": 93
+  },
+  "maxGapMs": 105,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 4,
+  "tileKB": 156,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 2973,
+  "readyMs": 2974,
+  "longTasks": {
+   "n": 2,
+   "sum": 1467,
+   "max": 1311
+  },
+  "maxGapMs": 1322,
+  "geojsonMB": 23.2,
+  "heapMB": 205,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 13,
+   "medianMs": 2.8,
+   "maxMs": 10.5
+  },
+  "restyle": {
+   "promiseMs": 2067,
+   "idleMs": 2068,
+   "longTasks": {
+    "n": 1,
+    "sum": 872,
+    "max": 872
+   },
+   "maxGapMs": 881,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 2285,
+   "idleMs": 2301,
+   "longTasks": {
+    "n": 1,
+    "sum": 1026,
+    "max": 1026
+   },
+   "maxGapMs": 1034
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 2685,
+  "readyMs": 2686,
+  "longTasks": {
+   "n": 2,
+   "sum": 1337,
+   "max": 1225
+  },
+  "maxGapMs": 1239,
+  "geojsonMB": 23.2,
+  "heapMB": 205,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 13,
+   "medianMs": 2.8,
+   "maxMs": 9.8
+  },
+  "restyle": {
+   "promiseMs": 2038,
+   "idleMs": 2045,
+   "longTasks": {
+    "n": 1,
+    "sum": 811,
+    "max": 811
+   },
+   "maxGapMs": 821,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 2154,
+   "idleMs": 2158,
+   "longTasks": {
+    "n": 1,
+    "sum": 1002,
+    "max": 1002
+   },
+   "maxGapMs": 1009
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 2667,
+  "readyMs": 2671,
+  "longTasks": {
+   "n": 2,
+   "sum": 1272,
+   "max": 1162
+  },
+  "maxGapMs": 1175,
+  "geojsonMB": 23.2,
+  "heapMB": 206,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 13,
+   "medianMs": 3,
+   "maxMs": 14.8
+  },
+  "restyle": {
+   "promiseMs": 2092,
+   "idleMs": 2096,
+   "longTasks": {
+    "n": 1,
+    "sum": 966,
+    "max": 966
+   },
+   "maxGapMs": 979,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 2109,
+   "idleMs": 2110,
+   "longTasks": {
+    "n": 1,
+    "sum": 913,
+    "max": 913
+   },
+   "maxGapMs": 922
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 284,
+  "readyMs": 426,
+  "longTasks": {
+   "n": 1,
+   "sum": 108,
+   "max": 108
+  },
+  "maxGapMs": 114,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 2,
+  "tileKB": 4,
+  "hover": {
+   "n": 24,
+   "hits": 13,
+   "medianMs": 2.2,
+   "maxMs": 12.2
+  },
+  "restyle": {
+   "promiseMs": 43,
+   "idleMs": 50,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 42,
+   "geojsonRequests": 0,
+   "featureStateMs": 4,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 35,
+   "idleMs": 43,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 36
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 319,
+  "readyMs": 446,
+  "longTasks": {
+   "n": 1,
+   "sum": 134,
+   "max": 134
+  },
+  "maxGapMs": 138,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 2,
+  "tileKB": 4,
+  "hover": {
+   "n": 24,
+   "hits": 13,
+   "medianMs": 2.5,
+   "maxMs": 10.8
+  },
+  "restyle": {
+   "promiseMs": 47,
+   "idleMs": 48,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 39,
+   "geojsonRequests": 0,
+   "featureStateMs": 4,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 32,
+   "idleMs": 37,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 27
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 296,
+  "readyMs": 452,
+  "longTasks": {
+   "n": 1,
+   "sum": 129,
+   "max": 129
+  },
+  "maxGapMs": 134,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 2,
+  "tileKB": 4,
+  "hover": {
+   "n": 24,
+   "hits": 13,
+   "medianMs": 2.3,
+   "maxMs": 18.2
+  },
+  "restyle": {
+   "promiseMs": 41,
+   "idleMs": 43,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 32,
+   "geojsonRequests": 0,
+   "featureStateMs": 3,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 33,
+   "idleMs": 34,
+   "longTasks": {
+    "n": 0,
+    "sum": 0,
+    "max": 0
+   },
+   "maxGapMs": 27
+  },
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 290,
+  "readyMs": 427,
+  "longTasks": {
+   "n": 1,
+   "sum": 104,
+   "max": 104
+  },
+  "maxGapMs": 115,
+  "geojsonMB": 0,
+  "heapMB": 36,
+  "tileRequests": 2,
+  "tileKB": 4,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 280,
+  "readyMs": 414,
+  "longTasks": {
+   "n": 1,
+   "sum": 78,
+   "max": 78
+  },
+  "maxGapMs": 95,
+  "geojsonMB": 0,
+  "heapMB": 36,
+  "tileRequests": 2,
+  "tileKB": 4,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "counties",
+  "view": "metro",
+  "plotMs": 265,
+  "readyMs": 403,
+  "longTasks": {
+   "n": 1,
+   "sum": 69,
+   "max": 69
+  },
+  "maxGapMs": 81,
+  "geojsonMB": 0,
+  "heapMB": 36,
+  "tileRequests": 2,
+  "tileKB": 4,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 15406,
+  "readyMs": 15408,
+  "longTasks": {
+   "n": 2,
+   "sum": 6837,
+   "max": 6564
+  },
+  "maxGapMs": 6569,
+  "geojsonMB": 116.9,
+  "heapMB": 369,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 18.9,
+   "maxMs": 34.9
+  },
+  "restyle": {
+   "promiseMs": 17905,
+   "idleMs": 17914,
+   "longTasks": {
+    "n": 1,
+    "sum": 7114,
+    "max": 7114
+   },
+   "maxGapMs": 7124,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 17214,
+   "idleMs": 17223,
+   "longTasks": {
+    "n": 2,
+    "sum": 6187,
+    "max": 6132
+   },
+   "maxGapMs": 6143
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 17518,
+  "readyMs": 17520,
+  "longTasks": {
+   "n": 3,
+   "sum": 7316,
+   "max": 6869
+  },
+  "maxGapMs": 6878,
+  "geojsonMB": 116.9,
+  "heapMB": 353,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 20,
+   "maxMs": 39
+  },
+  "restyle": {
+   "promiseMs": 17497,
+   "idleMs": 17504,
+   "longTasks": {
+    "n": 2,
+    "sum": 6908,
+    "max": 6572
+   },
+   "maxGapMs": 6584,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 15717,
+   "idleMs": 15727,
+   "longTasks": {
+    "n": 1,
+    "sum": 6204,
+    "max": 6204
+   },
+   "maxGapMs": 6213
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 15492,
+  "readyMs": 15495,
+  "longTasks": {
+   "n": 2,
+   "sum": 6486,
+   "max": 6247
+  },
+  "maxGapMs": 6258,
+  "geojsonMB": 116.9,
+  "heapMB": 353,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 21.3,
+   "maxMs": 35.9
+  },
+  "restyle": {
+   "promiseMs": 15237,
+   "idleMs": 15244,
+   "longTasks": {
+    "n": 2,
+    "sum": 6140,
+    "max": 5782
+   },
+   "maxGapMs": 5792,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 16663,
+   "idleMs": 16670,
+   "longTasks": {
+    "n": 1,
+    "sum": 6269,
+    "max": 6269
+   },
+   "maxGapMs": 6284
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 1060,
+  "readyMs": 1061,
+  "longTasks": {
+   "n": 7,
+   "sum": 855,
+   "max": 238
+  },
+  "maxGapMs": 305,
+  "geojsonMB": 0,
+  "heapMB": 83,
+  "tileRequests": 4,
+  "tileKB": 833,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.5,
+   "maxMs": 10.8
+  },
+  "restyle": {
+   "promiseMs": 373,
+   "idleMs": 379,
+   "longTasks": {
+    "n": 2,
+    "sum": 364,
+    "max": 208
+   },
+   "maxGapMs": 370,
+   "geojsonRequests": 0,
+   "featureStateMs": 113,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 308,
+   "idleMs": 317,
+   "longTasks": {
+    "n": 2,
+    "sum": 301,
+    "max": 197
+   },
+   "maxGapMs": 305
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 1061,
+  "readyMs": 1068,
+  "longTasks": {
+   "n": 7,
+   "sum": 848,
+   "max": 283
+  },
+  "maxGapMs": 255,
+  "geojsonMB": 0,
+  "heapMB": 82,
+  "tileRequests": 4,
+  "tileKB": 689,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.5,
+   "maxMs": 10.8
+  },
+  "restyle": {
+   "promiseMs": 401,
+   "idleMs": 414,
+   "longTasks": {
+    "n": 2,
+    "sum": 391,
+    "max": 282
+   },
+   "maxGapMs": 398,
+   "geojsonRequests": 0,
+   "featureStateMs": 66,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 286,
+   "idleMs": 287,
+   "longTasks": {
+    "n": 2,
+    "sum": 278,
+    "max": 189
+   },
+   "maxGapMs": 282
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 969,
+  "readyMs": 970,
+  "longTasks": {
+   "n": 6,
+   "sum": 745,
+   "max": 255
+  },
+  "maxGapMs": 261,
+  "geojsonMB": 0,
+  "heapMB": 72,
+  "tileRequests": 4,
+  "tileKB": 594,
+  "hover": {
+   "n": 24,
+   "hits": 14,
+   "medianMs": 2.4,
+   "maxMs": 13.6
+  },
+  "restyle": {
+   "promiseMs": 307,
+   "idleMs": 309,
+   "longTasks": {
+    "n": 2,
+    "sum": 298,
+    "max": 189
+   },
+   "maxGapMs": 304,
+   "geojsonRequests": 0,
+   "featureStateMs": 76,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 349,
+   "idleMs": 351,
+   "longTasks": {
+    "n": 2,
+    "sum": 341,
+    "max": 227
+   },
+   "maxGapMs": 345
+  },
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 559,
+  "readyMs": 563,
+  "longTasks": {
+   "n": 1,
+   "sum": 66,
+   "max": 66
+  },
+  "maxGapMs": 82,
+  "geojsonMB": 0,
+  "heapMB": 42,
+  "tileRequests": 4,
+  "tileKB": 833,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 658,
+  "readyMs": 664,
+  "longTasks": {
+   "n": 1,
+   "sum": 81,
+   "max": 81
+  },
+  "maxGapMs": 95,
+  "geojsonMB": 0,
+  "heapMB": 42,
+  "tileRequests": 4,
+  "tileKB": 833,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "tracts",
+  "view": "national",
+  "plotMs": 619,
+  "readyMs": 624,
+  "longTasks": {
+   "n": 1,
+   "sum": 82,
+   "max": 82
+  },
+  "maxGapMs": 93,
+  "geojsonMB": 0,
+  "heapMB": 42,
+  "tileRequests": 4,
+  "tileKB": 705,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 13187,
+  "readyMs": 13189,
+  "longTasks": {
+   "n": 2,
+   "sum": 6451,
+   "max": 6234
+  },
+  "maxGapMs": 6241,
+  "geojsonMB": 116.9,
+  "heapMB": 1144,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 19,
+   "medianMs": 20.5,
+   "maxMs": 127
+  },
+  "restyle": {
+   "promiseMs": 13358,
+   "idleMs": 13372,
+   "longTasks": {
+    "n": 2,
+    "sum": 6132,
+    "max": 5833
+   },
+   "maxGapMs": 5839,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 14149,
+   "idleMs": 14151,
+   "longTasks": {
+    "n": 2,
+    "sum": 7585,
+    "max": 7535
+   },
+   "maxGapMs": 7545
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 13107,
+  "readyMs": 13109,
+  "longTasks": {
+   "n": 2,
+   "sum": 6348,
+   "max": 6085
+  },
+  "maxGapMs": 6097,
+  "geojsonMB": 116.9,
+  "heapMB": 1146,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 19,
+   "medianMs": 17.9,
+   "maxMs": 117.2
+  },
+  "restyle": {
+   "promiseMs": 11918,
+   "idleMs": 11922,
+   "longTasks": {
+    "n": 2,
+    "sum": 4827,
+    "max": 4479
+   },
+   "maxGapMs": 4490,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 14184,
+   "idleMs": 14186,
+   "longTasks": {
+    "n": 1,
+    "sum": 6412,
+    "max": 6412
+   },
+   "maxGapMs": 6419
+  },
+  "errors": []
+ },
+ {
+  "method": "choroplethmap",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 13321,
+  "readyMs": 13322,
+  "longTasks": {
+   "n": 2,
+   "sum": 6458,
+   "max": 6234
+  },
+  "maxGapMs": 6244,
+  "geojsonMB": 116.9,
+  "heapMB": 1147,
+  "tileRequests": 0,
+  "tileKB": 0,
+  "hover": {
+   "n": 24,
+   "hits": 19,
+   "medianMs": 16.2,
+   "maxMs": 147.2
+  },
+  "restyle": {
+   "promiseMs": 12195,
+   "idleMs": 12196,
+   "longTasks": {
+    "n": 2,
+    "sum": 5211,
+    "max": 5154
+   },
+   "maxGapMs": 5164,
+   "geojsonRequests": 0,
+   "featureStateMs": null,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 13364,
+   "idleMs": 13366,
+   "longTasks": {
+    "n": 3,
+    "sum": 6551,
+    "max": 6158
+   },
+   "maxGapMs": 6164
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 806,
+  "readyMs": 818,
+  "longTasks": {
+   "n": 5,
+   "sum": 716,
+   "max": 256
+  },
+  "maxGapMs": 306,
+  "geojsonMB": 0,
+  "heapMB": 66,
+  "tileRequests": 2,
+  "tileKB": 141,
+  "hover": {
+   "n": 24,
+   "hits": 19,
+   "medianMs": 2.6,
+   "maxMs": 12.9
+  },
+  "restyle": {
+   "promiseMs": 290,
+   "idleMs": 292,
+   "longTasks": {
+    "n": 2,
+    "sum": 269,
+    "max": 157
+   },
+   "maxGapMs": 278,
+   "geojsonRequests": 0,
+   "featureStateMs": 75,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 232,
+   "idleMs": 244,
+   "longTasks": {
+    "n": 2,
+    "sum": 225,
+    "max": 142
+   },
+   "maxGapMs": 230
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 717,
+  "readyMs": 719,
+  "longTasks": {
+   "n": 4,
+   "sum": 559,
+   "max": 235
+  },
+  "maxGapMs": 160,
+  "geojsonMB": 0,
+  "heapMB": 69,
+  "tileRequests": 2,
+  "tileKB": 141,
+  "hover": {
+   "n": 24,
+   "hits": 19,
+   "medianMs": 2.5,
+   "maxMs": 14
+  },
+  "restyle": {
+   "promiseMs": 269,
+   "idleMs": 276,
+   "longTasks": {
+    "n": 2,
+    "sum": 260,
+    "max": 157
+   },
+   "maxGapMs": 269,
+   "geojsonRequests": 0,
+   "featureStateMs": 70,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 263,
+   "idleMs": 266,
+   "longTasks": {
+    "n": 2,
+    "sum": 255,
+    "max": 154
+   },
+   "maxGapMs": 261
+  },
+  "errors": []
+ },
+ {
+  "method": "vectortilemap",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 711,
+  "readyMs": 723,
+  "longTasks": {
+   "n": 4,
+   "sum": 601,
+   "max": 261
+  },
+  "maxGapMs": 257,
+  "geojsonMB": 0,
+  "heapMB": 66,
+  "tileRequests": 2,
+  "tileKB": 141,
+  "hover": {
+   "n": 24,
+   "hits": 19,
+   "medianMs": 2.5,
+   "maxMs": 10.2
+  },
+  "restyle": {
+   "promiseMs": 289,
+   "idleMs": 294,
+   "longTasks": {
+    "n": 2,
+    "sum": 270,
+    "max": 158
+   },
+   "maxGapMs": 276,
+   "geojsonRequests": 0,
+   "featureStateMs": 77,
+   "tileRequests": 0
+  },
+  "react": {
+   "promiseMs": 263,
+   "idleMs": 270,
+   "longTasks": {
+    "n": 2,
+    "sum": 256,
+    "max": 133
+   },
+   "maxGapMs": 261
+  },
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 343,
+  "readyMs": 400,
+  "longTasks": {
+   "n": 1,
+   "sum": 82,
+   "max": 82
+  },
+  "maxGapMs": 92,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 2,
+  "tileKB": 141,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 313,
+  "readyMs": 388,
+  "longTasks": {
+   "n": 1,
+   "sum": 70,
+   "max": 70
+  },
+  "maxGapMs": 81,
+  "geojsonMB": 0,
+  "heapMB": 36,
+  "tileRequests": 2,
+  "tileKB": 141,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ },
+ {
+  "method": "style",
+  "layer": "tracts",
+  "view": "metro",
+  "plotMs": 355,
+  "readyMs": 410,
+  "longTasks": {
+   "n": 1,
+   "sum": 92,
+   "max": 92
+  },
+  "maxGapMs": 103,
+  "geojsonMB": 0,
+  "heapMB": 37,
+  "tileRequests": 2,
+  "tileKB": 141,
+  "hover": null,
+  "restyle": null,
+  "react": null,
+  "errors": []
+ }
+]
