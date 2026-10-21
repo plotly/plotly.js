@@ -74,10 +74,13 @@ function getUnrotatedSize(newSvg, g) {
  * @param {number} [width0]: the SVG's own reported width, to detect the
  *   Firefox v82+ overflow bug (see link below); omit to skip that check
  * @param {number} [height0]: same, for height
+ * @param {boolean} [unrotated]: measure in the group's own coordinates when an
+ *   ancestor is rotated. Off by default so convertToTspans' other callers keep
+ *   the screen-space measurement they were laid out with
  */
-function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, width0, height0) {
+function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, width0, height0, unrotated) {
     var g = newSvg.select('g');
-    var bb = getUnrotatedSize(newSvg, g) || g.node().getBoundingClientRect();
+    var bb = (unrotated && getUnrotatedSize(newSvg, g)) || g.node().getBoundingClientRect();
     var w = bb.width;
     var h = bb.height;
     var w0 = width0 === undefined ? w : width0;
@@ -284,7 +287,7 @@ exports.repositionMathGroup = function(_context) {
 
     var textAnchor = _context.attr('text-anchor');
     var fontSize = parseInt(_context.node().style.fontSize, 10);
-    positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize);
+    positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, undefined, undefined, true);
 };
 
 /**
