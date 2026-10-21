@@ -82,11 +82,16 @@ export default function convert(calcTrace: any[]) {
         'fill-opacity': opacity
     };
 
-    line.paint = {
-        'line-color': markerLine.color,
-        'line-width': markerLine.width,
-        'line-opacity': opacity
-    };
+    // `marker.line.color` has no value when `marker.line.width` is 0
+    if (markerLine.width > 0) {
+        line.paint = {
+            'line-color': markerLine.color,
+            'line-width': markerLine.width,
+            'line-opacity': opacity
+        };
+    } else {
+        line.layout.visibility = 'none';
+    }
 
     return { fill, line };
 }

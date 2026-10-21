@@ -168,6 +168,25 @@ describe('Test vectortilemap interactions:', function () {
             .then(done, done.fail);
     });
 
+    it('@gl should hide the line layer when *marker.line.width* is 0', function (done) {
+        var fig = Lib.extendDeep({}, mock);
+        fig.data[0].marker.line.width = 0;
+
+        function lineVisibility() {
+            return getMap().getLayoutProperty(gd._fullData[0]._glTrace.layerIds.line, 'visibility');
+        }
+
+        plotAndWaitForTiles(fig)
+            .then(function () {
+                expect(lineVisibility()).toBe('none');
+                return Plotly.restyle(gd, 'marker.line.width', 2);
+            })
+            .then(function () {
+                expect(lineVisibility()).toBe('visible');
+            })
+            .then(done, done.fail);
+    });
+
     it('@gl should restyle *z* without a new source or a tile request', function (done) {
         var source;
         var requests;
