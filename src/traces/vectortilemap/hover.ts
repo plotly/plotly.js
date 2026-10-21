@@ -1,7 +1,7 @@
 import _Axes from '../../plots/cartesian/axes';
 import _choroplethHover from '../choropleth/hover';
 import { featureKey } from './calc';
-import { makeFeatureColorFn } from './convert';
+import { makeFeatureColorFn, valueAtZoom } from './convert';
 
 const Axes: any = _Axes;
 const choroplethHover: any = _choroplethHover;
@@ -39,9 +39,11 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
     const py = pointData.ya.c2p(lonlat);
     const layertype = trace.layertype;
 
+    const zoom = subplot.map.getZoom();
+    const size = layertype === 'circle' ? valueAtZoom(trace.marker._sizestops, trace.marker.size, zoom) : 0;
     let r = 0;
-    if (layertype === 'circle') r = trace.marker.size / 2 + (trace.marker.line.width || 0) + HIT_SLOP;
-    else if (layertype === 'line') r = trace.line.width / 2 + HIT_SLOP;
+    if (layertype === 'circle') r = size / 2 + (trace.marker.line.width || 0) + HIT_SLOP;
+    else if (layertype === 'line') r = valueAtZoom(trace.line._widthstops, trace.line.width, zoom) / 2 + HIT_SLOP;
     const query = r
         ? [
               [px - r, py - r],
@@ -87,7 +89,7 @@ export default function hoverPoints(pointData: any, xval: number, yval: number) 
     const pt = hasLocations
         ? cd[bestIndex!]
         : { loc: best.id, z: trace.zkey ? best.properties[trace.zkey] : undefined };
-    const rad = layertype === 'circle' ? trace.marker.size / 2 : 0;
+    const rad = size / 2;
 
     pointData.x0 = bestXY[0] - rad;
     pointData.x1 = bestXY[0] + rad;

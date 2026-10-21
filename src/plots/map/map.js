@@ -9,6 +9,14 @@ const maplibregl = require('maplibre-gl/dist/maplibre-gl.mjs');
 const maplibreWorkerSource = require('../../../build/maplibre_worker');
 let workerUrlIsSet = false;
 
+// Register the protocols of `config.mapProtocols`. MapLibre keeps one global list.
+const addMapProtocols = (protocols) => {
+    if (!Lib.isPlainObject(protocols)) return;
+    for (const name in protocols) {
+        if (typeof protocols[name] === 'function') maplibregl.addProtocol(name, protocols[name]);
+    }
+};
+
 // Point maplibre-gl at the worker
 const setWorkerUrl = () => {
     // Only load the inlined blob when the first map is requested to avoid taking a chunk of memory
@@ -127,6 +135,7 @@ proto.createMap = function (calcData, fullLayout, resolve, reject) {
     }
 
     setWorkerUrl();
+    addMapProtocols(self.gd._context.mapProtocols);
 
     // Create the map!
     const map = (self.map = new maplibregl.Map(mapOptions).addControl(

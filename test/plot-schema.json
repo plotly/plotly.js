@@ -239,6 +239,11 @@
       "min": 0,
       "valType": "integer"
     },
+    "mapProtocols": {
+      "description": "Sets custom URL protocols for the tiles of `map` subplots, as an object that maps a protocol name to a MapLibre protocol function (maplibregl.addProtocol), for example `{pmtiles: new pmtiles.Protocol().tile}`. A `source` that starts with the name and *://* then loads through the function. Protocols apply to every map on the page.",
+      "dflt": {},
+      "valType": "any"
+    },
     "modeBarButtons": {
       "description": "Define fully custom mode bar buttons as nested array, where the outer arrays represents button groups, and the inner arrays have buttons config objects or names of default buttons See ./components/modebar/buttons.js for more info.",
       "dflt": false,
@@ -82961,6 +82966,67 @@
           "editType": "calc",
           "valType": "string"
         },
+        "filters": {
+          "items": {
+            "filter": {
+              "description": "Keeps only the tile features that pass every enabled filter, in the browser. A change to a filter fetches no tile. Hover and selection see only the features that pass.",
+              "editType": "plot",
+              "enabled": {
+                "description": "Determines whether this filter applies.",
+                "dflt": true,
+                "editType": "plot",
+                "valType": "boolean"
+              },
+              "key": {
+                "description": "Sets the tile feature property that the filter tests.",
+                "editType": "plot",
+                "valType": "string"
+              },
+              "name": {
+                "description": "When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template.",
+                "editType": "none",
+                "valType": "string"
+              },
+              "operation": {
+                "description": "Sets the filter operation. *=* keeps features with a property equal to `value`. *!=* keeps the others. *<*, *>=*, *>* and *<=* compare the property with `value`. *[]*, *()*, *[)* and *(]* keep a property inside the range [`value[0]`, `value[1]`], with *[* and *]* for an included bound and *(* and *)* for an excluded one. *][*, *)(*, *](* and *)[* keep a property outside the range. *{}* keeps a property that is one of the items of `value`. *}{* keeps the others.",
+                "dflt": "=",
+                "editType": "plot",
+                "valType": "enumerated",
+                "values": [
+                  "=",
+                  "!=",
+                  "<",
+                  ">=",
+                  ">",
+                  "<=",
+                  "[]",
+                  "()",
+                  "[)",
+                  "(]",
+                  "][",
+                  ")(",
+                  "](",
+                  ")[",
+                  "{}",
+                  "}{"
+                ]
+              },
+              "role": "object",
+              "templateitemname": {
+                "description": "Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.",
+                "editType": "calc",
+                "valType": "string"
+              },
+              "value": {
+                "description": "Sets the value that the filter compares with: a number or a string, an array of two for a range operation, or an array for *{}* and *}{*.",
+                "dflt": 0,
+                "editType": "plot",
+                "valType": "any"
+              }
+            }
+          },
+          "role": "object"
+        },
         "hoverinfo": {
           "arrayOk": true,
           "description": "Determines what trace information appears on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.",
@@ -83292,6 +83358,26 @@
             "editType": "plot",
             "min": 0,
             "valType": "number"
+          },
+          "widthstops": {
+            "description": "Sets the line width at zoom levels, as [zoom, pixels] pairs, for example [[5, 2], [12, 8]]. Between two zoom levels the line width changes linearly. Outside them it stays at the nearest pair. When set, it replaces the single value.",
+            "dimensions": 2,
+            "editType": "plot",
+            "freeLength": true,
+            "items": [
+              {
+                "editType": "plot",
+                "max": 24,
+                "min": 0,
+                "valType": "number"
+              },
+              {
+                "editType": "plot",
+                "min": 0,
+                "valType": "number"
+              }
+            ],
+            "valType": "info_array"
           }
         },
         "locations": {
@@ -83342,6 +83428,26 @@
             "editType": "plot",
             "min": 0,
             "valType": "number"
+          },
+          "sizestops": {
+            "description": "Sets the circle diameter at zoom levels, as [zoom, pixels] pairs, for example [[5, 2], [12, 8]]. Between two zoom levels the circle diameter changes linearly. Outside them it stays at the nearest pair. When set, it replaces the single value.",
+            "dimensions": 2,
+            "editType": "plot",
+            "freeLength": true,
+            "items": [
+              {
+                "editType": "plot",
+                "max": 24,
+                "min": 0,
+                "valType": "number"
+              },
+              {
+                "editType": "plot",
+                "min": 0,
+                "valType": "number"
+              }
+            ],
+            "valType": "info_array"
           }
         },
         "maxzoom": {

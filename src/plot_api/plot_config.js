@@ -345,6 +345,18 @@ var configAttributes = {
         ].join(' ')
     },
 
+    mapProtocols: {
+        valType: 'any',
+        dflt: {},
+        description: [
+            'Sets custom URL protocols for the tiles of `map` subplots, as an object that maps',
+            'a protocol name to a MapLibre protocol function (maplibregl.addProtocol),',
+            'for example `{pmtiles: new pmtiles.Protocol().tile}`.',
+            'A `source` that starts with the name and *://* then loads through the function.',
+            'Protocols apply to every map on the page.'
+        ].join(' ')
+    },
+
     topojsonURL: {
         valType: 'string',
         noBlank: true,

@@ -10984,6 +10984,29 @@ export interface VectortilemapData {
      * @default 'id'
      */
     featureidkey?: string;
+    filters?: Array<{
+        /**
+         * Determines whether this filter applies.
+         * @default true
+         */
+        enabled?: boolean;
+        /** Sets the tile feature property that the filter tests. */
+        key?: string;
+        /** When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template. */
+        name?: string;
+        /**
+         * Sets the filter operation. *=* keeps features with a property equal to `value`. *!=* keeps the others. *<*, *>=*, *>* and *<=* compare the property with `value`. *[]*, *()*, *[)* and *(]* keep a property inside the range [`value[0]`, `value[1]`], with *[* and *]* for an included bound and *(* and *)* for an excluded one. *][*, *)(*, *](* and *)[* keep a property outside the range. *{}* keeps a property that is one of the items of `value`. *}{* keeps the others.
+         * @default '='
+         */
+        operation?: '=' | '!=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[' | '{}' | '}{';
+        /** Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`. */
+        templateitemname?: string;
+        /**
+         * Sets the value that the filter compares with: a number or a string, an array of two for a range operation, or an array for *{}* and *}{*.
+         * @default 0
+         */
+        value?: any;
+    }>;
     /**
      * Determines what trace information appears on hover. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
      * @default 'all'
@@ -11024,7 +11047,18 @@ export interface VectortilemapData {
      * Minimum: 0
      */
     legendwidth?: number;
-    line?: _internal.ErrorY;
+    line?: {
+        /** Sets the line color, for a trace without `z` or `zkey`. Has an effect only when `layertype` is *line*. */
+        color?: Color;
+        /**
+         * Sets the line width, in pixels. Has an effect only when `layertype` is *line*.
+         * @default 1.5
+         * Minimum: 0
+         */
+        width?: number;
+        /** Sets the line width at zoom levels, as [zoom, pixels] pairs, for example [[5, 2], [12, 8]]. Between two zoom levels the line width changes linearly. Outside them it stays at the nearest pair. When set, it replaces the single value. */
+        widthstops?: number[];
+    };
     /** Sets which tile features to color, using the value of the tile feature property set in `featureidkey`. */
     locations?: Datum[] | Datum[][] | TypedArray;
     marker?: {
@@ -11043,6 +11077,8 @@ export interface VectortilemapData {
          * Minimum: 0
          */
         size?: number;
+        /** Sets the circle diameter at zoom levels, as [zoom, pixels] pairs, for example [[5, 2], [12, 8]]. Between two zoom levels the circle diameter changes linearly. Outside them it stays at the nearest pair. When set, it replaces the single value. */
+        sizestops?: number[];
     };
     /**
      * Sets the maximum zoom level (map.layer.maxzoom). At zoom levels equal to or greater than the maxzoom, the layer will be hidden.
@@ -17066,6 +17102,11 @@ export interface ConfigBase {
      * Range: [0, 2]
      */
     logging?: number;
+    /**
+     * Sets custom URL protocols for the tiles of `map` subplots, as an object that maps a protocol name to a MapLibre protocol function (maplibregl.addProtocol), for example `{pmtiles: new pmtiles.Protocol().tile}`. A `source` that starts with the name and *://* then loads through the function. Protocols apply to every map on the page.
+     * @default {}
+     */
+    mapProtocols?: any;
     /**
      * Define fully custom mode bar buttons as nested array, where the outer arrays represents button groups, and the inner arrays have buttons config objects or names of default buttons See ./components/modebar/buttons.js for more info.
      * @default false

@@ -95,6 +95,71 @@ describe('Test vectortilemap defaults:', function () {
     it('should default *featureidkey* to the feature id', function () {
         expect(_supply(base).featureidkey).toBe('id');
     });
+
+    it('should disable filters without a key or with a value of the wrong shape', function () {
+        var out = _supply(
+            Lib.extendFlat({}, base, {
+                filters: [
+                    { key: 'status', value: 'Active' },
+                    { value: 'Active' },
+                    { key: 'year', operation: '[]', value: [2000] },
+                    { key: 'year', operation: '[]', value: [2000, 2010] },
+                    { key: 'kind', operation: '{}', value: 'oil' },
+                    { key: 'kind', operation: '{}', value: ['oil', 'gas'] },
+                    { key: 'kind', operation: '=', value: ['oil'] }
+                ]
+            })
+        );
+        expect(
+            out.filters.map(function (f) {
+                return f.enabled;
+            })
+        ).toEqual([true, false, false, true, false, true, false]);
+        expect(out.filters[0].operation).toBe('=');
+    });
+
+    it('should convert filters to one MapLibre filter expression', function () {
+        var convert = require('../../../src/traces/vectortilemap/convert');
+        var out = _supply(
+            Lib.extendFlat({}, base, {
+                filters: [
+                    { key: 'status', operation: '{}', value: ['A', 'B'] },
+                    { key: 'year', operation: '[)', value: [2010, 2000] },
+                    { key: 'depth', operation: '>=', value: 5000, enabled: false }
+                ]
+            })
+        );
+        expect(convert.makeFilterExpression(out)).toEqual([
+            'all',
+            ['in', ['get', 'status'], ['literal', ['A', 'B']]],
+            ['all', ['has', 'year'], ['all', ['>=', ['get', 'year'], 2000], ['<', ['get', 'year'], 2010]]]
+        ]);
+        expect(convert.makeFilterExpression(_supply(base))).toBe(null);
+    });
+
+    it('should sort zoom stops and drop invalid pairs', function () {
+        var convert = require('../../../src/traces/vectortilemap/convert');
+        var out = _supply({
+            source: base.source,
+            sourcelayer: 'wells',
+            layertype: 'circle',
+            marker: {
+                sizestops: [
+                    [12, 8],
+                    [5, 2],
+                    ['x', 3]
+                ]
+            }
+        });
+        expect(out.marker._sizestops).toEqual([
+            [5, 2],
+            [12, 8]
+        ]);
+        expect(convert.valueAtZoom(out.marker._sizestops, 4, 3)).toBe(2);
+        expect(convert.valueAtZoom(out.marker._sizestops, 4, 8.5)).toBe(5);
+        expect(convert.valueAtZoom(out.marker._sizestops, 4, 20)).toBe(8);
+        expect(convert.valueAtZoom(undefined, 4, 8)).toBe(4);
+    });
 });
 
 describe('Test vectortilemap interactions:', function () {
@@ -509,5 +574,150 @@ describe('Test vectortilemap interactions:', function () {
                 expect(squares.length).toBeGreaterThan(0, 'the squares trace draws');
             })
             .then(done, done.fail);
+    });
+
+    function wellsFig(extra) {
+        var fig = Lib.extendDeep({}, mock);
+        fig.data = [
+            Lib.extendDeep(
+                {
+                    type: 'vectortilemap',
+                    source: fig.data[1].source,
+                    sourcelayer: 'wells',
+                    layertype: 'circle',
+                    marker: { size: 14 }
+                },
+                extra || {}
+            )
+        ];
+        return fig;
+    }
+
+    function renderedIds() {
+        return getMap()
+            .queryRenderedFeatures({ layers: [gd._fullData[0]._glTrace.mainLayerId] })
+            .map(function (f) {
+                return f.id;
+            })
+            .sort();
+    }
+
+    it('@gl should filter features in the browser, and change the filter without a tile request', function (done) {
+        var requests;
+
+        plotAndWaitForTiles(wellsFig({ filters: [{ key: 'status', value: 'Plugged' }] }))
+            .then(function () {
+                expect(renderedIds()).toEqual([3, 4]);
+                requests = countTileRequests();
+                return Plotly.restyle(gd, 'filters[0].value', 'Producing');
+            })
+            .then(delay(100))
+            .then(function () {
+                expect(renderedIds()).toEqual([1, 2, 5]);
+                return Plotly.restyle(gd, {
+                    'filters[0].key': 'oil',
+                    'filters[0].operation': '[]',
+                    'filters[0].value': [[10, 120]]
+                });
+            })
+            .then(delay(100))
+            .then(function () {
+                expect(renderedIds()).toEqual([1, 2, 4], 'W3 has oil 0, W5 has no oil value');
+                return Plotly.restyle(gd, 'filters[0].enabled', false);
+            })
+            .then(delay(100))
+            .then(function () {
+                expect(renderedIds()).toEqual([1, 2, 3, 4, 5]);
+                expect(requests.n).toBe(0, 'tile requests');
+            })
+            .then(done, done.fail);
+    });
+
+    it('@gl should size circles and lines with zoom stops', function (done) {
+        var fig = wellsFig({
+            marker: {
+                sizestops: [
+                    [1, 4],
+                    [5, 20]
+                ]
+            }
+        });
+        fig.data.push({
+            type: 'vectortilemap',
+            source: fig.data[0].source,
+            sourcelayer: 'pipes',
+            layertype: 'line',
+            line: {
+                widthstops: [
+                    [0, 1],
+                    [4, 9]
+                ]
+            }
+        });
+
+        plotAndWaitForTiles(fig)
+            .then(function () {
+                var map = getMap();
+                expect(map.getPaintProperty(gd._fullData[0]._glTrace.mainLayerId, 'circle-radius')).toEqual([
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    1,
+                    2,
+                    5,
+                    10
+                ]);
+                expect(map.getPaintProperty(gd._fullData[1]._glTrace.mainLayerId, 'line-width')).toEqual([
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    0,
+                    1,
+                    4,
+                    9
+                ]);
+                return Plotly.restyle(gd, 'marker.sizestops', null, [0]);
+            })
+            .then(function () {
+                expect(getMap().getPaintProperty(gd._fullData[0]._glTrace.mainLayerId, 'circle-radius')).toBe(7);
+            })
+            .then(done, done.fail);
+    });
+
+    it('@gl should load tiles through *config.mapProtocols*', function (done) {
+        var tileJSON = JSON.parse(atob(mock.data[0].source.split(',')[1]));
+        var tile = Uint8Array.from(atob(tileJSON.tiles[0].split(',')[1]), function (c) {
+            return c.charCodeAt(0);
+        }).buffer;
+        var calls = [];
+        var protocol = function (params) {
+            calls.push(params.url);
+            if (params.url === 'fixture://tiles.json') {
+                return Promise.resolve({ data: { tiles: ['fixture://{z}/{x}/{y}'], minzoom: 0, maxzoom: 0 } });
+            }
+            return Promise.resolve({ data: tile.slice(0) });
+        };
+
+        var fig = squaresFig();
+        fig.data[0].source = 'fixture://tiles.json';
+        Plotly.newPlot(gd, fig.data, fig.layout, { mapProtocols: { fixture: protocol } })
+            .then(function () {
+                var map = getMap();
+                if (map.loaded()) return;
+                return new Promise(function (resolve) {
+                    map.once('idle', resolve);
+                });
+            })
+            .then(function () {
+                expect(calls).toContain('fixture://tiles.json');
+                expect(calls).toContain('fixture://0/0/0');
+                expect(getZState('D')).toBe(4);
+                expect(renderedIdsOf(gd._fullData[0]).length).toBeGreaterThan(0);
+            })
+            .then(done, done.fail);
+
+        function renderedIdsOf(trace) {
+            return getMap().queryRenderedFeatures({ layers: [trace._glTrace.mainLayerId] });
+        }
     });
 });

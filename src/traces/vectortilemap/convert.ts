@@ -140,10 +140,87 @@ const getOpacityExpression = (trace: any, hasValue: any[] | undefined, isSelecti
     return hasValue ? ['case', hasValue, out, 0] : out;
 };
 
+const RANGE_TESTS: Record<string, [string, string, boolean]> = {
+    // operation: [lower test, upper test, inside the range]
+    '[]': ['>=', '<=', true],
+    '()': ['>', '<', true],
+    '[)': ['>=', '<', true],
+    '(]': ['>', '<=', true],
+    '][': ['<', '>', false],
+    ')(': ['<=', '>=', false],
+    '](': ['<', '>=', false],
+    ')[': ['<=', '>', false]
+};
+
+/**
+ * Convert the enabled `filters` to one MapLibre filter expression, or null
+ * when no filter applies. A feature without the property fails every
+ * comparison, and passes only `!=` and `}{`.
+ */
+export function makeFilterExpression(trace: any): any[] | null {
+    const tests: any[] = [];
+    for (const f of trace.filters || []) {
+        if (!f.enabled) continue;
+        const get = ['get', f.key];
+        const op = f.operation;
+        const v = f.value;
+        if (op === '=') tests.push(['==', get, v]);
+        else if (op === '!=') tests.push(['!=', get, v]);
+        else if (op === '<' || op === '>=' || op === '>' || op === '<=')
+            tests.push(['all', ['has', f.key], [op, get, v]]);
+        else if (op === '{}') tests.push(['in', get, ['literal', v]]);
+        else if (op === '}{') tests.push(['!', ['in', get, ['literal', v]]]);
+        else if (RANGE_TESTS[op]) {
+            const [lo, hi, inside] = RANGE_TESTS[op];
+            const a = v[0] <= v[1] ? v[0] : v[1];
+            const b = v[0] <= v[1] ? v[1] : v[0];
+            const range = inside ? ['all', [lo, get, a], [hi, get, b]] : ['any', [lo, get, a], [hi, get, b]];
+            tests.push(['all', ['has', f.key], range]);
+        }
+    }
+    if (!tests.length) return null;
+    return tests.length === 1 ? tests[0] : ['all', ...tests];
+}
+
+/**
+ * Return a MapLibre expression that interpolates [zoom, value] stops on the
+ * map zoom, with each value multiplied by `scale`, or the single value when
+ * there are no stops. The stops come sorted by zoom.
+ */
+const zoomExpression = (stops: number[][] | undefined, value: number, scale = 1): any => {
+    if (!stops) return value * scale;
+    const out: any[] = ['interpolate', ['linear'], ['zoom']];
+    let previous = -Infinity;
+    for (const [z, v] of stops) {
+        // MapLibre needs strictly ascending stops
+        if (z <= previous) continue;
+        out.push(z, v * scale);
+        previous = z;
+    }
+    return out.length === 5 ? stops[0][1] * scale : out;
+};
+
+/**
+ * Return the value of sorted [zoom, value] stops at a zoom level, as MapLibre
+ * computes it, or `value` when there are no stops.
+ */
+export function valueAtZoom(stops: number[][] | undefined, value: number, zoom: number): number {
+    if (!stops) return value;
+    if (zoom <= stops[0][0]) return stops[0][1];
+    for (let i = 1; i < stops.length; i++) {
+        const [z1, v1] = stops[i];
+        if (zoom <= z1) {
+            const [z0, v0] = stops[i - 1];
+            return z1 === z0 ? v1 : v0 + ((v1 - v0) * (zoom - z0)) / (z1 - z0);
+        }
+    }
+    return stops[stops.length - 1][1];
+}
+
 /**
  * Return the layers that draw a trace, bottom first. Each item holds the
- * layer `role` (the suffix of the layer id), the MapLibre layer `type`, and
- * its `layout` and `paint` properties.
+ * layer `role` (the suffix of the layer id), the MapLibre layer `type`, its
+ * `layout` and `paint` properties, and its `filter` (null for none).
  *
  * @param calcTrace - the calcdata of the trace
  * @param isSelecting - true while a selection is active on the trace
@@ -157,6 +234,7 @@ export default function convert(calcTrace: any[], isSelecting = false) {
     const expressions = getValueExpressions(trace);
     const hasValue = expressions && expressions.hasValue;
     const opacity = getOpacityExpression(trace, hasValue, isSelecting);
+    const filter = makeFilterExpression(trace);
 
     let color: any;
     if (expressions) color = ['case', hasValue, makeColorExpression(trace, expressions.value), 'rgba(0, 0, 0, 0)'];
@@ -165,7 +243,7 @@ export default function convert(calcTrace: any[], isSelecting = false) {
     if (layertype === 'circle') {
         const paint: any = {
             'circle-color': color,
-            'circle-radius': marker.size / 2,
+            'circle-radius': zoomExpression(marker._sizestops, marker.size, 0.5),
             'circle-opacity': opacity
         };
         if (markerLine.width > 0) {
@@ -175,7 +253,7 @@ export default function convert(calcTrace: any[], isSelecting = false) {
                 'circle-stroke-opacity': opacity
             });
         }
-        return [{ role: 'circle', type: 'circle', layout: { visibility }, paint }];
+        return [{ role: 'circle', type: 'circle', layout: { visibility }, paint, filter }];
     }
 
     if (layertype === 'line') {
@@ -184,12 +262,17 @@ export default function convert(calcTrace: any[], isSelecting = false) {
                 role: 'line',
                 type: 'line',
                 layout: { visibility, 'line-join': 'round', 'line-cap': 'round' },
-                paint: { 'line-color': color, 'line-width': trace.line.width, 'line-opacity': opacity }
+                paint: {
+                    'line-color': color,
+                    'line-width': zoomExpression(trace.line._widthstops, trace.line.width),
+                    'line-opacity': opacity
+                },
+                filter
             }
         ];
     }
 
-    const outline: any = { role: 'outline', type: 'line', layout: { visibility }, paint: {} };
+    const outline: any = { role: 'outline', type: 'line', layout: { visibility }, paint: {}, filter };
     // `marker.line.color` has no value when `marker.line.width` is 0
     if (markerLine.width > 0) {
         outline.paint = {
@@ -202,7 +285,13 @@ export default function convert(calcTrace: any[], isSelecting = false) {
     }
 
     return [
-        { role: 'fill', type: 'fill', layout: { visibility }, paint: { 'fill-color': color, 'fill-opacity': opacity } },
+        {
+            role: 'fill',
+            type: 'fill',
+            layout: { visibility },
+            paint: { 'fill-color': color, 'fill-opacity': opacity },
+            filter
+        },
         outline
     ];
 }

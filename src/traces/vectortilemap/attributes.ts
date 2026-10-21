@@ -1,11 +1,29 @@
 import colorScaleAttrs from '../../components/colorscale/attributes';
 import { extendFlat } from '../../lib/extend';
+import { templatedArray } from '../../plot_api/plot_template';
 import mapLayoutAttrs from '../../plots/map/layout_attributes';
 import { hovertemplateAttrs, templatefallbackAttrs } from '../../plots/template_attributes';
 import choroplethmapAttrs from '../choroplethmap/attributes';
 import scattermapAttrs from '../scattermap/attributes';
 
 const layerAttrs = (mapLayoutAttrs as any).layers;
+
+// [zoom, value] pairs, as MapLibre zoom stops
+const zoomStops = (what: string, unit: string) => ({
+    valType: 'info_array',
+    freeLength: true,
+    dimensions: 2,
+    items: [
+        { valType: 'number', min: 0, max: 24, editType: 'plot' },
+        { valType: 'number', min: 0, editType: 'plot' }
+    ],
+    editType: 'plot',
+    description: [
+        `Sets the ${what} at zoom levels, as [zoom, ${unit}] pairs, for example [[5, 2], [12, 8]].`,
+        `Between two zoom levels the ${what} changes linearly. Outside them it stays at the nearest pair.`,
+        `When set, it replaces the single value.`
+    ].join(' ')
+});
 
 const attributes = extendFlat(
     {
@@ -79,6 +97,51 @@ const attributes = extendFlat(
             ].join(' ')
         },
 
+        filters: templatedArray('filter', {
+            enabled: {
+                valType: 'boolean',
+                dflt: true,
+                editType: 'plot',
+                description: 'Determines whether this filter applies.'
+            },
+            key: {
+                valType: 'string',
+                editType: 'plot',
+                description: 'Sets the tile feature property that the filter tests.'
+            },
+            operation: {
+                valType: 'enumerated',
+                values: ['=', '!=', '<', '>=', '>', '<=', '[]', '()', '[)', '(]', '][', ')(', '](', ')[', '{}', '}{'],
+                dflt: '=',
+                editType: 'plot',
+                description: [
+                    'Sets the filter operation.',
+                    '*=* keeps features with a property equal to `value`. *!=* keeps the others.',
+                    '*<*, *>=*, *>* and *<=* compare the property with `value`.',
+                    '*[]*, *()*, *[)* and *(]* keep a property inside the range [`value[0]`, `value[1]`],',
+                    'with *[* and *]* for an included bound and *(* and *)* for an excluded one.',
+                    '*][*, *)(*, *](* and *)[* keep a property outside the range.',
+                    '*{}* keeps a property that is one of the items of `value`. *}{* keeps the others.'
+                ].join(' ')
+            },
+            value: {
+                valType: 'any',
+                dflt: 0,
+                editType: 'plot',
+                description: [
+                    'Sets the value that the filter compares with:',
+                    'a number or a string, an array of two for a range operation,',
+                    'or an array for *{}* and *}{*.'
+                ].join(' ')
+            },
+            editType: 'plot',
+            description: [
+                'Keeps only the tile features that pass every enabled filter, in the browser.',
+                'A change to a filter fetches no tile.',
+                'Hover and selection see only the features that pass.'
+            ].join(' ')
+        }),
+
         minzoom: extendFlat({}, layerAttrs.minzoom, { editType: 'plot' }),
         maxzoom: extendFlat({}, layerAttrs.maxzoom, { editType: 'plot' }),
 
@@ -110,6 +173,7 @@ const attributes = extendFlat(
                 editType: 'plot',
                 description: 'Sets the circle diameter, in pixels. Has an effect only when `layertype` is *circle*.'
             }),
+            sizestops: zoomStops('circle diameter', 'pixels'),
             line: {
                 color: extendFlat({}, (choroplethmapAttrs as any).marker.line.color, {
                     arrayOk: false,
@@ -142,6 +206,7 @@ const attributes = extendFlat(
                 editType: 'plot',
                 description: 'Sets the line width, in pixels. Has an effect only when `layertype` is *line*.'
             }),
+            widthstops: zoomStops('line width', 'pixels'),
             editType: 'plot'
         },
 

@@ -3,7 +3,7 @@
  *
  * This file overlays a small hand-written interface on the schema-derived
  * `ConfigBase` to build `Config`. Most fields come straight from the schema.
- * The overrides cover the five fields whose schema `valType` is `any`. Those
+ * The overrides cover the six fields whose schema `valType` is `any`. Those
  * fields accept a function value, an arbitrary-key map, or a structure too
  * irregular for the schema to model.
  */
@@ -55,7 +55,7 @@ export interface DownloadImgopts extends Omit<ToImgopts, 'imageDataOnly'> {
 // ---------------------------------------------------------------------------
 
 /**
- * Hand-written overrides for the five `schema.config` fields whose `valType`
+ * Hand-written overrides for the six `schema.config` fields whose `valType`
  * is `any`. These fields accept functions or arbitrary-key maps, which the
  * JSON schema cannot describe.
  */
@@ -70,6 +70,14 @@ interface ConfigOverrides {
     modeBarButtonsToRemove?: ModeBarDefaultButtons[];
     /** Localization definitions under a locale id key, for example `'en-US'` or `'fr'` */
     locales?: Record<string, { dictionary?: Record<string, string>; format?: Record<string, any> }>;
+    /**
+     * Tile URL protocols for `map` subplots, by protocol name. Each function has the
+     * signature of a MapLibre `addProtocol` action and resolves to `{ data }`.
+     */
+    mapProtocols?: Record<
+        string,
+        (request: { url: string; type?: string }, abortController: AbortController) => Promise<{ data: any }>
+    >;
 }
 
 /**

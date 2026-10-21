@@ -91,6 +91,8 @@ class VectorTileMap {
                     subplot.setOptions(id, 'setPaintProperty', layers[i].paint);
                 }
                 map.setLayerZoomRange(id, trace.minzoom, trace.maxzoom);
+                // a filter change reuses the loaded tiles
+                map.setFilter(id, layers[i].filter);
             }
         }
         this.below = below;
@@ -177,19 +179,18 @@ class VectorTileMap {
         this.layers = [];
         for (const layer of layers) {
             const id = `${traceLayerPrefix}${this.uid}-${layer.role}`;
-            this.subplot.addLayer(
-                {
-                    type: layer.type,
-                    id,
-                    source: this.sourceId,
-                    'source-layer': trace.sourcelayer,
-                    minzoom: trace.minzoom,
-                    maxzoom: trace.maxzoom,
-                    layout: layer.layout,
-                    paint: layer.paint
-                },
-                below
-            );
+            const spec: any = {
+                type: layer.type,
+                id,
+                source: this.sourceId,
+                'source-layer': trace.sourcelayer,
+                minzoom: trace.minzoom,
+                maxzoom: trace.maxzoom,
+                layout: layer.layout,
+                paint: layer.paint
+            };
+            if (layer.filter) spec.filter = layer.filter;
+            this.subplot.addLayer(spec, below);
             this.layers.push({ id, type: layer.type });
         }
     }
