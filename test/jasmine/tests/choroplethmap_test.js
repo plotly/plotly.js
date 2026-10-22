@@ -713,15 +713,15 @@ describe('Test choroplethmap interactions:', function() {
             {}
         )
         .then(function() {
-            _assert('base', { layerCnt: 97 });
+            _assert('base', { layerCnt: 99 });
         })
         .then(function() { return Plotly.deleteTraces(gd, [0]); })
         .then(function() {
-            _assert('w/o trace0', { layerCnt: 95 });
+            _assert('w/o trace0', { layerCnt: 97 });
         })
         .then(function() { return Plotly.addTraces(gd, [trace0]); })
         .then(function() {
-            _assert('after adding trace0', { layerCnt: 97 });
+            _assert('after adding trace0', { layerCnt: 99 });
         })
         .then(done, done.fail);
     });

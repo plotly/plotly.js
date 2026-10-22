@@ -416,15 +416,15 @@ describe('Test densitymap interactions:', function() {
             {}
         )
         .then(function() {
-            _assert('base', { layerCnt: 95 });
+            _assert('base', { layerCnt: 97 });
         })
         .then(function() { return Plotly.deleteTraces(gd, [0]); })
         .then(function() {
-            _assert('w/o trace0', { layerCnt: 94 });
+            _assert('w/o trace0', { layerCnt: 96 });
         })
         .then(function() { return Plotly.addTraces(gd, [trace0]); })
         .then(function() {
-            _assert('after adding trace0', { layerCnt: 95 });
+            _assert('after adding trace0', { layerCnt: 97 });
         })
         .then(done, done.fail);
     });
