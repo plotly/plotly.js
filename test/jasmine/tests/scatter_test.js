@@ -1164,6 +1164,96 @@ describe('end-to-end scatter tests', function() {
     });
 });
 
+describe('scatter gradients', () => {
+    const colorscale = [
+        [0, 'blue'],
+        [1, 'red']
+    ];
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function getGradient(prefix, trace) {
+        return document.getElementById(`g${gd._fullLayout._uid}-${prefix}-${trace.uid}`);
+    }
+
+    function assertBounds(gradient, attr, ax, start, stop) {
+        expect(gradient.getAttribute('gradientUnits')).toBe('userSpaceOnUse');
+        expect(Number(gradient.getAttribute(`${attr}1`))).toBeCloseTo(ax.c2p(start), 1, `${attr}1`);
+        expect(Number(gradient.getAttribute(`${attr}2`))).toBeCloseTo(ax.c2p(stop), 1, `${attr}2`);
+    }
+
+    it('updates fillgradient bounds with the axis range', async () => {
+        await Plotly.newPlot(
+            gd,
+            [
+                {
+                    y: [1, 3, 2],
+                    fill: 'tozeroy',
+                    fillgradient: { type: 'vertical', start: 0, stop: 3, colorscale }
+                }
+            ],
+            { width: 400, height: 400, yaxis: { range: [0, 4] } }
+        );
+
+        const trace = gd._fullData[0];
+        assertBounds(getGradient('scatterfill', trace), 'y', gd._fullLayout.yaxis, 0, 3);
+
+        await Plotly.relayout(gd, 'yaxis.range', [0, 8]);
+        assertBounds(getGradient('scatterfill', trace), 'y', gd._fullLayout.yaxis, 0, 3);
+    });
+
+    it('draws fillgradient with a single bound on a secondary y axis', async () => {
+        await Plotly.newPlot(
+            gd,
+            [
+                { y: [1, 3, 2] },
+                {
+                    y: [10, 30, 20],
+                    yaxis: 'y2',
+                    fill: 'tozeroy',
+                    fillgradient: { type: 'vertical', start: 5, colorscale }
+                }
+            ],
+            { width: 400, height: 400, yaxis2: { overlaying: 'y', side: 'right' } }
+        );
+
+        assertBounds(getGradient('scatterfill', gd._fullData[1]), 'y', gd._fullLayout.yaxis2, 5, 30);
+    });
+
+    it('draws fillgradient with a single bound on a log axis', async () => {
+        await Plotly.newPlot(
+            gd,
+            [
+                {
+                    y: [1, 100, 10],
+                    fill: 'toself',
+                    fillgradient: { type: 'vertical', start: 2, colorscale }
+                }
+            ],
+            { width: 400, height: 400, yaxis: { type: 'log' } }
+        );
+
+        assertBounds(getGradient('scatterfill', gd._fullData[0]), 'y', gd._fullLayout.yaxis, 2, 100);
+    });
+
+    it('ignores fillgradient start and stop with type *radial*', async () => {
+        await Plotly.newPlot(gd, [
+            {
+                y: [1, 3, 2],
+                fill: 'tozeroy',
+                fillgradient: { type: 'radial', start: 1, stop: 2, colorscale }
+            }
+        ]);
+
+        expect(getGradient('scatterfill', gd._fullData[0]).tagName).toBe('radialGradient');
+    });
+});
+
 describe('Text templates on scatter traces:', function() {
     checkTextTemplate([{
         type: 'scatter',
