@@ -1,1 +1,0 @@
-- Describe `config.toImageButtonOptions` in the plot schema [[#8066](https://github.com/plotly/plotly.js/pull/8066)]

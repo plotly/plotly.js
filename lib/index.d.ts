@@ -55,7 +55,9 @@ export type * from '../src/types/generated/schema';
 
 export type {
     ButtonClickEvent,
+    DataUpdate,
     Icon,
+    LayoutUpdate,
     ModeBarButton,
     ModeBarButtonAny,
     ModeBarDefaultButtons,

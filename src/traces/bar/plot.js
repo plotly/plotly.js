@@ -1112,7 +1112,7 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
         obj.percentPrevious = cdi.difR;
         obj.percentPreviousLabel = Lib.formatPercent(cdi.difR);
         obj.percentTotal = cdi.sumR;
-        obj.percenTotalLabel = Lib.formatPercent(cdi.sumR);
+        obj.percentTotalLabel = Lib.formatPercent(cdi.sumR);
     }
 
     var customdata = Lib.castOption(trace, cdi.i, 'customdata');
