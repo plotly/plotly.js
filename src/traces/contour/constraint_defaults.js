@@ -57,10 +57,10 @@ function handleConstraintValueDefaults(coerce, contours) {
                 contours.value = [zvalue, zvalue + 1];
             }
         } else if(contours.value.length > 2) {
-            contours.value = contours.value.slice(2);
-        } else if(contours.length === 0) {
+            contours.value = contours.value.slice(0, 2);
+        } else if(contours.value.length === 0) {
             contours.value = [0, 1];
-        } else if(contours.length < 2) {
+        } else if(contours.value.length < 2) {
             zvalue = parseFloat(contours.value[0]);
             contours.value = [zvalue, zvalue + 1];
         } else {
