@@ -4687,6 +4687,73 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        ['right', 'left', 'top', 'bottom'].forEach((side) => {
+            [false, true].forEach((free) => {
+                it(`preserves ${side} anchors for ${free ? 'free' : 'anchored'} partial automargin`, async () => {
+                    const vertical = side === 'right' || side === 'left';
+                    const axis = vertical ? 'yaxis' : 'xaxis';
+                    const id = vertical ? 'y' : 'x';
+                    const edge = side[0];
+                    const fraction = side === 'right' || side === 'top' ? 1 : 0;
+                    const layout = {
+                        width: 500,
+                        height: 300,
+                        margin: { l: 0, r: 0, t: 0, b: 0 },
+                        xaxis: { range: [0, 4], visible: !vertical },
+                        yaxis: { range: [0, 4], visible: vertical }
+                    };
+                    layout[axis] = {
+                        range: [0, 4],
+                        side,
+                        automargin: true,
+                        tickvals: [1, 2, 3],
+                        ticktext: ['Long label', 'Long label', 'Long label'],
+                        tickangle: 0,
+                        ...(free ? { anchor: 'free', position: fraction } : {})
+                    };
+                    await Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], layout);
+                    const automatic = gd._fullLayout._size[edge];
+                    expect(automatic).toBeGreaterThan(0);
+
+                    for (const flag of [side, vertical ? 'width' : 'height']) {
+                        await Plotly.relayout(gd, { [`${axis}.automargin`]: flag });
+                        expect(gd._fullLayout._size[edge]).toBe(automatic);
+                        expect(gd._fullLayout._pushmargin[`${id}.automargin`][edge].val).toBe(fraction);
+                        for (const other of ['l', 'r', 't', 'b'].filter((value) => value !== edge)) {
+                            expect(gd._fullLayout._size[other]).toBe(0);
+                        }
+                    }
+
+                    await Plotly.relayout(gd, { [`${axis}.automargin`]: vertical ? 'height' : 'width' });
+                    expect(gd._fullLayout._size[edge]).toBe(0);
+                    await Plotly.relayout(gd, { [`${axis}.automargin`]: true });
+                    expect(gd._fullLayout._size[edge]).toBe(automatic);
+                    await Plotly.relayout(gd, { [`${axis}.automargin`]: false });
+                    expect(gd._fullLayout._size[edge]).toBe(0);
+                });
+            });
+        });
+
+        it('keeps right-side labels inside the paper when left automargin is excluded', async () => {
+            await Plotly.newPlot(gd, [{ x: [0, 1, 2], y: [1000, 2000, 3000] }], {
+                width: 500,
+                height: 300,
+                margin: { l: 40, r: 0, t: 30, b: 40 },
+                yaxis: { side: 'right', automargin: 'right+top+bottom', tickformat: '.0f' }
+            });
+            const rightMargin = gd._fullLayout._size.r;
+            expect(rightMargin).toBeGreaterThan(0);
+            expect(gd._fullLayout._size.l).toBe(40);
+            const paper = gd.querySelector('.main-svg').getBoundingClientRect();
+            const labels = gd.querySelectorAll('.ytick text');
+            expect(labels.length).toBeGreaterThan(0);
+            labels.forEach((label) => {
+                expect(label.getBoundingClientRect().right).toBeLessThanOrEqual(paper.right + 0.5);
+            });
+            await Plotly.relayout(gd, { 'yaxis.automargin': true });
+            expect(gd._fullLayout._size.r).toBe(rightMargin);
+        });
+
         it('should handle partial automargin', function(done) {
             var initialSize;
 
