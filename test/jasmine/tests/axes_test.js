@@ -1884,6 +1884,61 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        describe('a new range on a constrain:domain axis', () => {
+            const data = () => [{ x: [0, 20, 50, 80, 100], y: [0, 20, 50, 80, 100] }];
+            const layout = (xRange) => ({
+                width: 400,
+                height: 400,
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                xaxis: { range: xRange, constrain: 'domain' },
+                yaxis: { range: [0, 100], scaleanchor: 'x', scaleratio: 1 }
+            });
+
+            it('is applied by Plotly.react', (done) => {
+                Plotly.newPlot(gd, data(), layout([0, 100]))
+                    .then(() => Plotly.react(gd, data(), layout([20, 80])))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                        expect(gd._fullLayout.xaxis._inputRange).toEqual([20, 80]);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it('is applied by Plotly.relayout with a whole axis object', (done) => {
+                Plotly.newPlot(gd, data(), layout([0, 100]))
+                    .then(() => Plotly.relayout(gd, { xaxis: layout([20, 80]).xaxis, yaxis: layout().yaxis }))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                        expect(gd._fullLayout.xaxis._inputRange).toEqual([20, 80]);
+                    })
+                    .then(done, done.fail);
+            });
+
+            [
+                ['dotted keys', { 'xaxis.range': [20, 80] }],
+                ['a whole axis object', { xaxis: layout([20, 80]).xaxis }]
+            ].forEach(([name, update]) => {
+                it(`lets the other axis rescale when Plotly.relayout sets one range with ${name}`, (done) => {
+                    Plotly.newPlot(gd, data(), layout([0, 100]))
+                        .then(() => Plotly.relayout(gd, update))
+                        .then(() => {
+                            assertRangeDomain('xaxis', [20, 80], [0, 1], [0, 1]);
+                            assertRangeDomain('yaxis', [20, 80], [0, 1], [0, 1]);
+                        })
+                        .then(done, done.fail);
+                });
+            });
+
+            it('keeps the drawn range when Plotly.react gets the same layout again', (done) => {
+                Plotly.newPlot(gd, data(), layout([20, 80]))
+                    .then(() => Plotly.react(gd, gd.data, gd.layout))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                    })
+                    .then(done, done.fail);
+            });
+        });
+
         it('can change per-axis constrain:domain/range and constraintoward', function(done) {
             Plotly.newPlot(gd,
                 // start with a heatmap as it has no padding so calculations are easy
