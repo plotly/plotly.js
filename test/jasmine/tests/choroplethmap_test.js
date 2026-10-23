@@ -685,11 +685,13 @@ describe('Test choroplethmap interactions:', function() {
     });
 
     it('@gl should be able to add and remove traces', function(done) {
-        function _assert(msg, exp) {
+        let initialLayerCount;
+
+        function _assert(msg, expectedCount) {
             var map = gd._fullLayout.map._subplot.map;
             var layers = map.getStyle().layers;
 
-            expect(layers.length).toBe(exp.layerCnt, 'total # of layers |' + msg);
+            expect(layers.length).toBe(expectedCount, 'total # of layers |' + msg);
         }
 
         var trace0 = {
@@ -713,25 +715,37 @@ describe('Test choroplethmap interactions:', function() {
             {}
         )
         .then(function() {
-            _assert('base', { layerCnt: 97 });
+            const layers = gd._fullLayout.map._subplot.map.getStyle().layers;
+            initialLayerCount = layers.length;
+            const traceLayers = layers.filter(layer => layer.id.indexOf('plotly-trace-layer-') === 0);
+            expect(traceLayers.length).toBe(4);
         })
         .then(function() { return Plotly.deleteTraces(gd, [0]); })
         .then(function() {
-            _assert('w/o trace0', { layerCnt: 95 });
+            _assert('w/o trace0', initialLayerCount - 2);
         })
         .then(function() { return Plotly.addTraces(gd, [trace0]); })
         .then(function() {
-            _assert('after adding trace0', { layerCnt: 97 });
+            _assert('after adding trace0', initialLayerCount);
         })
         .then(done, done.fail);
     });
 
     it('@gl should be able to restyle *below*', function(done) {
+        const traceIds = ['plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line'];
+        let baseLayerIds;
+
         function getLayerIds() {
-            var subplot = gd._fullLayout.map._subplot;
-            var layers = subplot.map.getStyle().layers;
-            var layerIds = layers.map(function(l) { return l.id; });
-            return layerIds;
+            const layers = gd._fullLayout.map._subplot.map.getStyle().layers;
+            return layers.map(layer => layer.id);
+        }
+
+        function assertLayers(message, belowId) {
+            const expected = baseLayerIds.slice();
+            const index = belowId ? expected.indexOf(belowId) : expected.length;
+            expect(index).not.toBe(-1, message + ' anchor');
+            expected.splice(index, 0, ...traceIds);
+            expect(getLayerIds()).withContext(message).toEqual(expected);
         }
 
         Plotly.newPlot(gd, [{
@@ -742,27 +756,20 @@ describe('Test choroplethmap interactions:', function() {
             uid: 'a'
         }], {}, {})
         .then(function() {
-            expect(getLayerIds()).withContext('default *below*').toEqual([
-                'background', 'landcover', 'park_national_park', 'park_nature_reserve', 'landuse_residential', 'landuse', 'waterway', 'boundary_county', 'boundary_state', 'water', 'water_shadow', 'aeroway-runway', 'aeroway-taxiway', 'waterway_label', 'tunnel_service_case', 'tunnel_minor_case', 'tunnel_sec_case', 'tunnel_pri_case', 'tunnel_trunk_case', 'tunnel_mot_case', 'tunnel_path', 'tunnel_service_fill', 'tunnel_minor_fill', 'tunnel_sec_fill', 'tunnel_pri_fill', 'tunnel_trunk_fill', 'tunnel_mot_fill', 'tunnel_rail', 'tunnel_rail_dash', 'road_service_case', 'road_minor_case', 'road_pri_case_ramp', 'road_trunk_case_ramp', 'road_mot_case_ramp', 'road_sec_case_noramp', 'road_pri_case_noramp', 'road_trunk_case_noramp', 'road_mot_case_noramp', 'road_path', 'road_service_fill', 'road_minor_fill', 'road_pri_fill_ramp', 'road_trunk_fill_ramp', 'road_mot_fill_ramp', 'road_sec_fill_noramp', 'road_pri_fill_noramp', 'road_trunk_fill_noramp', 'road_mot_fill_noramp', 'rail', 'rail_dash', 'bridge_service_case', 'bridge_minor_case', 'bridge_sec_case', 'bridge_pri_case', 'bridge_trunk_case', 'bridge_mot_case', 'bridge_path', 'bridge_service_fill', 'bridge_minor_fill', 'bridge_sec_fill', 'bridge_pri_fill', 'bridge_trunk_fill', 'bridge_mot_fill', 'building', 'building-top', 'boundary_country_outline', 'boundary_country_inner', 'watername_ocean', 'watername_sea', 'watername_lake', 'watername_lake_line', 'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line', 'place_hamlet', 'place_suburbs', 'place_villages', 'place_town', 'place_country_2', 'place_country_1', 'place_state', 'place_continent', 'place_city_r6', 'place_city_r5', 'place_city_dot_r7', 'place_city_dot_r4', 'place_city_dot_r2', 'place_city_dot_z7', 'place_capital_dot_z7', 'poi_stadium', 'poi_park', 'roadname_minor', 'roadname_sec', 'roadname_pri', 'roadname_major', 'housenumber'
-            ]);
+            baseLayerIds = getLayerIds().filter(id => traceIds.indexOf(id) === -1);
+            assertLayers('default *below*', 'place_hamlet');
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
-            expect(getLayerIds()).withContext('*below* set to \'\'').toEqual([
-                'background', 'landcover', 'park_national_park', 'park_nature_reserve', 'landuse_residential', 'landuse', 'waterway', 'boundary_county', 'boundary_state', 'water', 'water_shadow', 'aeroway-runway', 'aeroway-taxiway', 'waterway_label', 'tunnel_service_case', 'tunnel_minor_case', 'tunnel_sec_case', 'tunnel_pri_case', 'tunnel_trunk_case', 'tunnel_mot_case', 'tunnel_path', 'tunnel_service_fill', 'tunnel_minor_fill', 'tunnel_sec_fill', 'tunnel_pri_fill', 'tunnel_trunk_fill', 'tunnel_mot_fill', 'tunnel_rail', 'tunnel_rail_dash', 'road_service_case', 'road_minor_case', 'road_pri_case_ramp', 'road_trunk_case_ramp', 'road_mot_case_ramp', 'road_sec_case_noramp', 'road_pri_case_noramp', 'road_trunk_case_noramp', 'road_mot_case_noramp', 'road_path', 'road_service_fill', 'road_minor_fill', 'road_pri_fill_ramp', 'road_trunk_fill_ramp', 'road_mot_fill_ramp', 'road_sec_fill_noramp', 'road_pri_fill_noramp', 'road_trunk_fill_noramp', 'road_mot_fill_noramp', 'rail', 'rail_dash', 'bridge_service_case', 'bridge_minor_case', 'bridge_sec_case', 'bridge_pri_case', 'bridge_trunk_case', 'bridge_mot_case', 'bridge_path', 'bridge_service_fill', 'bridge_minor_fill', 'bridge_sec_fill', 'bridge_pri_fill', 'bridge_trunk_fill', 'bridge_mot_fill', 'building', 'building-top', 'boundary_country_outline', 'boundary_country_inner', 'watername_ocean', 'watername_sea', 'watername_lake', 'watername_lake_line', 'place_hamlet', 'place_suburbs', 'place_villages', 'place_town', 'place_country_2', 'place_country_1', 'place_state', 'place_continent', 'place_city_r6', 'place_city_r5', 'place_city_dot_r7', 'place_city_dot_r4', 'place_city_dot_r2', 'place_city_dot_z7', 'place_capital_dot_z7', 'poi_stadium', 'poi_park', 'roadname_minor', 'roadname_sec', 'roadname_pri', 'roadname_major', 'housenumber', 'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line'
-            ]);
+            assertLayers('*below* set to top', '');
         })
-        .then(function() { return Plotly.restyle(gd, 'below', 'place_label_other'); })
+        .then(function() { return Plotly.restyle(gd, 'below', 'place_hamlet'); })
         .then(function() {
-            expect(getLayerIds()).withContext('*below* set to same base layer').toEqual([
-                'background', 'landcover', 'park_national_park', 'park_nature_reserve', 'landuse_residential', 'landuse', 'waterway', 'boundary_county', 'boundary_state', 'water', 'water_shadow', 'aeroway-runway', 'aeroway-taxiway', 'waterway_label', 'tunnel_service_case', 'tunnel_minor_case', 'tunnel_sec_case', 'tunnel_pri_case', 'tunnel_trunk_case', 'tunnel_mot_case', 'tunnel_path', 'tunnel_service_fill', 'tunnel_minor_fill', 'tunnel_sec_fill', 'tunnel_pri_fill', 'tunnel_trunk_fill', 'tunnel_mot_fill', 'tunnel_rail', 'tunnel_rail_dash', 'road_service_case', 'road_minor_case', 'road_pri_case_ramp', 'road_trunk_case_ramp', 'road_mot_case_ramp', 'road_sec_case_noramp', 'road_pri_case_noramp', 'road_trunk_case_noramp', 'road_mot_case_noramp', 'road_path', 'road_service_fill', 'road_minor_fill', 'road_pri_fill_ramp', 'road_trunk_fill_ramp', 'road_mot_fill_ramp', 'road_sec_fill_noramp', 'road_pri_fill_noramp', 'road_trunk_fill_noramp', 'road_mot_fill_noramp', 'rail', 'rail_dash', 'bridge_service_case', 'bridge_minor_case', 'bridge_sec_case', 'bridge_pri_case', 'bridge_trunk_case', 'bridge_mot_case', 'bridge_path', 'bridge_service_fill', 'bridge_minor_fill', 'bridge_sec_fill', 'bridge_pri_fill', 'bridge_trunk_fill', 'bridge_mot_fill', 'building', 'building-top', 'boundary_country_outline', 'boundary_country_inner', 'watername_ocean', 'watername_sea', 'watername_lake', 'watername_lake_line', 'place_hamlet', 'place_suburbs', 'place_villages', 'place_town', 'place_country_2', 'place_country_1', 'place_state', 'place_continent', 'place_city_r6', 'place_city_r5', 'place_city_dot_r7', 'place_city_dot_r4', 'place_city_dot_r2', 'place_city_dot_z7', 'place_capital_dot_z7', 'poi_stadium', 'poi_park', 'roadname_minor', 'roadname_sec', 'roadname_pri', 'roadname_major', 'housenumber', 'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line'
-            ]);
+            assertLayers('*below* set to place_hamlet', 'place_hamlet');
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
-            expect(getLayerIds()).withContext('back to default *below*').toEqual([
-                'background', 'landcover', 'park_national_park', 'park_nature_reserve', 'landuse_residential', 'landuse', 'waterway', 'boundary_county', 'boundary_state', 'water', 'water_shadow', 'aeroway-runway', 'aeroway-taxiway', 'waterway_label', 'tunnel_service_case', 'tunnel_minor_case', 'tunnel_sec_case', 'tunnel_pri_case', 'tunnel_trunk_case', 'tunnel_mot_case', 'tunnel_path', 'tunnel_service_fill', 'tunnel_minor_fill', 'tunnel_sec_fill', 'tunnel_pri_fill', 'tunnel_trunk_fill', 'tunnel_mot_fill', 'tunnel_rail', 'tunnel_rail_dash', 'road_service_case', 'road_minor_case', 'road_pri_case_ramp', 'road_trunk_case_ramp', 'road_mot_case_ramp', 'road_sec_case_noramp', 'road_pri_case_noramp', 'road_trunk_case_noramp', 'road_mot_case_noramp', 'road_path', 'road_service_fill', 'road_minor_fill', 'road_pri_fill_ramp', 'road_trunk_fill_ramp', 'road_mot_fill_ramp', 'road_sec_fill_noramp', 'road_pri_fill_noramp', 'road_trunk_fill_noramp', 'road_mot_fill_noramp', 'rail', 'rail_dash', 'bridge_service_case', 'bridge_minor_case', 'bridge_sec_case', 'bridge_pri_case', 'bridge_trunk_case', 'bridge_mot_case', 'bridge_path', 'bridge_service_fill', 'bridge_minor_fill', 'bridge_sec_fill', 'bridge_pri_fill', 'bridge_trunk_fill', 'bridge_mot_fill', 'building', 'building-top', 'boundary_country_outline', 'boundary_country_inner', 'watername_ocean', 'watername_sea', 'watername_lake', 'watername_lake_line', 'plotly-trace-layer-a-fill', 'plotly-trace-layer-a-line', 'place_hamlet', 'place_suburbs', 'place_villages', 'place_town', 'place_country_2', 'place_country_1', 'place_state', 'place_continent', 'place_city_r6', 'place_city_r5', 'place_city_dot_r7', 'place_city_dot_r4', 'place_city_dot_r2', 'place_city_dot_z7', 'place_capital_dot_z7', 'poi_stadium', 'poi_park', 'roadname_minor', 'roadname_sec', 'roadname_pri', 'roadname_major', 'housenumber'
-            ]);
+            assertLayers('back to default *below*', 'place_hamlet');
         })
         .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
