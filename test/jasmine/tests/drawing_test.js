@@ -351,6 +351,43 @@ describe('Drawing', function() {
     describe('bBox', function() {
         afterEach(destroyGraphDiv);
 
+        it('remeasures cached fallback text after fonts load outside a plot redraw', async () => {
+            Drawing.makeTester();
+            const stable = Drawing.tester.append('text').text('Stable text')
+                .call(Drawing.font, { family: 'Arial', size: 20 })
+                .call(svgTextUtils.convertToTspans).node();
+            const stableMeasure = spyOn(stable, 'getBoundingClientRect').and.callThrough();
+            Drawing.bBox(stable, true);
+
+            const family = `PartialRedrawFont${Date.now()}`;
+            const face = new FontFace(family,
+                'url(/base/node_modules/@plotly/mathjax-v3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff)');
+            document.fonts.add(face);
+            const text = Drawing.tester.append('text').text('WWWWWWWW iiiiiiii')
+                .call(Drawing.font, { family: `${family}, Arial`, size: 20 })
+                .call(svgTextUtils.convertToTspans).node();
+            const measure = spyOn(text, 'getBoundingClientRect').and.callThrough();
+            try {
+                const fallback = Drawing.bBox(text, true);
+                expect(face.status).toBe('loading');
+                expect(Drawing.bBox(text, true)).toEqual(fallback);
+                expect(measure).toHaveBeenCalledTimes(1);
+                await face.loaded;
+                await document.fonts.ready;
+                const loaded = Drawing.bBox(text, true);
+                expect(loaded.width).not.toBe(fallback.width);
+                expect(measure).toHaveBeenCalledTimes(2);
+                expect(Drawing.bBox(text, true)).toEqual(loaded);
+                expect(measure).toHaveBeenCalledTimes(2);
+                Drawing.bBox(stable, true);
+                expect(stableMeasure).toHaveBeenCalledTimes(1);
+            } finally {
+                document.fonts.delete(face);
+                text.remove();
+                stable.remove();
+            }
+        });
+
         function assertBBox(actual, expected) {
             [
                 'height', 'top', 'bottom',
