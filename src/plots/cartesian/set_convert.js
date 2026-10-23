@@ -35,6 +35,28 @@ function isValidCategory(v) {
     return v !== null && v !== undefined;
 }
 
+// The smallest plot area in pixels that `domainpad` can leave. `doAutoMargin` keeps
+// the same floor for margins. A floor of 0 is not sufficient: setScale rejects only
+// negative lengths, so a length of 0 gives a slope of 0 and the subplot collapses with no error.
+const MIN_PADDED_LENGTH = 2;
+
+/**
+ * Get the part of the requested `domainpad` that fits in a domain band.
+ *
+ * `domain` is a fraction of the plot area, so its band shrinks with the figure but the
+ * padding does not. If the two pads need more room than the band has, the two pads
+ * get the same scale factor. `doAutoMargin` uses the same method for margins.
+ *
+ * @param wanted - the total padding of the two edges, in pixels
+ * @param bandLength - the length of the domain band, in pixels
+ * @returns the factor from 0 to 1 to multiply each pad by
+ */
+function padFactor(wanted, bandLength) {
+    if(wanted <= 0) return 0;
+    const room = Math.max(0, bandLength - MIN_PADDED_LENGTH);
+    return wanted > room ? room / wanted : 1;
+}
+
 /**
  * Define the conversion functions for an axis data is used in 5 ways:
  *
@@ -562,6 +584,9 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax.overlaying) {
             var ax2 = axisIds.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
+            // an overlaying axis has to sit on exactly the same plot area as the axis
+            // underneath it, so it takes that axis' padding along with its domain
+            ax.domainpad = ax2.domainpad;
         }
 
         // While transitions are occurring, we get a double-transform
@@ -576,14 +601,36 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
         var isY = axLetter === 'y';
+        // the length in pixels of the domain band, before `domainpad`
+        const bandLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+        const pad = ax.domainpad;
+        // _offset counts from the top for y and from the left for x,
+        // so padStart moves the plot area in from that edge
+        let padStart = 0;
+        let padEnd = 0;
+
+        if(pad) {
+            padStart = (isY ? pad.top : pad.left) || 0;
+            padEnd = (isY ? pad.bottom : pad.right) || 0;
+
+            const fits = padFactor(padStart + padEnd, bandLength);
+            padStart *= fits;
+            padEnd *= fits;
+        }
+
+        ax._length = bandLength - padStart - padEnd;
+        // Keep the padding after the fit. scattergl, splom and hover spikes add these
+        // values to their `domain` math. A rebuild from _offset and _length would change
+        // the last bits of the result, also for an axis with no padding.
+        ax._padStart = padStart;
+        ax._padEnd = padEnd;
+
         if(isY) {
-            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
-            ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h + padStart;
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
         } else {
-            ax._offset = gs.l + ax.domain[0] * gs.w;
-            ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.l + ax.domain[0] * gs.w + padStart;
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
         }

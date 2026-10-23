@@ -4683,7 +4683,10 @@ function swapAxisGroup(gd, xIds, yIds) {
     var allAxKeys = Object.keys(axAttrs);
 
     var noSwapAttrs = [
-        'anchor', 'domain', 'overlaying', 'position', 'side', 'tickangle', 'editType'
+        // domainpad stays with domain: its keys name screen edges, so a swap of x and y
+        // would need to map left and right to top and bottom
+        'anchor', 'domain', 'domainpad', 'overlaying', 'position', 'side',
+        'tickangle', 'editType'
     ];
     var numericTypes = ['linear', 'log'];
 

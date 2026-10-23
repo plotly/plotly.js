@@ -565,7 +565,7 @@ exports.enforce = function enforce(gd) {
                         var getPadMin = autorange.makePadFn(fullLayout, ax, 0);
                         var getPadMax = autorange.makePadFn(fullLayout, ax, 1);
 
-                        updateDomain(ax, factor);
+                        updateDomain(ax, factor, fullLayout);
                         var m = Math.abs(ax._m);
                         var extremes = autorange.concatExtremes(gd, ax);
                         var minArray = extremes.min;
@@ -596,7 +596,7 @@ exports.enforce = function enforce(gd) {
                             [rangeMin, rangeMax] : [rangeMax, rangeMin];
                     }
 
-                    updateDomain(ax, factor);
+                    updateDomain(ax, factor, fullLayout);
                 }
             }
         }
@@ -633,14 +633,39 @@ exports.clean = function clean(gd, ax) {
     }
 };
 
-function updateDomain(ax, factor) {
+// Get the `domainpad` of an axis as a fraction of the plot size.
+// The constraint solver works in domain fractions, not in pixels.
+function domainPadFraction(ax, fullLayout) {
+    const pad = ax.domainpad;
+    if(!pad) return 0;
+
+    const gs = fullLayout._size;
+    return ax._id.charAt(0) === 'y' ?
+        ((pad.top || 0) + (pad.bottom || 0)) / gs.h :
+        ((pad.left || 0) + (pad.right || 0)) / gs.w;
+}
+
+function updateDomain(ax, factor, fullLayout) {
     var inputDomain = ax._inputDomain;
     var centerFraction = FROM_BL[ax.constraintoward];
     var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
 
+    // The constraint divides the drawn length of the axis by `factor`. Without padding,
+    // the drawn length is the domain span. `domainpad` removes a fixed number of pixels
+    // from the ends, so the drawn length is (span - padding), and only that part scales.
+    // Thus divide that part, then add the padding back. If the padding covers the full
+    // domain, nothing remains to scale, so divide the full span and let setScale clamp the padding.
+    let divisor = factor;
+    const padFraction = domainPadFraction(ax, fullLayout);
+    if(padFraction > 0) {
+        const inputSpan = inputDomain[1] - inputDomain[0];
+        const drawnSpan = inputSpan - padFraction;
+        if(drawnSpan > 0) divisor = inputSpan / (drawnSpan / factor + padFraction);
+    }
+
     ax.domain = ax._input.domain = [
-        center + (inputDomain[0] - center) / factor,
-        center + (inputDomain[1] - center) / factor
+        center + (inputDomain[0] - center) / divisor,
+        center + (inputDomain[1] - center) / divisor
     ];
     ax.setScale();
 }
