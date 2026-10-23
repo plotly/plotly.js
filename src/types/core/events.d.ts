@@ -14,6 +14,7 @@ import type {
     LayoutAxis,
     Slider,
     Transition,
+    UpdateMenu
 } from '../generated/schema';
 import type { Datum } from '../lib/common';
 import type { Config } from './config';
@@ -113,6 +114,8 @@ export interface PlotMouseEvent {
     xPixel?: number;
     /** Cursor y position in pixels from the graph div's top-left corner */
     yPixel?: number;
+    /** Category constraints of the hovered or clicked path, set by `parcats` traces only. */
+    constraints?: Record<string, any>;
 }
 
 /** Payload for `plotly_hover` — augments `PlotMouseEvent` with axis values. */
@@ -156,6 +159,14 @@ export type PlotRestyleEvent = [PlotRestyleEventUpdate, number[]];
  * date string.
  */
 export type PlotRelayoutEvent = LayoutUpdate;
+
+/** Payload for `plotly_update`: the restyle and relayout payloads of one `Plotly.update` call. */
+export interface PlotUpdateEvent {
+    /** Restyle part of the update: the attribute changes and the affected trace indices. */
+    data: PlotRestyleEvent;
+    /** Relayout part of the update. */
+    layout: PlotRelayoutEvent;
+}
 
 // ---------------------------------------------------------------------------
 // 3D scene / annotation / animation / legend events
@@ -235,6 +246,45 @@ export interface LegendClickEvent {
     fullLayout: Partial<Layout>;
 }
 
+/**
+ * Payload for `plotly_legendtitleclick` and `plotly_legendtitledoubleclick`.
+ * Return `false` from the handler to suppress Plotly's default title click behavior.
+ */
+export interface LegendTitleClickEvent {
+    /** The original DOM mouse event. */
+    event: MouseEvent;
+    /** Id of the legend whose title was clicked, for example `'legend2'`. */
+    legendId: string;
+    /** User-supplied data array. */
+    data: Data[];
+    /** User-supplied layout object. */
+    layout: Partial<Layout>;
+    /** Fully-resolved data array (defaults applied). */
+    fullData: Data[];
+    /** Fully-resolved layout object (defaults applied). */
+    fullLayout: Partial<Layout>;
+}
+
+/** Payload for `plotly_react`, emitted after a `Plotly.react` call that left the config unchanged. */
+export interface PlotReactEvent {
+    /** User-supplied config object. */
+    config: Partial<Config>;
+    /** User-supplied data array. */
+    data: Data[];
+    /** User-supplied layout object. */
+    layout: Partial<Layout>;
+}
+
+/** Payload for `plotly_buttonclicked`, emitted when a button of an updatemenu is clicked. */
+export interface ButtonClickedEvent {
+    /** The updatemenu that holds the button. */
+    menu: UpdateMenu;
+    /** The clicked button. */
+    button: NonNullable<UpdateMenu['buttons']>[number];
+    /** Index of the active button, or `-1` if none is active. */
+    active: number;
+}
+
 // ---------------------------------------------------------------------------
 // Slider events
 // ---------------------------------------------------------------------------
@@ -269,10 +319,22 @@ export interface SliderEndEvent {
 }
 
 // ---------------------------------------------------------------------------
+// WebGL context events
+// ---------------------------------------------------------------------------
+
+/** Payload for `plotly_webglcontextlost`, emitted when a WebGL context is lost. */
+export interface WebGLContextLostEvent {
+    /** The original DOM `webglcontextlost` event. */
+    event: WebGLContextEvent;
+    /** Identifier of the regl layer or the gl3d scene that lost its context. */
+    layer: string;
+}
+
+// ---------------------------------------------------------------------------
 // Sunburst / before-plot
 // ---------------------------------------------------------------------------
 
-/** Point payload for `plotly_sunburstclick`. */
+/** Point payload for `plotly_sunburstclick`. Treemap and icicle traces emit the same point shape. */
 export interface SunburstPlotDatum {
     /** Color value associated with the sector. */
     color: number;
@@ -306,15 +368,27 @@ export interface SunburstPlotDatum {
     value: number;
 }
 
-/** Payload for `plotly_sunburstclick`, including the next-level entry. */
+/** Point payload for `plotly_treemapclick`. Same shape as `SunburstPlotDatum`. */
+export type TreemapPlotDatum = SunburstPlotDatum;
+
+/** Point payload for `plotly_icicleclick`. Same shape as `SunburstPlotDatum`. */
+export type IciclePlotDatum = SunburstPlotDatum;
+
+/** Payload for `plotly_sunburstclick`. Treemap and icicle traces emit the same payload, including the next-level entry. */
 export interface SunburstClickEvent {
     /** The original DOM mouse event. */
     event: MouseEvent;
-    /** Sector id that becomes the entry on click. */
-    nextLevel: string;
+    /** Sector id that becomes the entry on click. Absent when the click does not change the entry, as on a sunburst root or leaf. */
+    nextLevel?: string;
     /** Clicked sector(s). */
     points: SunburstPlotDatum[];
 }
+
+/** Payload for `plotly_treemapclick`. Same shape as `SunburstClickEvent`. */
+export type TreemapClickEvent = SunburstClickEvent;
+
+/** Payload for `plotly_icicleclick`. Same shape as `SunburstClickEvent`. */
+export type IcicleClickEvent = SunburstClickEvent;
 
 /**
  * Payload for `plotly_beforeplot`. Returning `false` from the handler
@@ -349,12 +423,27 @@ export interface PlotlyHTMLElement extends HTMLElement {
     on(event: 'plotly_restyle', callback: (data: PlotRestyleEvent) => void): void;
     /** Subscribe to relayout events (layout updates, including in-progress). */
     on(event: 'plotly_relayout' | 'plotly_relayouting', callback: (event: PlotRelayoutEvent) => void): void;
+    /** Subscribe to update events (`Plotly.update` calls). */
+    on(event: 'plotly_update', callback: (event: PlotUpdateEvent) => void): void;
+    /** Subscribe to WebGL context loss events. */
+    on(event: 'plotly_webglcontextlost', callback: (event: WebGLContextLostEvent) => void): void;
     /** Subscribe to annotation click events. */
     on(event: 'plotly_clickannotation', callback: (event: ClickAnnotationEvent) => void): void;
     /** Subscribe to per-frame animation events. */
     on(event: 'plotly_animatingframe', callback: (event: FrameAnimationEvent) => void): void;
     /** Subscribe to legend click events; return `false` to suppress default toggle. */
     on(event: 'plotly_legendclick' | 'plotly_legenddoubleclick', callback: (event: LegendClickEvent) => boolean): void;
+    /** Subscribe to legend title click events; return `false` to suppress default behavior. */
+    on(
+        event: 'plotly_legendtitleclick' | 'plotly_legendtitledoubleclick',
+        callback: (event: LegendTitleClickEvent) => boolean
+    ): void;
+    /** Subscribe to react events. */
+    on(event: 'plotly_react', callback: (event: PlotReactEvent) => void): void;
+    /** Subscribe to updatemenu button click events. */
+    on(event: 'plotly_buttonclicked', callback: (event: ButtonClickedEvent) => void): void;
+    /** Subscribe to pre-hover events; return `false` to cancel the hover. */
+    on(event: 'plotly_beforehover', callback: (event: MouseEvent) => boolean): void;
     /** Subscribe to slider change events. */
     on(event: 'plotly_sliderchange', callback: (event: SliderChangeEvent) => void): void;
     /** Subscribe to slider end-of-interaction events. */
@@ -363,6 +452,10 @@ export interface PlotlyHTMLElement extends HTMLElement {
     on(event: 'plotly_sliderstart', callback: (event: SliderStartEvent) => void): void;
     /** Subscribe to sunburst sector click events. */
     on(event: 'plotly_sunburstclick', callback: (event: SunburstClickEvent) => void): void;
+    /** Subscribe to treemap sector click events. */
+    on(event: 'plotly_treemapclick', callback: (event: TreemapClickEvent) => void): void;
+    /** Subscribe to icicle sector click events. */
+    on(event: 'plotly_icicleclick', callback: (event: IcicleClickEvent) => void): void;
     /** Subscribe to generic plotly events (low-level catch-all). */
     on(event: 'plotly_event', callback: (data: any) => void): void;
     /** Subscribe to pre-plot events; return `false` to cancel plotting. */
@@ -373,13 +466,16 @@ export interface PlotlyHTMLElement extends HTMLElement {
             | 'plotly_afterexport'
             | 'plotly_afterplot'
             | 'plotly_animated'
+            | 'plotly_animating'
             | 'plotly_animationinterrupted'
             | 'plotly_autosize'
             | 'plotly_beforeexport'
             | 'plotly_deselect'
             | 'plotly_doubleclick'
+            | 'plotly_exportfail'
             | 'plotly_framework'
             | 'plotly_redraw'
+            | 'plotly_transitioned'
             | 'plotly_transitioning'
             | 'plotly_transitioninterrupted',
         callback: () => void
@@ -401,6 +497,7 @@ export type PlotlyEventName =
     | 'plotly_afterexport'
     | 'plotly_afterplot'
     | 'plotly_animated'
+    | 'plotly_animating'
     | 'plotly_animatingframe'
     | 'plotly_animationinterrupted'
     | 'plotly_autosize'
@@ -412,10 +509,15 @@ export type PlotlyEventName =
     | 'plotly_clickannotation'
     | 'plotly_deselect'
     | 'plotly_doubleclick'
+    | 'plotly_exportfail'
     | 'plotly_framework'
     | 'plotly_hover'
+    | 'plotly_icicleclick'
     | 'plotly_legendclick'
     | 'plotly_legenddoubleclick'
+    | 'plotly_legendtitleclick'
+    | 'plotly_legendtitledoubleclick'
+    | 'plotly_react'
     | 'plotly_redraw'
     | 'plotly_relayout'
     | 'plotly_relayouting'
@@ -426,8 +528,10 @@ export type PlotlyEventName =
     | 'plotly_sliderend'
     | 'plotly_sliderstart'
     | 'plotly_sunburstclick'
+    | 'plotly_transitioned'
     | 'plotly_transitioning'
     | 'plotly_transitioninterrupted'
     | 'plotly_treemapclick'
     | 'plotly_unhover'
+    | 'plotly_update'
     | 'plotly_webglcontextlost';
