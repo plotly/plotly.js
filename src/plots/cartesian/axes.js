@@ -1207,9 +1207,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // check if ticklabelIndex makes sense, otherwise ignore it.
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
-    const visibleMinorTicks = minorTickVals.filter((minorTick) => minorTick.noTick !== true);
     if (ax._useTicklabelIndex) {
-        if(!visibleMinorTicks || visibleMinorTicks.length < 2) {
+        const visibleMinorTicks = minorTickVals.filter((minorTick) => !minorTick.noTick);
+        if (visibleMinorTicks.length < 2) {
             ax._useTicklabelIndex = false;
         } else {
             const diff = (visibleMinorTicks[1].value - visibleMinorTicks[0].value) * (isReversed ? -1 : 1);
@@ -1280,9 +1280,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(!allowedToOverlap) {
             // remove duplicate minors
             var list = [];
-            for(var k = 0; k < visibleMinorTicks.length; k++) {
-                if (findOverlappingTick(visibleMinorTicks[k], tickVals) == null) {
-                    list.push(visibleMinorTicks[k]);
+            for(var k = 0; k < minorTickVals.length; k++) {
+                if (findOverlappingTick(minorTickVals[k], tickVals) == null) {
+                    list.push(minorTickVals[k]);
                 }
             }
             minorTickVals = list;
