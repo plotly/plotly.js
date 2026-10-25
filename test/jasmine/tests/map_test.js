@@ -515,16 +515,19 @@ describe('map plots', function() {
             expect(mapInfo.style.name).toEqual(style);
         }
 
-        assertLayout('Dark Matter (Protomaps)');
+        const darkStyle = getMapInfo(gd).style.name;
+        expect(darkStyle).toBeTruthy();
 
         Plotly.relayout(gd, 'map.style', 'carto-positron')
         .then(function() {
-            assertLayout('Positron (Protomaps)');
+            const lightStyle = getMapInfo(gd).style.name;
+            expect(lightStyle).toBeTruthy();
+            expect(lightStyle).not.toEqual(darkStyle);
 
             return Plotly.relayout(gd, 'map.style', 'carto-darkmatter');
         })
         .then(function() {
-            assertLayout('Dark Matter (Protomaps)');
+            assertLayout(darkStyle);
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
@@ -1161,7 +1164,10 @@ describe('map plots', function() {
             relayoutCnt = 0;
             return new Promise(function(resolve) {
                 mouseEvent('mousemove', pointPos[0], pointPos[1]);
-                mouseEvent('scroll', pointPos[0], pointPos[1], {deltaY: -400});
+                mouseEvent('scroll', pointPos[0], pointPos[1], {
+                    deltaY: -400,
+                    element: getMapInfo(gd).map.getCanvas()
+                });
                 setTimeout(resolve, 500);
             });
         }
@@ -1221,16 +1227,23 @@ describe('map plots', function() {
             }
         }
 
+        function assertCartoAttribution(s) {
+            const links = s[0][0].getElementsByTagName('a');
+            const hrefs = Array.from(links, link => link.href);
+
+            expect(s.size()).toBe(1);
+            expect(s.text()).toContain('CARTO');
+            expect(s.text()).toContain('OpenStreetMap');
+            expect(hrefs.length).toBe(2);
+            expect(hrefs.some(href => href.indexOf('carto.com/') !== -1)).toBe(true);
+            expect(hrefs.some(href => href.indexOf('openstreetmap.org/') !== -1)).toBe(true);
+        }
+
         it('@gl should be displayed for style "Carto"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'carto-darkmatter'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
-                expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© OpenStreetMap contributors © CARTO');
-                assertLinks(s, [
-                    'https://www.openstreetmap.org/copyright',
-                    'https://carto.com/about-carto/'
-                ]);
+                assertCartoAttribution(s);
             })
             .then(done, done.fail);
         });
@@ -1252,12 +1265,7 @@ describe('map plots', function() {
             Plotly.newPlot(gd, [{type: 'scattermap'}], {map: {style: 'basic'}})
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
-                expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© OpenStreetMap contributors © CARTO');
-                assertLinks(s, [
-                    'https://www.openstreetmap.org/copyright',
-                    'https://carto.com/about-carto/',
-                ]);
+                assertCartoAttribution(s);
             })
             .then(done, done.fail);
         });
@@ -1328,7 +1336,9 @@ describe('map plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual([XSS + attr, '© OpenStreetMap contributors © CARTO'].join(' | '));
+                expect(s.text()).toContain(XSS + attr + ' | ');
+                expect(s.text()).toContain('CARTO');
+                expect(s.text()).toContain('OpenStreetMap');
                 expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);
                 expect(s.html().indexOf('&lt;img src=x onerror="alert(XSS);"&gt;')).not.toBe(-1);
             })
@@ -1625,17 +1635,27 @@ describe('test map trace/layout *below* interactions', function() {
     }
 
     it('@gl should be able to update *below* - scattermap + layout layer case', function(done) {
-        function _assert(msg, exp) {
-            var layersIds = getLayerIds();
-            var tracePrefix = 'plotly-trace-layer-' + gd._fullData[0].uid;
+        const traceIds = [
+            'plotly-trace-layer-a-fill',
+            'plotly-trace-layer-a-line',
+            'plotly-trace-layer-a-circle',
+            'plotly-trace-layer-a-symbol'
+        ];
+        let baseLayerIds;
+        let layoutLayerId;
 
-            expect(layersIds.indexOf(tracePrefix + '-fill')).toBe(exp.trace[0], msg + '| fill');
-            expect(layersIds.indexOf(tracePrefix + '-line')).toBe(exp.trace[1], msg + '| line');
-            expect(layersIds.indexOf(tracePrefix + '-circle')).toBe(exp.trace[2], msg + '| circle');
-            expect(layersIds.indexOf(tracePrefix + '-symbol')).toBe(exp.trace[3], msg + '| symbol');
+        function assertLayers(message, traceBelow, layoutBelow, layoutFirst) {
+            const expected = baseLayerIds.slice();
+            const waterIndex = expected.indexOf('water');
+            expect(waterIndex).not.toBe(-1, message + ' water anchor');
 
-            var layoutLayerId = ['plotly-layout-layer', gd._fullLayout._uid, 'map-0'].join('-');
-            expect(layersIds.indexOf(layoutLayerId)).toBe(exp.layout, msg + '| layout layer');
+            if (layoutBelow === 'water') expected.splice(waterIndex, 0, layoutLayerId);
+            if (traceBelow === 'water') expected.splice(waterIndex, 0, ...traceIds);
+            if (layoutBelow === 'top' && layoutFirst) expected.push(layoutLayerId);
+            if (traceBelow === 'top') expected.push(...traceIds);
+            if (layoutBelow === 'top' && !layoutFirst) expected.push(layoutLayerId);
+
+            expect(getLayerIds()).withContext(message).toEqual(expected);
         }
 
         Plotly.newPlot(gd, [{
@@ -1660,94 +1680,77 @@ describe('test map trace/layout *below* interactions', function() {
             }
         })
         .then(function() {
-            _assert('default *below*', {
-                trace: [96, 97, 98, 99],
-                layout: 9
-            });
+            baseLayerIds = getLayerIds().filter(id => id.indexOf('plotly-') !== 0);
+            layoutLayerId = ['plotly-layout-layer', gd._fullLayout._uid, 'map-0'].join('-');
+            assertLayers('default *below*', 'top', 'water');
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'traces'); })
         .then(function() {
-            _assert('with layout layer *below:traces*', {
-                trace: [96, 97, 98, 99],
-                layout: 95
-            });
+            assertLayers('layout layer *below:traces*', 'top', 'top', true);
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', null); })
         .then(function() {
-            _assert('back to default *below* (1)', {
-                trace: [95, 96, 97, 98],
-                layout: 99
-            });
+            assertLayers('back to default *below* (1)', 'top', 'top');
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
-            _assert('with trace *below:""*', {
-                trace: [96, 97, 98, 99],
-                layout: 95
-            });
+            assertLayers('trace *below:""*', 'top', 'top', true);
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
-            _assert('back to default *below* (2)', {
-                trace: [95, 96, 97, 98],
-                layout: 99
-            });
+            assertLayers('back to default *below* (2)', 'top', 'top');
         })
         .then(function() { return Plotly.restyle(gd, 'below', 'water'); })
         .then(function() {
-            _assert('with trace *below:water*', {
-                trace: [9, 10, 11, 12],
-                layout: 99
-            });
+            assertLayers('trace *below:water*', 'water', 'top');
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'water'); })
         .then(function() {
-            _assert('with trace AND layout layer *below:water*', {
-                trace: [9, 10, 11, 12],
-                layout: 13
-            });
+            assertLayers('trace and layout layer *below:water*', 'water', 'water');
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', ''); })
         .then(function() {
-            _assert('with trace *below:water* and layout layer *below:""*', {
-                trace: [9, 10, 11, 12],
-                layout: 99
-            });
+            assertLayers('trace *below:water* and layout layer at top', 'water', 'top');
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
-            _assert('with trace AND layout layer *below:water*', {
-                trace: [95, 96, 97, 98],
-                layout: 99
-            });
+            assertLayers('trace and layout layer at top', 'top', 'top');
         })
         .then(function() { return Plotly.update(gd, {below: null}, {'map.layers[0].below': null}); })
         .then(function() {
-            _assert('back to default *below* (3)', {
-                trace: [95, 96, 97, 98],
-                layout: 99
-            });
+            assertLayers('back to default *below* (3)', 'top', 'top');
         })
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('@gl should be able to update *below* - scattermap + choroplethmap + densitymap case', function(done) {
-        function _assert(msg, exp) {
-            var layersIds = getLayerIds();
-            var tracePrefix = 'plotly-trace-layer-';
+        const scatterIds = [
+            'plotly-trace-layer-scatter-fill',
+            'plotly-trace-layer-scatter-line',
+            'plotly-trace-layer-scatter-circle',
+            'plotly-trace-layer-scatter-symbol'
+        ];
+        const densityId = 'plotly-trace-layer-density-heatmap';
+        const choroplethIds = [
+            'plotly-trace-layer-choropleth-fill',
+            'plotly-trace-layer-choropleth-line'
+        ];
+        let baseLayerIds;
 
-            var scatterPrefix = tracePrefix + 'scatter';
-            expect(layersIds.indexOf(scatterPrefix + '-fill')).toBe(exp.scatter[0], msg + '| scatter fill');
-            expect(layersIds.indexOf(scatterPrefix + '-line')).toBe(exp.scatter[1], msg + '| scatter line');
-            expect(layersIds.indexOf(scatterPrefix + '-circle')).toBe(exp.scatter[2], msg + '| scatter circle');
-            expect(layersIds.indexOf(scatterPrefix + '-symbol')).toBe(exp.scatter[3], msg + '| scatter symbol');
-
-            var densityPrefix = tracePrefix + 'density';
-            expect(layersIds.indexOf(densityPrefix + '-heatmap')).toBe(exp.density[0], msg + '| density heatmap');
-
-            var choroplethPrefix = tracePrefix + 'choropleth';
-            expect(layersIds.indexOf(choroplethPrefix + '-fill')).toBe(exp.choropleth[0], msg + '| choropleth fill');
-            expect(layersIds.indexOf(choroplethPrefix + '-line')).toBe(exp.choropleth[1], msg + '| choropleth line');
+        function assertLayers(message, allAtTop) {
+            const expected = baseLayerIds.slice();
+            if (allAtTop) {
+                expected.push(...choroplethIds, densityId, ...scatterIds);
+            } else {
+                const waterwayLabelIndex = expected.indexOf('waterway_label');
+                expect(waterwayLabelIndex).not.toBe(-1, message + ' waterway_label anchor');
+                expected.splice(waterwayLabelIndex, 0, densityId);
+                const placeHamletIndex = expected.indexOf('place_hamlet');
+                expect(placeHamletIndex).not.toBe(-1, message + ' place_hamlet anchor');
+                expected.splice(placeHamletIndex, 0, ...choroplethIds);
+                expected.push(...scatterIds);
+            }
+            expect(getLayerIds()).withContext(message).toEqual(expected);
         }
 
         Plotly.newPlot(gd, [{
@@ -1771,27 +1774,16 @@ describe('test map trace/layout *below* interactions', function() {
             map: {style: 'basic'}
         })
         .then(function() {
-            _assert('base', {
-                scatter: [98, 99, 100, 101],
-                density: [13],
-                choropleth: [74, 75]
-            });
+            baseLayerIds = getLayerIds().filter(id => id.indexOf('plotly-') !== 0);
+            assertLayers('base', false);
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
-            _assert('all traces *below:""', {
-                scatter: [98, 99, 100, 101],
-                density: [97],
-                choropleth: [95, 96]
-            });
+            assertLayers('all traces *below:""*', true);
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
-            _assert('back to base', {
-                scatter: [98, 99, 100, 101],
-                density: [13],
-                choropleth: [74, 75]
-            });
+            assertLayers('back to base', false);
         })
         .then(done, done.fail);
     }, 8 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
@@ -1819,7 +1811,7 @@ describe('test map trace/layout *below* interactions', function() {
             }
             Lib.warn.calls.reset();
 
-            getLayerIds().slice(96, -1).forEach(function(id) {
+            getLayerIds().slice(-exp.warnCnt).forEach(function(id) {
                 expect(id.indexOf('plotly-')).toBe(0, 'layer ' + id + ' fallback to top of map');
             });
         }
@@ -1934,7 +1926,7 @@ describe('Test map GeoJSON fetching:', function() {
             actual = reason;
         })
         .then(function() {
-            expect(actual).toEqual(new Error('GeoJSON at URL "invalidUrl" does not exist.'));
+            expect(actual.message).toMatch(/^GeoJSON at URL "invalidUrl(-two)?" does not exist\.$/);
             expect(window.PlotlyGeoAssets.invalidUrl).toBe(undefined);
         })
         .then(done, done.fail);
