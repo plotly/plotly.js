@@ -1216,13 +1216,14 @@ describe('map plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
-        function assertLinks(s, exp) {
+        // CARTO controls the markup of its own links, so only plotly-owned links have a target
+        function assertLinks(s, exp, checkTarget) {
             var elements = s[0][0].getElementsByTagName('a');
             expect(elements.length).toEqual(exp.length);
             for(var i = 0; i < elements.length; i++) {
                 var e = elements[i];
                 expect(e.href).toEqual(exp[i]);
-                expect(e.target).toEqual('_blank');
+                if(checkTarget) expect(e.target).toEqual('_blank');
             }
         }
 
@@ -1255,7 +1256,7 @@ describe('map plots', function() {
                 expect(s.text()).toEqual('© OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://www.openstreetmap.org/copyright'
-                ]);
+                ], true);
             })
             .then(done, done.fail);
         });
