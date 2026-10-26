@@ -292,8 +292,8 @@ exports.repositionMathGroup = function(_context) {
 
 /**
  * Finds the node whose bounding box represents a source <text> element's
- * rendered content: the typeset MathJax group if convertToTspans replaced
- * the text with one (the source itself is display:none in that case), or
+ * rendered content: the typeset glyphs if convertToTspans replaced the text
+ * with a MathJax group (the source itself is display:none in that case), or
  * the <text> node otherwise.
  *
  * @param {d3 selection} textSel: the source <text> element
@@ -305,7 +305,12 @@ exports.getMathOrTextNode = function(textSel) {
 
     var svgClass = (textSel.attr('class') ? textSel.attr('class').split(' ')[0] : 'text') + '-math';
     var mathGroup = d3.select(node.parentNode).select('g.' + svgClass + '-group');
-    return mathGroup.empty() ? node : mathGroup.node();
+    if(mathGroup.empty()) return node;
+
+    // Firefox can report a near-empty getBoundingClientRect for the group
+    // itself (seen on rotated hover labels), but measures the glyphs correctly
+    var glyphs = mathGroup.select('svg g');
+    return (glyphs.empty() ? mathGroup : glyphs).node();
 };
 
 

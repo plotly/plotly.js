@@ -723,7 +723,7 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                     expect(mathGroup.size()).toBe(1, 'name math group');
                     expect(box.size()).toBe(1, 'name box');
 
-                    var m = mathGroup.node().getBoundingClientRect();
+                    var m = mathGroup.select('svg g').node().getBoundingClientRect();
                     var b = box.node().getBoundingClientRect();
                     var dx = (m.left + m.right) / 2 - (b.left + b.right) / 2;
                     var dy = (m.top + m.bottom) / 2 - (b.top + b.bottom) / 2;
