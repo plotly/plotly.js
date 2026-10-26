@@ -36,11 +36,55 @@ gd.on('plotly_webglcontextlost', (event) => {
 
 gd.on('plotly_react', (event) => {
     const dataLength: number = event.data.length;
+    const responsive: boolean | undefined = event.config?.responsive;
+    const autosize: boolean | undefined = event.layout?.autosize;
+
+    // @ts-expect-error `config` is `undefined` if the `Plotly.react` call omitted it
+    const unchecked: boolean | undefined = event.config.responsive;
 });
 
 gd.on('plotly_legendtitleclick', (event) => {
     const legendId: string = event.legendId;
     return false;
+});
+
+// A handler that only observes the event is valid
+gd.on('plotly_legendclick', (event) => {
+    console.log(event.curveNumber);
+});
+
+gd.on('plotly_legenddoubleclick', (event) => {
+    console.log(event.curveNumber);
+});
+
+gd.on('plotly_beforeplot', (event) => {
+    console.log(event.data.length);
+});
+
+gd.on('plotly_sunburstclick', (event) => {
+    console.log(event.points.length);
+});
+
+gd.on('plotly_treemapclick', (event) => {
+    console.log(event.points.length);
+});
+
+gd.on('plotly_icicleclick', (event) => {
+    console.log(event.points.length);
+});
+
+// A handler can return `false` to cancel the default behavior
+gd.on('plotly_legendclick', () => false);
+gd.on('plotly_beforeplot', () => false);
+gd.on('plotly_sunburstclick', () => false);
+gd.on('plotly_treemapclick', () => false);
+
+gd.on('plotly_legendtitleclick', (event) => {
+    console.log(event.legendId);
+});
+
+gd.on('plotly_beforehover', (event) => {
+    console.log(event.clientX);
 });
 
 gd.on('plotly_buttonclicked', (event) => {
@@ -58,6 +102,10 @@ gd.on('plotly_icicleclick', (event) => {
 
 gd.on('plotly_treemapclick', (event) => {
     const points: TreemapPlotDatum[] = event.points;
+
+    // @ts-expect-error `value` is absent unless the trace sets `values`
+    const value: number = points[0].value;
+    const optionalValue: number | undefined = points[0].value;
 });
 
 gd.on('plotly_animating', () => {});
