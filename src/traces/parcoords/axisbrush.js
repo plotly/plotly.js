@@ -4,7 +4,10 @@ var c = require('./constants');
 var d3 = require('@plotly/d3');
 var keyFun = require('../../lib/gup').keyFun;
 var repeat = require('../../lib/gup').repeat;
+var removeElement = require('../../lib').removeElement;
+var setCursor = require('../../lib/setcursor');
 var sortAsc = require('../../lib').sorterAsc;
+var dragElement = require('../../components/dragelement');
 var strTranslate = require('../../lib').strTranslate;
 
 var snapRatio = c.bar.snapRatio;
@@ -110,9 +113,8 @@ function getRegion(fPix, y) {
     return 'ns';
 }
 
-function clearCursor() {
-    d3.select(document.body)
-        .style('cursor', null);
+function clearCursor(lThis) {
+    setCursor(d3.select(lThis));
 }
 
 function styleHighlight(selection) {
@@ -223,6 +225,8 @@ function dragstart(lThis, d) {
     }
     s.startExtent = interval.region ? unitRange[interval.region === 's' ? 1 : 0] : unitLocation;
     d.parent.inBrushDrag = true;
+    s.dragCover = dragElement.coverSlip();
+    s.dragCover.style.cursor = window.getComputedStyle(lThis).cursor;
     s.brushStartCallback();
 }
 
@@ -265,7 +269,9 @@ function dragend(lThis, d) {
     s.grabbingBar = false;
     s.grabLocation = undefined;
     d.parent.inBrushDrag = false;
-    clearCursor(); // instead of clearing, a nicer thing would be to set it according to current location
+    removeElement(s.dragCover);
+    s.dragCover = undefined;
+    clearCursor(lThis); // instead of clearing, a nicer thing would be to set it according to current location
     if(!s.wasDragged) { // a click+release on the same spot (ie. w/o dragging) means a bar or full reset
         s.wasDragged = undefined; // logic-wise unneeded, just shows `wasDragged` has no longer a meaning
         if(s.clickableOrdinalRange) {
@@ -329,8 +335,7 @@ function mousemove(lThis, d) {
     var cursor = 'crosshair';
     if(interval.clickableOrdinalRange) cursor = 'pointer';
     else if(interval.region) cursor = interval.region + '-resize';
-    d3.select(document.body)
-        .style('cursor', cursor);
+    setCursor(d3.select(lThis), cursor);
 }
 
 function attachDragBehavior(selection) {
@@ -343,7 +348,7 @@ function attachDragBehavior(selection) {
             if(!d.parent.inBrushDrag) mousemove(this, d);
         })
         .on('mouseleave', function(d) {
-            if(!d.parent.inBrushDrag) clearCursor();
+            if(!d.parent.inBrushDrag) clearCursor(this);
         })
         .call(d3.behavior.drag()
             .on('dragstart', function(d) { dragstart(this, d); })
