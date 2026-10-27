@@ -650,7 +650,7 @@ describe('Plotly.react transitions:', function() {
             layout.xaxis.range = [-1, 1];
             return Plotly.react(gd, data, layout);
         })
-        .then(delay(100))
+        .then(delay(300))
         .then(function() {
             assertSpies('both trace and layout transitions', [
                 [Plots, 'transitionFromReact', 1],

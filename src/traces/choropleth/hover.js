@@ -3,6 +3,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
 var fillText = require('../../lib').fillText;
+const { ANTIMERIDIAN_LON_SHIFT } = require('../../lib/geo_location_utils');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
@@ -12,7 +13,10 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var pt, i, j, isInside;
 
     var xy = [xval, yval];
-    var altXy = [xval + 360, yval];
+    // Polygons that cross the antimerdian are shifted by
+    // ANTIMERIDIAN_LON_SHIFT in feature2polygons (src/lib/geo_location_utils.js),
+    // so test the hover point in both the original and shifted frames.
+    const altXy = [xval + ANTIMERIDIAN_LON_SHIFT, yval];
 
     for(i = 0; i < cd.length; i++) {
         pt = cd[i];
@@ -23,7 +27,6 @@ module.exports = function hoverPoints(pointData, xval, yval) {
                 if(pt._polygons[j].contains(xy)) {
                     isInside = !isInside;
                 }
-                // for polygons that cross antimeridian as xval is in [-180, 180]
                 if(pt._polygons[j].contains(altXy)) {
                     isInside = !isInside;
                 }

@@ -80,10 +80,8 @@ describe('Plotly.Snapshot', function() {
                 staticPlot: true,
                 plotGlPixelRatio: 2,
                 displaylogo: false,
-                showLink: false,
                 showTips: false,
-                setBackground: 'opaque',
-                mapboxAccessToken: undefined
+                setBackground: 'opaque'
             };
 
             var themeTile = Plotly.Snapshot.clone(dummyGraphObj, themeOptions);
@@ -101,7 +99,6 @@ describe('Plotly.Snapshot', function() {
 
             var THUMBNAIL_DEFAULT_LAYOUT = {
                 title: {text: ''},
-                hidesources: true,
                 showlegend: false,
                 hovermode: false,
                 dragmode: false,
@@ -113,7 +110,6 @@ describe('Plotly.Snapshot', function() {
             };
 
             var thumbTile = Plotly.Snapshot.clone(dummyGraphObj, thumbnailOptions);
-            expect(thumbTile.layout.hidesources).toEqual(THUMBNAIL_DEFAULT_LAYOUT.hidesources);
             expect(thumbTile.layout.showlegend).toEqual(THUMBNAIL_DEFAULT_LAYOUT.showlegend);
             expect(thumbTile.layout.borderwidth).toEqual(THUMBNAIL_DEFAULT_LAYOUT.borderwidth);
             expect(thumbTile.layout.annotations).toEqual(THUMBNAIL_DEFAULT_LAYOUT.annotations);

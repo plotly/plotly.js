@@ -6,6 +6,7 @@ module.exports = {
     colorbar: require('../heatmap/colorbar'),
     calc: require('./calc'),
     calcGeoJSON: require('./plot').calcGeoJSON,
+    fitCoords: require('./plot').fitCoords,
     plot: require('./plot').plot,
     style: require('./style').style,
     styleOnSelect: require('./style').styleOnSelect,

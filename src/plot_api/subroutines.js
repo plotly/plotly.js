@@ -684,7 +684,7 @@ exports.doLegend = function(gd) {
 };
 
 exports.doTicksRelayout = function(gd) {
-    Axes.draw(gd, 'redraw');
+    var drawPromise = Axes.draw(gd, 'redraw');
 
     if(gd._fullLayout._hasOnlyLargeSploms) {
         Registry.subplotsRegistry.splom.updateGrid(gd);
@@ -693,7 +693,9 @@ exports.doTicksRelayout = function(gd) {
     }
 
     exports.drawMainTitle(gd);
-    return Plots.previousPromises(gd);
+    return Promise.resolve(drawPromise).then(function() {
+        return Plots.previousPromises(gd);
+    });
 };
 
 exports.doModeBar = function(gd) {

@@ -109,22 +109,29 @@ function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, i
         element = document;
     }
     element.querySelectorAll(selector).forEach(function(el) {
+        el._hoverStyle = {
+            activeStyleParts: activeStyleParts,
+            inactiveStyleParts: inactiveStyleParts
+        };
+
         if(!el.getAttribute(eventAddedAttrName)) {
             // Emulate ":hover" CSS style using JS event handlers to set the
             // style in a strict CSP-compliant manner.
             el.addEventListener('mouseenter', function() {
+                var hoverStyle = this._hoverStyle;
                 var childEl = this.querySelector(childSelector);
                 if(childEl) {
-                    childEl.style[activeStyleParts[0]] = activeStyleParts[1];
+                    childEl.style[hoverStyle.activeStyleParts[0]] = hoverStyle.activeStyleParts[1];
                 }
             });
             el.addEventListener('mouseleave', function() {
+                var hoverStyle = this._hoverStyle;
                 var childEl = this.querySelector(childSelector);
                 if(childEl) {
                     if(activeSelector && this.matches(activeSelector)) {
-                        childEl.style[activeStyleParts[0]] = activeStyleParts[1];
+                        childEl.style[hoverStyle.activeStyleParts[0]] = hoverStyle.activeStyleParts[1];
                     } else {
-                        childEl.style[inactiveStyleParts[0]] = inactiveStyleParts[1];
+                        childEl.style[hoverStyle.inactiveStyleParts[0]] = hoverStyle.inactiveStyleParts[1];
                     }
                 }
             });

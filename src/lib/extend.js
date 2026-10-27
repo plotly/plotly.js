@@ -17,20 +17,20 @@ function primitivesLoopSplice(source, target) {
     return true;
 }
 
-exports.extendFlat = function() {
-    return _extend(arguments, false, false, false);
+exports.extendFlat = function(...args) {
+    return _extend(args, false, false, false);
 };
 
-exports.extendDeep = function() {
-    return _extend(arguments, true, false, false);
+exports.extendDeep = function(...args) {
+    return _extend(args, true, false, false);
 };
 
-exports.extendDeepAll = function() {
-    return _extend(arguments, true, true, false);
+exports.extendDeepAll = function(...args) {
+    return _extend(args, true, true, false);
 };
 
-exports.extendDeepNoArrays = function() {
-    return _extend(arguments, true, false, true);
+exports.extendDeepNoArrays = function(...args) {
+    return _extend(args, true, false, true);
 };
 
 /*

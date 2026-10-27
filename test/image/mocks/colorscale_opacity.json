@@ -99,7 +99,7 @@
       "mode": "markers",
       "marker": {
         "size": 40,
-        "colorscale": [[0, "rgb(255,0.0,0.0)"], [1, "rgba(0.0,0.0,255,0.5)"]],
+        "colorscale": [[0, "rgb(255,0,0)"], [1, "rgba(0,0,255,0.5)"]],
         "color": [0, 1, 2, 3],
         "cmin": 0,
         "cmax": 3

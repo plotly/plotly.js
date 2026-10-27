@@ -90,6 +90,28 @@ function expandRange(range) {
     ];
 }
 
+/**
+ * Correct a floating-point roundoff artifact in a linearized tick value.
+ * When `l` is much closer to its nearest ideal grid position than one `dtick`
+ * (within `dtick * snapThreshold`), snap it to that ideal. Otherwise return
+ * `l` unchanged. See https://github.com/plotly/plotly.js/issues/7765.
+ *
+ * @param l - linearized tick value from the accumulator in calcTicks
+ * @param tick0l - the axis' `tick0` in linearized form
+ * @param dtick - the axis' tick step; must be numeric and nonzero to snap
+ * @returns the snapped value, or `l` unchanged if no snap applies
+ */
+function snapToGrid(l, tick0l, dtick) {
+    if (![dtick, l, tick0l].every(isNumeric) || dtick === 0) return l;
+
+    const nTicks = Math.round((l - tick0l) / dtick);
+    const idealTick = tick0l + nTicks * dtick;
+    const snapThreshold = 1e-6;
+    const shouldSnap = l !== idealTick && Math.abs(l - idealTick) < Math.abs(dtick) * snapThreshold;
+
+    return shouldSnap ? idealTick : l;
+}
+
 /*
  * find the list of possible axes to reference with an xref or yref attribute
  * and coerce it to that list
@@ -694,6 +716,12 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // ensure identical tick0
         mockAx.tick0 = ax.tick0;
     }
+    if (ax._useTicklabelIndex) {
+        // this could always be done but the additional information on the minor
+        // axis is just necessary when using ticklabelindex.
+        autoTickRound(mockAx);
+        ax.minor._tickround = mockAx._tickround;
+    }
 };
 
 function isMultiple(bigger, smaller) {
@@ -860,30 +888,48 @@ function adjustPeriodDelta(ax) { // adjusts ax.dtick and sets ax._definedDelta
     ax._definedDelta = definedDelta;
 }
 
+/**
+ * Calculates the period label position for each tick in tickVals.
+ * @param {array} tickVals: the list of ticks for which to position the period labels
+ * @param {object} ax: the axis of the ticks
+ * @param {number} definedDelta: the defined distance between two ticks
+ */
 function positionPeriodTicks(tickVals, ax, definedDelta) {
     for(var i = 0; i < tickVals.length; i++) {
         var v = tickVals[i].value;
-
-        var a = i;
-        var b = i + 1;
-        if(i < tickVals.length - 1) {
-            a = i;
-            b = i + 1;
-        } else if(i > 0) {
-            a = i - 1;
-            b = i;
+        var A, B;
+        if (tickVals[i].periodEndTick != null) {
+            // Will be set when ticklabelindex is used because labeled periods can
+            // have unlabeled periods between each other
+            A = tickVals[i].value;
+            B = tickVals[i].periodEndTick.value;
         } else {
-            a = i;
-            b = i;
+            // Use the next tick in tickVals as the period end tick
+            var a = i;
+            var b = i + 1;
+            if(i < tickVals.length - 1) {
+                a = i;
+                b = i + 1;
+            } else if(i > 0) {
+                a = i - 1;
+                b = i;
+            } else {
+                a = i;
+                b = i;
+            }
+
+            A = tickVals[a].value;
+            B = tickVals[b].value;
         }
 
-        var A = tickVals[a].value;
-        var B = tickVals[b].value;
         var actualDelta = Math.abs(B - A);
         var delta = definedDelta || actualDelta;
         var periodLength = 0;
 
-        if(delta >= ONEMINYEAR) {
+        if (tickVals[i].periodEndTick != null) {
+            // the period end is known exactly, so there is nothing to infer
+            periodLength = actualDelta;
+        } else if(delta >= ONEMINYEAR) {
             if(actualDelta >= ONEMINYEAR && actualDelta <= ONEMAXYEAR) {
                 periodLength = actualDelta;
             } else {
@@ -956,6 +1002,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var isReversed = ax.range[0] > ax.range[1];
     var ticklabelIndex = (!ax.ticklabelindex || Lib.isArrayOrTypedArray(ax.ticklabelindex)) ?
         ax.ticklabelindex : [ax.ticklabelindex];
+    ax._useTicklabelIndex = ticklabelIndex != null && ticklabelIndex !== 0;
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
@@ -975,7 +1022,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
     // minor ticks should be calculated if they are visible or if ticklabelindex is set because then
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
-    var calcMinor = hasMinor || ticklabelIndex;
+    var calcMinor = hasMinor || ax._useTicklabelIndex;
 
     // calc major first
     for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
@@ -1067,6 +1114,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
 
         var dtick = mockAx.dtick;
+        var tick0l = (type === 'linear') ? mockAx.r2l(mockAx.tick0) : undefined;
 
         if(mockAx.rangebreaks && mockAx._tick0Init !== mockAx.tick0) {
             // adjust tick0
@@ -1076,7 +1124,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        if((major || ticklabelIndex) && isPeriod) {
+        if((major || ax._useTicklabelIndex) && isPeriod) {
             // if major: add one item to label period before tick0
             // if minor: add one item for ticklabelindex positioning. positionPeriodTicks requires
             // at least 2 ticks to calculate the period length, so we add a dummy tick, ensuring
@@ -1110,9 +1158,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if(tickVals.length > maxTicks || x === prevX) break;
             prevX = x;
 
-            var obj = { value: x };
+            var obj = { value: snapToGrid(x, tick0l, dtick) };
 
             if(major) {
+                // mark first major tick, for showexponent/showtickprefix/showticksuffix 'first'
+                if(x === x0) obj.first = true;
+
                 if(isDLog && (x !== (x | 0))) {
                     obj.simpleLabel = true;
                 }
@@ -1130,93 +1181,104 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    function findOverlappingTick(minorTick, majorTicks) {
+        const majorTick = majorTicks.find((majorTick) => majorTick.value === minorTick.value);
+        if (majorTick != null) {
+            return majorTick;
+        }
+        // add 10e6 to eliminate problematic digits
+        const epsilon = 10e6;
+        for (let i = 0; i < majorTicks.length; i++) {
+            if (epsilon + majorTicks[i].value === epsilon + minorTick.value) {
+                return majorTicks[i];
+            }
+        }
+        return null;
+    };
+
     // check if ticklabelIndex makes sense, otherwise ignore it.
     // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
     // with the required distance to each other.
     if(!minorTickVals || minorTickVals.length < 3) {
-        ticklabelIndex = false;
+        ax._useTicklabelIndex = false;
     } else {
-        var diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
+        const diff = (minorTickVals[2].value - minorTickVals[1].value) * (isReversed ? -1 : 1);
         if(!periodCompatibleWithTickformat(diff, ax.tickformat)) {
-            ticklabelIndex = false;
+            ax._useTicklabelIndex = false;
             // remove previously added tick before tick0 for handling ticklabelindex positioning
             minorTickVals = minorTickVals.slice(1);
         }
     }
+
     // Determine for which ticks to draw labels
-    if(!ticklabelIndex) {
+    if(!ax._useTicklabelIndex) {
         allTicklabelVals = tickVals;
     } else {
-        // Collect and sort all major and minor ticks, to find the minor ticks `ticklabelIndex`
-        // steps away from each major tick. For those minor ticks we want to draw the label.
+        // For each major tick, find the minor tick `ticklabelIndex` steps away.
+        // This minor tick will be labeled instead of the major tick.
 
-        var allTickVals = tickVals.concat(minorTickVals);
-        if(isPeriod && tickVals.length) {
+        // if a minor tick coincides with a major tick, drop the minor tick and keep the major one
+        // because overlapping minor ticks are stripped away if both minor and major ticks are drawn on the same side.
+        const filteredMinors = minorTickVals.filter((minor) => findOverlappingTick(minor, tickVals) == null);
+        const labelTickValsAscending = tickVals.concat(filteredMinors)
+            .sort((a, b) => a.value - b.value);
+
+        if (isPeriod && tickVals.length) {
             // first major tick was just added for period handling
-            allTickVals = allTickVals.slice(1);
+            tickVals[0].skipLabel = true;
         }
-
-        allTickVals =
-            allTickVals
-            .sort(function(a, b) { return a.value - b.value; })
-            .filter(function(tick, index, self) {
-                return index === 0 || tick.value !== self[index - 1].value;
-            });
-
-        var majorTickIndices =
-            allTickVals
-            .map(function(item, index) {
-                return item.minor === undefined && !item.skipLabel ? index : null;
-            })
-            .filter(function(index) { return index !== null; });
-
-        majorTickIndices.forEach(function(majorIdx) {
-            ticklabelIndex.map(function(nextLabelIdx) {
-                var minorIdx = majorIdx + nextLabelIdx;
-                if(minorIdx >= 0 && minorIdx < allTickVals.length) {
-                    Lib.pushUnique(allTicklabelVals, allTickVals[minorIdx]);
-                }
-            });
+        tickVals.forEach(function(majorTick) {
+            if (!majorTick.skipLabel) {
+                ticklabelIndex.forEach((labelIndex) => {
+                    if (labelIndex < 0) {
+                        const smallerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value <= majorTick.value);
+                        const absLabelIndex = Math.abs(labelIndex);
+                        const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
+                        if (absLabelIndex < smallerTicks.length) {
+                            const tickToLabel = smallerTicks[labeledTickIndex];
+                            allTicklabelVals.push(tickToLabel);
+                            if (isPeriod) {
+                                tickToLabel.periodEndTick = smallerTicks[labeledTickIndex + 1];
+                            }
+                        }
+                    } else { // labelIndex >= 0
+                        const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
+                        if (labelIndex < largerTicks.length) {
+                            const tickToLabel = largerTicks[labelIndex];
+                            allTicklabelVals.push(tickToLabel);
+                            if (isPeriod && largerTicks[labelIndex + 1]) {
+                                tickToLabel.periodEndTick = largerTicks[labelIndex + 1];
+                            }
+                        }
+                    }
+                });
+                // Skip the major tick label since the label moved to a minor tick
+                majorTick.skipLabel = true;
+            }
         });
-        tickVals.forEach(function(tick) {
-            tick.skipLabel = allTicklabelVals.indexOf(tick) === -1;
-        });
+        allTicklabelVals.forEach((t) => t.skipLabel = false);
     }
 
     if(hasMinor) {
-        var canOverlap =
+        var allowedToOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
             (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
 
-        if(!canOverlap) {
+        if(!allowedToOverlap) {
             // remove duplicate minors
-
-            var majorValues = tickVals.map(function(d) { return d.value; });
-
             var list = [];
             for(var k = 0; k < minorTickVals.length; k++) {
-                var T = minorTickVals[k];
-                var v = T.value;
-                if(majorValues.indexOf(v) !== -1) {
-                    continue;
+                if (findOverlappingTick(minorTickVals[k], tickVals) == null) {
+                    list.push(minorTickVals[k]);
                 }
-                var found = false;
-                for(var q = 0; !found && (q < tickVals.length); q++) {
-                    if(
-                        // add 10e6 to eliminate problematic digits
-                        10e6 + tickVals[q].value ===
-                        10e6 + v
-                    ) {
-                        found = true;
-                    }
-                }
-                if(!found) list.push(T);
             }
             minorTickVals = list;
         }
     }
 
-    if(isPeriod) positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
+    if(isPeriod) {
+        positionPeriodTicks(allTicklabelVals, ax, ax._definedDelta);
+    }
 
     var i;
     if(ax.rangebreaks) {
@@ -1255,9 +1317,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
         tickVals.pop();
     }
 
-    // save the last tick as well as first, so we can
-    // show the exponent only on the last one
+    // save the last tick as well as first
     ax._tmax = (tickVals[tickVals.length - 1] || {}).value;
+    // mark the last major tick, for showexponent/showtickprefix/showticksuffix 'last'
+    if(tickVals.length) tickVals[tickVals.length - 1].last = true;
 
     // for showing the rest of a date when the main tick label is only the
     // latter part: ax._prevDateHead holds what we showed most recently.
@@ -1279,7 +1342,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             ax,
             tickVal.value,
             false, // hover
-            tickVal.simpleLabel // noSuffixPrefix
+            tickVal.simpleLabel, // noSuffixPrefix
+            {first: tickVal.first, last: tickVal.last} // positionFlags
         );
         var p = tickVal.periodX;
         if(p !== undefined) {
@@ -1300,7 +1364,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var _value = tickVals[i].value;
 
         if(_minor) {
-            if(ticklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
+            if(ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
                 t = { x: _value };
@@ -1318,7 +1382,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    if(isPeriod && ticklabelIndex && minorTicks.length) {
+    if(isPeriod && ax._useTicklabelIndex && minorTicks.length) {
         // drop very first minor tick that we added to handle ticklabelindex
         minorTicks[0].noTick = true;
     }
@@ -1351,6 +1415,16 @@ function syncTicks(ax) {
 
     var ticksOut = [];
     if(baseAxis._vals) {
+        // find the indices of the first and last labelled (major, non-noTick) base ticks,
+        // for showexponent/showtickprefix/showticksuffix 'first'/'last'
+        var firstMajorIdx = -1;
+        var lastMajorIdx = -1;
+        for(var j = 0; j < baseAxis._vals.length; j++) {
+            if(baseAxis._vals[j].noTick || baseAxis._vals[j].minor) continue;
+            if(firstMajorIdx === -1) firstMajorIdx = j;
+            lastMajorIdx = j;
+        }
+
         for(var i = 0; i < baseAxis._vals.length; i++) {
             // filter vals with noTick flag
             if(baseAxis._vals[i].noTick) {
@@ -1362,7 +1436,10 @@ function syncTicks(ax) {
 
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
-            var obj = axes.tickText(ax, vali);
+            var obj = axes.tickText(ax, vali, false, undefined, {
+                first: i === firstMajorIdx,
+                last: i === lastMajorIdx,
+            });
 
             // assign minor ticks
             if(baseAxis._vals[i].minor) {
@@ -1408,10 +1485,27 @@ function arrayTicks(ax, majorOnly) {
         // except with more precision to the numbers
         if(!Lib.isArrayOrTypedArray(text)) text = [];
 
+        // indices of the first and last in-range major ticks,
+        // showexponent/showtickprefix/showticksuffix 'first'/'last'
+        var firstIdx = -1;
+        var lastIdx = -1;
+        if(!isMinor) {
+            for(var k = 0; k < vals.length; k++) {
+                var valk = tickVal2l(vals[k]);
+                if(valk > tickMin && valk < tickMax) {
+                    if(firstIdx === -1) firstIdx = k;
+                    lastIdx = k;
+                }
+            }
+        }
+
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = axes.tickText(ax, vali, false, String(text[i]));
+                var obj = axes.tickText(ax, vali, false, String(text[i]), {
+                    first: i === firstIdx,
+                    last: i === lastIdx,
+                });
                 if(isMinor) {
                     obj.minor = true;
                     obj.text = '';
@@ -1725,13 +1819,23 @@ axes.tickFirst = function(ax, opts) {
     } else throw 'unrecognized dtick ' + String(dtick);
 };
 
-// draw the text for one tick.
-// px,py are the location on gd.paper
-// prefix is there so the x axis ticks can be dropped a line
-// ax is the axis layout, x is the tick value
-// hover is a (truthy) flag for whether to show numbers with a bit
-// more precision for hovertext
-axes.tickText = function(ax, x, hover, noSuffixPrefix) {
+/**
+ * Compute the text and metadata for one tick.
+ *
+ * @param {object} ax: the axis layout object
+ * @param {number} x: the tick value
+ * @param {boolean} hover: whether tick being computed for hovertext (as opposed to axis)
+ * @param {boolean} noSuffixPrefix: whether to skip adding tickprefix and ticksuffix
+ * @param {object} positionFlags: optional flags describing where this tick sits on the
+ *     axis, used by the showexponent/showtickprefix/showticksuffix 'first'/'last' options:
+ *       - first (boolean): whether this is the first (labelled, major) tick on the axis
+ *       - last (boolean): whether this is the last (labelled, major) tick on the axis
+ * @return {object} the tick object, including its formatted `text`
+ */
+axes.tickText = function(ax, x, hover, noSuffixPrefix, positionFlags) {
+    var first = !!positionFlags?.first;
+    var last = !!positionFlags?.last;
+
     var out = tickTextObj(ax, x);
     var arrayMode = ax.tickmode === 'array';
     var extraPrecision = hover || arrayMode;
@@ -1765,13 +1869,10 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     function isHidden(showAttr) {
         if(showAttr === undefined) return true;
         if(hover) return showAttr === 'none';
-
-        var firstOrLast = {
-            first: ax._tmin,
-            last: ax._tmax
-        }[showAttr];
-
-        return showAttr !== 'all' && x !== firstOrLast;
+        if(showAttr === 'all') return false;
+        if(showAttr === 'first') return !first;
+        if(showAttr === 'last') return !last;
+        return true; // fallback for the hover is false and showAttr==='none' or another value
     }
 
     var hideexp = hover ?
@@ -1867,7 +1968,7 @@ function tickTextObj(ax, x, text) {
 }
 
 function formatDate(ax, out, hover, extraPrecision) {
-    var tr = ax._tickround;
+    var tr = ax._useTicklabelIndex ? ax.minor._tickround : ax._tickround;
     var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
     // Only apply extra precision if no explicit format was provided.
@@ -2191,9 +2292,6 @@ function numFormat(v, ax, fmtoverride, hover) {
 
     if(tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
 
-    // 'epsilon' - rounding increment
-    var e = Math.pow(10, -tickRound) / 2;
-
     // exponentFormat codes:
     // 'e' (1.2e+6, default)
     // 'E' (1.2E+6)
@@ -2208,27 +2306,27 @@ function numFormat(v, ax, fmtoverride, hover) {
     // take the sign out, put it back manually at the end
     // - makes cases easier
     v = Math.abs(v);
+
+    // 'epsilon' - rounding increment
+    const e = Math.pow(10, -tickRound) / 2;
     if(v < e) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
         isNeg = false;
     } else {
-        v += e;
         // take out a common exponent, if any
         if(exponent) {
             v *= Math.pow(10, -exponent);
             tickRound += exponent;
         }
         // round the mantissa
-        if(tickRound === 0) v = String(Math.floor(v));
-        else if(tickRound < 0) {
+        if(tickRound === 0) {
             v = String(Math.round(v));
-            v = v.slice(0, Math.max(0, v.length + tickRound));
-            for(var i = tickRound; i < 0; i++) v += '0';
+        } else if(tickRound < 0) {
+            const roundingMagnitude = Math.pow(10, -tickRound);
+            v = String(Math.round(v / roundingMagnitude) * roundingMagnitude);
         } else {
-            v = String(v);
-            var dp = v.indexOf('.') + 1;
-            if(dp) v = v.slice(0, dp + tickRound).replace(/\.?0+$/, '');
+            v = v.toFixed(Math.min(20, tickRound)).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
         v = Lib.numSeparate(v, ax._separators, separatethousands);

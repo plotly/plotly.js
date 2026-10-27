@@ -2,6 +2,7 @@ var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 
 var ScatterGl = require('../../../src/traces/scattergl');
+var ScatterGlHelpers = require('../../../src/traces/scattergl/helpers');
 var TOO_MANY_POINTS = require('../../../src/traces/scattergl/constants').TOO_MANY_POINTS;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -10,6 +11,37 @@ var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
 var checkTextTemplate = require('../assets/check_texttemplate');
+
+describe('scattergl marker symbol variants', function() {
+    var symbolCases = [
+        {symbols: ['circle', 0, '0'], isOpen: false, isDot: false},
+        {symbols: ['circle-open', 100, '100'], isOpen: true, isDot: false},
+        {symbols: ['circle-dot', 200, '200'], isOpen: false, isDot: true},
+        {symbols: ['circle-open-dot', 300, '300'], isOpen: true, isDot: true}
+    ];
+
+    it('should detect open symbol variants', function() {
+        symbolCases.forEach(function(symbolCase) {
+            symbolCase.symbols.forEach(function(symbol) {
+                expect(ScatterGlHelpers.isOpenSymbol(symbol)).toBe(
+                    symbolCase.isOpen,
+                    'symbol: ' + JSON.stringify(symbol)
+                );
+            });
+        });
+    });
+
+    it('should detect dot symbol variants', function() {
+        symbolCases.forEach(function(symbolCase) {
+            symbolCase.symbols.forEach(function(symbol) {
+                expect(ScatterGlHelpers.isDotSymbol(symbol)).toBe(
+                    symbolCase.isDot,
+                    'symbol: ' + JSON.stringify(symbol)
+                );
+            });
+        });
+    });
+});
 
 describe('end-to-end scattergl tests', function() {
     var gd;
@@ -216,6 +248,77 @@ describe('end-to-end scattergl tests', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should clear error bars when toggling traces with mixed error bars', function(done) {
+        function assertNoStaleErrorGroups(scene, msg) {
+            scene.error2d.groups.forEach(function(group, i) {
+                var hasSceneOptions = i < scene.count ?
+                    scene.errorXOptions[i] :
+                    scene.errorYOptions[i - scene.count];
+
+                if(!hasSceneOptions && group) {
+                    expect(group.count).toBe(0, msg + ': group ' + i);
+                }
+            });
+        }
+
+        function assertVisibleErrorBars(msg, exp) {
+            var scene = gd._fullLayout._plots.xy._scene;
+            var countSceneErrorYOptions = scene.errorYOptions.filter(function(opts) { return opts; }).length;
+            var countDrawableErrorGroups = scene.error2d.groups.filter(function(group) { return group && group.count; }).length;
+
+            expect(countSceneErrorYOptions).toBe(exp, msg + ' scene options');
+            expect(countDrawableErrorGroups).toBe(exp, msg + ' renderer groups');
+            assertNoStaleErrorGroups(scene, msg);
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            name: 'no error 1',
+            x: [0, 1, 2],
+            y: [0, 1, 0]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            name: 'my',
+            x: [0, 1, 2],
+            y: [1, 2, 1],
+            error_y: {value: 0.2}
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            name: 'no error 2',
+            x: [0, 1, 2],
+            y: [2, 3, 2]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            name: 'mz',
+            x: [0, 1, 2],
+            y: [3, 4, 3],
+            error_y: {value: 0.2}
+        }])
+        .then(function() {
+            assertVisibleErrorBars('base', 2);
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [3]);
+        })
+        .then(function() {
+            assertVisibleErrorBars('after hiding last error trace', 1);
+
+            return Plotly.restyle(gd, 'visible', true, [3]);
+        })
+        .then(function() {
+            assertVisibleErrorBars('after showing last error trace', 2);
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
+        })
+        .then(function() {
+            assertVisibleErrorBars('after hiding first error trace', 1);
+        })
+        .then(done, done.fail);
+    });
+
     it('@gl should change plot type with incomplete data', function(done) {
         Plotly.newPlot(gd, [{}])
         .then(function() {
@@ -297,7 +400,7 @@ describe('end-to-end scattergl tests', function() {
             expect(scene.markerOptions.length).toBe(2);
             expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
             expect(scene.textOptions.length).toBe(2);
-            expect(scene.textOptions[1].color).toEqual('#444');
+            expect(scene.textOptions[1].color).toEqual('rgb(68, 68, 68)');
             expect(scene.scatter2d.draw).toHaveBeenCalled();
 
             return Plotly.restyle(gd, 'selectedpoints', null);
@@ -354,6 +457,46 @@ describe('end-to-end scattergl tests', function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 200, 160)[0]).toBe(0);
         })
         .then(done, done.fail);
+    });
+
+    it('@gl should convert modern CSS colors for lines, fill, error bars and text', (done) => {
+        const orange = 'oklch(0.7 0.15 30)';
+        const brown = 'lab(50% 40 59)';
+        const orangeRgb = 'rgb(237, 118, 101)';
+        const brownRgb = 'rgb(191, 87, 2)';
+
+        Plotly.newPlot(gd, [
+            {
+                type: 'scattergl',
+                mode: 'lines+text',
+                x: [1, 2],
+                y: [1, 2],
+                text: ['a', 'b'],
+                line: { color: orange },
+                fill: 'tozeroy',
+                fillcolor: brown,
+                textfont: { color: [orange, brown] },
+                error_x: { array: [0.1, 0.1] },
+                error_y: { array: [0.1, 0.1], color: orange }
+            }
+        ])
+            .then(() => {
+                const scene = gd._fullLayout._plots.xy._scene;
+
+                expect(scene.lineOptions[0].color).toBe(orangeRgb, 'line.color');
+                expect(scene.fillOptions[0].fill).toBe(brownRgb, 'fillcolor');
+                expect(scene.errorXOptions[0].color).toBe(orangeRgb, 'error_x.color with copy_ystyle');
+                expect(scene.errorYOptions[0].color).toBe(orangeRgb, 'error_y.color');
+                expect(scene.textOptions[0].color).toEqual([orangeRgb, brownRgb], 'textfont.color');
+
+                return Plotly.restyle(gd, 'error_x.color', brown);
+            })
+            .then(() => {
+                const scene = gd._fullLayout._plots.xy._scene;
+
+                expect(scene.errorXOptions[0].color).toBe(brownRgb, 'error_x.color');
+            })
+            .then(done, done.fail);
     });
 
     it('@gl should be able to draw more than 4096 colors', function(done) {

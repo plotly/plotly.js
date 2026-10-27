@@ -38,7 +38,7 @@ module.exports = function calc(gd, trace) {
     var rowBlocks = makeRowBlock(anchorToRowBlock, headerRowBlocks);
     var uniqueKeys = {};
 
-    var columnOrder = trace._fullInput.columnorder;
+    var columnOrder = trace.columnorder;
     if(isArrayOrTypedArray(columnOrder)) columnOrder = Array.from(columnOrder);
     columnOrder = columnOrder.concat(slicer(cellsValues.map(function(d, i) {return i;})));
 

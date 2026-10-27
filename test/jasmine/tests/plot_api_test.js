@@ -3251,3 +3251,175 @@ describe('plot_api edit_types', function () {
         expect(flags).toEqual({ calc: true, legend: true, style: true });
     });
 });
+
+describe('color attribute coercion:', () => {
+    'use strict';
+
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+
+    afterEach(() => {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    // Color attributes are gated by Color.isValid. A syntax the parser accepts
+    // but the gate rejects silently falls back to the default, which renders as
+    // a plausible color rather than as an error.
+    const CSS_COLOR_4 = [
+        'oklch(0.7 0.15 180)',
+        'lab(50% 40 59.5)',
+        'lch(50% 70 40)',
+        'oklab(0.5 0.1 0.1)',
+        'color(srgb 1 0 0)',
+        'color(display-p3 1 0 0)',
+        'hwb(120 0% 0%)',
+        'hsl(0.5turn 50% 50%)',
+        'hsl(120 50% 50% / 50%)',
+        'rgb(255 0 0 / 50%)'
+    ];
+
+    CSS_COLOR_4.forEach((cstr) => {
+        it(`should keep ${cstr} through supplyDefaults`, (done) => {
+            Plotly.newPlot(gd, [{ y: [1, 2, 3], marker: { color: cstr } }])
+                .then(() => {
+                    expect(gd._fullData[0].marker.color).toBe(cstr, 'coerced away');
+                })
+                .then(done, done.fail);
+        });
+    });
+
+    it('should drop an invalid color specifier', (done) => {
+        Plotly.newPlot(gd, [{ y: [1, 2, 3], marker: { color: 'notacolor' } }])
+            .then(() => {
+                expect(gd._fullData[0].marker.color).not.toBe('notacolor');
+            })
+            .then(done, done.fail);
+    });
+});
+
+describe('web font loading', () => {
+    'use strict';
+
+    const fontUrl =
+        '/base/node_modules/@plotly/mathjax-v3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff';
+    let gd;
+    let gd2;
+    let face;
+    let faceCount = 0;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+
+    afterEach(() => {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+        if (gd2) {
+            Plotly.purge(gd2);
+            gd2.remove();
+            gd2 = undefined;
+        }
+        document.fonts.delete(face);
+    });
+
+    // Each test adds a new family, so that no earlier measurement can be in the bBox cache
+    const addFace = () => {
+        const family = `PlotlyTestFont${++faceCount}`;
+        face = new FontFace(family, `url(${fontUrl})`);
+        document.fonts.add(face);
+        return family;
+    };
+
+    const makeFigure = (family) => ({
+        data: [{ y: [1, 3, 2], name: 'a long legend entry WWWWWWWW' }],
+        layout: { font: { family }, showlegend: true, width: 500, height: 400 }
+    });
+
+    const legendWidth = (div) => +div.querySelector('.legend .bg').getAttribute('width');
+
+    it('should redraw a plot with the metrics of its web font after the font loads', (done) => {
+        const fig = makeFigure(addFace());
+        let widthBeforeLoad;
+
+        Plotly.newPlot(gd, fig.data, fig.layout)
+            .then(() => {
+                expect(face.status).not.toBe('loaded');
+                widthBeforeLoad = legendWidth(gd);
+                return new Promise((resolve) => gd.once('plotly_afterplot', resolve));
+            })
+            .then(() => {
+                expect(face.status).toBe('loaded');
+                expect(legendWidth(gd)).not.toBe(widthBeforeLoad);
+
+                // A plot drawn after the load must not reuse the sizes measured with the fallback font
+                gd2 = createGraphDiv('graph2');
+                return Plotly.newPlot(gd2, fig.data, fig.layout);
+            })
+            .then(() => {
+                expect(legendWidth(gd2)).toBe(legendWidth(gd));
+            })
+            .then(done, done.fail);
+    });
+
+    it('should not redraw a plot when a font loads after its draw', (done) => {
+        addFace();
+        const fig = makeFigure('Arial');
+
+        Plotly.newPlot(gd, fig.data, fig.layout)
+            .then(() => {
+                spyOn(plotApi, '_doPlot').and.callThrough();
+                return face.load();
+            })
+            // `document.fonts.ready` can resolve after the load promise
+            .then(() => new Promise((resolve) => setTimeout(resolve, 100)))
+            .then(() => {
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
+            })
+            .then(done, done.fail);
+    });
+
+    it('should redraw once per font load after several redraws', (done) => {
+        const fig = makeFigure(addFace());
+
+        Plotly.newPlot(gd, fig.data, fig.layout)
+            .then(() => Plotly.redraw(gd))
+            .then(() => Plotly.redraw(gd))
+            .then(() => {
+                expect(face.status).not.toBe('loaded');
+                spyOn(plotApi, '_doPlot').and.callThrough();
+                return face.loaded;
+            })
+            // `document.fonts.ready` can resolve after the load promise
+            .then(() => new Promise((resolve) => setTimeout(resolve, 100)))
+            .then(() => {
+                expect(plotApi._doPlot).toHaveBeenCalledTimes(1);
+            })
+            .then(done, done.fail);
+    });
+
+    it('should not redraw a purged plot when its font loads', (done) => {
+        const fig = makeFigure(addFace());
+
+        Plotly.newPlot(gd, fig.data, fig.layout)
+            .then(() => {
+                expect(face.status).not.toBe('loaded');
+                expect(gd._fontLoadToken).toBeDefined();
+
+                Plotly.purge(gd);
+                expect(gd._fontLoadToken).toBeUndefined();
+
+                spyOn(plotApi, '_doPlot').and.callThrough();
+                return face.loaded;
+            })
+            // `document.fonts.ready` can resolve after the load promise
+            .then(() => new Promise((resolve) => setTimeout(resolve, 100)))
+            .then(() => {
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
+            })
+            .then(done, done.fail);
+    });
+});

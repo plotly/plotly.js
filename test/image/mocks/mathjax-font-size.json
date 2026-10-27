@@ -1,0 +1,230 @@
+{
+    "data": [],
+    "layout": {
+        "annotations": [
+            {
+                "text": "Font size 6",
+                "x": 0.4,
+                "y": 0.9,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 6
+                }
+            },
+            {
+                "text": "$f=6 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.9,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 6
+                }
+            },
+            {
+                "text": "Font size 10",
+                "x": 0.4,
+                "y": 0.8,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 10
+                }
+            },
+            {
+                "text": "$f=10 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.8,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 10
+                }
+            },
+            {
+                "text": "Font size 12",
+                "x": 0.4,
+                "y": 0.7,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 12
+                }
+            },
+            {
+                "text": "$f=12 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.7,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 12
+                }
+            },
+            {
+                "text": "Font size 16",
+                "x": 0.4,
+                "y": 0.6,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 16
+                }
+            },
+            {
+                "text": "$f=16 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.6,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 16
+                }
+            },
+            {
+                "text": "Font size 20",
+                "x": 0.4,
+                "y": 0.5,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 20
+                }
+            },
+            {
+                "text": "$f=20 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.5,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 20
+                }
+            },
+            {
+                "text": "Font size 24",
+                "x": 0.4,
+                "y": 0.4,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 24
+                }
+            },
+            {
+                "text": "$f=24 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.4,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 24
+                }
+            },
+            {
+                "text": "Font size 28",
+                "x": 0.4,
+                "y": 0.3,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 28
+                }
+            },
+            {
+                "text": "$f=28 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.3,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 28
+                }
+            },
+            {
+                "text": "Font size 32",
+                "x": 0.4,
+                "y": 0.2,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "right",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 32
+                }
+            },
+            {
+                "text": "$f=32 (\\frac{a^2+b^2}{c})$",
+                "x": 0.5,
+                "y": 0.2,
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "left",
+                "yanchor": "middle",
+                "showarrow": false,
+                "font": {
+                    "size": 32
+                }
+            }
+        ],
+        "width": 600,
+        "height": 600,
+        "xaxis": {
+            "range": [0, 1],
+            "showgrid": false,
+            "zeroline": false,
+            "showticklabels": false
+        },
+        "yaxis": {
+            "range": [0, 1],
+            "showgrid": false,
+            "zeroline": false,
+            "showticklabels": false
+        },
+        "margin": {"l": 0, "r": 0, "b": 0, "t": 0}
+    }
+}

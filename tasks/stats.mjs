@@ -1,0 +1,193 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { gzipSizeSync } from 'gzip-size';
+import prettyBytes from 'pretty-bytes';
+import pkg from '../package.json' with { type: 'json' };
+import common from './util/common.js';
+import constants from './util/constants.js';
+
+const pkgVersion = pkg.version;
+
+const pathDistREADME = path.join(constants.pathToDist, 'README.md');
+const cdnRoot = 'https://cdn.plot.ly/plotly-';
+
+const ENC = 'utf-8';
+const JS = '.js';
+const MINJS = '.min.js';
+
+const partialBundlePaths = constants.partialBundleNames.map(constants.makePartialBundleOpts);
+
+common.writeFile(pathDistREADME, getReadMeContent());
+
+function getReadMeContent() {
+    return [...getInfoContent(), ...getMainBundleInfo(), ...getPartialBundleInfo(), ...getFooter()].join('\n');
+}
+
+function getInfoContent() {
+    return [
+        '# Using distributed files',
+        '',
+        'All plotly.js bundles inject an object `Plotly` into the global scope.',
+        '',
+        'Import plotly.js as:',
+        '',
+        '```html',
+        '<script src="plotly.min.js"></script>',
+        '```',
+        '',
+        'or the un-minified version as:',
+        '',
+        '```html',
+        '<script src="plotly.js" charset="utf-8"></script>',
+        '```',
+        '',
+        '### To include localization',
+        '',
+        'Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.',
+        'Many other localizations are available - here is an example using Swiss-German (de-CH),',
+        'see the contents of this directory for the full list.',
+        'Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.',
+        '',
+        '*After* the plotly.js script tag, add:',
+        '',
+        '```html',
+        '<script src="plotly-locale-de-ch.js"></script>',
+        "<script>Plotly.setPlotConfig({locale: 'de-CH'})</script>",
+        '```',
+        '',
+        'The first line loads and registers the locale definition with plotly.js, the second sets it as the default for all Plotly plots.',
+        'You can also include multiple locale definitions and apply them to each plot separately as a `config` parameter:',
+        '',
+        '```js',
+        "Plotly.newPlot(graphDiv, data, layout, {locale: 'de-CH'})",
+        '```',
+        ''
+    ];
+}
+
+function getMainBundleInfo() {
+    const { raw, minified, gzipped, withMeta } = findSizes({
+        dist: constants.pathToPlotlyDist,
+        distMin: constants.pathToPlotlyDistMin,
+        withMeta: constants.pathToPlotlyDistWithMeta
+    });
+
+    return [
+        '# Bundle information',
+        '',
+        'The main plotly.js bundle includes all trace modules.',
+        '',
+        'The main plotly.js bundles weight in at:',
+        '',
+        '| plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |',
+        '|-----------|---------------|----------------------|---------------------|',
+        `| ${raw} | ${minified} | ${gzipped} | ${withMeta} |`,
+        '',
+        '#### CDN links',
+        `> ${cdnRoot}${pkgVersion}${JS}`,
+        '',
+        `> ${cdnRoot}${pkgVersion}${MINJS}`,
+        '',
+        '',
+        '#### npm packages',
+        `> ${createLink('https://www.npmjs.com/package/', 'plotly.js')}`,
+        '',
+        `> ${createLink('https://www.npmjs.com/package/', 'plotly.js-dist')}`,
+        '',
+        `> ${createLink('https://www.npmjs.com/package/', 'plotly.js-dist-min')}`,
+        '',
+        '#### Meta information',
+        [
+            '> If you would like to have access to the attribute meta information',
+            '(including attribute descriptions as on the [schema reference page](https://plotly.com/javascript/reference/)),',
+            'use dist file `dist/plotly-with-meta.js`'
+        ].join(' '),
+        '---',
+        '',
+        '## Partial bundles',
+        '',
+        'plotly.js also ships with several _partial_ bundles:',
+        '',
+        partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
+        '',
+        '> Each plotly.js partial bundle has a corresponding npm package with no dependencies.',
+        '',
+        '> The minified version of each partial bundle is also published to npm in a separate "dist-min" package.',
+        '',
+        [
+            '> The strict bundle now includes all traces, but the regl-based traces are built differently to avoid function constructors.',
+            'This results in about a 10% larger bundle size, which is why this method is not used by default.',
+            'Over time we intend to use the strict bundle to work on other strict CSP issues such as inline CSS.'
+        ].join(' '),
+        '',
+        '---',
+        ''
+    ];
+}
+
+function getPartialBundleInfo() {
+    return partialBundlePaths.map(distBundleInfo);
+}
+
+function getFooter() {
+    return ['', '_This file is auto-generated by `npm run stats`. Please do not edit this file directly._'];
+}
+
+function makeBundleHeaderInfo({ name }) {
+    return `- [${name}](#plotlyjs-${name})`;
+}
+
+function createLink(base, name) {
+    return `[${name}](${base}${name})`;
+}
+
+function distBundleInfo(pathObj) {
+    const { name, traceList = [] } = pathObj;
+    const { raw, minified, gzipped } = findSizes(pathObj);
+    const nameDist = `plotly.js-${name}-dist`;
+    const nameVersion = `${name}-${pkgVersion}`;
+
+    return [
+        `### plotly.js ${name}`,
+        '',
+        `The \`${name}\` partial bundle contains trace modules ${common.formatEnumeration(traceList)}.`,
+        '',
+        '#### Stats',
+        '',
+        '| Raw size | Minified size | Minified + gzip size |',
+        '|------|-----------------|------------------------|',
+        `| ${raw} | ${minified} | ${gzipped} |`,
+        '',
+        '#### CDN links',
+        `> ${cdnRoot}${nameVersion}${JS}`,
+        '',
+        `> ${cdnRoot}${nameVersion}${MINJS}`,
+        '',
+        '',
+        '#### npm packages',
+        `> ${createLink('https://www.npmjs.com/package/', nameDist)}`,
+        '',
+        `> ${createLink('https://www.npmjs.com/package/', `${nameDist}-min`)}`,
+        '',
+        '---',
+        ''
+    ].join('\n');
+}
+
+function findSizes(pathObj) {
+    const codeDist = fs.readFileSync(pathObj.dist, ENC);
+    const codeDistMin = fs.readFileSync(pathObj.distMin, ENC);
+
+    const sizes = {
+        raw: prettyBytes(codeDist.length),
+        minified: prettyBytes(codeDistMin.length),
+        gzipped: prettyBytes(gzipSizeSync(codeDistMin))
+    };
+
+    if (pathObj.withMeta) {
+        const codeWithMeta = fs.readFileSync(pathObj.withMeta, ENC);
+        sizes.withMeta = prettyBytes(codeWithMeta.length);
+    }
+
+    return sizes;
+}

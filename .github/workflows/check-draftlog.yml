@@ -1,0 +1,86 @@
+name: Check Draftlog
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review]
+
+concurrency:
+  group: check-draftlog-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check-draftlog:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for no-draftlog label
+        id: label-check
+        env:
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          set -euo pipefail
+          if echo "$PR_LABELS" | grep -q '"no-draftlog"'; then
+            echo "Skipping draftlog check: 'no-draftlog' label is set."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for a new draftlog entry
+        if: steps.label-check.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          ADDED=$(gh api --paginate "/repos/$REPO/pulls/$PR_NUMBER/files" \
+            --jq '.[] | select(.status=="added") | .filename' \
+            | grep '^draftlogs/' | grep -v '^draftlogs/README\.md$' || true)
+
+          if [ -z "$ADDED" ]; then
+            echo "::error::No new draftlog entry was added under draftlogs/."
+            echo ""
+            echo "Most PRs should add a markdown file under draftlogs/ for the next CHANGELOG."
+            echo "See draftlogs/README.md for the filename convention."
+            echo ""
+            echo "If this PR genuinely does not need a changelog entry (e.g. CI-only,"
+            echo "internal refactor, docs typo), add the 'no-draftlog' label to this PR."
+            exit 1
+          fi
+
+          INVALID_NAMES=$(echo "$ADDED" | grep -vE "^draftlogs/${PR_NUMBER}_(fix|add|remove|change|deprecate)\.md$" || true)
+          if [ -n "$INVALID_NAMES" ]; then
+            echo "::error::Invalid draftlog filename(s):"
+            echo "$INVALID_NAMES" | sed 's/^/  - /'
+            echo ""
+            echo "Expected pattern: draftlogs/${PR_NUMBER}_(fix|add|remove|change|deprecate).md"
+            echo "See draftlogs/README.md for details."
+            exit 1
+          fi
+
+          MISSING_LINK=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            content=$(gh api -H 'Accept: application/vnd.github.raw' "/repos/$REPO/contents/$f?ref=$HEAD_SHA")
+            if ! echo "$content" | grep -qE "\[\[#${PR_NUMBER}\]\(https://github\.com/plotly/plotly\.js/(pull|issues)/${PR_NUMBER}\)\]"; then
+              MISSING_LINK="$MISSING_LINK$f"$'\n'
+            fi
+          done <<< "$ADDED"
+
+          if [ -n "$MISSING_LINK" ]; then
+            echo "::error::Draftlog entry(ies) missing a link to this PR (#${PR_NUMBER}):"
+            printf '%s' "$MISSING_LINK" | sed 's/^/  - /'
+            echo ""
+            echo "Each entry must include a link in the form:"
+            echo "  [[#${PR_NUMBER}](https://github.com/plotly/plotly.js/pull/${PR_NUMBER})]"
+            echo "See draftlogs/README.md for an example."
+            exit 1
+          fi
+
+          echo "Found new draftlog entry(ies):"
+          echo "$ADDED" | sed 's/^/  - /'
