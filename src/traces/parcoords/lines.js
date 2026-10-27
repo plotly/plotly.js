@@ -336,10 +336,11 @@ function makeItem(
         dim1D: dims[1].slice(48, 64),
 
         drwLayer: drwLayer,
+        // These are normalized color channel values (0-1)
         contextColor: [
-            deselectedLinesColor[0] / 255,
-            deselectedLinesColor[1] / 255,
-            deselectedLinesColor[2] / 255,
+            deselectedLinesColor[0],
+            deselectedLinesColor[1],
+            deselectedLinesColor[2],
             deselectedLinesOpacity !== 'auto' ?
                 deselectedLinesColor[3] * deselectedLinesOpacity :
                 Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))

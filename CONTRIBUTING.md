@@ -44,11 +44,17 @@ The Plotly.js community, construed fairly broadly, includes the maintainers and 
 
 ## Opening issues
 
-Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
+Please read the [issue guidelines](./.github/ISSUE_TEMPLATE/) in the appropriate template.
 
 ## Making pull requests
 
 Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
+
+## Using a coding agent
+
+If you prepare a contribution with a coding agent, point it at [AGENTS.md](AGENTS.md).
+That file and the [.agents](.agents/) folder state the rules an agent follows in this
+repository, including the steps it must leave to a human.
 
 ## GitHub labels
 
@@ -78,7 +84,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 #### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v18.x.
+- [node.js](https://nodejs.org/en/). We recommend using node.js v22.x.
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/nvm-sh/nvm) or its Windows alternatives.
 - [`npm`](https://www.npmjs.com/) v10.x and up to ensure that the
@@ -97,7 +103,7 @@ cd plotly.js
 #### Step 2: Switch to a dev branch
 
 ```bash
-# please do not use master or main for your dev branch
+# please do not use main for your dev branch
 git checkout dev-branch-name
 ```
 
@@ -138,7 +144,7 @@ comes bundled with some useful tools while developing - all bundled under the
 | `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
 | `Tabs.purge()` | Destroys all plots. |
 
-View [the source](https://github.com/plotly/plotly.js/blob/master/devtools/test_dashboard/devtools.js) for more info.
+View [the source](https://github.com/plotly/plotly.js/blob/main/devtools/test_dashboard/devtools.js) for more info.
 
 Three additional helpers exist that are refreshed every second:
 
@@ -205,7 +211,7 @@ previous changes. `npm run regl-codegen` will prompt you to open
 a browser window, run through the mocks for each regl-using trace
 (`parcoords`, `scattergl`, `scatterpolargl`, `splom`), and store the captured
 shader code into
-[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen).
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/main/src/generated/regl-codegen).
 The four `src/traces/{parcoords,scattergl,scatterpolargl,splom}/regl_precompiled.js`
 files are rewritten in the same pass so their imports point at the freshly
 generated shader files. Commit any changes that result — both the
@@ -214,10 +220,11 @@ files.
 
 #### Other npm scripts that may be of interest in development
 
-- `npm run preprocess`: pre-processes the css and svg source file in js. This
-  script must be run manually when updating the css and svg source files.
-- `npm run watch`: starts a watchify file watcher just like the test dashboard but
-  without booting up a server.
+- `npm run preprocess`: regenerates the sources that the build depends on, and
+  must be run manually when their inputs change. Commit the result.
+  `build/README.md` describes the committed files under `build/` and what
+  triggers each one. Note that the `preprocess` step is always run automatically
+  as part of `npm run build`.
 
 ## Testing
 
@@ -241,7 +248,7 @@ npm run test-jasmine -- <suite>
 ```
 
 where the `<suite>` corresponds to the suite's file name as found in
-[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+[`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/main/test/jasmine/tests).
 
 You can also test multiple suites at a time, for example:
 
@@ -288,7 +295,7 @@ bash .github/scripts/env_image.sh
 #### Without Docker:
 Ensure you have Python 3.12+ and [`uv`](https://docs.astral.sh/uv/) installed.
 
-To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/master/.github/scripts/env_image.sh):
+To install required fonts and tools, run the [setup script](https://github.com/plotly/plotly.js/blob/main/.github/scripts/env_image.sh):
 ```sh
 bash .github/scripts/env_image.sh
 ```
@@ -312,9 +319,9 @@ npm run baseline mock_*
 ```
 
 **IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before
-running the image tests. We recommend running `npm run watch` or `npm start` in
+running the image tests. We recommend running `npm start` in
 a separate tab to ensure that the most up-to-date code is used.
-Also if you are adding a new mock, you may need to re-run `npm start` or `npm run watch`
+Also if you are adding a new mock, you may need to re-run `npm start`
 to be able to find the new mock in the browser.
 To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock`
 or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
@@ -382,14 +389,21 @@ If you would like a link to the dev build for your PR but don't have permission 
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
 - Tests are in `test/`; they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Built files are in `build/` (the files in here are git-ignored, except for `plotcss.js`)
+- Built files are in `build/` (mostly git-ignored, with a few exceptions: see `build/README.md`)  
+
+### The bundled maplibre-gl worker
+
+`map` traces render through `maplibre-gl`, which parses tiles in a web worker.
+As of v6, the library no longer includes a UMD bundle with this code. As such,
+it's now necessary to extract it and include it as part of the build process.
+See `tasks/util/bundle_maplibre_worker.js` for more information.
 
 ## Trace module design
 
-The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/master/src/traces))
+The trace modules (found in [`src/traces`](https://github.com/plotly/plotly.js/tree/main/src/traces))
 are defined as plain objects with functions and constants attached to them in an index file
 (e.g. `src/traces/scatter/index.js`). The trace modules are "registered" under the `Registry` object
-(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/master/src/registry.js)) using
+(found in [`src/registry.js`](https://github.com/plotly/plotly.js/blob/main/src/registry.js)) using
 `Plotly.register` (as done in the index files in `dist/`).
 
 The trace module methods are meant to be called as part of loops during subplot-specific
@@ -405,8 +419,10 @@ All traces modules set:
   This object is used to generate the plot-schema JSON.
 - `_module.supplyDefaults`: Takes in input trace settings and coerces them into "full" settings
   under `gd._fullData`. This one is called during the figure-wide `Plots.supplyDefaults` routine.
-  Note that the `supplyDefaults` method performance should scale with the number of attributes (**not** the
-  number of data points - so it should not loop over any data arrays).
+  As a rule, `supplyDefaults` performance should scale with the number of attributes rather than
+  the number of data points, so avoid looping over data arrays in this function. That being said,
+  there are a few exceptions to this rule due to technical requirements (`fitbounds` on map subplots).
+  The same guidance applies to `_module.supplyLayoutDefaults`.
 - `_module.calc`: Converts inputs data into "calculated" (or sanitized) data. This one is called during
   the figure-wide `Plots.doCalcdata` routine. The `calc` method is allowed to
   scale with the number of data points and is in general more costly than `supplyDefaults`.
@@ -432,7 +448,7 @@ Other methods used by some trace modules:
   selections.
 - `_module.convert`: Sometimes separated from `_module.plot` or `_module.calc` to convert the
   plotly.js settings to another framework e.g. to `gl-plot3d` for `gl3d` traces, to
-  `mapbox-gl` for `mapbox` traces. This split can make the logic easier to test.
+  `maplibre-gl` for `map` traces. This split can make the logic easier to test.
   If you make a `convert`, you should call it from either `calc` or `plot`.
 
 ## Coding style

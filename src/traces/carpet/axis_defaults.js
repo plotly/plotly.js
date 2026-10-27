@@ -135,7 +135,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         dataAttr: letter
     });
 
-    var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
+    var gridColor = coerce('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
     var gridDash = coerce2('griddash');
     var showGrid = coerce('showgrid');

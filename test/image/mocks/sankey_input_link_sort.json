@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "type": "sankey",
+      "node": {
+        "label": ["0", "1", "2", "3", "4", "5"],
+        "align": "center",
+        "color": "gray"
+      },
+      "link": {
+        "source": [0, 0, 0, 0, 1, 4],
+        "target": [1, 3, 2, 4, 5, 5],
+        "value": [1, 1, 2, 1, 1, 1],
+        "color": [
+          "rgba(230, 25, 75, 0.6)",
+          "rgba(255, 165, 0, 0.6)",
+          "rgba(60, 180, 75, 0.6)",
+          "rgba(0, 130, 200, 0.6)",
+          "rgba(145, 30, 180, 0.6)",
+          "rgba(128, 128, 128, 0.6)"
+        ],
+        "sort": "input"
+      }
+    }
+  ],
+  "layout": {
+    "title": { "text": "Sankey with link ordering matching the input array" },
+    "width": 800,
+    "height": 800
+  }
+}

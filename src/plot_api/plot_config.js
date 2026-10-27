@@ -12,6 +12,12 @@
  * at the moment.
  */
 
+const { format, width, height, scale } = require('./to_image_attributes').default;
+
+// `toImage` owns the scale default, not the button. A default here would reach
+// `downloadImage` on every click and change what the caller receives.
+const { dflt: scaleDflt, ...buttonScale } = scale;
+
 var configAttributes = {
     staticPlot: {
         valType: 'boolean',
@@ -27,13 +33,13 @@ var configAttributes = {
         dflt: true,
         description: [
             'Determines whether math should be typeset or not,',
-            'when MathJax (either v2 or v3) is present on the page.'
+            'when MathJax (either v3 or v4) is present on the page.'
         ].join(' ')
     },
 
     plotlyServerURL: {
         valType: 'string',
-        dflt: '',
+        dflt: 'https://cloud.plotly.com/newchart',
         description: [
             'Sets the URL for the `sendChartToCloud` modebar button.',
             'When clicked, the button will send the chart data to this URL.',
@@ -50,6 +56,11 @@ var configAttributes = {
         ].join(' ')
     },
     edits: {
+        description: [
+            'Determines which parts of the graph a user can edit directly.',
+            '`editable` sets every key here at once, and a key set here overrides it.',
+            '`staticPlot` disables all of them.'
+        ].join(' '),
         annotationPosition: {
             valType: 'boolean',
             dflt: false,
@@ -128,8 +139,8 @@ var configAttributes = {
         valType: 'boolean',
         dflt: false,
         description: [
-            'Determines whether to change the layout size when window is resized.',
-            'In v3, this option will be removed and will always be true.'
+            'Determines whether to change the layout size when the graph container is resized.',
+            'In v5, this option will be removed and will always be true.'
         ].join(' ')
     },
     fillFrame: {
@@ -153,12 +164,12 @@ var configAttributes = {
 
     scrollZoom: {
         valType: 'flaglist',
-        flags: ['cartesian', 'gl3d', 'geo', 'mapbox', 'map'],
+        flags: ['cartesian', 'gl3d', 'geo', 'map'],
         extras: [true, false],
         dflt: 'gl3d+geo+map',
         description: [
             'Determines whether mouse wheel or two-finger scroll zooms is enable.',
-            'Turned on by default for gl3d, geo, mapbox and map subplots',
+            'Turned on by default for gl3d, geo and map subplots',
             '(as these subplot types do not have zoombox via pan),',
             'but turned off by default for cartesian subplots.',
             'Set `scrollZoom` to *false* to disable scrolling for all subplots.'
@@ -181,14 +192,14 @@ var configAttributes = {
     },
     doubleClickDelay: {
         valType: 'number',
-        dflt: 300,
+        dflt: 500,
         min: 0,
         description: [
             'Sets the delay for registering a double-click in ms.',
             'This is the time interval (in ms) between first mousedown and',
             '2nd mouseup to constitute a double-click.',
             'This setting propagates to all on-subplot double clicks',
-            '(except for geo, mapbox and map) and on-legend double clicks.'
+            '(except for geo and map) and on-legend double clicks.'
         ].join(' ')
     },
 
@@ -223,40 +234,6 @@ var configAttributes = {
         description: 'Determines whether or not notifier is displayed.'
     },
 
-    showLink: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Determines whether a link to Chart Studio Cloud is displayed',
-            'at the bottom right corner of resulting graphs.',
-            'Use with `sendData` and `linkText`.'
-        ].join(' ')
-    },
-    linkText: {
-        valType: 'string',
-        dflt: 'Edit chart',
-        noBlank: true,
-        description: [
-            'Sets the text appearing in the `showLink` link.'
-        ].join(' ')
-    },
-    sendData: {
-        valType: 'boolean',
-        dflt: true,
-        description: [
-            'If *showLink* is true, does it contain data',
-            'just link to a Chart Studio Cloud file?'
-        ].join(' ')
-    },
-    showSources: {
-        valType: 'any',
-        dflt: false,
-        description: [
-            'Adds a source-displaying function to show sources on',
-            'the resulting graphs.'
-        ].join(' ')
-    },
-
     displayModeBar: {
         valType: 'enumerated',
         values: ['hover', true, false],
@@ -271,19 +248,12 @@ var configAttributes = {
     },
     showSendToCloud: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         description: [
             'Should we include a modebar button that sends this chart to a URL',
             'specified by `plotlyServerURL`, for sharing the chart with others?',
             'Note that this button will (after a confirmation step)',
             'send chart data to an external server.'
-        ].join(' ')
-    },
-    showEditInChartStudio: {
-        valType: 'boolean',
-        dflt: false,
-        description: [
-            'Deprecated. Use `showSendToCloud` instead.'
         ].join(' ')
     },
     modeBarButtonsToRemove: {
@@ -303,7 +273,8 @@ var configAttributes = {
             'To enable predefined modebar buttons e.g. shape drawing, hover and spikelines,',
             'simply provide their string name(s). This could include:',
             '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
-            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
+            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*',
+            'and *downloadJson*.',
             'Please note that these predefined buttons will only be shown if they are compatible',
             'with all trace types used in a graph.'
         ].join(' ')
@@ -319,13 +290,24 @@ var configAttributes = {
         ].join(' ')
     },
     toImageButtonOptions: {
-        valType: 'any',
-        dflt: {},
         description: [
-            'Statically override options for toImage modebar button',
-            'allowed keys are format, filename, width, height, scale',
-            'see ../components/modebar/buttons.js'
-        ].join(' ')
+            'Statically overrides options for the toImage modebar button.',
+            'The button reads only `format`, `filename`, `width`, `height` and `scale`,',
+            'and drops every other key.'
+        ].join(' '),
+        format,
+        filename: {
+            valType: 'string',
+            description: [
+                'Sets the name of the downloaded file, without an extension.',
+                'The button appends the extension that matches `format`.',
+                'The name defaults to the plot title, then the plot subtitle,',
+                'then *plot-image*.'
+            ].join(' ')
+        },
+        width,
+        height,
+        scale: buttonScale
     },
     displaylogo: {
         valType: 'boolean',
@@ -375,16 +357,6 @@ var configAttributes = {
             '<path-to-plotly.js>/dist/topojson/',
             'to render geographical feature using the topojson files',
             'that ship with the plotly.js module.'
-        ].join(' ')
-    },
-
-    mapboxAccessToken: {
-        valType: 'string',
-        dflt: null,
-        description: [
-            'Mapbox access token (required to plot mapbox trace types)',
-            'If using an Mapbox Atlas server, set this option to \'\'',
-            'so that plotly.js won\'t attempt to authenticate to the public Mapbox server.'
         ].join(' ')
     },
 
@@ -464,12 +436,17 @@ var configAttributes = {
 var dfltConfig = {};
 
 function crawl(src, target) {
-    for(var k in src) {
-        var obj = src[k];
-        if(obj.valType) {
-            target[k] = obj.dflt;
+    for (const k in src) {
+        const obj = src[k];
+        // A container carries its own `description` string beside the child
+        // attributes. Recursing into a string never terminates.
+        if (typeof obj !== 'object' || obj === null) continue;
+        if (obj.valType) {
+            // An attribute without a `dflt` seeds no key. A key holding
+            // `undefined` reads as present to `in`, which callers test.
+            if ('dflt' in obj) target[k] = obj.dflt;
         } else {
-            if(!target[k]) {
+            if (!target[k]) {
                 target[k] = {};
             }
             crawl(obj, target[k]);

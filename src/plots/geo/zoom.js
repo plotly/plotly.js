@@ -6,16 +6,16 @@ var Registry = require('../../registry');
 
 var radians = Math.PI / 180;
 var degrees = 180 / Math.PI;
-var zoomstartStyle = {cursor: 'pointer'};
-var zoomendStyle = {cursor: 'auto'};
+var zoomstartStyle = { cursor: 'pointer' };
+var zoomendStyle = { cursor: 'auto' };
 
 function createGeoZoom(geo, geoLayout) {
     var projection = geo.projection;
     var zoomConstructor;
 
-    if(geoLayout._isScoped) {
+    if (geoLayout._isScoped) {
         zoomConstructor = zoomScoped;
-    } else if(geoLayout._isClipped) {
+    } else if (geoLayout._isClipped) {
         zoomConstructor = zoomClipped;
     } else {
         zoomConstructor = zoomNonClipped;
@@ -30,8 +30,10 @@ module.exports = createGeoZoom;
 
 // common to all zoom types
 function initZoom(geo, projection) {
-    return d3.behavior.zoom()
+    return d3.behavior
+        .zoom()
         .translate(projection.translate())
+        .scaleExtent(projection.scaleExtent())
         .scale(projection.scale());
 }
 
@@ -52,7 +54,7 @@ function sync(geo, projection, cb) {
         Registry.call('_storeDirectGUIEdit', layout, fullLayout._preGUI, preGUI);
 
         var fullNp = Lib.nestedProperty(fullOpts, propStr);
-        if(fullNp.get() !== val) {
+        if (fullNp.get() !== val) {
             fullNp.set(val);
             Lib.nestedProperty(userOpts, propStr).set(val);
             eventData[id + '.' + propStr] = val;
@@ -61,6 +63,8 @@ function sync(geo, projection, cb) {
 
     cb(set);
     set('projection.scale', projection.scale() / geo.fitScale);
+    // Turn off fitbounds so subsequent replays don't re-run the auto-fit and
+    // overwrite the user's dragged/scrolled position
     set('fitbounds', false);
     gd.emit('plotly_relayout', eventData);
 }
@@ -74,9 +78,7 @@ function zoomScoped(geo, projection) {
     }
 
     function handleZoom() {
-        projection
-            .scale(d3.event.scale)
-            .translate(d3.event.translate);
+        projection.scale(d3.event.scale).translate(d3.event.translate);
         geo.render(true);
 
         var center = projection.invert(geo.midPt);
@@ -99,10 +101,7 @@ function zoomScoped(geo, projection) {
         sync(geo, projection, syncCb);
     }
 
-    zoom
-        .on('zoomstart', handleZoomstart)
-        .on('zoom', handleZoom)
-        .on('zoomend', handleZoomend);
+    zoom.on('zoomstart', handleZoomstart).on('zoom', handleZoom).on('zoomend', handleZoomend);
 
     return zoom;
 }
@@ -113,26 +112,28 @@ function zoomNonClipped(geo, projection) {
 
     var INSIDETOLORANCEPXS = 2;
 
-    var mouse0, rotate0, translate0, lastRotate, zoomPoint,
-        mouse1, rotate1, point1, didZoom;
+    var mouse0, rotate0, translate0, lastRotate, zoomPoint, mouse1, rotate1, point1, didZoom;
 
-    function position(x) { return projection.invert(x); }
+    function position(x) {
+        return projection.invert(x);
+    }
 
     function outside(x) {
         var pos = position(x);
-        if(!pos) return true;
+        if (!pos) return true;
 
         var pt = projection(pos);
-        return (
-            Math.abs(pt[0] - x[0]) > INSIDETOLORANCEPXS ||
-            Math.abs(pt[1] - x[1]) > INSIDETOLORANCEPXS
-        );
+        return Math.abs(pt[0] - x[0]) > INSIDETOLORANCEPXS || Math.abs(pt[1] - x[1]) > INSIDETOLORANCEPXS;
     }
 
     function handleZoomstart() {
         d3.select(this).style(zoomstartStyle);
 
-        mouse0 = d3.mouse(this);
+        // Fallback to bbox center when there's no source event
+        // (e.g. synthetic zoom.event dispatched on initial render
+        // to enforce minscale/maxscale).
+        const { x, y, width, height } = this.getBBox();
+        mouse0 = d3.event.sourceEvent ? d3.mouse(this) : [x + width / 2, y + height / 2];
         rotate0 = projection.rotate();
         translate0 = projection.translate();
         lastRotate = rotate0;
@@ -140,9 +141,9 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoom() {
-        mouse1 = d3.mouse(this);
-
-        if(outside(mouse0)) {
+        const { x, y, width, height } = this.getBBox();
+        mouse1 = d3.event.sourceEvent ? d3.mouse(this) : [x + width / 2, y + height / 2];
+        if (outside(mouse0)) {
             zoom.scale(projection.scale());
             zoom.translate(projection.translate());
             return;
@@ -151,10 +152,10 @@ function zoomNonClipped(geo, projection) {
         projection.scale(d3.event.scale);
         projection.translate([translate0[0], d3.event.translate[1]]);
 
-        if(!zoomPoint) {
+        if (!zoomPoint) {
             mouse0 = mouse1;
             zoomPoint = position(mouse0);
-        } else if(position(mouse1)) {
+        } else if (position(mouse1)) {
             point1 = position(mouse1);
             rotate1 = [lastRotate[0] + (point1[0] - zoomPoint[0]), rotate0[1], rotate0[2]];
             projection.rotate(rotate1);
@@ -176,7 +177,7 @@ function zoomNonClipped(geo, projection) {
 
     function handleZoomend() {
         d3.select(this).style(zoomendStyle);
-        if(didZoom) sync(geo, projection, syncCb);
+        if (didZoom) sync(geo, projection, syncCb);
     }
 
     function syncCb(set) {
@@ -188,10 +189,7 @@ function zoomNonClipped(geo, projection) {
         set('center.lat', center[1]);
     }
 
-    zoom
-        .on('zoomstart', handleZoomstart)
-        .on('zoom', handleZoom)
-        .on('zoomend', handleZoomend);
+    zoom.on('zoomstart', handleZoomstart).on('zoom', handleZoom).on('zoomend', handleZoomend);
 
     return zoom;
 }
@@ -199,7 +197,7 @@ function zoomNonClipped(geo, projection) {
 // zoom for clipped projections
 // inspired by https://www.jasondavies.com/maps/d3.geo.zoom.js
 function zoomClipped(geo, projection) {
-    var view = {r: projection.rotate(), k: projection.scale()};
+    var view = { r: projection.rotate(), k: projection.scale() };
     var zoom = initZoom(geo, projection);
     var event = d3eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend');
     var zooming = 0;
@@ -207,28 +205,33 @@ function zoomClipped(geo, projection) {
 
     var zoomPoint;
 
-    zoom.on('zoomstart', function() {
+    zoom.on('zoomstart', function () {
         d3.select(this).style(zoomstartStyle);
 
-        var mouse0 = d3.mouse(this);
-        var rotate0 = projection.rotate();
-        var lastRotate = rotate0;
-        var translate0 = projection.translate();
-        var q = quaternionFromEuler(rotate0);
+        // Fallback to bbox center when there's no source event
+        // (e.g. synthetic zoom.event dispatched on initial render
+        // to enforce minscale/maxscale).
+        const { x, y, width, height } = this.getBBox();
+        let mouse0 = d3.event.sourceEvent ? d3.mouse(this) : [x + width / 2, y + height / 2];
+        const rotate0 = projection.rotate();
+        let lastRotate = rotate0;
+        const translate0 = projection.translate();
+        const q = quaternionFromEuler(rotate0);
 
         zoomPoint = position(projection, mouse0);
 
-        zoomOn.call(zoom, 'zoom', function() {
-            var mouse1 = d3.mouse(this);
+        zoomOn.call(zoom, 'zoom', function () {
+            const { x, y, width, height } = this.getBBox();
+            const mouse1 = d3.event.sourceEvent ? d3.mouse(this) : [x + width / 2, y + height / 2];
 
-            projection.scale(view.k = d3.event.scale);
+            projection.scale((view.k = d3.event.scale));
 
-            if(!zoomPoint) {
+            if (!zoomPoint) {
                 // if no zoomPoint, the mouse wasn't over the actual geography yet
                 // maybe this point is the start... we'll find out next time!
                 mouse0 = mouse1;
                 zoomPoint = position(projection, mouse0);
-            } else if(position(projection, mouse1)) {
+            } else if (position(projection, mouse1)) {
                 // check if the point is on the map
                 // if not, don't do anything new but scale
                 // if it is, then we can assume between will exist below
@@ -236,18 +239,15 @@ function zoomClipped(geo, projection) {
 
                 // go back to original projection temporarily
                 // except for scale... that's kind of independent?
-                projection
-                    .rotate(rotate0)
-                    .translate(translate0);
+                projection.rotate(rotate0).translate(translate0);
 
                 // calculate the new params
                 var point1 = position(projection, mouse1);
                 var between = rotateBetween(zoomPoint, point1);
                 var newEuler = eulerFromQuaternion(multiply(q, between));
-                var rotateAngles = view.r = unRoll(newEuler, zoomPoint, lastRotate);
+                var rotateAngles = (view.r = unRoll(newEuler, zoomPoint, lastRotate));
 
-                if(!isFinite(rotateAngles[0]) || !isFinite(rotateAngles[1]) ||
-                   !isFinite(rotateAngles[2])) {
+                if (!isFinite(rotateAngles[0]) || !isFinite(rotateAngles[1]) || !isFinite(rotateAngles[2])) {
                     rotateAngles = lastRotate;
                 }
 
@@ -261,33 +261,33 @@ function zoomClipped(geo, projection) {
 
         zoomstarted(event.of(this, arguments));
     })
-    .on('zoomend', function() {
-        d3.select(this).style(zoomendStyle);
-        zoomOn.call(zoom, 'zoom', null);
-        zoomended(event.of(this, arguments));
-        sync(geo, projection, syncCb);
-    })
-    .on('zoom.redraw', function() {
-        geo.render(true);
+        .on('zoomend', function () {
+            d3.select(this).style(zoomendStyle);
+            zoomOn.call(zoom, 'zoom', null);
+            zoomended(event.of(this, arguments));
+            sync(geo, projection, syncCb);
+        })
+        .on('zoom.redraw', function () {
+            geo.render(true);
 
-        var _rotate = projection.rotate();
-        geo.graphDiv.emit('plotly_relayouting', {
-            'geo.projection.scale': projection.scale() / geo.fitScale,
-            'geo.projection.rotation.lon': -_rotate[0],
-            'geo.projection.rotation.lat': -_rotate[1]
+            var _rotate = projection.rotate();
+            geo.graphDiv.emit('plotly_relayouting', {
+                'geo.projection.scale': projection.scale() / geo.fitScale,
+                'geo.projection.rotation.lon': -_rotate[0],
+                'geo.projection.rotation.lat': -_rotate[1]
+            });
         });
-    });
 
     function zoomstarted(dispatch) {
-        if(!zooming++) dispatch({type: 'zoomstart'});
+        if (!zooming++) dispatch({ type: 'zoomstart' });
     }
 
     function zoomed(dispatch) {
-        dispatch({type: 'zoom'});
+        dispatch({ type: 'zoom' });
     }
 
     function zoomended(dispatch) {
-        if(!--zooming) dispatch({type: 'zoomend'});
+        if (!--zooming) dispatch({ type: 'zoomend' });
     }
 
     function syncCb(set) {
@@ -342,7 +342,7 @@ function multiply(a, b) {
 }
 
 function rotateBetween(a, b) {
-    if(!a || !b) return;
+    if (!a || !b) return;
     var axis = cross(a, b);
     var norm = Math.sqrt(dot(axis, axis));
     var halfgamma = 0.5 * Math.acos(Math.max(-1, Math.min(1, dot(a, b))));
@@ -381,7 +381,7 @@ function unRoll(rotateAngles, pt, lastRotate) {
     var b;
     var newYaw1;
 
-    if(Math.abs(g) > a) {
+    if (Math.abs(g) > a) {
         newYaw1 = (g > 0 ? 90 : -90) - theta;
         b = 0;
     } else {
@@ -397,7 +397,7 @@ function unRoll(rotateAngles, pt, lastRotate) {
     var dist1 = angleDistance(lastRotate[0], lastRotate[1], newYaw1, newPitch1);
     var dist2 = angleDistance(lastRotate[0], lastRotate[1], newYaw2, newPitch2);
 
-    if(dist1 <= dist2) return [newYaw1, newPitch1, lastRotate[2]];
+    if (dist1 <= dist2) return [newYaw1, newPitch1, lastRotate[2]];
     else return [newYaw2, newPitch2, lastRotate[2]];
 }
 
@@ -409,7 +409,7 @@ function angleDistance(yaw0, pitch0, yaw1, pitch1) {
 
 // reduce an angle in degrees to [-180,180]
 function angleMod(angle) {
-    return (angle % 360 + 540) % 360 - 180;
+    return (((angle % 360) + 540) % 360) - 180;
 }
 
 // rotate a cartesian vector
@@ -418,8 +418,8 @@ function angleMod(angle) {
 function rotateCartesian(vector, axis, angle) {
     var angleRads = angle * radians;
     var vectorOut = vector.slice();
-    var ax1 = (axis === 0) ? 1 : 0;
-    var ax2 = (axis === 2) ? 1 : 2;
+    var ax1 = axis === 0 ? 1 : 0;
+    var ax2 = axis === 2 ? 1 : 2;
     var cosa = Math.cos(angleRads);
     var sina = Math.sin(angleRads);
 
@@ -440,25 +440,17 @@ function cartesian(spherical) {
     var lambda = spherical[0] * radians;
     var phi = spherical[1] * radians;
     var cosPhi = Math.cos(phi);
-    return [
-        cosPhi * Math.cos(lambda),
-        cosPhi * Math.sin(lambda),
-        Math.sin(phi)
-    ];
+    return [cosPhi * Math.cos(lambda), cosPhi * Math.sin(lambda), Math.sin(phi)];
 }
 
 function dot(a, b) {
     var s = 0;
-    for(var i = 0, n = a.length; i < n; ++i) s += a[i] * b[i];
+    for (var i = 0, n = a.length; i < n; ++i) s += a[i] * b[i];
     return s;
 }
 
 function cross(a, b) {
-    return [
-        a[1] * b[2] - a[2] * b[1],
-        a[2] * b[0] - a[0] * b[2],
-        a[0] * b[1] - a[1] * b[0]
-    ];
+    return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 }
 
 // Like d3.dispatch, but for custom events abstracting native UI events. These
@@ -470,7 +462,7 @@ function d3eventDispatch(target) {
     var n = arguments.length;
     var argumentz = [];
 
-    while(++i < n) argumentz.push(arguments[i]);
+    while (++i < n) argumentz.push(arguments[i]);
 
     var dispatch = d3.dispatch.apply(null, argumentz);
 
@@ -483,8 +475,8 @@ function d3eventDispatch(target) {
     // constructor. This context will automatically populate the "sourceEvent" and
     // "target" attributes of the event, as well as setting the `d3.event` global
     // for the duration of the notification.
-    dispatch.of = function(thiz, argumentz) {
-        return function(e1) {
+    dispatch.of = function (thiz, argumentz) {
+        return function (e1) {
             var e0;
             try {
                 e0 = e1.sourceEvent = d3.event;

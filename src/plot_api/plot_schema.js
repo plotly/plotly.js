@@ -218,7 +218,7 @@ exports.findArrayAttributes = function(trace) {
  * @param {object} trace
  *  full trace object that contains a reference to `_module.attributes`
  * @param {object} parts
- *  an array of parts, like ['transforms', 1, 'value']
+ *  an array of parts, like ['dimensions', 1, 'values']
  *  typically from nestedProperty(...).parts
  *
  * @return {object|false}
@@ -539,29 +539,16 @@ function getFramesAttributes() {
 }
 
 function formatAttributes(attrs) {
-    mergeValTypeAndRole(attrs);
+    setRole(attrs);
     formatArrayContainers(attrs);
     stringify(attrs);
 
     return attrs;
 }
 
-function mergeValTypeAndRole(attrs) {
-    function makeSrcAttr(attrName) {
-        return {
-            valType: 'string',
-            description: 'Sets the source reference on Chart Studio Cloud for `' + attrName + '`.',
-            editType: 'none'
-        };
-    }
-
+function setRole(attrs) {
     function callback(attr, attrName, attrs) {
-        if(exports.isValObject(attr)) {
-            if(attr.arrayOk === true || attr.valType === 'data_array') {
-                // all 'arrayOk' and 'data_array' attrs have a corresponding 'src' attr
-                attrs[attrName + 'src'] = makeSrcAttr(attrName);
-            }
-        } else if(isPlainObject(attr)) {
+        if(!exports.isValObject(attr) && isPlainObject(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
         }
