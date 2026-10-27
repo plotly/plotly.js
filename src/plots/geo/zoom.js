@@ -14,7 +14,8 @@ function startDragStyle(geo, el) {
     d3.select(el).style(zoomstartStyle);
 
     var sourceEvent = d3.event.sourceEvent;
-    if(sourceEvent && sourceEvent.type === 'mousedown') {
+    var isRightClick = sourceEvent && (sourceEvent.buttons === 2 || sourceEvent.ctrlKey);
+    if(sourceEvent && sourceEvent.type === 'mousedown' && !isRightClick) {
         geo._dragCover = dragElement.coverSlip();
         geo._dragCover.style.cursor = zoomstartStyle.cursor;
     }

@@ -226,7 +226,7 @@ function dragstart(lThis, d) {
     s.startExtent = interval.region ? unitRange[interval.region === 's' ? 1 : 0] : unitLocation;
     d.parent.inBrushDrag = true;
     s.dragCover = dragElement.coverSlip();
-    s.dragCover.style.cursor = window.getComputedStyle(lThis).cursor;
+    s.dragCover.style.cursor = getCursor(interval);
     s.brushStartCallback();
 }
 
@@ -328,14 +328,15 @@ function dragend(lThis, d) {
     s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
 }
 
+function getCursor(interval) {
+    if(interval.clickableOrdinalRange) return 'pointer';
+    if(interval.region) return interval.region + '-resize';
+    return 'crosshair';
+}
+
 function mousemove(lThis, d) {
     var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
-    var interval = getInterval(d, y);
-
-    var cursor = 'crosshair';
-    if(interval.clickableOrdinalRange) cursor = 'pointer';
-    else if(interval.region) cursor = interval.region + '-resize';
-    setCursor(d3.select(lThis), cursor);
+    setCursor(d3.select(lThis), getCursor(getInterval(d, y)));
 }
 
 function attachDragBehavior(selection) {

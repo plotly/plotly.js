@@ -1690,6 +1690,26 @@ describe('Test geo interactions', function () {
             .then(done, done.fail);
     });
 
+    it('should not create a drag cover on right-click', function (done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        Plotly.newPlot(gd, fig)
+            .then(function () {
+                mouseEvent('mousedown', 350, 250, { buttons: 2 });
+                expect(document.querySelectorAll('.dragcover').length).toBe(0, 'right button');
+                mouseEvent('mouseup', 350, 250, { buttons: 2 });
+
+                mouseEvent('mousedown', 350, 250, { ctrlKey: true });
+                expect(document.querySelectorAll('.dragcover').length).toBe(0, 'ctrl key');
+                mouseEvent('mouseup', 350, 250, { ctrlKey: true });
+            })
+            .then(done, done.fail);
+    });
+
     it('should clear hover label when cursor slips off subplot', function (done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));
