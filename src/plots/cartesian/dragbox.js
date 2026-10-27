@@ -1149,7 +1149,7 @@ function dZoom(d) {
 }
 
 function getDragCursor(nsew, dragmode, isMainDrag) {
-    if(!nsew) return 'pointer';
+    if(!nsew) return 'default';
     if(nsew === 'nsew') {
         // in this case here, clear cursor and
         // use the cursor style set on <g .draglayer>

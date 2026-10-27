@@ -2407,6 +2407,14 @@ describe('drag cursor', function() {
         .then(done, done.fail)
         .then(function() { document.body.removeChild(input); });
     });
+
+    it('uses the default cursor on the main rect when every axis is fixedrange', function(done) {
+        plot({xaxis: {fixedrange: true}, yaxis: {fixedrange: true}})
+        .then(function() {
+            expect(d3Select(gd).select('.nsewdrag').node().classList.contains('cursor-default')).toBe(true);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('Event data:', function() {
