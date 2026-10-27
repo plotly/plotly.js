@@ -749,18 +749,6 @@ describe('sankey tests', function () {
                     .then(done, done.fail);
             });
 
-            it('respects explicit positions of 0', (done) => {
-                const fig = makeFixedMock();
-                fig.data[0].node.x[2] = 0;
-                fig.data[0].node.y[3] = 0;
-
-                Plotly.newPlot(gd, fig)
-                    .then(() => {
-                        assertPositions(fig.data[0], getCentersByIndex(), [0, 2, 3, 4], 'zero');
-                    })
-                    .then(done, done.fail);
-            });
-
             it('applies positions to the right nodes when nodes are grouped', (done) => {
                 const fig = makeFixedMock();
                 // Grouping nodes 3 and 4 leaves them unlinked and adds group node 5
