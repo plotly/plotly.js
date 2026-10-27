@@ -253,7 +253,8 @@ function sankeyModel(layout, d, traceIndex) {
             if(forcedNode.partOfGroup) continue;
 
             var p = forcedNode.pointNumber;
-            if(trace.node.x[p] && trace.node.y[p]) {
+            // Allow values of zero for coordinates
+            if (trace.node.x[p] != null && trace.node.y[p] != null) {
                 var pos = [trace.node.x[p] * width, trace.node.y[p] * height];
                 forcedNode.x0 = pos[0] - nodeThickness / 2;
                 forcedNode.x1 = pos[0] + nodeThickness / 2;
@@ -805,13 +806,13 @@ function snappingForce(sankeyNode, forceKey, nodes, d) {
 // basic data utilities
 
 function persistFinalNodePositions(d, gd) {
-    var x = [];
-    var y = [];
-    for(var i = 0; i < d.graph.nodes.length; i++) {
-        var nodeX = (d.graph.nodes[i].x0 + d.graph.nodes[i].x1) / 2;
-        var nodeY = (d.graph.nodes[i].y0 + d.graph.nodes[i].y1) / 2;
-        x.push(nodeX / d.figure.width);
-        y.push(nodeY / d.figure.height);
+    // Write by pointNumber because graph.nodes omits unlinked nodes
+    const x = [...d.trace.node.x];
+    const y = [...d.trace.node.y];
+    for (const node of d.graph.nodes) {
+        if (node.partOfGroup) continue;
+        x[node.pointNumber] = (node.x0 + node.x1) / 2 / d.figure.width;
+        y[node.pointNumber] = (node.y0 + node.y1) / 2 / d.figure.height;
     }
     Registry.call('_guiRestyle', gd, {
         'node.x': [x],
