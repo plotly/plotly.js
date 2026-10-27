@@ -1640,6 +1640,56 @@ describe('Test geo interactions', function () {
             .then(done, done.fail);
     });
 
+    it('should show the move cursor at rest and after a drag in pan mode', function (done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        var bgRect = function () { return d3Select(gd).select('.geo .bg rect').node(); };
+        var hasMoveCursor = function () {
+            return bgRect().classList.contains('cursor-move') && !bgRect().style.cursor;
+        };
+
+        Plotly.newPlot(gd, fig)
+            .then(function () {
+                expect(hasMoveCursor()).toBe(true, 'at rest');
+                return drag({ node: bgRect(), dpos: [20, 20], noCover: true });
+            })
+            .then(function () {
+                expect(hasMoveCursor()).toBe(true, 'after drag');
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function () {
+                expect(bgRect().classList.contains('cursor-crosshair')).toBe(true, 'in select mode');
+            })
+            .then(done, done.fail);
+    });
+
+    it('should keep the move cursor on a cover while a pan drag is in progress', function (done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        Plotly.newPlot(gd, fig)
+            .then(function () {
+                mouseEvent('mousedown', 350, 250);
+                mouseEvent('mousemove', 360, 260);
+
+                var covers = document.querySelectorAll('.dragcover');
+                expect(covers.length).toBe(1, 'one cover while dragging');
+                expect(covers[0].style.cursor).toBe('move');
+                expect(d3Select(gd).select('.geo .bg rect').node().style.cursor).toBe('move');
+
+                mouseEvent('mouseup', 360, 260);
+                expect(document.querySelectorAll('.dragcover').length).toBe(0, 'no cover after the drag');
+            })
+            .then(done, done.fail);
+    });
+
     it('should clear hover label when cursor slips off subplot', function (done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('../../image/mocks/geo_orthographic.json'));

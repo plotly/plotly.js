@@ -3,11 +3,28 @@
 var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var Registry = require('../../registry');
+var dragElement = require('../../components/dragelement');
 
 var radians = Math.PI / 180;
 var degrees = 180 / Math.PI;
-var zoomstartStyle = { cursor: 'pointer' };
-var zoomendStyle = { cursor: 'auto' };
+var zoomstartStyle = { cursor: 'move' };
+var zoomendStyle = { cursor: null };
+
+function startDragStyle(geo, el) {
+    d3.select(el).style(zoomstartStyle);
+
+    var sourceEvent = d3.event.sourceEvent;
+    if(sourceEvent && sourceEvent.type === 'mousedown') {
+        geo._dragCover = dragElement.coverSlip();
+        geo._dragCover.style.cursor = zoomstartStyle.cursor;
+    }
+}
+
+function endDragStyle(geo, el) {
+    d3.select(el).style(zoomendStyle);
+    Lib.removeElement(geo._dragCover);
+    geo._dragCover = null;
+}
 
 function createGeoZoom(geo, geoLayout) {
     var projection = geo.projection;
@@ -74,7 +91,7 @@ function zoomScoped(geo, projection) {
     var zoom = initZoom(geo, projection);
 
     function handleZoomstart() {
-        d3.select(this).style(zoomstartStyle);
+        startDragStyle(geo, this);
     }
 
     function handleZoom() {
@@ -97,7 +114,7 @@ function zoomScoped(geo, projection) {
     }
 
     function handleZoomend() {
-        d3.select(this).style(zoomendStyle);
+        endDragStyle(geo, this);
         sync(geo, projection, syncCb);
     }
 
@@ -127,7 +144,7 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoomstart() {
-        d3.select(this).style(zoomstartStyle);
+        startDragStyle(geo, this);
 
         // Fallback to bbox center when there's no source event
         // (e.g. synthetic zoom.event dispatched on initial render
@@ -176,7 +193,7 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoomend() {
-        d3.select(this).style(zoomendStyle);
+        endDragStyle(geo, this);
         if (didZoom) sync(geo, projection, syncCb);
     }
 
@@ -206,7 +223,7 @@ function zoomClipped(geo, projection) {
     var zoomPoint;
 
     zoom.on('zoomstart', function () {
-        d3.select(this).style(zoomstartStyle);
+        startDragStyle(geo, this);
 
         // Fallback to bbox center when there's no source event
         // (e.g. synthetic zoom.event dispatched on initial render
@@ -262,7 +279,7 @@ function zoomClipped(geo, projection) {
         zoomstarted(event.of(this, arguments));
     })
         .on('zoomend', function () {
-            d3.select(this).style(zoomendStyle);
+            endDragStyle(geo, this);
             zoomOn.call(zoom, 'zoom', null);
             zoomended(event.of(this, arguments));
             sync(geo, projection, syncCb);
