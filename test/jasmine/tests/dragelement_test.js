@@ -20,7 +20,7 @@ describe('dragElement', function() {
             _hoverlayer: d3Select(this.hoverlayer)
         };
         this.gd._context = {
-            doubleClickDelay: 300
+            doubleClickDelay: 500
         };
         this.element.innerHTML = 'drag element';
 

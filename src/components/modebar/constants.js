@@ -18,7 +18,7 @@ var backButtons = [
     'hovercompare',
     'togglehover',
     'togglespikelines'
-].concat(DRAW_MODES);
+].concat(DRAW_MODES, ['downloadJson']);
 
 var foreButtons = [];
 var addToForeButtons = function(b) {

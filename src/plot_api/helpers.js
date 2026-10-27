@@ -6,7 +6,6 @@ var Registry = require('../registry');
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
 var AxisIds = require('../plots/cartesian/axis_ids');
-var Color = require('../components/color');
 
 var cleanId = AxisIds.cleanId;
 var getFromTrace = AxisIds.getFromTrace;
@@ -139,10 +138,6 @@ exports.cleanLayout = function (layout) {
      * Moved from rotate -> orbit for dragmode
      */
     if (layout.dragmode === 'rotate') layout.dragmode = 'orbit';
-
-    // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
-    // supported, but new tinycolor does not because they're not valid css
-    Color.clean(layout);
 
     // clean the layout container in layout.template
     if (layout.template && layout.template.layout) {
@@ -279,10 +274,6 @@ exports.cleanData = function (data) {
             if (emptyContainer(trace, 'marker')) delete trace.marker;
         }
 
-        // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
-        // supported, but new tinycolor does not because they're not valid css
-        Color.clean(trace);
-
         // remove obsolete autobin(x|y) attributes, but only if true
         // if false, this needs to happen in Histogram.calc because it
         // can be a one-time autobin so we need to know the results before
@@ -354,7 +345,7 @@ function emptyContainer(outer, innerStr) {
 // swap all the data and data attributes associated with x and y
 exports.swapXYData = function (trace) {
     var i;
-    Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
+    Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', 'error_?']);
     if (Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
         if (trace.transpose) delete trace.transpose;
         else trace.transpose = true;

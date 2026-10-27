@@ -100,7 +100,7 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
 
-    // disable 1D transforms (for now)
+    // Ensure _length is defined
     traceOut._length = null;
 }
 

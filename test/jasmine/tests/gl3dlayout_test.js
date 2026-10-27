@@ -1,7 +1,6 @@
 var Plotly = require('../../../lib/index');
 var Gl3d = require('../../../src/plots/gl3d');
 
-var tinycolor = require('tinycolor2');
 var Color = require('../../../src/components/color');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -378,10 +377,10 @@ describe('Test Gl3d layout defaults', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.xaxis.gridcolor)
-                .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
+                .toEqual(Color.mix('red', bgColor, frac));
             expect(layoutOut.scene.yaxis.gridcolor).toEqual('blue');
             expect(layoutOut.scene.zaxis.gridcolor)
-                .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
+                .toEqual(Color.mix('#444', bgColor, frac));
         });
 
         it('should disable converting numeric strings using axis.autotypenumbers', function() {

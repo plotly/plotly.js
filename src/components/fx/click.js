@@ -1,6 +1,7 @@
 'use strict';
 
 var Registry = require('../../registry');
+var helpers = require('./helpers');
 var hover = require('./hover').hover;
 
 module.exports = function click(gd, evt, subplot) {
@@ -21,8 +22,10 @@ module.exports = function click(gd, evt, subplot) {
         // get coordinate values from latest hover call, if available
         clickData.xaxes ??= gd._hoverXAxes;
         clickData.yaxes ??= gd._hoverYAxes;
-        clickData.xvals ??= gd._hoverXVals;
-        clickData.yvals ??= gd._hoverYVals;
+        clickData.xvals ??= gd._hoverXVals && helpers.c2dApply(gd._hoverXAxes, gd._hoverXVals);
+        clickData.yvals ??= gd._hoverYVals && helpers.c2dApply(gd._hoverYAxes, gd._hoverYVals);
+        clickData.xPixel ??= gd._hoverPointerX;
+        clickData.yPixel ??= gd._hoverPointerY;
 
         gd.emit('plotly_click', clickData);
     }

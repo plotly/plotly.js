@@ -50,7 +50,13 @@ module.exports = {
     texttemplatefallback: templatefallbackAttrs({ editType: 'plot' }),
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
-        flags: ['label', 'text', 'value', 'percent', 'name']
+        flags: ['label', 'text', 'value', 'percent', 'name'],
+        description: [
+            'Determines what trace information appears on hover.',
+            'Flags are rendered in a fixed order; use `hovertemplate` if you',
+            'need explicit control over the rendered string, including the',
+            'order of fields and surrounding text.'
+        ].join(' ')
     }),
 
     hovertemplate: hovertemplateAttrs({}, { keys: ['label', 'color', 'value', 'text', 'percent'] }),

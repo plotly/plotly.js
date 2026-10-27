@@ -153,7 +153,6 @@
     "bargroupgap": 0,
     "boxmode": "overlay",
     "separators": ".,",
-    "hidesources": false,
     "yaxis2": {
       "title": {
         "text": "Click to enter Y2 axis title"

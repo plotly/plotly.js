@@ -1012,12 +1012,14 @@
     "geo": {
       "projection": {
         "type": "robinson"
-      }
+      },
+      "fitbounds": false
     },
     "geo2": {
       "projection": {
         "type": "robinson"
-      }
+      },
+      "fitbounds": false
     },
     "showlegend": false
   }

@@ -33,10 +33,6 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
             };
             firstTrace = true;
         }
-        // TODO: how is this going to work with groupby transforms?
-        // in principle it should be OK I guess, as long as explicit group styles
-        // don't override explicit base-trace styles?
-
         var dflts = {
             orientation: (traceOut.x && !traceOut.y) ? 'h' : 'v'
         };

@@ -8,7 +8,8 @@ dirIn = os.path.join(root, "test", "image", "mocks")
 dirOut = os.path.join(root, "build", "test_images")
 
 pio.templates.default = "none"
-pio.kaleido.scope.plotlyjs = os.path.join(root, "build", "plotly.js")
+pio.defaults.plotlyjs = os.path.join(root, "build", "plotly.js")
+pio.defaults.mathjax = "https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-svg.js"
 
 allFormats = ["svg", "jpg", "jpeg", "webp", "pdf"]
 # 'png' is tested by image-test
@@ -31,7 +32,7 @@ allNames = [
     "zsmooth_methods",
 ]
 
-failed = 0
+failed = []
 for name in allNames:
     for fmt in allFormats:
         print(name + " --> " + fmt)
@@ -59,8 +60,15 @@ for name in allNames:
                 )
 
             except Exception as e:
+                import traceback
                 print(e)
-                failed += 1
+                traceback.print_exc()
 
-if failed > 0:
+                failed.append((name, fmt))
+
+if len(failed) > 0:
+    print("\nFailed on:")
+    for name, fmt in failed:
+        print(f"  {name} ({fmt})")
+    print("")
     sys.exit(1)

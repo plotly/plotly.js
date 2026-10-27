@@ -1528,7 +1528,6 @@
     }
   ],
   "layout": {
-    "hidesources": false,
     "autosize": true,
     "font": {
       "color": "#444",

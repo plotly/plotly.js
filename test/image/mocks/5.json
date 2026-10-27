@@ -184,7 +184,6 @@
     "plot_bgcolor": "#fff",
     "hovermode": "x",
     "dragmode": "zoom",
-    "separators": ".,",
-    "hidesources": false
+    "separators": ".,"
   }
 }

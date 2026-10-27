@@ -1,7 +1,7 @@
 'use strict';
 
+const Color = require('../../components/color');
 var isNumeric = require('fast-isnumeric');
-var tinycolor = require('tinycolor2');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 exports.coerceString = function(attributeDefinition, value, defaultValue) {
@@ -34,7 +34,7 @@ exports.coerceNumber = function(attributeDefinition, value, defaultValue) {
 };
 
 exports.coerceColor = function(attributeDefinition, value, defaultValue) {
-    if(tinycolor(value).isValid()) return value;
+    if(Color.isValid(value)) return value;
 
     return (defaultValue !== undefined) ?
       defaultValue :

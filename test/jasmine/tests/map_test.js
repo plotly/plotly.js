@@ -515,16 +515,16 @@ describe('map plots', function() {
             expect(mapInfo.style.name).toEqual(style);
         }
 
-        assertLayout('Dark Matter');
+        assertLayout('Dark Matter (Protomaps)');
 
         Plotly.relayout(gd, 'map.style', 'carto-positron')
         .then(function() {
-            assertLayout('Positron');
+            assertLayout('Positron (Protomaps)');
 
             return Plotly.relayout(gd, 'map.style', 'carto-darkmatter');
         })
         .then(function() {
-            assertLayout('Dark Matter');
+            assertLayout('Dark Matter (Protomaps)');
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
@@ -1210,13 +1210,14 @@ describe('map plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
-        function assertLinks(s, exp) {
+        // CARTO controls the markup of its own links, so only plotly-owned links have a target
+        function assertLinks(s, exp, checkTarget) {
             var elements = s[0][0].getElementsByTagName('a');
             expect(elements.length).toEqual(exp.length);
             for(var i = 0; i < elements.length; i++) {
                 var e = elements[i];
                 expect(e.href).toEqual(exp[i]);
-                expect(e.target).toEqual('_blank');
+                if(checkTarget) expect(e.target).toEqual('_blank');
             }
         }
 
@@ -1225,10 +1226,10 @@ describe('map plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
+                expect(s.text()).toEqual('© OpenStreetMap contributors © CARTO');
                 assertLinks(s, [
-                    'https://carto.com/about-carto/',
-                    'http://www.openstreetmap.org/about/'
+                    'https://www.openstreetmap.org/copyright',
+                    'https://carto.com/about-carto/'
                 ]);
             })
             .then(done, done.fail);
@@ -1242,7 +1243,7 @@ describe('map plots', function() {
                 expect(s.text()).toEqual('© OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://www.openstreetmap.org/copyright'
-                ]);
+                ], true);
             })
             .then(done, done.fail);
         });
@@ -1252,10 +1253,10 @@ describe('map plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© CARTO, © OpenStreetMap contributors');
+                expect(s.text()).toEqual('© OpenStreetMap contributors © CARTO');
                 assertLinks(s, [
+                    'https://www.openstreetmap.org/copyright',
                     'https://carto.com/about-carto/',
-                    'http://www.openstreetmap.org/about/',
                 ]);
             })
             .then(done, done.fail);
@@ -1327,7 +1328,7 @@ describe('map plots', function() {
             .then(function() {
                 var s = d3SelectAll('.maplibregl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual([XSS + attr, '© CARTO, © OpenStreetMap contributors'].join(' | '));
+                expect(s.text()).toEqual([XSS + attr, '© OpenStreetMap contributors © CARTO'].join(' | '));
                 expect(s.html().indexOf('<img src=x onerror="alert(XSS);">')).toBe(-1);
                 expect(s.html().indexOf('&lt;img src=x onerror="alert(XSS);"&gt;')).not.toBe(-1);
             })
@@ -1385,7 +1386,7 @@ describe('map plots', function() {
         var out = [];
 
         mapInfo.traceSources.forEach(function(s) {
-            var info = mapInfo.sources[s];
+            var info = mapInfo.sources[s].getSource();
 
             if(s.indexOf(mode) === -1) return;
 
@@ -1428,6 +1429,103 @@ describe('map plots', function() {
 
         return promise;
     }
+});
+
+describe('map auto-fit', () => {
+    let gd;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+    });
+    afterEach(() => {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    const mock = (overrides = {}) => {
+        return Lib.extendDeep(
+            {
+                data: [{ type: 'scattermap', mode: 'markers', lon: [-75, -74, -73], lat: [40, 41, 42] }],
+                layout: { width: 400, height: 400 }
+            },
+            overrides
+        );
+    };
+
+    it(
+        '@gl frames the data when no center/zoom set',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const { lng, lat } = gd._fullLayout.map._subplot.map.getCenter();
+            expect(lng).toBeCloseTo(-74, 0);
+            expect(lat).toBeCloseTo(41, 0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl refits when lon/lat change via restyle',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const z0 = gd._fullLayout.map.zoom;
+            await Plotly.restyle(gd, { lon: [[-75]], lat: [[40]] }, [0]);
+            // Single-point trace → tighter zoom than the 3-point cluster
+            expect(gd._fullLayout.map.zoom).toBeGreaterThan(z0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl preserves center when only zoom is relayout-ed',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const { lon: origLon, lat: origLat } = gd._fullLayout.map.center;
+            await Plotly.relayout(gd, { 'map.zoom': 5 });
+            expect(gd._fullLayout.map.zoom).toBe(5);
+            expect(gd._fullLayout.map.center.lon).toBe(origLon);
+            expect(gd._fullLayout.map.center.lat).toBe(origLat);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl skips auto-fit when fitbounds is false',
+        async () => {
+            await Plotly.newPlot(gd, mock({ layout: { map: { fitbounds: false } } }));
+            expect(gd._fullLayout.map.center.lon).toBe(0);
+            expect(gd._fullLayout.map.center.lat).toBe(0);
+            expect(gd._fullLayout.map.zoom).toBe(1);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl skips refit after the user has changed center',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            await Plotly.relayout(gd, { 'map.center': { lon: 0, lat: 0 } });
+            await Plotly.restyle(gd, { lon: [[-75]], lat: [[40]] }, [0]);
+            expect(gd._fullLayout.map.center.lon).toBe(0);
+            expect(gd._fullLayout.map.center.lat).toBe(0);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
+    it(
+        '@gl refits after addTraces / deleteTraces',
+        async () => {
+            await Plotly.newPlot(gd, mock());
+            const z0 = gd._fullLayout.map.zoom;
+            await Plotly.addTraces(gd, { type: 'scattermap', mode: 'markers', lon: [140], lat: [-30] });
+            // New trace pulls the fit far wider → lower zoom
+            expect(gd._fullLayout.map.zoom).toBeLessThan(z0);
+            await Plotly.deleteTraces(gd, 1);
+            // Back to the original 3-point fit
+            expect(gd._fullLayout.map.zoom).toBeCloseTo(z0, 5);
+        },
+        LONG_TIMEOUT_INTERVAL
+    );
+
 });
 
 describe('map react', function() {
@@ -1563,43 +1661,43 @@ describe('test map trace/layout *below* interactions', function() {
         })
         .then(function() {
             _assert('default *below*', {
-                trace: [94, 95, 96, 97],
+                trace: [96, 97, 98, 99],
                 layout: 9
             });
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'traces'); })
         .then(function() {
             _assert('with layout layer *below:traces*', {
-                trace: [94, 95, 96, 97],
-                layout: 93
+                trace: [96, 97, 98, 99],
+                layout: 95
             });
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', null); })
         .then(function() {
             _assert('back to default *below* (1)', {
-                trace: [93, 94, 95, 96],
-                layout: 97
+                trace: [95, 96, 97, 98],
+                layout: 99
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
             _assert('with trace *below:""*', {
-                trace: [94, 95, 96, 97],
-                layout: 93
+                trace: [96, 97, 98, 99],
+                layout: 95
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
             _assert('back to default *below* (2)', {
-                trace: [93, 94, 95, 96],
-                layout: 97
+                trace: [95, 96, 97, 98],
+                layout: 99
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', 'water'); })
         .then(function() {
             _assert('with trace *below:water*', {
                 trace: [9, 10, 11, 12],
-                layout: 97
+                layout: 99
             });
         })
         .then(function() { return Plotly.relayout(gd, 'map.layers[0].below', 'water'); })
@@ -1613,21 +1711,21 @@ describe('test map trace/layout *below* interactions', function() {
         .then(function() {
             _assert('with trace *below:water* and layout layer *below:""*', {
                 trace: [9, 10, 11, 12],
-                layout: 97
+                layout: 99
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
             _assert('with trace AND layout layer *below:water*', {
-                trace: [93, 94, 95, 96],
-                layout: 97
+                trace: [95, 96, 97, 98],
+                layout: 99
             });
         })
         .then(function() { return Plotly.update(gd, {below: null}, {'map.layers[0].below': null}); })
         .then(function() {
             _assert('back to default *below* (3)', {
-                trace: [93, 94, 95, 96],
-                layout: 97
+                trace: [95, 96, 97, 98],
+                layout: 99
             });
         })
         .then(done, done.fail);
@@ -1674,25 +1772,25 @@ describe('test map trace/layout *below* interactions', function() {
         })
         .then(function() {
             _assert('base', {
-                scatter: [96, 97, 98, 99],
+                scatter: [98, 99, 100, 101],
                 density: [13],
-                choropleth: [72, 73]
+                choropleth: [74, 75]
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', ''); })
         .then(function() {
             _assert('all traces *below:""', {
-                scatter: [96, 97, 98, 99],
-                density: [95],
-                choropleth: [93, 94]
+                scatter: [98, 99, 100, 101],
+                density: [97],
+                choropleth: [95, 96]
             });
         })
         .then(function() { return Plotly.restyle(gd, 'below', null); })
         .then(function() {
             _assert('back to base', {
-                scatter: [96, 97, 98, 99],
+                scatter: [98, 99, 100, 101],
                 density: [13],
-                choropleth: [72, 73]
+                choropleth: [74, 75]
             });
         })
         .then(done, done.fail);
@@ -1721,7 +1819,7 @@ describe('test map trace/layout *below* interactions', function() {
             }
             Lib.warn.calls.reset();
 
-            getLayerIds().slice(94, -1).forEach(function(id) {
+            getLayerIds().slice(96, -1).forEach(function(id) {
                 expect(id.indexOf('plotly-')).toBe(0, 'layer ' + id + ' fallback to top of map');
             });
         }
@@ -1882,7 +1980,7 @@ function getMapInfo(gd) {
     var subplot = gd._fullLayout.map._subplot;
     var map = subplot.map;
 
-    var sources = map.style.sourceCaches;
+    var sources = map.style.tileManagers;
     var layers = map.style._layers;
     var uid = subplot.uid;
 

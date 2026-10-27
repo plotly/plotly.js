@@ -74,8 +74,8 @@ describe('finance charts defaults:', function () {
         assertDataLength(trace0, out._fullData[0], 5);
         assertDataLength(trace1, out._fullData[1], 4);
 
-        expect(out._fullData[0]._fullInput.x).toBeUndefined();
-        expect(out._fullData[1]._fullInput.x).toBeDefined();
+        expect(out._fullData[0].x).toBeUndefined();
+        expect(out._fullData[1].x).toBeDefined();
     });
 
     it('should set visible to *false* when a component (other than x) is missing', function () {
