@@ -723,7 +723,8 @@ describe('sankey tests', function () {
                 const centers = {};
                 // d3 v3 binds the element to `this`, so this callback stays a function
                 d3SelectAll('.sankey-node').each(function (d) {
-                    centers[d.index] = getNodeCoords(this);
+                    // measure the rect because the label shifts the group bounding box
+                    centers[d.index] = getNodeCoords(this.querySelector('.node-rect'));
                 });
                 return centers;
             };
