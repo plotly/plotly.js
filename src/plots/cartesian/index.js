@@ -761,3 +761,4 @@ exports.toSVG = function(gd) {
 };
 
 exports.updateFx = require('./graph_interact').updateFx;
+exports.updateCursor = require('./graph_interact').updateCursor;

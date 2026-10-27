@@ -47,3 +47,11 @@ exports.selectingOrDrawing = function(dragmode) {
         exports.rectMode(dragmode)
     );
 };
+
+exports.effectiveDragmode = (dragmode, { shiftKey } = {}) => {
+    if(!shiftKey || !dragmode || exports.selectingOrDrawing(dragmode)) return dragmode;
+    return dragmode === 'pan' ? 'zoom' : 'pan';
+};
+
+exports.dragCursor = (dragmode, modifiers) =>
+    exports.effectiveDragmode(dragmode, modifiers) === 'pan' ? 'move' : 'crosshair';

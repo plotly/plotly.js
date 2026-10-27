@@ -2296,6 +2296,119 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 });
 
+describe('drag cursor', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function pressShift(type) {
+        window.dispatchEvent(new KeyboardEvent(type, {key: 'Shift', shiftKey: type === 'keydown'}));
+    }
+
+    function assertCursor(expected) {
+        var draglayer = d3Select(gd).select('.draglayer').node();
+        expect(draglayer).toBeClassed(['draglayer', 'cursor-' + expected]);
+    }
+
+    function plot(layout) {
+        return Plotly.newPlot(gd, [{y: [1, 2, 1]}], Lib.extendFlat({width: 400, height: 400}, layout));
+    }
+
+    it('flips from crosshair to move while shift is held in zoom mode', function(done) {
+        plot({dragmode: 'zoom'})
+        .then(function() {
+            assertCursor('crosshair');
+            pressShift('keydown');
+            assertCursor('move');
+            pressShift('keyup');
+            assertCursor('crosshair');
+        })
+        .then(done, done.fail);
+    });
+
+    it('flips from move to crosshair while shift is held in pan mode', function(done) {
+        plot({dragmode: 'pan'})
+        .then(function() {
+            assertCursor('move');
+            pressShift('keydown');
+            assertCursor('crosshair');
+            pressShift('keyup');
+            assertCursor('move');
+        })
+        .then(done, done.fail);
+    });
+
+    it('keeps crosshair while shift is held in select mode', function(done) {
+        plot({dragmode: 'select'})
+        .then(function() {
+            pressShift('keydown');
+            assertCursor('crosshair');
+        })
+        .then(done, done.fail);
+    });
+
+    it('reverts the shift cursor on window blur', function(done) {
+        plot({dragmode: 'zoom'})
+        .then(function() {
+            pressShift('keydown');
+            window.dispatchEvent(new Event('blur'));
+            assertCursor('crosshair');
+        })
+        .then(done, done.fail);
+    });
+
+    it('applies the held shift state to a dragmode relayout', function(done) {
+        plot({dragmode: 'zoom'})
+        .then(function() {
+            pressShift('keydown');
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            assertCursor('crosshair');
+            pressShift('keyup');
+            assertCursor('move');
+        })
+        .then(done, done.fail);
+    });
+
+    it('keeps crosshair while shift is held when dragmode is false', function(done) {
+        plot({dragmode: false})
+        .then(function() {
+            pressShift('keydown');
+            assertCursor('crosshair');
+        })
+        .then(done, done.fail);
+    });
+
+    it('picks up shift from a mousemove when no keydown was seen', function(done) {
+        plot({dragmode: 'zoom', margin: {l: 50, t: 50, r: 50, b: 50}})
+        .then(function() {
+            mouseEvent('mousemove', 200, 200, {shiftKey: true});
+            assertCursor('move');
+            mouseEvent('mousemove', 200, 200);
+            assertCursor('crosshair');
+        })
+        .then(done, done.fail);
+    });
+
+    it('ignores shift typed into an input', function(done) {
+        var input = document.createElement('input');
+        document.body.appendChild(input);
+
+        plot({dragmode: 'zoom'})
+        .then(function() {
+            input.dispatchEvent(new KeyboardEvent('keydown', {key: 'A', shiftKey: true, bubbles: true}));
+            assertCursor('crosshair');
+        })
+        .then(done, done.fail)
+        .then(function() { document.body.removeChild(input); });
+    });
+});
+
 describe('Event data:', function() {
     var gd;
 
