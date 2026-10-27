@@ -1,6 +1,7 @@
 'use strict';
 
 var Ternary = require('./ternary');
+var dragCursor = require('../../components/dragelement/helpers').dragCursor;
 
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
@@ -80,5 +81,5 @@ exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;
     fullLayout._ternarylayer
         .selectAll('g.toplevel')
-        .style('cursor', fullLayout.dragmode === 'pan' ? 'move' : 'crosshair');
+        .style('cursor', dragCursor(fullLayout.dragmode));
 };

@@ -17,6 +17,7 @@ var dragElement = require('../../components/dragelement');
 var helpers = require('../../components/dragelement/helpers');
 var selectingOrDrawing = helpers.selectingOrDrawing;
 var freeMode = helpers.freeMode;
+var effectiveDragmode = helpers.effectiveDragmode;
 
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
@@ -168,12 +169,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(isMainDrag) {
                 // main dragger handles all drag modes, and changes
                 // to pan (or to zoom if it already is pan) on shift
-                if(e.shiftKey) {
-                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!selectingOrDrawing(dragModeNow)) dragModeNow = 'pan';
-                } else if(e.ctrlKey) {
-                    dragModeNow = 'pan';
-                }
+                dragModeNow = effectiveDragmode(dragModeNow, e);
             } else {
                 // all other draggers just pan
                 dragModeNow = 'pan';
@@ -1153,7 +1149,7 @@ function dZoom(d) {
 }
 
 function getDragCursor(nsew, dragmode, isMainDrag) {
-    if(!nsew) return 'pointer';
+    if(!nsew) return 'default';
     if(nsew === 'nsew') {
         // in this case here, clear cursor and
         // use the cursor style set on <g .draglayer>

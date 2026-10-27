@@ -16,6 +16,7 @@ var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('./cartesian/axis_ids');
 var clearOutline = require('../components/shapes/handle_outline').clearOutline;
+var modifierKeys = require('../components/dragelement/modifier_keys');
 var scatterAttrs = require('../traces/scatter/layout_attributes');
 
 var animationAttrs = require('./animation_attributes');
@@ -1469,6 +1470,8 @@ plots.purge = function(gd) {
 
     // remove responsive handler
     Lib.clearResponsive(gd);
+
+    modifierKeys.untrack(gd);
 
     // Cancel the pending redraw for web fonts
     delete gd._fontLoadToken;

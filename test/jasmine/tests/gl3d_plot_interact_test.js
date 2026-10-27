@@ -256,6 +256,72 @@ describe('Test gl3d plots', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should set the cursor on the scene container from the dragmode and held modifier keys', function(done) {
+        var cursorClasses = function() {
+            return Array.prototype.filter.call(
+                d3Select(gd).select('.gl-container > div').node().classList,
+                function(cls) { return cls.indexOf('cursor-') === 0; }
+            );
+        };
+        var press = function(type, init) {
+            window.dispatchEvent(new KeyboardEvent(type, init));
+        };
+
+        Plotly.newPlot(gd, [{type: 'scatter3d', x: [1, 2], y: [1, 2], z: [1, 2]}], {dragmode: 'turntable'})
+        .then(function() {
+            expect(cursorClasses()).toEqual(['cursor-default'], 'turntable');
+
+            press('keydown', {shiftKey: true});
+            expect(cursorClasses()).toEqual(['cursor-default'], 'shift rotates');
+            press('keyup', {});
+
+            press('keydown', {ctrlKey: true});
+            expect(cursorClasses()).toEqual(['cursor-move'], 'ctrl pans');
+            press('keyup', {});
+
+            press('keydown', {altKey: true});
+            expect(cursorClasses()).toEqual(['cursor-crosshair'], 'alt zooms');
+            press('keyup', {});
+
+            return Plotly.relayout(gd, 'scene.dragmode', 'pan');
+        })
+        .then(function() {
+            expect(cursorClasses()).toEqual(['cursor-move'], 'pan');
+            press('keydown', {shiftKey: true});
+            expect(cursorClasses()).toEqual(['cursor-default'], 'shift rotates in pan mode');
+            press('keyup', {});
+
+            return Plotly.relayout(gd, 'scene.dragmode', 'zoom');
+        })
+        .then(function() {
+            expect(cursorClasses()).toEqual(['cursor-crosshair'], 'zoom');
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl should leave the camera mode alone when a modifier key is pressed in a mixed figure', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1, 2], y: [1, 2]},
+            {type: 'scatter3d', x: [1, 2], y: [1, 2], z: [1, 2], scene: 'scene'}
+        ], {
+            dragmode: 'zoom',
+            scene: {dragmode: 'turntable', domain: {x: [0.5, 1]}},
+            xaxis: {domain: [0, 0.4]}
+        })
+        .then(function() {
+            var scene = gd._fullLayout.scene._scene;
+            var keyBindingMode = scene.camera.keyBindingMode;
+            var cameraMode = scene.camera.mode;
+            expect(cameraMode).toBe('turntable');
+
+            window.dispatchEvent(new KeyboardEvent('keydown', {shiftKey: true}));
+
+            expect(scene.camera.keyBindingMode).toBe(keyBindingMode);
+            expect(scene.camera.mode).toBe(cameraMode);
+        })
+        .then(done, done.fail);
+    });
+
     it('@gl should not set _length to NaN and dtick should be defined.', function(done) {
         Plotly.newPlot(gd,
             {

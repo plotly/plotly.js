@@ -4663,6 +4663,31 @@ describe('hover updates', function () {
         }
     }
 
+    it('should clear the clicktoshow pointer cursor on unhover', function (done) {
+        var gd = createGraphDiv();
+        var hasPointer = function () {
+            return d3Select(gd).select('.nsewdrag').node().classList.contains('cursor-pointer');
+        };
+
+        Plotly.newPlot(gd, [{ x: [0.5], y: [0.5] }], {
+            hovermode: 'closest',
+            margin: { t: 0, r: 0, b: 0, l: 0 },
+            width: 200,
+            height: 200,
+            xaxis: { range: [0, 1] },
+            yaxis: { range: [0, 1] },
+            annotations: [{ x: 0.5, y: 0.5, text: 'shown on click', visible: false, clicktoshow: 'onoff' }]
+        })
+            .then(function () {
+                mouseEvent('mousemove', 100, 100);
+                expect(hasPointer()).toBe(true, 'while over the point');
+
+                mouseEvent('mouseout', 100, 100);
+                expect(hasPointer()).toBe(false, 'after the mouse leaves the point');
+            })
+            .then(done, done.fail);
+    });
+
     it('should update the labels on animation', function (done) {
         var mock = {
             data: [
