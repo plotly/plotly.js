@@ -593,6 +593,147 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             .then(done, done.fail);
         });
 
+        it('should not truncate a pure-tex trace name to hoverlabel.namelength', function(done) {
+            var longTex = '$\\alpha_{1c} = 352 \\pm 11 \\text{ km s}^{-1}$';
+
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    name: longTex,
+                    hoverinfo: 'x+y+name'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var mathGroup = d3Select(gd).select('g.hovertext .name-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'name math group');
+                expect(mathGroup.attr('data-unformatted')).toBe(longTex, 'full, untruncated tex');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should not truncate a pure-tex hovertemplate <extra> name to hoverlabel.namelength', function(done) {
+            var longTex = '$\\alpha_{1c} = 352 \\pm 11 \\text{ km s}^{-1}$';
+
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    hovertemplate: 'v<extra>' + longTex + '</extra>'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var mathGroup = d3Select(gd).select('g.hovertext .name-math-group');
+
+                expect(mathGroup.size()).toBe(1, 'name math group');
+                expect(mathGroup.attr('data-unformatted')).toBe(longTex, 'full, untruncated tex');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should still truncate a plain-text trace name to hoverlabel.namelength', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    type: 'scatter',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    name: 'a rather long trace name',
+                    hoverinfo: 'x+y+name'
+                }],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]}
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var nameText = d3Select(gd).select('g.hovertext text.name').text();
+
+                expect(nameText.length).toBeLessThan('a rather long trace name'.length, 'truncated');
+                expect(nameText).toMatch(/\.\.\.$/, 'ellipsis');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should keep the tex name inside its box for rotated labels in hovermode y', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {type: 'scatter', mode: 'markers', x: [1], y: [1], name: '$\\alpha_{1c} = 352 \\pm 11 \\text{ km s}^{-1}$', hoverinfo: 'x+y+name'},
+                    {type: 'scatter', mode: 'markers', x: [2], y: [1], name: '$\\gamma^2$', hoverinfo: 'x+y+name'}
+                ],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]},
+                    hoverlabel: {namelength: -1},
+                    hovermode: 'y'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var hoverTexts = d3Select(gd).selectAll('g.hovertext');
+
+                expect(hoverTexts.size()).toBe(2, 'two hover labels');
+                expect(hoverTexts.attr('transform')).toContain('rotate', 'labels are rotated');
+
+                hoverTexts.each(function() {
+                    var g = d3Select(this);
+                    var mathGroup = g.select('.name-math-group');
+                    var box = g.select('rect');
+
+                    expect(mathGroup.size()).toBe(1, 'name math group');
+                    expect(box.size()).toBe(1, 'name box');
+
+                    var m = mathGroup.select('svg g').node().getBoundingClientRect();
+                    var b = box.node().getBoundingClientRect();
+                    var dx = (m.left + m.right) / 2 - (b.left + b.right) / 2;
+                    var dy = (m.top + m.bottom) / 2 - (b.top + b.bottom) / 2;
+
+                    expect(Math.sqrt(dx * dx + dy * dy)).toBeLessThan(4, 'tex centered in its name box');
+                });
+            })
+            .then(done, done.fail);
+        });
+
         it('should hand a pure-tex Fx.loneHover label off to MathJax, sized to its final content', function(done) {
             Plotly.newPlot(gd, {
                 data: [{type: 'scatter', mode: 'markers', x: [1], y: [1]}],
