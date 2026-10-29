@@ -17,7 +17,7 @@ import {
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
 
-var reglTraceList = ['parcoords', 'scattergl', 'scatterpolargl', 'splom'];
+const reglTraceList = args.trace ? [args.trace] : ['parcoords', 'scattergl', 'scatterpolargl', 'scatterternarygl', 'splom'];
 
 const _static = sirv(constants.pathToRoot, {
     dev: true,

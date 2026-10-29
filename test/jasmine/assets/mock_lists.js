@@ -59,6 +59,7 @@ var svgMockList = [
 var glMockList = [
     ['gl2d_line_dash', require('../../image/mocks/gl2d_line_dash.json')],
     ['gl2d_parcoords_2', require('../../image/mocks/gl2d_parcoords_2.json')],
+    ['scatterternarygl_markers', require('../../image/mocks/scatterternarygl_markers.json')],
     ['gl3d_annotations', require('../../image/mocks/gl3d_annotations.json')],
     ['gl3d_set-ranges', require('../../image/mocks/gl3d_set-ranges.json')],
     ['gl3d_world-cals', require('../../image/mocks/gl3d_world-cals.json')],
