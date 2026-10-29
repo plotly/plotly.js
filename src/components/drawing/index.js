@@ -880,6 +880,8 @@ drawing.pointStyle = function (s, trace, gd, pt) {
     if (!s.size()) return;
 
     var fns = drawing.makePointStyleFns(trace);
+    // The cache dies with this loop, so one trace never slows down the next.
+    fns.colorCache = new Map();
 
     s.each(function (d) {
         drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
@@ -1051,11 +1053,13 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
                 patternFGOpacity
             );
         } else {
-            Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
+            Lib.isArrayOrTypedArray(fillColor)
+                ? Color.fill(sel, fillColor[d.i], fns.colorCache)
+                : Color.fill(sel, fillColor, fns.colorCache);
         }
 
         if (lineWidth) {
-            Color.stroke(sel, lineColor);
+            Color.stroke(sel, lineColor, fns.colorCache);
         }
     }
 };
