@@ -928,12 +928,15 @@ describe('rangesliders in general', function() {
 
     afterEach(destroyGraphDiv);
 
-    function assertRange(axRange, rsRange) {
+    function assertRange(axRange, rsRange, fullLayoutRsRange) {
         // lower toBeCloseToArray precision for FF38 on CI
         var precision = 1e-2;
 
+        if(!fullLayoutRsRange) fullLayoutRsRange = rsRange;
+
         expect(gd.layout.xaxis.range).toBeCloseToArray(axRange, precision);
         expect(gd.layout.xaxis.rangeslider.range).toBeCloseToArray(rsRange, precision);
+        expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray(fullLayoutRsRange, precision);
     }
 
     it('should plot when only x data is provided', function(done) {
@@ -988,6 +991,60 @@ describe('rangesliders in general', function() {
         .then(done, done.fail);
     });
 
+    it('should reset autoranged rangeslider range after axis autorange', function(done) {
+        var initialRange;
+
+        Plotly.newPlot(gd, [{
+            y: [2, 1, 2]
+        }], {
+            xaxis: { rangeslider: {} }
+        })
+        .then(function() {
+            initialRange = gd._fullLayout.xaxis.range.slice();
+
+            assertRange(initialRange, initialRange);
+
+            // zoom out
+            return Plotly.relayout(gd, 'xaxis.range', [-1, 3]);
+        })
+        .then(function() {
+            assertRange([-1, 3], initialRange, [-1, 3]);
+
+            // reset axis
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        })
+        .then(function() {
+            assertRange(initialRange, initialRange);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should restore fixed rangeslider range when axis range is restored', function(done) {
+        Plotly.newPlot(gd, [{
+            x: [0, 50],
+            y: [1, 2]
+        }], {
+            xaxis: {
+                range: [10, 45],
+                rangeslider: {range: [20, 30]}
+            }
+        })
+        .then(function() {
+            assertRange([10, 45], [20, 30], [10, 45]);
+
+            return Plotly.relayout(gd, 'xaxis.range', [-10, 60]);
+        })
+        .then(function() {
+            assertRange([-10, 60], [20, 30], [-10, 60]);
+
+            return Plotly.relayout(gd, 'xaxis.range', [10, 45]);
+        })
+        .then(function() {
+            assertRange([10, 45], [20, 30], [10, 45]);
+        })
+        .then(done, done.fail);
+    });
+
     it('should not expand its range when range slider range is set', function(done) {
         Plotly.newPlot(gd, [{
             y: [2, 1, 2]
@@ -1026,11 +1083,11 @@ describe('rangesliders in general', function() {
         .then(function() {
             assertRange([-0.26, 4.26], [-0.26, 4.26]);
 
-            // smaller than xaxis.range - won't be accepted
+            // smaller than xaxis.range - displayed range expands to cover the axis range
             return Plotly.relayout(gd, {'xaxis.rangeslider.range': [0, 2]});
         })
         .then(function() {
-            assertRange([-0.26, 4.26], [-0.26, 4.26]);
+            assertRange([-0.26, 4.26], [0, 2], [-0.26, 4.26]);
 
             // will be accepted (and autorange is disabled by impliedEdits)
             return Plotly.relayout(gd, {'xaxis.rangeslider.range': [-2, 12]});
@@ -1162,7 +1219,7 @@ describe('rangesliders in general', function() {
             expect(xa.rangeslider.range)
                 .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider rng ' + msg);
             expect(xa.rangeslider._input.range)
-                .toBeCloseToArray(exp.rangesliderRng, 1, 'rangeslider input rng ' + msg);
+                .toBeCloseToArray(exp.rangesliderInputRng, 1, 'rangeslider input rng ' + msg);
         }
 
         Plotly.newPlot(gd, [{
@@ -1173,7 +1230,8 @@ describe('rangesliders in general', function() {
         .then(function() {
             _assert('base', {
                 axRng: [0.935, 2.06],
-                rangesliderRng: [0.935, 2.06]
+                rangesliderRng: [0.935, 2.06],
+                rangesliderInputRng: [0.935, 2.06]
             });
 
             return Plotly.relayout(gd, 'xaxis.autorange', 'reversed');
@@ -1181,7 +1239,8 @@ describe('rangesliders in general', function() {
         .then(function() {
             _assert('reversed!', {
                 axRng: [2.06, 0.935],
-                rangesliderRng: [2.06, 0.935]
+                rangesliderRng: [2.06, 0.935],
+                rangesliderInputRng: [0.935, 2.06]
             });
 
             return Plotly.relayout(gd, 'xaxis.range', [0, 3]);
@@ -1189,7 +1248,8 @@ describe('rangesliders in general', function() {
         .then(function() {
             _assert('set increasing rng', {
                 axRng: [0, 3],
-                rangesliderRng: [0, 3]
+                rangesliderRng: [0, 3],
+                rangesliderInputRng: [0.935, 2.06]
             });
 
             return Plotly.relayout(gd, 'xaxis.range', [3, 0]);
@@ -1197,7 +1257,8 @@ describe('rangesliders in general', function() {
         .then(function() {
             _assert('set reversed rng', {
                 axRng: [3, 0],
-                rangesliderRng: [3, 0]
+                rangesliderRng: [3, 0],
+                rangesliderInputRng: [0.935, 2.06]
             });
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.range', [0, 3]);
@@ -1205,7 +1266,8 @@ describe('rangesliders in general', function() {
         .then(function() {
             _assert('reversed ax rng / increasing rangeslider rng', {
                 axRng: [3, 0],
-                rangesliderRng: [3, 0]
+                rangesliderRng: [3, 0],
+                rangesliderInputRng: [0, 3]
             });
 
             return Plotly.relayout(gd, {
@@ -1216,7 +1278,8 @@ describe('rangesliders in general', function() {
         .then(function() {
             _assert('increasing ax rng / reversed rangeslider rng', {
                 axRng: [0, 3],
-                rangesliderRng: [0, 3]
+                rangesliderRng: [0, 3],
+                rangesliderInputRng: [3, 0]
             });
         })
         .then(done, done.fail);
