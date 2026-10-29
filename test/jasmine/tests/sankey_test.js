@@ -696,6 +696,101 @@ describe('sankey tests', function () {
                 .then(done, done.fail);
         });
 
+        describe('explicit node.(x|y) positions', () => {
+            // Node 1 has no links, so it is absent from the rendered graph
+            const makeFixedMock = () => ({
+                data: [
+                    {
+                        type: 'sankey',
+                        arrangement: 'fixed',
+                        node: {
+                            label: ['a', 'unlinked', 'b', 'c', 'd'],
+                            x: [0.1, 0.5, 0.5, 0.9, 0.9],
+                            y: [0.2, 0.5, 0.3, 0.8, 0.1],
+                            pad: 5
+                        },
+                        link: {
+                            source: [0, 0, 2],
+                            target: [2, 3, 4],
+                            value: [1, 1, 1]
+                        }
+                    }
+                ],
+                layout: { width: 600, height: 400 }
+            });
+
+            const getCentersByIndex = () => {
+                const centers = {};
+                // d3 v3 binds the element to `this`, so this callback stays a function
+                d3SelectAll('.sankey-node').each(function (d) {
+                    // measure the rect because the label shifts the group bounding box
+                    centers[d.index] = getNodeCoords(this.querySelector('.node-rect'));
+                });
+                return centers;
+            };
+
+            const assertPositions = (trace, centers, indices, msg) => {
+                const size = gd._fullLayout._size;
+                const ref = indices[0];
+                indices.forEach((i) => {
+                    const dx = (trace.node.x[i] - trace.node.x[ref]) * size.w;
+                    const dy = (trace.node.y[i] - trace.node.y[ref]) * size.h;
+                    expect(centers[i].x - centers[ref].x).toBeCloseTo(dx, 0, msg + ': node ' + i + ' x');
+                    expect(centers[i].y - centers[ref].y).toBeCloseTo(dy, 0, msg + ': node ' + i + ' y');
+                });
+            };
+
+            it('applies positions to the right nodes when a node is unlinked', (done) => {
+                const fig = makeFixedMock();
+
+                Plotly.newPlot(gd, fig)
+                    .then(() => {
+                        assertPositions(fig.data[0], getCentersByIndex(), [0, 2, 3, 4], 'fixed');
+                    })
+                    .then(done, done.fail);
+            });
+
+            it('applies positions to the right nodes when nodes are grouped', (done) => {
+                const fig = makeFixedMock();
+                // Grouping nodes 3 and 4 leaves them unlinked and adds group node 5
+                fig.data[0].node.groups = [[3, 4]];
+
+                Plotly.newPlot(gd, fig)
+                    .then(() => {
+                        assertPositions(fig.data[0], getCentersByIndex(), [0, 2], 'grouped');
+                    })
+                    .then(done, done.fail);
+            });
+
+            it('keeps the positions of the other nodes after a drag when a node is unlinked', (done) => {
+                const fig = makeFixedMock();
+                fig.data[0].arrangement = 'freeform';
+                let before;
+
+                Plotly.newPlot(gd, fig)
+                    .then(() => {
+                        before = getCentersByIndex();
+                        const node = d3SelectAll('.sankey-node')
+                            .filter((d) => d.index === 2)
+                            .node();
+                        return drag({ node: node, dpos: [0, 30] });
+                    })
+                    .then(() => {
+                        const { x } = gd._fullData[0].node;
+                        expect(x.length).toBe(5, 'x covers the unlinked node');
+                        expect(x[1]).toBeCloseTo(0.5, 5, 'unlinked node x is kept');
+
+                        const after = getCentersByIndex();
+                        [0, 3, 4].forEach((i) => {
+                            expect(after[i].x).toBeCloseTo(before[i].x, 0, 'node ' + i + ' x');
+                            expect(after[i].y).toBeCloseTo(before[i].y, 0, 'node ' + i + ' y');
+                        });
+                        expect(after[2].y).toBeCloseTo(before[2].y + 30, 0, 'dragged node y');
+                    })
+                    .then(done, done.fail);
+            });
+        });
+
         it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function (done) {
             var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 
