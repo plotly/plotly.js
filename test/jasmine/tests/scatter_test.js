@@ -12,6 +12,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var negateIf = require('../assets/negate_if');
+var selectButton = require('../assets/modebar_button');
 
 var transitions = require('../assets/transitions');
 
@@ -1224,6 +1225,150 @@ describe('end-to-end scatter tests', function() {
                     expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'label overlaps after zooming back out');
                 })
                 .then(done, done.fail);
+        });
+
+        describe('in a plot area that several traces share', () => {
+            const x = Array.from({ length: 12 }, (_, i) => i);
+            const y = x.map((i) => i % 3);
+            // A new object for every plot, because a relayout writes its ranges into the layout that the plot got
+            const size = () => ({ width: 600, height: 400, showlegend: false });
+            const trace = (name, shift, extra) =>
+                Lib.extendFlat(
+                    {
+                        mode: 'markers+text',
+                        x: x.map((i) => i + shift),
+                        y: y.map((v) => v + shift * 0.8),
+                        text: x.map((i) => name + i),
+                        textposition: 'auto',
+                        marker: { size: 12 }
+                    },
+                    extra
+                );
+
+            // Labels that sit on a marker or on another label, among all the traces of the plot
+            function collisions() {
+                const markers = [];
+                d3SelectAll('.point').each(function () {
+                    markers.push(this.getBoundingClientRect());
+                });
+                const labels = visibleLabelBoxes();
+                let onMarkers = 0;
+                labels.forEach((l) =>
+                    markers.forEach((m) => {
+                        if (l.left < m.right && l.right > m.left && l.top < m.bottom && l.bottom > m.top) onMarkers++;
+                    })
+                );
+                return { labels: labels.length, onMarkers, onLabels: countOverlaps(labels) };
+            }
+
+            function expectClear(msg) {
+                const c = collisions();
+                expect(c.labels).toBe(24, msg + ': visible labels');
+                expect(c.onMarkers).toBe(0, msg + ': labels on markers');
+                expect(c.onLabels).toBe(0, msg + ': labels on labels');
+            }
+
+            it('should keep the labels of different zorder groups apart', (done) => {
+                Plotly.newPlot(gd, [trace('A', 0, { zorder: 0 }), trace('B', 0.15, { zorder: 1 })], size())
+                    .then(() => {
+                        expectClear('zorder groups');
+                        return Plotly.relayout(gd, 'xaxis.range', [-1, 8]);
+                    })
+                    .then(() => {
+                        const c = collisions();
+                        expect(c.onMarkers).toBe(0, 'labels on markers after a zoom');
+                        expect(c.onLabels).toBe(0, 'labels on labels after a zoom');
+                    })
+                    .then(done, done.fail);
+            });
+
+            // Leaders whose label sits away from the end of the leader line
+            function detachedLeaders() {
+                let n = 0;
+                d3SelectAll('.textpoint').each(function () {
+                    const leader = this.querySelector('path.textleader');
+                    if (!leader || this.style.display === 'none') return;
+                    const l = leader.getBoundingClientRect();
+                    const t = this.querySelector('text').getBoundingClientRect();
+                    const dx = Math.max(t.left - l.right, l.left - t.right, 0);
+                    const dy = Math.max(t.top - l.bottom, l.top - t.bottom, 0);
+                    if (Math.hypot(dx, dy) > 3) n++;
+                });
+                return n;
+            }
+
+            it('should place the labels again after a pan and a reset of the axes', (done) => {
+                Plotly.newPlot(gd, [trace('A', 0, { zorder: 0 }), trace('B', 0.15, { zorder: 1 })], size())
+                    .then(() => {
+                        expectClear('before the pan');
+                        expect(d3SelectAll('.textpoint path.textleader').size()).toBe(24, 'leaders before the pan');
+                        return Plotly.relayout(gd, 'xaxis.range', [3, 15]);
+                    })
+                    .then(
+                        () =>
+                            new Promise((resolve) => {
+                                gd.once('plotly_relayout', resolve);
+                                selectButton(gd._fullLayout._modeBar, 'resetScale2d').click();
+                            })
+                    )
+                    .then(() => {
+                        expectClear('after the reset');
+                        expect(d3SelectAll('.textpoint path.textleader').size()).toBe(24, 'leaders after the reset');
+                        expect(detachedLeaders()).toBe(0, 'leaders away from their labels');
+                    })
+                    .then(done, done.fail);
+            });
+
+            it('should keep the labels of overlaid axes apart', (done) => {
+                Plotly.newPlot(gd, [trace('A', 0), trace('B', 0.15, { yaxis: 'y2' })], {
+                    ...size(),
+                    yaxis2: { overlaying: 'y' }
+                })
+                    .then(() => expectClear('overlaid axes'))
+                    .then(done, done.fail);
+            });
+
+            it('should keep the labels of a scatter trace and a scattercarpet trace apart', (done) => {
+                const carpet = { type: 'carpet', carpet: 'c', a: [1, 2, 3], b: [1, 2, 3], y: [[1, 2, 3], [2, 3, 4], [3, 4, 5]] };
+                const onCarpet = {
+                    type: 'scattercarpet',
+                    carpet: 'c',
+                    a: x.map((i) => 1 + (i % 6) / 3),
+                    b: x.map((i) => 1 + Math.floor(i / 6)),
+                    mode: 'markers+text',
+                    text: x.map((i) => 'C' + i),
+                    textposition: 'auto',
+                    marker: { size: 12 }
+                };
+
+                Plotly.newPlot(gd, [carpet, onCarpet], size())
+                    .then(() => {
+                        // Put a scatter point 7px to the right of and 5px below every carpet point
+                        const xa = gd._fullLayout.xaxis;
+                        const ya = gd._fullLayout.yaxis;
+                        const cd = gd.calcdata.find((c) => c[0].trace.type === 'scattercarpet');
+                        const near = {
+                            x: cd.map((d) => xa.p2c(xa.c2p(d.x) + 7)),
+                            y: cd.map((d) => ya.p2c(ya.c2p(d.y) + 5)),
+                            text: x.map((i) => 'S' + i)
+                        };
+                        return Plotly.newPlot(gd, [carpet, onCarpet, trace('S', 0, near)], size());
+                    })
+                    .then(() => expectClear('scatter and scattercarpet'))
+                    .then(done, done.fail);
+            });
+
+            it('should leave no label of a trace that a redraw removes', (done) => {
+                Plotly.newPlot(gd, [trace('A', 0, { zorder: 0 }), trace('B', 0.15, { zorder: 1 })], size())
+                    .then(() => Plotly.react(gd, [trace('A', 0, { zorder: 0 })], size()))
+                    .then(() => {
+                        expect(d3SelectAll('.textpoint').size()).toBe(12, 'label nodes');
+                        const c = collisions();
+                        expect(c.labels).toBe(12, 'visible labels');
+                        expect(c.onMarkers).toBe(0, 'labels on markers');
+                    })
+                    .then(done, done.fail);
+            });
         });
 
         describe('in a subplot with axis labels inside the plot area', () => {
