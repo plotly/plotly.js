@@ -347,6 +347,51 @@ describe('relayout', function() {
 
         afterEach(destroyGraphDiv);
 
+        ['scatter', 'bar'].forEach((type) => {
+            it(`preserves axis lines across zorder layers for ${type} traces`, async () => {
+                const assertLineLengths = (layer, xLength, yLength) => {
+                    expect(gd.querySelector(`.xlines-${layer}`).getTotalLength()).toBeCloseTo(xLength, 5);
+                    expect(gd.querySelector(`.ylines-${layer}`).getTotalLength()).toBeCloseTo(yLength, 5);
+                };
+
+                await Plotly.newPlot(gd, [
+                    {type, x: [1, 2], y: [1, 2], zorder: -1},
+                    {type, x: [1, 2], y: [2, 1]},
+                    {type, x: [1, 2], y: [3, 2], zorder: 2}
+                ], {
+                    width: 400,
+                    height: 400,
+                    margin: {l: 50, r: 50, t: 50, b: 50},
+                    showlegend: false,
+                    xaxis: {range: [0, 4], showline: true, linewidth: 2},
+                    yaxis: {range: [0, 4], showline: true, linewidth: 2}
+                });
+                assertLineLengths('above', 302, 300);
+
+                await Plotly.restyle(gd, {zorder: [0, 0, 0]});
+                assertLineLengths('above', 302, 300);
+
+                await Plotly.restyle(gd, {zorder: [-1, 0, 2]});
+                assertLineLengths('above', 302, 300);
+
+                await Plotly.relayout(gd, {'xaxis.showline': false, 'yaxis.showline': false});
+                assertLineLengths('above', 0, 0);
+
+                await Plotly.relayout(gd, {
+                    'xaxis.showline': true,
+                    'yaxis.showline': true,
+                    'xaxis.layer': 'below traces',
+                    'yaxis.layer': 'below traces',
+                    'xaxis.mirror': true,
+                    'yaxis.mirror': true
+                });
+                assertLineLengths('below', 608, 600);
+
+                await Plotly.relayout(gd, {width: 500, height: 450});
+                assertLineLengths('below', 808, 700);
+            });
+        });
+
         it('can show and hide axis lines', function(done) {
             Plotly.newPlot(gd, [{y: [1, 2]}], {width: 400, height: 400})
             .then(function() {
