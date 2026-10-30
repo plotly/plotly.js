@@ -29,6 +29,8 @@ var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
+const selectMode = require('../components/dragelement/helpers').selectMode;
+const hasText = require('../traces/scatter/subtypes').hasText;
 
 var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
@@ -2166,8 +2168,8 @@ function _relayout(gd, aobj) {
                 fullLayout._has('scatter-like') &&
                 fullLayout._has('regl') &&
                 ai === 'dragmode' &&
-                (vi === 'lasso' || vi === 'select') &&
-                !(vOld === 'lasso' || vOld === 'select')
+                selectMode(vi) !== selectMode(vOld) &&
+                (selectMode(vi) || gd._fullData.some(trace => trace.visible === true && Registry.traceIs(trace, 'regl') && hasText(trace)))
             ) {
                 flags.plot = true;
             } else if (valObject) editTypes.update(flags, valObject);

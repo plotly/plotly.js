@@ -34,6 +34,8 @@ module.exports = function sceneUpdate(gd, subplot) {
         error2d: false,
         line2d: false,
         glText: false,
+        glTextLayers: [[], []],
+        glTextOnFocus: false,
         select2d: false
     };
 
@@ -94,13 +96,19 @@ module.exports = function sceneUpdate(gd, subplot) {
                         scatter2d.draw(i);
                     }
                 }
-                if(glText[i] && scene.textOptions[i]) {
+                if (!scene.glTextOnFocus && glText[i] && scene.textOptions[i]) {
                     glText[i].render();
                 }
             }
 
             if(select2d) {
                 select2d.draw(selectBatch);
+            }
+            // Selection markers use the focus canvas, so draw their text on that canvas last.
+            if (scene.glTextOnFocus) {
+                for (let i = 0; i < count; i++) {
+                    if (glText[i] && scene.textOptions[i]) glText[i].render();
+                }
             }
 
             scene.dirty = false;
@@ -113,11 +121,7 @@ module.exports = function sceneUpdate(gd, subplot) {
             if(scene.error2d && scene.error2d.destroy) scene.error2d.destroy();
             if(scene.line2d && scene.line2d.destroy) scene.line2d.destroy();
             if(scene.select2d && scene.select2d.destroy) scene.select2d.destroy();
-            if(scene.glText) {
-                scene.glText.forEach(function(text) {
-                    if(text.destroy) text.destroy();
-                });
-            }
+            scene.glTextLayers.forEach(texts => texts.forEach(text => text.destroy()));
 
             scene.lineOptions = null;
             scene.fillOptions = null;
