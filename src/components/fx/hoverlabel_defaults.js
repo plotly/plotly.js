@@ -35,8 +35,14 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
 
     coerce('hoverlabel.bgcolor', opts.bgcolor);
     coerce('hoverlabel.bordercolor', opts.bordercolor);
-    coerce('hoverlabel.namelength', opts.namelength);
-    coerce('hoverlabel.showarrow', opts.showarrow);
+    coerce('hoverlabel.borderwidth', opts.borderwidth);
+    coerce('hoverlabel.borderradius', opts.borderradius);
+    coerce('hoverlabel.borderpad', opts.borderpad);
+    coerce('hoverlabel.namecolor', opts.namecolor);
+    coerce('hoverlabel.bgnamecolor', opts.bgnamecolor);
+    coerce('hoverlabel.shadow', opts.shadow);
     Lib.coerceFont(coerce, 'hoverlabel.font', opts.font);
     coerce('hoverlabel.align', opts.align);
+    coerce('hoverlabel.namelength', opts.namelength);
+    coerce('hoverlabel.showarrow', opts.showarrow);
 };

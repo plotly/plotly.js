@@ -150,6 +150,12 @@ describe('Fx defaults', function() {
             hoverlabel: {
                 bgcolor: 'white',
                 bordercolor: 'black',
+                borderwidth: 2,
+                borderradius: 8,
+                borderpad: 6,
+                namecolor: 'purple',
+                bgnamecolor: 'orange',
+                shadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
                 font: {
                     family: 'Roboto',
                     size: 20,
@@ -167,6 +173,12 @@ describe('Fx defaults', function() {
         expect(out.data[0].hoverlabel).toEqual({
             bgcolor: ['red', 'blue', 'black'],
             bordercolor: 'black',
+            borderwidth: 2,
+            borderradius: 8,
+            borderpad: 6,
+            namecolor: 'purple',
+            bgnamecolor: 'orange',
+            shadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
             font: {
                 family: 'Roboto',
                 size: 40,
@@ -186,6 +198,12 @@ describe('Fx defaults', function() {
         expect(out.data[1].hoverlabel).toEqual({
             bgcolor: 'white',
             bordercolor: 'yellow',
+            borderwidth: 2,
+            borderradius: 8,
+            borderpad: 6,
+            namecolor: 'purple',
+            bgnamecolor: 'orange',
+            shadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
             font: {
                 family: 'Roboto',
                 size: 20,
