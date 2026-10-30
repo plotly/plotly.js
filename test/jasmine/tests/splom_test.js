@@ -730,6 +730,80 @@ describe('Test splom interactions:', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should place the splom cells in the plot areas that domainpad leaves', (done) => {
+        _newPlot(gd, [{
+            type: 'splom',
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 3, 1]}
+            ]
+        }], {
+            width: 500,
+            height: 500,
+            xaxis: {domainpad: {left: 25, right: 5}},
+            yaxis2: {domainpad: {top: 30, bottom: 10}}
+        })
+        .then(() => {
+            const fullLayout = gd._fullLayout;
+            const gs = fullLayout._size;
+            const scene = fullLayout._splomScenes[gd._fullData[0].uid];
+            const bottom = gs.t + gs.h;
+
+            // regl-splom takes each cell as [x0, y0, x1, y1], in fractions of the plot area
+            // from the bottom left corner. Convert the padded plot area of each axis pair to that form.
+            ['', '2'].forEach((id, k) => {
+                const xa = fullLayout['xaxis' + id];
+                const ya = fullLayout['yaxis' + id];
+
+                expect(scene.viewOpts.domains[k]).toBeCloseToArray([
+                    (xa._offset - gs.l) / gs.w,
+                    (bottom - ya._offset - ya._length) / gs.h,
+                    (xa._offset + xa._length - gs.l) / gs.w,
+                    (bottom - ya._offset) / gs.h
+                ], 6, `cell ${k}`);
+            });
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl when hasOnlyLargeSploms, should keep the regl grid inside the padded plot areas', (done) => {
+        const fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
+        const ids = fig.data[0].dimensions.map((_, i) => (i === 0 ? '' : String(i + 1)));
+
+        // Pad every axis. The outermost grid lines must then stop short of the domain edges.
+        ids.forEach((id) => {
+            fig.layout['xaxis' + id] = Lib.extendFlat({}, fig.layout['xaxis' + id], {domainpad: {left: 4, right: 3}});
+            fig.layout['yaxis' + id] = Lib.extendFlat({}, fig.layout['yaxis' + id], {domainpad: {top: 5, bottom: 2}});
+        });
+
+        _newPlot(gd, fig).then(() => {
+            const fullLayout = gd._fullLayout;
+            const pixelRatio = gd._context.plotGlPixelRatio;
+            const xAxes = ids.map((id) => fullLayout['xaxis' + id]);
+            const yAxes = ids.map((id) => fullLayout['yaxis' + id]);
+
+            // regl-line2d draws the grid in device pixels from the bottom left corner,
+            // so these values are the outer edges of the padded plot areas in that frame
+            const want = [
+                Math.min(...xAxes.map((ax) => ax._offset)) * pixelRatio,
+                Math.min(...yAxes.map((ax) => fullLayout.height - ax._offset - ax._length)) * pixelRatio,
+                Math.max(...xAxes.map((ax) => ax._offset + ax._length)) * pixelRatio,
+                Math.max(...yAxes.map((ax) => fullLayout.height - ax._offset)) * pixelRatio
+            ];
+
+            const passes = fullLayout._splomGrid.passes;
+            const got = [
+                Math.min(...passes.map((pass) => pass.bounds[0])),
+                Math.min(...passes.map((pass) => pass.bounds[1])),
+                Math.max(...passes.map((pass) => pass.bounds[2])),
+                Math.max(...passes.map((pass) => pass.bounds[3]))
+            ];
+
+            expect(got).toBeCloseToArray(want, 3);
+        })
+        .then(done, done.fail);
+    });
+
     it('@gl when hasOnlyLargeSploms, should convert modern CSS grid colors for regl-line2d', (done) => {
         const fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
 

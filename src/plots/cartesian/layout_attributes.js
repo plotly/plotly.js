@@ -1165,6 +1165,46 @@ module.exports = {
         editType: 'plot',
         description: ['Sets the domain of this axis (in plot fraction).'].join(' ')
     },
+    domainpad: {
+        left: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: 'Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.'
+        },
+        right: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: 'Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.'
+        },
+        top: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: 'Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.'
+        },
+        bottom: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: 'Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.'
+        },
+        editType: 'plot',
+        description: [
+            'Sets the space in pixels to reserve inside the edges of `domain`.',
+            'Because `domain` is a fraction of the plot area, the gap between subplots',
+            'changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes,',
+            'so it can hold content with a fixed size, such as a subplot title.',
+            'x axes use `left` and `right`. y axes use `top` and `bottom`.',
+            'If the padding needs more room than the domain has, the two pads shrink by the same factor,',
+            'and the plot area keeps a length of at least 2 pixels.'
+        ].join(' ')
+    },
     position: {
         valType: 'number',
         min: 0,
