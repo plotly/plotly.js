@@ -1162,6 +1162,41 @@ describe('Test treemap clicks:', function () {
 
     afterEach(destroyGraphDiv);
 
+    it('remeasures text first drawn by a partial zoom after its font loads', async () => {
+        const family = `TreemapPartialFont${Date.now()}`;
+        const face = new FontFace(family,
+            'url(/base/node_modules/@plotly/mathjax-v3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff)');
+        document.fonts.add(face);
+        const label = 'WWWWWWWW iiiiiiii WWWWWWWW iiiiiiii';
+        const zoom = level => Plotly.animate(gd, { data: [{ level }], traces: [0] }, {
+            transition: { duration: 0 }, frame: { duration: 0, redraw: false }
+        });
+        const transforms = () => Array.from(gd.querySelectorAll(SLICES_TEXT_SELECTOR))
+            .filter(node => node.style.fontFamily.includes(family)).map(node => node.getAttribute('transform'));
+        try {
+            await Plotly.newPlot(gd, [{
+                type: 'treemap', ids: ['root', 'A', 'B', 'a1', 'a2', 'b1'],
+                labels: ['root', 'A', 'B', label, label, label],
+                parents: ['', 'root', 'root', 'A', 'A', 'B'], values: [0, 0, 0, 30, 20, 25],
+                level: 'B', textfont: { family: ['Arial', 'Arial', 'Arial', family, family, 'Arial'] }
+            }], { width: 700, height: 500 });
+            expect(face.status).toBe('unloaded');
+            await zoom('root');
+            await face.loaded;
+            await document.fonts.ready;
+            await zoom('B');
+            await zoom('root');
+            const loaded = transforms();
+            expect(loaded.length).toBe(2);
+            Drawing.savedBBoxes = {};
+            await zoom('B');
+            await zoom('root');
+            expect(transforms()).toEqual(loaded, 'the next partial zoom matches a fresh measurement with the loaded font');
+        } finally {
+            document.fonts.delete(face);
+        }
+    });
+
     function setupListeners(opts) {
         opts = opts || {};
 
