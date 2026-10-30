@@ -1,0 +1,1 @@
+ - Fix missing axis lines for traces with different `zorder` values [[#PR_NUMBER](https://github.com/plotly/plotly.js/pull/PR_NUMBER)]
