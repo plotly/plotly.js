@@ -1,1 +1,0 @@
-- Apply `tickprefix` and `ticksuffix` to `tickvals` without explicit `ticktext`
