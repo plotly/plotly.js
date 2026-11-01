@@ -3931,6 +3931,40 @@ describe('Test axes', function() {
             });
         });
 
+        it('applies prefixes and suffixes to array ticks without explicit text', () => {
+            ['linear', 'log', 'date', 'category'].forEach(axType => {
+                const vals = axType === 'date' ?
+                    ['2020-01-01', '2020-01-02', '2020-01-03'] :
+                    axType === 'category' ? ['a', 'b', 'c'] : [1, 2, 3];
+                const ax = {
+                    type: axType,
+                    tickmode: 'array',
+                    tickvals: vals,
+                    range: axType === 'log' ? [0, 1] :
+                        axType === 'category' ? [-0.5, 2.5] : [vals[0], vals[2]],
+                    tickprefix: '<',
+                    ticksuffix: '>',
+                    showtickprefix: 'all',
+                    showticksuffix: 'all',
+                    nticks: 10
+                };
+                if(axType === 'category') {
+                    ax._categories = vals;
+                    ax._categoriesMap = {a: 0, b: 1, c: 2};
+                }
+                const bare = mockCalc({...ax, tickprefix: '', ticksuffix: ''});
+                expect(mockCalc(ax)).toEqual(bare.map(text => `<${text}>`), axType);
+                ax.ticktext = ['custom'];
+                expect(mockCalc(ax)).toEqual(['custom', `<${bare[1]}>`, `<${bare[2]}>`], axType);
+                ax.showtickprefix = 'first';
+                ax.showticksuffix = 'last';
+                delete ax.ticktext;
+                expect(mockCalc(ax)).toEqual([`<${bare[0]}`, bare[1], `${bare[2]}>`], axType);
+                ax.showtickprefix = ax.showticksuffix = 'none';
+                expect(mockCalc(ax)).toEqual(bare, axType);
+            });
+        });
+
         it('should handle tickvals edge cases with category axes', function() {
             var ax = {
                 type: 'category',
