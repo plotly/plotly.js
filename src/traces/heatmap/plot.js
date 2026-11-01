@@ -17,6 +17,8 @@ var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var supportsPixelatedImage = require('../../lib/supports_pixelated_image');
 var PIXELATED_IMAGE_STYLE = require('../../constants/pixelated_image').STYLE;
 
+const { setImageHref } = require('../../lib/image_href');
+
 var labelClass = 'heatmap-label';
 
 function selectLabels(plotGroup) {
@@ -365,9 +367,9 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
             height: imageHeight,
             width: imageWidth,
             x: left,
-            y: top,
-            'xlink:href': canvas.toDataURL('image/png')
+            y: top
         });
+        setImageHref(gd, image3, canvas);
 
         if (drawingMethod === 'fast' && !zsmooth) {
             image3.attr('style', PIXELATED_IMAGE_STYLE);
