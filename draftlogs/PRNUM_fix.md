@@ -1,1 +1,0 @@
- - Position a sankey node at `node.x` or `node.y` of `0` instead of placing it automatically [[#PRNUM](https://github.com/plotly/plotly.js/pull/PRNUM)]
