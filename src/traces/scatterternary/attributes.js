@@ -111,6 +111,7 @@ module.exports = {
         ].join(' ')
     }),
     fillcolor: makeFillcolorAttr(),
+    fillpattern: scatterAttrs.fillpattern,
     marker: extendFlat(
         {
             symbol: scatterMarkerAttrs.symbol,
