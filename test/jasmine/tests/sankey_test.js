@@ -762,6 +762,20 @@ describe('sankey tests', function () {
                     .then(done, done.fail);
             });
 
+            it('applies a position of 0 like any other position', (done) => {
+                const fig = makeFixedMock();
+                // A falsy test used to treat 0 as a missing position
+                fig.data[0].node.x[0] = 0;
+                fig.data[0].node.y[0] = 0;
+                fig.data[0].node.y[4] = 0;
+
+                Plotly.newPlot(gd, fig)
+                    .then(() => {
+                        assertPositions(fig.data[0], getCentersByIndex(), [0, 2, 3, 4], 'zero');
+                    })
+                    .then(done, done.fail);
+            });
+
             it('keeps the positions of the other nodes after a drag when a node is unlinked', (done) => {
                 const fig = makeFixedMock();
                 fig.data[0].arrangement = 'freeform';

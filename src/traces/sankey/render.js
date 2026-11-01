@@ -270,7 +270,7 @@ function sankeyModel(layout, d, traceIndex) {
             if(forcedNode.partOfGroup) continue;
 
             var p = forcedNode.pointNumber;
-            if (trace.node.x[p] && trace.node.y[p]) {
+            if (trace.node.x[p] != null && trace.node.y[p] != null) {
                 var pos = [trace.node.x[p] * width, trace.node.y[p] * height];
                 forcedNode.x0 = pos[0] - nodeThickness / 2;
                 forcedNode.x1 = pos[0] + nodeThickness / 2;
