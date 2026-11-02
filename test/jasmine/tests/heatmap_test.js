@@ -4,6 +4,7 @@ var Lib = require('../../../src/lib');
 var setConvert = require('../../../src/plots/cartesian/set_convert');
 
 var convertColumnXYZ = require('../../../src/traces/heatmap/convert_column_xyz');
+var findEmpties = require('../../../src/traces/heatmap/find_empties');
 var Heatmap = require('../../../src/traces/heatmap');
 
 var d3Select = require('../../strict-d3').select;
@@ -1113,5 +1114,31 @@ describe('heatmap hover', function() {
             expect(hoverData).toEqual(undefined);
             expect(pt).toEqual(undefined);
         });
+    });
+});
+
+describe('findEmpties', function() {
+    'use strict';
+
+    it('should fill deep empty regions without floating-point underflow (#8108)', function() {
+        // 5 rows, column 0 is defined, columns 1..250 are undefined (empty).
+        // Depth of 250 causes geometric weight decay (1/20)^249 to underflow double precision.
+        var z = [];
+        var r;
+        var i;
+        var j;
+        var nanCount = 250;
+        for(i = 0; i < 5; i++) {
+            r = [1];
+            for(j = 0; j < nanCount; j++) r.push(undefined);
+            z.push(r);
+        }
+
+        var empties;
+        expect(function() {
+            empties = findEmpties(z);
+        }).not.toThrow();
+
+        expect(empties.length).toBe(5 * nanCount);
     });
 });
