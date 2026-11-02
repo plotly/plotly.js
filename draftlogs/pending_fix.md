@@ -1,0 +1,1 @@
+- Prevent double-precision underflow in `findEmpties` for deep empty (NaN) regions [[#8108](https://github.com/plotly/plotly.js/issues/8108)]
