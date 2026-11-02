@@ -9,6 +9,32 @@ To see all merged commits on the main branch that will be part of the next plotl
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [4.2.0] -- 2026-10-29
+
+### Added
+- Add `layout.legend.itemheight` to set the height of the legend fill swatch, so more of a trace `fillpattern` is visible in the legend [[#7925](https://github.com/plotly/plotly.js/pull/7925)], with thanks to @MannXo for the contribution!
+- Add spikelines to ternary plots [[#8041](https://github.com/plotly/plotly.js/pull/8041)], with thanks to @Lexachoc for the contribution!
+ - Add TypeScript declarations for lifecycle and WebGL context events [[#8145](https://github.com/plotly/plotly.js/pull/8145)]
+
+### Fixed
+- Respect explicit `node.x`/`node.y` positions in Sankey traces that contain unlinked or grouped nodes [[#7826](https://github.com/plotly/plotly.js/pull/7826)], with thanks to @kyo5uke for the contribution!
+- Fix incorrect positioning of tick labels when using `ticklabelindex` on period axes [[#7934](https://github.com/plotly/plotly.js/pull/7934)], with thanks to @my-tien for the contribution!
+- Fix tick label format sometimes being incompatible with the labeled tick when using `ticklabelindex` [[#7935](https://github.com/plotly/plotly.js/pull/7935)], with thanks to @my-tien for the contribution!
+- Fix unified hover swatch color and pattern for bar `marker.pattern` arrays [[#8039](https://github.com/plotly/plotly.js/pull/8039)], with thanks to @Dmao233 for the contribution!
+- Keep cartesian traces aligned with their axes when an automargin title is combined with any component that expands the margins [[#8045](https://github.com/plotly/plotly.js/pull/8045)]
+- Fix hover labels ignoring MathJax for text that is a single tex expression [[#8051](https://github.com/plotly/plotly.js/pull/8051)], with thanks to @SergeyAxiomatic 
+- Fix XSS via `javascript:` URLs in MathJax `\href` macros by sanitizing links in MathJax-rendered text [[#8051](https://github.com/plotly/plotly.js/pull/8051)], with thanks to @SergeyAxiomatic 
+- Fix issue causing `scattergl` plot to freeze up when hovering over points [[#8052](https://github.com/plotly/plotly.js/pull/8052)], with thanks to @emilykl for the contribution!
+ - Fix quiver arrow colors for a discrete `marker.color` array [[#8069](https://github.com/plotly/plotly.js/pull/8069)], with thanks to @Yahiro025 for the contribution!
+- Fix numeric and numeric-string marker symbol variant detection in `scattergl` [[#8071](https://github.com/plotly/plotly.js/pull/8071)]
+ - Fix `hoverlabel.align` so that it aligns the item text in `x unified` and `y unified` hover labels [[#8104](https://github.com/plotly/plotly.js/pull/8104)], with thanks to @MannXo for the contribution!
+ - Convert modern CSS color formats to rgba for scattergl based traces [[#8119](https://github.com/plotly/plotly.js/pull/8119)]
+- Update TypeScript types so that `Plotly.relayout`, `Plotly.restyle`, `Plotly.update`, and the `plotly_relayout` event accept attribute paths such as `'xaxis.autorange'` [[#8126](https://github.com/plotly/plotly.js/pull/8126)]
+  - Add the `LayoutUpdate` and `DataUpdate` types for these update objects
+  - Add the `(root, attribute, value)` call form to the types of `Plotly.relayout` and `Plotly.restyle`
+ - Fix funnel `percentTotal` text formatting to display formatted percentages instead of raw ratios [[#8139](https://github.com/plotly/plotly.js/pull/8139)], with thanks to @ORITOMI for the contribution!
+
+
 ## [4.1.2] -- 2026-10-05
 
 ### Changed
