@@ -1,0 +1,1 @@
+- Do not leak internal `_template` property into input `layout` rangeslider opposing axis containers [[#6310](https://github.com/plotly/plotly.js/issues/6310)]

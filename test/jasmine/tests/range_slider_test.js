@@ -946,6 +946,32 @@ describe('rangesliders in general', function() {
         .then(done, done.fail);
     });
 
+    it('should not leak _template into input layout rangeslider opp-axis container', function(done) {
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
+        .then(function() {
+            expect(gd.layout.xaxis.rangeslider.yaxis).toBeDefined();
+            expect(gd.layout.xaxis.rangeslider.yaxis._template).toBeUndefined();
+            expect(gd._fullLayout.xaxis.rangeslider.yaxis._template).toBeDefined();
+        })
+        .then(done, done.fail);
+    });
+
+    it('should not leak _template into input layout when a template is used', function(done) {
+        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], {
+            template: {
+                layout: {
+                    xaxis: { rangeslider: { yaxis: { rangemode: 'auto' } } }
+                }
+            },
+            xaxis: { rangeslider: {} }
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.rangeslider.yaxis).toBeDefined();
+            expect(gd.layout.xaxis.rangeslider.yaxis._template).toBeUndefined();
+        })
+        .then(done, done.fail);
+    });
+
     it('should plot when only y data is provided', function(done) {
         Plotly.newPlot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
         .then(function() {
