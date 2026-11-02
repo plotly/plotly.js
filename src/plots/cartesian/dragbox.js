@@ -466,6 +466,16 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
+        // Store (sub)plot that initiated a scroll
+        if (gd._currentScrollingSubplot == null) {
+            gd._currentScrollingSubplot = plotinfo.id;
+        }
+        // Early exit to prevent jitters if this subplot didn't initiate the scroll
+        if (gd._currentScrollingSubplot !== plotinfo.id) {
+            e.preventDefault();
+            return;
+        }
+
         clearAndResetSelect();
 
         // If a transition is in progress, then disable any behavior:
@@ -502,7 +512,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var axRange = Lib.simpleMap(ax.range, ax.r2l);
             var v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
             function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
-            ax.range = axRange.map(doZoom);
+            ax.range = ax._input.range = axRange.map(doZoom);
+            ax.setScale();
         }
 
         if(editX) {
@@ -531,6 +542,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         // viewbox redraw at first
+        gd._fullLayout._replotting = true;
         updateSubplots(scrollViewBox);
         ticksAndAnnotations();
 
@@ -540,6 +552,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
             if(!gd._fullLayout) return;
+            gd._currentScrollingSubplot = null;
             scrollViewBox = [0, 0, pw, ph];
             dragTail();
         }, REDRAWDELAY);
