@@ -138,6 +138,15 @@ exports.cleanId = function cleanId(id) {
     return SCENE + sceneNum;
 };
 
+exports.updateCursor = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var subplotIds = fullLayout._subplots[GL3D];
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        fullLayout[subplotIds[i]]._scene.updateCursor();
+    }
+};
+
 exports.updateFx = function(gd) {
     var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[GL3D];

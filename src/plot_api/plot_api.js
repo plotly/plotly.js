@@ -21,6 +21,7 @@ var cartesianLayoutAttributes = require('../plots/cartesian/layout_attributes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
+var modifierKeys = require('../components/dragelement/modifier_keys');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var clearOutline = require('../components/selections').clearOutline;
 
@@ -394,6 +395,7 @@ function _doPlot(gd, data, layout, config) {
         subroutines.drawData,
         subroutines.finalDraw,
         initInteractions,
+        modifierKeys.track,
         Plots.rehover,
         Plots.redrag,
         Plots.reselect,
