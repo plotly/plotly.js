@@ -122,6 +122,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
         var isHorizontal = trace.orientation === 'h';
         var withTransition = hasTransition(opts);
+        opts.zeroBarDir = getZeroBarDir(cd, isHorizontal, xa, ya);
 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
@@ -554,7 +555,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, r, overhead, op
     // get trace attributes
     var trace = cd[0].trace;
     var isHorizontal = trace.orientation === 'h';
-    var zeroBarDir = getZeroBarDir(cd, isHorizontal, xa, ya);
+    var zeroBarDir = opts.zeroBarDir;
 
     var text = getText(fullLayout, cd, i, xa, ya);
 
