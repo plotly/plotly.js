@@ -26,6 +26,7 @@ module.exports = function style(s, gd, legend) {
     if (!legend) legend = fullLayout.legend;
     var constantItemSizing = legend.itemsizing === 'constant';
     var itemWidth = legend.itemwidth;
+    var itemHeight = legend.itemheight;
     var centerPos = (itemWidth + constants.itemGap * 2) / 2;
     var centerTransform = strTranslate(centerPos, 0);
 
@@ -139,7 +140,14 @@ module.exports = function style(s, gd, legend) {
             .data(showFill || showGradientFill ? [d] : []);
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
-        fill.attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z').call(fillStyle);
+        fill.attr('d', pathStart + 'h' + itemWidth + 'v' + itemHeight + 'h-' + itemWidth + 'z').call(fillStyle);
+
+        // Grow a tall fill swatch up and down by the same amount, so the space above and below the symbol
+        // stays as in the default row. The line and the markers move with the fill to stay on its top edge.
+        const fillShiftY = showFill || showGradientFill ? (constants.dfltFillHeight - itemHeight) / 2 : 0;
+        this3
+            .selectAll('g.legendfill, g.legendlines, g.legendsymbols')
+            .attr('transform', fillShiftY ? strTranslate(0, fillShiftY) : null);
 
         if (showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);
@@ -379,15 +387,25 @@ module.exports = function style(s, gd, legend) {
 
             var markerPattern = marker.pattern;
             var pAttr = Drawing.getPatternAttr;
-            var patternShape = markerPattern && (pAttr(markerPattern.shape, 0, '') || pAttr(markerPattern.path, 0, ''));
+            let patternIndex = 0;
+            if (legend._inHover && d0._distinct && d0.index != null) {
+                patternIndex = d0.index;
+            }
+            const patternShape =
+                markerPattern &&
+                (pAttr(markerPattern.shape, patternIndex, '') || pAttr(markerPattern.path, patternIndex, ''));
 
             if (patternShape) {
-                var patternBGColor = pAttr(markerPattern.bgcolor, 0, null);
-                var patternFGColor = pAttr(markerPattern.fgcolor, 0, null);
+                const patternBGColor = pAttr(markerPattern.bgcolor, patternIndex, null);
+                const patternFGColor = pAttr(markerPattern.fgcolor, patternIndex, null);
                 var patternFGOpacity = markerPattern.fgopacity;
-                var patternSize = dimAttr(markerPattern.size, 8, 10);
-                var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
-                var patternID = 'legend-' + trace.uid;
+                const patternSize = legend._inHover
+                    ? dimAttr(pAttr(markerPattern.size, patternIndex, 8), 8, 10)
+                    : dimAttr(markerPattern.size, 8, 10);
+                const patternSolidity = legend._inHover
+                    ? dimAttr(pAttr(markerPattern.solidity, patternIndex, 0.5), 0.5, 1)
+                    : dimAttr(markerPattern.solidity, 0.5, 1);
+                const patternID = legend._inHover ? `hover-${trace.uid}-${patternIndex}` : `legend-${trace.uid}`;
                 p.call(
                     Drawing.pattern,
                     'legend',

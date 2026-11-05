@@ -438,7 +438,7 @@ export interface ColorBar {
 
 export interface HoverLabel {
     /**
-     * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+     * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
      * @default 'auto'
      */
     align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
@@ -1577,7 +1577,7 @@ export interface CandlestickData {
     hoverinfo?: 'x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
@@ -2797,7 +2797,7 @@ export interface ContourData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -2904,7 +2904,7 @@ export interface ContourData {
          */
         smoothing?: number;
         /**
-         * Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.
+         * Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.
          * Minimum: 0
          */
         width?: number;
@@ -2942,9 +2942,9 @@ export interface ContourData {
     showscale?: boolean;
     /** Sets the text elements associated with each z value. */
     text?: Datum[] | Datum[][] | TypedArray;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font. */
     textfont?: Font;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
     texttemplate?: string;
     /**
      * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
@@ -3138,7 +3138,7 @@ export interface ContourcarpetData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -3227,7 +3227,7 @@ export interface ContourcarpetData {
          */
         smoothing?: number;
         /**
-         * Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.
+         * Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.
          * Minimum: 0
          */
         width?: number;
@@ -4677,7 +4677,7 @@ export interface Histogram2dcontourData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -4823,9 +4823,9 @@ export interface Histogram2dcontourData {
      * @default true
      */
     showscale?: boolean;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font. */
     textfont?: Font;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
     texttemplate?: string;
     /**
      * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
@@ -6074,7 +6074,7 @@ export interface OhlcData {
     hoverinfo?: 'x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
@@ -12759,6 +12759,12 @@ export interface Legend {
      */
     itemdoubleclick?: 'toggle' | 'toggleothers' | false;
     /**
+     * Sets the height (in px) of the legend item fill swatch. A taller swatch shows more of a trace *fill* or *fillpattern*. Only traces with a *fill* use this value. Every legend item grows to fit, so a larger value makes every row taller.
+     * @default 6
+     * Minimum: 6
+     */
+    itemheight?: number;
+    /**
      * Determines if the legend items symbols scale with their corresponding *trace* attributes or remain *constant* independent of the symbol size on the graph.
      * @default 'trace'
      */
@@ -14754,6 +14760,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -14768,6 +14779,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -14916,6 +14949,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -14930,6 +14968,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -15083,6 +15143,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -15097,6 +15162,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -16176,7 +16263,7 @@ export interface Layout {
     hoverdistance?: number;
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto';

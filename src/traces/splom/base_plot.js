@@ -3,6 +3,7 @@
 var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
+const { rgbaString } = require('../../components/color');
 var prepareRegl = require('../../lib/prepare_regl');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
@@ -116,7 +117,7 @@ function makeGridData(gd) {
                 data: [x0, x1, y0, y1],
                 join: 'rect',
                 thickness: lwidth * plotGlPixelRatio,
-                color: lcolor,
+                color: rgbaString(lcolor),
                 viewport: fullView,
                 range: fullView,
                 overlay: false

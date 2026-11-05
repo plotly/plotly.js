@@ -55,7 +55,9 @@ export type * from '../src/types/generated/schema';
 
 export type {
     ButtonClickEvent,
+    DataUpdate,
     Icon,
+    LayoutUpdate,
     ModeBarButton,
     ModeBarButtonAny,
     ModeBarDefaultButtons,
@@ -79,15 +81,20 @@ export type {
 
 export type {
     BeforePlotEvent,
+    ButtonClickedEvent,
     ClickAnnotationEvent,
     FrameAnimationEvent,
+    IcicleClickEvent,
+    IciclePlotDatum,
     LegendClickEvent,
+    LegendTitleClickEvent,
     PlotCoordinate,
     PlotDatum,
     PlotHoverEvent,
     PlotlyEventName,
     PlotlyHTMLElement,
     PlotMouseEvent,
+    PlotReactEvent,
     PlotRelayoutEvent,
     PlotRestyleEvent,
     PlotRestyleEventUpdate,
@@ -95,12 +102,16 @@ export type {
     PlotScene,
     PlotSelectedData,
     PlotSelectionEvent,
+    PlotUpdateEvent,
     SelectionRange,
     SliderChangeEvent,
     SliderEndEvent,
     SliderStartEvent,
     SunburstClickEvent,
-    SunburstPlotDatum
+    SunburstPlotDatum,
+    TreemapClickEvent,
+    TreemapPlotDatum,
+    WebGLContextLostEvent
 } from '../src/types/core/events';
 
 // ---------------------------------------------------------------------------

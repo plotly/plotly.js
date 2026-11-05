@@ -45,14 +45,14 @@ module.exports = extendFlat(
         hovertemplatefallback: heatmapAttrs.hovertemplatefallback,
         texttemplate: extendFlat({}, heatmapAttrs.texttemplate, {
             description: [
-                'For this trace it only has an effect if `coloring` is set to *heatmap*.',
+                'For this trace it only has an effect if `contours.coloring` is set to *heatmap*.',
                 heatmapAttrs.texttemplate.description
             ].join(' ')
         }),
         texttemplatefallback: heatmapAttrs.texttemplatefallback,
         textfont: extendFlat({}, heatmapAttrs.textfont, {
             description: [
-                'For this trace it only has an effect if `coloring` is set to *heatmap*.',
+                'For this trace it only has an effect if `contours.coloring` is set to *heatmap*.',
                 heatmapAttrs.textfont.description
             ].join(' ')
         }),
@@ -203,7 +203,7 @@ module.exports = extendFlat(
 
                     '*[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]`',
 
-                    '*][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]`',
+                    '*][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]`',
 
                     'Open vs. closed intervals make no difference to constraint display, but',
                     'all versions are allowed.'
@@ -243,9 +243,9 @@ module.exports = extendFlat(
                 min: 0,
                 editType: 'style+colorbars',
                 description: [
-                    'Sets the contour line width in (in px)',
+                    'Sets the contour line width (in px)',
                     'Defaults to *0.5* when `contours.type` is *levels*.',
-                    'Defaults to *2* when `contour.type` is *constraint*.'
+                    'Defaults to *2* when `contours.type` is *constraint*.'
                 ].join(' ')
             },
             dash: dash,

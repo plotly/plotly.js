@@ -83,6 +83,21 @@ describe('legend defaults', function () {
         expect(layoutOut.showlegend).toBe(false);
     });
 
+    it('defaults itemheight to 6 and clamps values below the minimum', function () {
+        fullData = allShown([{ type: 'scatter' }, { type: 'scatter' }]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.legend.itemheight).toBe(6);
+
+        layoutOut = { font: Plots.layoutAttributes.font, bg_color: Plots.layoutAttributes.bg_color };
+        supplyLayoutDefaults({ showlegend: true, legend: { itemheight: 1 } }, layoutOut, fullData);
+        expect(layoutOut.legend.itemheight).toBe(6);
+
+        layoutOut = { font: Plots.layoutAttributes.font, bg_color: Plots.layoutAttributes.bg_color };
+        supplyLayoutDefaults({ showlegend: true, legend: { itemheight: 24 } }, layoutOut, fullData);
+        expect(layoutOut.legend.itemheight).toBe(24);
+    });
+
     it('shows with one visible pie', function () {
         fullData = allShown([{ type: 'pie' }]);
 
@@ -3588,5 +3603,184 @@ describe('legend title click', function() {
                 expect(titleToggle.style.cursor).not.toBe('pointer');
             }
         }).then(done, done.fail);
+    });
+});
+
+describe('legend itemheight:', function () {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function () {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function fillPathD() {
+        return d3Select(gd).select('g.legendfill').select('path').attr('d');
+    }
+
+    function linePathD() {
+        return d3Select(gd).select('g.legendlines').select('path').attr('d');
+    }
+
+    // The toggle rect is sized to the computed row height, see setRect in draw.js
+    function rowHeights() {
+        var heights = [];
+        d3Select(gd)
+            .selectAll('rect.legendtoggle')
+            .each(function () {
+                heights.push(+this.getAttribute('height'));
+            });
+        return heights;
+    }
+
+    var filled = [
+        { x: [1, 2], y: [1, 2], fill: 'tozeroy', name: 'a' },
+        { x: [1, 2], y: [2, 3], fill: 'tozeroy', name: 'b' }
+    ];
+
+    it('reproduces the historical 6px swatch at the default', function (done) {
+        Plotly.newPlot(gd, filled, { showlegend: true })
+            .then(function () {
+                expect(gd._fullLayout.legend.itemheight).toBe(6);
+                expect(fillPathD()).toBe('M5,0h30v6h-30z');
+            })
+            .then(done, done.fail);
+    });
+
+    it('grows the fill swatch to the requested height', function (done) {
+        Plotly.newPlot(gd, filled, { showlegend: true, legend: { itemheight: 24 } })
+            .then(function () {
+                expect(fillPathD()).toBe('M5,0h30v24h-30z');
+            })
+            .then(done, done.fail);
+    });
+
+    it('keeps the line on the top edge of a taller fill', function (done) {
+        var dfltLine;
+
+        Plotly.newPlot(gd, filled, { showlegend: true })
+            .then(function () {
+                dfltLine = linePathD();
+                return Plotly.relayout(gd, 'legend.itemheight', 30);
+            })
+            .then(function () {
+                // the line marks the top edge of the fill, exactly as in the plot itself
+                expect(linePathD()).toBe(dfltLine);
+                expect(fillPathD()).toBe('M5,0h30v30h-30z');
+            })
+            .then(done, done.fail);
+    });
+
+    it('does not move the swatch of a trace without fill', function (done) {
+        var unfilled = [
+            { x: [1, 2], y: [1, 2], name: 'a' },
+            { x: [1, 2], y: [2, 3], name: 'b' }
+        ];
+        var dfltLine;
+
+        Plotly.newPlot(gd, unfilled, { showlegend: true })
+            .then(function () {
+                dfltLine = linePathD();
+                return Plotly.relayout(gd, 'legend.itemheight', 40);
+            })
+            .then(function () {
+                expect(linePathD()).toBe(dfltLine);
+            })
+            .then(done, done.fail);
+    });
+
+    it('grows each legend row so taller swatches do not overlap', function (done) {
+        var dflt;
+
+        Plotly.newPlot(gd, filled, { showlegend: true })
+            .then(function () {
+                dflt = rowHeights();
+                expect(dflt.length).toBe(2);
+                return Plotly.relayout(gd, 'legend.itemheight', 40);
+            })
+            .then(function () {
+                var grown = rowHeights();
+                expect(grown.length).toBe(dflt.length);
+                grown.forEach(function (h, i) {
+                    expect(h).toBeGreaterThan(dflt[i]);
+                    // itemMinHeight + itemheight - dfltFillHeight + itemHeightPad = 16 + 40 - 6 + 3
+                    expect(h).toBe(53);
+                });
+            })
+            .then(done, done.fail);
+    });
+
+    it('leaves row heights untouched at the default', function (done) {
+        var dflt;
+
+        Plotly.newPlot(gd, filled, { showlegend: true })
+            .then(function () {
+                dflt = rowHeights();
+                return Plotly.relayout(gd, 'legend.itemheight', 6);
+            })
+            .then(function () {
+                expect(rowHeights()).toEqual(dflt);
+            })
+            .then(done, done.fail);
+    });
+
+    it('keeps the default space above and below a taller symbol', (done) => {
+        // Space between the row edges and the symbol (fill, line, and marker) of each legend item
+        const symbolGaps = () =>
+            [...gd.querySelectorAll('g.traces')].map((item) => {
+                const row = item.querySelector('rect.legendtoggle').getBoundingClientRect();
+                const parts = [
+                    ...item.querySelectorAll('g.legendfill path, g.legendlines path, g.legendpoints path')
+                ].map((el) => el.getBoundingClientRect());
+                return {
+                    above: Math.min(...parts.map((r) => r.top)) - row.top,
+                    below: row.bottom - Math.max(...parts.map((r) => r.bottom))
+                };
+            });
+        let dfltGaps;
+
+        Plotly.newPlot(gd, filled, { showlegend: true })
+            .then(() => {
+                dfltGaps = symbolGaps();
+                return Plotly.relayout(gd, 'legend.itemheight', 40);
+            })
+            .then(() => {
+                const gaps = symbolGaps();
+                expect(gaps.length).toBe(dfltGaps.length);
+                gaps.forEach((gap, i) => {
+                    expect(gap.above).toBeCloseTo(dfltGaps[i].above, 1);
+                    expect(gap.below).toBeCloseTo(dfltGaps[i].below, 1);
+                });
+            })
+            .then(done, done.fail);
+    });
+
+    it('keeps the default swatch in unified hover labels', (done) => {
+        Plotly.newPlot(gd, filled, {
+            showlegend: true,
+            hovermode: 'x unified',
+            legend: { itemheight: 18 }
+        })
+            .then(() => {
+                Plotly.Fx.hover(gd, { xval: 1 });
+                Lib.clearThrottle();
+
+                // The hover legend does not inherit layout.legend, the same as for itemwidth
+                const hoverFills = [...gd.querySelectorAll('g.hoverlayer g.legendfill path')];
+                expect(hoverFills.length).toBe(2);
+                hoverFills.forEach((fillPath) => {
+                    expect(fillPath.getAttribute('d')).toBe('M5,0h30v6h-30z');
+                });
+
+                const legendFills = [...gd.querySelectorAll('g.infolayer g.legendfill path')];
+                expect(legendFills.length).toBe(2);
+                legendFills.forEach((fillPath) => {
+                    expect(fillPath.getAttribute('d')).toBe('M5,0h30v18h-30z');
+                });
+            })
+            .then(done, done.fail);
     });
 });

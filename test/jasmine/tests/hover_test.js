@@ -7141,6 +7141,76 @@ describe('hovermode: (x|y)unified', function () {
             .then(done, done.fail);
     });
 
+    it('should style bar pattern swatches from the hovered point', async () => {
+        const getSwatch = () => getHoverLabel().select('g.legendpoints path');
+
+        const getPatternId = (fill) => {
+            const match = /url\(["']?#([^"')]+)["']?\)/.exec(fill);
+            return match ? match[1] : null;
+        };
+
+        const getPatternStroke = (patternId) => {
+            const pattern = document.getElementById(patternId);
+            if (!pattern) return null;
+            const painted = pattern.querySelector('path, circle');
+            return painted ? painted.getAttribute('stroke') || painted.getAttribute('fill') : null;
+        };
+
+        const getSwatchStroke = () => getPatternStroke(getPatternId(getSwatch().node().style.fill));
+
+        await Plotly.newPlot(
+            gd,
+            [
+                {
+                    type: 'bar',
+                    x: [0, 1],
+                    y: [1, 2],
+                    marker: {
+                        color: ['red', 'purple'],
+                        pattern: { shape: ['/', '\\'] }
+                    }
+                }
+            ],
+            {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 400,
+                height: 400,
+                margin: { t: 50, b: 50, l: 50, r: 50 }
+            }
+        );
+
+        _hover(gd, { xval: 0 });
+        assertLabel({ title: '0', items: ['1'] });
+
+        const patternId0 = getPatternId(getSwatch().node().style.fill);
+        expect(patternId0).toBeTruthy('first bar swatch uses a pattern fill');
+        expect(getPatternStroke(patternId0)).toBe('rgb(255, 0, 0)');
+
+        _hover(gd, { xval: 1 });
+        assertLabel({ title: '1', items: ['2'] });
+
+        const patternId1 = getPatternId(getSwatch().node().style.fill);
+        expect(patternId1).toBeTruthy('second bar swatch uses a pattern fill');
+        expect(patternId1).not.toBe(patternId0);
+        expect(getPatternStroke(patternId1)).toBe('rgb(128, 0, 128)');
+
+        await Plotly.restyle(gd, 'marker.pattern.fgcolor', [['blue', 'green']]);
+
+        _hover(gd, { xval: 0 });
+        expect(getSwatchStroke()).toBe('rgb(0, 0, 255)');
+
+        _hover(gd, { xval: 1 });
+        expect(getSwatchStroke()).toBe('rgb(0, 128, 0)');
+
+        await Plotly.restyle(gd, 'marker.pattern.shape', [['/', '']]);
+
+        _hover(gd, { xval: 1 });
+        assertLabel({ title: '1', items: ['2'] });
+        expect(getSwatch().node().style.fill).toBe('rgb(128, 0, 128)');
+        expect(getPatternId(getSwatch().node().style.fill)).toBe(null);
+    });
+
     it('should style funnel symbols accordingly', function (done) {
         var mock = require('../../image/mocks/funnel_custom.json');
         var mockCopy = Lib.extendDeep({}, mock);
@@ -7391,6 +7461,61 @@ describe('hovermode: (x|y)unified', function () {
                 _hover(gd, { xval: 0 });
 
                 assertFont('Mono', '20px', 'rgb(255, 127, 0)');
+            })
+            .then(done, done.fail);
+    });
+
+    it('should align item text with hoverlabel.align', (done) => {
+        const getItems = () => {
+            const items = [];
+            getHoverLabel()
+                .selectAll('g.traces text.legendtext')
+                .each(function () {
+                    const { left, right } = this.getBoundingClientRect();
+                    items.push({
+                        anchor: this.getAttribute('text-anchor'),
+                        left,
+                        right,
+                        x: this.getAttribute('x')
+                    });
+                });
+            return items;
+        };
+        let rightAlignedShort;
+
+        Plotly.newPlot(gd, [{ y: [1, 2, 3] }, { y: [1000000, 2000000, 3000000] }], {
+            hovermode: 'x unified',
+            hoverlabel: { align: 'right' },
+            showlegend: false,
+            width: 500,
+            height: 500
+        })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['end', 'end']);
+                // Compare anchor positions because the text rect can extend past the anchor by a font-dependent amount
+                expect(short.x).toBe(long.x);
+                expect(short.left).toBeGreaterThan(long.left);
+                rightAlignedShort = short;
+
+                return Plotly.relayout(gd, 'hoverlabel.align', 'left');
+            })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['start', 'start']);
+                expect(short.left).toBeCloseTo(long.left, 0);
+
+                return Plotly.restyle(gd, 'hoverlabel.align', 'right', [0]);
+            })
+            .then(() => {
+                _hover(gd, { xval: 1 });
+                const [short, long] = getItems();
+                expect([short.anchor, long.anchor]).toEqual(['end', 'start']);
+                // Same text and box as the first step, so the right-aligned item must not move
+                expect(short.x).toBe(rightAlignedShort.x);
+                expect(short.right).toBeCloseTo(rightAlignedShort.right, 0);
             })
             .then(done, done.fail);
     });

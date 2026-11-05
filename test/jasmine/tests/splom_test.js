@@ -730,6 +730,24 @@ describe('Test splom interactions:', function() {
         .then(done, done.fail);
     });
 
+    it('@gl when hasOnlyLargeSploms, should convert modern CSS grid colors for regl-line2d', (done) => {
+        const fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
+
+        _newPlot(gd, fig)
+            .then(() => {
+                spyOn(gd._fullLayout._splomGrid, 'update').and.callThrough();
+                return Plotly.relayout(gd, 'xaxis.gridcolor', 'oklch(0.7 0.15 30)');
+            })
+            .then(() => {
+                const gridData = gd._fullLayout._splomGrid.update.calls.mostRecent().args[0];
+                const colors = gridData.map((d) => d.color);
+
+                expect(colors).toContain('rgb(237, 118, 101)');
+                expect(colors).not.toContain('oklch(0.7 0.15 30)');
+            })
+            .then(done, done.fail);
+    });
+
     it('@gl should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
         var figLarge = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         var dimsLarge = figLarge.data[0].dimensions;

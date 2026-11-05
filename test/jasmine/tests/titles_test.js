@@ -882,6 +882,53 @@ describe('Title automargining', function() {
 
     afterEach(destroyGraphDiv);
 
+    it('keeps cartesian traces aligned with axes when controls also expand margins', function(done) {
+        Plotly.newPlot(gd, [{
+            x: [1, 2, 3],
+            y: [2, 1, 3],
+            mode: 'lines+markers',
+            line: {simplify: false}
+        }], {
+            margin: {autoexpand: true, t: 0},
+            title: {
+                text: 'Title',
+                automargin: true,
+                font: {size: 36}
+            },
+            sliders: [{
+                pad: {t: 30},
+                x: 0.05,
+                len: 0.95,
+                steps: [
+                    {label: '0', method: 'update', args: [{}, {}]},
+                    {label: '1', method: 'update', args: [{}, {}]}
+                ]
+            }],
+            updatemenus: [{
+                type: 'buttons',
+                x: 0.05,
+                y: 0,
+                xanchor: 'right',
+                yanchor: 'top',
+                direction: 'left',
+                pad: {t: 60, r: 20},
+                buttons: [{label: 'Play', method: 'skip'}]
+            }]
+        }).then(function() {
+            var plot = d3Select(gd);
+            var point = plot.select('.scatterlayer .point').node();
+            var yTick;
+
+            plot.selectAll('.ytick').each(function() {
+                if(d3Select(this).select('text').text() === '2') yTick = this;
+            });
+
+            expect(point).not.toBeNull();
+            expect(yTick).toBeDefined();
+            expect(point.getCTM().f).toBeCloseTo(yTick.querySelector('text').getCTM().f, 6);
+        }).then(done, done.fail);
+    });
+
     it('should avoid overlap with container for yref=paper and allow padding', function(done) {
         Plotly.newPlot(gd, data, {
             margin: {t: 0, b: 0, l: 0, r: 0},

@@ -210,9 +210,7 @@ describe('@noCIdep Plotly.react', function() {
             return Plotly.react(gd, data, layout);
         })
         .then(function() {
-            // we get an extra call to layoutStyles from marginPushersAgain due to the colorbar.
-            // Really need to simplify that pipeline...
-            countCalls({plot: 1, layoutStyles: 1});
+            countCalls({plot: 1});
 
             layout.scene.camera = {up: {x: 1, y: 0, z: -1}};
 

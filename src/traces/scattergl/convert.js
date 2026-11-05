@@ -2,7 +2,7 @@
 
 var isNumeric = require('fast-isnumeric');
 const svgSdf = require('svg-path-sdf').default;
-const { normalize: rgba } = require('../../components/color');
+const { normalize: rgba, rgbaString } = require('../../components/color');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -75,7 +75,7 @@ function convertStyle(gd, trace) {
         opts.line = {
             overlay: true,
             thickness: trace.line.width * plotGlPixelRatio,
-            color: trace.line.color,
+            color: rgbaString(trace.line.color),
             opacity: trace.opacity
         };
 
@@ -97,7 +97,7 @@ function convertStyle(gd, trace) {
     if (!!trace.fill && trace.fill !== 'none') {
         opts.fill = {
             closed: true,
-            fill: trace.fillcolor,
+            fill: rgbaString(trace.fillcolor),
             thickness: 0
         };
     }
@@ -199,10 +199,10 @@ function convertTextStyle(gd, trace) {
     if (isArrayOrTypedArray(tfc)) {
         optsOut.color = new Array(count);
         for (i = 0; i < count; i++) {
-            optsOut.color[i] = tfc[i];
+            optsOut.color[i] = rgbaString(tfc[i]);
         }
     } else {
-        optsOut.color = tfc;
+        optsOut.color = rgbaString(tfc);
     }
 
     if (
@@ -411,7 +411,7 @@ function convertMarkerSelection(gd, trace, target) {
         optsOut = convertMarkerStyle(gd, Lib.extendFlat({}, optsIn, target.marker));
     } else if (target.marker) {
         if (target.marker.size) optsOut.size = target.marker.size;
-        if (target.marker.color) optsOut.colors = target.marker.color;
+        if (target.marker.color) optsOut.colors = rgbaString(target.marker.color);
         if (target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
 
@@ -444,11 +444,11 @@ function convertErrorBarStyle(trace, target, plotGlPixelRatio) {
     var optsOut = {
         capSize: target.width * 2 * plotGlPixelRatio,
         lineWidth: target.thickness * plotGlPixelRatio,
-        color: target.color
+        color: rgbaString(target.color)
     };
 
     if (target.copy_ystyle) {
-        optsOut = trace.error_y;
+        optsOut = { ...trace.error_y, color: rgbaString(trace.error_y.color) };
     }
 
     return optsOut;
