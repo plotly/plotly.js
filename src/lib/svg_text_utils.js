@@ -66,6 +66,18 @@ function measureMath(newSvg, width0, height0) {
 }
 
 /**
+ * The size of a typeset group in its own units, which unlike its client rect
+ * does not change when the group, or something above it, is rotated or scaled.
+ *
+ * @param {d3 selection} mathjaxGroup: the '<svgClass>-group' wrapper
+ * @return {{width: number, height: number}}
+ */
+function getLocalSize(mathjaxGroup) {
+    var bb = mathjaxGroup.node().getBBox();
+    return {width: bb.width, height: bb.height};
+}
+
+/**
  * Positions a MathJax-typeset group against its source <text> node's x/y
  * and text-anchor.
  *
@@ -260,9 +272,8 @@ exports.convertToTspans = function(_context, gd, _callback) {
  * convertToTspans, to match its source <text> node's *current* x/y and
  * text-anchor.
  *
- * The size is measured from the page, so it changes with the rotation or
- * scale of whatever the group sits in. A caller that moves the text into such
- * a state should measure once beforehand and pass that size back in.
+ * The size is measured in the group's own units, so it does not change with
+ * the rotation or scale of whatever the group sits in.
  *
  * @param {d3 selection} _context: the source <text> element
  * @param {{width: number, height: number}} [size]: a size returned by an
@@ -279,7 +290,7 @@ exports.repositionMathGroup = function(_context, size) {
     var newSvg = mathjaxGroup.select('svg.' + svgClass);
     if(mathjaxGroup.empty() || newSvg.empty()) return null;
 
-    size = size || measureMath(newSvg);
+    size = size || getLocalSize(mathjaxGroup);
     var textAnchor = _context.attr('text-anchor');
     var fontSize = parseInt(_context.node().style.fontSize, 10);
     positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, size);
