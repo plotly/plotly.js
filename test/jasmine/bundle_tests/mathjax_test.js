@@ -734,6 +734,52 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             .then(done, done.fail);
         });
 
+        it('should keep a pure-tex main label inside its box for rotated labels in hovermode y', function(done) {
+            var template = '$\\sum_{i=1}^{n} x_i$<extra>one</extra>';
+
+            Plotly.newPlot(gd, {
+                data: [
+                    {type: 'scatter', mode: 'markers', x: [1], y: [1], hovertemplate: template},
+                    {type: 'scatter', mode: 'markers', x: [2], y: [1], hovertemplate: template}
+                ],
+                layout: {
+                    width: 500,
+                    height: 400,
+                    margin: {l: 0, t: 0, r: 0, b: 0},
+                    xaxis: {range: [0, 4]},
+                    yaxis: {range: [0, 4]},
+                    hovermode: 'y'
+                }
+            })
+            .then(function() {
+                _hover(125, 300);
+                return delay(30)();
+            })
+            .then(function() {
+                var hoverTexts = d3Select(gd).selectAll('g.hovertext');
+
+                expect(hoverTexts.size()).toBe(2, 'two hover labels');
+                expect(hoverTexts.attr('transform')).toContain('rotate', 'labels are rotated');
+
+                hoverTexts.each(function() {
+                    var g = d3Select(this);
+                    var mathGroup = g.select('.nums-math-group');
+
+                    expect(mathGroup.size()).toBe(1, 'main label math group');
+
+                    var m = mathGroup.select('svg g').node().getBoundingClientRect();
+                    var b = g.select('path').node().getBoundingClientRect();
+                    var tol = 1;
+
+                    expect(m.left).not.toBeLessThan(b.left - tol, 'tex inside the box, left');
+                    expect(m.right).not.toBeGreaterThan(b.right + tol, 'tex inside the box, right');
+                    expect(m.top).not.toBeLessThan(b.top - tol, 'tex inside the box, top');
+                    expect(m.bottom).not.toBeGreaterThan(b.bottom + tol, 'tex inside the box, bottom');
+                });
+            })
+            .then(done, done.fail);
+        });
+
         it('should hand a pure-tex Fx.loneHover label off to MathJax, sized to its final content', function(done) {
             Plotly.newPlot(gd, {
                 data: [{type: 'scatter', mode: 'markers', x: [1], y: [1]}],
