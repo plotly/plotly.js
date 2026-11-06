@@ -84,6 +84,14 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         if(domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
         Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
 
+        if(letter === 'x') {
+            coerce('domainpad.left');
+            coerce('domainpad.right');
+        } else {
+            coerce('domainpad.top');
+            coerce('domainpad.bottom');
+        }
+
         // tickmode sync needs an overlaying axis, otherwise
         // we should default it to 'auto'
         if(containerOut.tickmode === 'sync') {
