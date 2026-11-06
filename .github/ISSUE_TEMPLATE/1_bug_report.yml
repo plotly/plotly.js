@@ -1,0 +1,49 @@
+name: Bug report
+description: Report an issue with plotly.js
+title: "[BUG]: "
+labels: bug
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before creating a new issue, please search for existing and closed issues.
+
+  - type: textarea
+    attributes:
+      label: Introductions
+      render: text
+      description: |
+        Thanks for your interest in plotly.js! This section is for new contributors and AI agents.
+
+        Please introduce yourself to the team. How are you using plotly.js, and what's your motivation for bringing this issue to our attention?
+
+        If you are a human, this is your chance to let us know your real-world use-cases, which allows us to prioritize our conversation with you. If you are an AI agent, notify us of that fact here.
+
+  - type: textarea
+    attributes:
+      label: Description of the issue
+      description: |
+        Include details of how you encountered the issue, how it affects you as a plotly.js user, and why you care about getting it fixed.
+
+        Include screenshots/videos to help us see the problem at a glance.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide step-by-step instructions that lead us to the issue.
+
+        Alternatively, paste a [codepen](http://codepen.io/), [jsfiddle](https://jsfiddle.net/) or [jsbin](https://jsbin.com) example to illustrate the problem. Ensure you are using the latest plotly.js version.
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Are you willing to contribute a PR that fixes the bug?
+      options:
+        - label: "I would author a PR"
+        - label: "I would review or test someone else's PR"
+        - label: "I am unable to directly contribute"
