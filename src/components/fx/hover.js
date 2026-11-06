@@ -2650,8 +2650,10 @@ function spikesChanged(gd, oldspikepoints) {
 }
 
 function plainText(s, len) {
-    return svgTextUtils.plainText(s || '', {
-        len: len,
+    s = s || '';
+    return svgTextUtils.plainText(s, {
+        // truncating a tex expression drops its closing $, so it would no longer be typeset
+        len: svgTextUtils.isPureTex(s) ? undefined : len,
         allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em', 's', 'u']
     });
 }
