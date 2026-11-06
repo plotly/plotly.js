@@ -1502,7 +1502,7 @@ function arrayTicks(ax, majorOnly) {
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = axes.tickText(ax, vali, false, String(text[i]), {
+                const obj = axes.tickText(ax, vali, false, text[i] !== undefined, {
                     first: i === firstIdx,
                     last: i === lastIdx,
                 });

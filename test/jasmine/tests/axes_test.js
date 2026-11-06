@@ -1884,6 +1884,61 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        describe('a new range on a constrain:domain axis', () => {
+            const data = () => [{ x: [0, 20, 50, 80, 100], y: [0, 20, 50, 80, 100] }];
+            const layout = (xRange) => ({
+                width: 400,
+                height: 400,
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                xaxis: { range: xRange, constrain: 'domain' },
+                yaxis: { range: [0, 100], scaleanchor: 'x', scaleratio: 1 }
+            });
+
+            it('is applied by Plotly.react', (done) => {
+                Plotly.newPlot(gd, data(), layout([0, 100]))
+                    .then(() => Plotly.react(gd, data(), layout([20, 80])))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                        expect(gd._fullLayout.xaxis._inputRange).toEqual([20, 80]);
+                    })
+                    .then(done, done.fail);
+            });
+
+            it('is applied by Plotly.relayout with a whole axis object', (done) => {
+                Plotly.newPlot(gd, data(), layout([0, 100]))
+                    .then(() => Plotly.relayout(gd, { xaxis: layout([20, 80]).xaxis, yaxis: layout().yaxis }))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                        expect(gd._fullLayout.xaxis._inputRange).toEqual([20, 80]);
+                    })
+                    .then(done, done.fail);
+            });
+
+            [
+                ['dotted keys', { 'xaxis.range': [20, 80] }],
+                ['a whole axis object', { xaxis: layout([20, 80]).xaxis }]
+            ].forEach(([name, update]) => {
+                it(`lets the other axis rescale when Plotly.relayout sets one range with ${name}`, (done) => {
+                    Plotly.newPlot(gd, data(), layout([0, 100]))
+                        .then(() => Plotly.relayout(gd, update))
+                        .then(() => {
+                            assertRangeDomain('xaxis', [20, 80], [0, 1], [0, 1]);
+                            assertRangeDomain('yaxis', [20, 80], [0, 1], [0, 1]);
+                        })
+                        .then(done, done.fail);
+                });
+            });
+
+            it('keeps the drawn range when Plotly.react gets the same layout again', (done) => {
+                Plotly.newPlot(gd, data(), layout([20, 80]))
+                    .then(() => Plotly.react(gd, gd.data, gd.layout))
+                    .then(() => {
+                        assertRangeDomain('xaxis', [20, 80], [0, 1], [0.2, 0.8]);
+                    })
+                    .then(done, done.fail);
+            });
+        });
+
         it('can change per-axis constrain:domain/range and constraintoward', function(done) {
             Plotly.newPlot(gd,
                 // start with a heatmap as it has no padding so calculations are easy
@@ -3928,6 +3983,40 @@ describe('Test axes', function() {
                 expect(textOut).toEqual(expectedText, axType);
                 expect(mockHoverText(ax, 1)).toBe('One');
                 expect(mockHoverText(ax, 19.999)).toBe('19.999');
+            });
+        });
+
+        it('applies prefixes and suffixes to array ticks without explicit text', () => {
+            ['linear', 'log', 'date', 'category'].forEach(axType => {
+                const vals = axType === 'date' ?
+                    ['2020-01-01', '2020-01-02', '2020-01-03'] :
+                    axType === 'category' ? ['a', 'b', 'c'] : [1, 2, 3];
+                const ax = {
+                    type: axType,
+                    tickmode: 'array',
+                    tickvals: vals,
+                    range: axType === 'log' ? [0, 1] :
+                        axType === 'category' ? [-0.5, 2.5] : [vals[0], vals[2]],
+                    tickprefix: '<',
+                    ticksuffix: '>',
+                    showtickprefix: 'all',
+                    showticksuffix: 'all',
+                    nticks: 10
+                };
+                if(axType === 'category') {
+                    ax._categories = vals;
+                    ax._categoriesMap = {a: 0, b: 1, c: 2};
+                }
+                const bare = mockCalc({...ax, tickprefix: '', ticksuffix: ''});
+                expect(mockCalc(ax)).toEqual(bare.map(text => `<${text}>`), axType);
+                ax.ticktext = ['custom'];
+                expect(mockCalc(ax)).toEqual(['custom', `<${bare[1]}>`, `<${bare[2]}>`], axType);
+                ax.showtickprefix = 'first';
+                ax.showticksuffix = 'last';
+                delete ax.ticktext;
+                expect(mockCalc(ax)).toEqual([`<${bare[0]}`, bare[1], `${bare[2]}>`], axType);
+                ax.showtickprefix = ax.showticksuffix = 'none';
+                expect(mockCalc(ax)).toEqual(bare, axType);
             });
         });
 
