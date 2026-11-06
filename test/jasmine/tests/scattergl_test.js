@@ -791,7 +791,6 @@ describe('end-to-end scattergl tests', function() {
             const xa = fullLayout.xaxis;
             const ya = fullLayout.yaxis;
 
-            // regl measures in device pixels, from the bottom left corner of the canvas
             const viewport = fullLayout._plots.xy._scene.scatter2d.groups[0].viewport;
             expect(viewport.x).toBeCloseTo(xa._offset * pixelRatio, 3, 'x');
             expect(viewport.y).toBeCloseTo((fullLayout.height - ya._offset - ya._length) * pixelRatio, 3, 'y');

@@ -633,8 +633,6 @@ exports.clean = function clean(gd, ax) {
     }
 };
 
-// Get the `domainpad` of an axis as a fraction of the plot size.
-// The constraint solver works in domain fractions, not in pixels.
 function domainPadFraction(ax, fullLayout) {
     const pad = ax.domainpad;
     if(!pad) return 0;
@@ -650,11 +648,6 @@ function updateDomain(ax, factor, fullLayout) {
     var centerFraction = FROM_BL[ax.constraintoward];
     var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
 
-    // The constraint divides the drawn length of the axis by `factor`. Without padding,
-    // the drawn length is the domain span. `domainpad` removes a fixed number of pixels
-    // from the ends, so the drawn length is (span - padding), and only that part scales.
-    // Thus divide that part, then add the padding back. If the padding covers the full
-    // domain, nothing remains to scale, so divide the full span and let setScale clamp the padding.
     let divisor = factor;
     const padFraction = domainPadFraction(ax, fullLayout);
     if(padFraction > 0) {

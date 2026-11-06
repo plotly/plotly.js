@@ -12199,7 +12199,7 @@ export interface LayoutAxis {
      * @default [0,1]
      */
     domain?: [number, number];
-    /** Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. */
+    /** Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. An axis that sets `overlaying` ignores its own `domainpad` and uses the `domainpad` of the axis it overlays, so that both axes share the same plot area. */
     domainpad?: {
         /**
          * Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.

@@ -35,17 +35,10 @@ function isValidCategory(v) {
     return v !== null && v !== undefined;
 }
 
-// The smallest plot area in pixels that `domainpad` can leave. `doAutoMargin` keeps
-// the same floor for margins. A floor of 0 is not sufficient: setScale rejects only
-// negative lengths, so a length of 0 gives a slope of 0 and the subplot collapses with no error.
 const MIN_PADDED_LENGTH = 2;
 
 /**
  * Get the part of the requested `domainpad` that fits in a domain band.
- *
- * `domain` is a fraction of the plot area, so its band shrinks with the figure but the
- * padding does not. If the two pads need more room than the band has, the two pads
- * get the same scale factor. `doAutoMargin` uses the same method for margins.
  *
  * @param wanted - the total padding of the two edges, in pixels
  * @param bandLength - the length of the domain band, in pixels
@@ -584,8 +577,6 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax.overlaying) {
             var ax2 = axisIds.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
-            // an overlaying axis has to sit on exactly the same plot area as the axis
-            // underneath it, so it takes that axis' padding along with its domain
             ax.domainpad = ax2.domainpad;
         }
 
@@ -604,8 +595,6 @@ module.exports = function setConvert(ax, fullLayout) {
         // the length in pixels of the domain band, before `domainpad`
         const bandLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
         const pad = ax.domainpad;
-        // _offset counts from the top for y and from the left for x,
-        // so padStart moves the plot area in from that edge
         let padStart = 0;
         let padEnd = 0;
 
@@ -619,9 +608,6 @@ module.exports = function setConvert(ax, fullLayout) {
         }
 
         ax._length = bandLength - padStart - padEnd;
-        // Keep the padding after the fit. scattergl, splom and hover spikes add these
-        // values to their `domain` math. A rebuild from _offset and _length would change
-        // the last bits of the result, also for an axis with no padding.
         ax._padStart = padStart;
         ax._padEnd = padEnd;
 

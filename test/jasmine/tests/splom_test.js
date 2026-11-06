@@ -749,8 +749,6 @@ describe('Test splom interactions:', function() {
             const scene = fullLayout._splomScenes[gd._fullData[0].uid];
             const bottom = gs.t + gs.h;
 
-            // regl-splom takes each cell as [x0, y0, x1, y1], in fractions of the plot area
-            // from the bottom left corner. Convert the padded plot area of each axis pair to that form.
             ['', '2'].forEach((id, k) => {
                 const xa = fullLayout['xaxis' + id];
                 const ya = fullLayout['yaxis' + id];
@@ -770,7 +768,6 @@ describe('Test splom interactions:', function() {
         const fig = Lib.extendDeep({}, require('../../image/mocks/splom_large.json'));
         const ids = fig.data[0].dimensions.map((_, i) => (i === 0 ? '' : String(i + 1)));
 
-        // Pad every axis. The outermost grid lines must then stop short of the domain edges.
         ids.forEach((id) => {
             fig.layout['xaxis' + id] = Lib.extendFlat({}, fig.layout['xaxis' + id], {domainpad: {left: 4, right: 3}});
             fig.layout['yaxis' + id] = Lib.extendFlat({}, fig.layout['yaxis' + id], {domainpad: {top: 5, bottom: 2}});
@@ -782,8 +779,6 @@ describe('Test splom interactions:', function() {
             const xAxes = ids.map((id) => fullLayout['xaxis' + id]);
             const yAxes = ids.map((id) => fullLayout['yaxis' + id]);
 
-            // regl-line2d draws the grid in device pixels from the bottom left corner,
-            // so these values are the outer edges of the padded plot areas in that frame
             const want = [
                 Math.min(...xAxes.map((ax) => ax._offset)) * pixelRatio,
                 Math.min(...yAxes.map((ax) => fullLayout.height - ax._offset - ax._length)) * pixelRatio,

@@ -1202,7 +1202,9 @@ module.exports = {
             'so it can hold content with a fixed size, such as a subplot title.',
             'x axes use `left` and `right`. y axes use `top` and `bottom`.',
             'If the padding needs more room than the domain has, the two pads shrink by the same factor,',
-            'and the plot area keeps a length of at least 2 pixels.'
+            'and the plot area keeps a length of at least 2 pixels.',
+            'An axis that sets `overlaying` ignores its own `domainpad` and uses the `domainpad`',
+            'of the axis it overlays, so that both axes share the same plot area.'
         ].join(' ')
     },
     position: {

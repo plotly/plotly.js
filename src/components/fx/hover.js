@@ -2432,10 +2432,6 @@ function cleanPoint(d, hovermode) {
 /**
  * Get the pixel span of a spike with spikemode 'across'.
  *
- * The span covers the plot areas of all counter axes of `ax`. Each plot area is the
- * domain of the counter axis minus its `domainpad`. Thus the spike stops at the edge
- * of the plot area, and the padding stays clear for content such as a subplot title.
- *
  * @param gd - the graph div
  * @param ax - the full axis that shows the spike
  * @param gs - the plot size, `fullLayout._size`
@@ -2457,7 +2453,6 @@ function getAcrossSpikeSpan(gd, ax, gs) {
             start = Math.min(start, gs.l + counterAx.domain[0] * gs.w + padStart);
             end = Math.max(end, gs.l + counterAx.domain[1] * gs.w - padEnd);
         } else {
-            // SVG measures y from the top, so the top edge of the domain comes first
             start = Math.min(start, gs.t + (1 - counterAx.domain[1]) * gs.h + padStart);
             end = Math.max(end, gs.t + (1 - counterAx.domain[0]) * gs.h - padEnd);
         }
