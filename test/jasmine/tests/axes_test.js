@@ -8797,12 +8797,13 @@ describe('axis domainpad', () => {
             height: 600,
             margin: {l: 40, r: 20, t: 20, b: 40},
             yaxis: {domain: [0, 1], domainpad: {top: 30}},
-            yaxis2: {overlaying: 'y', side: 'right'}
+            yaxis2: {overlaying: 'y', side: 'right', domainpad: {top: 5, bottom: 12}}
         })
         .then(() => {
             const ya = gd._fullLayout.yaxis;
             const ya2 = gd._fullLayout.yaxis2;
 
+            expect(ya._offset).toBeCloseTo(20 + 30, 2);
             // the two have to end up on exactly the same plot area
             expect(ya2._offset).toBeCloseTo(ya._offset, 2);
             expect(ya2._length).toBeCloseTo(ya._length, 2);
