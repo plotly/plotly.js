@@ -790,6 +790,55 @@ function setSpikelineVisibility(gd) {
     return aobj;
 }
 
+// unlike cartesian toggleSpikelines above
+// this toggles ternary spikelines by hiding and restoring their previous visibility states
+modeBarButtons.toggleTernarySpikelines = {
+    name: 'toggleTernarySpikelines',
+    title: function(gd) {
+        return _(gd, 'Toggle Spike Lines');
+    },
+    icon: Icons.ternary_spikeline,
+    attr: 'ternary-spikelines',
+    toggle: true,
+    click: function(gd, ev) {
+        Registry.call('_guiRelayout', gd, toggleTernarySpikelineVisibility(gd, ev));
+    }
+};
+
+function toggleTernarySpikelineVisibility(gd, ev) {
+    var button = ev.currentTarget;
+    var val = button._previousVal;
+    var fullLayout = gd._fullLayout;
+    var ternaryIds = fullLayout._subplots.ternary;
+
+    var axes = ['aaxis', 'baxis', 'caxis'];
+
+    var currentSpikes = {};
+    var layoutUpdate = {};
+
+    if (val) {
+        layoutUpdate = val;
+        button._previousVal = null;
+    } else {
+        for (var i = 0; i < ternaryIds.length; i++) {
+            var ternaryId = ternaryIds[i];
+            var ternaryLayout = fullLayout[ternaryId];
+
+            for (var j = 0; j < axes.length; j++) {
+                var axis = axes[j];
+                var spikeAStr = ternaryId + '.' + axis + '.showspikes';
+
+                layoutUpdate[spikeAStr] = false;
+                currentSpikes[spikeAStr] = ternaryLayout[axis].showspikes;
+            }
+        }
+
+        button._previousVal = currentSpikes;
+    }
+
+    return layoutUpdate;
+}
+
 modeBarButtons.resetViewMap = {
     name: 'resetViewMap',
     _cat: 'resetView',

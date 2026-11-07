@@ -1520,6 +1520,101 @@ describe('ModeBar', function() {
             });
         });
 
+        describe('button toggleTernarySpikelines', function() {
+            it('should hide and restore ternary spikelines', function(done) {
+                var gd = createGraphDiv();
+
+                Plotly.newPlot(gd, [{
+                    type: 'scatterternary',
+                    a: [1],
+                    b: [2],
+                    c: [3]
+                }], {
+                    ternary: {
+                        aaxis: {showspikes: true},
+                        baxis: {showspikes: false},
+                        caxis: {showspikes: true}
+                    }
+                }, {
+                    modeBarButtonsToAdd: ['toggleTernarySpikelines']
+                })
+                .then(function() {
+                    var button = selectButton(gd._fullLayout._modeBar, 'toggleTernarySpikelines');
+
+                    expect(gd._fullLayout.ternary.aaxis.showspikes).toBe(true);
+                    expect(gd._fullLayout.ternary.baxis.showspikes).toBe(false);
+                    expect(gd._fullLayout.ternary.caxis.showspikes).toBe(true);
+
+                    button.click();
+
+                    expect(gd._fullLayout.ternary.aaxis.showspikes).toBe(false);
+                    expect(gd._fullLayout.ternary.baxis.showspikes).toBe(false);
+                    expect(gd._fullLayout.ternary.caxis.showspikes).toBe(false);
+
+                    button.click();
+
+                    expect(gd._fullLayout.ternary.aaxis.showspikes).toBe(true);
+                    expect(gd._fullLayout.ternary.baxis.showspikes).toBe(false);
+                    expect(gd._fullLayout.ternary.caxis.showspikes).toBe(true);
+                })
+                .then(done, done.fail);
+            });
+
+            it('should toggle spikelines on multiple ternary subplots', function(done) {
+                var gd = createGraphDiv();
+
+                Plotly.newPlot(gd, [{
+                    type: 'scatterternary',
+                    subplot: 'ternary',
+                    a: [1],
+                    b: [2],
+                    c: [3]
+                }, {
+                    type: 'scatterternary',
+                    subplot: 'ternary2',
+                    a: [2],
+                    b: [3],
+                    c: [1]
+                }], {
+                    ternary: {
+                        domain: {x: [0, 0.45]},
+                        aaxis: {showspikes: true},
+                        baxis: {showspikes: false},
+                        caxis: {showspikes: true}
+                    },
+                    ternary2: {
+                        domain: {x: [0.55, 1]},
+                        aaxis: {showspikes: false},
+                        baxis: {showspikes: true},
+                        caxis: {showspikes: false}
+                    }
+                }, {
+                    modeBarButtonsToAdd: ['toggleTernarySpikelines']
+                })
+                .then(function() {
+                    var button = selectButton(gd._fullLayout._modeBar, 'toggleTernarySpikelines');
+
+                    button.click();
+
+                    ['aaxis', 'baxis', 'caxis'].forEach(function(axis) {
+                        expect(gd._fullLayout.ternary[axis].showspikes).toBe(false);
+                        expect(gd._fullLayout.ternary2[axis].showspikes).toBe(false);
+                    });
+
+                    button.click();
+
+                    expect(gd._fullLayout.ternary.aaxis.showspikes).toBe(true);
+                    expect(gd._fullLayout.ternary.baxis.showspikes).toBe(false);
+                    expect(gd._fullLayout.ternary.caxis.showspikes).toBe(true);
+
+                    expect(gd._fullLayout.ternary2.aaxis.showspikes).toBe(false);
+                    expect(gd._fullLayout.ternary2.baxis.showspikes).toBe(true);
+                    expect(gd._fullLayout.ternary2.caxis.showspikes).toBe(false);
+                })
+                .then(done, done.fail);
+            });
+        });
+
         describe('button toggleHover', function() {
             it('ternary case', function(done) {
                 var gd = createGraphDiv();
