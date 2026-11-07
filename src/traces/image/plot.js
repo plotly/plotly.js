@@ -8,6 +8,8 @@ var constants = require('./constants');
 var supportsPixelatedImage = require('../../lib/supports_pixelated_image');
 var PIXELATED_IMAGE_STYLE = require('../../constants/pixelated_image').STYLE;
 
+const { setImageHref } = require('../../lib/image_href');
+
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -184,18 +186,15 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             }
         })
         .then(function() {
-            var href, canvas;
+            let canvas;
             if(trace._hasZ) {
                 canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
                     var _z = z[j][i];
                     if(Lib.isTypedArray(_z)) _z = Array.from(_z);
                     return _z;
                 });
-                href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
-                if(realImage) {
-                    href = trace.source;
-                } else {
+                if(!realImage) {
                     var context = trace._canvas.el.getContext('2d', {willReadFrequently: true});
                     var data = context.getImageData(0, 0, w, h).data;
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
@@ -207,12 +206,11 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                             data[index + 3]
                         ];
                     });
-                    href = canvas.toDataURL('image/png');
                 }
             }
 
+            setImageHref(gd, image3, realImage ? trace.source : canvas);
             image3.attr({
-                'xlink:href': href,
                 height: imageHeight,
                 width: imageWidth,
                 x: left,

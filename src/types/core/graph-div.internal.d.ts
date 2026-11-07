@@ -42,6 +42,8 @@ export interface GraphDiv extends HTMLDivElement {
     _fullLayout?: FullLayout;
     /** Most recent hover payloads (used to deduplicate hover events). */
     _hoverdata?: any[];
+    /** Image nodes with blob URLs to release after removal or on purge. */
+    _imageBlobNodes?: SVGImageElement[];
     /** True once `Plotly.plot`/`newPlot` has run at least once. */
     _initialized?: boolean;
     /** Outstanding async operations the next call must await. */
