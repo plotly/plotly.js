@@ -8,6 +8,7 @@ module.exports = {
     colorbar: require('./colorbar'),
     style: require('./style'),
     hoverPoints: require('./hover'),
+    eventData: require('./event_data'),
 
     moduleType: 'trace',
     name: 'heatmap',
