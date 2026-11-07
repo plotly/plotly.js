@@ -371,10 +371,15 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            // [ [cnt, {$cat: index}], for 1,2 ]
-            var seen = [[0, {}], [0, {}]];
-            // [ [arrayIn[0][i], arrayIn[1][i]], for i .. N ]
-            var list = [];
+            // first-level categories in first-appearance order
+            var parents = [];
+            // {$parentCat: {seen: {$childCat: 1}, children: [$childCat, ..]}}
+            // second-level categories are tracked *per parent*, so that each
+            // parent keeps the child order found in its own data rather than
+            // sharing one global order across all parents.
+            // prototype-less objects so that e.g. a category named 'toString'
+            // does not resolve through Object.prototype
+            var childrenOf = Object.create(null);
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
@@ -389,13 +394,15 @@ module.exports = function setConvert(ax, fullLayout) {
                             var v1 = arrayIn[1][j];
 
                             if(isValidCategory(v0) && isValidCategory(v1)) {
-                                list.push([v0, v1]);
-
-                                if(!(v0 in seen[0][1])) {
-                                    seen[0][1][v0] = seen[0][0]++;
+                                if(!(v0 in childrenOf)) {
+                                    childrenOf[v0] = {seen: Object.create(null), children: []};
+                                    parents.push(v0);
                                 }
-                                if(!(v1 in seen[1][1])) {
-                                    seen[1][1][v1] = seen[1][0]++;
+
+                                var kids = childrenOf[v0];
+                                if(!(v1 in kids.seen)) {
+                                    kids.seen[v1] = 1;
+                                    kids.children.push(v1);
                                 }
                             }
                         }
@@ -403,17 +410,11 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            list.sort(function(a, b) {
-                var ind0 = seen[0][1];
-                var d = ind0[a[0]] - ind0[b[0]];
-                if(d) return d;
-
-                var ind1 = seen[1][1];
-                return ind1[a[1]] - ind1[b[1]];
-            });
-
-            for(i = 0; i < list.length; i++) {
-                setCategoryIndex(list[i]);
+            for(i = 0; i < parents.length; i++) {
+                var children = childrenOf[parents[i]].children;
+                for(j = 0; j < children.length; j++) {
+                    setCategoryIndex([parents[i], children[j]]);
+                }
             }
         };
     }
