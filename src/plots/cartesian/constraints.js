@@ -108,6 +108,15 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
 
     function setAttrVal() {
         val = axOut[attr];
+        if(attr === 'range') {
+            // check the input of the axis the value comes from
+            hasRange = !!(val &&
+                axIn.range &&
+                axIn.range.length === 2 &&
+                axIn.range[0] !== null &&
+                axIn.range[1] !== null
+            );
+        }
         if(attr === 'rangebreaks') {
             hasDayOfWeekBreaks = axOut._hasDayOfWeekBreaks;
         }
@@ -115,6 +124,8 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
 
     for(i = 0; i < matchGroups.length; i++) {
         group = matchGroups[i];
+        // a range set in another match group must not disable autorange here
+        hasRange = false;
 
         // find 'matching' range attrs
         for(var j = 0; j < matchAttrs.length; j++) {
@@ -145,14 +156,6 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
             // special logic for coupling of range and autorange
             // if nobody explicitly specifies autorange, but someone does
             // explicitly specify range, autorange must be disabled.
-            if(attr === 'range' && val &&
-                axIn.range &&
-                axIn.range.length === 2 &&
-                axIn.range[0] !== null &&
-                axIn.range[1] !== null
-            ) {
-                hasRange = true;
-            }
             if(attr === 'autorange' && val === null && hasRange) {
                 val = false;
             }
