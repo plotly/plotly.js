@@ -202,7 +202,8 @@ module.exports = {
                 'regardless of length. 0-3 shows the first 0-3 characters, and',
                 'an integer >3 will show the whole name if it is less than that',
                 'many characters, but if it is longer, will truncate to',
-                '`namelength - 3` characters and add an ellipsis.'
+                '`namelength - 3` characters and add an ellipsis.',
+                'A name that is a single tex expression is always shown in full.'
             ].join(' ')
         },
         showarrow: {

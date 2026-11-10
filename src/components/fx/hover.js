@@ -267,10 +267,10 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             fixVerticalOverlap();
             alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
-            hoverLabel.each(function () {
+            hoverLabel.each(function (d) {
                 var g = d3.select(this);
-                svgTextUtils.repositionMathGroup(g.select('text.nums'));
-                svgTextUtils.repositionMathGroup(g.select('text.name'));
+                svgTextUtils.repositionMathGroup(g.select('text.nums'), d.numsMathSize);
+                svgTextUtils.repositionMathGroup(g.select('text.name'), d.nameMathSize);
             });
         });
     }
@@ -1053,10 +1053,10 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
                 alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
 
-                hoverLabels.each(function () {
+                hoverLabels.each(function (d) {
                     var g = d3.select(this);
-                    svgTextUtils.repositionMathGroup(g.select('text.nums'));
-                    svgTextUtils.repositionMathGroup(g.select('text.name'));
+                    svgTextUtils.repositionMathGroup(g.select('text.nums'), d.numsMathSize);
+                    svgTextUtils.repositionMathGroup(g.select('text.name'), d.nameMathSize);
                 });
             });
         }
@@ -1103,7 +1103,7 @@ function hoverDataKey(d) {
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
 function getHoverTextBBox(gd, textSel) {
-    return getBoundingClientRect(gd, svgTextUtils.getMathOrTextNode(textSel));
+    return toLayoutRect(gd, svgTextUtils.getTextClientRect(textSel));
 }
 
 function createHoverText(hoverData, opts) {
@@ -1220,6 +1220,7 @@ function createHoverText(hoverData, opts) {
         });
 
         var commonLabelTex = svgTextUtils.isPureTex(String(t0));
+        var commonMathSize;
         var onCommonLabelReady;
 
         if (commonLabelTex) {
@@ -1231,7 +1232,7 @@ function createHoverText(hoverData, opts) {
                             return;
                         }
                         positionCommonLabel();
-                        svgTextUtils.repositionMathGroup(ltext);
+                        svgTextUtils.repositionMathGroup(ltext, commonMathSize);
                         resolve();
                     };
                 })
@@ -1250,7 +1251,7 @@ function createHoverText(hoverData, opts) {
         function positionCommonLabel() {
             label.attr('transform', '');
             svgTextUtils.positionText(ltext, 0, 0);
-            svgTextUtils.repositionMathGroup(ltext);
+            commonMathSize = svgTextUtils.repositionMathGroup(ltext);
 
             var tbb = getHoverTextBBox(gd, ltext);
             var lx, ly;
@@ -1758,10 +1759,10 @@ function createHoverText(hoverData, opts) {
         function finalizePosition() {
             g.attr('transform', '');
             tx.call(svgTextUtils.positionText, 0, 0);
-            svgTextUtils.repositionMathGroup(tx);
+            d.numsMathSize = svgTextUtils.repositionMathGroup(tx);
             if (hasName) {
                 tx2.call(svgTextUtils.positionText, 0, 0);
-                svgTextUtils.repositionMathGroup(tx2);
+                d.nameMathSize = svgTextUtils.repositionMathGroup(tx2);
             }
 
             g.select('path').style({
@@ -2679,8 +2680,10 @@ function spikesChanged(gd, oldspikepoints) {
 }
 
 function plainText(s, len) {
-    return svgTextUtils.plainText(s || '', {
-        len: len,
+    s = s || '';
+    return svgTextUtils.plainText(s, {
+        // truncating a tex expression drops its closing $, so it would no longer be typeset
+        len: svgTextUtils.isPureTex(s) ? undefined : len,
         allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em', 's', 'u']
     });
 }
@@ -2753,9 +2756,11 @@ const getTopOffset = (gd) => gd.offsetTop + gd.clientTop;
 const getLeftOffset = (gd) => gd.offsetLeft + gd.clientLeft;
 
 function getBoundingClientRect(gd, node) {
-    var fullLayout = gd._fullLayout;
+    return toLayoutRect(gd, node.getBoundingClientRect());
+}
 
-    var rect = node.getBoundingClientRect();
+function toLayoutRect(gd, rect) {
+    var fullLayout = gd._fullLayout;
 
     var x0 = rect.left;
     var y0 = rect.top;

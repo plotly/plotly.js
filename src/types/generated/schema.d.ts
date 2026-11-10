@@ -449,7 +449,7 @@ export interface HoverLabel {
     /** Sets the font used in hover labels. */
     font?: FontArray;
     /**
-     * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
+     * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis. A name that is a single tex expression is always shown in full.
      * @default 15
      * Minimum: -1
      */
@@ -1588,7 +1588,7 @@ export interface CandlestickData {
         /** Sets the font used in hover labels. */
         font?: FontArray;
         /**
-         * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
+         * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis. A name that is a single tex expression is always shown in full.
          * @default 15
          * Minimum: -1
          */
@@ -6085,7 +6085,7 @@ export interface OhlcData {
         /** Sets the font used in hover labels. */
         font?: FontArray;
         /**
-         * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
+         * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis. A name that is a single tex expression is always shown in full.
          * @default 15
          * Minimum: -1
          */
@@ -16303,7 +16303,7 @@ export interface Layout {
         /** Sets the font for group titles in hover (unified modes). Defaults to `hoverlabel.font`. */
         grouptitlefont?: Font;
         /**
-         * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.
+         * Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis. A name that is a single tex expression is always shown in full.
          * @default 15
          * Minimum: -1
          */
