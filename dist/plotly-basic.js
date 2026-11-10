@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v4.2.0
+* plotly.js (basic) v4.3.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -110,7 +110,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "4.2.0";
+      exports.version = "4.3.0";
     }
   });
 
@@ -9261,7 +9261,7 @@ var Plotly = (() => {
         for (var i = 1; i < length; i++) {
           input = inputs[i];
           for (key in input) {
-            src = target[key];
+            src = Object.prototype.hasOwnProperty.call(target, key) ? target[key] : void 0;
             copy = input[key];
             if (noArrayCopies && isArray(copy)) {
               target[key] = copy;
@@ -19641,8 +19641,8 @@ var Plotly = (() => {
       };
       var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
       var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
-      function notValid(prop) {
-        return prop.slice(0, 2) === "__";
+      function notValid(obj, prop) {
+        return prop in obj && !Object.prototype.hasOwnProperty.call(obj, prop);
       }
       lib.expandObjectPaths = function(data) {
         var match, key, prop, datum, idx, dest, trailingPath;
@@ -19652,7 +19652,7 @@ var Plotly = (() => {
               if (match = key.match(dottedPropertyRegex)) {
                 datum = data[key];
                 prop = match[1];
-                if (notValid(prop)) continue;
+                if (notValid(data, prop)) continue;
                 delete data[key];
                 data[prop] = lib.extendDeepNoArrays(
                   data[prop] || {},
@@ -19661,7 +19661,7 @@ var Plotly = (() => {
               } else if (match = key.match(indexedPropertyRegex)) {
                 datum = data[key];
                 prop = match[1];
-                if (notValid(prop)) continue;
+                if (notValid(data, prop)) continue;
                 idx = parseInt(match[2]);
                 delete data[key];
                 data[prop] = data[prop] || [];
@@ -19670,11 +19670,11 @@ var Plotly = (() => {
                   dest = data[prop][idx] = data[prop][idx] || {};
                   lib.extendDeepNoArrays(dest, lib.objectFromPath(trailingPath, lib.expandObjectPaths(datum)));
                 } else {
-                  if (notValid(prop)) continue;
+                  if (notValid(data, prop)) continue;
                   data[prop][idx] = lib.expandObjectPaths(datum);
                 }
               } else {
-                if (notValid(key)) continue;
+                if (notValid(data, key)) continue;
                 data[key] = lib.expandObjectPaths(data[key]);
               }
             }
@@ -22229,7 +22229,7 @@ var Plotly = (() => {
           ax._counterAxes.sort(axisIDs.idSort);
           ax._subplotsWith.sort(Lib.subplotSort);
           ax._mainSubplot = findMainSubplot(ax, newFullLayout);
-          if (ax._counterAxes.length && (ax.spikemode && ax.spikemode.indexOf("across") !== -1 || ax.automargin && ax.mirror && ax.anchor !== "free" || Registry.getComponentMethod("rangeslider", "isVisible")(ax))) {
+          if (ax._counterAxes.length && (ax.automargin && ax.mirror && ax.anchor !== "free" || Registry.getComponentMethod("rangeslider", "isVisible")(ax))) {
             var min = 1;
             var max = 0;
             for (j = 0; j < ax._counterAxes.length; j++) {
@@ -25419,6 +25419,33 @@ var Plotly = (() => {
             { valType: "number", min: 0, max: 1, editType: "plot" }
           ],
           dflt: [0, 1],
+          editType: "plot"
+        },
+        domainpad: {
+          left: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
+          right: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
+          top: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
+          bottom: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
           editType: "plot"
         },
         position: {
@@ -29097,6 +29124,12 @@ var Plotly = (() => {
       function isValidCategory(v) {
         return v !== null && v !== void 0;
       }
+      var MIN_PADDED_LENGTH = 2;
+      function padFactor(wanted, bandLength) {
+        if (wanted <= 0) return 0;
+        const room = Math.max(0, bandLength - MIN_PADDED_LENGTH);
+        return wanted > room ? room / wanted : 1;
+      }
       module.exports = function setConvert(ax, fullLayout) {
         fullLayout = fullLayout || {};
         var axId = ax._id || "x";
@@ -29467,6 +29500,7 @@ var Plotly = (() => {
           if (ax.overlaying) {
             var ax2 = axisIds.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
+            ax.domainpad = ax2.domainpad;
           }
           var rangeAttr = usePrivateRange && ax._r ? "_r" : "range";
           var calendar = ax.calendar;
@@ -29474,14 +29508,26 @@ var Plotly = (() => {
           var rl0 = ax.r2l(ax[rangeAttr][0], calendar);
           var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
           var isY2 = axLetter === "y";
+          const bandLength = (isY2 ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+          const pad = ax.domainpad;
+          let padStart = 0;
+          let padEnd = 0;
+          if (pad) {
+            padStart = (isY2 ? pad.top : pad.left) || 0;
+            padEnd = (isY2 ? pad.bottom : pad.right) || 0;
+            const fits = padFactor(padStart + padEnd, bandLength);
+            padStart *= fits;
+            padEnd *= fits;
+          }
+          ax._length = bandLength - padStart - padEnd;
+          ax._padStart = padStart;
+          ax._padEnd = padEnd;
           if (isY2) {
-            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
-            ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h + padStart;
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
           } else {
-            ax._offset = gs.l + ax.domain[0] * gs.w;
-            ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.l + ax.domain[0] * gs.w + padStart;
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
           }
@@ -31338,7 +31384,7 @@ var Plotly = (() => {
           for (var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if (vali > tickMin && vali < tickMax) {
-              var obj = axes.tickText(ax, vali, false, String(text[i]), {
+              const obj = axes.tickText(ax, vali, false, text[i] !== void 0, {
                 first: i === firstIdx,
                 last: i === lastIdx
               });
@@ -33427,6 +33473,7 @@ var Plotly = (() => {
         var noSwapAttrs = [
           "anchor",
           "domain",
+          "domainpad",
           "overlaying",
           "position",
           "side",
@@ -38012,6 +38059,30 @@ var Plotly = (() => {
         }
         return d;
       }
+      function getAcrossSpikeSpan(gd, ax, gs) {
+        const isY = ax._id.charAt(0) === "y";
+        let start = Infinity;
+        let end = -Infinity;
+        for (const counterId of ax._counterAxes || []) {
+          const counterAx = Axes.getFromId(gd, counterId);
+          if (!counterAx) continue;
+          const padStart = counterAx._padStart || 0;
+          const padEnd = counterAx._padEnd || 0;
+          if (isY) {
+            start = Math.min(start, gs.l + counterAx.domain[0] * gs.w + padStart);
+            end = Math.max(end, gs.l + counterAx.domain[1] * gs.w - padEnd);
+          } else {
+            start = Math.min(start, gs.t + (1 - counterAx.domain[1]) * gs.h + padStart);
+            end = Math.max(end, gs.t + (1 - counterAx.domain[0]) * gs.h - padEnd);
+          }
+        }
+        if (ax.anchor === "free") {
+          const position = isY ? gs.l + ax.position * gs.w : gs.t + (1 - ax.position) * gs.h;
+          start = Math.min(start, position);
+          end = Math.max(end, position);
+        }
+        return [start, end];
+      }
       function createSpikelines(gd, closestPoints, opts) {
         var container = opts.container;
         var fullLayout = opts.fullLayout;
@@ -38048,14 +38119,9 @@ var Plotly = (() => {
               xEndSpike = hLinePointX;
             }
             if (yMode.indexOf("across") !== -1) {
-              var xAcross0 = ya._counterDomainMin;
-              var xAcross1 = ya._counterDomainMax;
-              if (ya.anchor === "free") {
-                xAcross0 = Math.min(xAcross0, ya.position);
-                xAcross1 = Math.max(xAcross1, ya.position);
-              }
-              xBase = gs.l + xAcross0 * gs.w;
-              xEndSpike = gs.l + xAcross1 * gs.w;
+              const xSpan = getAcrossSpikeSpan(gd, ya, gs);
+              xBase = xSpan[0];
+              xEndSpike = xSpan[1];
             }
             container.insert("line", ":first-child").attr({
               x1: xBase,
@@ -38109,14 +38175,9 @@ var Plotly = (() => {
               yEndSpike = vLinePointY;
             }
             if (xMode.indexOf("across") !== -1) {
-              var yAcross0 = xa._counterDomainMin;
-              var yAcross1 = xa._counterDomainMax;
-              if (xa.anchor === "free") {
-                yAcross0 = Math.min(yAcross0, xa.position);
-                yAcross1 = Math.max(yAcross1, xa.position);
-              }
-              yBase = gs.t + (1 - yAcross1) * gs.h;
-              yEndSpike = gs.t + (1 - yAcross0) * gs.h;
+              const ySpan = getAcrossSpikeSpan(gd, xa, gs);
+              yBase = ySpan[0];
+              yEndSpike = ySpan[1];
             }
             container.insert("line", ":first-child").attr({
               x1: vLinePointX,
@@ -42772,7 +42833,7 @@ var Plotly = (() => {
                   var outerMax = rangeCenter + halfRange * factor * 1.0001;
                   var getPadMin = autorange.makePadFn(fullLayout, ax, 0);
                   var getPadMax = autorange.makePadFn(fullLayout, ax, 1);
-                  updateDomain(ax, factor);
+                  updateDomain(ax, factor, fullLayout);
                   var m = Math.abs(ax._m);
                   var extremes = autorange.concatExtremes(gd, ax);
                   var minArray = extremes.min;
@@ -42797,7 +42858,7 @@ var Plotly = (() => {
                   rangeMax = ax.l2r(rangeMax);
                   ax.range = ax._input.range = rl0 < rl1 ? [rangeMin, rangeMax] : [rangeMax, rangeMin];
                 }
-                updateDomain(ax, factor);
+                updateDomain(ax, factor, fullLayout);
               }
             }
           }
@@ -42828,13 +42889,26 @@ var Plotly = (() => {
           }
         }
       };
-      function updateDomain(ax, factor) {
+      function domainPadFraction(ax, fullLayout) {
+        const pad = ax.domainpad;
+        if (!pad) return 0;
+        const gs = fullLayout._size;
+        return ax._id.charAt(0) === "y" ? ((pad.top || 0) + (pad.bottom || 0)) / gs.h : ((pad.left || 0) + (pad.right || 0)) / gs.w;
+      }
+      function updateDomain(ax, factor, fullLayout) {
         var inputDomain = ax._inputDomain;
         var centerFraction = FROM_BL2[ax.constraintoward];
         var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
+        let divisor = factor;
+        const padFraction = domainPadFraction(ax, fullLayout);
+        if (padFraction > 0) {
+          const inputSpan = inputDomain[1] - inputDomain[0];
+          const drawnSpan = inputSpan - padFraction;
+          if (drawnSpan > 0) divisor = inputSpan / (drawnSpan / factor + padFraction);
+        }
         ax.domain = ax._input.domain = [
-          center + (inputDomain[0] - center) / factor,
-          center + (inputDomain[1] - center) / factor
+          center + (inputDomain[0] - center) / divisor,
+          center + (inputDomain[1] - center) / divisor
         ];
         ax.setScale();
       }
@@ -50063,6 +50137,10 @@ var Plotly = (() => {
             if (!newType || newType === "-") newType = "linear";
             Registry.getComponentMethod("annotations", "convertCoords")(gd, fullProp, newType, doextra);
             Registry.getComponentMethod("images", "convertCoords")(gd, fullProp, newType, doextra);
+            if (!ptrunk && fullProp && vi && (vi.range !== void 0 || vi.autorange !== void 0)) {
+              recordAlteredAxis(`${pleaf}.range`);
+              fullProp._inputRange = null;
+            }
           }
           var containerArrayMatch = manageArrays.containerArrayMatch(ai);
           if (containerArrayMatch) {
@@ -50575,6 +50653,14 @@ var Plotly = (() => {
             } else if (newDomain[0] !== oldDomain[0] || newDomain[1] !== oldDomain[1]) {
               newFullLayout[key]._inputDomain = null;
             }
+          }
+          const newRange = newFullLayout[key].range;
+          const oldRange = oldFullLayout[key].range;
+          const oldInputRange = oldFullLayout[key]._inputRange;
+          if (oldInputRange && newRange && oldRange) {
+            const isInputRange = newRange[0] === oldInputRange[0] && newRange[1] === oldInputRange[1];
+            const isOldRange = newRange[0] === oldRange[0] && newRange[1] === oldRange[1];
+            if (!isInputRange && !isOldRange) newFullLayout[key]._inputRange = null;
           }
         }
         var diffOpts = {
@@ -55824,6 +55910,13 @@ var Plotly = (() => {
           var domain = coerce("domain", dfltDomain);
           if (domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
           Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
+          if (letter === "x") {
+            coerce("domainpad.left");
+            coerce("domainpad.right");
+          } else {
+            coerce("domainpad.top");
+            coerce("domainpad.bottom");
+          }
           if (containerOut.tickmode === "sync") {
             containerOut.tickmode = "auto";
           }
@@ -61200,9 +61293,8 @@ var Plotly = (() => {
           }
           axisOpts.cleanRange("rangeslider.range");
           var gs = fullLayout._size;
-          var domain = axisOpts.domain;
-          opts2._width = gs.w * (domain[1] - domain[0]);
-          var x = Math.round(gs.l + gs.w * domain[0]);
+          opts2._width = axisOpts._length;
+          const x = Math.round(axisOpts._offset);
           var y = Math.round(
             gs.t + gs.h * (1 - axisOpts._counterDomainMin) + (axisOpts.side === "bottom" ? axisOpts._depth : 0) + opts2._offsetShift + constants2.extraPad
           );
