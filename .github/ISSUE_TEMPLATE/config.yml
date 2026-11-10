@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report an issue with the official examples
+    url: https://github.com/plotly/documentation/issues
+    about: For problems found on the example pages at https://plotly.com/javascript/
+  - name: "How do I do ... ?"
+    url: https://community.plotly.com/c/plotly-js/6
+    about: Get help with usage on our Community Forum
+  - name: Stack Overflow
+    url: https://stackoverflow.com/questions/tagged/plotly
+    about: Discuss on Stack Overflow using our `plotly` tag
