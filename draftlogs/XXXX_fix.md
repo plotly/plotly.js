@@ -1,1 +1,0 @@
- - Fix `rangebreaks` when one break overlaps two other breaks, which hid the plot or drew later data over earlier data [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
