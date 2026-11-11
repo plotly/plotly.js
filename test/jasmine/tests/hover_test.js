@@ -5671,18 +5671,19 @@ describe('hover on points at the same position', () => {
 
         it(`hovers a ${type} marker whose edge, not center, is within hoverdistance`, async () => {
             const gd = createGraphDiv();
-            const trace = Lib.extendFlat(makeTrace([0, 1, 2], [0, 0, 0]), { marker: { size: 80 } });
+            // One point, so that the pointer is inside no other marker
+            const trace = Lib.extendFlat(makeTrace([1], [0]), { marker: { size: 80 } });
             await Plotly.newPlot(gd, {
                 data: [trace],
                 layout: { width: 400, height: 400, hovermode: 'closest', hoverdistance: 20 }
             });
 
-            // 30px from the center of the middle marker, inside its 40px radius
+            // 30px from the marker center, inside its 40px radius
             const xa = gd._fullLayout.xaxis;
             Fx.hover(gd, { xval: xa.p2c(xa.c2p(1) + 30), yval: 0 }, subplot);
 
             expect(gd._hoverdata.length).toEqual(1);
-            expect(gd._hoverdata[0].pointNumber).toEqual(1);
+            expect(gd._hoverdata[0].pointNumber).toEqual(0);
         });
     });
 
