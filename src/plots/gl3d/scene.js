@@ -6,6 +6,7 @@ var createPlot = glPlot3d.createScene;
 
 var getContext = require('webgl-context');
 var passiveSupported = require('has-passive-events');
+var d3 = require('@plotly/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -16,6 +17,9 @@ var Fx = require('../../components/fx');
 
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
+var setCursor = require('../../lib/setcursor');
+var dragCursor3d = require('../../components/dragelement/helpers').dragCursor3d;
+var modifierKeys = require('../../components/dragelement/modifier_keys');
 
 var project = require('./project');
 var createAxesOptions = require('./layout/convert');
@@ -264,6 +268,10 @@ proto.initializeGLPlot = function() {
                 relayoutCallback(scene);
             }
         }, passiveSupported ? {passive: false} : false);
+
+        scene.glplot.canvas.addEventListener('mousemove', function(e) {
+            modifierKeys.update(scene.graphDiv, e);
+        });
 
         scene.glplot.canvas.addEventListener('mousemove', function() {
             if(scene.fullSceneLayout.dragmode === false) return;
@@ -1052,8 +1060,18 @@ proto.updateFx = function(dragmode, hovermode) {
         }
     }
 
+    scene.updateCursor();
+
     // to put dragmode and hovermode on the same grounds from relayout
     scene.fullSceneLayout.hovermode = hovermode;
+};
+
+proto.updateCursor = function() {
+    var scene = this;
+    if(scene.staticMode || !scene.camera) return;
+
+    var cursor = dragCursor3d(scene.camera.keyBindingMode, scene.graphDiv._modifierKeys);
+    setCursor(d3.select(scene.container), cursor);
 };
 
 function flipPixels(pixels, w, h) {

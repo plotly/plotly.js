@@ -222,6 +222,7 @@ module.exports = {
     updateGrid: updateGrid,
     clean: clean,
     updateFx: Cartesian.updateFx,
+    updateCursor: Cartesian.updateCursor,
     toSVG: Cartesian.toSVG,
     reglPrecompiled: reglPrecompiled
 };
