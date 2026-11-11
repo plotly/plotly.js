@@ -50,6 +50,7 @@ function styleOnSelect(gd, cd, sel) {
         stylePoints(sel, trace, gd);
         styleText(sel, trace, gd);
     }
+    Registry.getComponentMethod('errorbars', 'style')(sel);
 }
 
 module.exports = {
