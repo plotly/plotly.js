@@ -1662,7 +1662,16 @@ drawing.bBox = function (node, inTester, hash) {
     }
 
     // cache this bbox
-    if (hash) drawing.savedBBoxes[hash] = bb;
+    if (hash) {
+        const cache = drawing.savedBBoxes;
+        cache[hash] = bb;
+        if (document.fonts && document.fonts.status === 'loading') {
+            // Reuse fallback measurements during the draw, but not after the fonts settle.
+            document.fonts.ready.then(() => {
+                if (cache[hash] === bb) delete cache[hash];
+            });
+        }
+    }
     savedBBoxesCount++;
 
     return Lib.extendFlat({}, bb);
