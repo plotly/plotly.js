@@ -68,9 +68,11 @@ describe('Test scatterpolargl hover:', function() {
         });
     }
 
+    // The default position is inside two 'Trial 3' markers (points 2 and 26) of the same size.
+    // As in `scatterpolar`, the tie goes to the point drawn last.
     [{
         desc: 'base',
-        nums: 'r: 3.886013\nθ: 125.2822°',
+        nums: 'r: 4.022892\nθ: 128.342°',
         name: 'Trial 3'
     }, {
         desc: 'with hovertemplate',
@@ -78,7 +80,7 @@ describe('Test scatterpolargl hover:', function() {
             fig.data[2].hovertemplate = 'template %{r} %{theta}';
             return fig;
         },
-        nums: 'template 3.886013 125.2822°',
+        nums: 'template 4.022892 128.342°',
         name: 'Trial 3'
     }, {
         desc: '(no labels - out of sector)',
@@ -95,7 +97,7 @@ describe('Test scatterpolargl hover:', function() {
             fig.layout.polar.angularaxis.thetaunit = 'radians';
             return fig;
         },
-        nums: 'r: 3.886013\nθ: 2.186586',
+        nums: 'r: 4.022892\nθ: 2.239991',
         name: 'Trial 3'
     }, {
         desc: 'on log radial axis',
@@ -124,7 +126,7 @@ describe('Test scatterpolargl hover:', function() {
             fig.data.forEach(function(t) { t.text = 'a'; });
             return fig;
         },
-        nums: 'r: 3.886013\nθ: 125.2822°\na',
+        nums: 'r: 4.022892\nθ: 128.342°\na',
         name: 'Trial 3'
     }, {
         desc: 'with custom text array',
@@ -132,7 +134,7 @@ describe('Test scatterpolargl hover:', function() {
             fig.data.forEach(function(t) { t.text = t.r.map(String); });
             return fig;
         },
-        nums: 'r: 3.886013\nθ: 125.2822°\n3.88601339194',
+        nums: 'r: 4.022892\nθ: 128.342°\n4.02289202968',
         name: 'Trial 3'
     }]
     .forEach(function(specs) {

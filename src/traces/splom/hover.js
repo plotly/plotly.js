@@ -2,6 +2,8 @@
 
 var helpers = require('./helpers');
 var calcHover = require('../scattergl/hover').calcHover;
+const { getMarkerRadii } = require('../scattergl/hover');
+const { getPointDistance } = require('../scatter/hover');
 var getFromId = require('../../plots/cartesian/axes').getFromId;
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -66,6 +68,8 @@ function _hoverPoints(pointData, xval, yval, axisHoversubplots) {
 
     var id, dxy;
     var minDist = maxDistance;
+    // splom traces always draw markers, so score them like `scatter` markers
+    const markerRadii = getMarkerRadii(scene.matrixOptions);
 
     for(var i = 0; i < x.length; i++) {
         if(axisHoversubplots && i !== pointData.index) continue;
@@ -74,7 +78,7 @@ function _hoverPoints(pointData, xval, yval, axisHoversubplots) {
         var pty = y[i];
         var dx = xa.c2p(ptx) - xpx;
         var dy = ya.c2p(pty) - ypx;
-        var dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = getPointDistance(dx, dy, markerRadii.radius(i), 3);
 
         // Accept a tie so that the point drawn last wins, as in `Fx.getClosest`
         if(axisHoversubplots || dist <= minDist) {

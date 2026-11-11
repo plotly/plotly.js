@@ -1,0 +1,1 @@
+- Account for marker size when picking the hovered point in `scattergl`, `scatterpolargl` and `splom` (matching `scatter`) [[#PRNUMBER](https://github.com/plotly/plotly.js/pull/PRNUMBER)]

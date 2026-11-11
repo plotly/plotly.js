@@ -7,6 +7,24 @@ var getTraceColor = require('./get_trace_color');
 var Color = require('../../components/color');
 var fillText = Lib.fillText;
 
+// Hover distance along one axis, for the 'x' and 'y' hovermodes.
+// `d` is the pixel offset from the marker center and `mrc` the marker radius.
+// Inside the marker, the distance stays below 1 and grows with the offset relative to the radius.
+const getAxisDistance = (d, mrc) => {
+    const rad = Math.max(3, mrc || 0);
+    const kink = 1 - 1 / rad;
+    const dRaw = Math.abs(d);
+    return dRaw < rad ? (kink * dRaw) / rad : dRaw - rad + kink;
+};
+
+// Hover distance to a marker for the 'closest' hovermode.
+// The distance is measured to the marker edge, so a point inside a marker always shows up.
+// Inside the marker the distance is floored at `1 - minRad / rad`, so a smaller marker wins.
+const getPointDistance = (dx, dy, mrc, minRad) => {
+    const rad = Math.max(minRad, mrc || 0);
+    return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - minRad / rad);
+};
+
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
@@ -39,10 +57,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 ) ? 0 : Infinity;
             }
 
-            var rad = Math.max(3, di.mrc || 0);
-            var kink = 1 - 1 / rad;
-            var dxRaw = Math.abs(xa.c2p(di.x) - xpx);
-            return (dxRaw < rad) ? (kink * dxRaw / rad) : (dxRaw - rad + kink);
+            return getAxisDistance(xa.c2p(di.x) - xpx, di.mrc);
         };
         var dy = function(di) {
             if(yPeriod) {
@@ -55,22 +70,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 ) ? 0 : Infinity;
             }
 
-            var rad = Math.max(3, di.mrc || 0);
-            var kink = 1 - 1 / rad;
-            var dyRaw = Math.abs(ya.c2p(di.y) - ypx);
-            return (dyRaw < rad) ? (kink * dyRaw / rad) : (dyRaw - rad + kink);
+            return getAxisDistance(ya.c2p(di.y) - ypx, di.mrc);
         };
 
         // scatter points: d.mrc is the calculated marker radius
-        // adjust the distance so if you're inside the marker it
-        // always will show up regardless of point size, but
-        // prioritize smaller points
-        var dxy = function(di) {
-            var rad = Math.max(minRad, di.mrc || 0);
-            var dx = xa.c2p(di.x) - xpx;
-            var dy = ya.c2p(di.y) - ypx;
-            return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - minRad / rad);
-        };
+        const dxy = (di) => getPointDistance(xa.c2p(di.x) - xpx, ya.c2p(di.y) - ypx, di.mrc, minRad);
         var distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
 
         Fx.getClosest(cd, distfn, pointData);
@@ -261,3 +265,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         }
     }
 };
+
+module.exports.getAxisDistance = getAxisDistance;
+module.exports.getPointDistance = getPointDistance;
