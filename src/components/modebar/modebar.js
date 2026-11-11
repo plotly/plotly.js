@@ -261,14 +261,10 @@ proto.updateActiveButton = function(buttonClicked) {
         // (e.g. during the handling when a modebar button is clicked)
         var updateButtonStyle = function(button, isActive) {
             var style = fullLayout.modebar;
-            var childEl = button.querySelector('.icon path');
-            if(childEl) {
-                if(isActive || button.matches(':hover')) {
-                    childEl.style.fill = style.activecolor;
-                } else {
-                    childEl.style.fill = style.color;
-                }
-            }
+            var fill = (isActive || button.matches(':hover')) ? style.activecolor : style.color;
+            button.querySelectorAll('.icon path').forEach(function(childEl) {
+                childEl.style.fill = fill;
+            });
         };
 
         // Use 'data-toggle' and 'buttonClicked' to toggle buttons
