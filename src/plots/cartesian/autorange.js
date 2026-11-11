@@ -402,7 +402,9 @@ function doAutoRange(gd, ax, presetRange) {
                 axeRangeOpts.range = getAutoRange(gd, ax);
             }
         }
-        anchorAx._input.rangeslider[ax._name] = Lib.extendFlat({}, axeRangeOpts);
+        var inOpts = Lib.extendFlat({}, axeRangeOpts);
+        delete inOpts._template;
+        anchorAx._input.rangeslider[ax._name] = inOpts;
     }
 }
 
