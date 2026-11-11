@@ -49,7 +49,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if (subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, { noDash: true });
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('connectgaps');
     }
 

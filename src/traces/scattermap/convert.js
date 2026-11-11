@@ -69,7 +69,19 @@ module.exports = function convert(gd, calcTrace) {
             'line-opacity': trace.opacity
         });
 
-        // TODO convert line.dash into line-dasharray
+        // MapLibre scales line-dasharray lengths by the line width, so reuse
+        // the px dash lengths from Drawing.dashStyle and convert them back
+        // to line-width units. 'solid' yields an empty string: no dasharray.
+        const dashPx = Drawing.dashStyle(trace.line.dash, trace.line.width);
+        if(dashPx) {
+            const w = trace.line.width || 1;
+            const dashArray = dashPx.split(/[\s,]+/)
+                .map(s => parseFloat(s) / w)
+                .filter(v => isFinite(v) && v >= 0);
+            if(dashArray.length) {
+                line.paint['line-dasharray'] = dashArray;
+            }
+        }
     }
 
     if (hasCircles) {

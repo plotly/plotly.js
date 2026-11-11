@@ -123,6 +123,25 @@ describe('scattermap defaults', function() {
         expect(fullTrace.marker).toBeDefined();
         expect(fullTrace.marker.line).toBeUndefined();
     });
+
+    it('should default \'line.dash\' to \'solid\' and coerce named dash styles', function() {
+        const solidTrace = _supply({
+            mode: 'lines',
+            lon: [1, 2, 3],
+            lat: [2, 3, 3]
+        });
+
+        expect(solidTrace.line.dash).toBe('solid', 'default dash');
+
+        const dashedTrace = _supply({
+            mode: 'lines',
+            lon: [1, 2, 3],
+            lat: [2, 3, 3],
+            line: {dash: 'dashdot'}
+        });
+
+        expect(dashedTrace.line.dash).toBe('dashdot', 'coerced dash');
+    });
 });
 
 describe('scattermap convert', function() {
@@ -590,6 +609,29 @@ describe('scattermap convert', function() {
         ];
 
         expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'have correct line coords');
+    });
+
+    it('should convert \'line.dash\' to a MapLibre \'line-dasharray\' paint value', function() {
+        const dasharrayOf = (line) => {
+            const opts = _convert(Lib.extendFlat({}, base, {
+                mode: 'lines',
+                line: line
+            }));
+            return opts.line.paint['line-dasharray'];
+        };
+
+        // 'solid' (the default) leaves line-dasharray unset
+        expect(dasharrayOf({})).toBe(undefined, 'default solid');
+        expect(dasharrayOf({dash: 'solid'})).toBe(undefined, 'explicit solid');
+
+        // named styles mirror the SVG dash lengths from Drawing.dashStyle,
+        // expressed in line-width units (MapLibre scales them by line width)
+        expect(dasharrayOf({dash: 'dash', width: 2})).toEqual([4.5, 4.5], 'dash style');
+        expect(dasharrayOf({dash: 'dot', width: 4})).toEqual([1, 1], 'dot style');
+        expect(dasharrayOf({dash: 'longdashdot', width: 2})).toEqual([7.5, 3, 1.5, 3], 'longdashdot style');
+
+        // custom px dash lists are honored, converted to line-width units
+        expect(dasharrayOf({dash: '5px,10px,2px,2px', width: 2})).toEqual([2.5, 5, 1, 1], 'custom px list');
     });
 
     it('should correctly convert \'textposition\' to \'text-anchor\' and \'text-offset\'', function() {
