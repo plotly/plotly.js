@@ -1671,6 +1671,43 @@ describe('pie relayout', function() {
         })
         .then(done, done.fail);
     });
+
+    it('removes leader lines and label offsets that a larger size no longer needs', (done) => {
+        const labels = [];
+        const values = [];
+        for (let i = 0; i < 8; i++) {
+            labels.push(`Label ${i}`);
+            values.push(i < 4 ? 20 : 3);
+        }
+        const data = [{ type: 'pie', labels, values, textposition: 'auto', textinfo: 'label' }];
+        const largeLayout = { width: 1000, height: 1000, showlegend: false };
+        const countTextLines = () => d3SelectAll('.pielayer path.textline').size();
+        const getTextTransforms = () => {
+            const transforms = [];
+            d3SelectAll(SLICES_TEXT_SELECTOR).each(function () {
+                transforms.push(this.getAttribute('transform'));
+            });
+            return transforms;
+        };
+        let textLinesAfterRelayout;
+        let transformsAfterRelayout;
+
+        Plotly.newPlot(gd, data, { width: 300, height: 300, showlegend: false })
+            .then(() => {
+                expect(countTextLines()).toBeGreaterThan(0, 'leader lines at the small size');
+                return Plotly.relayout(gd, { width: largeLayout.width, height: largeLayout.height });
+            })
+            .then(() => {
+                textLinesAfterRelayout = countTextLines();
+                transformsAfterRelayout = getTextTransforms();
+                return Plotly.newPlot(gd, data, largeLayout);
+            })
+            .then(() => {
+                expect(textLinesAfterRelayout).toBe(countTextLines(), 'leader lines after relayout');
+                expect(transformsAfterRelayout).toEqual(getTextTransforms());
+            })
+            .then(done, done.fail);
+    });
 });
 
 describe('Test pie interactions edge cases:', function() {

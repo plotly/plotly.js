@@ -54,6 +54,14 @@ function plot(gd, cdModule) {
             var hasOutsideText = false;
 
             slices.each(function (pt, i) {
+                // Clear the outside-label state of the previous draw.
+                // Otherwise a label that moved back inside keeps its old leader line and offset.
+                pt.yLabelMin = undefined;
+                pt.yLabelMid = undefined;
+                pt.yLabelMax = undefined;
+                pt.labelExtraX = 0;
+                pt.labelExtraY = 0;
+
                 if (pt.hidden) {
                     d3.select(this).selectAll('path,g').remove();
                     return;
@@ -219,8 +227,6 @@ function plot(gd, cdModule) {
                         pt.yLabelMin = targetY - textBB.height / 2;
                         pt.yLabelMid = targetY;
                         pt.yLabelMax = targetY + textBB.height / 2;
-                        pt.labelExtraX = 0;
-                        pt.labelExtraY = 0;
                         hasOutsideText = true;
                     }
 
