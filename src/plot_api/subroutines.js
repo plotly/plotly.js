@@ -264,6 +264,8 @@ function lsInner(gd) {
     }
 
     for(subplot in fullLayout._plots) {
+        // Z-order subplots share axis lines with their primary subplot.
+        if (subplot.indexOf(zindexSeparator) !== -1) continue;
         plotinfo = fullLayout._plots[subplot];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
