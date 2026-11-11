@@ -5652,6 +5652,60 @@ describe('hover on points at the same position', () => {
             expect(gd._hoverdata.length).toEqual(1);
             expect(gd._hoverdata[0].pointNumber).toEqual(2);
         });
+
+        it(`picks the smaller marker for ${type} when markers of different sizes overlap`, async () => {
+            const gd = createGraphDiv();
+            const small = Lib.extendFlat(makeTrace([0, 1, 2], [1, 0, 1]), { marker: { size: 6 } });
+            const big = Lib.extendFlat(makeTrace([0, 1, 2], [2, 0, 2]), { marker: { size: 20 } });
+            await Plotly.newPlot(gd, {
+                data: [small, big],
+                layout: { width: 400, height: 400, hovermode: 'closest' }
+            });
+
+            Fx.hover(gd, { xval: 1, yval: 0 }, subplot);
+
+            expect(gd._hoverdata.length).toEqual(1);
+            expect(gd._hoverdata[0].curveNumber).toEqual(0);
+            expect(gd._hoverdata[0].pointNumber).toEqual(1);
+        });
+
+        it(`hovers a ${type} marker whose edge, not center, is within hoverdistance`, async () => {
+            const gd = createGraphDiv();
+            const trace = Lib.extendFlat(makeTrace([0, 1, 2], [0, 0, 0]), { marker: { size: 80 } });
+            await Plotly.newPlot(gd, {
+                data: [trace],
+                layout: { width: 400, height: 400, hovermode: 'closest', hoverdistance: 20 }
+            });
+
+            // 30px from the center of the middle marker, inside its 40px radius
+            const xa = gd._fullLayout.xaxis;
+            Fx.hover(gd, { xval: xa.p2c(xa.c2p(1) + 30), yval: 0 }, subplot);
+
+            expect(gd._hoverdata.length).toEqual(1);
+            expect(gd._hoverdata[0].pointNumber).toEqual(1);
+        });
+    });
+
+    it('hovers a large scattergl marker whose center is outside the spatial index search box', async () => {
+        // Traces of 1e5 points or more are searched through a spatial index
+        const n = 1e5;
+        const x = new Array(n).fill(5);
+        const y = new Array(n).fill(0);
+        const size = new Array(n).fill(4);
+        x[0] = 1;
+        size[0] = 80;
+
+        const gd = createGraphDiv();
+        await Plotly.newPlot(gd, {
+            data: [{ type: 'scattergl', mode: 'markers', x, y, marker: { size } }],
+            layout: { width: 400, height: 400, hovermode: 'closest', hoverdistance: 20, xaxis: { range: [0, 6] } }
+        });
+
+        const xa = gd._fullLayout.xaxis;
+        Fx.hover(gd, { xval: xa.p2c(xa.c2p(1) + 30), yval: 0 });
+
+        expect(gd._hoverdata.length).toEqual(1);
+        expect(gd._hoverdata[0].pointNumber).toEqual(0);
     });
 });
 
