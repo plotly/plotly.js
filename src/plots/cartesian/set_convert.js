@@ -35,6 +35,21 @@ function isValidCategory(v) {
     return v !== null && v !== undefined;
 }
 
+const MIN_PADDED_LENGTH = 2;
+
+/**
+ * Get the part of the requested `domainpad` that fits in a domain band.
+ *
+ * @param wanted - the total padding of the two edges, in pixels
+ * @param bandLength - the length of the domain band, in pixels
+ * @returns the factor from 0 to 1 to multiply each pad by
+ */
+function padFactor(wanted, bandLength) {
+    if(wanted <= 0) return 0;
+    const room = Math.max(0, bandLength - MIN_PADDED_LENGTH);
+    return wanted > room ? room / wanted : 1;
+}
+
 /**
  * Define the conversion functions for an axis data is used in 5 ways:
  *
@@ -562,6 +577,7 @@ module.exports = function setConvert(ax, fullLayout) {
         if(ax.overlaying) {
             var ax2 = axisIds.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
+            ax.domainpad = ax2.domainpad;
         }
 
         // While transitions are occurring, we get a double-transform
@@ -576,14 +592,31 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl1 = ax.r2l(ax[rangeAttr][1], calendar);
 
         var isY = axLetter === 'y';
+        // the length in pixels of the domain band, before `domainpad`
+        const bandLength = (isY ? gs.h : gs.w) * (ax.domain[1] - ax.domain[0]);
+        const pad = ax.domainpad;
+        let padStart = 0;
+        let padEnd = 0;
+
+        if(pad) {
+            padStart = (isY ? pad.top : pad.left) || 0;
+            padEnd = (isY ? pad.bottom : pad.right) || 0;
+
+            const fits = padFactor(padStart + padEnd, bandLength);
+            padStart *= fits;
+            padEnd *= fits;
+        }
+
+        ax._length = bandLength - padStart - padEnd;
+        ax._padStart = padStart;
+        ax._padEnd = padEnd;
+
         if(isY) {
-            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
-            ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.t + (1 - ax.domain[1]) * gs.h + padStart;
             ax._m = ax._length / (rl0 - rl1);
             ax._b = -ax._m * rl1;
         } else {
-            ax._offset = gs.l + ax.domain[0] * gs.w;
-            ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
+            ax._offset = gs.l + ax.domain[0] * gs.w + padStart;
             ax._m = ax._length / (rl1 - rl0);
             ax._b = -ax._m * rl0;
         }
