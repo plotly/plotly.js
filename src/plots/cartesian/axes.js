@@ -716,6 +716,12 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
         // ensure identical tick0
         mockAx.tick0 = ax.tick0;
     }
+    if (ax._useTicklabelIndex) {
+        // this could always be done but the additional information on the minor
+        // axis is just necessary when using ticklabelindex.
+        autoTickRound(mockAx);
+        ax.minor._tickround = mockAx._tickround;
+    }
 };
 
 function isMultiple(bigger, smaller) {
@@ -1496,7 +1502,7 @@ function arrayTicks(ax, majorOnly) {
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = axes.tickText(ax, vali, false, String(text[i]), {
+                const obj = axes.tickText(ax, vali, false, text[i] !== undefined, {
                     first: i === firstIdx,
                     last: i === lastIdx,
                 });
@@ -1962,7 +1968,7 @@ function tickTextObj(ax, x, text) {
 }
 
 function formatDate(ax, out, hover, extraPrecision) {
-    var tr = ax._tickround;
+    var tr = ax._useTicklabelIndex ? ax.minor._tickround : ax._tickround;
     var fmt = (hover && ax.hoverformat) || axes.getTickFormat(ax);
 
     // Only apply extra precision if no explicit format was provided.
@@ -4677,7 +4683,8 @@ function swapAxisGroup(gd, xIds, yIds) {
     var allAxKeys = Object.keys(axAttrs);
 
     var noSwapAttrs = [
-        'anchor', 'domain', 'overlaying', 'position', 'side', 'tickangle', 'editType'
+        'anchor', 'domain', 'domainpad', 'overlaying', 'position', 'side',
+        'tickangle', 'editType'
     ];
     var numericTypes = ['linear', 'log'];
 

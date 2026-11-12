@@ -3,6 +3,7 @@
 var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
+const { rgbaString } = require('../../components/color');
 var prepareRegl = require('../../lib/prepare_regl');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
@@ -116,7 +117,7 @@ function makeGridData(gd) {
                 data: [x0, x1, y0, y1],
                 join: 'rect',
                 thickness: lwidth * plotGlPixelRatio,
-                color: lcolor,
+                color: rgbaString(lcolor),
                 viewport: fullView,
                 range: fullView,
                 overlay: false
@@ -136,7 +137,7 @@ function makeGridData(gd) {
 
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
-        var yOffset = gs.b + ya.domain[0] * gs.h;
+        const yOffset = gs.b + ya.domain[0] * gs.h + (ya._padEnd || 0);
         var ym = -ya._m;
         var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
         var x, y;

@@ -72,7 +72,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
         input = inputs[i];
 
         for(key in input) {
-            src = target[key];
+            src = Object.prototype.hasOwnProperty.call(target, key) ? target[key] : undefined;
             copy = input[key];
 
             if(noArrayCopies && isArray(copy)) {

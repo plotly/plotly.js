@@ -332,7 +332,7 @@ function _doPlot(gd, data, layout, config) {
     function marginPushersAgain() {
         if (!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
 
-        return Lib.syncOrAsync([marginPushers, subroutines.layoutStyles], gd);
+        return marginPushers();
     }
 
     function positionAndAutorange() {
@@ -2124,6 +2124,12 @@ function _relayout(gd, aobj) {
             if (!newType || newType === '-') newType = 'linear';
             Registry.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
             Registry.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
+
+            // a range or autorange in a whole axis object is handled like the dotted keys above
+            if (!ptrunk && fullProp && vi && (vi.range !== undefined || vi.autorange !== undefined)) {
+                recordAlteredAxis(`${pleaf}.range`);
+                fullProp._inputRange = null;
+            }
         }
 
         // alter gd.layout
@@ -2883,6 +2889,17 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
             // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
             // because it's likely that if the newDomain and oldDomain are the same, the user
             // passed in the same layout object and we should keep the _inputDomain.
+        }
+
+        // Same for _inputRange: constraints compare the range against it, so a stale one
+        // puts the previous range back
+        const newRange = newFullLayout[key].range;
+        const oldRange = oldFullLayout[key].range;
+        const oldInputRange = oldFullLayout[key]._inputRange;
+        if (oldInputRange && newRange && oldRange) {
+            const isInputRange = newRange[0] === oldInputRange[0] && newRange[1] === oldInputRange[1];
+            const isOldRange = newRange[0] === oldRange[0] && newRange[1] === oldRange[1];
+            if (!isInputRange && !isOldRange) newFullLayout[key]._inputRange = null;
         }
     }
 

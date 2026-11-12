@@ -2797,7 +2797,7 @@ export interface ContourData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -2904,7 +2904,7 @@ export interface ContourData {
          */
         smoothing?: number;
         /**
-         * Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.
+         * Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.
          * Minimum: 0
          */
         width?: number;
@@ -2942,9 +2942,9 @@ export interface ContourData {
     showscale?: boolean;
     /** Sets the text elements associated with each z value. */
     text?: Datum[] | Datum[][] | TypedArray;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font. */
     textfont?: Font;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
     texttemplate?: string;
     /**
      * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
@@ -3138,7 +3138,7 @@ export interface ContourcarpetData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -3227,7 +3227,7 @@ export interface ContourcarpetData {
          */
         smoothing?: number;
         /**
-         * Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.
+         * Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.
          * Minimum: 0
          */
         width?: number;
@@ -4677,7 +4677,7 @@ export interface Histogram2dcontourData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -4823,9 +4823,9 @@ export interface Histogram2dcontourData {
      * @default true
      */
     showscale?: boolean;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font. */
     textfont?: Font;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
     texttemplate?: string;
     /**
      * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
@@ -12199,6 +12199,33 @@ export interface LayoutAxis {
      * @default [0,1]
      */
     domain?: [number, number];
+    /** Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. An axis that sets `overlaying` ignores its own `domainpad` and uses the `domainpad` of the axis it overlays, so that both axes share the same plot area. */
+    domainpad?: {
+        /**
+         * Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        bottom?: number;
+        /**
+         * Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        left?: number;
+        /**
+         * Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        right?: number;
+        /**
+         * Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        top?: number;
+    };
     /**
      * Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*
      * Setting this also sets: tickmode = "linear"

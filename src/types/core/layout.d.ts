@@ -157,3 +157,30 @@ export interface Template {
     /** Template layout defaults. */
     layout?: Partial<Layout> | undefined;
 }
+
+// ---------------------------------------------------------------------------
+// Update objects (relayout / restyle / update)
+// ---------------------------------------------------------------------------
+
+/** Keys that hold an attribute path such as `'xaxis.range[0]'` or `'annotations[0].text'`. */
+interface AttributePathKeys {
+    [key: `${string}.${string}`]: any;
+    [key: `${string}[${string}`]: any;
+}
+
+/**
+ * Layout update for `Plotly.relayout` and `Plotly.update`.
+ *
+ * A key is a layout property or an attribute path, for example `'xaxis.range[0]'` or `'annotations[0].text'`.
+ * An attribute path changes one property and keeps its siblings. A nested object replaces the whole container.
+ * A value behind an attribute path has the type `any`.
+ */
+export type LayoutUpdate = Partial<Layout> & AttributePathKeys;
+
+/**
+ * Trace update for `Plotly.restyle` and `Plotly.update`.
+ *
+ * A key is a trace property or an attribute path, for example `'marker.color'`.
+ * A value behind an attribute path has the type `any`.
+ */
+export type DataUpdate = Partial<Data> & AttributePathKeys;
