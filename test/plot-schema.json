@@ -12427,7 +12427,7 @@
         "sum": {
           "description": "The number each triplet should sum to, and the maximum range of each axis",
           "dflt": 1,
-          "editType": "plot",
+          "editType": "calc",
           "min": 0,
           "valType": "number"
         },
