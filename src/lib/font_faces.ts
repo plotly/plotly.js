@@ -36,6 +36,7 @@ type Permission = 'embed' | 'forbid' | 'unknown';
 type Source = string | ArrayBuffer | ArrayBufferView;
 
 interface Face {
+    key: string;
     family: string;
     weight: string;
     style: string;
@@ -58,7 +59,8 @@ const warnedItems = new WeakSet<object>();
 
 /**
  * Load the faces of `config.fonts` before the graph draws.
- * Each face downloads and loads one time. Later graphs use the same face.
+ * A face that loads stays in the cache, and later graphs use it.
+ * A face that fails leaves the cache, so that the next graph that draws tries it again.
  *
  * @param fonts - the `fonts` value of the graph config
  * @returns undefined if no face must load. Otherwise a promise that resolves after the faces load or fail.
@@ -92,8 +94,8 @@ export function loadFonts(fonts: unknown): Promise<boolean> | undefined {
  *
  * @param fonts - the `fonts` value of the graph config
  * @param svg - the serialized SVG. A face gets a rule only if the SVG names its family.
- * @param format - the export format. For *svg*, *pdf* and *eps*, a face gets a rule only if
- *   its font file permits embedding.
+ * @param format - the export format. For *svg*, *pdf* and *eps*, a face gets no rule if
+ *   its font file forbids embedding. A face whose permission cannot be read gets a rule.
  * @returns the CSS text for a `<style>` element, or an empty string
  */
 export function fontFaceRules(fonts: unknown, svg: string, format?: string): string {
@@ -108,7 +110,7 @@ export function fontFaceRules(fonts: unknown, svg: string, format?: string): str
         if (!face || !face.loaded || used.has(face)) continue;
         if (text.indexOf(face.family.toLowerCase()) === -1) continue;
         used.add(face);
-        if (keepsBytes && face.permission !== 'embed') {
+        if (keepsBytes && face.permission === 'forbid') {
             warnNotEmbedded(face, format || 'svg');
             continue;
         }
@@ -122,7 +124,7 @@ export function fontFaceRules(fonts: unknown, svg: string, format?: string): str
  *
  * @param bytes - the font file: TrueType, OpenType, WOFF or WOFF2
  * @returns *embed* if the font permits embedding, *forbid* if it does not,
- *   and *unknown* if the permission cannot be read.
+ *   and *unknown* if the permission cannot be read. An export embeds a face of unknown permission.
  *   A WOFF2 file is always *unknown*, because browsers have no Brotli decoder.
  *   A compressed WOFF file is *unknown* if the browser has no `DecompressionStream`.
  */
@@ -202,6 +204,7 @@ function findFace(font: FontSource, create: boolean): Face | undefined {
     let face = faces.get(key);
     if (!face && create) {
         const newFace: Face = {
+            key,
             family,
             weight,
             style,
@@ -264,6 +267,8 @@ async function loadFace(face: Face, source: Source): Promise<boolean> {
         document.fonts.add(fontFace);
         face.loaded = true;
     } catch (error) {
+        // A failed download can be a short network fault, so do not keep the failure
+        if (faces.get(face.key) === face) faces.delete(face.key);
         warn(`Cannot load the font "${face.family}" (${error}). The graph uses a fallback font.`);
     }
     face.settled = true;
@@ -332,9 +337,5 @@ function base64(bytes: ArrayBuffer): string {
 function warnNotEmbedded(face: Face, format: string): void {
     if (face.warned) return;
     face.warned = true;
-    const reason =
-        face.permission === 'forbid'
-            ? 'the font file forbids embedding'
-            : 'plotly.js cannot read the embedding permission of the font file. A TTF, OTF or WOFF file makes the permission readable';
-    warn(`The ${format} export does not embed the font "${face.family}", because ${reason}.`);
+    warn(`The ${format} export does not embed the font "${face.family}", because the font file forbids embedding.`);
 }

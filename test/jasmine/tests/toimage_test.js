@@ -693,6 +693,21 @@ describe('Plotly.toImage', function () {
                 .then(done, done.fail);
         });
 
+        it('embeds a font whose embedding permission cannot be read in svg exports', (done) => {
+            // Without DecompressionStream, plotly.js cannot read the compressed OS/2 table of a WOFF file
+            const decompressionStream = window.DecompressionStream;
+            window.DecompressionStream = undefined;
+            plot('ToImageFontsUnknown', testFonts.squareWoff)
+                .finally(() => {
+                    window.DecompressionStream = decompressionStream;
+                })
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('data:font/woff;base64,');
+                })
+                .then(done, done.fail);
+        });
+
         it('reads the embedding permission of a WOFF file with a compressed OS/2 table', (done) => {
             plot('ToImageFontsWoff', testFonts.squareWoff)
                 .then(svgOf)

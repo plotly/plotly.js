@@ -1102,16 +1102,47 @@ describe('config argument', function() {
                 .then(done, done.fail);
         });
 
-        it('should warn and draw with a fallback font if a font does not load', (done) => {
+        it('should warn and draw with a fallback font each time a font does not load', (done) => {
             spyOn(Lib, 'warn');
             const family = 'ConfigFontsBroken';
+            const config = { fonts: [{ family, source: 'data:font/ttf;base64,AAAA' }] };
+            const message = `Cannot load the font "${family}"`;
+            const warnings = () => Lib.warn.calls.allArgs().filter((args) => String(args[0]).includes(message)).length;
 
-            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), {
-                fonts: [{ family, source: 'data:font/ttf;base64,AAAA' }]
-            })
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
                 .then(() => {
                     expect(gd.querySelector('.gtitle')).not.toBe(null);
+                    expect(warnings()).toBe(1);
+                    return Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
+                })
+                .then(() => {
+                    expect(warnings()).toBe(2, 'the next draw tries the font again');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should load a font in the next draw after a failed download', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ConfigFontsRetry';
+            const binary = atob(testFonts.square.split(',')[1]);
+            const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+            const config = { fonts: [{ family, source: 'https://fonts.example.invalid/retry.ttf' }] };
+            let calls = 0;
+            spyOn(window, 'fetch').and.callFake(() => {
+                calls++;
+                if (calls === 1) return Promise.reject(new TypeError('Failed to fetch'));
+                return Promise.resolve(new Response(bytes));
+            });
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => {
                     expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching(`Cannot load the font "${family}"`));
+                    Plotly.purge(gd);
+                    return Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
+                })
+                .then(() => {
+                    expect(window.fetch).toHaveBeenCalledTimes(2);
+                    expect(titleWidth()).toBeCloseTo(100, 0);
                 })
                 .then(done, done.fail);
         });

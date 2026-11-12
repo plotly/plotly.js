@@ -371,8 +371,9 @@ var configAttributes = {
             'or the font bytes in an `ArrayBuffer` or a typed array.',
             'plotly.js measures text only after the fonts load.',
             'If a font does not load in 10 seconds, plotly.js logs a warning and draws with a fallback font.',
-            'An export to *svg*, *pdf* or *eps* embeds a font only if the font file permits embedding.',
-            'plotly.js cannot read that permission in a WOFF2 file, so these exports do not embed WOFF2 fonts.'
+            'The next draw tries to load the font again.',
+            'An export to *svg*, *pdf* or *eps* does not embed a font whose file forbids embedding.',
+            'If plotly.js cannot read that permission, as in a WOFF2 file, the export embeds the font.'
         ].join(' ')
     },
 
