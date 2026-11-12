@@ -5,6 +5,8 @@ function b64encodeTypedArray(typedArray) {
 
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
+const toSVG = require('../../../src/snapshot/tosvg');
+const testFonts = require('../assets/test_fonts');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -643,6 +645,64 @@ describe('Plotly.toImage', function () {
                     var computed = fig.layout.computed;
                     expect(computed.margin.b).toBeGreaterThan(80);
                     expect(computed.margin.r).toBeGreaterThan(80);
+                })
+                .then(done, done.fail);
+        });
+    });
+
+    describe('with config.fonts', () => {
+        const plot = (family, source) =>
+            Plotly.newPlot(
+                gd,
+                [{ y: [1, 2] }],
+                { width: 400, height: 300, font: { family: `${family}, Arial` }, title: { text: 'ABCDE' } },
+                { fonts: [{ family, source }] }
+            );
+        const svgOf = () => Plotly.toImage(gd, { format: 'svg', imageDataOnly: true });
+
+        it('embeds the fonts that the graph uses in svg exports', (done) => {
+            const family = 'ToImageFonts';
+            plot(family, testFonts.square)
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('@font-face');
+                    expect(svg).toContain(`font-family:"${family}"`);
+                    expect(svg).toContain('data:font/ttf;base64,');
+                })
+                .then(done, done.fail);
+        });
+
+        it('does not embed a font that forbids embedding in svg exports', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ToImageFontsRestricted';
+            plot(family, testFonts.squareRestricted)
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).not.toContain('@font-face');
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringContaining('forbids embedding'));
+                })
+                .then(done, done.fail);
+        });
+
+        it('embeds a font that forbids embedding in raster exports', (done) => {
+            // A raster export keeps the pixels of the text, not the font
+            plot('ToImageFontsRaster', testFonts.squareRestricted)
+                .then(() => {
+                    expect(toSVG(gd, 'png')).toContain('@font-face');
+                })
+                .then(done, done.fail);
+        });
+
+        it('reads the embedding permission of a WOFF file with a compressed OS/2 table', (done) => {
+            plot('ToImageFontsWoff', testFonts.squareWoff)
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('data:font/woff;base64,');
+                    return plot('ToImageFontsWoffRestricted', testFonts.squareRestrictedWoff);
+                })
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).not.toContain('@font-face');
                 })
                 .then(done, done.fail);
         });

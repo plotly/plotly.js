@@ -9,6 +9,7 @@ var nestedProperty = Lib.nestedProperty;
 
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
+const { loadFonts } = require('../lib/font_faces');
 
 var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
@@ -372,7 +373,18 @@ function _doPlot(gd, data, layout, config) {
         return Axes.draw(gd, graphWasEmpty ? '' : 'redraw');
     }
 
-    var seq = [Plots.previousPromises, addFrames, drawFramework, marginPushers, marginPushersAgain];
+    // Text that the graph measures before its font loads gets the size of the fallback font.
+    // A face that loads now can also make the cached text sizes of other graphs stale.
+    const loadConfigFonts = () => {
+        const loading = loadFonts(gd._context.fonts);
+        if (!loading) return;
+
+        return loading.then((loadedNow) => {
+            if (loadedNow) Drawing.savedBBoxes = {};
+        });
+    };
+
+    var seq = [Plots.previousPromises, loadConfigFonts, addFrames, drawFramework, marginPushers, marginPushersAgain];
 
     if (hasCartesian) seq.push(positionAndAutorange);
 

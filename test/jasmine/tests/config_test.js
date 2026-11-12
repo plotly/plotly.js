@@ -11,6 +11,7 @@ var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+const testFonts = require('../assets/test_fonts');
 
 var RESIZE_DELAY = 300;
 
@@ -1038,6 +1039,92 @@ describe('config argument', function() {
                 expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
             .then(done, done.fail);
+        });
+    });
+
+    describe('fonts:', () => {
+        let gd;
+
+        beforeEach(() => {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        // Each glyph of the test font is 1 em wide, so the title 'ABCDE' at 20px measures 100px
+        const layout = (family) => ({
+            width: 400,
+            height: 300,
+            font: { family: `${family}, Arial` },
+            title: { text: 'ABCDE', font: { size: 20 } }
+        });
+        const titleWidth = () => gd.querySelector('.gtitle').getBoundingClientRect().width;
+
+        it('should load the fonts before the graph draws', (done) => {
+            const family = 'ConfigFontsLoad';
+            const promise = Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), {
+                fonts: [{ family, source: testFonts.square }]
+            });
+            expect(gd.querySelector('.gtitle')).toBe(null, 'no title before the font loads');
+
+            promise
+                .then(() => {
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                    expect(document.fonts.check(`20px ${family}`)).toBe(true);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should draw synchronously when the fonts loaded before', (done) => {
+            const family = 'ConfigFontsCache';
+            const config = { fonts: [{ family, source: testFonts.square }] };
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => {
+                    Plotly.purge(gd);
+                    const promise = Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
+                    expect(gd.querySelector('.gtitle')).not.toBe(null, 'title drawn without a wait');
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                    return promise;
+                })
+                .then(done, done.fail);
+        });
+
+        it('should accept the font bytes in a typed array', (done) => {
+            const family = 'ConfigFontsBytes';
+            const binary = atob(testFonts.square.split(',')[1]);
+            const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), { fonts: [{ family, source: bytes }] })
+                .then(() => {
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should warn and draw with a fallback font if a font does not load', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ConfigFontsBroken';
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), {
+                fonts: [{ family, source: 'data:font/ttf;base64,AAAA' }]
+            })
+                .then(() => {
+                    expect(gd.querySelector('.gtitle')).not.toBe(null);
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringContaining(`Cannot load the font "${family}"`));
+                })
+                .then(done, done.fail);
+        });
+
+        it('should warn about an item without a family', (done) => {
+            spyOn(Lib, 'warn');
+            const item = { source: testFonts.square };
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout('ConfigFontsNoFamily'), { fonts: [item] })
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringContaining('config.fonts'), item);
+                })
+                .then(done, done.fail);
         });
     });
 });
