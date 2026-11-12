@@ -1102,7 +1102,7 @@ describe('config argument', function() {
                 .then(done, done.fail);
         });
 
-        it('should warn and draw with a fallback font each time a font does not load', (done) => {
+        it('should warn one time and draw with a fallback font if a font file cannot be decoded', (done) => {
             spyOn(Lib, 'warn');
             const family = 'ConfigFontsBroken';
             const config = { fonts: [{ family, source: 'data:font/ttf;base64,AAAA' }] };
@@ -1116,7 +1116,24 @@ describe('config argument', function() {
                     return Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config);
                 })
                 .then(() => {
-                    expect(warnings()).toBe(2, 'the next draw tries the font again');
+                    expect(warnings()).toBe(1, 'the face stays failed');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should not download a font file again if the file cannot be decoded', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ConfigFontsBadFile';
+            const config = { fonts: [{ family, source: 'https://fonts.example.invalid/bad.ttf' }] };
+            const message = `Cannot load the font "${family}"`;
+            const warnings = () => Lib.warn.calls.allArgs().filter((args) => String(args[0]).includes(message)).length;
+            spyOn(window, 'fetch').and.callFake(() => Promise.resolve(new Response(new Uint8Array([0, 1, 2, 3]))));
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
+                .then(() => Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config))
+                .then(() => {
+                    expect(window.fetch).toHaveBeenCalledTimes(1);
+                    expect(warnings()).toBe(1);
                 })
                 .then(done, done.fail);
         });

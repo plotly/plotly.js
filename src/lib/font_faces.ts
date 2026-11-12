@@ -60,7 +60,8 @@ const warnedItems = new WeakSet<object>();
 /**
  * Load the faces of `config.fonts` before the graph draws.
  * A face that loads stays in the cache, and later graphs use it.
- * A face that fails leaves the cache, so that the next graph that draws tries it again.
+ * If the download of a face fails, the face leaves the cache, and the next graph that draws tries the download again.
+ * A face whose font file cannot be decoded stays in the cache as failed, so the graph warns one time.
  *
  * @param fonts - the `fonts` value of the graph config
  * @returns undefined if no face must load. Otherwise a promise that resolves after the faces load or fail.
@@ -256,8 +257,12 @@ function descriptor(value: unknown): string {
 }
 
 async function loadFace(face: Face, source: Source): Promise<boolean> {
+    // A download can fail because of a short network fault. A data URL or bytes always give the same result.
+    let retry = typeof source === 'string' && !source.startsWith('data:');
     try {
         const bytes = await readBytes(source);
+        // The download finished, so from here a failure comes from the font file
+        retry = false;
         face.bytes = bytes;
         face.format = fontFormat(bytes);
         face.permission = await readEmbeddingPermission(bytes);
@@ -267,8 +272,7 @@ async function loadFace(face: Face, source: Source): Promise<boolean> {
         document.fonts.add(fontFace);
         face.loaded = true;
     } catch (error) {
-        // A failed download can be a short network fault, so do not keep the failure
-        if (faces.get(face.key) === face) faces.delete(face.key);
+        if (retry && faces.get(face.key) === face) faces.delete(face.key);
         warn(`Cannot load the font "${face.family}" (${error}). The graph uses a fallback font.`);
     }
     face.settled = true;
