@@ -1111,7 +1111,7 @@ describe('config argument', function() {
             })
                 .then(() => {
                     expect(gd.querySelector('.gtitle')).not.toBe(null);
-                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringContaining(`Cannot load the font "${family}"`));
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching(`Cannot load the font "${family}"`));
                 })
                 .then(done, done.fail);
         });
@@ -1122,7 +1122,7 @@ describe('config argument', function() {
 
             Plotly.newPlot(gd, [{ y: [1, 2] }], layout('ConfigFontsNoFamily'), { fonts: [item] })
                 .then(() => {
-                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringContaining('config.fonts'), item);
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('config\\.fonts'), item);
                 })
                 .then(done, done.fail);
         });

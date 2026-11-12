@@ -679,7 +679,7 @@ describe('Plotly.toImage', function () {
                 .then(svgOf)
                 .then((svg) => {
                     expect(svg).not.toContain('@font-face');
-                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringContaining('forbids embedding'));
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('forbids embedding'));
                 })
                 .then(done, done.fail);
         });
