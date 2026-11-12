@@ -100,11 +100,12 @@ module.exports = function(gd) {
         // update range slider dimensions
 
         var gs = fullLayout._size;
-        var domain = axisOpts.domain;
 
-        opts._width = gs.w * (domain[1] - domain[0]);
+        // The slider must line up with the plot area above it. `domainpad` moves the
+        // plot area but not `domain`, so get the width and position from the axis.
+        opts._width = axisOpts._length;
 
-        var x = Math.round(gs.l + (gs.w * domain[0]));
+        const x = Math.round(axisOpts._offset);
 
         var y = Math.round(
             gs.t + gs.h * (1 - axisOpts._counterDomainMin) +
