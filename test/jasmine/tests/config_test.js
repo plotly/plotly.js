@@ -1059,6 +1059,16 @@ describe('config argument', function() {
             title: { text: 'ABCDE', font: { size: 20 } }
         });
         const titleWidth = () => gd.querySelector('.gtitle').getBoundingClientRect().width;
+        const fontBytes = () => Uint8Array.from(atob(testFonts.square.split(',')[1]), (c) => c.charCodeAt(0));
+
+        // Make fetch answer with the test font only when the test calls the returned function
+        const holdFetch = () => {
+            const answers = [];
+            spyOn(window, 'fetch').and.callFake(
+                () => new Promise((resolve) => answers.push(() => resolve(new Response(fontBytes()))))
+            );
+            return () => answers.forEach((answer) => answer());
+        };
 
         it('should load the fonts before the graph draws', (done) => {
             const family = 'ConfigFontsLoad';
@@ -1092,10 +1102,8 @@ describe('config argument', function() {
 
         it('should accept the font bytes in a typed array', (done) => {
             const family = 'ConfigFontsBytes';
-            const binary = atob(testFonts.square.split(',')[1]);
-            const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
 
-            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), { fonts: [{ family, source: bytes }] })
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), { fonts: [{ family, source: fontBytes() }] })
                 .then(() => {
                     expect(titleWidth()).toBeCloseTo(100, 0);
                 })
@@ -1141,14 +1149,12 @@ describe('config argument', function() {
         it('should load a font in the next draw after a failed download', (done) => {
             spyOn(Lib, 'warn');
             const family = 'ConfigFontsRetry';
-            const binary = atob(testFonts.square.split(',')[1]);
-            const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
             const config = { fonts: [{ family, source: 'https://fonts.example.invalid/retry.ttf' }] };
             let calls = 0;
             spyOn(window, 'fetch').and.callFake(() => {
                 calls++;
                 if (calls === 1) return Promise.reject(new TypeError('Failed to fetch'));
-                return Promise.resolve(new Response(bytes));
+                return Promise.resolve(new Response(fontBytes()));
             });
 
             Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config)
@@ -1164,6 +1170,59 @@ describe('config argument', function() {
                 .then(done, done.fail);
         });
 
+        it('should stop a draw that waits for a font if the graph is purged during the wait', (done) => {
+            const family = 'ConfigFontsPurged';
+            const answer = holdFetch();
+
+            const promise = Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), {
+                fonts: [{ family, source: 'https://fonts.example.invalid/purged.ttf' }]
+            });
+            Plotly.purge(gd);
+            answer();
+
+            promise
+                .then((result) => {
+                    expect(result).toBe(gd);
+                    expect(gd.querySelector('.main-svg')).toBe(null, 'nothing drawn after the purge');
+                })
+                .then(done, done.fail);
+        });
+
+        it('should run a relayout that comes during the font wait after the draw', (done) => {
+            const family = 'ConfigFontsRelayout';
+            const answer = holdFetch();
+
+            const plotted = Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], layout(family), {
+                fonts: [{ family, source: 'https://fonts.example.invalid/relayout.ttf' }]
+            });
+            const relaidOut = Plotly.relayout(gd, 'xaxis.range', [0, 4]);
+            answer();
+
+            Promise.all([plotted, relaidOut])
+                .then(() => {
+                    expect(gd._fullLayout.xaxis.range).toEqual([0, 4]);
+                    expect(gd.querySelectorAll('.xtick').length).toBeGreaterThan(0);
+                    expect(titleWidth()).toBeCloseTo(100, 0);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should not rebuild the plot when react gets the same font bytes in a new buffer', (done) => {
+            const family = 'ConfigFontsReactBytes';
+            const config = () => ({ fonts: [{ family, source: fontBytes() }] });
+            let paper;
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout(family), config())
+                .then(() => {
+                    paper = gd.querySelector('.main-svg');
+                    return Plotly.react(gd, [{ y: [2, 1] }], layout(family), config());
+                })
+                .then(() => {
+                    expect(gd.querySelector('.main-svg')).toBe(paper, 'react did not call newPlot');
+                })
+                .then(done, done.fail);
+        });
+
         it('should warn about an item without a family', (done) => {
             spyOn(Lib, 'warn');
             const item = { source: testFonts.square };
@@ -1171,6 +1230,25 @@ describe('config argument', function() {
             Plotly.newPlot(gd, [{ y: [1, 2] }], layout('ConfigFontsNoFamily'), { fonts: [item] })
                 .then(() => {
                     expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('config\\.fonts'), item);
+                })
+                .then(done, done.fail);
+        });
+
+        it('should warn about a fonts value that is not an array and about items without a usable source', (done) => {
+            spyOn(Lib, 'warn');
+            const single = { family: 'ConfigFontsSingle', source: testFonts.square };
+            const blobItem = { family: 'ConfigFontsBlob', source: new Blob([fontBytes()]) };
+
+            Plotly.newPlot(gd, [{ y: [1, 2] }], layout('Arial'), { fonts: single })
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('must be an array'), single);
+                    return Plotly.newPlot(gd, [{ y: [1, 2] }], layout('Arial'), {
+                        fonts: ['ConfigFontsString', blobItem]
+                    });
+                })
+                .then(() => {
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('typed array'), 'ConfigFontsString');
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('typed array'), blobItem);
                 })
                 .then(done, done.fail);
         });

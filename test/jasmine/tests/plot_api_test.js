@@ -3144,6 +3144,16 @@ describe('plot_api helpers', function () {
             ).toBe(true);
         });
 
+        it('Compares binary values by their bytes', () => {
+            const bytes = () => new Uint8Array([1, 2, 3]);
+            expect(helpers.collectionsAreEqual({ source: bytes() }, { source: bytes() })).toBe(true);
+            expect(helpers.collectionsAreEqual([bytes().buffer], [bytes().buffer])).toBe(true);
+            expect(helpers.collectionsAreEqual({ source: bytes() }, { source: new Uint8Array([1, 2, 4]) })).toBe(false);
+            expect(helpers.collectionsAreEqual({ source: bytes() }, { source: new Uint8Array([1, 2]) })).toBe(false);
+            const dataUrl = 'data:font/ttf;base64,AQID';
+            expect(helpers.collectionsAreEqual({ source: bytes() }, { source: dataUrl })).toBe(false);
+        });
+
         it('Returns false for null values', () => {
             expect(helpers.collectionsAreEqual(null, null)).toBe(false);
         });

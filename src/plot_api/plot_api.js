@@ -375,16 +375,34 @@ function _doPlot(gd, data, layout, config) {
 
     // Text that the graph measures before its font loads gets the size of the fallback font.
     // A face that loads now can also make the cached text sizes of other graphs stale.
+    let purgedDuringWait = false;
     const loadConfigFonts = () => {
         const loading = loadFonts(gd._context.fonts);
         if (!loading) return;
 
-        return loading.then((loadedNow) => {
+        // Plots.purge deletes the token, so the draw stops if a purge happens during the wait
+        if (!gd._fontWaitToken) gd._fontWaitToken = {};
+        const fontWaitToken = gd._fontWaitToken;
+        // Plots.previousPromises holds the later calls on this graph until the fonts load
+        const waiting = loading.then((loadedNow) => {
+            if (gd._fontWait === waiting) delete gd._fontWait;
             if (loadedNow) Drawing.savedBBoxes = {};
+
+            if (gd._fontWaitToken !== fontWaitToken) {
+                purgedDuringWait = true;
+                return;
+            }
+            // A call during the wait, for example Plotly.react, can replace the full layout
+            if (gd._fullLayout !== fullLayout) {
+                fullLayout = gd._fullLayout;
+                fullLayout._replotting = true;
+            }
         });
+        gd._fontWait = waiting;
+        return waiting;
     };
 
-    var seq = [Plots.previousPromises, loadConfigFonts, addFrames, drawFramework, marginPushers, marginPushersAgain];
+    var seq = [addFrames, drawFramework, marginPushers, marginPushersAgain];
 
     if (hasCartesian) seq.push(positionAndAutorange);
 
@@ -419,10 +437,14 @@ function _doPlot(gd, data, layout, config) {
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
-    var plotDone = Lib.syncOrAsync(seq, gd);
+    var plotDone = Lib.syncOrAsync([Plots.previousPromises, loadConfigFonts], gd, () =>
+        purgedDuringWait ? undefined : Lib.syncOrAsync(seq, gd)
+    );
     if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function () {
+        if (purgedDuringWait) return gd;
+
         redrawAfterFontLoads(gd, unloadedFaces);
         emitAfterPlot(gd);
         return gd;

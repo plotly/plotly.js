@@ -504,6 +504,33 @@ exports.clearAxisTypes = function (gd, traces, layoutUpdate) {
 };
 
 /**
+ * Check if two binary values (an ArrayBuffer or a typed array) hold the same bytes.
+ * A config can hold binary data, for example the font bytes of `config.fonts`.
+ *
+ * @param {*} value1: First value to compare
+ * @param {*} value2: Second value to compare
+ */
+const bytesAreEqual = (value1, value2) => {
+    const bytesOf = (value) => {
+        if (value instanceof ArrayBuffer) return new Uint8Array(value);
+        if (ArrayBuffer.isView(value)) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    };
+    try {
+        const bytes1 = bytesOf(value1);
+        const bytes2 = bytesOf(value2);
+        if (!bytes1 || !bytes2 || bytes1.length !== bytes2.length) return false;
+
+        for (let i = 0; i < bytes1.length; i++) {
+            if (bytes1[i] !== bytes2[i]) return false;
+        }
+        return true;
+    } catch (error) {
+        // A detached buffer has no bytes to compare
+        return false;
+    }
+};
+
+/**
  * Check if two collections (object or array) are equal
  *
  * @param {Object|Array} collection1: First collection to compare
@@ -518,7 +545,9 @@ const collectionsAreEqual = (collection1, collection2) => {
             const oldVal = collection1[i];
             const newVal = collection2[i];
             if (oldVal !== newVal) {
-                const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+                const equal = isArrayOrObject(oldVal, newVal)
+                    ? collectionsAreEqual(oldVal, newVal)
+                    : bytesAreEqual(oldVal, newVal);
                 if (!equal) return false;
             }
         }
@@ -532,7 +561,9 @@ const collectionsAreEqual = (collection1, collection2) => {
             const oldVal = collection1[k];
             const newVal = collection2[k];
             if (oldVal !== newVal) {
-                const equal = isArrayOrObject(oldVal, newVal) ? collectionsAreEqual(oldVal, newVal) : false;
+                const equal = isArrayOrObject(oldVal, newVal)
+                    ? collectionsAreEqual(oldVal, newVal)
+                    : bytesAreEqual(oldVal, newVal);
                 if (!equal) return false;
             }
         }

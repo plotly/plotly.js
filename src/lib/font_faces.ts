@@ -1,5 +1,6 @@
 'use strict';
 
+import { encode } from 'base64-arraybuffer';
 import * as Lib from './index';
 import type { FontSource } from '../types/core/config';
 
@@ -32,10 +33,18 @@ const MIME_TYPES: Record<string, string> = {
     woff2: 'font/woff2'
 };
 
+/** The characters that the XML serializer writes as named entities */
+const XML_ENTITIES: Record<string, string> = { amp: '&', apos: "'", gt: '>', lt: '<', quot: '"' };
+
+const ITEM_WARNING =
+    'config.fonts: each item must have a *family* string and a *source*: ' +
+    'the URL of a font file, a base64 data URL, an ArrayBuffer or a typed array.';
+
 type Permission = 'embed' | 'forbid' | 'unknown';
 type Source = string | ArrayBuffer | ArrayBufferView;
 
 interface Face {
+    sourceKey: string;
     key: string;
     family: string;
     weight: string;
@@ -50,12 +59,14 @@ interface Face {
     warned?: boolean;
 }
 
-// Faces by descriptors and source. Two byte sources with equal bytes are the same source.
-const faces = new Map<string, Face>();
+// Faces by source key, then by family, weight and style. Two byte sources with equal bytes have the same key.
+// A string source is its own key, so the cache finds the face of a long data URL without a copy of the URL.
+const faces = new Map<string, Map<string, Face>>();
 // The content keys of byte sources, so that each buffer gets one hash
 const byteKeys = new WeakMap<object, string>();
-// Items of config.fonts that produced a warning already
-const warnedItems = new WeakSet<object>();
+// The values of config.fonts that produced a warning already
+const warnedObjects = new WeakSet<object>();
+const warnedValues = new Set<unknown>();
 
 /**
  * Load the faces of `config.fonts` before the graph draws.
@@ -69,17 +80,18 @@ const warnedItems = new WeakSet<object>();
  *   A face that fails produces a warning. The promise does not reject.
  */
 export function loadFonts(fonts: unknown): Promise<boolean> | undefined {
-    if (!Array.isArray(fonts) || !fonts.length) return;
-    if (typeof FontFace === 'undefined' || !document.fonts) return;
+    if (fonts == null) return;
+    if (!Array.isArray(fonts)) {
+        warnOnce(fonts, 'config.fonts must be an array of objects with a *family* and a *source*.');
+        return;
+    }
+    if (!fonts.length || typeof FontFace === 'undefined' || !document.fonts) return;
 
     const pending: Promise<boolean>[] = [];
     for (const font of fonts) {
         const face = findFace(font, true);
         if (!face) {
-            if (font && typeof font === 'object' && !warnedItems.has(font)) {
-                warnedItems.add(font);
-                warn('config.fonts: each item must have a *family* string and a *source*.', font);
-            }
+            warnOnce(font, ITEM_WARNING);
             continue;
         }
         if (!face.settled) pending.push(face.loading);
@@ -94,7 +106,7 @@ export function loadFonts(fonts: unknown): Promise<boolean> | undefined {
  * An SVG image cannot use the fonts of the page, so the SVG must hold the font bytes.
  *
  * @param fonts - the `fonts` value of the graph config
- * @param svg - the serialized SVG. A face gets a rule only if the SVG names its family.
+ * @param svg - the serialized SVG. A face gets a rule only if a `font-family` declaration of the SVG names its family.
  * @param format - the export format. For *svg*, *pdf* and *eps*, a face gets no rule if
  *   its font file forbids embedding. A face whose permission cannot be read gets a rule.
  * @returns the CSS text for a `<style>` element, or an empty string
@@ -102,14 +114,18 @@ export function loadFonts(fonts: unknown): Promise<boolean> | undefined {
 export function fontFaceRules(fonts: unknown, svg: string, format?: string): string {
     if (!Array.isArray(fonts) || !fonts.length) return '';
 
-    const text = svg.toLowerCase();
     const keepsBytes = !format || DOCUMENT_FORMATS.indexOf(format) !== -1;
     const used = new Set<Face>();
+    let families: Set<string> | undefined;
     let rules = '';
     for (const font of fonts) {
         const face = findFace(font, false);
         if (!face || !face.loaded || used.has(face)) continue;
-        if (text.indexOf(face.family.toLowerCase()) === -1) continue;
+
+        // Read the families of the SVG only when a loaded face needs them
+        if (!families) families = usedFamilies(svg);
+        if (!families.has(familyKey(face.family))) continue;
+
         used.add(face);
         if (keepsBytes && face.permission === 'forbid') {
             warnNotEmbedded(face, format || 'svg');
@@ -200,11 +216,17 @@ function findFace(font: FontSource, create: boolean): Face | undefined {
 
     const weight = descriptor(font.weight);
     const style = descriptor(font.style);
-    const key = `${family}\n${weight}\n${style}\n${sourceKey}`;
+    const key = `${family}\n${weight}\n${style}`;
 
-    let face = faces.get(key);
+    let bySource = faces.get(sourceKey);
+    let face = bySource && bySource.get(key);
     if (!face && create) {
+        if (!bySource) {
+            bySource = new Map();
+            faces.set(sourceKey, bySource);
+        }
         const newFace: Face = {
+            sourceKey,
             key,
             family,
             weight,
@@ -214,11 +236,20 @@ function findFace(font: FontSource, create: boolean): Face | undefined {
             settled: false,
             permission: 'unknown'
         };
+        bySource.set(key, newFace);
         newFace.loading = loadFace(newFace, source as Source);
-        faces.set(key, newFace);
         face = newFace;
     }
     return face;
+}
+
+/** Remove a face from the cache, so that the next graph that draws loads it again */
+function forgetFace(face: Face): void {
+    const bySource = faces.get(face.sourceKey);
+    if (!bySource || bySource.get(face.key) !== face) return;
+
+    bySource.delete(face.key);
+    if (!bySource.size) faces.delete(face.sourceKey);
 }
 
 /**
@@ -256,6 +287,18 @@ function descriptor(value: unknown): string {
     return /^[\w .-]+$/.test(text) ? text : 'normal';
 }
 
+/** Warn one time about a value of `config.fonts`. A value can be an object or a primitive, such as a string item. */
+function warnOnce(value: unknown, message: string): void {
+    if (value && typeof value === 'object') {
+        if (warnedObjects.has(value)) return;
+        warnedObjects.add(value);
+    } else {
+        if (warnedValues.has(value)) return;
+        warnedValues.add(value);
+    }
+    warn(message, value);
+}
+
 async function loadFace(face: Face, source: Source): Promise<boolean> {
     // A download can fail because of a short network fault. A data URL or bytes always give the same result.
     let retry = typeof source === 'string' && !source.startsWith('data:');
@@ -272,7 +315,9 @@ async function loadFace(face: Face, source: Source): Promise<boolean> {
         document.fonts.add(fontFace);
         face.loaded = true;
     } catch (error) {
-        if (retry && faces.get(face.key) === face) faces.delete(face.key);
+        if (retry) forgetFace(face);
+        // A face that did not load is never embedded, so it does not need its bytes
+        face.bytes = undefined;
         warn(`Cannot load the font "${face.family}" (${error}). The graph uses a fallback font.`);
     }
     face.settled = true;
@@ -280,7 +325,8 @@ async function loadFace(face: Face, source: Source): Promise<boolean> {
 }
 
 async function readBytes(source: Source): Promise<ArrayBuffer> {
-    if (source instanceof ArrayBuffer) return source;
+    // Copy the bytes, so that a later change to the buffer of the caller cannot change the face
+    if (source instanceof ArrayBuffer) return source.slice(0);
     if (ArrayBuffer.isView(source)) {
         return new Uint8Array(source.buffer, source.byteOffset, source.byteLength).slice().buffer;
     }
@@ -305,10 +351,60 @@ function decodeDataUrl(url: string): ArrayBuffer {
     if (comma === -1 || !url.slice(0, comma).endsWith(';base64')) {
         throw new Error('a font data URL must use base64');
     }
+    // atob skips the line breaks that some base64 encoders insert. The decoder of base64-arraybuffer does not.
     const binary = atob(url.slice(comma + 1));
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     return bytes.buffer;
+}
+
+/**
+ * Find the font families that a serialized SVG names, as keys from `familyKey`.
+ * The serializer writes the families in `style` attributes and encodes their quotes as XML entities.
+ */
+function usedFamilies(svg: string): Set<string> {
+    const families = new Set<string>();
+    const attributes = /\s(style|font-family)="([^"]*)"/g;
+    let attribute: RegExpExecArray | null;
+    while ((attribute = attributes.exec(svg))) {
+        const [, name, value] = attribute;
+        if (value.indexOf('font-family') === -1 && name === 'style') continue;
+
+        const text = decodeXml(value);
+        if (name === 'font-family') {
+            addFamilies(families, text);
+            continue;
+        }
+        const declarations = /(?:^|;)\s*font-family\s*:\s*((?:"[^"]*"|'[^']*'|[^;"'])*)/gi;
+        let declaration: RegExpExecArray | null;
+        while ((declaration = declarations.exec(text))) addFamilies(families, declaration[1]);
+    }
+    return families;
+}
+
+/** Add the names of a CSS `font-family` list to a set of family keys */
+function addFamilies(families: Set<string>, list: string): void {
+    const names = /"([^"]*)"|'([^']*)'|([^,"']+)/g;
+    let name: RegExpExecArray | null;
+    while ((name = names.exec(list))) {
+        const key = familyKey(name[1] ?? name[2] ?? name[3]);
+        if (key) families.add(key);
+    }
+}
+
+/** CSS compares family names without case, and the serializer can change the white space between words */
+function familyKey(family: string): string {
+    return family.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function decodeXml(text: string): string {
+    return text.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z]+);/gi, (entity, name: string) => {
+        const lower = name.toLowerCase();
+        if (lower[0] !== '#') return XML_ENTITIES[lower] ?? entity;
+
+        const code = lower[1] === 'x' ? parseInt(lower.slice(2), 16) : parseInt(lower.slice(1), 10);
+        return code <= 0x10ffff ? String.fromCodePoint(code) : entity;
+    });
 }
 
 function faceRule(face: Face): string {
@@ -324,18 +420,9 @@ function faceRule(face: Face): string {
         const hint = face.format ? ` format("${face.format}")` : '';
         face.rule =
             `@font-face{font-family:"${family}";font-style:${face.style};font-weight:${face.weight};` +
-            `src:url(data:${type};base64,${base64(face.bytes)})${hint};}`;
+            `src:url(data:${type};base64,${encode(face.bytes)})${hint};}`;
     }
     return face.rule || '';
-}
-
-function base64(bytes: ArrayBuffer): string {
-    const array = new Uint8Array(bytes);
-    let binary = '';
-    for (let i = 0; i < array.length; i += 0x8000) {
-        binary += String.fromCharCode(...array.subarray(i, i + 0x8000));
-    }
-    return btoa(binary);
 }
 
 function warnNotEmbedded(face: Face, format: string): void {
