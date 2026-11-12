@@ -126,7 +126,7 @@ const RE_NAME = /\bname: '([\w-]+)'/;
 /**
  * `var index = require('./base_index');` … `module.exports = index;`
  *
- * Four gl traces (parcoords, scattergl, scatterpolargl, splom) build their
+ * Five gl traces (parcoords, scattergl, scatterpolargl, scatterternarygl, splom) build their
  * descriptor in `base_index.js` and patch one field in `index.js`, so the
  * lookup follows this single level of indirection.
  */
