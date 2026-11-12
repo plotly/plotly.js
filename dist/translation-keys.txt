@@ -2,9 +2,9 @@ Autoscale                                                                       
 Box Select                                                                                                                    // components/modebar/buttons.js:152
 Cancel                                                                                                                        // components/modebar/share_chart/strings.js:27
 Click to enter Colorscale title                                                                                               // plots/plots.js:238
-Click to enter Component A title                                                                                              // plots/ternary/ternary.js:378
-Click to enter Component B title                                                                                              // plots/ternary/ternary.js:388
-Click to enter Component C title                                                                                              // plots/ternary/ternary.js:398
+Click to enter Component A title                                                                                              // plots/ternary/ternary.js:514
+Click to enter Component B title                                                                                              // plots/ternary/ternary.js:524
+Click to enter Component C title                                                                                              // plots/ternary/ternary.js:534
 Click to enter Plot subtitle                                                                                                  // plots/plots.js:235
 Click to enter Plot title                                                                                                     // plots/plots.js:234
 Click to enter X axis title                                                                                                   // plots/plots.js:236
@@ -12,7 +12,7 @@ Click to enter Y axis title                                                     
 Click to enter radial axis title                                                                                              // plots/polar/polar.js:592
 Compare data on hover                                                                                                         // components/modebar/buttons.js:301
 Double-click on legend to isolate one trace                                                                                   // components/legend/handle_click.js:40
-Double-click to zoom back out                                                                                                 // plots/ternary/ternary.js:680
+Double-click to zoom back out                                                                                                 // plots/ternary/ternary.js:816
 Download plot                                                                                                                 // components/modebar/buttons.js:48
 Download plot as JSON                                                                                                         // components/modebar/buttons.js:76
 Download plot as a PNG                                                                                                        // components/modebar/buttons.js:46
