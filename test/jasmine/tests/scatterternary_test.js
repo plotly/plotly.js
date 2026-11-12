@@ -226,6 +226,92 @@ describe('scatterternary defaults', function() {
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.hoveron).toBe('points');
     });
+
+    it('should coerce \'fillpattern\' defaults with *replace* fillpattern.fillmode', function() {
+        traceIn = {
+            a: [3, 1, 1],
+            b: [1, 3, 1],
+            c: [1, 1, 3],
+            mode: 'lines',
+            fill: 'toself',
+            fillcolor: 'green',
+            fillpattern: {shape: '+'}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.fillpattern.shape).toBe('+');
+        expect(traceOut.fillpattern.fillmode).toBe('replace');
+        expect(traceOut.fillpattern.bgcolor).toBeUndefined('transparent background');
+        expect(traceOut.fillpattern.fgcolor).toBe('green');
+        expect(traceOut.fillpattern.fgopacity).toBe(1);
+        expect(traceOut.fillpattern.size).toBe(8);
+        expect(traceOut.fillpattern.solidity).toBe(0.3);
+    });
+
+    it('should coerce \'fillpattern\' defaults with *overlay* fillpattern.fillmode', function() {
+        traceIn = {
+            a: [3, 1, 1],
+            b: [1, 3, 1],
+            c: [1, 1, 3],
+            mode: 'lines',
+            fill: 'toself',
+            fillcolor: 'green',
+            fillpattern: {
+                fillmode: 'overlay',
+                shape: '+'
+            }
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.fillpattern.shape).toBe('+');
+        expect(traceOut.fillpattern.bgcolor).toBe('green');
+        expect(traceOut.fillpattern.fgcolor).toBe('rgb(255, 255, 255)');
+        expect(traceOut.fillpattern.fgopacity).toBe(0.5);
+    });
+
+    it('should support a custom \'fillpattern.path\'', function() {
+        traceIn = {
+            a: [1, 2, 3],
+            b: [3, 2, 1],
+            c: [2, 2, 2],
+            mode: 'lines',
+            fill: 'toself',
+            fillcolor: 'green',
+            fillpattern: {
+                path: 'M0,0L8,0L8,4L0,4Z',
+                size: 12,
+                bgcolor: 'blue',
+                fgcolor: 'red',
+                fgopacity: 0.6
+            }
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.fillpattern.path).toBe('M0,0L8,0L8,4L0,4Z');
+        expect(traceOut.fillpattern.size).toBe(12);
+        expect(traceOut.fillpattern.bgcolor).toBe('blue');
+        expect(traceOut.fillpattern.fgcolor).toBe('red');
+        expect(traceOut.fillpattern.fgopacity).toBe(0.6);
+        expect(traceOut.fillpattern.solidity).toBeUndefined();
+    });
+
+    it('should not coerce \'fillpattern\' when \'fill\' is *none*', function() {
+        traceIn = {
+            a: [1, 2, 3],
+            b: [3, 2, 1],
+            c: [2, 2, 2],
+            mode: 'lines',
+            fill: 'none',
+            fillpattern: {shape: '+'}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.fillpattern).toBeUndefined();
+    });
 });
 
 describe('scatterternary calc', function() {
