@@ -660,3 +660,32 @@ describe('convertToTspans with an unsupported MathJax version', function() {
         .then(done, done.fail);
     });
 });
+
+describe('convertToTspans with a MathJax that fails to render', () => {
+    let gd;
+    let mathJaxBefore;
+
+    beforeEach(() => {
+        gd = createGraphDiv();
+        mathJaxBefore = window.MathJax;
+        // Look like a supported MathJax v3 without the SVG output, so that every render fails
+        window.MathJax = { version: '3.2.2', _: {} };
+    });
+
+    afterEach(() => {
+        if (mathJaxBefore === undefined) delete window.MathJax;
+        else window.MathJax = mathJaxBefore;
+        destroyGraphDiv();
+    });
+
+    it('shows the tex left unevaluated', (done) => {
+        Plotly.newPlot(gd, [{ y: [1, 2, 3] }], { title: { text: '$x^2$' } })
+            .then(() => {
+                const title = d3Select('.gtitle');
+                expect(title.size()).toBe(1, 'title');
+                expect(title.text()).toBe('$x^2$', 'raw tex as title');
+                expect(title.node().style.display).not.toBe('none', 'title is visible');
+            })
+            .then(done, done.fail);
+    });
+});

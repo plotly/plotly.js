@@ -13,7 +13,9 @@ module.exports = function plot(gd, subplot, moduleCalcData) {
         xaxis: xa,
         yaxis: ya,
         plot: subplot.framework,
-        layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null
+        layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null,
+        // Keep *auto* text clear of the tick labels and the title, which sit inside the plot area
+        axisLayers: ['angular-axis', 'radial-axis', 'radial-axis-title'].map((k) => subplot.layers[k])
     };
 
     var radialAxis = subplot.radialAxis;

@@ -1,11 +1,13 @@
 var Plotly = require('../../../lib/index');
 var Fx = require('../../../src/components/fx');
 var Lib = require('../../../src/lib');
+const Drawing = require('../../../src/components/drawing');
 var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var loadScript = require('../assets/load_script');
+var click = require('../assets/click');
 var delay = require('../assets/delay');
 
 // eslint-disable-next-line no-undef
@@ -622,6 +624,144 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
                 var bg = gd3.select('g.hovertext > path').node().getBBox();
                 expect(bg.width).toBeGreaterThan(50, 'loneHover box width, once corrected for the real label size');
                 expect(gd3.select('g.hovertext > path').attr('d')).not.toContain('NaN');
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('Test scatter text labels:', function() {
+        var gd;
+
+        var layout = {
+            width: 500,
+            height: 500,
+            margin: {l: 50, r: 50, t: 50, b: 50},
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]}
+        };
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function hiddenSourceCount() {
+            return d3Select(gd).selectAll('.textpoint text').filter(function() {
+                return this.style.display === 'none';
+            }).size();
+        }
+
+        it('should keep the tex source hidden when a point is selected', function(done) {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                x: [1, 2],
+                y: [1, 2],
+                text: ['$\\alpha$', '$\\beta$'],
+                textposition: 'top center'
+            }], Lib.extendFlat({clickmode: 'event+select'}, layout))
+            .then(function() {
+                expect(d3Select(gd).selectAll('.textpoint .text-math-group').size()).toBe(2, 'math groups');
+                expect(hiddenSourceCount()).toBe(2, 'before selection');
+                return new Promise(function(resolve) {
+                    gd.once('plotly_selected', resolve);
+                    click(150, 350);
+                });
+            })
+            .then(function() {
+                expect(gd._fullData[0].selectedpoints).toEqual([0]);
+                expect(hiddenSourceCount()).toBe(2, 'after selection');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should measure a tex label at the font size of its own trace', (done) => {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                x: [0.5],
+                y: [0.5],
+                text: ['$\\alpha$'],
+                textposition: 'auto',
+                textfont: {size: 10}
+            }, {
+                mode: 'markers+text',
+                x: [1, 1.3, 1.6, 1.9, 2.2, 2.5],
+                y: [2, 2.1, 2, 2.1, 2, 2.1],
+                text: ['$\\alpha$', '$\\alpha$', '$\\alpha$', '$\\alpha$', '$\\alpha$', '$\\alpha$'],
+                textposition: 'auto',
+                textfont: {size: 40}
+            }], Lib.extendDeep({}, layout, {showlegend: false, xaxis: {range: [0, 3]}, yaxis: {range: [0, 3]}}))
+            .then(() => {
+                const sizes = [];
+
+                d3Select(gd).selectAll('.textpoint').each(function() {
+                    const label = d3Select(this);
+                    const rect = label.select('.text-math-group').node().getBoundingClientRect();
+                    const measured = Drawing.textPointBBox(label.select('text'));
+
+                    expect(Math.abs(measured.width - rect.width)).toBeLessThan(1, 'width of a tex label');
+                    expect(Math.abs(measured.height - rect.height)).toBeLessThan(1, 'height of a tex label');
+                    sizes.push(Math.round(rect.width));
+                });
+
+                // the two font sizes give two sizes of the same string
+                expect(sizes.length).toBe(7, 'tex labels');
+                expect(sizes[1]).toBeGreaterThan(sizes[0] * 2, 'large label against small label');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should place *auto* labels by their rendered box and hide the whole label', function(done) {
+            var n = 12;
+            var x = [];
+            var y = [];
+            var text = [];
+            var textposition = [];
+            for(var i = 0; i < n; i++) {
+                x.push(2);
+                y.push(2);
+                text.push(i ? '$\\alpha_{' + i + '}$' : '$\\alpha + \\beta + \\gamma + \\delta$');
+                textposition.push(i ? 'auto' : 'top center');
+            }
+            // a point outside the plot area gets no label
+            x.push(5);
+            y.push(2);
+            text.push('$\\omega$');
+            textposition.push('auto');
+
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                x: x,
+                y: y,
+                text: text,
+                textposition: textposition,
+                marker: {size: 10}
+            }], layout)
+            .then(function() {
+                var gd3 = d3Select(gd);
+                var cd = gd.calcdata[0];
+                var boxes = [gd3.select('.point').node().getBoundingClientRect()];
+
+                // The point outside the plot area has no label to render
+                expect(gd3.selectAll('.textpoint .text-math-group').size()).toBe(n, 'math groups');
+                expect(cd[n]._tpAuto).toBe(null, 'label outside the plot area');
+
+                gd3.selectAll('.textpoint').each(function(d) {
+                    // Measure the group, because Firefox reports the nested svg in its viewBox units
+                    const rect = d3Select(this).select('.text-math-group').node().getBoundingClientRect();
+                    if(d._tpAuto === null) expect(rect.width).toBe(0, 'hidden label ' + d.i);
+                    else boxes.push(rect);
+                });
+
+                var overlaps = 0;
+                for(var i = 0; i < boxes.length; i++) {
+                    for(var j = i + 1; j < boxes.length; j++) {
+                        var a = boxes[i];
+                        var b = boxes[j];
+                        if(a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top) overlaps++;
+                    }
+                }
+                expect(overlaps).toBe(0, 'overlaps among the marker and the visible labels');
             })
             .then(done, done.fail);
         });

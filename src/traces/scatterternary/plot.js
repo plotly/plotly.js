@@ -16,7 +16,9 @@ module.exports = function plot(gd, ternary, moduleCalcData) {
         xaxis: xa,
         yaxis: ya,
         plot: plotContainer,
-        layerClipId: ternary._hasClipOnAxisFalse ? ternary.clipIdRelative : null
+        layerClipId: ternary._hasClipOnAxisFalse ? ternary.clipIdRelative : null,
+        // Keep *auto* text clear of the tick labels and the titles, which sit inside the plot area
+        axisLayers: ['aaxis', 'baxis', 'caxis', 'a-title', 'b-title', 'c-title'].map((k) => ternary.layers[k])
     };
 
     var scatterLayer = ternary.layers.frontplot.select('g.scatterlayer');

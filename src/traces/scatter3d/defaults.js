@@ -49,6 +49,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('texttemplatefallback');
         handleTextDefaults(traceIn, traceOut, layout, coerce, {
             noSelect: true,
+            noAutoPosition: true,
             noFontShadow: true,
             noFontLineposition: true,
             noFontTextcase: true

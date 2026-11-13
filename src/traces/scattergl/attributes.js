@@ -37,7 +37,11 @@ var attrs = (module.exports = overrideAll(
         text: scatterAttrs.text,
         hovertext: scatterAttrs.hovertext,
 
-        textposition: scatterAttrs.textposition,
+        textposition: extendFlat({}, scatterAttrs.textposition, {
+            // *auto* placement runs in the svg scatter plot code only
+            values: scatterAttrs.textposition.values.filter((v) => v !== 'auto'),
+            description: 'Sets the positions of the `text` elements with respects to the (x,y) coordinates.'
+        }),
         textfont: fontAttrs({
             noFontShadow: true,
             noFontLineposition: true,
