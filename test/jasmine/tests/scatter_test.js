@@ -988,6 +988,28 @@ describe('end-to-end scatter tests', function() {
                 expect(cd[0]._tpAuto).toBeUndefined();
                 expect(cd[1]._tpAuto).toBe('bottom center');
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+
+                // A corner label sits farther from a large marker than a side label does.
+                // The second auto label has no free spot above its point, so it takes the strip over the fixed label.
+                return Plotly.newPlot(gd, [{
+                    mode: 'markers+text',
+                    x: [1],
+                    y: [1],
+                    text: ['Fixed label'],
+                    textposition: 'top right',
+                    marker: {size: 80}
+                }, {
+                    mode: 'markers+text',
+                    x: [1.61, 1.61],
+                    y: [1.67, 1.8],
+                    text: ['auto Q', 'auto B'],
+                    textposition: 'auto',
+                    marker: {size: 8}
+                }], layout);
+            })
+            .then(() => {
+                expect(visibleLabelBoxes().length).toBe(3, 'visible labels');
+                expect(countOverlaps(visibleLabelBoxes())).toBe(0, 'overlaps with a fixed corner label');
             })
             .then(done, done.fail);
         });

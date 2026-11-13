@@ -85,6 +85,7 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
             const rank = Lib.extractOption(d, trace, 'tR', 'textrank');
             const x = xaxis.c2p(d.x);
             const y = yaxis.c2p(d.y);
+            const bb = Drawing.textPointBBox(tx);
             const label = {
                 tx,
                 trace,
@@ -101,13 +102,14 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
                 // `_tpAuto` survives a relayout, so a pan or zoom keeps the labels in place where it can
                 prefer: d._tpAuto || undefined,
                 preferGap: d._tpAutoGap,
-                rect: labelRect(d, trace, x, y, Drawing.textPointBBox(tx))
+                rect: labelRect(d, trace, x, y, bb)
             };
 
             if (pos === 'auto') {
                 labels.push(label);
             } else {
-                const box = label.rect(pos, 0);
+                // `textPointPosition` stored the geometry that draws the fixed label
+                const box = boxAt(x, y, bb, d._tpOffset);
                 box.owner = d;
                 fixed.push(box);
             }
@@ -230,25 +232,25 @@ function hasAutoTextPosition(trace) {
     return tp === 'auto' || (Lib.isArrayOrTypedArray(tp) && tp.includes('auto'));
 }
 
-// the box of a label at a given position and gap, plus its leader line, in the plot frame
+// The box of a label at a given offset, plus its leader line, in the plot frame
+function boxAt(x, y, bb, offset) {
+    let x0 = x + offset.dx;
+    if (offset.anchor === 'end') x0 -= bb.width;
+    else if (offset.anchor === 'middle') x0 -= bb.width / 2;
+    const y0 = y + offset.dy + bb.top;
+
+    const seg = offset.leader;
+    return {
+        x0,
+        y0,
+        x1: x0 + bb.width,
+        y1: y0 + bb.height,
+        leader: seg ? [x + seg[0], y + seg[1], x + seg[2], y + seg[3]] : null
+    };
+}
+
+// The box of an *auto* label at a given position and gap
 function labelRect(d, trace, x, y, bb) {
     const symbol = d.mx || (trace.marker || {}).symbol;
-
-    return (pos, gap) => {
-        const offset = Drawing.textPointBoxOffset(pos, d.mrc, symbol, bb, gap);
-
-        let x0 = x + offset.dx;
-        if (offset.anchor === 'end') x0 -= bb.width;
-        else if (offset.anchor === 'middle') x0 -= bb.width / 2;
-        const y0 = y + offset.dy + bb.top;
-
-        const seg = offset.leader;
-        return {
-            x0,
-            y0,
-            x1: x0 + bb.width,
-            y1: y0 + bb.height,
-            leader: seg ? [x + seg[0], y + seg[1], x + seg[2], y + seg[3]] : null
-        };
-    };
+    return (pos, gap) => boxAt(x, y, bb, Drawing.textPointBoxOffset(pos, d.mrc, symbol, bb, gap));
 }

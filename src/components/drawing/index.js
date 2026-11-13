@@ -1368,6 +1368,7 @@ function textPointHash(node) {
 
 /**
  * Position a text label relative to its point, and join its leader line.
+ * Sets `d._tpOffset` for a label with a fixed position.
  *
  * @param s - d3 selection of one `<text>` element, inside its own `<g>`
  * @param d - the calcdata point
@@ -1397,6 +1398,8 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
             markerRadius,
             svgTextUtils.lineCount(s)
         );
+        // The *auto* placement reads it, so it blocks with the box this draw gives the label
+        if (!isAuto) d._tpOffset = offset;
     }
 
     // fix the overall text group position
