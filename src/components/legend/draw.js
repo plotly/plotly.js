@@ -733,7 +733,7 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
 
 
 function textLayout(s, g, gd, legendObj, aTitle) {
-    if(legendObj._inHover) s.attr('data-notex', true); // do not process MathJax for unified hover
+    if(legendObj._inHover) s.attr('data-notex', svgTextUtils.isPureTex(s.text()) ? null : true);
     svgTextUtils.convertToTspans(s, gd, function() {
         computeTextDimensions(g, gd, legendObj, aTitle);
     });

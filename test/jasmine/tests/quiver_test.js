@@ -9,6 +9,7 @@ var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var quiverStyle = require('../../../src/traces/quiver/style');
 
 describe('Test quiver defaults', function() {
     var gd;
@@ -305,6 +306,52 @@ describe('Test quiver interactions', function() {
         expect(window.getComputedStyle(arrow).stroke).toBe('rgb(33, 145, 140)', 'arrow');
     });
 
+    it('should color each arrow from a discrete marker.color array', async () => {
+        const colors = ['rgb(23, 103, 194)', '#FF4136', '#2ECC40'];
+        const expected = ['rgb(23, 103, 194)', 'rgb(255, 65, 54)', 'rgb(46, 204, 64)'];
+
+        await Plotly.newPlot(gd, [{
+            type: 'quiver',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            u: [1, 1, 1],
+            v: [0, 1, 0],
+            marker: {
+                color: colors,
+                line: { width: 3 }
+            }
+        }]);
+
+        function arrowStrokes() {
+            const arrows = gd.querySelectorAll('g.trace.quiver path.js-line');
+            expect(arrows.length).toBe(3);
+            const strokes = [];
+            for(let i = 0; i < arrows.length; i++) {
+                strokes.push(window.getComputedStyle(arrows[i]).stroke);
+            }
+            return strokes;
+        }
+
+        expect(arrowStrokes()).toEqual(expected);
+
+        // A style-only edit must keep the per-arrow colors.
+        await Plotly.restyle(gd, 'marker.line.width', 4);
+        expect(arrowStrokes()).toEqual(expected);
+
+        // Selection styling must keep each arrow color and only dim the rest.
+        const cd = gd.calcdata[0];
+        cd[0].trace.selectedpoints = [0, 2];
+        cd[0].selected = 1;
+        cd[2].selected = 1;
+        quiverStyle.styleOnSelect(gd, cd, cd[0].node3);
+
+        expect(arrowStrokes()).toEqual(expected);
+        const arrows = gd.querySelectorAll('g.trace.quiver path.js-line');
+        expect(window.getComputedStyle(arrows[0]).strokeOpacity).toBe('1');
+        expect(window.getComputedStyle(arrows[1]).strokeOpacity).toBe('0.2');
+        expect(window.getComputedStyle(arrows[2]).strokeOpacity).toBe('1');
+    });
+
     it('should render multiple quiver traces', function(done) {
         Plotly.newPlot(gd, [{
             type: 'quiver',
@@ -330,6 +377,12 @@ describe('Test quiver interactions', function() {
         .then(function() {
             var quiverLayers = gd._fullLayout._plots.xy.plot.selectAll('.trace.quiver');
             expect(quiverLayers.size()).toBe(2);
+
+            var arrows = gd.querySelectorAll('g.trace.quiver path.js-line');
+            expect(window.getComputedStyle(arrows[0]).stroke).toBe('rgb(255, 0, 0)');
+            expect(window.getComputedStyle(arrows[1]).stroke).toBe('rgb(255, 0, 0)');
+            expect(window.getComputedStyle(arrows[2]).stroke).toBe('rgb(0, 0, 255)');
+            expect(window.getComputedStyle(arrows[3]).stroke).toBe('rgb(0, 0, 255)');
         })
         .then(done, done.fail);
     });
