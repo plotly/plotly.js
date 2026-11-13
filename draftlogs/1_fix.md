@@ -1,0 +1,1 @@
+ - Fix O(n²) bar draw from per-bar `getZeroBarDir` scans [[#1](https://github.com/plotly/plotly.js/pull/1)]
