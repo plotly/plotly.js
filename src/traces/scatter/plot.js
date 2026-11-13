@@ -597,7 +597,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         // text points
-        selection = text.selectAll('g');
+        selection = text.selectAll('g.textpoint');
         join = selection.data(textFilter, keyFunc);
 
         // each text needs to go in its own 'g' in case
