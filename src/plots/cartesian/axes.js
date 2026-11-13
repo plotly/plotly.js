@@ -1502,7 +1502,7 @@ function arrayTicks(ax, majorOnly) {
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
-                var obj = axes.tickText(ax, vali, false, String(text[i]), {
+                const obj = axes.tickText(ax, vali, false, text[i] !== undefined, {
                     first: i === firstIdx,
                     last: i === lastIdx,
                 });
@@ -4683,7 +4683,8 @@ function swapAxisGroup(gd, xIds, yIds) {
     var allAxKeys = Object.keys(axAttrs);
 
     var noSwapAttrs = [
-        'anchor', 'domain', 'overlaying', 'position', 'side', 'tickangle', 'editType'
+        'anchor', 'domain', 'domainpad', 'overlaying', 'position', 'side',
+        'tickangle', 'editType'
     ];
     var numericTypes = ['linear', 'log'];
 
