@@ -1,5 +1,6 @@
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
+const Drawing = require('../../../src/components/drawing');
 var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -248,6 +249,42 @@ describe('Test MathJax v' + mathjaxVersion + ':', function() {
             .then(function() {
                 expect(gd._fullData[0].selectedpoints).toEqual([0]);
                 expect(hiddenSourceCount()).toBe(2, 'after selection');
+            })
+            .then(done, done.fail);
+        });
+
+        it('should measure a tex label at the font size of its own trace', (done) => {
+            Plotly.newPlot(gd, [{
+                mode: 'markers+text',
+                x: [0.5],
+                y: [0.5],
+                text: ['$\\alpha$'],
+                textposition: 'auto',
+                textfont: {size: 10}
+            }, {
+                mode: 'markers+text',
+                x: [1, 1.3, 1.6, 1.9, 2.2, 2.5],
+                y: [2, 2.1, 2, 2.1, 2, 2.1],
+                text: ['$\\alpha$', '$\\alpha$', '$\\alpha$', '$\\alpha$', '$\\alpha$', '$\\alpha$'],
+                textposition: 'auto',
+                textfont: {size: 40}
+            }], Lib.extendDeep({}, layout, {showlegend: false, xaxis: {range: [0, 3]}, yaxis: {range: [0, 3]}}))
+            .then(() => {
+                const sizes = [];
+
+                d3Select(gd).selectAll('.textpoint').each(function() {
+                    const label = d3Select(this);
+                    const rect = label.select('.text-math-group').node().getBoundingClientRect();
+                    const measured = Drawing.textPointBBox(label.select('text'));
+
+                    expect(Math.abs(measured.width - rect.width)).toBeLessThan(1, 'width of a tex label');
+                    expect(Math.abs(measured.height - rect.height)).toBeLessThan(1, 'height of a tex label');
+                    sizes.push(Math.round(rect.width));
+                });
+
+                // the two font sizes give two sizes of the same string
+                expect(sizes.length).toBe(7, 'tex labels');
+                expect(sizes[1]).toBeGreaterThan(sizes[0] * 2, 'large label against small label');
             })
             .then(done, done.fail);
         });

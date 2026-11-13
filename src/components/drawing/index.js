@@ -1346,7 +1346,9 @@ drawing.textPointBBox = function (s) {
     const math = d3.select(node.parentNode).select('g.text-math-group');
     let bb;
     if (math.size()) {
-        bb = drawing.bBox(math.node());
+        // The default key of the render has no font, so key it by its source `<text>` node, which has the font
+        const hash = textPointHash(node);
+        bb = drawing.bBox(math.node(), false, hash && hash + '~math');
         // the MathJax svg is placed in the frame of the `<text>` node
         bb.top = +math.select('svg').attr('y') - +s.attr('y');
         bb.bottom = bb.top + bb.height;
