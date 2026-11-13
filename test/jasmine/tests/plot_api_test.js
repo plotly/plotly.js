@@ -2569,20 +2569,19 @@ describe('Test plot api', function () {
             expect(gd.data[0].scl).toBe(undefined);
         });
 
-        it('should keep *auto* textposition on scatter traces', function () {
-            var data = [
-                {
-                    type: 'scatter',
-                    mode: 'text',
-                    x: [1],
-                    y: [1],
-                    text: ['a'],
-                    textposition: 'auto'
-                }
+        it('should keep *auto* textposition only on trace types that accept it', () => {
+            const data = [
+                { type: 'scatter', mode: 'text', x: [1], y: [1], text: ['a'], textposition: 'auto' },
+                { type: 'scatter', mode: 'text', x: [1], y: [1], text: ['a'], textposition: ['auto', 'top'] },
+                { type: 'scattergl', mode: 'text', x: [1], y: [1], text: ['a'], textposition: 'auto' },
+                { type: 'scattergl', mode: 'text', x: [1], y: [1], text: ['a'], textposition: ['auto', 'top'] }
             ];
 
-            Plotly.newPlot(gd, data);
-            expect(gd.data[0].textposition).toBe('auto');
+            helpers.cleanData(data);
+            expect(data[0].textposition).toBe('auto');
+            expect(data[1].textposition).toEqual(['auto', 'top center']);
+            expect(data[2].textposition).toBe('middle center');
+            expect(data[3].textposition).toEqual(['middle center', 'top center']);
         });
 
         it("should not delete rename 'scl' to 'colorscale' when colorscale is defined ", function () {
