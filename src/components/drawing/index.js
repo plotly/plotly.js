@@ -1382,12 +1382,19 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
     var textPosition = getTextPosition(d, trace);
 
     var offset;
+    let leaderSeg = d._tpAutoLeader;
     // Skip the box for an *auto* label that the placement did not reach yet,
     // because the placement measures every label in one pass right after this draw
     if (isAuto && textPosition && d._tpAuto !== undefined) {
         var symbol = d.mx || (trace.marker || {}).symbol;
         var bb = drawing.textPointBBox(s);
         offset = drawing.textPointBoxOffset(textPosition, markerRadius, symbol, bb, d._tpAutoGap);
+
+        // The placement set the leader for `d._tpAutoRadius`, so move each end by the change that another radius makes
+        if (leaderSeg && offset.leader && (markerRadius || 0) !== d._tpAutoRadius) {
+            const base = drawing.textPointBoxOffset(textPosition, d._tpAutoRadius, symbol, bb, d._tpAutoGap);
+            leaderSeg = leaderSeg.map((v, i) => v + offset.leader[i] - base.leader[i]);
+        }
 
         // a MathJax render is aligned to the anchor it had when it rendered
         group.select('svg.text-math').attr('x', +s.attr('x') - (bb.width * (1 - TEXTOFFSETSIGN[offset.anchor])) / 2);
@@ -1414,9 +1421,9 @@ drawing.textPointPosition = function (s, d, trace, markerRadius, dontTouchParent
     // Skip the join when no leader is due and none is left over, because only *auto* draws leaders
     const first = group.node().firstChild;
     const hasLeader = first && first.nodeName === 'path' && first.classList.contains('textleader');
-    if (!d._tpAutoLeader && !hasLeader) return;
+    if (!leaderSeg && !hasLeader) return;
 
-    var leader = group.selectAll('path.textleader').data(d._tpAutoLeader ? [d._tpAutoLeader] : []);
+    const leader = group.selectAll('path.textleader').data(leaderSeg ? [leaderSeg] : []);
     leader.exit().remove();
     leader.enter().insert('path', ':first-child').classed('textleader', true).style('fill', 'none');
     leader.each(function (seg) {

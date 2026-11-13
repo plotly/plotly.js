@@ -20,7 +20,7 @@ const { textrank } = require('./attributes');
  * with the axes of its own subplot. The pass of the last group sees all traces,
  * and `_tpAuto` keeps the labels of the earlier passes in place where it can.
  *
- * Sets `_tpAuto`, `_tpAutoGap`, and `_tpAutoLeader` on every calcdata point
+ * Sets `_tpAuto`, `_tpAutoGap`, `_tpAutoLeader`, and `_tpAutoRadius` on every calcdata point
  * with an *auto* position and repositions its `<text>` node. Does nothing
  * when no trace of the plot area uses *auto*, or in the plot of a range slider,
  * where labels are never placed.
@@ -126,6 +126,8 @@ module.exports = function autoTextPosition(gd, plotinfo, traceGroups) {
         d._tpAutoGap = out ? out.gap : 0;
         // in the plot frame, so the leader does not depend on the `<text>` node in mid-transition
         d._tpAutoLeader = out ? out.leader : null;
+        // The marker radius of the leader, which a later draw can change with another marker size
+        d._tpAutoRadius = label.radius;
         Drawing.textPointPosition(label.tx, d, label.trace, d.mrc);
     }
 

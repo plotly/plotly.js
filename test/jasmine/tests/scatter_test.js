@@ -784,6 +784,21 @@ describe('end-to-end scatter tests', function() {
             }).size();
         }
 
+        // Leaders whose label sits away from the end of the leader line
+        function detachedLeaders() {
+            let n = 0;
+            d3SelectAll('.textpoint').each(function () {
+                const leader = this.querySelector('path.textleader');
+                if (!leader || this.style.display === 'none') return;
+                const l = leader.getBoundingClientRect();
+                const t = this.querySelector('text').getBoundingClientRect();
+                const dx = Math.max(t.left - l.right, l.left - t.right, 0);
+                const dy = Math.max(t.top - l.bottom, l.top - t.bottom, 0);
+                if (Math.hypot(dx, dy) > 3) n++;
+            });
+            return n;
+        }
+
         function countOverlaps(boxes) {
             var n = 0;
             for(var i = 0; i < boxes.length; i++) {
@@ -1098,6 +1113,12 @@ describe('end-to-end scatter tests', function() {
             .then(function() {
                 expect(textPointTransforms()).toEqual(transforms);
                 expect(countOverlaps(visibleLabelBoxes())).toBe(0);
+                return Plotly.restyle(gd, 'selected.marker.size', 30);
+            })
+            .then(function() {
+                // The selected points draw their labels around the larger selected marker
+                expect(textPointTransforms()).not.toEqual(transforms);
+                expect(detachedLeaders()).toBe(0, 'detached leaders after a selection');
                 return Plotly.relayout(gd, 'xaxis.range', [1, 3]);
             })
             .then(function() {
@@ -1303,21 +1324,6 @@ describe('end-to-end scatter tests', function() {
                     })
                     .then(done, done.fail);
             });
-
-            // Leaders whose label sits away from the end of the leader line
-            function detachedLeaders() {
-                let n = 0;
-                d3SelectAll('.textpoint').each(function () {
-                    const leader = this.querySelector('path.textleader');
-                    if (!leader || this.style.display === 'none') return;
-                    const l = leader.getBoundingClientRect();
-                    const t = this.querySelector('text').getBoundingClientRect();
-                    const dx = Math.max(t.left - l.right, l.left - t.right, 0);
-                    const dy = Math.max(t.top - l.bottom, l.top - t.bottom, 0);
-                    if (Math.hypot(dx, dy) > 3) n++;
-                });
-                return n;
-            }
 
             it('should place the labels again after a pan and a reset of the axes', (done) => {
                 Plotly.newPlot(gd, [trace('A', 0, { zorder: 0 }), trace('B', 0.15, { zorder: 1 })], size())
