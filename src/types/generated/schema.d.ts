@@ -7078,12 +7078,12 @@ export interface SankeyData {
          */
         thickness?: number;
         /**
-         * The normalized horizontal position of the node.
+         * The normalized position of the node center along the flow axis, measured from the source end. For `orientation` *h* the flow axis is horizontal. For `orientation` *v* the flow axis is vertical. With `direction` *reversed* the source end is the right or bottom edge.
          * @default []
          */
         x?: Datum[] | Datum[][] | TypedArray;
         /**
-         * The normalized vertical position of the node.
+         * The normalized position of the node center across the flow axis. For `orientation` *h* the value counts down from the top edge. For `orientation` *v* the value counts from the left edge. The value does not depend on `direction`.
          * @default []
          */
         y?: Datum[] | Datum[][] | TypedArray;
