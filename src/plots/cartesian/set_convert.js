@@ -774,22 +774,24 @@ module.exports = function setConvert(ax, fullLayout) {
             max = Lib.constrain(max, r0, r1);
             if(min === max) return;
 
-            var isNewBreak = true;
-            for(var j = 0; j < rangebreaksOut.length; j++) {
-                var brkj = rangebreaksOut[j];
+            let merged;
+            for(let j = 0; j < rangebreaksOut.length; j++) {
+                const brkj = rangebreaksOut[j];
                 if(min < brkj.max && max >= brkj.min) {
-                    if(min < brkj.min) {
-                        brkj.min = min;
+                    if(merged) {
+                        // The axis code sums the break lengths, so the located breaks must not overlap.
+                        merged.min = Math.min(merged.min, brkj.min);
+                        merged.max = Math.max(merged.max, brkj.max);
+                        rangebreaksOut.splice(j, 1);
+                        j--;
+                    } else {
+                        merged = brkj;
+                        merged.min = Math.min(merged.min, min);
+                        merged.max = Math.max(merged.max, max);
                     }
-                    if(max > brkj.max) {
-                        brkj.max = max;
-                    }
-                    isNewBreak = false;
                 }
             }
-            if(isNewBreak) {
-                rangebreaksOut.push({min: min, max: max});
-            }
+            if(!merged) rangebreaksOut.push({min, max});
         };
 
         for(i = 0; i < rangebreaksIn.length; i++) {

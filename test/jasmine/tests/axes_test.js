@@ -13,7 +13,7 @@ var Cartesian = require('../../../src/plots/cartesian');
 var Axes = require('../../../src/plots/cartesian/axes');
 var Fx = require('../../../src/components/fx');
 var supplyLayoutDefaults = require('../../../src/plots/cartesian/layout_defaults');
-const {BADNUM, MINUS_SIGN, ONEDAY, ONEWEEK} = require('../../../src/constants/numerical');
+const {BADNUM, MINUS_SIGN, ONEDAY, ONEHOUR, ONEWEEK} = require('../../../src/constants/numerical');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -6061,6 +6061,63 @@ describe('Test axes', function() {
                     });
                 })
                 .then(done, done.fail);
+            });
+
+            it('should merge a holiday rangebreak that overlaps two located breaks', (done) => {
+                const assertBreaks = (msg, exp) => {
+                    const xa = gd._fullLayout.xaxis;
+                    const brks = xa._rangebreaks.map((brk) => [brk.min, brk.max]);
+
+                    for(let i = 1; i < brks.length; i++) {
+                        expect(brks[i][0])
+                            .withContext(`${msg} | break ${i} starts before break ${i - 1} ends`)
+                            .not.toBeLessThan(brks[i - 1][1]);
+                    }
+                    expect(brks).withContext(`${msg} | merged break`).toContain(exp.merged.map(Lib.dateTime2ms));
+                    expect(xa._lBreaks).withContext(`${msg} | total break length`).toBe(exp.lBreaks);
+                    expect(xa._m2).withContext(`${msg} | l2p slope`).toBeGreaterThan(0);
+                };
+                const layout = (range, rangebreaks) => ({xaxis: {range, rangebreaks}});
+
+                // Thanksgiving 2023 is a Thursday. Its break bridges the overnight breaks before and after it.
+                const thanksgivingRange = ['2023-11-20 09:30', '2023-11-24 13:00'];
+                const thanksgiving = [
+                    {pattern: 'day of week', bounds: [6, 1]},
+                    {pattern: 'hour', bounds: [16, 9.5]},
+                    {values: ['2023-11-23']}
+                ];
+                const thanksgivingBreaks = {
+                    merged: ['2023-11-22 16:00', '2023-11-24 09:30'],
+                    lBreaks: 76.5 * ONEHOUR
+                };
+
+                // Christmas 2020 is a Friday. Its break bridges the Thursday overnight break and the weekend break.
+                const christmasRange = ['2020-12-14 09:00', '2020-12-31 15:00'];
+                const christmas = [
+                    {pattern: 'hour', bounds: [15, 9]},
+                    {pattern: 'day of week', bounds: [6, 1]},
+                    {values: ['2020-12-25']}
+                ];
+
+                Plotly.newPlot(gd, [{x: thanksgivingRange}], layout(thanksgivingRange, thanksgiving))
+                    .then(() => {
+                        assertBreaks('Thanksgiving', thanksgivingBreaks);
+
+                        const reversed = thanksgiving.slice().reverse();
+                        return Plotly.react(gd, [{x: thanksgivingRange}], layout(thanksgivingRange, reversed));
+                    })
+                    .then(() => {
+                        assertBreaks('Thanksgiving, reversed rangebreaks', thanksgivingBreaks);
+
+                        return Plotly.react(gd, [{x: christmasRange}], layout(christmasRange, christmas));
+                    })
+                    .then(() => {
+                        assertBreaks('Christmas', {
+                            merged: ['2020-12-24 15:00', '2020-12-28 09:00'],
+                            lBreaks: 336 * ONEHOUR
+                        });
+                    })
+                    .then(done, done.fail);
             });
         });
 
