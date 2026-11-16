@@ -9,6 +9,17 @@ To see all merged commits on the main branch that will be part of the next plotl
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [4.3.0] -- 2026-11-10
+
+### Added
+- Add `domainpad` to cartesian axes to reserve space in pixels inside the edges of `domain`, so the gap between subplots stays the same at all figure sizes [[#7965](https://github.com/plotly/plotly.js/pull/7965)], with thanks to @SharadhNaidu for the contribution!
+
+### Fixed
+- Fix `Plotly.react` and `Plotly.relayout` with a whole axis object ignoring a new range on an axis with `constrain: 'domain'` [[#8144](https://github.com/plotly/plotly.js/pull/8144)], with thanks to @Roshan1299 for the contribution!
+- Apply `tickprefix` and `ticksuffix` to `tickvals` without explicit `ticktext` [[#8160](https://github.com/plotly/plotly.js/pull/8160)], with thanks to @davrens101 for the contribution!
+- Fix potential prototype pollution from inherited properties in plot API calls [[#8168](https://github.com/plotly/plotly.js/pull/8168)]
+
+
 ## [4.2.0] -- 2026-10-29
 
 ### Added

@@ -1,5 +1,5 @@
 /**
-* plotly.js v4.2.0
+* plotly.js v4.3.0
 * Copyright 2012-2026, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -146,7 +146,7 @@ var Plotly = (() => {
   var require_version = __commonJS({
     "src/version.js"(exports) {
       "use strict";
-      exports.version = "4.2.0";
+      exports.version = "4.3.0";
     }
   });
 
@@ -9297,7 +9297,7 @@ var Plotly = (() => {
         for (var i2 = 1; i2 < length; i2++) {
           input = inputs[i2];
           for (key in input) {
-            src = target[key];
+            src = Object.prototype.hasOwnProperty.call(target, key) ? target[key] : void 0;
             copy = input[key];
             if (noArrayCopies && isArray(copy)) {
               target[key] = copy;
@@ -19677,8 +19677,8 @@ var Plotly = (() => {
       };
       var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
       var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
-      function notValid(prop) {
-        return prop.slice(0, 2) === "__";
+      function notValid(obj, prop) {
+        return prop in obj && !Object.prototype.hasOwnProperty.call(obj, prop);
       }
       lib.expandObjectPaths = function(data) {
         var match, key, prop, datum, idx, dest, trailingPath;
@@ -19688,7 +19688,7 @@ var Plotly = (() => {
               if (match = key.match(dottedPropertyRegex)) {
                 datum = data[key];
                 prop = match[1];
-                if (notValid(prop)) continue;
+                if (notValid(data, prop)) continue;
                 delete data[key];
                 data[prop] = lib.extendDeepNoArrays(
                   data[prop] || {},
@@ -19697,7 +19697,7 @@ var Plotly = (() => {
               } else if (match = key.match(indexedPropertyRegex)) {
                 datum = data[key];
                 prop = match[1];
-                if (notValid(prop)) continue;
+                if (notValid(data, prop)) continue;
                 idx = parseInt(match[2]);
                 delete data[key];
                 data[prop] = data[prop] || [];
@@ -19706,11 +19706,11 @@ var Plotly = (() => {
                   dest = data[prop][idx] = data[prop][idx] || {};
                   lib.extendDeepNoArrays(dest, lib.objectFromPath(trailingPath, lib.expandObjectPaths(datum)));
                 } else {
-                  if (notValid(prop)) continue;
+                  if (notValid(data, prop)) continue;
                   data[prop][idx] = lib.expandObjectPaths(datum);
                 }
               } else {
-                if (notValid(key)) continue;
+                if (notValid(data, key)) continue;
                 data[key] = lib.expandObjectPaths(data[key]);
               }
             }
@@ -22265,7 +22265,7 @@ var Plotly = (() => {
           ax2._counterAxes.sort(axisIDs.idSort);
           ax2._subplotsWith.sort(Lib.subplotSort);
           ax2._mainSubplot = findMainSubplot(ax2, newFullLayout);
-          if (ax2._counterAxes.length && (ax2.spikemode && ax2.spikemode.indexOf("across") !== -1 || ax2.automargin && ax2.mirror && ax2.anchor !== "free" || Registry.getComponentMethod("rangeslider", "isVisible")(ax2))) {
+          if (ax2._counterAxes.length && (ax2.automargin && ax2.mirror && ax2.anchor !== "free" || Registry.getComponentMethod("rangeslider", "isVisible")(ax2))) {
             var min = 1;
             var max = 0;
             for (j2 = 0; j2 < ax2._counterAxes.length; j2++) {
@@ -25455,6 +25455,33 @@ var Plotly = (() => {
             { valType: "number", min: 0, max: 1, editType: "plot" }
           ],
           dflt: [0, 1],
+          editType: "plot"
+        },
+        domainpad: {
+          left: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
+          right: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
+          top: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
+          bottom: {
+            valType: "number",
+            min: 0,
+            dflt: 0,
+            editType: "plot"
+          },
           editType: "plot"
         },
         position: {
@@ -29133,6 +29160,12 @@ var Plotly = (() => {
       function isValidCategory(v2) {
         return v2 !== null && v2 !== void 0;
       }
+      var MIN_PADDED_LENGTH = 2;
+      function padFactor(wanted, bandLength) {
+        if (wanted <= 0) return 0;
+        const room = Math.max(0, bandLength - MIN_PADDED_LENGTH);
+        return wanted > room ? room / wanted : 1;
+      }
       module.exports = function setConvert(ax2, fullLayout) {
         fullLayout = fullLayout || {};
         var axId = ax2._id || "x";
@@ -29503,6 +29536,7 @@ var Plotly = (() => {
           if (ax2.overlaying) {
             var ax22 = axisIds.getFromId({ _fullLayout: fullLayout }, ax2.overlaying);
             ax2.domain = ax22.domain;
+            ax2.domainpad = ax22.domainpad;
           }
           var rangeAttr = usePrivateRange && ax2._r ? "_r" : "range";
           var calendar = ax2.calendar;
@@ -29510,14 +29544,26 @@ var Plotly = (() => {
           var rl0 = ax2.r2l(ax2[rangeAttr][0], calendar);
           var rl1 = ax2.r2l(ax2[rangeAttr][1], calendar);
           var isY2 = axLetter === "y";
+          const bandLength = (isY2 ? gs3.h : gs3.w) * (ax2.domain[1] - ax2.domain[0]);
+          const pad = ax2.domainpad;
+          let padStart = 0;
+          let padEnd = 0;
+          if (pad) {
+            padStart = (isY2 ? pad.top : pad.left) || 0;
+            padEnd = (isY2 ? pad.bottom : pad.right) || 0;
+            const fits = padFactor(padStart + padEnd, bandLength);
+            padStart *= fits;
+            padEnd *= fits;
+          }
+          ax2._length = bandLength - padStart - padEnd;
+          ax2._padStart = padStart;
+          ax2._padEnd = padEnd;
           if (isY2) {
-            ax2._offset = gs3.t + (1 - ax2.domain[1]) * gs3.h;
-            ax2._length = gs3.h * (ax2.domain[1] - ax2.domain[0]);
+            ax2._offset = gs3.t + (1 - ax2.domain[1]) * gs3.h + padStart;
             ax2._m = ax2._length / (rl0 - rl1);
             ax2._b = -ax2._m * rl1;
           } else {
-            ax2._offset = gs3.l + ax2.domain[0] * gs3.w;
-            ax2._length = gs3.w * (ax2.domain[1] - ax2.domain[0]);
+            ax2._offset = gs3.l + ax2.domain[0] * gs3.w + padStart;
             ax2._m = ax2._length / (rl1 - rl0);
             ax2._b = -ax2._m * rl0;
           }
@@ -31374,7 +31420,7 @@ var Plotly = (() => {
           for (var i2 = 0; i2 < vals.length; i2++) {
             var vali = tickVal2l(vals[i2]);
             if (vali > tickMin && vali < tickMax) {
-              var obj = axes.tickText(ax2, vali, false, String(text[i2]), {
+              const obj = axes.tickText(ax2, vali, false, text[i2] !== void 0, {
                 first: i2 === firstIdx,
                 last: i2 === lastIdx
               });
@@ -33463,6 +33509,7 @@ var Plotly = (() => {
         var noSwapAttrs = [
           "anchor",
           "domain",
+          "domainpad",
           "overlaying",
           "position",
           "side",
@@ -38048,6 +38095,30 @@ var Plotly = (() => {
         }
         return d2;
       }
+      function getAcrossSpikeSpan(gd3, ax2, gs3) {
+        const isY = ax2._id.charAt(0) === "y";
+        let start = Infinity;
+        let end = -Infinity;
+        for (const counterId of ax2._counterAxes || []) {
+          const counterAx = Axes.getFromId(gd3, counterId);
+          if (!counterAx) continue;
+          const padStart = counterAx._padStart || 0;
+          const padEnd = counterAx._padEnd || 0;
+          if (isY) {
+            start = Math.min(start, gs3.l + counterAx.domain[0] * gs3.w + padStart);
+            end = Math.max(end, gs3.l + counterAx.domain[1] * gs3.w - padEnd);
+          } else {
+            start = Math.min(start, gs3.t + (1 - counterAx.domain[1]) * gs3.h + padStart);
+            end = Math.max(end, gs3.t + (1 - counterAx.domain[0]) * gs3.h - padEnd);
+          }
+        }
+        if (ax2.anchor === "free") {
+          const position = isY ? gs3.l + ax2.position * gs3.w : gs3.t + (1 - ax2.position) * gs3.h;
+          start = Math.min(start, position);
+          end = Math.max(end, position);
+        }
+        return [start, end];
+      }
       function createSpikelines(gd3, closestPoints, opts) {
         var container = opts.container;
         var fullLayout = opts.fullLayout;
@@ -38084,14 +38155,9 @@ var Plotly = (() => {
               xEndSpike = hLinePointX;
             }
             if (yMode.indexOf("across") !== -1) {
-              var xAcross0 = ya3._counterDomainMin;
-              var xAcross1 = ya3._counterDomainMax;
-              if (ya3.anchor === "free") {
-                xAcross0 = Math.min(xAcross0, ya3.position);
-                xAcross1 = Math.max(xAcross1, ya3.position);
-              }
-              xBase = gs3.l + xAcross0 * gs3.w;
-              xEndSpike = gs3.l + xAcross1 * gs3.w;
+              const xSpan = getAcrossSpikeSpan(gd3, ya3, gs3);
+              xBase = xSpan[0];
+              xEndSpike = xSpan[1];
             }
             container.insert("line", ":first-child").attr({
               x1: xBase,
@@ -38145,14 +38211,9 @@ var Plotly = (() => {
               yEndSpike = vLinePointY;
             }
             if (xMode.indexOf("across") !== -1) {
-              var yAcross0 = xa3._counterDomainMin;
-              var yAcross1 = xa3._counterDomainMax;
-              if (xa3.anchor === "free") {
-                yAcross0 = Math.min(yAcross0, xa3.position);
-                yAcross1 = Math.max(yAcross1, xa3.position);
-              }
-              yBase = gs3.t + (1 - yAcross1) * gs3.h;
-              yEndSpike = gs3.t + (1 - yAcross0) * gs3.h;
+              const ySpan = getAcrossSpikeSpan(gd3, xa3, gs3);
+              yBase = ySpan[0];
+              yEndSpike = ySpan[1];
             }
             container.insert("line", ":first-child").attr({
               x1: vLinePointX,
@@ -42808,7 +42869,7 @@ var Plotly = (() => {
                   var outerMax = rangeCenter + halfRange * factor * 1.0001;
                   var getPadMin = autorange.makePadFn(fullLayout, ax2, 0);
                   var getPadMax = autorange.makePadFn(fullLayout, ax2, 1);
-                  updateDomain(ax2, factor);
+                  updateDomain(ax2, factor, fullLayout);
                   var m2 = Math.abs(ax2._m);
                   var extremes = autorange.concatExtremes(gd3, ax2);
                   var minArray = extremes.min;
@@ -42833,7 +42894,7 @@ var Plotly = (() => {
                   rangeMax = ax2.l2r(rangeMax);
                   ax2.range = ax2._input.range = rl0 < rl1 ? [rangeMin, rangeMax] : [rangeMax, rangeMin];
                 }
-                updateDomain(ax2, factor);
+                updateDomain(ax2, factor, fullLayout);
               }
             }
           }
@@ -42864,13 +42925,26 @@ var Plotly = (() => {
           }
         }
       };
-      function updateDomain(ax2, factor) {
+      function domainPadFraction(ax2, fullLayout) {
+        const pad = ax2.domainpad;
+        if (!pad) return 0;
+        const gs3 = fullLayout._size;
+        return ax2._id.charAt(0) === "y" ? ((pad.top || 0) + (pad.bottom || 0)) / gs3.h : ((pad.left || 0) + (pad.right || 0)) / gs3.w;
+      }
+      function updateDomain(ax2, factor, fullLayout) {
         var inputDomain = ax2._inputDomain;
         var centerFraction = FROM_BL2[ax2.constraintoward];
         var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
+        let divisor = factor;
+        const padFraction = domainPadFraction(ax2, fullLayout);
+        if (padFraction > 0) {
+          const inputSpan = inputDomain[1] - inputDomain[0];
+          const drawnSpan = inputSpan - padFraction;
+          if (drawnSpan > 0) divisor = inputSpan / (drawnSpan / factor + padFraction);
+        }
         ax2.domain = ax2._input.domain = [
-          center + (inputDomain[0] - center) / factor,
-          center + (inputDomain[1] - center) / factor
+          center + (inputDomain[0] - center) / divisor,
+          center + (inputDomain[1] - center) / divisor
         ];
         ax2.setScale();
       }
@@ -50099,6 +50173,10 @@ var Plotly = (() => {
             if (!newType || newType === "-") newType = "linear";
             Registry.getComponentMethod("annotations", "convertCoords")(gd3, fullProp, newType, doextra);
             Registry.getComponentMethod("images", "convertCoords")(gd3, fullProp, newType, doextra);
+            if (!ptrunk && fullProp && vi3 && (vi3.range !== void 0 || vi3.autorange !== void 0)) {
+              recordAlteredAxis(`${pleaf}.range`);
+              fullProp._inputRange = null;
+            }
           }
           var containerArrayMatch = manageArrays.containerArrayMatch(ai3);
           if (containerArrayMatch) {
@@ -50611,6 +50689,14 @@ var Plotly = (() => {
             } else if (newDomain[0] !== oldDomain[0] || newDomain[1] !== oldDomain[1]) {
               newFullLayout[key]._inputDomain = null;
             }
+          }
+          const newRange = newFullLayout[key].range;
+          const oldRange = oldFullLayout[key].range;
+          const oldInputRange = oldFullLayout[key]._inputRange;
+          if (oldInputRange && newRange && oldRange) {
+            const isInputRange = newRange[0] === oldInputRange[0] && newRange[1] === oldInputRange[1];
+            const isOldRange = newRange[0] === oldRange[0] && newRange[1] === oldRange[1];
+            if (!isInputRange && !isOldRange) newFullLayout[key]._inputRange = null;
           }
         }
         var diffOpts = {
@@ -55860,6 +55946,13 @@ var Plotly = (() => {
           var domain = coerce("domain", dfltDomain);
           if (domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
           Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
+          if (letter === "x") {
+            coerce("domainpad.left");
+            coerce("domainpad.right");
+          } else {
+            coerce("domainpad.top");
+            coerce("domainpad.bottom");
+          }
           if (containerOut.tickmode === "sync") {
             containerOut.tickmode = "auto";
           }
@@ -61236,9 +61329,8 @@ var Plotly = (() => {
           }
           axisOpts.cleanRange("rangeslider.range");
           var gs3 = fullLayout._size;
-          var domain = axisOpts.domain;
-          opts2._width = gs3.w * (domain[1] - domain[0]);
-          var x2 = Math.round(gs3.l + gs3.w * domain[0]);
+          opts2._width = axisOpts._length;
+          const x2 = Math.round(axisOpts._offset);
           var y2 = Math.round(
             gs3.t + gs3.h * (1 - axisOpts._counterDomainMin) + (axisOpts.side === "bottom" ? axisOpts._depth : 0) + opts2._offsetShift + constants2.extraPad
           );
@@ -167296,11 +167388,15 @@ void main() {
         var t5 = gs3.t * plotGlPixelRatio;
         var w2 = gs3.w * plotGlPixelRatio;
         var h2 = gs3.h * plotGlPixelRatio;
+        const padL = (xaxis._padStart || 0) * plotGlPixelRatio;
+        const padR = (xaxis._padEnd || 0) * plotGlPixelRatio;
+        const padT = (yaxis._padStart || 0) * plotGlPixelRatio;
+        const padB = (yaxis._padEnd || 0) * plotGlPixelRatio;
         return [
-          l2 + xaxis.domain[0] * w2,
-          b2 + yaxis.domain[0] * h2,
-          width - r2 - (1 - xaxis.domain[1]) * w2,
-          height - t5 - (1 - yaxis.domain[1]) * h2
+          l2 + xaxis.domain[0] * w2 + padL,
+          b2 + yaxis.domain[0] * h2 + padB,
+          width - r2 - (1 - xaxis.domain[1]) * w2 - padR,
+          height - t5 - (1 - yaxis.domain[1]) * h2 - padT
         ];
       }
       var exports = module.exports = function plot(gd3, subplot, cdata) {
@@ -168479,6 +168575,7 @@ void main() {
         var viewOpts = scene.viewOpts = {};
         viewOpts.ranges = new Array(visibleLength);
         viewOpts.domains = new Array(visibleLength);
+        const padFrac = (px2, total) => (px2 || 0) / total;
         for (k2 = 0; k2 < visibleDims.length; k2++) {
           i2 = visibleDims[k2];
           var rng = viewOpts.ranges[k2] = new Array(4);
@@ -168487,15 +168584,15 @@ void main() {
           if (xa3) {
             rng[0] = xa3._rl[0];
             rng[2] = xa3._rl[1];
-            dmn[0] = xa3.domain[0];
-            dmn[2] = xa3.domain[1];
+            dmn[0] = xa3.domain[0] + padFrac(xa3._padStart, gs3.w);
+            dmn[2] = xa3.domain[1] - padFrac(xa3._padEnd, gs3.w);
           }
           ya3 = AxisIDs.getFromId(gd3, trace._diag[i2][1]);
           if (ya3) {
             rng[1] = ya3._rl[0];
             rng[3] = ya3._rl[1];
-            dmn[1] = ya3.domain[0];
-            dmn[3] = ya3.domain[1];
+            dmn[1] = ya3.domain[0] + padFrac(ya3._padEnd, gs3.h);
+            dmn[3] = ya3.domain[1] - padFrac(ya3._padStart, gs3.h);
           }
         }
         var plotGlPixelRatio = gd3._context.plotGlPixelRatio;
@@ -168873,7 +168970,7 @@ void main() {
           var xOffset = xa3._offset;
           var xLength = xa3._length;
           var yLength = ya3._length;
-          var yOffset = gs3.b + ya3.domain[0] * gs3.h;
+          const yOffset = gs3.b + ya3.domain[0] * gs3.h + (ya3._padEnd || 0);
           var ym3 = -ya3._m;
           var yb2 = -ym3 * ya3.r2l(ya3.range[0], ya3.calendar);
           var x2, y2;

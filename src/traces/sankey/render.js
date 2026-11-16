@@ -271,7 +271,9 @@ function sankeyModel(layout, d, traceIndex) {
 
             var p = forcedNode.pointNumber;
             if (trace.node.x[p] && trace.node.y[p]) {
-                var pos = [trace.node.x[p] * width, trace.node.y[p] * height];
+                const pos = horizontal
+                    ? [trace.node.x[p] * width, trace.node.y[p] * height]
+                    : [trace.node.x[p] * height, trace.node.y[p] * width];
                 forcedNode.x0 = pos[0] - nodeThickness / 2;
                 forcedNode.x1 = pos[0] + nodeThickness / 2;
 
@@ -838,8 +840,15 @@ function persistFinalNodePositions(d, gd) {
     const y = [...d.trace.node.y];
     for (const node of d.graph.nodes) {
         if (node.partOfGroup) continue;
-        x[node.pointNumber] = (node.x0 + node.x1) / 2 / d.figure.width;
-        y[node.pointNumber] = (node.y0 + node.y1) / 2 / d.figure.height;
+        const nodeX = (node.x0 + node.x1) / 2;
+        const nodeY = (node.y0 + node.y1) / 2;
+        if (d.horizontal) {
+            x[node.pointNumber] = nodeX / d.figure.width;
+            y[node.pointNumber] = nodeY / d.figure.height;
+        } else {
+            x[node.pointNumber] = nodeX / d.figure.height;
+            y[node.pointNumber] = nodeY / d.figure.width;
+        }
     }
     Registry.call('_guiRestyle', gd, {
         'node.x': [x],
