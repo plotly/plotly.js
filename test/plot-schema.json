@@ -52393,13 +52393,13 @@
             "valType": "number"
           },
           "x": {
-            "description": "The normalized horizontal position of the node.",
+            "description": "The normalized position of the node center along the flow axis, measured from the source end. For `orientation` *h* the flow axis is horizontal. For `orientation` *v* the flow axis is vertical. With `direction` *reversed* the source end is the right or bottom edge.",
             "dflt": [],
             "editType": "calc",
             "valType": "data_array"
           },
           "y": {
-            "description": "The normalized vertical position of the node.",
+            "description": "The normalized position of the node center across the flow axis. For `orientation` *h* the value counts down from the top edge. For `orientation` *v* the value counts from the left edge. The value does not depend on `direction`.",
             "dflt": [],
             "editType": "calc",
             "valType": "data_array"
