@@ -29,6 +29,10 @@ npm run typecheck-watch   # incremental rechecking on change
 
 npm run schema            # rebuild test/plot-schema.json + regenerate types under src/types/generated/
 npm run schema-typegen-diff-check      # regenerate + verify no changes to test/plot-schema.json or src/types/generated/schema.d.ts
+
+npm run entry-point-types         # regenerate the entry point declarations under src/types/generated/entry_points/
+npm run entry-point-types-check   # verify the committed entry point declarations are current
+
 npm run build             # full production build (regenerate all files under `dist/`)
 ```
 
@@ -48,14 +52,16 @@ npm start
 
 ```bash
 npm run typecheck
-npm run schema          # if attribute files changed
+npm run schema              # if attribute files changed
+npm run entry-point-types   # if you added or removed a lib/ entry point
 ```
 
-**CI** runs both checks as separate jobs (see `.github/workflows/ci.yml`):
+**CI** runs these checks (see `.github/workflows/ci.yml`):
 
 ```bash
 npm run typecheck                     # validates the type system is internally consistent
 npm run schema-typegen-diff-check     # verifies generated types match the schema
+npm run entry-point-types-check       # verifies every lib/ entry point has a current declaration
 ```
 
 ## How esbuild handles `.ts`

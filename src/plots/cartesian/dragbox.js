@@ -335,7 +335,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
         lum = gd._hmpixcount
             ? (gd._hmlumcount / gd._hmpixcount)
-            : Color.color(gd._fullLayout.plot_bgcolor).luminosity();
+            : Color.luminosity(gd._fullLayout.plot_bgcolor);
         path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
         dimmed = false;
         zoomMode = 'xy';
@@ -485,6 +485,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             Lib.log('Did not find wheel motion attributes: ', e);
             return;
         }
+
+        // Keep automargin from changing plot size while wheel zoom is still
+        // debouncing. The final dragTail relayout will release this guard.
+        gd._fullLayout._replotting = true;
 
         var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200);
         var gbb = mainplot.draglayer.select('.nsewdrag').node().getBoundingClientRect();

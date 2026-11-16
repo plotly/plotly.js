@@ -6,6 +6,7 @@ var createError = require('regl-error2d');
 var Text = require('gl-text');
 
 var Lib = require('../../lib');
+const { rgbaString } = require('../../components/color');
 var selectMode = require('../../components/dragelement/helpers').selectMode;
 var prepareRegl = require('../../lib/prepare_regl');
 
@@ -27,11 +28,17 @@ function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var t = gs.t * plotGlPixelRatio;
     var w = gs.w * plotGlPixelRatio;
     var h = gs.h * plotGlPixelRatio;
+
+    const padL = (xaxis._padStart || 0) * plotGlPixelRatio;
+    const padR = (xaxis._padEnd || 0) * plotGlPixelRatio;
+    const padT = (yaxis._padStart || 0) * plotGlPixelRatio;
+    const padB = (yaxis._padEnd || 0) * plotGlPixelRatio;
+
     return [
-        l + xaxis.domain[0] * w,
-        b + yaxis.domain[0] * h,
-        (width - r) - (1 - xaxis.domain[1]) * w,
-        (height - t) - (1 - yaxis.domain[1]) * h
+        l + xaxis.domain[0] * w + padL,
+        b + yaxis.domain[0] * h + padB,
+        (width - r) - (1 - xaxis.domain[1]) * w - padR,
+        (height - t) - (1 - yaxis.domain[1]) * h - padT
     ];
 }
 
@@ -226,7 +233,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
                                     if(isNaN(xx) || isNaN(yy)) continue;
                                     pos.push(xx, yy);
                                 }
-                                fillOptions.fill = nextTrace.fillcolor;
+                                fillOptions.fill = rgbaString(nextTrace.fillcolor);
                             }
                         }
                     }

@@ -142,7 +142,7 @@
     },
     "doubleClickDelay": {
       "description": "Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and map) and on-legend double clicks.",
-      "dflt": 300,
+      "dflt": 500,
       "min": 0,
       "valType": "number"
     },
@@ -182,6 +182,7 @@
         "dflt": false,
         "valType": "boolean"
       },
+      "description": "Determines which parts of the graph a user can edit directly. `editable` sets every key here at once, and a key set here overrides it. `staticPlot` disables all of them.",
       "legendPosition": {
         "description": "Enables moving the legend.",
         "dflt": false,
@@ -244,7 +245,7 @@
       "valType": "any"
     },
     "modeBarButtonsToAdd": {
-      "description": "Add mode bar button using config objects See ./components/modebar/buttons.js for list of arguments. To enable predefined modebar buttons e.g. shape drawing, hover and spikelines, simply provide their string name(s). This could include: *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*. Please note that these predefined buttons will only be shown if they are compatible with all trace types used in a graph.",
+      "description": "Add mode bar button using config objects See ./components/modebar/buttons.js for list of arguments. To enable predefined modebar buttons e.g. shape drawing, hover and spikelines, simply provide their string name(s). This could include: *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape* and *downloadJson*. Please note that these predefined buttons will only be shown if they are compatible with all trace types used in a graph.",
       "dflt": [],
       "valType": "any"
     },
@@ -279,7 +280,7 @@
       "valType": "integer"
     },
     "responsive": {
-      "description": "Determines whether to change the layout size when window is resized. In v3, this option will be removed and will always be true.",
+      "description": "Determines whether to change the layout size when the graph container is resized. In v5, this option will be removed and will always be true.",
       "dflt": false,
       "valType": "boolean"
     },
@@ -329,9 +330,39 @@
       "valType": "boolean"
     },
     "toImageButtonOptions": {
-      "description": "Statically override options for toImage modebar button allowed keys are format, filename, width, height, scale see ../components/modebar/buttons.js",
-      "dflt": {},
-      "valType": "any"
+      "description": "Statically overrides options for the toImage modebar button. The button reads only `format`, `filename`, `width`, `height` and `scale`, and drops every other key.",
+      "filename": {
+        "description": "Sets the name of the downloaded file, without an extension. The button appends the extension that matches `format`. The name defaults to the plot title, then the plot subtitle, then *plot-image*.",
+        "valType": "string"
+      },
+      "format": {
+        "description": "Sets the format of exported image.",
+        "dflt": "png",
+        "valType": "enumerated",
+        "values": [
+          "png",
+          "jpeg",
+          "webp",
+          "svg",
+          "full-json"
+        ]
+      },
+      "height": {
+        "description": "Sets the exported image height. Defaults to the value found in `layout.height` If set to *null*, the exported image height will match the current graph height.",
+        "min": 1,
+        "valType": "number"
+      },
+      "role": "object",
+      "scale": {
+        "description": "Sets a scaling for the generated image. If set, all features of a graphs (e.g. text, line width) are scaled, unlike simply setting a bigger *width* and *height*.",
+        "min": 0,
+        "valType": "number"
+      },
+      "width": {
+        "description": "Sets the exported image width. Defaults to the value found in `layout.width` If set to *null*, the exported image width will match the current graph width.",
+        "min": 1,
+        "valType": "number"
+      }
     },
     "topojsonURL": {
       "description": "Set the URL to topojson used in geo charts. By default, the topojson files are fetched from cdn.plot.ly. For example, set this option to: <path-to-plotly.js>/dist/topojson/ to render geographical feature using the topojson files that ship with the plotly.js module.",
@@ -427,7 +458,7 @@
         "requiredOpts": []
       },
       "color": {
-        "description": "A string describing color. Supported formats: - hex (e.g. '#d3d3d3', '#d3d3d3aa') - rgb (e.g. 'rgb(255, 0, 0)', 'rgb(255 0 0)') - rgba (e.g. 'rgba(255, 0, 0, 0.5)', 'rgba(255 0 0 / 0.5)') - hsl (e.g. 'hsl(0, 100%, 50%)') - hsla (e.g. 'hsla(0, 100%, 50%, 0.5)') - hwb (e.g. 'hwb(0, 0%, 0%)') - named colors (full list: http://www.w3.org/TR/css3-color/#svg-color)",
+        "description": "A string describing color. Supported formats: - hex (e.g. '#d3d3d3', '#d3d3d3aa') - rgb/rgba (e.g. 'rgb(255, 0, 0)', 'rgba(255 0 0 / 0.5)') - hsl/hsla (e.g. 'hsl(0, 100%, 50%)', 'hsla(0 100% 50% / 0.5)') - hwb (e.g. 'hwb(0 0% 0%)') - lab/lch/oklab/oklch (e.g. 'oklch(0.7 0.15 180)') - color (e.g. 'color(display-p3 1 0 0)') - named colors (full list: https://www.w3.org/TR/css-color-4/#named-colors)",
         "otherOpts": [
           "dflt",
           "arrayOk"
@@ -1140,7 +1171,7 @@
         ]
       },
       "clickanywhere": {
-        "description": "If true, `plotly_click` events will fire for any click position within the plot area, not just over traces. When clicking where there is no trace data, the event will have an empty `points` array but will include `xvals` and `yvals` with click coordinates in data space.",
+        "description": "If true, `plotly_click` events will fire for any click position within the plot area, not just over traces. When clicking where there is no trace data, the event will have an empty `points` array but will include `xvals` and `yvals` with click coordinates in data space, and `xPixel` and `yPixel` with click coordinates in pixels, relative to the top-left corner of the graph div.",
         "dflt": false,
         "editType": "none",
         "valType": "boolean"
@@ -1220,7 +1251,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -2785,7 +2816,7 @@
         "valType": "number"
       },
       "hoveranywhere": {
-        "description": "If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space.",
+        "description": "If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space, and `xPixel` and `yPixel` with cursor coordinates in pixels, relative to the top-left corner of the graph div. A `plotly_unhover` event fires when the cursor leaves the plot area.",
         "dflt": false,
         "editType": "none",
         "valType": "boolean"
@@ -2799,7 +2830,7 @@
       },
       "hoverlabel": {
         "align": {
-          "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+          "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
           "dflt": "auto",
           "editType": "none",
           "valType": "enumerated",
@@ -3312,6 +3343,15 @@
             "togglegroup"
           ]
         },
+        "groupdoubleclick": {
+          "description": "Determines the behavior on legend group item double-click. *toggleitem* toggles the visibility of the individual item clicked on the graph. *togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph. Defaults to the value of `groupclick`.",
+          "editType": "legend",
+          "valType": "enumerated",
+          "values": [
+            "toggleitem",
+            "togglegroup"
+          ]
+        },
         "grouptitlefont": {
           "color": {
             "editType": "legend",
@@ -3429,6 +3469,13 @@
             "toggleothers",
             false
           ]
+        },
+        "itemheight": {
+          "description": "Sets the height (in px) of the legend item fill swatch. A taller swatch shows more of a trace *fill* or *fillpattern*. Only traces with a *fill* use this value. Every legend item grows to fit, so a larger value makes every row taller.",
+          "dflt": 6,
+          "editType": "legend",
+          "min": 6,
+          "valType": "number"
         },
         "itemsizing": {
           "description": "Determines if the legend items symbols scale with their corresponding *trace* attributes or remain *constant* independent of the symbol size on the graph.",
@@ -4167,7 +4214,7 @@
         },
         "add": {
           "arrayOk": true,
-          "description": "Determines which predefined modebar buttons to add. Please note that these buttons will only be shown if they are compatible with all trace types used in a graph. Similar to `config.modeBarButtonsToAdd` option. This may include *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*.",
+          "description": "Determines which predefined modebar buttons to add. Please note that these buttons will only be shown if they are compatible with all trace types used in a graph. Similar to `config.modeBarButtonsToAdd` option. This may include *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*, *downloadJson*.",
           "dflt": "",
           "editType": "modebar",
           "valType": "string"
@@ -10776,6 +10823,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -10805,6 +10858,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the spike line width in pixels.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -11280,6 +11381,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -11309,6 +11416,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the spike line width in pixels.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -11790,6 +11945,12 @@
             "editType": "plot",
             "valType": "boolean"
           },
+          "showspikes": {
+            "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.",
+            "dflt": false,
+            "editType": "plot",
+            "valType": "boolean"
+          },
           "showticklabels": {
             "description": "Determines whether or not the tick labels are drawn.",
             "dflt": true,
@@ -11819,6 +11980,54 @@
               "last",
               "none"
             ]
+          },
+          "spikecolor": {
+            "description": "Sets the spike color. If undefined, will use the series color",
+            "dflt": null,
+            "editType": "plot",
+            "valType": "color"
+          },
+          "spikedash": {
+            "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+            "dflt": "dash",
+            "editType": "plot",
+            "valType": "string",
+            "values": [
+              "solid",
+              "dot",
+              "dash",
+              "longdash",
+              "dashdot",
+              "longdashdot"
+            ]
+          },
+          "spikemode": {
+            "description": "Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on",
+            "dflt": "toaxis",
+            "editType": "plot",
+            "flags": [
+              "toaxis",
+              "across",
+              "marker"
+            ],
+            "valType": "flaglist"
+          },
+          "spikesnap": {
+            "description": "Determines whether spikelines are stuck to the cursor or to the closest datapoints.",
+            "dflt": "hovered data",
+            "editType": "plot",
+            "valType": "enumerated",
+            "values": [
+              "data",
+              "cursor",
+              "hovered data"
+            ]
+          },
+          "spikethickness": {
+            "description": "Sets the spike line width in pixels.",
+            "dflt": 3,
+            "editType": "plot",
+            "valType": "number"
           },
           "tick0": {
             "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
@@ -13169,6 +13378,39 @@
           ],
           "valType": "info_array"
         },
+        "domainpad": {
+          "bottom": {
+            "description": "Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "description": "Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. An axis that sets `overlaying` ignores its own `domainpad` and uses the `domainpad` of the axis it overlays, so that both axes share the same plot area.",
+          "editType": "plot",
+          "left": {
+            "description": "Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "right": {
+            "description": "Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "role": "object",
+          "top": {
+            "description": "Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          }
+        },
         "dtick": {
           "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
           "editType": "ticks",
@@ -13953,7 +14195,7 @@
           "valType": "boolean"
         },
         "showspikes": {
-          "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note: This only takes affect when hovermode = closest",
+          "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.",
           "dflt": false,
           "editType": "modebar",
           "valType": "boolean"
@@ -14042,7 +14284,7 @@
           ]
         },
         "spikethickness": {
-          "description": "Sets the width (in px) of the zero line.",
+          "description": "Sets the spike line width in pixels.",
           "dflt": 3,
           "editType": "none",
           "valType": "number"
@@ -14735,6 +14977,39 @@
           ],
           "valType": "info_array"
         },
+        "domainpad": {
+          "bottom": {
+            "description": "Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "description": "Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. An axis that sets `overlaying` ignores its own `domainpad` and uses the `domainpad` of the axis it overlays, so that both axes share the same plot area.",
+          "editType": "plot",
+          "left": {
+            "description": "Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "right": {
+            "description": "Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          },
+          "role": "object",
+          "top": {
+            "description": "Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.",
+            "dflt": 0,
+            "editType": "plot",
+            "min": 0,
+            "valType": "number"
+          }
+        },
         "dtick": {
           "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
           "editType": "ticks",
@@ -15202,7 +15477,7 @@
           "valType": "boolean"
         },
         "showspikes": {
-          "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note: This only takes affect when hovermode = closest",
+          "description": "Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.",
           "dflt": false,
           "editType": "modebar",
           "valType": "boolean"
@@ -15291,7 +15566,7 @@
           ]
         },
         "spikethickness": {
-          "description": "Sets the width (in px) of the zero line.",
+          "description": "Sets the spike line width in pixels.",
           "dflt": 3,
           "editType": "none",
           "valType": "number"
@@ -15995,7 +16270,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -16464,7 +16739,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -17864,7 +18139,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -18223,7 +18498,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -19260,7 +19535,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -20630,7 +20905,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -22837,7 +23112,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -23465,7 +23740,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -23983,7 +24258,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -24605,7 +24880,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -25158,7 +25433,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -25774,7 +26049,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -26357,7 +26632,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -27070,7 +27345,7 @@
             "valType": "string"
           },
           "operation": {
-            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
+            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
             "dflt": "=",
             "editType": "calc",
             "valType": "enumerated",
@@ -27189,7 +27464,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -27509,7 +27784,7 @@
             "valType": "number"
           },
           "width": {
-            "description": "Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.",
+            "description": "Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.",
             "editType": "style+colorbars",
             "min": 0,
             "valType": "number"
@@ -27570,7 +27845,7 @@
             "editType": "style",
             "valType": "color"
           },
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font.",
           "editType": "plot",
           "family": {
             "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
@@ -27656,7 +27931,7 @@
           }
         },
         "texttemplate": {
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
           "dflt": "",
           "editType": "plot",
           "valType": "string"
@@ -28039,7 +28314,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -28746,7 +29021,7 @@
             "valType": "string"
           },
           "operation": {
-            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
+            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
             "dflt": "=",
             "editType": "calc",
             "valType": "enumerated",
@@ -29007,7 +29282,7 @@
             "valType": "number"
           },
           "width": {
-            "description": "Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.",
+            "description": "Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.",
             "editType": "style+colorbars",
             "min": 0,
             "valType": "number"
@@ -29207,7 +29482,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -29819,7 +30094,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -30357,7 +30632,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -30825,7 +31100,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -32100,7 +32375,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -32981,7 +33256,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -33616,7 +33891,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -34641,7 +34916,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -35100,7 +35375,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -36465,7 +36740,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -37103,7 +37378,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -37843,7 +38118,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -38551,7 +38826,7 @@
             "valType": "string"
           },
           "operation": {
-            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
+            "description": "Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.",
             "dflt": "=",
             "editType": "calc",
             "valType": "enumerated",
@@ -38673,7 +38948,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -39062,7 +39337,7 @@
             "editType": "style",
             "valType": "color"
           },
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font.",
           "editType": "plot",
           "family": {
             "description": "HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available.",
@@ -39148,7 +39423,7 @@
           }
         },
         "texttemplate": {
-          "description": "For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
+          "description": "For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of \"data: %{x}, %{y}\" will result in a value of \"data: 1, %{y}\" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`.",
           "dflt": "",
           "editType": "plot",
           "valType": "string"
@@ -39488,7 +39763,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -39956,7 +40231,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -41219,7 +41494,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -42939,7 +43214,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "calc",
             "impliedEdits": {
               "tickmode": "linear"
@@ -43581,7 +43856,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -44308,7 +44583,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -44966,7 +45241,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -45636,7 +45911,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -46609,7 +46884,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -47835,7 +48110,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -48873,7 +49148,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -49859,7 +50134,7 @@
       "animatable": true,
       "attributes": {
         "anchor": {
-          "description": "Sets the arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the arrow on (x,y).",
+          "description": "Sets the vector arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the vector arrow on (x,y).",
           "dflt": "tail",
           "editType": "calc",
           "valType": "enumerated",
@@ -49869,9 +50144,9 @@
             "center"
           ]
         },
-        "anglemode": {
-          "description": "Sets the mode used to determine the angle of the arrow vectors. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axes scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis",
-          "dflt": "axis",
+        "arrowref": {
+          "description": "Determines how the u/v vector components are interpreted. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axis scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis",
+          "dflt": "data",
           "editType": "calc",
           "valType": "enumerated",
           "values": [
@@ -49921,7 +50196,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -50194,9 +50469,26 @@
           "min": 0,
           "valType": "number"
         },
+        "lengthfactor": {
+          "description": "Adjusts the drawn length of the vector arrows. The arrow length is determined by the values of u and v, then optionally rescaled when `lengthmode` is *scaled*, then multiplied by `lengthfactor`.",
+          "dflt": 1,
+          "editType": "calc",
+          "min": 0,
+          "valType": "number"
+        },
+        "lengthmode": {
+          "description": "Determines whether vector arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper* vectors are always scaled and `lengthmode` *raw* is ignored.",
+          "dflt": "scaled",
+          "editType": "calc",
+          "valType": "enumerated",
+          "values": [
+            "scaled",
+            "raw"
+          ]
+        },
         "marker": {
           "arrowsize": {
-            "description": "Sets the size of the arrow head relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.",
+            "description": "Sets the size of the vector arrowhead relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.",
             "dflt": 1,
             "editType": "calc",
             "min": 0.3,
@@ -50275,7 +50567,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -50879,7 +51171,7 @@
             "editType": "style",
             "role": "object",
             "width": {
-              "description": "Sets the width (in px) of the arrow lines.",
+              "description": "Sets the width (in px) of the vector arrow lines.",
               "dflt": 2,
               "editType": "style",
               "min": 0,
@@ -50961,23 +51253,6 @@
           "dflt": true,
           "editType": "style",
           "valType": "boolean"
-        },
-        "sizemode": {
-          "description": "Determines whether arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `anglemode` is *data* arrows are alwyas scaled and `sizemode` *raw* is ignored.",
-          "dflt": "scaled",
-          "editType": "calc",
-          "valType": "enumerated",
-          "values": [
-            "scaled",
-            "raw"
-          ]
-        },
-        "sizeref": {
-          "description": "Adjusts the arrow size scaling. The arrow length is determined by the vector norm multiplied by `sizeref`, optionally normalized when `sizemode` is *scaled* (`sizeref` is applied after scaling).",
-          "dflt": 1,
-          "editType": "calc",
-          "min": 0,
-          "valType": "number"
         },
         "text": {
           "arrayOk": true,
@@ -51105,7 +51380,7 @@
         "type": "quiver",
         "u": {
           "anim": true,
-          "description": "Sets the x components of the arrow vectors.",
+          "description": "Sets the x components of the vector arrows.",
           "editType": "calc",
           "valType": "data_array"
         },
@@ -51160,7 +51435,7 @@
         },
         "v": {
           "anim": true,
-          "description": "Sets the y components of the arrow vectors.",
+          "description": "Sets the y components of the vector arrows.",
           "editType": "calc",
           "valType": "data_array"
         },
@@ -51183,7 +51458,7 @@
         },
         "x": {
           "anim": true,
-          "description": "Sets the x coordinates of the arrow locations.",
+          "description": "Sets the x coordinates of the vector arrow locations.",
           "editType": "calc+clearAxisTypes",
           "valType": "data_array"
         },
@@ -51208,7 +51483,7 @@
         },
         "y": {
           "anim": true,
-          "description": "Sets the y coordinates of the arrow locations.",
+          "description": "Sets the y coordinates of the vector arrow locations.",
           "editType": "calc+clearAxisTypes",
           "valType": "data_array"
         },
@@ -51263,6 +51538,16 @@
           "description": "Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements",
           "editType": "calc",
           "valType": "data_array"
+        },
+        "direction": {
+          "description": "Sets the direction of the flow along the `orientation` axis. With `forward` (the default), sources are on the left (horizontal) or top (vertical). With `reversed`, sources are on the right (horizontal) or bottom (vertical).",
+          "dflt": "forward",
+          "editType": "calc",
+          "valType": "enumerated",
+          "values": [
+            "forward",
+            "reversed"
+          ]
         },
         "domain": {
           "column": {
@@ -51344,7 +51629,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "calc",
             "valType": "enumerated",
@@ -51699,7 +51984,7 @@
           "hoverlabel": {
             "align": {
               "arrayOk": true,
-              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
               "dflt": "auto",
               "editType": "calc",
               "valType": "enumerated",
@@ -51971,7 +52256,7 @@
           "hoverlabel": {
             "align": {
               "arrayOk": true,
-              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+              "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
               "dflt": "auto",
               "editType": "calc",
               "valType": "enumerated",
@@ -52187,7 +52472,7 @@
           }
         },
         "orientation": {
-          "description": "Sets the orientation of the Sankey diagram.",
+          "description": "Sets the orientation of the Sankey diagram. With `h` (the default), the flow runs horizontally. With `v`, the flow runs vertically. Use `direction` to control which side the sources are placed on.",
           "dflt": "h",
           "editType": "calc",
           "valType": "enumerated",
@@ -52694,7 +52979,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -53151,7 +53436,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -55187,7 +55472,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -55546,7 +55831,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "calc",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -56241,7 +56526,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "calc",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -57422,7 +57707,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -57863,7 +58148,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -59501,7 +59786,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -59935,7 +60220,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "calc",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -61708,7 +61993,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -62117,7 +62402,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "calc",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -63816,7 +64101,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -64214,7 +64499,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "calc",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -65148,7 +65433,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -65589,7 +65874,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -67243,7 +67528,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -67639,7 +67924,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "calc",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -69192,7 +69477,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -69638,7 +69923,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -71271,7 +71556,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -71712,7 +71997,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -73371,7 +73656,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -73737,7 +74022,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -75190,7 +75475,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "colorbars",
             "impliedEdits": {
               "tickmode": "linear"
@@ -75807,7 +76092,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -76476,7 +76761,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -76956,7 +77241,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -78055,7 +78340,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "calc",
             "impliedEdits": {
               "tickmode": "linear"
@@ -78956,7 +79241,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -79964,7 +80249,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -80382,7 +80667,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -80839,7 +81124,7 @@
               "valType": "number"
             },
             "dtick": {
-              "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+              "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
               "editType": "colorbars",
               "impliedEdits": {
                 "tickmode": "linear"
@@ -82188,7 +82473,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -83534,7 +83819,7 @@
             "valType": "number"
           },
           "dtick": {
-            "description": "Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*",
+            "description": "Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.",
             "editType": "calc",
             "impliedEdits": {
               "tickmode": "linear"
@@ -84176,7 +84461,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",
@@ -84985,7 +85270,7 @@
         "hoverlabel": {
           "align": {
             "arrayOk": true,
-            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines",
+            "description": "Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines",
             "dflt": "auto",
             "editType": "none",
             "valType": "enumerated",

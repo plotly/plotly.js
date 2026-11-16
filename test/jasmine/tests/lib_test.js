@@ -728,6 +728,49 @@ describe('Test lib.js:', function () {
             expect(computed).toEqual(expected);
         });
         */
+
+        it('does not modify inherited objects or the prototype chain', () => {
+            const payloads = [
+                '{"toString.call": 1}',
+                '{"hasOwnProperty.call": 1}',
+                '{"toString.marker": 1}',
+                '{"constructor[0].x": 1}',
+                '{"constructor.prototype.polluted": 1}',
+                '{"__proto__.polluted": 1}',
+                '{"x.__proto__.polluted": 1}',
+                '{"__proto__": {"polluted": 1}}'
+            ];
+            const targets = [Object.prototype, Object, Object.prototype.toString, Object.prototype.hasOwnProperty];
+            const ownNames = () => targets.map((target) => Object.getOwnPropertyNames(target));
+            const before = ownNames();
+            const originalProcess = window.process;
+            let after;
+            let prototypesKept = true;
+
+            try {
+                [undefined, { versions: {} }].forEach((process) => {
+                    window.process = process;
+                    [Lib.expandObjectPaths, (obj) => Lib.extendDeepNoArrays({}, obj)].forEach((fn) => {
+                        payloads.forEach((payload) => {
+                            const input = JSON.parse(payload);
+                            fn(input);
+                            prototypesKept = prototypesKept && Object.getPrototypeOf(input) === Object.prototype;
+                        });
+                    });
+                });
+                after = ownNames();
+            } finally {
+                window.process = originalProcess;
+                targets.forEach((target, i) => {
+                    Object.getOwnPropertyNames(target)
+                        .filter((name) => !before[i].includes(name))
+                        .forEach((name) => delete target[name]);
+                });
+            }
+
+            expect(after).toEqual(before);
+            expect(prototypesKept).toBe(true);
+        });
     });
 
     describe('coerce', function () {

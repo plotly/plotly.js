@@ -10,7 +10,8 @@ var MAX_SAFE = numConstants.FP_SAFE;
 var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
-var lib = (module.exports = {});
+var lib = {};
+module.exports = lib;
 
 lib.adjustFormat = function adjustFormat(formatStr) {
     if (!formatStr || /^\d[.]\df/.test(formatStr) || /[.]\d%/.test(formatStr)) return formatStr;
@@ -19,8 +20,16 @@ lib.adjustFormat = function adjustFormat(formatStr) {
     if (/^\d%/.test(formatStr)) return '~%';
     if (/^\ds/.test(formatStr)) return '~s';
 
-    // try adding tilde to the start of format in order to trim
-    if (!/^[~,.0$]/.test(formatStr) && /[&fps]/.test(formatStr)) return '~' + formatStr;
+    // A d3-format spec may begin with a sign flag (+, -, (, space). Look past
+    // that prefix before deciding whether to trim, and reattach it: prepending
+    // the tilde to the whole string (e.g. "~+.2f") is an invalid spec that
+    // d3Format rejects, so "+.2f" used to be silently dropped.
+    var prefix = (formatStr.match(/^[+\-( ]?/) || [''])[0];
+    var rest = formatStr.slice(prefix.length);
+
+    // try adding tilde to trim trailing zeros; leave symbol-led specs ($, #)
+    // untrimmed, since the symbol isn't part of the prefix we stripped above
+    if (!/^[~,.0$#]/.test(rest) && /[&fps]/.test(rest)) return prefix + '~' + rest;
 
     return formatStr;
 };
@@ -878,9 +887,9 @@ lib.objectFromPath = function (path, value) {
 var dottedPropertyRegex = /^([^\[\.]+)\.(.+)?/;
 var indexedPropertyRegex = /^([^\.]+)\[([0-9]+)\](\.)?(.+)?/;
 
-function notValid(prop) {
+function notValid(obj, prop) {
     // guard against polluting __proto__ and other internals getters and setters
-    return prop.slice(0, 2) === '__';
+    return prop in obj && !Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
 lib.expandObjectPaths = function (data) {
@@ -891,7 +900,7 @@ lib.expandObjectPaths = function (data) {
                 if ((match = key.match(dottedPropertyRegex))) {
                     datum = data[key];
                     prop = match[1];
-                    if (notValid(prop)) continue;
+                    if (notValid(data, prop)) continue;
 
                     delete data[key];
 
@@ -903,7 +912,7 @@ lib.expandObjectPaths = function (data) {
                     datum = data[key];
 
                     prop = match[1];
-                    if (notValid(prop)) continue;
+                    if (notValid(data, prop)) continue;
 
                     idx = parseInt(match[2]);
 
@@ -934,11 +943,11 @@ lib.expandObjectPaths = function (data) {
                         // This is the case where this property is the end of the line,
                         // e.g. xaxis.range[0]
 
-                        if (notValid(prop)) continue;
+                        if (notValid(data, prop)) continue;
                         data[prop][idx] = lib.expandObjectPaths(datum);
                     }
                 } else {
-                    if (notValid(key)) continue;
+                    if (notValid(data, key)) continue;
                     data[key] = lib.expandObjectPaths(data[key]);
                 }
             }

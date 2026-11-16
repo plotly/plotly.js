@@ -5,11 +5,12 @@ var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
-var confirmCloudDialog = require('./cloud_confirm');
+var confirmCloudDialog = require('./share_chart/dialog');
 var Lib = require('../../lib');
 var _ = Lib._;
 
-var modeBarButtons = (module.exports = {});
+var modeBarButtons = {};
+module.exports = modeBarButtons;
 
 /**
  * ModeBar buttons configuration
@@ -69,26 +70,48 @@ modeBarButtons.toImage = {
     }
 };
 
+modeBarButtons.downloadJson = {
+    name: 'downloadJson',
+    title: function (gd) {
+        return _(gd, 'Download plot as JSON');
+    },
+    icon: Icons.curlybraces,
+    click: function (gd) {
+        Registry.call('downloadImage', gd, {format: 'full-json'})
+            .then(function(filename) {
+                Lib.notifier(_(gd, 'JSON download succeeded') + ' - ' + filename, 'long', gd);
+            })
+            .catch(function() {
+                Lib.notifier(_(gd, 'Sorry, there was a problem downloading your JSON file!'), 'long', gd);
+            });
+    }
+};
+
 modeBarButtons.sendChartToCloud = {
     name: 'sendChartToCloud',
     title: function (gd) {
-        return _(gd, 'Share Chart');
+        return _(gd, 'Share chart...');
     },
     icon: Icons.cloudupload,
     click: function (gd) {
         var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
         if (!baseUrl) {
-            console.error('No destination URL provided (plotlyServerURL is not set)');
+            console.error('No destination URL provided (plotlyServerURL is empty)');
             return;
         }
 
-        // Plotly Cloud origin, used to validate incoming messages and to target outgoing ones.
-        // `baseUrl` (plotlyServerURL) is the upload page that handles login and signals
-        // back when authentication succeeds.
+        // Validate that the provided plotlyServerURL is a valid URL
+        // with an http or https protocol
+        var baseUrlObj;
         try {
-            new URL(baseUrl);
+            baseUrlObj = new URL(baseUrl);
         } catch (e) {
             console.error('Invalid plotlyServerURL: ' + baseUrl);
+            return;
+        }
+        const supportedProtocols = ['http:', 'https:'];
+        if (!supportedProtocols.includes(baseUrlObj.protocol)) {
+            console.error(`Invalid protocol '${baseUrlObj.protocol}' in plotlyServerURL '${baseUrl}'. Must be one of: ${supportedProtocols.join(', ')}`);
             return;
         }
 

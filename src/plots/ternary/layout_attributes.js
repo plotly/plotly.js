@@ -62,6 +62,18 @@ var ternaryAxesAttrs = {
             'all the minima set to zero.'
         ].join(' ')
     },
+    // spikelines
+    showspikes: extendFlat({}, axesAttrs.showspikes, {
+        description: [
+            'Determines whether or not spikes (aka droplines) are drawn for this axis.',
+            'Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.',
+        ].join(' ')
+    }),
+    spikecolor: axesAttrs.spikecolor,
+    spikethickness: axesAttrs.spikethickness,
+    spikedash: axesAttrs.spikedash,
+    spikemode: axesAttrs.spikemode,
+    spikesnap: axesAttrs.spikesnap,
 };
 
 var attrs = module.exports = overrideAll({

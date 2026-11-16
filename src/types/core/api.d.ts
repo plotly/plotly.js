@@ -5,7 +5,7 @@
 import type { AnimationOpts, Data, Frame, Layout } from '../generated/schema';
 import type { Config, DownloadImgopts, ToImgopts } from './config';
 import type { PlotlyHTMLElement } from './events';
-import type { Icon, Template } from './layout';
+import type { DataUpdate, Icon, LayoutUpdate, Template } from './layout';
 
 // ---------------------------------------------------------------------------
 // Roots and request shapes
@@ -183,11 +183,11 @@ export interface ValidateTemplateResult {
 /**
  * Create a new plot at `root`. Replaces any existing plot.
  *
- * @param root - graph div id or element
- * @param data - trace data array
- * @param layout - layout overrides
- * @param config - config overrides
- * @returns the graph div once the plot has rendered
+ * @param root - Graph div id or element
+ * @param data - Trace data array
+ * @param layout - Layout overrides
+ * @param config - Config overrides
+ * @returns The graph div once the plot has rendered
  */
 export function newPlot(
     root: Root,
@@ -199,48 +199,86 @@ export function newPlot(
  * Create a new plot at `root` from a figure-shaped object containing
  * `data`/`layout`/`config`/`frames`. Replaces any existing plot.
  *
- * @param root - graph div id or element
- * @param figure - figure-shaped object
- * @returns the graph div once the plot has rendered
+ * @param root - Graph div id or element
+ * @param figure - Figure-shaped object
+ * @returns The graph div once the plot has rendered
  */
 export function newPlot(
     root: Root,
     figure: PlotlyDataLayoutConfig
 ): Promise<PlotlyHTMLElement>;
 
-/** Update layout properties on an existing plot. */
-export function relayout(root: Root, layout: Partial<Layout>): Promise<PlotlyHTMLElement>;
+/**
+ * Update layout properties on an existing plot with an update object.
+ *
+ * @param layout - Update object whose keys are layout properties or attribute paths
+ */
+export function relayout(root: Root, layout: LayoutUpdate): Promise<PlotlyHTMLElement>;
+/**
+ * Update one layout property on an existing plot with an attribute path.
+ *
+ * @param astr - Attribute path, for example `'xaxis.autorange'`
+ * @param val - New value of the attribute
+ */
+export function relayout(root: Root, astr: string, val: any): Promise<PlotlyHTMLElement>;
+/**
+ * Update layout properties on an existing plot with either call form.
+ *
+ * This signature lets a wrapper read the parameter types with `Parameters<typeof relayout>`.
+ * It does not check that the value matches the form.
+ */
+export function relayout(root: Root, astr: string | LayoutUpdate, val?: any): Promise<PlotlyHTMLElement>;
 /** Re-render the plot at `root` from its current data/layout. */
 export function redraw(root: Root): Promise<PlotlyHTMLElement>;
 /** Remove a plot and its event listeners from the DOM. */
 export function purge(root: Root): void;
 /**
- * Update trace properties (style) on the existing plot.
+ * Update trace properties (style) on the existing plot with an update object.
  *
- * @param aobj - update object whose keys are attribute paths
- * @param traces - trace index/indices to update (defaults to all)
+ * @param aobj - Update object whose keys are trace properties or attribute paths
+ * @param traces - Trace index/indices to update (defaults to all)
  */
-export function restyle(root: Root, aobj: Data, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+export function restyle(root: Root, aobj: DataUpdate, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+/**
+ * Update one trace property on the existing plot with an attribute path.
+ *
+ * @param astr - Attribute path, for example `'marker.color'`
+ * @param val - New value of the attribute, or an array with one value for each trace
+ * @param traces - Trace index/indices to update (defaults to all)
+ */
+export function restyle(root: Root, astr: string, val: any, traces?: number[] | number): Promise<PlotlyHTMLElement>;
+/**
+ * Update trace properties (style) on the existing plot with either call form.
+ *
+ * This signature lets a wrapper read the parameter types with `Parameters<typeof restyle>`.
+ * It does not check that the arguments match the form.
+ */
+export function restyle(
+    root: Root,
+    astr: string | DataUpdate,
+    val?: any,
+    traces?: number[] | number
+): Promise<PlotlyHTMLElement>;
 
 /**
  * Update both trace and layout properties in a single call.
  *
- * @param traceUpdate - per-trace updates
- * @param layoutUpdate - layout updates
- * @param traces - trace index/indices `traceUpdate` applies to
+ * @param traceUpdate - Per-trace updates
+ * @param layoutUpdate - Layout updates
+ * @param traces - Trace index/indices `traceUpdate` applies to
  */
 export function update(
     root: Root,
-    traceUpdate: Data,
-    layoutUpdate: Partial<Layout>,
+    traceUpdate: DataUpdate,
+    layoutUpdate: LayoutUpdate,
     traces?: number[] | number
 ): Promise<PlotlyHTMLElement>;
 
 /**
  * Add one or more traces to an existing plot.
  *
- * @param traces - trace(s) to add
- * @param newIndices - position(s) in `data` where the traces should land
+ * @param traces - Trace(s) to add
+ * @param newIndices - Position(s) in `data` where the traces should land
  */
 export function addTraces(
     root: Root,
@@ -254,8 +292,8 @@ export function deleteTraces(root: Root, indices: number[] | number): Promise<Pl
 /**
  * Reorder existing traces.
  *
- * @param currentIndices - current trace indices to move
- * @param newIndices - destination indices; if omitted, traces move to the end
+ * @param currentIndices - Current trace indices to move
+ * @param newIndices - Destination indices; if omitted, traces move to the end
  */
 export function moveTraces(
     root: Root,
@@ -284,7 +322,7 @@ export function prependTraces(
 /** Render the plot to a data URI or SVG string. */
 export function toImage(root: RootOrData, opts?: ToImgopts): Promise<string>;
 /** Render the plot and trigger a browser download. */
-export function downloadImage(root: RootOrData, opts: DownloadImgopts): Promise<string>;
+export function downloadImage(root: RootOrData, opts?: DownloadImgopts): Promise<string>;
 
 /**
  * Reconcile the plot's current state with the supplied figure. Comparable
@@ -307,8 +345,8 @@ export function register(modules: PlotlyModule | PlotlyModule[]): void;
 /**
  * Animate to a frame, frame group, or sequence of frames.
  *
- * @param frameOrGroupNameOrFrameList - frame name, group name, or list of either
- * @param opts - animation options (frame timing, transition, mode, …)
+ * @param frameOrGroupNameOrFrameList - Frame name, group name, or list of either
+ * @param opts - Animation options (frame timing, transition, mode, …)
  */
 export function animate(
     root: Root,

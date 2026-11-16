@@ -165,20 +165,41 @@ function _doPlot(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
-    // make the figure responsive
+    // Make the figure responsive. We need to save the callback that clears the
+    // listener for proper teardown.
     if (gd._context.responsive) {
-        if (!gd._responsiveChartHandler) {
-            // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function () {
+        if (!gd._clearResponsive) {
+            const resizeIfShown = () => {
                 if (!Lib.isHidden(gd)) Plots.resize(gd);
             };
-
-            // Listen to window resize
-            window.addEventListener('resize', gd._responsiveChartHandler);
+            // We still need the window resize listener for `fillFrame` and an
+            // escape hatch for browser-like users that don't support `ResizeObserver` (like jsdom)
+            if (gd._context.fillFrame || typeof ResizeObserver === 'undefined') {
+                window.addEventListener('resize', resizeIfShown);
+                gd._clearResponsive = () => window.removeEventListener('resize', resizeIfShown);
+            } else {
+                let previousWidth = gd.offsetWidth;
+                let previousHeight = gd.offsetHeight;
+                const observer = new ResizeObserver(() => {
+                    const width = gd.offsetWidth;
+                    const height = gd.offsetHeight;
+                    // Ignore size changes of one pixel or less (the same as plotAutoSize)
+                    const changed = Math.abs(width - previousWidth) > 1 || Math.abs(height - previousHeight) > 1;
+                    previousWidth = width;
+                    previousHeight = height;
+                    // Only resize plot if it changed and is visible (width and height > 0)
+                    if (changed && width && height) resizeIfShown();
+                });
+                observer.observe(gd);
+                gd._clearResponsive = () => observer.disconnect();
+            }
         }
     } else {
         Lib.clearResponsive(gd);
     }
+
+    // Text measured while one of these faces loads uses the fallback font
+    const unloadedFaces = document.fonts ? [...document.fonts].filter((face) => face.status !== 'loaded') : [];
 
     /*
      * start async-friendly code - now we're actually drawing things
@@ -310,7 +331,7 @@ function _doPlot(gd, data, layout, config) {
     function marginPushersAgain() {
         if (!Plots.didMarginChange(oldMargins, fullLayout._size)) return;
 
-        return Lib.syncOrAsync([marginPushers, subroutines.layoutStyles], gd);
+        return marginPushers();
     }
 
     function positionAndAutorange() {
@@ -390,9 +411,38 @@ function _doPlot(gd, data, layout, config) {
     if (!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function () {
+        redrawAfterFontLoads(gd, unloadedFaces);
         emitAfterPlot(gd);
         return gd;
     });
+}
+
+/**
+ * Redraw a plot after the web fonts that load during its draw finish loading.
+ *
+ * A plot that draws before its web font loads measures its text with the fallback font.
+ * The redraw happens after the draw that calls this function, once every face that started or
+ * finished loading during the draw settles. A face that fails to load still settles.
+ * A font that other text loads during the draw also causes one redraw.
+ * A later draw or `Plots.purge` cancels a pending redraw.
+ *
+ * @param gd - The graph div that finished a draw
+ * @param unloadedFaces - The faces in `document.fonts` that were not loaded when the draw started
+ */
+async function redrawAfterFontLoads(gd, unloadedFaces) {
+    // The draw started these loads, or they finished during the draw
+    const faces = unloadedFaces.filter((face) => ['loaded', 'loading'].includes(face.status));
+    if (!faces.length) return;
+
+    const token = {};
+    gd._fontLoadToken = token;
+    await Promise.all(faces.map((face) => face.loaded.catch(() => {})));
+    if (gd._fontLoadToken !== token) return;
+    delete gd._fontLoadToken;
+
+    // Clear size cache to force new measurement with loaded fonts
+    Drawing.savedBBoxes = {};
+    exports._doPlot(gd);
 }
 
 function emitAfterPlot(gd) {
@@ -2062,6 +2112,12 @@ function _relayout(gd, aobj) {
             if (!newType || newType === '-') newType = 'linear';
             Registry.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
             Registry.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
+
+            // a range or autorange in a whole axis object is handled like the dotted keys above
+            if (!ptrunk && fullProp && vi && (vi.range !== undefined || vi.autorange !== undefined)) {
+                recordAlteredAxis(`${pleaf}.range`);
+                fullProp._inputRange = null;
+            }
         }
 
         // alter gd.layout
@@ -2821,6 +2877,17 @@ function diffLayout(gd, oldFullLayout, newFullLayout, immutable, transition) {
             // We skip the else case (newDomain !== oldInputDomain && newDomain === oldDomain)
             // because it's likely that if the newDomain and oldDomain are the same, the user
             // passed in the same layout object and we should keep the _inputDomain.
+        }
+
+        // Same for _inputRange: constraints compare the range against it, so a stale one
+        // puts the previous range back
+        const newRange = newFullLayout[key].range;
+        const oldRange = oldFullLayout[key].range;
+        const oldInputRange = oldFullLayout[key]._inputRange;
+        if (oldInputRange && newRange && oldRange) {
+            const isInputRange = newRange[0] === oldInputRange[0] && newRange[1] === oldInputRange[1];
+            const isOldRange = newRange[0] === oldRange[0] && newRange[1] === oldRange[1];
+            if (!isInputRange && !isOldRange) newFullLayout[key]._inputRange = null;
         }
     }
 

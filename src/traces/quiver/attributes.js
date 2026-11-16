@@ -14,7 +14,7 @@ var attrs = {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         anim: true,
-        description: 'Sets the x coordinates of the arrow locations.'
+        description: 'Sets the x coordinates of the vector arrow locations.'
     },
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
@@ -22,7 +22,7 @@ var attrs = {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         anim: true,
-        description: 'Sets the y coordinates of the arrow locations.'
+        description: 'Sets the y coordinates of the vector arrow locations.'
     },
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
@@ -30,46 +30,47 @@ var attrs = {
         valType: 'data_array',
         editType: 'calc',
         anim: true,
-        description: 'Sets the x components of the arrow vectors.'
+        description: 'Sets the x components of the vector arrows.'
     },
     v: {
         valType: 'data_array',
         editType: 'calc',
         anim: true,
-        description: 'Sets the y components of the arrow vectors.'
+        description: 'Sets the y components of the vector arrows.'
     },
-    anglemode: {
+    arrowref: {
         valType: 'enumerated',
         values: ['paper', 'data'],
-        dflt: 'axis',
+        dflt: 'data',
         editType: 'calc',
         description: [
-            'Sets the mode used to determine the angle of the arrow vectors.',
+            'Determines how the u/v vector components are interpreted.',
             'If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle',
-            'does not change regardless of the axes scales.',
+            'does not change regardless of the axis scales.',
             'If *data*, u/v are interpreted in data coordinates and the rendered vector angle',
             'may change, e.g. if zooming in along a single axis'
         ].join(' ')
     },
-    sizemode: {
+    lengthmode: {
         valType: 'enumerated',
         values: ['scaled', 'raw'],
         editType: 'calc',
         dflt: 'scaled',
         description: [
-            'Determines whether arrows are drawn according to their raw lengths,',
-            'or scaled based on the maximum vector length and point density. Note: When `anglemode` is *data*', 
-            'arrows are alwyas scaled and `sizemode` *raw* is ignored.',
+            'Determines whether vector arrows are drawn according to their raw lengths,',
+            'or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper*',
+            'vectors are always scaled and `lengthmode` *raw* is ignored.'
         ].join(' ')
     },
-    sizeref: {
+    lengthfactor: {
         valType: 'number',
         min: 0,
         editType: 'calc',
         dflt: 1,
         description: [
-            'Adjusts the arrow size scaling. The arrow length is determined by the vector norm multiplied by `sizeref`,',
-            'optionally normalized when `sizemode` is *scaled* (`sizeref` is applied after scaling).'
+            'Adjusts the drawn length of the vector arrows. The arrow length is determined by',
+            'the values of u and v, then optionally rescaled when `lengthmode` is *scaled*,',
+            'then multiplied by `lengthfactor`.',
         ].join(' ')
     },
     anchor: {
@@ -78,9 +79,9 @@ var attrs = {
         dflt: 'tail',
         editType: 'calc',
         description: [
-            'Sets the arrows\' anchor with respect to their (x,y) positions.',
+            'Sets the vector arrows\' anchor with respect to their (x,y) positions.',
             'Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head,',
-            'or *center* to center the arrow on (x,y).'
+            'or *center* to center the vector arrow on (x,y).'
         ].join(' ')
     },
     xhoverformat: axisHoverFormat('x'),
@@ -107,7 +108,7 @@ var attrs = {
             arrowsize: extendFlat({}, annotationAttrs.arrowsize, {
                 editType: 'calc',
                 description: [
-                    'Sets the size of the arrow head relative to `marker.line.width`.',
+                    'Sets the size of the vector arrowhead relative to `marker.line.width`.',
                     'A value of 1 (default) gives a head about 3x as wide as the line.'
                 ].join(' ')
             }),
@@ -117,7 +118,7 @@ var attrs = {
                     min: 0,
                     dflt: 2,
                     editType: 'style',
-                    description: 'Sets the width (in px) of the arrow lines.'
+                    description: 'Sets the width (in px) of the vector arrow lines.'
                 },
                 dash: dash,
                 editType: 'style'

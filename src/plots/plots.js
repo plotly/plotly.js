@@ -840,7 +840,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         // find "full" domain span of counter axes,
         // this loop can be costly, so only compute it when required
         if(ax._counterAxes.length && (
-            (ax.spikemode && ax.spikemode.indexOf('across') !== -1) ||
             (ax.automargin && ax.mirror && ax.anchor !== 'free') ||
             Registry.getComponentMethod('rangeslider', 'isVisible')(ax)
         )) {
@@ -1469,6 +1468,9 @@ plots.purge = function(gd) {
 
     // remove responsive handler
     Lib.clearResponsive(gd);
+
+    // Cancel the pending redraw for web fonts
+    delete gd._fontLoadToken;
 
     // data and layout
     delete gd.data;

@@ -1,1 +1,0 @@
-- Use plot title as default filename for "Download plot" button [[#7828](https://github.com/plotly/plotly.js/pull/7828)]

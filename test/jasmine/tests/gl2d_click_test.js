@@ -292,6 +292,53 @@ describe('Test hover and click interactions', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should use the per-point marker color for the hover label', async () => {
+        await Plotly.newPlot(
+            gd,
+            [
+                {
+                    type: 'scattergl',
+                    mode: 'markers',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    marker: {
+                        color: ['#1767C2', '#FF4136', '#2ECC40'],
+                        size: 20
+                    }
+                }
+            ],
+            {
+                hovermode: 'closest',
+                width: 400,
+                height: 400,
+                xaxis: { showspikes: true },
+                yaxis: { showspikes: true }
+            }
+        );
+
+        Plotly.Fx.hover(gd, { xval: 2, yval: 2 }, 'xy');
+        Lib.clearThrottle();
+
+        const withArray = d3Select('g.hovertext path').node();
+        expect(window.getComputedStyle(withArray).fill).toBe('rgb(255, 65, 54)', 'color array');
+
+        const spikeStrokes = Array.from(document.querySelectorAll('line.spikeline')).map(
+            (line) => window.getComputedStyle(line).stroke
+        );
+        expect(spikeStrokes.filter((stroke) => stroke === 'rgb(255, 65, 54)').length).toBe(2, 'spikelines');
+
+        await Plotly.restyle(gd, {
+            'marker.color': [[0, 5, 10]],
+            'marker.colorscale': 'Viridis'
+        });
+
+        Plotly.Fx.hover(gd, { xval: 2, yval: 2 }, 'xy');
+        Lib.clearThrottle();
+
+        const withColorscale = d3Select('g.hovertext path').node();
+        expect(window.getComputedStyle(withColorscale).fill).toBe('rgb(33, 145, 140)', 'colorscale');
+    });
+
     it('@gl should show correct label for scattergl when hovertext is set', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hovertext = 'text';

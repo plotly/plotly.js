@@ -6,12 +6,14 @@ var constants = require('./util/constants');
 var common = require('./util/common');
 var pullCSS = require('./util/pull_css');
 var updateVersion = require('./util/update_version');
+const bundleMapLibreWorker = require('./util/bundle_maplibre_worker');
 
 // main
 makeBuildCSS();
 exposePartsInLib();
 copyTopojsonFiles();
 updateVersion(constants.pathToPlotlyVersion);
+makeMapLibreWorker();
 
 // convert scss to css to js and static css file
 function makeBuildCSS() {
@@ -25,6 +27,10 @@ function makeBuildCSS() {
 
     // css to js to be inlined
     pullCSS(result.css, constants.pathToCSSBuild);
+}
+
+function makeMapLibreWorker() {
+    bundleMapLibreWorker(constants.pathToMapLibreWorkerSrc, constants.pathToMapLibreWorkerBuild);
 }
 
 function exposePartsInLib() {

@@ -14,6 +14,8 @@ const esbuildConfig = {
     sourcemap: false,
     plugins: [InlineCSSPlugin(), glsl({ minify: true }), environmentPlugin({ NODE_DEBUG: false })],
     alias: {
+        // Force users of regl (gl-text) to use the plotly flavor to deduplicate code
+        regl: '@plotly/regl',
         stream: 'stream-browserify'
     },
     define: {

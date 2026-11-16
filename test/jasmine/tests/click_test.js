@@ -110,6 +110,23 @@ describe('Test click interactions:', function() {
             expect(contextPassthroughs).toBe(0);
         });
 
+        function checkData() {
+            expect(Object.keys(futureData).sort()).toEqual([
+                'event', 'points', 'xaxes', 'yaxes', 'xvals', 'yvals', 'xPixel', 'yPixel'
+            ].sort());
+
+            expect(futureData.event).not.toBe(null);
+            checkPointData();
+            // xvals, yvals, xaxes, and yaxes should all be undefined since clickanywhere is not enabled
+            expect(futureData.xvals).toBe(undefined);
+            expect(futureData.yvals).toBe(undefined);
+            expect(futureData.xaxes).toBe(undefined);
+            expect(futureData.yaxes).toBe(undefined);
+            // However, xPixel and yPixel should be defined and match the click position
+            expect(futureData.xPixel).toEqual(pointPos[0]);
+            expect(futureData.yPixel).toEqual(pointPos[1]);
+        }
+
         function checkPointData() {
             expect(futureData.points.length).toEqual(1);
             expect(clickPassthroughs).toBe(2);
@@ -131,14 +148,14 @@ describe('Test click interactions:', function() {
             expect(evt.clientY).toEqual(pointPos[1]);
         }
 
-        it('should contain the correct fields', function() {
+        it('should contain the correct fields with the correct values', function() {
             click(pointPos[0], pointPos[1]);
-            checkPointData();
+            checkData();
         });
 
         it('should work with a sloppy click (shift < minDrag before mouseup)', function() {
             click(pointPos[0], pointPos[1], {slop: [4, 4]});
-            checkPointData();
+            checkData();
         });
 
         it('works with fixedrange axes', function(done) {

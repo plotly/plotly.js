@@ -7,7 +7,7 @@
       "y": [0, 0, 0, 1, 1, 1],
       "u": [1, 1.5, 2, 1, 1.5, 2],
       "v": [0.5, 1, 0.5, 1, 1.5, 1],
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "tail",
       "marker": {
         "color": "red",
@@ -21,7 +21,7 @@
       "y": [0, 0, 0, 1, 1, 1],
       "u": [-1, -1.5, -2, -1, -1.5, -2],
       "v": [1, 0.5, 1, 0.5, 1, 0.5],
-      "sizemode": "scaled",
+      "lengthmode": "scaled",
       "anchor": "tail",
       "marker": {
         "color": "blue",

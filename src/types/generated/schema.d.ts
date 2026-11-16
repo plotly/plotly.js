@@ -3,7 +3,16 @@
  * Do not edit by hand — run `npm run schema` to regenerate.
  */
 
-import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';
+import type {
+    CartesianSubplotId,
+    Color,
+    ColorScale,
+    Datum,
+    MarkerSymbol,
+    TypedArray,
+    XAxisName,
+    YAxisName
+} from '../lib/common';
 
 // ---------------------------------------------------------------------------
 // Common enum types — value sets discovered from the schema
@@ -22,6 +31,8 @@ export type YRef = 'container' | 'paper';
 export type PatternShape = '' | '/' | '\\' | 'x' | '-' | '|' | '+' | '.';
 
 export type TransitionEasing = 'linear' | 'quad' | 'cubic' | 'sin' | 'exp' | 'circle' | 'elastic' | 'back' | 'bounce' | 'linear-in' | 'quad-in' | 'cubic-in' | 'sin-in' | 'exp-in' | 'circle-in' | 'elastic-in' | 'back-in' | 'bounce-in' | 'linear-out' | 'quad-out' | 'cubic-out' | 'sin-out' | 'exp-out' | 'circle-out' | 'elastic-out' | 'back-out' | 'bounce-out' | 'linear-in-out' | 'quad-in-out' | 'cubic-in-out' | 'sin-in-out' | 'exp-in-out' | 'circle-in-out' | 'elastic-in-out' | 'back-in-out' | 'bounce-in-out';
+
+export type ToImageFormat = 'png' | 'jpeg' | 'webp' | 'svg' | 'full-json';
 
 export type TraceType = 'bar' | 'barpolar' | 'box' | 'candlestick' | 'carpet' | 'choropleth' | 'choroplethmap' | 'cone' | 'contour' | 'contourcarpet' | 'densitymap' | 'funnel' | 'funnelarea' | 'heatmap' | 'histogram' | 'histogram2d' | 'histogram2dcontour' | 'icicle' | 'image' | 'indicator' | 'isosurface' | 'mesh3d' | 'ohlc' | 'parcats' | 'parcoords' | 'pie' | 'quiver' | 'sankey' | 'scatter' | 'scatter3d' | 'scattercarpet' | 'scattergeo' | 'scattergl' | 'scattermap' | 'scatterpolar' | 'scatterpolargl' | 'scattersmith' | 'scatterternary' | 'splom' | 'streamtube' | 'sunburst' | 'surface' | 'table' | 'treemap' | 'violin' | 'volume' | 'waterfall';
 
@@ -113,7 +124,7 @@ export interface Font {
 }
 
 export interface FontArray {
-    color?: Color | Color[];
+    color?: Color | Color[] | TypedArray;
     /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
     family?: string | string[];
     /**
@@ -129,7 +140,7 @@ export interface FontArray {
     /**
      * Minimum: 1
      */
-    size?: number | number[];
+    size?: number | number[] | TypedArray;
     /**
      * Sets whether a font should be styled with a normal or italic face from its family.
      * @default 'normal'
@@ -150,14 +161,14 @@ export interface FontArray {
      * @default 'normal'
      * Range: [1, 1000]
      */
-    weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[];
+    weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[] | TypedArray;
 }
 
 export interface Pattern {
     /** When there is no colorscale sets the color of background pattern fill. Defaults to a `marker.color` background when `fillmode` is *overlay*. Otherwise, defaults to a transparent background. */
-    bgcolor?: Color | Color[];
+    bgcolor?: Color | Color[] | TypedArray;
     /** When there is no colorscale sets the color of foreground pattern fill. Defaults to a `marker.color` background when `fillmode` is *replace*. Otherwise, defaults to dark grey or white to increase contrast with the `bgcolor`. */
-    fgcolor?: Color | Color[];
+    fgcolor?: Color | Color[] | TypedArray;
     /**
      * Sets the opacity of the foreground pattern fill. Defaults to a 0.5 when `fillmode` is *overlay*. Otherwise, defaults to 1.
      * Range: [0, 1]
@@ -177,13 +188,13 @@ export interface Pattern {
      * @default 8
      * Minimum: 0
      */
-    size?: number | number[];
+    size?: number | number[] | TypedArray;
     /**
      * Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern.
      * @default 0.3
      * Range: [0, 1]
      */
-    solidity?: number | number[];
+    solidity?: number | number[] | TypedArray;
 }
 
 export interface TickFormatStops {
@@ -239,7 +250,7 @@ export interface ColorBar {
      */
     borderwidth?: number;
     /**
-     * Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*
+     * Sets the step in-between ticks on this color bar. Use with `tick0`. Must be a positive number. Note: unlike on x/y axes, the special *log* and *date* string forms (*L<f>*, *D1*, *D2*, *M<n>*) are not supported here: this axis is always linear, so such strings are silently ignored and the step is set to 1.
      * Setting this also sets: tickmode = "linear"
      */
     dtick?: any;
@@ -427,14 +438,14 @@ export interface ColorBar {
 
 export interface HoverLabel {
     /**
-     * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+     * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
      * @default 'auto'
      */
     align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
     /** Sets the background color of the hover labels for this trace */
-    bgcolor?: Color | Color[];
+    bgcolor?: Color | Color[] | TypedArray;
     /** Sets the border color of the hover labels for this trace. */
-    bordercolor?: Color | Color[];
+    bordercolor?: Color | Color[] | TypedArray;
     /** Sets the font used in hover labels. */
     font?: FontArray;
     /**
@@ -442,7 +453,7 @@ export interface HoverLabel {
      * @default 15
      * Minimum: -1
      */
-    namelength?: number | number[];
+    namelength?: number | number[] | TypedArray;
     /**
      * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
      * @default true
@@ -594,7 +605,7 @@ export namespace _internal {
          */
         cmin?: number;
         /** Sets the marker.line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.line.cmin` and `marker.line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         /**
@@ -616,7 +627,7 @@ export namespace _internal {
          * Sets the width (in px) of the lines bounding the marker points.
          * Minimum: 0
          */
-        width?: number | number[];
+        width?: number | number[] | TypedArray;
     }
 
     export interface Marker {
@@ -624,7 +635,7 @@ export namespace _internal {
          * Sets the marker angle in respect to `angleref`.
          * @default 0
          */
-        angle?: number | 'auto' | (number | 'auto')[];
+        angle?: number | 'auto' | (number | 'auto')[] | TypedArray;
         /**
          * Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.
          * @default 'up'
@@ -653,7 +664,7 @@ export namespace _internal {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -664,7 +675,7 @@ export namespace _internal {
         colorscale?: ColorScale;
         gradient?: {
             /** Sets the final color of the gradient fill: the center color for radial, the right for horizontal, or the bottom for vertical. */
-            color?: Color | Color[];
+            color?: Color | Color[] | TypedArray;
             /**
              * Sets the type of gradient used to fill the markers
              * @default 'none'
@@ -682,7 +693,7 @@ export namespace _internal {
          * Sets the marker opacity.
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -698,7 +709,7 @@ export namespace _internal {
          * @default 6
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -720,7 +731,7 @@ export namespace _internal {
          * @default 0
          * Minimum: 0
          */
-        standoff?: number | number[];
+        standoff?: number | number[] | TypedArray;
         /**
          * Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.
          * @default 'circle'
@@ -876,7 +887,7 @@ export interface BarData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -893,7 +904,7 @@ export interface BarData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /** Sets the pattern within the marker. */
         pattern?: Pattern;
         /**
@@ -912,7 +923,7 @@ export interface BarData {
     /** Sets the trace name. The trace name appears as the legend item and on hover. */
     name?: string;
     /** Shifts the position where the bar is drawn (in position axis units). In *group* barmode, traces that set *offset* will be excluded and drawn in *overlay* mode instead. */
-    offset?: number | number[];
+    offset?: number | number[] | TypedArray;
     /** Set several traces linked to the same position axis or matching axes to the same offsetgroup where bars of the same position coordinate will line up. */
     offsetgroup?: string;
     /**
@@ -991,7 +1002,7 @@ export interface BarData {
      * Sets the bar width (in position axis units).
      * Minimum: 0
      */
-    width?: number | number[];
+    width?: number | number[] | TypedArray;
     /** Sets the x coordinates. */
     x?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -1132,7 +1143,7 @@ export interface BarpolarData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -1147,7 +1158,7 @@ export interface BarpolarData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /** Sets the pattern within the marker. */
         pattern?: Pattern;
         /**
@@ -1166,7 +1177,7 @@ export interface BarpolarData {
     /** Sets the trace name. The trace name appears as the legend item and on hover. */
     name?: string;
     /** Shifts the angular position where the bar is drawn (in *thetatunit* units). */
-    offset?: number | number[];
+    offset?: number | number[] | TypedArray;
     /**
      * Sets the opacity of the trace.
      * @default 1
@@ -1244,7 +1255,7 @@ export interface BarpolarData {
      * Sets the bar angular width (in *thetaunit* units).
      * Minimum: 0
      */
-    width?: number | number[];
+    width?: number | number[] | TypedArray;
 }
 
 export interface BoxData {
@@ -1566,14 +1577,14 @@ export interface CandlestickData {
     hoverinfo?: 'x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
         /** Sets the background color of the hover labels for this trace */
-        bgcolor?: Color | Color[];
+        bgcolor?: Color | Color[] | TypedArray;
         /** Sets the border color of the hover labels for this trace. */
-        bordercolor?: Color | Color[];
+        bordercolor?: Color | Color[] | TypedArray;
         /** Sets the font used in hover labels. */
         font?: FontArray;
         /**
@@ -1581,7 +1592,7 @@ export interface CandlestickData {
          * @default 15
          * Minimum: -1
          */
-        namelength?: number | number[];
+        namelength?: number | number[] | TypedArray;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
@@ -2352,7 +2363,7 @@ export interface ChoroplethData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
     };
     /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
     meta?: any;
@@ -2495,7 +2506,7 @@ export interface ChoroplethmapData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
     };
     /** Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index. */
     meta?: any;
@@ -2786,7 +2797,7 @@ export interface ContourData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -2893,7 +2904,7 @@ export interface ContourData {
          */
         smoothing?: number;
         /**
-         * Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.
+         * Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.
          * Minimum: 0
          */
         width?: number;
@@ -2931,9 +2942,9 @@ export interface ContourData {
     showscale?: boolean;
     /** Sets the text elements associated with each z value. */
     text?: Datum[] | Datum[][] | TypedArray;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font. */
     textfont?: Font;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
     texttemplate?: string;
     /**
      * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
@@ -3127,7 +3138,7 @@ export interface ContourcarpetData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -3216,7 +3227,7 @@ export interface ContourcarpetData {
          */
         smoothing?: number;
         /**
-         * Sets the contour line width in (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contour.type` is *constraint*.
+         * Sets the contour line width (in px) Defaults to *0.5* when `contours.type` is *levels*. Defaults to *2* when `contours.type` is *constraint*.
          * Minimum: 0
          */
         width?: number;
@@ -3377,7 +3388,7 @@ export interface DensitymapData {
      * @default 30
      * Minimum: 1
      */
-    radius?: number | number[];
+    radius?: number | number[] | TypedArray;
     /**
      * Reverses the color mapping if true. If true, `zmin` will correspond to the last color in the array and `zmax` will correspond to the first color.
      * @default false
@@ -3549,7 +3560,7 @@ export interface FunnelData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -3564,7 +3575,7 @@ export interface FunnelData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -4240,7 +4251,7 @@ export interface HistogramData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -4257,7 +4268,7 @@ export interface HistogramData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /** Sets the pattern within the marker. */
         pattern?: Pattern;
         /**
@@ -4666,7 +4677,7 @@ export interface Histogram2dcontourData {
         /** Sets the contour label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. */
         labelformat?: string;
         /**
-         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
+         * Sets the constraint operation. *=* keeps regions equal to `value` *<* and *<=* keep regions less than `value` *>* and *>=* keep regions greater than `value` *[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]` *][*, *)(*, *](*, *)[* keep regions outside `value[0]` to `value[1]` Open vs. closed intervals make no difference to constraint display, but all versions are allowed.
          * @default '='
          */
         operation?: '=' | '<' | '>=' | '>' | '<=' | '[]' | '()' | '[)' | '(]' | '][' | ')(' | '](' | ')[';
@@ -4812,9 +4823,9 @@ export interface Histogram2dcontourData {
      * @default true
      */
     showscale?: boolean;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Sets the text font. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Sets the text font. */
     textfont?: Font;
-    /** For this trace it only has an effect if `coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
+    /** For this trace it only has an effect if `contours.coloring` is set to *heatmap*. Template string used for rendering the information text that appears on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example "y: %{y}". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example "Price: %{y:$.2f}". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Variables that can't be found will be replaced with the specifier. For example, a template of "data: %{x}, %{y}" will result in a value of "data: 1, %{y}" if x is 1 and y is missing. Variables with an undefined value will be replaced with the fallback value. All attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. Finally, the template string has access to variables `x`, `y`, `z` and `text`. */
     texttemplate?: string;
     /**
      * Fallback string that's displayed when a variable referenced in a template is missing. If the boolean value 'false' is passed in, the specifier with the missing variable will be displayed.
@@ -6063,14 +6074,14 @@ export interface OhlcData {
     hoverinfo?: 'x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}) | ('x' | 'y' | 'z' | 'text' | 'name' | 'all' | 'none' | 'skip' | (string & {}))[];
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto' | ('left' | 'right' | 'auto')[];
         /** Sets the background color of the hover labels for this trace */
-        bgcolor?: Color | Color[];
+        bgcolor?: Color | Color[] | TypedArray;
         /** Sets the border color of the hover labels for this trace. */
-        bordercolor?: Color | Color[];
+        bordercolor?: Color | Color[] | TypedArray;
         /** Sets the font used in hover labels. */
         font?: FontArray;
         /**
@@ -6078,7 +6089,7 @@ export interface OhlcData {
          * @default 15
          * Minimum: -1
          */
-        namelength?: number | number[];
+        namelength?: number | number[] | TypedArray;
         /**
          * Sets whether or not to show the hover label arrow/triangle pointing to the data point.
          * @default true
@@ -6247,7 +6258,7 @@ export interface ParcatsData {
      * @default 1
      * Minimum: 0
      */
-    counts?: number | number[];
+    counts?: number | number[] | TypedArray;
     dimensions?: Array<{
         /** Sets the order in which categories in this dimension appear. Only has an effect if `categoryorder` is set to *array*. Used with `categoryorder`. */
         categoryarray?: Datum[] | Datum[][] | TypedArray;
@@ -6323,7 +6334,7 @@ export interface ParcatsData {
          */
         cmin?: number;
         /** Sets the line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `line.cmin` and `line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -6466,7 +6477,7 @@ export interface ParcoordsData {
          */
         cmin?: number;
         /** Sets the line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `line.cmin` and `line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -6590,7 +6601,7 @@ export interface PieData {
      * Sets the legend rank for this pie. If passed as an array, this will set the legend rank of the individual pie slices. Items and groups with smaller ranks are presented on top/left side while with *reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items. When having unranked or equal rank items shapes would be displayed after traces i.e. according to their order in data and layout.
      * @default 1000
      */
-    legendrank?: number | number[];
+    legendrank?: number | number[] | TypedArray;
     /**
      * Sets the width (in px or fraction) of the legend for this trace.
      * Minimum: 0
@@ -6620,7 +6631,7 @@ export interface PieData {
      * @default 0
      * Range: [0, 1]
      */
-    pull?: number | number[];
+    pull?: number | number[] | TypedArray;
     /**
      * Instead of the first slice starting at 12 o'clock, rotate to some other angle.
      * @default 0
@@ -6680,15 +6691,15 @@ export interface PieData {
 
 export interface QuiverData {
     /**
-     * Sets the arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the arrow on (x,y).
+     * Sets the vector arrows' anchor with respect to their (x,y) positions. Use *tail* to place (x,y) at the base, *tip* to place (x,y) at the head, or *center* to center the vector arrow on (x,y).
      * @default 'tail'
      */
     anchor?: 'tip' | 'tail' | 'center';
     /**
-     * Sets the mode used to determine the angle of the arrow vectors. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axes scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis
-     * @default 'axis'
+     * Determines how the u/v vector components are interpreted. If *paper*, u/v are interpreted in pixel coordinates and the rendered vector angle does not change regardless of the axis scales. If *data*, u/v are interpreted in data coordinates and the rendered vector angle may change, e.g. if zooming in along a single axis
+     * @default 'data'
      */
-    anglemode?: 'paper' | 'data';
+    arrowref?: 'paper' | 'data';
     /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
     customdata?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -6729,9 +6740,20 @@ export interface QuiverData {
      * Minimum: 0
      */
     legendwidth?: number;
+    /**
+     * Adjusts the drawn length of the vector arrows. The arrow length is determined by the values of u and v, then optionally rescaled when `lengthmode` is *scaled*, then multiplied by `lengthfactor`.
+     * @default 1
+     * Minimum: 0
+     */
+    lengthfactor?: number;
+    /**
+     * Determines whether vector arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `arrowref` is *paper* vectors are always scaled and `lengthmode` *raw* is ignored.
+     * @default 'scaled'
+     */
+    lengthmode?: 'scaled' | 'raw';
     marker?: {
         /**
-         * Sets the size of the arrow head relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.
+         * Sets the size of the vector arrowhead relative to `marker.line.width`. A value of 1 (default) gives a head about 3x as wide as the line.
          * @default 1
          * Minimum: 0.3
          */
@@ -6759,7 +6781,7 @@ export interface QuiverData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -6775,7 +6797,7 @@ export interface QuiverData {
              */
             dash?: Dash;
             /**
-             * Sets the width (in px) of the arrow lines.
+             * Sets the width (in px) of the vector arrow lines.
              * @default 2
              * Minimum: 0
              */
@@ -6817,17 +6839,6 @@ export interface QuiverData {
      * @default true
      */
     showlegend?: boolean;
-    /**
-     * Determines whether arrows are drawn according to their raw lengths, or scaled based on the maximum vector length and point density. Note: When `anglemode` is *data* arrows are alwyas scaled and `sizemode` *raw* is ignored.
-     * @default 'scaled'
-     */
-    sizemode?: 'scaled' | 'raw';
-    /**
-     * Adjusts the arrow size scaling. The arrow length is determined by the vector norm multiplied by `sizeref`, optionally normalized when `sizemode` is *scaled* (`sizeref` is applied after scaling).
-     * @default 1
-     * Minimum: 0
-     */
-    sizeref?: number;
     /** Sets text elements associated with each (x,y) pair. If a single string, the same string appears over all the data points. If an array of string, the items are mapped in order to the this trace's (x,y) coordinates. If trace `hoverinfo` contains a *text* flag and *hovertext* is not set, these elements will be seen in the hover labels. */
     text?: string | string[];
     /** Sets the text font. */
@@ -6838,7 +6849,7 @@ export interface QuiverData {
      */
     textposition?: 'top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right' | ('top left' | 'top center' | 'top right' | 'middle left' | 'middle center' | 'middle right' | 'bottom left' | 'bottom center' | 'bottom right')[];
     type?: 'quiver';
-    /** Sets the x components of the arrow vectors. */
+    /** Sets the x components of the vector arrows. */
     u?: Datum[] | Datum[][] | TypedArray;
     /** Sets the hover text formatting rule for `u` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format.By default the values are formatted using generic number format. */
     uhoverformat?: string;
@@ -6854,7 +6865,7 @@ export interface QuiverData {
         };
         textfont?: Font;
     };
-    /** Sets the y components of the arrow vectors. */
+    /** Sets the y components of the vector arrows. */
     v?: Datum[] | Datum[][] | TypedArray;
     /** Sets the hover text formatting rule for `v` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format.By default the values are formatted using generic number format. */
     vhoverformat?: string;
@@ -6863,7 +6874,7 @@ export interface QuiverData {
      * @default true
      */
     visible?: true | false | 'legendonly';
-    /** Sets the x coordinates of the arrow locations. */
+    /** Sets the x coordinates of the vector arrow locations. */
     x?: Datum[] | Datum[][] | TypedArray;
     /**
      * Alternate to `x`. Builds a linear space of x coordinates. Use with `dx` where `x0` is the starting coordinate and `dx` the step.
@@ -6877,7 +6888,7 @@ export interface QuiverData {
     xaxis?: string;
     /** Sets the hover text formatting rule for `x` using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. And for dates see: https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format. We add two items to d3's date formatter: *%h* for half of the year as a decimal number as well as *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*By default the values are formatted using `xaxis.hoverformat`. */
     xhoverformat?: string;
-    /** Sets the y coordinates of the arrow locations. */
+    /** Sets the y coordinates of the vector arrow locations. */
     y?: Datum[] | Datum[][] | TypedArray;
     /**
      * Alternate to `y`. Builds a linear space of y coordinates. Use with `dy` where `y0` is the starting coordinate and `dy` the step.
@@ -6940,7 +6951,7 @@ export interface SankeyData {
          */
         arrowlen?: number;
         /** Sets the `link` color. It can be a single value, or an array for specifying color for each `link`. If `link.color` is omitted, then by default, a translucent grey link will be used. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         colorscales?: Array<{
             /**
              * Sets the upper bound of the color domain.
@@ -6968,7 +6979,7 @@ export interface SankeyData {
         /** Assigns extra data to each link. */
         customdata?: Datum[] | Datum[][] | TypedArray;
         /** Sets the `link` hover color. It can be a single value, or an array for specifying hover colors for each `link`. If `link.hovercolor` is omitted, then by default, links will become slightly more opaque when hovered over. */
-        hovercolor?: Color | Color[];
+        hovercolor?: Color | Color[] | TypedArray;
         /**
          * Determines what trace information appears when hovering links. If `none` or `skip` are set, no information is displayed upon hovering. But, if `none` is set, click and hover events are still fired.
          * @default 'all'
@@ -7039,7 +7050,7 @@ export interface SankeyData {
          */
         align?: 'justify' | 'left' | 'right' | 'center';
         /** Sets the `node` color. It can be a single value, or an array for specifying color for each `node`. If `node.color` is omitted, then the default `Plotly` color palette will be cycled through to have a variety of colors. These defaults are not fully opaque, to allow some visibility of what is beneath the node. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Assigns extra data to each node. */
         customdata?: Datum[] | Datum[][] | TypedArray;
         /**
@@ -7085,12 +7096,12 @@ export interface SankeyData {
          */
         thickness?: number;
         /**
-         * The normalized horizontal position of the node.
+         * The normalized position of the node center along the flow axis, measured from the source end. For `orientation` *h* the flow axis is horizontal. For `orientation` *v* the flow axis is vertical. With `direction` *reversed* the source end is the right or bottom edge.
          * @default []
          */
         x?: Datum[] | Datum[][] | TypedArray;
         /**
-         * The normalized vertical position of the node.
+         * The normalized position of the node center across the flow axis. For `orientation` *h* the value counts down from the top edge. For `orientation` *v* the value counts from the left edge. The value does not depend on `direction`.
          * @default []
          */
         y?: Datum[] | Datum[][] | TypedArray;
@@ -7262,7 +7273,7 @@ export interface ScatterData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -7617,7 +7628,7 @@ export interface Scatter3dData {
          */
         cmin?: number;
         /** Sets the line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `line.cmin` and `line.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -7672,7 +7683,7 @@ export interface Scatter3dData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -7705,7 +7716,7 @@ export interface Scatter3dData {
              */
             cmin?: number;
             /** Sets the marker.line color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.line.cmin` and `marker.line.cmax` if set. */
-            color?: Color | Color[];
+            color?: Color | Color[] | TypedArray;
             /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
             coloraxis?: string;
             /**
@@ -7744,7 +7755,7 @@ export interface Scatter3dData {
          * @default 8
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -7862,13 +7873,13 @@ export interface Scatter3dData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'
@@ -7884,7 +7895,7 @@ export interface Scatter3dData {
          * @default 'normal'
          * Range: [1, 1000]
          */
-        weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[];
+        weight?: number | 'normal' | 'bold' | (number | 'normal' | 'bold')[] | TypedArray;
     };
     /**
      * Sets the positions of the `text` elements with respects to the (x,y) coordinates.
@@ -8001,7 +8012,7 @@ export interface ScattercarpetData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -8220,7 +8231,7 @@ export interface ScattergeoData {
          * Sets the marker angle in respect to `angleref`.
          * @default 0
          */
-        angle?: number | 'auto' | (number | 'auto')[];
+        angle?: number | 'auto' | (number | 'auto')[] | TypedArray;
         /**
          * Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen. With *north*, angle 0 points north based on the current map projection.
          * @default 'up'
@@ -8249,7 +8260,7 @@ export interface ScattergeoData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -8260,7 +8271,7 @@ export interface ScattergeoData {
         colorscale?: ColorScale;
         gradient?: {
             /** Sets the final color of the gradient fill: the center color for radial, the right for horizontal, or the bottom for vertical. */
-            color?: Color | Color[];
+            color?: Color | Color[] | TypedArray;
             /**
              * Sets the type of gradient used to fill the markers
              * @default 'none'
@@ -8272,7 +8283,7 @@ export interface ScattergeoData {
          * Sets the marker opacity.
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -8288,7 +8299,7 @@ export interface ScattergeoData {
          * @default 6
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -8310,7 +8321,7 @@ export interface ScattergeoData {
          * @default 0
          * Minimum: 0
          */
-        standoff?: number | number[];
+        standoff?: number | number[] | TypedArray;
         /**
          * Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.
          * @default 'circle'
@@ -8571,13 +8582,13 @@ export interface ScatterglData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'
@@ -8702,7 +8713,7 @@ export interface ScattermapData {
     below?: string;
     cluster?: {
         /** Sets the color for each cluster step. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Determines whether clustering is enabled or disabled. */
         enabled?: boolean;
         /**
@@ -8716,19 +8727,19 @@ export interface ScattermapData {
          * @default 1
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Sets the size for each cluster step.
          * @default 20
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets how many points it takes to create a cluster or advance to the next cluster step. Use this in conjunction with arrays for `size` and / or `color`. If an integer, steps start at multiples of this number. If an array, each step extends from the given value until one less than the next value.
          * @default -1
          * Minimum: -1
          */
-        step?: number | number[];
+        step?: number | number[] | TypedArray;
     };
     /**
      * Determines whether or not gaps (i.e. {nan} or missing values) in the provided data arrays are connected.
@@ -8794,7 +8805,7 @@ export interface ScattermapData {
          * Sets the marker orientation from true North, in degrees clockwise. When using the *auto* default, no rotation would be applied in perspective views which is different from using a zero angle.
          * @default 'auto'
          */
-        angle?: number | number[];
+        angle?: number | number[] | TypedArray;
         /**
          * Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.
          * @default true
@@ -8818,7 +8829,7 @@ export interface ScattermapData {
          */
         cmin?: number;
         /** Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set. */
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** Sets a reference to a shared color axis. References to these shared color axes are *coloraxis*, *coloraxis2*, *coloraxis3*, etc. Settings for these shared color axes are set in the layout, under `layout.coloraxis`, `layout.coloraxis2`, etc. Note that multiple color scales can be linked to the same color axis. */
         coloraxis?: string;
         colorbar?: ColorBar;
@@ -8831,7 +8842,7 @@ export interface ScattermapData {
          * Sets the marker opacity.
          * Range: [0, 1]
          */
-        opacity?: number | number[];
+        opacity?: number | number[] | TypedArray;
         /**
          * Reverses the color mapping if true. Has an effect only if in `marker.color` is set to a numerical array. If true, `marker.cmin` will correspond to the last color in the array and `marker.cmax` will correspond to the first color.
          * @default false
@@ -8847,7 +8858,7 @@ export interface ScattermapData {
          * @default 6
          * Minimum: 0
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Has an effect only if `marker.size` is set to a numerical array. Sets the minimum size (in px) of the rendered marker points.
          * @default 0
@@ -9027,7 +9038,7 @@ export interface ScatterpolarData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -9284,13 +9295,13 @@ export interface ScatterpolarglData {
     text?: string | string[];
     /** Sets the text font. */
     textfont?: {
-        color?: Color | Color[];
+        color?: Color | Color[] | TypedArray;
         /** HTML font family - the typeface that will be applied by the web browser. The web browser can only apply a font if it is available on the system where it runs. Provide multiple font families, separated by commas, to indicate the order in which to apply fonts if they aren't available. */
         family?: string | string[];
         /**
          * Minimum: 1
          */
-        size?: number | number[];
+        size?: number | number[] | TypedArray;
         /**
          * Sets whether a font should be styled with a normal or italic face from its family.
          * @default 'normal'
@@ -9425,7 +9436,7 @@ export interface ScattersmithData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -9609,7 +9620,7 @@ export interface ScatterternaryData {
          * @default 'auto'
          * Minimum: 0
          */
-        backoff?: number | number[];
+        backoff?: number | number[] | TypedArray;
         /** Sets the line color. */
         color?: Color;
         /**
@@ -10663,7 +10674,7 @@ export interface TableData {
     /** Specifies the rendered order of the data columns; for example, a value `2` at position `0` means that column index `0` in the data will be rendered as the third column, as columns have an index base of zero. */
     columnorder?: Datum[] | Datum[][] | TypedArray;
     /** The width of columns expressed as a ratio. Columns fill the available width in proportion of their specified column widths. */
-    columnwidth?: number | number[];
+    columnwidth?: number | number[] | TypedArray;
     /** Assigns extra data each datum. This may be useful when listening to hover, click and selection events. Note that, *scatter* traces also appends customdata items in the markers DOM elements */
     customdata?: Datum[] | Datum[][] | TypedArray;
     domain?: Domain;
@@ -11674,7 +11685,7 @@ export interface WaterfallData {
     /** Sets the trace name. The trace name appears as the legend item and on hover. */
     name?: string;
     /** Shifts the position where the bar is drawn (in position axis units). In *group* barmode, traces that set *offset* will be excluded and drawn in *overlay* mode instead. */
-    offset?: number | number[];
+    offset?: number | number[] | TypedArray;
     /** Set several traces linked to the same position axis or matching axes to the same offsetgroup where bars of the same position coordinate will line up. */
     offsetgroup?: string;
     /**
@@ -11738,7 +11749,7 @@ export interface WaterfallData {
      * Sets the bar width (in position axis units).
      * Minimum: 0
      */
-    width?: number | number[];
+    width?: number | number[] | TypedArray;
     /** Sets the x coordinates. */
     x?: Datum[] | Datum[][] | TypedArray;
     /**
@@ -12143,7 +12154,7 @@ export interface GeoLayout {
 
 export interface LayoutAxis {
     /** If set to an opposite-letter axis id (e.g. `x2`, `y`), this axis is bound to the corresponding opposite-letter axis. If set to *free*, this axis' position is determined by `position`. */
-    anchor?: 'free' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    anchor?: 'free' | XAxisName | YAxisName;
     /**
      * Determines whether long tick labels automatically grow the figure margins.
      * @default false
@@ -12206,6 +12217,33 @@ export interface LayoutAxis {
      * @default [0,1]
      */
     domain?: [number, number];
+    /** Sets the space in pixels to reserve inside the edges of `domain`. Because `domain` is a fraction of the plot area, the gap between subplots changes with the figure size. `domainpad` keeps the same size in pixels at all figure sizes, so it can hold content with a fixed size, such as a subplot title. x axes use `left` and `right`. y axes use `top` and `bottom`. If the padding needs more room than the domain has, the two pads shrink by the same factor, and the plot area keeps a length of at least 2 pixels. An axis that sets `overlaying` ignores its own `domainpad` and uses the `domainpad` of the axis it overlays, so that both axes share the same plot area. */
+    domainpad?: {
+        /**
+         * Sets the space in pixels to reserve inside the bottom edge of `domain`. Applies to y axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        bottom?: number;
+        /**
+         * Sets the space in pixels to reserve inside the left edge of `domain`. Applies to x axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        left?: number;
+        /**
+         * Sets the space in pixels to reserve inside the right edge of `domain`. Applies to x axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        right?: number;
+        /**
+         * Sets the space in pixels to reserve inside the top edge of `domain`. Applies to y axes only.
+         * @default 0
+         * Minimum: 0
+         */
+        top?: number;
+    };
     /**
      * Sets the step in-between ticks on this axis. Use with `tick0`. Must be a positive number, or special strings available to *log* and *date* axes. If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n is the tick number. For example, to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1. To set tick marks at 1, 100, 10000, ... set dtick to 2. To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433. *log* has several special values; *L<f>*, where `f` is a positive number, gives ticks linearly spaced in value (but not position). For example `tick0` = 0.1, `dtick` = *L0.5* will put ticks at 0.1, 0.6, 1.1, 1.6 etc. To show powers of 10 plus small digits between, use *D1* (all digits) or *D2* (only 2 and 5). `tick0` is ignored for *D1* and *D2*. If the axis `type` is *date*, then you must convert the time to milliseconds. For example, to set the interval between ticks to one day, set `dtick` to 86400000.0. *date* also has special values *M<n>* gives ticks spaced by a number of months. `n` must be a positive integer. To set ticks on the 15th of every third month, set `tick0` to *2000-01-15* and `dtick` to *M3*. To set ticks every 4 years, set `dtick` to *M48*
      * Setting this also sets: tickmode = "linear"
@@ -12263,7 +12301,7 @@ export interface LayoutAxis {
      */
     linewidth?: number;
     /** If set to another axis id (e.g. `x2`, `y`), the range of this axis will match the range of the corresponding axis in data-coordinates space. Moreover, matching axes share auto-range values, category lists and histogram auto-bins. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Moreover, note that matching axes must have the same `type`. */
-    matches?: '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    matches?: XAxisName | YAxisName;
     /**
      * Determines the maximum range of this axis.
      * Setting this also sets: ^autorange = false
@@ -12358,7 +12396,7 @@ export interface LayoutAxis {
      */
     nticks?: number;
     /** If set a same-letter axis id, this axis is overlaid on top of the corresponding same-letter axis, with traces and axes visible for both axes. If *false*, this axis does not overlay any same-letter axes. In this case, for axes with overlapping domains only the highest-numbered axis will be visible. */
-    overlaying?: 'free' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    overlaying?: 'free' | XAxisName | YAxisName;
     /**
      * Sets the position of this axis in the plotting space (in normalized coordinates). Only has an effect if `anchor` is set to *free*.
      * @default 0
@@ -12520,7 +12558,7 @@ export interface LayoutAxis {
         };
     };
     /** If set to another axis id (e.g. `x2`, `y`), the range of this axis changes together with the range of the corresponding axis such that the scale of pixels per unit is in a constant ratio. Both axes are still zoomable, but when you zoom one, the other will zoom the same amount, keeping a fixed midpoint. `constrain` and `constraintoward` determine how we enforce the constraint. You can chain these, ie `yaxis: {scaleanchor: *x*}, xaxis2: {scaleanchor: *y*}` but you can only link axes of the same `type`. The linked axis can have the opposite letter (to constrain the aspect ratio) or the same letter (to match scales across subplots). Loops (`yaxis: {scaleanchor: *x*}, xaxis: {scaleanchor: *y*}` or longer) are redundant and the last constraint encountered will be ignored to avoid possible inconsistent constraints via `scaleratio`. Note that setting axes simultaneously in both a `scaleanchor` and a `matches` constraint is currently forbidden. Setting `false` allows to remove a default constraint (occasionally, you may need to prevent a default `scaleanchor` constraint from being applied, eg. when having an image trace `yaxis: {scaleanchor: "x"}` is set automatically in order for pixels to be rendered as squares, setting `yaxis: {scaleanchor: false}` allows to remove the constraint). */
-    scaleanchor?: '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/' | false;
+    scaleanchor?: XAxisName | YAxisName | false;
     /**
      * If this axis is linked to another by `scaleanchor`, this determines the pixel to unit scale ratio. For example, if this value is 10, then every unit on this axis spans 10 times the number of pixels as a unit on the linked axis. Use this for example to create an elevation profile where the vertical scale is exaggerated a fixed amount with respect to the horizontal.
      * @default 1
@@ -12552,7 +12590,7 @@ export interface LayoutAxis {
      */
     showline?: boolean;
     /**
-     * Determines whether or not spikes (aka droplines) are drawn for this axis. Note: This only takes affect when hovermode = closest
+     * Determines whether or not spikes (aka droplines) are drawn for this axis. Note that spikes will never be drawn when `hovermode` is *false*.
      * @default false
      */
     showspikes?: boolean;
@@ -12591,7 +12629,7 @@ export interface LayoutAxis {
      */
     spikesnap?: 'data' | 'cursor' | 'hovered data';
     /**
-     * Sets the width (in px) of the zero line.
+     * Sets the spike line width in pixels.
      * @default 3
      */
     spikethickness?: number;
@@ -12616,7 +12654,7 @@ export interface LayoutAxis {
     tickformat?: string;
     tickformatstops?: TickFormatStops[];
     /** Only for axes with `type` *date* or *linear*. Instead of drawing the major tick label, draw the label for the minor tick that is n positions away from the major tick. E.g. to always draw the label for the minor tick before each major tick, choose `ticklabelindex` -1. This is useful for date axes with `ticklabelmode` *period* if you want to label the period that ends with each major tick instead of the period that begins there. */
-    ticklabelindex?: number | number[];
+    ticklabelindex?: number | number[] | TypedArray;
     /**
      * Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.
      * @default 'instant'
@@ -12745,6 +12783,8 @@ export interface Legend {
      * @default 'togglegroup'
      */
     groupclick?: 'toggleitem' | 'togglegroup';
+    /** Determines the behavior on legend group item double-click. *toggleitem* toggles the visibility of the individual item clicked on the graph. *togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph. Defaults to the value of `groupclick`. */
+    groupdoubleclick?: 'toggleitem' | 'togglegroup';
     /** Sets the font for group titles in legend. Defaults to `legend.font` with its size increased about 10%. */
     grouptitlefont?: Font;
     /**
@@ -12763,6 +12803,12 @@ export interface Legend {
      * @default 'toggleothers'
      */
     itemdoubleclick?: 'toggle' | 'toggleothers' | false;
+    /**
+     * Sets the height (in px) of the legend item fill swatch. A taller swatch shows more of a trace *fill* or *fillpattern*. Only traces with a *fill* use this value. Every legend item grows to fit, so a larger value makes every row taller.
+     * @default 6
+     * Minimum: 6
+     */
+    itemheight?: number;
     /**
      * Determines if the legend items symbols scale with their corresponding *trace* attributes or remain *constant* independent of the symbol size on the graph.
      * @default 'trace'
@@ -13195,6 +13241,17 @@ export interface PolarLayout {
          */
         visible?: boolean;
     };
+    /**
+     * Sets the gap between bars of adjacent location coordinates. Values are unitless, they represent fractions of the minimum difference in bar positions in the data.
+     * @default 0.1
+     * Range: [0, 1]
+     */
+    bargap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *stack*, the bars are stacked on top of one another With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'stack'
+     */
+    barmode?: 'stack' | 'overlay';
     /**
      * Set the background color of the subplot
      * @default '#fff'
@@ -14748,6 +14805,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -14762,6 +14824,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -14910,6 +14994,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -14924,6 +15013,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -15077,6 +15188,11 @@ export interface TernaryLayout {
          */
         showline?: boolean;
         /**
+         * Determines whether or not spikes (aka droplines) are drawn for this axis. Ternary spikes are accompanied by axis value labels formatted according to `hoverformat`.
+         * @default false
+         */
+        showspikes?: boolean;
+        /**
          * Determines whether or not the tick labels are drawn.
          * @default true
          */
@@ -15091,6 +15207,28 @@ export interface TernaryLayout {
          * @default 'all'
          */
         showticksuffix?: 'all' | 'first' | 'last' | 'none';
+        /** Sets the spike color. If undefined, will use the series color */
+        spikecolor?: Color;
+        /**
+         * Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).
+         * @default 'dash'
+         */
+        spikedash?: Dash;
+        /**
+         * Determines the drawing mode for the spike line If *toaxis*, the line is drawn from the data point to the axis the series is plotted on. If *across*, the line is drawn across the entire plot area, and supercedes *toaxis*. If *marker*, then a marker dot is drawn on the axis the series is plotted on
+         * @default 'toaxis'
+         */
+        spikemode?: 'toaxis' | 'across' | 'marker' | (string & {});
+        /**
+         * Determines whether spikelines are stuck to the cursor or to the closest datapoints.
+         * @default 'hovered data'
+         */
+        spikesnap?: 'data' | 'cursor' | 'hovered data';
+        /**
+         * Sets the spike line width in pixels.
+         * @default 3
+         */
+        spikethickness?: number;
         /**
          * Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.
          * Setting this also sets: tickmode = "linear"
@@ -15192,14 +15330,14 @@ export interface Annotation {
      * Indicates in what coordinates the tail of the annotation (ax,ay) is specified. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. In order for absolute positioning of the arrow to work, *axref* must be exactly the same as *xref*, otherwise *axref* will revert to *pixel* (explained next). For relative positioning, *axref* can be set to *pixel*, in which case the *ax* value is specified in pixels relative to *x*. Absolute positioning is useful for trendline annotations which should continue to indicate the correct trend when zoomed. Relative positioning is useful for specifying the text offset for an annotated point.
      * @default 'pixel'
      */
-    axref?: 'pixel' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    axref?: 'pixel' | XAxisName;
     /** Sets the y component of the arrow tail about the arrow head. If `ayref` is `pixel`, a positive (negative) component corresponds to an arrow pointing from bottom to top (top to bottom). If `ayref` is not `pixel` and is exactly the same as `yref`, this is an absolute value on that axis, like `y`, specified in the same coordinates as `yref`. */
     ay?: any;
     /**
      * Indicates in what coordinates the tail of the annotation (ax,ay) is specified. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. In order for absolute positioning of the arrow to work, *ayref* must be exactly the same as *yref*, otherwise *ayref* will revert to *pixel* (explained next). For relative positioning, *ayref* can be set to *pixel*, in which case the *ay* value is specified in pixels relative to *y*. Absolute positioning is useful for trendline annotations which should continue to indicate the correct trend when zoomed. Relative positioning is useful for specifying the text offset for an annotated point.
      * @default 'pixel'
      */
-    ayref?: 'pixel' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    ayref?: 'pixel' | YAxisName;
     /**
      * Sets the background color of the annotation.
      * @default 'rgba(0,0,0,0)'
@@ -15317,7 +15455,7 @@ export interface Annotation {
     /** Toggle this annotation when clicking a data point whose `x` value is `xclick` rather than the annotation's `x` value. */
     xclick?: any;
     /** Sets the annotation's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    xref?: 'paper' | XAxisName;
     /**
      * Shifts the position of the whole annotation and arrow to the right (positive) or left (negative) by this many pixels.
      * @default 0
@@ -15333,7 +15471,7 @@ export interface Annotation {
     /** Toggle this annotation when clicking a data point whose `y` value is `yclick` rather than the annotation's `y` value. */
     yclick?: any;
     /** Sets the annotation's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    yref?: 'paper' | YAxisName;
     /**
      * Shifts the position of the whole annotation and arrow up (positive) or down (negative) by this many pixels.
      * @default 0
@@ -15393,7 +15531,7 @@ export interface LayoutImage {
      * Sets the images's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis.
      * @default 'paper'
      */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    xref?: 'paper' | XAxisName;
     /**
      * Sets the image's y position. When `yref` is set to `paper`, units are sized relative to the plot height. See `yref` for more info
      * @default 0
@@ -15408,7 +15546,7 @@ export interface LayoutImage {
      * Sets the images's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis.
      * @default 'paper'
      */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    yref?: 'paper' | YAxisName;
 }
 
 export interface LayoutSelection {
@@ -15446,13 +15584,13 @@ export interface LayoutSelection {
     /** Sets the selection's end x position. */
     x1?: any;
     /** Sets the selection's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/';
+    xref?: 'paper' | XAxisName;
     /** Sets the selection's starting y position. */
     y0?: any;
     /** Sets the selection's end y position. */
     y1?: any;
     /** Sets the selection's x coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/';
+    yref?: 'paper' | YAxisName;
 }
 
 export interface Shape {
@@ -15585,7 +15723,7 @@ export interface Shape {
     /** Only relevant in conjunction with `xsizemode` set to *pixel*. Specifies the anchor point on the x axis to which `x0`, `x1` and x coordinates within `path` are relative to. E.g. useful to attach a pixel sized shape to a certain data value. No effect when `xsizemode` not set to *pixel*. */
     xanchor?: any;
     /** Sets the shape's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. If an array of axis IDs is provided, each `x` value will refer to the corresponding axis, e.g., ['x', 'x2'] for a rectangle, line, or circle means `x0` uses the `x` axis and `x1` uses the `x2` axis. Path shapes using an array should have one entry for each x coordinate in the string. */
-    xref?: 'paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/' | ('paper' | '/^x([2-9]|[1-9][0-9]+)?( domain)?$/')[];
+    xref?: 'paper' | XAxisName | ('paper' | XAxisName)[];
     /**
      * Sets the shapes's sizing mode along the x axis. If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to data values on the x axis or a fraction of the plot area's width (`xref` set to *paper*). If set to *pixel*, `xanchor` specifies the x position in terms of data or plot fraction but `x0`, `x1` and x coordinates within `path` are pixels relative to `xanchor`. This way, the shape can have a fixed width while maintaining a position relative to data or plot fraction. Note: `xsizemode` *pixel* is not supported when `xref` is an array.
      * @default 'scaled'
@@ -15610,7 +15748,7 @@ export interface Shape {
     /** Only relevant in conjunction with `ysizemode` set to *pixel*. Specifies the anchor point on the y axis to which `y0`, `y1` and y coordinates within `path` are relative to. E.g. useful to attach a pixel sized shape to a certain data value. No effect when `ysizemode` not set to *pixel*. */
     yanchor?: any;
     /** Sets the shape's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis. If an array of axis IDs is provided, each `y` value will refer to the corresponding axis, e.g., ['y', 'y2'] for a rectangle, line, or circle means `y0` uses the `y` axis and `y1` uses the `y2` axis. Path shapes using an array should have one entry for each y coordinate in the string. */
-    yref?: 'paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/' | ('paper' | '/^y([2-9]|[1-9][0-9]+)?( domain)?$/')[];
+    yref?: 'paper' | YAxisName | ('paper' | YAxisName)[];
     /**
      * Sets the shapes's sizing mode along the y axis. If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to data values on the y axis or a fraction of the plot area's height (`yref` set to *paper*). If set to *pixel*, `yanchor` specifies the y position in terms of data or plot fraction but `y0`, `y1` and y coordinates within `path` are pixels relative to `yanchor`. This way, the shape can have a fixed height while maintaining a position relative to data or plot fraction. Note: `ysizemode` *pixel* is not supported when `yref` is an array.
      * @default 'scaled'
@@ -15947,10 +16085,67 @@ export interface Layout {
         opacity?: number;
     };
     annotations?: Annotation[];
+    /**
+     * Determines whether or not a layout width or height that has been left undefined by the user is initialized on each relayout. Note that, regardless of this attribute, an undefined layout width or height is always initialized on the first call to plot.
+     * @default false
+     */
     autosize?: boolean;
+    /**
+     * Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. This is the default value; however it could be overridden for individual axes.
+     * @default 'convert types'
+     */
     autotypenumbers?: 'convert types' | 'strict';
+    /** Sets the rounding of bar corners. May be an integer number of pixels, or a percentage of bar width (as a string ending in %). */
+    barcornerradius?: any;
+    /**
+     * Sets the gap (in plot fraction) between bars of adjacent location coordinates.
+     * Range: [0, 1]
+     */
+    bargap?: number;
+    /**
+     * Sets the gap (in plot fraction) between bars of the same location coordinate.
+     * @default 0
+     * Range: [0, 1]
+     */
+    bargroupgap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *stack*, the bars are stacked on top of one another With *relative*, the bars are stacked on top of one another, with negative values below the axis, positive values above With *group*, the bars are plotted next to one another centered around the shared location. With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'group'
+     */
+    barmode?: 'stack' | 'group' | 'overlay' | 'relative';
+    /** Sets the normalization for bar traces on the graph. With *fraction*, the value of each bar is divided by the sum of all values at that location coordinate. *percent* is the same but multiplied by 100 to show percentages. */
+    barnorm?: '' | 'fraction' | 'percent';
+    /**
+     * Sets the gap (in plot fraction) between boxes of adjacent location coordinates. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    boxgap?: number;
+    /**
+     * Sets the gap (in plot fraction) between boxes of the same location coordinate. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    boxgroupgap?: number;
+    /**
+     * Determines how boxes at the same location coordinate are displayed on the graph. If *group*, the boxes are plotted next to one another centered around the shared location. If *overlay*, the boxes are plotted over one another, you might need to set *opacity* to see them multiple boxes. Has no effect on traces that have *width* set.
+     * @default 'overlay'
+     */
+    boxmode?: 'group' | 'overlay';
+    /**
+     * Sets the default calendar system to use for interpreting and displaying dates throughout the plot.
+     * @default 'gregorian'
+     */
     calendar?: Calendar;
+    /**
+     * If true, `plotly_click` events will fire for any click position within the plot area, not just over traces. When clicking where there is no trace data, the event will have an empty `points` array but will include `xvals` and `yvals` with click coordinates in data space, and `xPixel` and `yPixel` with click coordinates in pixels, relative to the top-left corner of the graph div.
+     * @default false
+     */
     clickanywhere?: boolean;
+    /**
+     * Determines the mode of single click interactions. *event* is the default value and emits the `plotly_click` event. In addition this mode emits the `plotly_selected` event in drag modes *lasso* and *select*, but with no event data attached (kept for compatibility reasons). The *select* flag enables selecting single data points via click. This mode also supports persistent selections, meaning that pressing Shift while clicking, adds to / subtracts from an existing selection. *select* with `hovermode`: *x* can be confusing, consider explicitly setting `hovermode`: *closest* when using this feature. Selection events are sent accordingly as long as *event* flag is set as well. When the *event* flag is missing, `plotly_click` and `plotly_selected` events are not fired.
+     * @default 'event'
+     */
     clickmode?: 'event' | 'select' | 'none' | (string & {});
     coloraxis?: ColorAxis;
     colorscale?: {
@@ -15970,12 +16165,67 @@ export interface Layout {
          */
         sequentialminus?: ColorScale;
     };
+    /**
+     * Sets the default trace colors.
+     * @default ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]
+     */
     colorway?: Color[];
+    /** Placeholder for exporting automargin-impacting values namely `margin.t`, `margin.b`, `margin.l` and `margin.r` in *full-json* mode. */
     computed?: any;
+    /** If provided, a changed value tells `Plotly.react` that one or more data arrays has changed. This way you can modify arrays in-place rather than making a complete new copy for an incremental change. If NOT provided, `Plotly.react` assumes that data arrays are being treated as immutable, thus any data array with a different identity from its predecessor contains new data. */
     datarevision?: any;
+    /**
+     * Determines the mode of drag interactions. *select* and *lasso* apply only to scatter traces with markers or text. *orbit* and *turntable* apply only to 3D scenes.
+     * @default 'zoom'
+     */
     dragmode?: 'zoom' | 'pan' | 'select' | 'lasso' | 'drawclosedpath' | 'drawopenpath' | 'drawline' | 'drawrect' | 'drawcircle' | 'orbit' | 'turntable' | false;
+    /** Controls persistence of user-driven changes in `editable: true` configuration, other than trace names and axis titles. Defaults to `layout.uirevision`. */
     editrevision?: any;
+    /**
+     * If `true`, the funnelarea slice colors (whether given by `funnelareacolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendfunnelareacolors?: boolean;
+    /**
+     * If `true`, the icicle slice colors (whether given by `iciclecolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendiciclecolors?: boolean;
+    /**
+     * If `true`, the pie slice colors (whether given by `piecolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendpiecolors?: boolean;
+    /**
+     * If `true`, the sunburst slice colors (whether given by `sunburstcolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendsunburstcolors?: boolean;
+    /**
+     * If `true`, the treemap slice colors (whether given by `treemapcolorway` or inherited from `colorway`) will be extended to three times its original length by first repeating every color 20% lighter then each color 20% darker. This is intended to reduce the likelihood of reusing the same color when you have many slices, but you can set `false` to disable. Colors provided in the trace, using `marker.colors`, are never extended.
+     * @default true
+     */
+    extendtreemapcolors?: boolean;
+    /** Sets the global font. Note that fonts used in traces and other layout components inherit from the global font. */
     font?: Font;
+    /** Sets the default funnelarea slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendfunnelareacolors`. */
+    funnelareacolorway?: Color[];
+    /**
+     * Sets the gap (in plot fraction) between bars of adjacent location coordinates.
+     * Range: [0, 1]
+     */
+    funnelgap?: number;
+    /**
+     * Sets the gap (in plot fraction) between bars of the same location coordinate.
+     * @default 0
+     * Range: [0, 1]
+     */
+    funnelgroupgap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *stack*, the bars are stacked on top of one another With *group*, the bars are plotted next to one another centered around the shared location. With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'stack'
+     */
+    funnelmode?: 'stack' | 'group' | 'overlay';
     geo?: GeoLayout;
     grid?: {
         /**
@@ -16011,9 +16261,9 @@ export interface Layout {
          */
         rows?: number;
         /** Used for freeform grids, where some axes may be shared across subplots but others are not. Each entry should be a cartesian subplot id, like *xy* or *x3y2*, or ** to leave that cell empty. You may reuse x axes within the same column, and y axes within the same row. Non-cartesian subplots and traces that support `domain` can place themselves in this grid separately using the `gridcell` attribute. */
-        subplots?: any[];
+        subplots?: (CartesianSubplotId | '')[];
         /** Used with `yaxes` when the x and y axes are shared across columns and rows. Each entry should be an x axis id like *x*, *x2*, etc., or ** to not put an x axis in that column. Entries other than ** must be unique. Ignored if `subplots` is present. If missing but `yaxes` is present, will generate consecutive IDs. */
-        xaxes?: any[];
+        xaxes?: (XAxisName | '')[];
         /**
          * Horizontal space between grid cells, expressed as a fraction of the total width available to one cell. Defaults to 0.1 for coupled-axes grids and 0.2 for independent grids.
          * Range: [0, 1]
@@ -16025,7 +16275,7 @@ export interface Layout {
          */
         xside?: 'bottom' | 'bottom plot' | 'top plot' | 'top';
         /** Used with `yaxes` when the x and y axes are shared across columns and rows. Each entry should be an y axis id like *y*, *y2*, etc., or ** to not put a y axis in that row. Entries other than ** must be unique. Ignored if `subplots` is present. If missing but `xaxes` is present, will generate consecutive IDs. */
-        yaxes?: any[];
+        yaxes?: (YAxisName | '')[];
         /**
          * Vertical space between grid cells, expressed as a fraction of the total height available to one cell. Defaults to 0.1 for coupled-axes grids and 0.3 for independent grids.
          * Range: [0, 1]
@@ -16037,12 +16287,28 @@ export interface Layout {
          */
         yside?: 'left' | 'left plot' | 'right plot' | 'right';
     };
+    /**
+     * Sets the plot's height (in px).
+     * @default 450
+     * Minimum: 10
+     */
     height?: number;
+    /** hiddenlabels is the funnelarea & pie chart analog of visible:'legendonly' but it can contain many labels, and can simultaneously hide slices from several pies/funnelarea charts */
+    hiddenlabels?: Datum[] | Datum[][] | TypedArray;
+    /**
+     * If true, `plotly_hover` events will fire for any cursor position within the plot area, not just over traces. When the cursor is not over a trace, the event will have an empty `points` array but will include `xvals` and `yvals` with cursor coordinates in data space, and `xPixel` and `yPixel` with cursor coordinates in pixels, relative to the top-left corner of the graph div. A `plotly_unhover` event fires when the cursor leaves the plot area.
+     * @default false
+     */
     hoveranywhere?: boolean;
+    /**
+     * Sets the default distance (in pixels) to look for data to add hover labels (-1 means no cutoff, 0 means no looking for data). This is only a real distance for hovering on point-like objects, like scatter points. For area-like objects (bars, scatter fills, etc) hovering is on inside the area and off outside, but these objects will not supersede hover on point-like objects in case of conflict.
+     * @default 20
+     * Minimum: -1
+     */
     hoverdistance?: number;
     hoverlabel?: {
         /**
-         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans more two or more lines
+         * Sets the horizontal alignment of the text content within hover label box. Has an effect only if the hover label text spans two or more lines
          * @default 'auto'
          */
         align?: 'left' | 'right' | 'auto';
@@ -16066,9 +16332,23 @@ export interface Layout {
          */
         showarrow?: boolean;
     };
+    /**
+     * Determines the mode of hover interactions. If *closest*, a single hoverlabel will appear for the *closest* point within the `hoverdistance`. If *x* (or *y*), multiple hoverlabels will appear for multiple points at the *closest* x- (or y-) coordinate within the `hoverdistance`, with the caveat that no more than one hoverlabel will appear per trace. If *x unified* (or *y unified*), a single hoverlabel will appear multiple points at the closest x- (or y-) coordinate within the `hoverdistance` with the caveat that no more than one hoverlabel will appear per trace. In this mode, spikelines are enabled by default perpendicular to the specified axis. If false, hover interactions are disabled.
+     * @default 'closest'
+     */
     hovermode?: 'x' | 'y' | 'closest' | false | 'x unified' | 'y unified';
+    /**
+     * Determines the order of items shown in unified hover labels. If *trace*, items are sorted by trace index. If *value descending*, items are sorted by value from largest to smallest. If *value ascending*, items are sorted by value from smallest to largest. Only applies when `hovermode` is *x unified* or *y unified*.
+     * @default 'trace'
+     */
     hoversort?: 'trace' | 'value descending' | 'value ascending';
+    /**
+     * Determines expansion of hover effects to other subplots If *single* just the axis pair of the primary point is included without overlaying subplots. If *overlaying* all subplots using the main axis and occupying the same space are included. If *axis*, also include stacked subplots using the same axis when `hovermode` is set to *x*, *x unified*, *y* or *y unified*.
+     * @default 'overlaying'
+     */
     hoversubplots?: 'single' | 'overlaying' | 'axis';
+    /** Sets the default icicle slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendiciclecolors`. */
+    iciclecolorway?: Color[];
     images?: LayoutImage[];
     legend?: Legend;
     map?: MapLayout;
@@ -16109,13 +16389,24 @@ export interface Layout {
          */
         t?: number;
     };
+    /** Assigns extra meta information that can be used in various `text` attributes. Attributes such as the graph, axis and colorbar `title.text`, annotation `text` `trace.name` in legend items, `rangeselector`, `updatemenus` and `sliders` `label` text all support `meta`. One can access `meta` fields using template strings: `%{meta[i]}` where `i` is the index of the `meta` item in question. `meta` can also be an object for example `{key: value}` which can be accessed %{meta[key]}. */
     meta?: any;
+    /**
+     * Minimum height of the plot with margin.automargin applied (in px)
+     * @default 64
+     * Minimum: 2
+     */
     minreducedheight?: number;
+    /**
+     * Minimum width of the plot with margin.automargin applied (in px)
+     * @default 64
+     * Minimum: 2
+     */
     minreducedwidth?: number;
     modebar?: {
         /** Sets the color of the active or hovered on icons in the modebar. */
         activecolor?: Color;
-        /** Determines which predefined modebar buttons to add. Please note that these buttons will only be shown if they are compatible with all trace types used in a graph. Similar to `config.modeBarButtonsToAdd` option. This may include *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*. */
+        /** Determines which predefined modebar buttons to add. Please note that these buttons will only be shown if they are compatible with all trace types used in a graph. Similar to `config.modeBarButtonsToAdd` option. This may include *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*, *downloadJson*. */
         add?: string | string[];
         /** Sets the background color of the modebar. */
         bgcolor?: Color;
@@ -16259,19 +16550,54 @@ export interface Layout {
          */
         visible?: true | false | 'legendonly';
     };
+    /**
+     * Sets the background color of the paper where the graph is drawn.
+     * @default '#fff'
+     */
     paper_bgcolor?: Color;
+    /** Sets the default pie slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendpiecolors`. */
+    piecolorway?: Color[];
+    /**
+     * Sets the background color of the plotting area in-between x and y axes.
+     * @default '#fff'
+     */
     plot_bgcolor?: Color;
     polar?: PolarLayout;
+    /**
+     * Sets the gap (in plot fraction) between scatter points of adjacent location coordinates. Defaults to `bargap`.
+     * Range: [0, 1]
+     */
+    scattergap?: number;
+    /**
+     * Determines how scatter points at the same location coordinate are displayed on the graph. With *group*, the scatter points are plotted next to one another centered around the shared location. With *overlay*, the scatter points are plotted over one another, you might need to reduce *opacity* to see multiple scatter points.
+     * @default 'overlay'
+     */
+    scattermode?: 'group' | 'overlay';
     scene?: Scene;
+    /**
+     * When `dragmode` is set to *select*, this limits the selection of the drag to horizontal, vertical or diagonal. *h* only allows horizontal selection, *v* only vertical, *d* only diagonal and *any* sets no limit.
+     * @default 'any'
+     */
     selectdirection?: 'h' | 'v' | 'd' | 'any';
+    /** Controls persistence of user-driven changes in selected points from all traces. */
     selectionrevision?: any;
     selections?: LayoutSelection[];
+    /** Sets the decimal and thousand separators. For example, *. * puts a '.' before decimals and a space between thousands. In English locales, dflt is *.,* but other locales may alter this default. */
     separators?: string;
     shapes?: Shape[];
+    /** Determines whether or not a legend is drawn. Default is `true` if there is a trace to show and any of these: a) Two or more traces would by default be shown in the legend. b) One pie trace is shown in the legend. c) One trace is explicitly given with `showlegend: true`. */
     showlegend?: boolean;
     sliders?: Slider[];
     smith?: SmithLayout;
+    /**
+     * Sets the default distance (in pixels) to look for data to draw spikelines to (-1 means no cutoff, 0 means no looking for data). As with hoverdistance, distance does not apply to area-like objects. In addition, some objects can be hovered on but will not generate spikelines, such as scatter fills.
+     * @default -1
+     * Minimum: -1
+     */
     spikedistance?: number;
+    /** Sets the default sunburst slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendsunburstcolors`. */
+    sunburstcolorway?: Color[];
+    /** Default attributes to be applied to the plot. Templates can be created from existing plots using `Plotly.makeTemplate`, or created manually. They should be objects with format: `{layout: layoutTemplate, data: {[type]: [traceTemplate, ...]}, ...}` `layoutTemplate` and `traceTemplate` are objects matching the attribute structure of `layout` and a data trace.  Trace templates are applied cyclically to traces of each type. Container arrays (eg `annotations`) have special handling: An object ending in `defaults` (eg `annotationdefaults`) is applied to each array item. But if an item has a `templateitemname` key we look in the template array for an item with matching `name` and apply that instead. If no matching `name` is found we mark the item invisible. Any named template item not referenced is appended to the end of the array, so you can use this for a watermark annotation or a logo image, for example. To omit one of these items on the plot, make an item with matching `templateitemname` and `visible: false`. */
     template?: any;
     ternary?: TernaryLayout;
     title?: {
@@ -16341,7 +16667,11 @@ export interface Layout {
          */
         yref?: YRef;
     };
+    /** Sets transition options used during Plotly.react updates. */
     transition?: Transition;
+    /** Sets the default treemap slice colors. Defaults to the main `colorway` used for trace colors. If you specify a new list here it can still be extended with lighter and darker colors, see `extendtreemapcolors`. */
+    treemapcolorway?: Color[];
+    /** Used to allow user interactions with the plot to persist after `Plotly.react` calls that are unaware of these interactions. If `uirevision` is omitted, or if it is given and it changed from the previous `Plotly.react` call, the exact new figure is used. If `uirevision` is truthy and did NOT change, any attribute that has been affected by user interactions and did not receive a different value in the new figure will keep the interaction value. `layout.uirevision` attribute serves as the default for `uirevision` attributes in various sub-containers. For finer control you can set these sub-attributes directly. For example, if your app separately controls the data on the x and y axes you might set `xaxis.uirevision=*time*` and `yaxis.uirevision=*cost*`. Then if only the y data is changed, you can update `yaxis.uirevision=*quantity*` and the y axis range will reset but the x axis range will retain any user-driven zoom. */
     uirevision?: any;
     uniformtext?: {
         /**
@@ -16357,6 +16687,44 @@ export interface Layout {
         mode?: false | 'hide' | 'show';
     };
     updatemenus?: UpdateMenu[];
+    /**
+     * Sets the gap (in plot fraction) between violins of adjacent location coordinates. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    violingap?: number;
+    /**
+     * Sets the gap (in plot fraction) between violins of the same location coordinate. Has no effect on traces that have *width* set.
+     * @default 0.3
+     * Range: [0, 1]
+     */
+    violingroupgap?: number;
+    /**
+     * Determines how violins at the same location coordinate are displayed on the graph. If *group*, the violins are plotted next to one another centered around the shared location. If *overlay*, the violins are plotted over one another, you might need to set *opacity* to see them multiple violins. Has no effect on traces that have *width* set.
+     * @default 'overlay'
+     */
+    violinmode?: 'group' | 'overlay';
+    /**
+     * Sets the gap (in plot fraction) between bars of adjacent location coordinates.
+     * Range: [0, 1]
+     */
+    waterfallgap?: number;
+    /**
+     * Sets the gap (in plot fraction) between bars of the same location coordinate.
+     * @default 0
+     * Range: [0, 1]
+     */
+    waterfallgroupgap?: number;
+    /**
+     * Determines how bars at the same location coordinate are displayed on the graph. With *group*, the bars are plotted next to one another centered around the shared location. With *overlay*, the bars are plotted over one another, you might need to reduce *opacity* to see multiple bars.
+     * @default 'group'
+     */
+    waterfallmode?: 'group' | 'overlay';
+    /**
+     * Sets the plot's width (in px).
+     * @default 700
+     * Minimum: 10
+     */
     width?: number;
     xaxis?: LayoutAxis;
     yaxis?: LayoutAxis;
@@ -16466,6 +16834,31 @@ export interface Edits {
     titleText?: boolean;
 }
 
+export interface ToImageButtonOptions {
+    /** Sets the name of the downloaded file, without an extension. The button appends the extension that matches `format`. The name defaults to the plot title, then the plot subtitle, then *plot-image*. */
+    filename?: string;
+    /**
+     * Sets the format of exported image.
+     * @default 'png'
+     */
+    format?: ToImageFormat;
+    /**
+     * Sets the exported image height. Defaults to the value found in `layout.height` If set to *null*, the exported image height will match the current graph height.
+     * Minimum: 1
+     */
+    height?: number | null;
+    /**
+     * Sets a scaling for the generated image. If set, all features of a graphs (e.g. text, line width) are scaled, unlike simply setting a bigger *width* and *height*.
+     * Minimum: 0
+     */
+    scale?: number;
+    /**
+     * Sets the exported image width. Defaults to the value found in `layout.width` If set to *null*, the exported image width will match the current graph width.
+     * Minimum: 1
+     */
+    width?: number | null;
+}
+
 export interface ConfigBase {
     /**
      * Determines whether the graphs are plotted with respect to layout.autosize:true and infer its container size.
@@ -16494,7 +16887,7 @@ export interface ConfigBase {
     doubleClick?: false | 'reset' | 'autosize' | 'reset+autosize';
     /**
      * Sets the delay for registering a double-click in ms. This is the time interval (in ms) between first mousedown and 2nd mouseup to constitute a double-click. This setting propagates to all on-subplot double clicks (except for geo and map) and on-legend double clicks.
-     * @default 300
+     * @default 500
      * Minimum: 0
      */
     doubleClickDelay?: number;
@@ -16508,6 +16901,7 @@ export interface ConfigBase {
      * @default false
      */
     editable?: boolean;
+    /** Determines which parts of the graph a user can edit directly. `editable` sets every key here at once, and a key set here overrides it. `staticPlot` disables all of them. */
     edits?: Edits;
     /**
      * When `layout.autosize` is turned on, determines whether the graph fills the container (the default) or the screen (if set to *true*).
@@ -16542,7 +16936,7 @@ export interface ConfigBase {
      */
     modeBarButtons?: any;
     /**
-     * Add mode bar button using config objects See ./components/modebar/buttons.js for list of arguments. To enable predefined modebar buttons e.g. shape drawing, hover and spikelines, simply provide their string name(s). This could include: *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*. Please note that these predefined buttons will only be shown if they are compatible with all trace types used in a graph.
+     * Add mode bar button using config objects See ./components/modebar/buttons.js for list of arguments. To enable predefined modebar buttons e.g. shape drawing, hover and spikelines, simply provide their string name(s). This could include: *v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*, *drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape* and *downloadJson*. Please note that these predefined buttons will only be shown if they are compatible with all trace types used in a graph.
      * @default []
      */
     modeBarButtonsToAdd?: any;
@@ -16575,7 +16969,7 @@ export interface ConfigBase {
      */
     queueLength?: number;
     /**
-     * Determines whether to change the layout size when window is resized. In v3, this option will be removed and will always be true.
+     * Determines whether to change the layout size when the graph container is resized. In v5, this option will be removed and will always be true.
      * @default false
      */
     responsive?: boolean;
@@ -16614,11 +17008,8 @@ export interface ConfigBase {
      * @default false
      */
     staticPlot?: boolean;
-    /**
-     * Statically override options for toImage modebar button allowed keys are format, filename, width, height, scale see ../components/modebar/buttons.js
-     * @default {}
-     */
-    toImageButtonOptions?: any;
+    /** Statically overrides options for the toImage modebar button. The button reads only `format`, `filename`, `width`, `height` and `scale`, and drops every other key. */
+    toImageButtonOptions?: ToImageButtonOptions;
     /**
      * Set the URL to topojson used in geo charts. By default, the topojson files are fetched from cdn.plot.ly. For example, set this option to: <path-to-plotly.js>/dist/topojson/ to render geographical feature using the topojson files that ship with the plotly.js module.
      * @default 'https://cdn.plot.ly/un/'

@@ -1,2 +1,0 @@
-- **Breaking**: Remove `scattermapbox`, `choroplethmapbox`, `densitymapbox` trace types, the `mapbox` subplot, and the `mapboxAccessToken` config option [[#7860](https://github.com/plotly/plotly.js/pull/7860)]
-  - These traces have been deprecated since v3. Use the equivalent `*map` traces going forward.

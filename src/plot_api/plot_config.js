@@ -12,6 +12,12 @@
  * at the moment.
  */
 
+const { format, width, height, scale } = require('./to_image_attributes').default;
+
+// `toImage` owns the scale default, not the button. A default here would reach
+// `downloadImage` on every click and change what the caller receives.
+const { dflt: scaleDflt, ...buttonScale } = scale;
+
 var configAttributes = {
     staticPlot: {
         valType: 'boolean',
@@ -50,6 +56,11 @@ var configAttributes = {
         ].join(' ')
     },
     edits: {
+        description: [
+            'Determines which parts of the graph a user can edit directly.',
+            '`editable` sets every key here at once, and a key set here overrides it.',
+            '`staticPlot` disables all of them.'
+        ].join(' '),
         annotationPosition: {
             valType: 'boolean',
             dflt: false,
@@ -128,8 +139,8 @@ var configAttributes = {
         valType: 'boolean',
         dflt: false,
         description: [
-            'Determines whether to change the layout size when window is resized.',
-            'In v3, this option will be removed and will always be true.'
+            'Determines whether to change the layout size when the graph container is resized.',
+            'In v5, this option will be removed and will always be true.'
         ].join(' ')
     },
     fillFrame: {
@@ -181,7 +192,7 @@ var configAttributes = {
     },
     doubleClickDelay: {
         valType: 'number',
-        dflt: 300,
+        dflt: 500,
         min: 0,
         description: [
             'Sets the delay for registering a double-click in ms.',
@@ -262,7 +273,8 @@ var configAttributes = {
             'To enable predefined modebar buttons e.g. shape drawing, hover and spikelines,',
             'simply provide their string name(s). This could include:',
             '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
-            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
+            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect*, *eraseshape*',
+            'and *downloadJson*.',
             'Please note that these predefined buttons will only be shown if they are compatible',
             'with all trace types used in a graph.'
         ].join(' ')
@@ -278,13 +290,24 @@ var configAttributes = {
         ].join(' ')
     },
     toImageButtonOptions: {
-        valType: 'any',
-        dflt: {},
         description: [
-            'Statically override options for toImage modebar button',
-            'allowed keys are format, filename, width, height, scale',
-            'see ../components/modebar/buttons.js'
-        ].join(' ')
+            'Statically overrides options for the toImage modebar button.',
+            'The button reads only `format`, `filename`, `width`, `height` and `scale`,',
+            'and drops every other key.'
+        ].join(' '),
+        format,
+        filename: {
+            valType: 'string',
+            description: [
+                'Sets the name of the downloaded file, without an extension.',
+                'The button appends the extension that matches `format`.',
+                'The name defaults to the plot title, then the plot subtitle,',
+                'then *plot-image*.'
+            ].join(' ')
+        },
+        width,
+        height,
+        scale: buttonScale
     },
     displaylogo: {
         valType: 'boolean',
@@ -413,12 +436,17 @@ var configAttributes = {
 var dfltConfig = {};
 
 function crawl(src, target) {
-    for(var k in src) {
-        var obj = src[k];
-        if(obj.valType) {
-            target[k] = obj.dflt;
+    for (const k in src) {
+        const obj = src[k];
+        // A container carries its own `description` string beside the child
+        // attributes. Recursing into a string never terminates.
+        if (typeof obj !== 'object' || obj === null) continue;
+        if (obj.valType) {
+            // An attribute without a `dflt` seeds no key. A key holding
+            // `undefined` reads as present to `in`, which callers test.
+            if ('dflt' in obj) target[k] = obj.dflt;
         } else {
-            if(!target[k]) {
+            if (!target[k]) {
                 target[k] = {};
             }
             crawl(obj, target[k]);

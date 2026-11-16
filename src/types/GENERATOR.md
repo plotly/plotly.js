@@ -99,7 +99,29 @@ schema flows through automatically.
 
 ### Phase 4: Layout types
 
-Layout generation handles three categories:
+Before generation, `mergeTraceLayoutAttributes` folds every
+`schema.traces[<type>].layoutAttributes` map into the layout attribute tree.
+Trace modules contribute layout keys such as `barmode`, `boxmode` and
+`piecolorway`, and the schema files them under the trace that contributes
+them. At runtime they are ordinary layout keys, so the generated types must
+carry them.
+
+Most modules contribute to the top level of layout. barpolar is the
+exception: its `supplyLayoutDefaults` coerces from `layoutIn[trace.subplot]`,
+so `layout.polar.barmode` is the real key and `layout.barmode` does nothing
+for a barpolar trace. `SUBPLOT_SCOPED_TRACE_LAYOUT` maps barpolar to `polar`,
+which is why `Layout.barmode` allows all four bar values while
+`PolarLayout.barmode` allows only `'stack'` and `'overlay'`. Add an entry
+there if another module ever reads its layout attributes from a subplot.
+
+Two modules that contribute the same key to the same target must agree on
+the definition. If they disagree, generation throws rather than guessing,
+because one property cannot describe both. The repo shares such keys by
+reference instead of copying them, so a disagreement means either the shared
+require was broken, or the two modules mean genuinely different things and
+one of them belongs in its own container.
+
+Layout generation then handles three categories:
 
 - **Subplot containers** (`_isSubplotObj` flag) — grouped by target name
   and merged into supersets. E.g., `xaxis` and `yaxis` both map to
@@ -222,7 +244,7 @@ Summary:
 | `info_array` | tuple of element `valType`s when fixed-length; `T[]` when `freeLength`; `any[]` fallback |
 | `any` | `any` |
 
-`arrayOk: true` wraps the result in `T | T[]`.
+`arrayOk: true` wraps the result in `T | T[]`. For the `number`, `integer`, `angle`, and `color` value types, the union also includes `TypedArray`.
 
 Attribute name overrides via `ATTR_NAME_OVERRIDES` map specific attribute
 paths to a type alias regardless of valType (e.g. `marker.symbol` →
@@ -330,9 +352,13 @@ wildcard) but their bare names are not.
 ## CI integration
 
 `npm run schema-typegen-diff-check` runs the generator and then verifies that
-both `test/plot-schema.json` and `src/types/generated/` are unchanged via
-`git diff --exit-code`. If either differs, the command fails with exit code 1
+both `test/plot-schema.json` and `src/types/generated/schema.d.ts` are unchanged
+via `git diff --exit-code`. If either differs, the command fails with exit code 1
 and outputs the diff to the console.
+
+The path names `schema.d.ts` rather than the whole `generated/` directory, so an
+uncommitted change to the entry point declarations cannot fail this check.
+`npm run entry-point-types-check` covers those.
 
 This is what makes the JS-to-TS conversion workflow safe: a correct
 conversion produces a byte-identical schema, so the check passes; an

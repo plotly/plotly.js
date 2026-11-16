@@ -9,6 +9,7 @@ var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var quiverStyle = require('../../../src/traces/quiver/style');
 
 describe('Test quiver defaults', function() {
     var gd;
@@ -95,11 +96,17 @@ describe('Test quiver defaults', function() {
         expect(gd._fullData[0].v).toEqual([0, 0, 0]);
     });
 
-    it('should set sizemode and sizeref defaults correctly', function() {
+    it('should set lengthmode and lengthfactor defaults correctly', function() {
         gd = makeGD();
         supplyAllDefaults(gd);
-        expect(gd._fullData[0].sizemode).toBe('scaled');
-        expect(gd._fullData[0].sizeref).toBe(1);
+        expect(gd._fullData[0].lengthmode).toBe('scaled');
+        expect(gd._fullData[0].lengthfactor).toBe(1);
+    });
+
+    it('should set arrowref default to data', function() {
+        gd = makeGD();
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].arrowref).toBe('data');
     });
 
     it('should set anchor default to tail', function() {
@@ -220,13 +227,13 @@ describe('Test quiver interactions', function() {
             y: [1, 2],
             u: [1, 0],
             v: [0, 1],
-            sizeref: 0.5
+            lengthfactor: 0.5
         }]).then(function() {
-            expect(gd._fullData[0].sizeref).toBe(0.5);
-            return Plotly.restyle(gd, 'sizeref', 1.5);
+            expect(gd._fullData[0].lengthfactor).toBe(0.5);
+            return Plotly.restyle(gd, 'lengthfactor', 1.5);
         })
         .then(function() {
-            expect(gd._fullData[0].sizeref).toBe(1.5);
+            expect(gd._fullData[0].lengthfactor).toBe(1.5);
             return Plotly.restyle(gd, 'anchor', 'tip');
         })
         .then(function() {
@@ -264,6 +271,87 @@ describe('Test quiver interactions', function() {
         .then(done, done.fail);
     });
 
+    it('should use the per-point arrow color for the hover label', async () => {
+        const fig = {
+            data: [
+                {
+                    type: 'quiver',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3],
+                    u: [1, 0, -1],
+                    v: [0, 1, 0],
+                    marker: {
+                        color: [0, 5, 10],
+                        colorscale: 'Viridis',
+                        showscale: false
+                    }
+                }
+            ],
+            layout: {
+                margin: { l: 0, t: 0, r: 0, b: 0 },
+                width: 400,
+                height: 400
+            }
+        };
+
+        await Plotly.newPlot(gd, fig);
+
+        mouseEvent('mousemove', 200, 200);
+        await delay(20)();
+
+        const label = document.querySelector('g.hovertext path');
+        const arrow = gd.querySelectorAll('g.trace.quiver path.js-line')[1];
+
+        expect(window.getComputedStyle(label).fill).toBe('rgb(33, 145, 140)', 'hover label');
+        expect(window.getComputedStyle(arrow).stroke).toBe('rgb(33, 145, 140)', 'arrow');
+    });
+
+    it('should color each arrow from a discrete marker.color array', async () => {
+        const colors = ['rgb(23, 103, 194)', '#FF4136', '#2ECC40'];
+        const expected = ['rgb(23, 103, 194)', 'rgb(255, 65, 54)', 'rgb(46, 204, 64)'];
+
+        await Plotly.newPlot(gd, [{
+            type: 'quiver',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            u: [1, 1, 1],
+            v: [0, 1, 0],
+            marker: {
+                color: colors,
+                line: { width: 3 }
+            }
+        }]);
+
+        function arrowStrokes() {
+            const arrows = gd.querySelectorAll('g.trace.quiver path.js-line');
+            expect(arrows.length).toBe(3);
+            const strokes = [];
+            for(let i = 0; i < arrows.length; i++) {
+                strokes.push(window.getComputedStyle(arrows[i]).stroke);
+            }
+            return strokes;
+        }
+
+        expect(arrowStrokes()).toEqual(expected);
+
+        // A style-only edit must keep the per-arrow colors.
+        await Plotly.restyle(gd, 'marker.line.width', 4);
+        expect(arrowStrokes()).toEqual(expected);
+
+        // Selection styling must keep each arrow color and only dim the rest.
+        const cd = gd.calcdata[0];
+        cd[0].trace.selectedpoints = [0, 2];
+        cd[0].selected = 1;
+        cd[2].selected = 1;
+        quiverStyle.styleOnSelect(gd, cd, cd[0].node3);
+
+        expect(arrowStrokes()).toEqual(expected);
+        const arrows = gd.querySelectorAll('g.trace.quiver path.js-line');
+        expect(window.getComputedStyle(arrows[0]).strokeOpacity).toBe('1');
+        expect(window.getComputedStyle(arrows[1]).strokeOpacity).toBe('0.2');
+        expect(window.getComputedStyle(arrows[2]).strokeOpacity).toBe('1');
+    });
+
     it('should render multiple quiver traces', function(done) {
         Plotly.newPlot(gd, [{
             type: 'quiver',
@@ -289,29 +377,35 @@ describe('Test quiver interactions', function() {
         .then(function() {
             var quiverLayers = gd._fullLayout._plots.xy.plot.selectAll('.trace.quiver');
             expect(quiverLayers.size()).toBe(2);
+
+            var arrows = gd.querySelectorAll('g.trace.quiver path.js-line');
+            expect(window.getComputedStyle(arrows[0]).stroke).toBe('rgb(255, 0, 0)');
+            expect(window.getComputedStyle(arrows[1]).stroke).toBe('rgb(255, 0, 0)');
+            expect(window.getComputedStyle(arrows[2]).stroke).toBe('rgb(0, 0, 255)');
+            expect(window.getComputedStyle(arrows[3]).stroke).toBe('rgb(0, 0, 255)');
         })
         .then(done, done.fail);
     });
 
-    it('should handle sizemode changes', function(done) {
+    it('should handle lengthmode changes', function(done) {
         Plotly.newPlot(gd, [{
             type: 'quiver',
             x: [0, 1, 2],
             y: [0, 1, 2],
             u: [1, 2, 3],
             v: [1, 2, 3],
-            sizemode: 'scaled',
-            sizeref: 0.5
+            lengthmode: 'scaled',
+            lengthfactor: 0.5
         }]).then(function() {
-            expect(gd._fullData[0].sizemode).toBe('scaled');
-            return Plotly.restyle(gd, 'sizemode', 'raw');
+            expect(gd._fullData[0].lengthmode).toBe('scaled');
+            return Plotly.restyle(gd, 'lengthmode', 'raw');
         })
         .then(function() {
-            expect(gd._fullData[0].sizemode).toBe('raw');
-            return Plotly.restyle(gd, 'sizemode', 'scaled');
+            expect(gd._fullData[0].lengthmode).toBe('raw');
+            return Plotly.restyle(gd, 'lengthmode', 'scaled');
         })
         .then(function() {
-            expect(gd._fullData[0].sizemode).toBe('scaled');
+            expect(gd._fullData[0].lengthmode).toBe('scaled');
         })
         .then(done, done.fail);
     });
@@ -338,4 +432,3 @@ describe('Test quiver interactions', function() {
         .then(done, done.fail);
     });
 });
-

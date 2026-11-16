@@ -44,6 +44,15 @@
 
             &--hostname {
                 font-weight: bold;
+                text-decoration: underline;
+            }
+
+            &--account {
+                margin-top: 16px;
+                padding: 8px;
+                border-radius: 3px;
+                font-size: 0.9em;
+                background-color: vars.$color-bg-hint;
             }
         }
 

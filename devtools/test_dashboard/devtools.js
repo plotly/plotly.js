@@ -2,7 +2,7 @@
 
 /* global Plotly:false */
 
-var Fuse = require('fuse.js/dist/fuse.common.js');
+var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var Lib = require('../../src/lib');
 

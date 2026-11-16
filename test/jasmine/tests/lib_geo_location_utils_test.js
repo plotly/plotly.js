@@ -1,31 +1,220 @@
 const {
+    boundsOfCoords,
     computeBbox,
+    coordsOf,
+    doesCrossAntiMeridian,
+    extractTraceFeature,
+    fitGeojsonBbox,
+    fitGeojsonCoords,
     getFitboundsLonRange,
     unwrapLonRange,
-    doesCrossAntiMeridian
 } = require('../../../src/lib/geo_location_utils');
+const loggers = require('../../../src/lib/loggers');
 
-describe('Test geo_location_utils.getFitboundsLonRange', () => {
-    it('returns the compact crossing range when point data straddles the antimeridian', () => {
-        expect(getFitboundsLonRange([131.8855, -179])).toEqual([131.8855, 181]);
-        expect(getFitboundsLonRange([170, 175, -170])).toEqual([170, 190]);
+function extractSingleFeature(geometry) {
+    const trace = {
+        _length: 1,
+        geojson: { type: 'Feature', id: 'Omicron Persei 8', geometry }
+    };
+
+    return extractTraceFeature([{ loc: 'Omicron Persei 8', trace }])[0];
+}
+
+describe('Test geo_location_utils.extractTraceFeature', () => {
+    it('keeps MultiPolygons with no positive-area polygon without affecting valid features', () => {
+        const trace = {
+            _length: 2,
+            geojson: {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                        type: 'Feature',
+                        id: 'zero-area',
+                        geometry: {
+                            type: 'MultiPolygon',
+                            coordinates: [
+                                [
+                                    [
+                                        [0, 0],
+                                        [1, 1],
+                                        [0, 0],
+                                        [0, 0]
+                                    ]
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        type: 'Feature',
+                        id: 'valid',
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: [
+                                [
+                                    [0, 0],
+                                    [0, 1],
+                                    [1, 1],
+                                    [1, 0],
+                                    [0, 0]
+                                ]
+                            ]
+                        }
+                    }
+                ]
+            }
+        };
+        const calcTrace = [
+            { loc: 'zero-area', trace },
+            { loc: 'valid', trace }
+        ];
+
+        const features = extractTraceFeature(calcTrace);
+
+        expect(features.length).toBe(2);
+        expect(features[0].id).toBe('zero-area');
+        expect(features[0].properties.ct.every(Number.isNaN)).toBe(true);
+        expect(features[1].id).toBe('valid');
+        expect(features[1].properties.ct.every(Number.isFinite)).toBe(true);
     });
 
-    it('keeps the naive range (null) when the data does not straddle the antimeridian', () => {
-        expect(getFitboundsLonRange([131.8855, 179])).toBe(null);
-        expect(getFitboundsLonRange([-10, 0, 20])).toBe(null);
+    it('keeps Polygons and MultiPolygons whose rings hold no points', () => {
+        const polygon = extractSingleFeature({ type: 'Polygon', coordinates: [[]] });
+        const multiPolygon = extractSingleFeature({ type: 'MultiPolygon', coordinates: [[[]]] });
+
+        expect(polygon.properties.ct.every(Number.isNaN)).toBe(true);
+        expect(multiPolygon.properties.ct.every(Number.isNaN)).toBe(true);
     });
 
-    it('keeps the naive range (null) when the data spans the whole globe', () => {
-        const lons = [];
-        for (let lon = 0; lon <= 360; lon += 2.5) lons.push(lon);
-        expect(getFitboundsLonRange(lons)).toBe(null);
+    it('logs the locations whose centroid could not be computed', () => {
+        spyOn(loggers, 'log');
+
+        extractSingleFeature({
+            type: 'MultiPolygon',
+            coordinates: [
+                [
+                    [
+                        [0, 0],
+                        [1, 1],
+                        [0, 0],
+                        [0, 0]
+                    ]
+                ]
+            ]
+        });
+
+        expect(loggers.log).toHaveBeenCalledWith(
+            [
+                'Location Omicron Persei 8 has no polygon with positive area.',
+                'Its centroid could not be computed,',
+                'so hover and selection will not work for it.'
+            ].join(' ')
+        );
     });
 
-    it('returns null when fewer than two finite longitudes are available', () => {
-        expect(getFitboundsLonRange([10])).toBe(null);
-        expect(getFitboundsLonRange([NaN, 5])).toBe(null);
-        expect(getFitboundsLonRange([])).toBe(null);
+    it('does not log for features with a computable centroid', () => {
+        spyOn(loggers, 'log');
+
+        extractSingleFeature({
+            type: 'Polygon',
+            coordinates: [
+                [
+                    [0, 0],
+                    [0, 1],
+                    [1, 1],
+                    [1, 0],
+                    [0, 0]
+                ]
+            ]
+        });
+
+        expect(loggers.log).not.toHaveBeenCalled();
+    });
+});
+
+describe('Test geo_location_utils.coordsOf', () => {
+    it('returns every coordinate in the object', () => {
+        expect(coordsOf({ type: 'Point', coordinates: [10, 0] })).toEqual([[10, 0]]);
+        expect(coordsOf({ type: 'MultiPoint', coordinates: [[20, 1], [30, 2]] })).toEqual([[20, 1], [30, 2]]);
+    });
+
+    it('returns an empty array for input with no extractable coordinates', () => {
+        expect(coordsOf({ type: 'Sphere' })).toEqual([]);
+        expect(coordsOf({ type: 'FeatureCollection', features: [] })).toEqual([]);
+        expect(coordsOf(null)).toEqual([]);
+        expect(coordsOf(undefined)).toEqual([]);
+        expect(coordsOf({})).toEqual([]);
+    });
+});
+
+describe('Test geo_location_utils.boundsOfCoords', () => {
+    it('bounds several objects together, finding the compact crossing range', () => {
+        // separately these bbox to [172.6, 173.3] and [-141, -52.6]; min/maxing those
+        // endpoints spans 314deg, while bounding the coordinates together spans 135deg
+        const coords = [
+            coordsOf({ type: 'MultiPoint', coordinates: [[172.6, 52], [173.3, 53]] }),
+            coordsOf({ type: 'MultiPoint', coordinates: [[-141, 60], [-52.6, 47]] })
+        ].flat();
+
+        const [west, , east] = boundsOfCoords(coords);
+        expect(west).toBeCloseTo(172.6, 6);
+        expect(east).toBeCloseTo(307.4, 6);
+    });
+
+    it('agrees with computeBbox, which is defined in terms of it', () => {
+        const fc = {
+            type: 'FeatureCollection',
+            features: [
+                { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [172.6, 52] } },
+                { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [-52.6, 47] } }
+            ]
+        };
+
+        expect(boundsOfCoords(coordsOf(fc))).toEqual(computeBbox(fc));
+    });
+
+    it('returns null when there are no coordinates', () => {
+        expect(boundsOfCoords([])).toBe(null);
+    });
+});
+
+describe('Test geo_location_utils.fitGeojsonCoords / fitGeojsonBbox', () => {
+    // straddles the antimeridian: bounding both points together spans 135deg
+    const crossing = { type: 'MultiPoint', coordinates: [[172.6, 52], [-52.6, 47]] };
+    const trace = (geojson, locationmode = 'geojson-id') => ({ geojson, locationmode });
+    const geojsonFit = { fitbounds: 'geojson' };
+
+    it('returns the whole geojson coordinates in geojson fitbounds mode', () => {
+        expect(fitGeojsonCoords(trace(crossing), geojsonFit)).toEqual([[172.6, 52], [-52.6, 47]]);
+    });
+
+    it('bounds them across the antimeridian, east past 180', () => {
+        const [west, , east] = fitGeojsonBbox(trace(crossing), geojsonFit);
+
+        expect(west).toBeCloseTo(172.6, 6);
+        expect(east).toBeCloseTo(307.4, 6);
+    });
+
+    it('declines for any other fitbounds mode or locationmode', () => {
+        expect(fitGeojsonCoords(trace(crossing), { fitbounds: 'locations' })).toEqual([]);
+        expect(fitGeojsonCoords(trace(crossing), { fitbounds: false })).toEqual([]);
+        expect(fitGeojsonCoords(trace(crossing, 'ISO-3'), geojsonFit)).toEqual([]);
+
+        expect(fitGeojsonBbox(trace(crossing), { fitbounds: 'locations' })).toBe(null);
+        expect(fitGeojsonBbox(trace(crossing, 'ISO-3'), geojsonFit)).toBe(null);
+    });
+
+    it('declines when the geojson has nothing extractable, so callers fall back', () => {
+        for (const geojson of [{ type: 'Sphere' }, { type: 'FeatureCollection', features: [] }]) {
+            expect(fitGeojsonCoords(trace(geojson), geojsonFit)).toEqual([]);
+            expect(fitGeojsonBbox(trace(geojson), geojsonFit)).toBe(null);
+        }
+    });
+
+    it('keeps the two in step — the bbox is the bounds of the coords', () => {
+        for (const geojson of [crossing, { type: 'Sphere' }]) {
+            const t = trace(geojson);
+            expect(fitGeojsonBbox(t, geojsonFit)).toEqual(boundsOfCoords(fitGeojsonCoords(t, geojsonFit)));
+        }
     });
 });
 

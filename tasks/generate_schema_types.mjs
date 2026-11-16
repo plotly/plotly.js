@@ -1,7 +1,7 @@
 /**
  * Generate TypeScript interfaces from the plot schema.
  *
- * Walks schema.traces and schema.layout.layoutAttributes, emitting interfaces
+ * Walks schema.traces and the layout attributes, emitting interfaces
  * for all trace types, layout component types, and a top-level Layout interface
  * into a single .d.ts file. All attribute metadata (valType, values, arrayOk,
  * etc.) is mapped to the corresponding TypeScript type.
@@ -14,6 +14,8 @@
  */
 
 import * as fs from 'fs';
+
+import { generatedHeader, jsDocBlock, toFileText, tsLiteral } from './util/type_gen.mjs';
 
 // ---------------------------------------------------------------------------
 // Meta keys to skip (not user-facing attributes)
@@ -46,7 +48,8 @@ const COMMON_TYPE_ANCHORS = [
         match: (key, _path, values) => key === 'yref' && values.length === 2 && values.includes('container')
     },
     { name: 'PatternShape', match: (key, path) => key === 'shape' && /\.pattern\.shape$/.test(path) },
-    { name: 'TransitionEasing', match: (key) => key === 'easing' }
+    { name: 'TransitionEasing', match: (key) => key === 'easing' },
+    { name: 'ToImageFormat', match: (_key, path) => path === 'config.toImageButtonOptions.format' }
 ];
 
 /**
@@ -57,6 +60,9 @@ const VALUES_TO_COMMON_TYPE = new Map();
 
 /** Attribute name patterns that should use a specific common type. */
 const ATTR_NAME_OVERRIDES = new Map([['marker.symbol', 'MarkerSymbol']]);
+
+/** Value types whose `arrayOk` form also accepts a `TypedArray` */
+const NUMERIC_ARRAY_OK_VAL_TYPES = new Set(['number', 'integer', 'angle', 'color']);
 
 /**
  * Shared interfaces wrapped inside `export namespace _internal { ... }`.
@@ -114,6 +120,7 @@ function discoverCommonTypes(schema) {
     visit(schema.traces, 'traces');
     visit(schema.layout, 'layout');
     if (schema.animation) visit(schema.animation, 'animation');
+    if (schema.config) visit(schema.config, 'config');
 
     // For each anchor, pick the largest value set. When sizes tie, the first
     // match wins. The superset rule handles axis-type-style cases where
@@ -186,12 +193,53 @@ const LAYOUT_ARRAY_NAMES = new Map([
 // valType → TS type
 // ---------------------------------------------------------------------------
 
-function serializeValue(v) {
-    if (typeof v === 'string') {
-        const escaped = v.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-        return `'${escaped}'`;
+const serializeValue = tsLiteral;
+
+/**
+ * Schema `values` entries wrapped in `/.../` are regexes, not literals. The
+ * enumerated `validateFunction` in src/lib/coerce.js unwraps and tests them.
+ * Each one maps to a template literal type in src/types/lib/common.d.ts that
+ * accepts the same strings.
+ *
+ * A regex stands in for a value set that the static schema cannot list,
+ * because the real set depends on how many axes a figure declares.
+ */
+const REGEX_VALUE_TYPES = new Map([
+    ['/^x([2-9]|[1-9][0-9]+)?( domain)?$/', 'XAxisName'],
+    ['/^y([2-9]|[1-9][0-9]+)?( domain)?$/', 'YAxisName'],
+    ['/^x([2-9]|[1-9][0-9]+)?y([2-9]|[1-9][0-9]+)?$/', 'CartesianSubplotId']
+]);
+
+/** Test whether a schema value uses the `/.../` regex convention. */
+function isRegexValue(v) {
+    return typeof v === 'string' && v.length > 1 && v.startsWith('/') && v.endsWith('/');
+}
+
+/**
+ * Serialize one `values` entry from a string or enumerated attribute.
+ *
+ * Plain values become string literals. Regex values become the named type
+ * that accepts the same strings.
+ *
+ * @param {string|number|boolean} v - The schema value
+ * @param {string} attrPath - Dotted attribute path, used in the error message
+ * @returns {string}
+ * @throws If `v` is a regex with no entry in `REGEX_VALUE_TYPES`. Emitting the
+ *   regex source as a string literal would produce a type that only accepts
+ *   the pattern text, so failing here is deliberate.
+ */
+function enumValueToTS(v, attrPath) {
+    if (!isRegexValue(v)) return serializeValue(v);
+
+    const typeName = REGEX_VALUE_TYPES.get(v);
+    if (!typeName) {
+        throw new Error(
+            `Unmapped regex value '${v}' at '${attrPath}'. Add an entry to REGEX_VALUE_TYPES ` +
+                `pointing at a template literal type in src/types/lib/common.d.ts that accepts ` +
+                `the same strings.`
+        );
     }
-    return String(v); // numbers, booleans
+    return typeName;
 }
 
 /**
@@ -215,32 +263,42 @@ function matchCommonType(values) {
  * When all elements share the same valType we can emit a precise tuple
  * or array type instead of `unknown[]`.
  */
-function infoArrayToTS(attr) {
+function infoArrayToTS(attr, attrPath) {
     if (!attr.items) return 'any[]';
 
     // items can be an array of item descriptors or a single descriptor
     // (single descriptor = freeLength homogeneous array)
     if (!Array.isArray(attr.items)) {
-        const elemType = simpleValType(attr.items.valType);
-        return `${elemType}[]`;
+        return `${asArrayElement(simpleValType(attr.items, attrPath))}[]`;
     }
 
-    const elemTypes = attr.items.map((item) => simpleValType(item.valType));
+    const elemTypes = attr.items.map((item) => simpleValType(item, attrPath));
 
     if (attr.freeLength) {
         // Variable-length — use array of the union of element types
         const unique = [...new Set(elemTypes)];
         const union = unique.length === 1 ? unique[0] : unique.join(' | ');
-        return `${union}[]`;
+        return `${asArrayElement(union)}[]`;
     }
 
     // Fixed-length — emit tuple
     return `[${elemTypes.join(', ')}]`;
 }
 
-/** Map a valType string to a simple TS type (no arrayOk handling). */
-function simpleValType(valType) {
-    switch (valType) {
+/** Parenthesize a union so that appending `[]` binds to the whole union. */
+function asArrayElement(type) {
+    return type.includes('|') ? `(${type})` : type;
+}
+
+/**
+ * Map an info_array item descriptor to a simple TS type (no arrayOk handling).
+ *
+ * @param {object} item - The item descriptor, carrying at least `valType`
+ * @param {string} attrPath - Dotted path of the owning attribute
+ * @returns {string}
+ */
+function simpleValType(item, attrPath) {
+    switch (item.valType) {
         case 'number':
         case 'integer':
             return 'number';
@@ -251,6 +309,9 @@ function simpleValType(valType) {
             return 'boolean';
         case 'color':
             return 'Color';
+        case 'enumerated':
+            if (!Array.isArray(item.values)) return 'any';
+            return item.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
         default:
             return 'any';
     }
@@ -305,27 +366,7 @@ function formatJSDoc(attr, indent) {
         }
     }
 
-    if (!description && tags.length === 0) return [];
-
-    // Single-line — preserve original compact format when there's only a description
-    if (description && tags.length === 0) {
-        const text = description.replace(/\*\//g, '*\\/');
-        return [`${indent}/** ${text} */`];
-    }
-
-    // Multi-line block
-    const out = [`${indent}/**`];
-    if (description) {
-        const text = description.replace(/\*\//g, '*\\/');
-        for (const line of text.split('\n')) {
-            out.push(`${indent} * ${line}`);
-        }
-    }
-    for (const tag of tags) {
-        out.push(`${indent} * ${tag}`);
-    }
-    out.push(`${indent} */`);
-    return out;
+    return jsDocBlock({ description, tags, indent });
 }
 
 /**
@@ -368,7 +409,7 @@ function valTypeToTS(attr, attrPath) {
                     base = common;
                     break;
                 }
-                base = attr.values.map(serializeValue).join(' | ');
+                base = attr.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
             } else {
                 base = 'string';
             }
@@ -405,7 +446,7 @@ function valTypeToTS(attr, attrPath) {
                     base = common;
                     break;
                 }
-                base = attr.values.map(serializeValue).join(' | ');
+                base = attr.values.map((v) => enumValueToTS(v, attrPath)).join(' | ');
             } else {
                 base = 'any';
             }
@@ -432,7 +473,7 @@ function valTypeToTS(attr, attrPath) {
         }
 
         case 'info_array':
-            return infoArrayToTS(attr);
+            return infoArrayToTS(attr, attrPath);
 
         case 'any':
             return 'any';
@@ -444,7 +485,9 @@ function valTypeToTS(attr, attrPath) {
     if (attr.arrayOk) {
         // Wrap in parens if base contains '|' to avoid ambiguity
         const needsParens = base.includes('|');
-        return needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+        const arrayType = needsParens ? `${base} | (${base})[]` : `${base} | ${base}[]`;
+        // A typed array holds only numbers, so allow one only for value types that accept numeric values
+        return NUMERIC_ARRAY_OK_VAL_TYPES.has(valType) ? `${arrayType} | TypedArray` : arrayType;
     }
 
     return base;
@@ -842,7 +885,7 @@ function traceNameToInterfaceName(traceName) {
  * attributes into a superset. E.g. xaxis and yaxis both map to LayoutAxis;
  * their attributes are merged so the interface covers both.
  *
- * @param {object} layoutAttrs - schema.layout.layoutAttributes
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
  * @returns {Map<string, {attrs: object, keys: string[]}>}
  */
 function buildSubplotGroups(layoutAttrs) {
@@ -865,10 +908,112 @@ function buildSubplotGroups(layoutAttrs) {
 }
 
 /**
+ * Trace modules whose layout attributes live inside a subplot container
+ * instead of at the top level of layout.
+ *
+ * The plot schema does not record where a trace module reads its layout
+ * attributes from, so the mapping lives here. barpolar is the only module
+ * that reads them from a subplot: its `supplyLayoutDefaults` coerces from
+ * `layoutIn[trace.subplot]`, which makes `layout.polar.barmode` the real key
+ * and `layout.barmode` a no-op for barpolar traces.
+ *
+ * If a trace module ever reads its layout attributes from another subplot
+ * container, add it here. Otherwise its keys land on `Layout`, where setting
+ * them does nothing.
+ */
+const SUBPLOT_SCOPED_TRACE_LAYOUT = new Map([['barpolar', 'polar']]);
+
+/**
+ * Merge the layout attributes that trace modules contribute into the layout
+ * attribute tree.
+ *
+ * The plot schema files these under `schema.traces[<type>].layoutAttributes`
+ * because a trace module only contributes them when the module loads. At
+ * runtime they are ordinary layout keys, so the generated types must carry
+ * them. Without this merge, `Layout` omits `barmode`, `boxmode`,
+ * `piecolorway` and 25 other keys, and `PolarLayout` omits `barmode` and
+ * `bargap`.
+ *
+ * Keys from a module in `SUBPLOT_SCOPED_TRACE_LAYOUT` merge into that subplot
+ * container. All other keys merge into the top level.
+ *
+ * A key that the layout already defines keeps the layout definition. Two
+ * modules that contribute the same key to the same target must agree on the
+ * definition, otherwise one interface cannot describe both and this throws.
+ *
+ * The merge copies rather than mutates, because `generateSchemaTypes` is
+ * exported and must not rewrite a caller's schema object. Only the top level
+ * and each subplot container this writes to need a copy. Attribute objects
+ * below those two levels stay shared by reference, and nothing here writes
+ * to them.
+ *
+ * @param {object} schema - The full plot schema
+ * @returns {object} A new attribute map. The input schema is not modified.
+ */
+function mergeTraceLayoutAttributes(schema) {
+    const layoutAttrs = schema.layout.layoutAttributes;
+    // Target container name ('' for the top level) → key → {attr, traceName}.
+    const contributed = new Map();
+
+    for (const traceName of Object.keys(schema.traces).sort()) {
+        const traceLayoutAttrs = schema.traces[traceName].layoutAttributes;
+        if (!traceLayoutAttrs || typeof traceLayoutAttrs !== 'object') continue;
+
+        const container = SUBPLOT_SCOPED_TRACE_LAYOUT.get(traceName) || '';
+        const target = container ? layoutAttrs[container] : layoutAttrs;
+        if (!target) {
+            throw new Error(
+                `Trace '${traceName}' is mapped to the layout container '${container}', ` +
+                    `but the schema has no 'layout.layoutAttributes.${container}'. ` +
+                    `Update SUBPLOT_SCOPED_TRACE_LAYOUT.`
+            );
+        }
+
+        if (!contributed.has(container)) contributed.set(container, new Map());
+        const claimed = contributed.get(container);
+
+        for (const [key, val] of Object.entries(traceLayoutAttrs)) {
+            if (key in target) continue;
+            if (!val || typeof val !== 'object') continue;
+
+            const existing = claimed.get(key);
+            if (!existing) {
+                claimed.set(key, { attr: val, traceName });
+                continue;
+            }
+            // Compare the TypeScript type each definition would emit, not the
+            // raw schema entry: a differing `description` or `dflt` only
+            // changes the JSDoc, and the first contributor's wins.
+            const emitted = (attr) => (attr.valType ? leafFingerprint(attr, key) : containerFingerprint(attr));
+            if (emitted(existing.attr) !== emitted(val)) {
+                const where = container ? `layout.${container}` : 'layout';
+                throw new Error(
+                    `Traces '${existing.traceName}' and '${traceName}' both contribute '${key}' to ${where}, ` +
+                        `but their definitions differ, so one generated property cannot describe both. ` +
+                        `If the two mean the same thing, share a single definition by reference.` +
+                        `If they mean different things, add the trace to SUBPLOT_SCOPED_TRACE_LAYOUT.`
+                );
+            }
+        }
+    }
+
+    const merged = { ...layoutAttrs };
+    for (const [container, claimed] of contributed) {
+        const additions = Object.fromEntries([...claimed].map(([key, { attr }]) => [key, attr]));
+        if (container) {
+            merged[container] = { ...merged[container], ...additions };
+        } else {
+            Object.assign(merged, additions);
+        }
+    }
+    return merged;
+}
+
+/**
  * Extract linked-to-array containers from layout attributes.
  * Returns a map of interface name → item attributes.
  *
- * @param {object} layoutAttrs - schema.layout.layoutAttributes
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
  * @returns {Map<string, object>} name → item child attrs
  */
 function extractArrayItems(layoutAttrs) {
@@ -886,7 +1031,7 @@ function extractArrayItems(layoutAttrs) {
 /**
  * Generate the Layout interface body.
  *
- * @param {object} layoutAttrs - schema.layout.layoutAttributes
+ * @param {object} layoutAttrs - Layout attributes, as from mergeTraceLayoutAttributes
  * @param {Map<string,string>} sharedTypes - fingerprint → interface name
  * @param {Map<string,{attrs,keys}>} subplotGroups - from buildSubplotGroups
  * @param {Map<string,object>} arrayItems - from extractArrayItems
@@ -923,6 +1068,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Leaf attribute
         if (val.valType) {
             const tsType = valTypeToTS(val, key);
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${tsType};`);
             continue;
         }
@@ -930,6 +1076,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Subplot container — reference the named interface
         if (subplotKeyToName.has(key)) {
             const typeName = subplotKeyToName.get(key);
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${typeName};`);
             subplotEntries.push({ key, typeName });
             continue;
@@ -938,6 +1085,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Linked-to-array container — reference as array
         if (arrayKeyToName.has(key)) {
             const typeName = arrayKeyToName.get(key);
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${typeName}[];`);
             continue;
         }
@@ -946,6 +1094,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         const fp = containerFingerprint(val);
         const sharedName = sharedTypes.get(fp);
         if (sharedName) {
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: ${refName(sharedName, false)};`);
             continue;
         }
@@ -953,6 +1102,7 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
         // Inline container
         const nested = attrsToProperties(val, '        ', key, sharedTypes);
         if (nested.length > 0) {
+            lines.push(...formatJSDoc(val, '    '));
             lines.push(`    ${key}?: {`);
             lines.push(...nested);
             lines.push(`    };`);
@@ -984,7 +1134,6 @@ function generateLayoutProperties(layoutAttrs, sharedTypes, subplotGroups, array
  */
 export function generateSchemaTypes(schema, outputPath) {
     const traceNames = Object.keys(schema.traces).sort();
-    const layoutAttrs = schema.layout.layoutAttributes;
 
     // Populate META_KEYS from the schema's own list of metadata keys so we
     // pick up any future additions without code changes.
@@ -996,6 +1145,8 @@ export function generateSchemaTypes(schema, outputPath) {
 
     // ----- Phase 0: Discover common enum types (Calendar, Dash, ...) -----
     const commonTypes = discoverCommonTypes(schema);
+
+    const layoutAttrs = mergeTraceLayoutAttributes(schema);
 
     // ----- Phase 1: Fingerprint all container subtrees across traces + layout -----
     const collector = new Map();
@@ -1070,12 +1221,22 @@ export function generateSchemaTypes(schema, outputPath) {
 
     // ----- Phase 4: Build output -----
     const chunks = [
-        '/**',
-        ' * Generated from plot-schema.json by tasks/generate_schema_types.mjs.',
-        ' * Do not edit by hand — run `npm run schema` to regenerate.',
-        ' */',
+        generatedHeader({
+            source: 'plot-schema.json',
+            task: 'tasks/generate_schema_types.mjs',
+            command: 'npm run schema'
+        }),
         '',
-        "import type { Color, ColorScale, Datum, MarkerSymbol, TypedArray } from '../lib/common';",
+        'import type {',
+        '    CartesianSubplotId,',
+        '    Color,',
+        '    ColorScale,',
+        '    Datum,',
+        '    MarkerSymbol,',
+        '    TypedArray,',
+        '    XAxisName,',
+        '    YAxisName',
+        "} from '../lib/common';",
         ''
     ];
 
@@ -1163,8 +1324,8 @@ export function generateSchemaTypes(schema, outputPath) {
     chunks.push(' * narrow with the `type` discriminator before accessing trace-specific');
     chunks.push(' * attributes:');
     chunks.push(' *');
-    chunks.push(' *     if (trace.type === \'bar\') { trace.marker?.cornerradius }');
-    chunks.push(' *     if (trace.type === \'pie\') { trace.marker?.colors }');
+    chunks.push(" *     if (trace.type === 'bar') { trace.marker?.cornerradius }");
+    chunks.push(" *     if (trace.type === 'pie') { trace.marker?.colors }");
     chunks.push(' */');
     chunks.push('export type Data =');
     traceNames.forEach((traceName, i) => {
@@ -1235,14 +1396,30 @@ export function generateSchemaTypes(schema, outputPath) {
         // references `edits?: Edits` instead of re-inlining the subtree.
         sharedTypes.set(containerFingerprint(schema.config.edits), 'Edits');
     }
+    if (schema.config && schema.config.toImageButtonOptions) {
+        // The runtime reads `null` for `width` and `height` as the current graph
+        // size. A `number` valType cannot express that, so widen the two fields
+        // here rather than in `core/config.d.ts`.
+        const toImageButtonProps = attrsToProperties(
+            schema.config.toImageButtonOptions,
+            '    ',
+            'toImageButtonOptions',
+            sharedTypes,
+            { width: 'number | null', height: 'number | null' }
+        );
+        extraInterfaces.push({ name: 'ToImageButtonOptions', properties: toImageButtonProps });
+
+        // Register the fingerprint so the ConfigBase emission below references
+        // `toImageButtonOptions?: ToImageButtonOptions` instead of re-inlining the subtree.
+        sharedTypes.set(containerFingerprint(schema.config.toImageButtonOptions), 'ToImageButtonOptions');
+    }
     if (schema.config) {
         // Generate the schema-derived Config building block. Fields whose
-        // schema valType is `any` (locales, modeBarButtons, setBackground,
-        // toImageButtonOptions, ...) come through as `any` and are
-        // overridden with precise types in `core/config.d.ts`'s `Config`
-        // via Omit/intersection. The schema is fundamentally unable to
-        // describe functions or arbitrary-key maps, so those overrides are
-        // permanent.
+        // schema valType is `any` (locales, modeBarButtons, setBackground, ...)
+        // come through as `any` and are overridden with precise types in
+        // `core/config.d.ts`'s `Config` via Omit/intersection. The schema is
+        // fundamentally unable to describe functions or arbitrary-key maps, so
+        // those overrides are permanent.
         const configProps = attrsToProperties(schema.config, '    ', 'config', sharedTypes);
         extraInterfaces.push({ name: 'ConfigBase', properties: configProps });
     }
@@ -1260,7 +1437,21 @@ export function generateSchemaTypes(schema, outputPath) {
         }
     }
 
-    fs.writeFileSync(outputPath, chunks.join('\n'));
+    const output = toFileText(chunks);
+
+    // Backstop for the `/.../` regex convention. `enumValueToTS` already fails
+    // on an unmapped regex and names the attribute, but it only sees `values`
+    // entries. This catches a regex that reaches the output by another route.
+    const leakedRegexes = output.match(/'\/\^[^']*'/g);
+    if (leakedRegexes) {
+        throw new Error(
+            `Generated types contain regex string literals: ${[...new Set(leakedRegexes)].join(', ')}. ` +
+                `A schema regex reached the output as a literal type, which only accepts the pattern ` +
+                `text itself. Map it in REGEX_VALUE_TYPES.`
+        );
+    }
+
+    fs.writeFileSync(outputPath, output);
 
     const sharedCount = sharedList.length;
     const layoutCount = subplotGroups.size + arrayItems.size + 1; // +1 for Layout itself

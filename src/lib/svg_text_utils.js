@@ -24,6 +24,98 @@ var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
 const matchTex = (str) => str ? str.match(FIND_TEX) : null;
 exports.matchTex = matchTex;
 
+/**
+ * Checks whether a string is *entirely* a single tex expression, with no
+ * literal text before or after the $...$ delimiters.
+ *
+ * @param {string} str: the string to check for tex
+ * @return {boolean} true if the whole string is one tex expression
+ */
+const isPureTex = (str) => {
+    var tex = matchTex(str);
+    return !!tex && !tex[1] && !tex[3];
+};
+exports.isPureTex = isPureTex;
+
+/**
+ * Positions a MathJax-typeset group against its source <text> node's x/y
+ * and text-anchor.
+ *
+ * @param {d3 selection} _context: the source <text> element
+ * @param {string} svgClass: the '<baseClass>-math' class used on newSvg
+ * @param {d3 selection} mathjaxGroup: the '<svgClass>-group' wrapper
+ * @param {d3 selection} newSvg: the typeset <svg>, already sized
+ * @param {string} textAnchor: _context's text-anchor to position against
+ * @param {number} fontSize: _context's font size, for the baseline offset
+ * @param {number} [width0]: the SVG's own reported width, to detect the
+ *   Firefox v82+ overflow bug (see link below); omit to skip that check
+ * @param {number} [height0]: same, for height
+ */
+function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, width0, height0) {
+    var g = newSvg.select('g');
+    var bb = g.node().getBoundingClientRect();
+    var w = bb.width;
+    var h = bb.height;
+    var w0 = width0 === undefined ? w : width0;
+    var h0 = height0 === undefined ? h : height0;
+
+    if(w > w0 || h > h0) {
+        // this happen in firefox v82+ | see https://bugzilla.mozilla.org/show_bug.cgi?id=1709251 addressed
+        // temporary fix:
+        newSvg.style('overflow', 'hidden');
+        bb = newSvg.node().getBoundingClientRect();
+        w = bb.width;
+        h = bb.height;
+    }
+
+    var x = +_context.attr('x');
+    var y = +_context.attr('y');
+
+    // font baseline is about 1/4 fontSize below centerline
+    var textHeight = fontSize || _context.node().getBoundingClientRect().height;
+    var dy = -textHeight / 4;
+
+    if(svgClass[0] === 'y') {
+        mathjaxGroup.attr({
+            transform: 'rotate(' + [-90, x, y] +
+            ')' + strTranslate(-w / 2, dy - h / 2)
+        });
+    } else if(svgClass[0] === 'l') {
+        y = dy - h / 2;
+    } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
+        x = 0;
+        y = dy;
+    } else {
+        x = x - w * (
+            textAnchor === 'middle' ? 0.5 :
+            textAnchor === 'end' ? 1 : 0
+        );
+        y = y + dy - h / 2;
+    }
+
+    newSvg.attr({
+        x: x,
+        y: y
+    });
+}
+
+/**
+ * Removes an unsafe href/xlink:href from every <a> MathJax's \href{url}{...}
+ * macro produced inside newSvg.
+ *
+ * @param {d3 selection} newSvg: the typeset <svg>, already inserted into
+ *   the document (or a fragment), so selectAll can walk its descendants
+ */
+function sanitizeMathJaxLinks(newSvg) {
+    newSvg.selectAll('a').each(function() {
+        var a = d3.select(this);
+        ['href', 'xlink:href'].forEach(function(attrName) {
+            var href = a.attr(attrName);
+            if(href) a.attr(attrName, sanitizeHref(href) || null);
+        });
+    });
+}
+
 exports.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
@@ -31,8 +123,10 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
         gd && gd._context.typesetMath &&
-        (typeof MathJax !== 'undefined') &&
         matchTex(str);
+
+    // Only complain about MathJax version once we know there's actually math to render
+    if(tex && !isMathJaxVersionSupported()) tex = null;
 
     var parent = d3.select(_context.node().parentNode);
     if(parent.empty()) return;
@@ -111,6 +205,8 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
                 mathjaxGroup.node().appendChild(newSvg.node());
 
+                sanitizeMathJaxLinks(newSvg);
+
                 // stitch the glyph defs
                 if(_glyphDefs && _glyphDefs.node()) {
                     newSvg.node().insertBefore(_glyphDefs.node().cloneNode(true),
@@ -135,48 +231,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var g = newSvg.select('g');
                 g.attr({fill: fill, stroke: fill});
 
-                var bb = g.node().getBoundingClientRect();
-                var w = bb.width;
-                var h = bb.height;
-
-                if(w > w0 || h > h0) {
-                    // this happen in firefox v82+ | see https://bugzilla.mozilla.org/show_bug.cgi?id=1709251 addressed
-                    // temporary fix:
-                    newSvg.style('overflow', 'hidden');
-                    bb = newSvg.node().getBoundingClientRect();
-                    w = bb.width;
-                    h = bb.height;
-                }
-
-                var x = +_context.attr('x');
-                var y = +_context.attr('y');
-
-                // font baseline is about 1/4 fontSize below centerline
-                var textHeight = fontSize || _context.node().getBoundingClientRect().height;
-                var dy = -textHeight / 4;
-
-                if(svgClass[0] === 'y') {
-                    mathjaxGroup.attr({
-                        transform: 'rotate(' + [-90, x, y] +
-                        ')' + strTranslate(-w / 2, dy - h / 2)
-                    });
-                } else if(svgClass[0] === 'l') {
-                    y = dy - h / 2;
-                } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
-                    x = 0;
-                    y = dy;
-                } else {
-                    x = x - w * (
-                        textAnchor === 'middle' ? 0.5 :
-                        textAnchor === 'end' ? 1 : 0
-                    );
-                    y = y + dy - h / 2;
-                }
-
-                newSvg.attr({
-                    x: x,
-                    y: y
-                });
+                positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, w0, h0);
 
                 if(_callback) _callback.call(_context, mathjaxGroup);
                 resolve(mathjaxGroup);
@@ -185,6 +240,45 @@ exports.convertToTspans = function(_context, gd, _callback) {
     } else showText();
 
     return _context;
+};
+
+/**
+ * Repositions an existing MathJax-typeset group, previously inserted by
+ * convertToTspans, to match its source <text> node's *current* x/y and
+ * text-anchor.
+ *
+ * @param {d3 selection} _context: the source <text> element
+ */
+exports.repositionMathGroup = function(_context) {
+    if(_context.empty()) return;
+
+    var svgClass = (_context.attr('class') ? _context.attr('class').split(' ')[0] : 'text') + '-math';
+    var parent = d3.select(_context.node().parentNode);
+    var mathjaxGroup = parent.select('g.' + svgClass + '-group');
+    var newSvg = mathjaxGroup.select('svg.' + svgClass);
+    if(mathjaxGroup.empty() || newSvg.empty()) return;
+
+    var textAnchor = _context.attr('text-anchor');
+    var fontSize = parseInt(_context.node().style.fontSize, 10);
+    positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize);
+};
+
+/**
+ * Finds the node whose bounding box represents a source <text> element's
+ * rendered content: the typeset MathJax group if convertToTspans replaced
+ * the text with one (the source itself is display:none in that case), or
+ * the <text> node otherwise.
+ *
+ * @param {d3 selection} textSel: the source <text> element
+ * @return {?Element} the node to measure, or null if textSel is empty
+ */
+exports.getMathOrTextNode = function(textSel) {
+    var node = textSel.node();
+    if(!node) return null;
+
+    var svgClass = (textSel.attr('class') ? textSel.attr('class').split(' ')[0] : 'text') + '-math';
+    var mathGroup = d3.select(node.parentNode).select('g.' + svgClass + '-group');
+    return mathGroup.empty() ? node : mathGroup.node();
 };
 
 
@@ -204,18 +298,33 @@ function cleanEscapesForTex(s) {
 // and reused for subsequent calls.
 var mathjaxSVGDocument = null;
 
-function texToSVG(_texString, _config, _callback) {
-    const MathJaxVersion = parseInt(
-        (MathJax.version || '').split('.')[0]
-    );
+// Function which returns the major version of MathJax as an integer,
+// or null if MathJax is undefined or MathJax.version is falsy.
+const mathJaxMajorVersion = () => (typeof MathJax !== 'undefined' && MathJax.version) ? parseInt(MathJax.version.split('.')[0]) : null;
 
-    if(
-        MathJaxVersion !== 3 &&
-        MathJaxVersion !== 4
-    ) {
+// Only warn once per page about each of these conditions
+var warnedMissingMathJax = false;
+var warnedUnsupportedMathJax = false;
+
+// plotly.js is only compatible with MathJax v3 and v4.
+function isMathJaxVersionSupported() {
+    const version = mathJaxMajorVersion();
+    if(version === 3 || version === 4) return true;
+
+    if(version === null) {
+        if(!warnedMissingMathJax) {
+            warnedMissingMathJax = true;
+            Lib.warn('MathJax is not loaded. Math equations will not be rendered.');
+        }
+    } else if(!warnedUnsupportedMathJax) {
+        warnedUnsupportedMathJax = true;
         Lib.warn('Unsupported MathJax version:', MathJax.version);
-        return;
     }
+    return false;
+}
+
+function texToSVG(_texString, _config, _callback) {
+    const MathJaxVersion = mathJaxMajorVersion();
 
     var tmpDiv;
 

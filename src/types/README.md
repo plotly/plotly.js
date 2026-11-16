@@ -7,7 +7,7 @@ This directory documents the TypeScript conversion in progress.
 | [SETUP.md](SETUP.md) | First-time contributor — toolchain overview, npm scripts |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Anyone working with types — directory layout, public/private split |
 | [CONVERTING_ATTRIBUTES.md](CONVERTING_ATTRIBUTES.md) | **Contributor doing conversion work** — step-by-step recipe |
-| [GENERATOR.md](GENERATOR.md) | Maintainer extending or debugging the type generator |
+| [GENERATOR.md](GENERATOR.md) | Maintainer extending or debugging the schema type generator |
 
 ## Status
 
@@ -16,7 +16,8 @@ This directory documents the TypeScript conversion in progress.
 - `AttributeMap` validation machinery: ✅ done
 - **Schema-based type generator**: ✅ done — all trace types + layout + shared interfaces
 - Consumer entry point (`lib/index.d.ts`, wired via `package.json#types`): ✅ done
-- CI gates (`typecheck` + `schema-typegen-diff-check`): ✅ done
+- Modular entry points (`plotly.js/lib/<entry>`, wired via `package.json#typesVersions`): ✅ done
+- CI gates (`typecheck` + `schema-typegen-diff-check` + `entry-point-types-check`): ✅ done
 - First attribute file converted (modebar): ✅ done
 - Conversion of remaining files: 🚧 in progress
 
@@ -36,11 +37,23 @@ This directory documents the TypeScript conversion in progress.
   `Datum[] | Datum[][] | TypedArray` for *every* `data_array` so 2D/3D usage
   typechecks, but the trade-off is that 1D-only fields also accept 2D arrays.
 
-The published consumer surface lives at [`lib/index.d.ts`](../../lib/index.d.ts).
+The published consumer surface has two parts. [`lib/index.d.ts`](../../lib/index.d.ts)
+declares the full library for `import ... from 'plotly.js'`. The generated
+declarations in [`generated/entry_points/`](generated/entry_points/) cover the
+modular entry points, one file each: `plotly.js/lib/core`, every trace and
+component, the partial bundles, and every locale under
+`plotly.js/lib/locales/`.
+
 This `src/types/` directory is the authoring location — internal types live
 here, public types are re-exported through `lib/index.d.ts` to consumers.
 
 ## Generated types
+
+Two tasks generate types. This section covers the schema generator. For the
+entry point declarations under
+[`generated/entry_points/`](generated/entry_points/), see
+[ARCHITECTURE.md](ARCHITECTURE.md#the-generatedentry_points-directory) and run
+`npm run entry-point-types`.
 
 The following are **auto-generated from `plot-schema.json`** by
 `tasks/generate_schema_types.mjs`:

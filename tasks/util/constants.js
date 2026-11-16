@@ -198,6 +198,9 @@ module.exports = {
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
     pathToCSSDist: path.join(pathToDist, 'plotly.css'),
 
+    pathToMapLibreWorkerSrc: require.resolve('maplibre-gl/dist/maplibre-gl-worker.mjs'),
+    pathToMapLibreWorkerBuild: path.join(pathToBuild, 'maplibre_worker.js'),
+
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
     pathToReglCodegenBundle: path.join(pathToBuild, 'regl_codegen-bundle.js'),
 

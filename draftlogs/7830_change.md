@@ -1,1 +1,0 @@
-- Upgrade `plotly/d3-sankey` to 0.12.3. [[#7830](https://github.com/plotly/plotly.js/pull/7830)], with thanks to @adamreeve for the contribution!

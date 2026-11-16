@@ -27,6 +27,8 @@ export as namespace Plotly;
 // ---------------------------------------------------------------------------
 
 export type {
+    AxisName,
+    CartesianSubplotId,
     Color,
     ColorScale,
     Datum,
@@ -36,7 +38,9 @@ export type {
     MarkerSymbol,
     TypedArray,
     XAnchor,
-    YAnchor
+    XAxisName,
+    YAnchor,
+    YAxisName
 } from '../src/types/lib/common';
 
 // ---------------------------------------------------------------------------
@@ -50,22 +54,15 @@ export type * from '../src/types/generated/schema';
 // ---------------------------------------------------------------------------
 
 export type {
-    AxisName,
     ButtonClickEvent,
+    DataUpdate,
     Icon,
+    LayoutUpdate,
     ModeBarButton,
     ModeBarButtonAny,
     ModeBarDefaultButtons,
-    Template,
-    XAxisName,
-    YAxisName
+    Template
 } from '../src/types/core/layout';
-
-// ---------------------------------------------------------------------------
-// Trace data
-// ---------------------------------------------------------------------------
-
-export type { Data } from '../src/types/core/data';
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -84,15 +81,20 @@ export type {
 
 export type {
     BeforePlotEvent,
+    ButtonClickedEvent,
     ClickAnnotationEvent,
     FrameAnimationEvent,
+    IcicleClickEvent,
+    IciclePlotDatum,
     LegendClickEvent,
+    LegendTitleClickEvent,
     PlotCoordinate,
     PlotDatum,
     PlotHoverEvent,
     PlotlyEventName,
     PlotlyHTMLElement,
     PlotMouseEvent,
+    PlotReactEvent,
     PlotRelayoutEvent,
     PlotRestyleEvent,
     PlotRestyleEventUpdate,
@@ -100,12 +102,16 @@ export type {
     PlotScene,
     PlotSelectedData,
     PlotSelectionEvent,
+    PlotUpdateEvent,
     SelectionRange,
     SliderChangeEvent,
     SliderEndEvent,
     SliderStartEvent,
     SunburstClickEvent,
-    SunburstPlotDatum
+    SunburstPlotDatum,
+    TreemapClickEvent,
+    TreemapPlotDatum,
+    WebGLContextLostEvent
 } from '../src/types/core/events';
 
 // ---------------------------------------------------------------------------

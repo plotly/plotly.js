@@ -1,11 +1,14 @@
 var path = require('path');
 var fs = require('fs');
 
+const esbuild = require('esbuild');
 var falafel = require('falafel');
 var { glob } = require('glob');
-var madge = require('madge');
 var readLastLines = require('read-last-lines');
+const scc = require('strongly-connected-components');
 var trueCasePath = require('true-case-path').trueCasePathSync;
+
+const { esbuildConfig } = require('../esbuild-config.js');
 
 var common = require('./util/common');
 var isJasmineTestIt = common.isJasmineTestIt;
@@ -251,18 +254,33 @@ function assertTrailingNewLine() {
 }
 
 // check circular dependencies
-function assertCircularDeps() {
-    madge(constants.pathToSrc).then(function(res) {
-        var circularDeps = res.circular();
-        var logs = [];
-
-        if(circularDeps.length) {
-            console.log(circularDeps.join('\n'));
-            logs.push('some circular dependencies were found in src/');
-        }
-
-        log('circular dependencies: ' + circularDeps.length, logs);
+async function assertCircularDeps() {
+    const { metafile } = await esbuild.build({
+        ...esbuildConfig,
+        metafile: true,
+        write: false,
+        logLevel: 'silent'
     });
+
+    const srcFiles = Object.keys(metafile.inputs).filter((f) => f.startsWith('src/'));
+    const idx = new Map(srcFiles.map((f, i) => [f, i]));
+    const adjacencyList = srcFiles.map((f) =>
+        metafile.inputs[f].imports
+            .map((imp) => idx.get(imp.path))
+            .filter((i) => i !== undefined)
+    );
+
+    const cycles = scc(adjacencyList).components.filter((c) => c.length > 1);
+    const logs = [];
+
+    if(cycles.length) {
+        for(const cycle of cycles) {
+            console.log(cycle.map((i) => srcFiles[i]).join(' -> '));
+        }
+        logs.push('some circular dependencies were found in src/');
+    }
+
+    log('circular dependencies: ' + cycles.length, logs);
 }
 
 function combineGlobs(arr) {

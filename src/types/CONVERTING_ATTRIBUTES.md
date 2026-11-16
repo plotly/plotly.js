@@ -103,7 +103,7 @@ should be added to the corresponding `Full*` interface instead.
 ```bash
 npm run typecheck                      # zero errors
 npm run schema-typegen-diff-check      # regen + check test/plot-schema.json
-                                       # and src/types/generated/ are unchanged
+                                       # and generated/schema.d.ts are unchanged
 ```
 
 The `schema-typegen-diff-check` script regenerates both the runtime schema

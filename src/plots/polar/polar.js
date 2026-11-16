@@ -934,7 +934,7 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
         dimmed = false;
 
         var polarLayoutNow = gd._fullLayout[_this.id];
-        lum = Color.color(polarLayoutNow.bgcolor).luminosity();
+        lum = Color.luminosity(polarLayoutNow.bgcolor);
 
         zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
         zb.attr('fill-rule', 'evenodd');

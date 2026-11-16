@@ -544,7 +544,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         if(clickVal === false) return;
         legend._clickTimeout = setTimeout(function() {
             if(!gd._fullLayout) return;
-            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick);
+            if(itemClick) handleItemClick(legendItem, gd, legend, itemClick, numClicks);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
@@ -553,7 +553,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
         // Activate default double click behaviour only when both single click and double click values are not false
         if(dblClickVal !== false && clickVal !== false && itemDoubleClick) {
-            handleItemClick(legendItem, gd, legend, itemDoubleClick);
+            handleItemClick(legendItem, gd, legend, itemDoubleClick, numClicks);
         }
     }
 }
@@ -733,7 +733,7 @@ function setupTitleToggle(scrollBox, gd, legendObj, legendId) {
 
 
 function textLayout(s, g, gd, legendObj, aTitle) {
-    if(legendObj._inHover) s.attr('data-notex', true); // do not process MathJax for unified hover
+    if(legendObj._inHover) s.attr('data-notex', svgTextUtils.isPureTex(s.text()) ? null : true);
     svgTextUtils.convertToTspans(s, gd, function() {
         computeTextDimensions(g, gd, legendObj, aTitle);
     });
@@ -824,7 +824,9 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         legendObj._titleHeight = height;
     } else { // legend item
         legendItem.lineHeight = lineHeight;
-        legendItem.height = Math.max(height, 16) + 3;
+        // A taller fill swatch keeps the space that the default row gives the default swatch
+        const fillItemHeight = constants.itemMinHeight + legendObj.itemheight - constants.dfltFillHeight;
+        legendItem.height = Math.max(height, constants.itemMinHeight, fillItemHeight) + constants.itemHeightPad;
         legendItem.width = width;
     }
 }
@@ -1063,6 +1065,17 @@ function computeLegendDimensions(gd, groups, traces, legendObj, scrollBox) {
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
+
+    if (legendObj._inHover) {
+        const textRight = legendObj._width - bw2 - itemGap - titleSize[0];
+        traces.each(function (d) {
+            if (d[0].textAlign !== 'right') return;
+            d3.select(this)
+                .select('.' + legendId + 'text')
+                .attr('text-anchor', 'end')
+                .call(svgTextUtils.positionText, textRight);
+        });
+    }
 
     // align legend title horizontally
     var titleEl = scrollBox.select('.' + legendId + 'titletext');

@@ -95,6 +95,76 @@ describe('Test colorbar:', function() {
             .then(done, done.fail);
         });
 
+        // see https://github.com/plotly/plotly.js/issues/6499
+        it('does not throw when the colorbar is too short for its own length/padding', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {len: 0.01, thickness: 30}
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
+        it('does not throw when a top-side colorbar title is taller than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        title: {text: 'Long title', side: 'top', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
+        it('does not throw when a bottom-side colorbar title is taller than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        title: {text: 'Long title', side: 'bottom', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
+        it('does not throw when a right-side horizontal colorbar title is wider than the colorbar', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatter',
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                marker: {
+                    color: [1, 2, 3],
+                    colorbar: {
+                        orientation: 'h',
+                        title: {text: 'Long title', side: 'right', font: {size: 60}},
+                        len: 0.3,
+                        thickness: 30
+                    }
+                }
+            }], {width: 300, height: 120})
+            .then(done, done.fail);
+        });
+
         function assertCB(msg, present, opts) {
             var expandedMarginR = opts.expandedMarginR;
             var expandedMarginT = opts.expandedMarginT;

@@ -12,71 +12,86 @@ import type { Data, Layout, TraceType } from '../generated/schema';
 import type { PlotlyHTMLElement } from './events';
 
 // ---------------------------------------------------------------------------
-// Axis name types (template literal utilities — not in schema)
+// Axis name types
 // ---------------------------------------------------------------------------
 
-/**
- * Numeric axis suffix plus the optional ` domain` qualifier. The suffix is
- * empty for the first axis (`x` / `y`) and `2` through `99` otherwise.
- */
-type xYAxisNames = `${
-    | ''
-    | `${2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`
-    | `${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}`}${'' | ' domain'}`;
-
-/** Any valid x-axis reference: `'x'`, `'x2'`, …, `'x99'`, optionally `' domain'`. */
-export type XAxisName = `x${xYAxisNames}`;
-/** Any valid y-axis reference: `'y'`, `'y2'`, …, `'y99'`, optionally `' domain'`. */
-export type YAxisName = `y${xYAxisNames}`;
-/** Any valid axis reference (x or y, numbered or not, domain-qualified or not). */
-export type AxisName = XAxisName | YAxisName;
+export type { AxisName, CartesianSubplotId, XAxisName, YAxisName } from '../lib/common';
 
 // ---------------------------------------------------------------------------
 // ModeBar / Icon (behavioral types — not in schema)
 // ---------------------------------------------------------------------------
 
 /**
- * Names of built-in mode-bar buttons. Used by `config.modeBarButtonsToAdd`
- * and `config.modeBarButtonsToRemove` to reference Plotly's defaults.
+ * Identifiers for Plotly's built-in mode-bar buttons. Which of these a config
+ * option accepts differs:
+ *
+ * - `config.modeBarButtonsToRemove` — any identifier below. Removal matches
+ *   case-insensitively against each default button's `name` and its category.
+ * - `config.modeBarButtons` — the button's registry key, resolved against
+ *   Plotly's button table; an unknown key throws.
+ * - `config.modeBarButtonsToAdd` — as a *string*, only the shape-drawing
+ *   buttons (`drawline` … `eraseshape`), `downloadJson`, and the category
+ *   aliases at the end of this union. Any other button has to be added as a
+ *   `ModeBarButton` object; passing its name as a string does not resolve to
+ *   the built-in button.
  */
 export type ModeBarDefaultButtons =
-    | 'lasso2d'
-    | 'select2d'
-    | 'sendDataToCloud'
+    // Cartesian
     | 'zoom2d'
     | 'pan2d'
+    | 'select2d'
+    | 'lasso2d'
     | 'zoomIn2d'
     | 'zoomOut2d'
     | 'autoScale2d'
     | 'resetScale2d'
-    | 'hoverClosestCartesian'
-    | 'hoverCompareCartesian'
+    // 3D
     | 'zoom3d'
     | 'pan3d'
     | 'orbitRotation'
     | 'tableRotation'
-    | 'handleDrag3d'
     | 'resetCameraDefault3d'
     | 'resetCameraLastSave3d'
-    | 'hoverClosest3d'
+    // Geo
     | 'zoomInGeo'
     | 'zoomOutGeo'
     | 'resetGeo'
-    | 'hoverClosestGeo'
-    | 'hoverClosestGl2d'
-    | 'hoverClosestPie'
-    | 'toggleHover'
-    | 'toImage'
-    | 'resetViews'
-    | 'toggleSpikelines'
+    // Map
     | 'zoomInMap'
     | 'zoomOutMap'
     | 'resetViewMap'
-    | 'togglespikelines'
-    | 'togglehover'
-    | 'hovercompare'
+    // Sankey. `resetViewSankey` is the button's object key (for `config.modeBarButtons`
+    // custom groups); `resetSankeyGroup` is its `name` (for `modeBarButtonsToRemove`).
+    | 'resetViewSankey'
+    | 'resetSankeyGroup'
+    // Hover
+    | 'hoverClosestCartesian'
+    | 'hoverCompareCartesian'
+    | 'hoverClosest3d'
+    | 'hoverClosestGeo'
+    | 'hoverClosestPie'
+    | 'toggleHover'
+    | 'toggleSpikelines'
+    // Shape drawing
+    | 'drawline'
+    | 'drawopenpath'
+    | 'drawclosedpath'
+    | 'drawcircle'
+    | 'drawrect'
+    | 'eraseshape'
+    // Other
+    | 'downloadJson'
+    | 'toImage'
+    | 'sendChartToCloud'
+    | 'resetViews'
+    // Category aliases. `modeBarButtonsToRemove` matches case-insensitively against a
+    // button's `name` and its category, and `modeBarButtonsToAdd` accepts these strings
+    // to re-enable the corresponding hover buttons.
+    | 'v1hovermode'
     | 'hoverclosest'
-    | 'v1hovermode';
+    | 'hovercompare'
+    | 'togglehover'
+    | 'togglespikelines';
 
 /** Click handler signature for custom mode-bar buttons. */
 export type ButtonClickEvent = (gd: PlotlyHTMLElement, ev: MouseEvent) => void;
@@ -143,3 +158,29 @@ export interface Template {
     layout?: Partial<Layout> | undefined;
 }
 
+// ---------------------------------------------------------------------------
+// Update objects (relayout / restyle / update)
+// ---------------------------------------------------------------------------
+
+/** Keys that hold an attribute path such as `'xaxis.range[0]'` or `'annotations[0].text'`. */
+interface AttributePathKeys {
+    [key: `${string}.${string}`]: any;
+    [key: `${string}[${string}`]: any;
+}
+
+/**
+ * Layout update for `Plotly.relayout` and `Plotly.update`.
+ *
+ * A key is a layout property or an attribute path, for example `'xaxis.range[0]'` or `'annotations[0].text'`.
+ * An attribute path changes one property and keeps its siblings. A nested object replaces the whole container.
+ * A value behind an attribute path has the type `any`.
+ */
+export type LayoutUpdate = Partial<Layout> & AttributePathKeys;
+
+/**
+ * Trace update for `Plotly.restyle` and `Plotly.update`.
+ *
+ * A key is a trace property or an attribute path, for example `'marker.color'`.
+ * A value behind an attribute path has the type `any`.
+ */
+export type DataUpdate = Partial<Data> & AttributePathKeys;
