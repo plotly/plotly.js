@@ -1619,6 +1619,37 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
+        it('applies active color to toggle buttons on initial render', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'scatterternary',
+                a: [1],
+                b: [2],
+                c: [3]
+            }], {
+                modebar: {
+                    color: colors[0],
+                    activecolor: colors[1]
+                }
+            }, {
+                modeBarButtonsToAdd: ['toggleHover']
+            })
+            .then(function() {
+                button = selectButton(gd._fullLayout._modeBar, 'toggleHover');
+
+                expect(button.node.classList.contains('active')).toBe(true);
+                checkButtonColor(button, colors[1]);
+
+                button.click();
+                expect(button.node.classList.contains('active')).toBe(false);
+                checkButtonColor(button, colors[0]);
+
+                button.click();
+                expect(button.node.classList.contains('active')).toBe(true);
+                checkButtonColor(button, colors[1]);
+            })
+            .then(done, done.fail);
+        });
+
         it('changes hover icon colors', function(done) {
             Plotly.newPlot(gd, [], {
                 modebar: {
