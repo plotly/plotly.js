@@ -437,6 +437,36 @@ describe('sankey tests', function () {
                 .then(done, done.fail);
         });
 
+        it('scales node.x and node.y by the transposed extents for orientation v', async () => {
+            const nodeX = [0.2, 0.8];
+            const nodeY = [0.5, 0.5];
+            await Plotly.newPlot(
+                gd,
+                [
+                    {
+                        type: 'sankey',
+                        orientation: 'v',
+                        arrangement: 'freeform',
+                        node: { x: nodeX, y: nodeY },
+                        link: { source: [0], target: [1], value: [1] }
+                    }
+                ],
+                { width: 900, height: 300, margin: { l: 0, r: 0, t: 0, b: 0 } }
+            );
+
+            // For 'v', the layout space carries the flow along x and spans [height, width]
+            d3SelectAll('.sankey .sankey-node').each((d) => {
+                const i = d.node.pointNumber;
+                expect((d.node.x0 + d.node.x1) / 2).toBeCloseTo(nodeX[i] * 300, 3);
+                expect((d.node.y0 + d.node.y1) / 2).toBeCloseTo(nodeY[i] * 900, 3);
+            });
+
+            // A drag writes back every node, so the node that stays put must keep its input coordinates
+            await drag({ node: document.getElementsByClassName('sankey-node').item(0), dpos: [0, 20] });
+            expect(gd._fullData[0].node.x[1]).toBeCloseTo(nodeX[1], 3);
+            expect(gd._fullData[0].node.y[1]).toBeCloseTo(nodeY[1], 3);
+        });
+
         it('Plotly.deleteTraces with two traces removes the deleted plot', function (done) {
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);

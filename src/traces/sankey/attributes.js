@@ -110,12 +110,22 @@ var attrs = (module.exports = overrideAll(
             x: {
                 valType: 'data_array',
                 dflt: [],
-                description: 'The normalized horizontal position of the node.'
+                description: [
+                    'The normalized position of the node center along the flow axis, measured from the source end.',
+                    'For `orientation` *h* the flow axis is horizontal.',
+                    'For `orientation` *v* the flow axis is vertical.',
+                    'With `direction` *reversed* the source end is the right or bottom edge.'
+                ].join(' ')
             },
             y: {
                 valType: 'data_array',
                 dflt: [],
-                description: 'The normalized vertical position of the node.'
+                description: [
+                    'The normalized position of the node center across the flow axis.',
+                    'For `orientation` *h* the value counts down from the top edge.',
+                    'For `orientation` *v* the value counts from the left edge.',
+                    'The value does not depend on `direction`.'
+                ].join(' ')
             },
             color: {
                 valType: 'color',

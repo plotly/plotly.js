@@ -137,7 +137,7 @@ function makeGridData(gd) {
 
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
-        var yOffset = gs.b + ya.domain[0] * gs.h;
+        const yOffset = gs.b + ya.domain[0] * gs.h + (ya._padEnd || 0);
         var ym = -ya._m;
         var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
         var x, y;
