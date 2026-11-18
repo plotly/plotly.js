@@ -109,7 +109,6 @@ exports.handleDefaults = function(layoutIn, layoutOut, opts) {
     function setAttrVal() {
         val = axOut[attr];
         if(attr === 'range') {
-            // check the input of the axis the value comes from
             hasRange = !!(val &&
                 axIn.range &&
                 axIn.range.length === 2 &&
