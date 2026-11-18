@@ -97,7 +97,7 @@ function deleteRelatedStyleRule(uid) {
  * in which case, the active style remains even when it's no longer hovered.
  * @param {string} selector selector for button elements to be styled when hovered
  * @param {string} activeSelector selector used to determine if selected element is active
- * @param {string} childSelector the child element on which the styling needs to be updated
+ * @param {string} childSelector the child elements on which the styling needs to be updated
  * @param {string} activeStyle    style that has to be applied when 'hovered' or 'active'
  * @param {string} inactiveStyle    style that has to be applied when not 'hovered' nor 'active'
  */
@@ -119,21 +119,18 @@ function setStyleOnHover(selector, activeSelector, childSelector, activeStyle, i
             // style in a strict CSP-compliant manner.
             el.addEventListener('mouseenter', function() {
                 var hoverStyle = this._hoverStyle;
-                var childEl = this.querySelector(childSelector);
-                if(childEl) {
+                this.querySelectorAll(childSelector).forEach(function(childEl) {
                     childEl.style[hoverStyle.activeStyleParts[0]] = hoverStyle.activeStyleParts[1];
-                }
+                });
             });
             el.addEventListener('mouseleave', function() {
                 var hoverStyle = this._hoverStyle;
-                var childEl = this.querySelector(childSelector);
-                if(childEl) {
-                    if(activeSelector && this.matches(activeSelector)) {
-                        childEl.style[hoverStyle.activeStyleParts[0]] = hoverStyle.activeStyleParts[1];
-                    } else {
-                        childEl.style[hoverStyle.inactiveStyleParts[0]] = hoverStyle.inactiveStyleParts[1];
-                    }
-                }
+                var styleParts = (activeSelector && this.matches(activeSelector)) ?
+                    hoverStyle.activeStyleParts :
+                    hoverStyle.inactiveStyleParts;
+                this.querySelectorAll(childSelector).forEach(function(childEl) {
+                    childEl.style[styleParts[0]] = styleParts[1];
+                });
             });
             el.setAttribute(eventAddedAttrName, true);
         }
