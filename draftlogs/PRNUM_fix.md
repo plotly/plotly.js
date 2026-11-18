@@ -1,0 +1,1 @@
+- Fix a heatmap with a single `x` or `y` value on a category axis, which was drawn at twice its category index [[#PRNUM](https://github.com/plotly/plotly.js/pull/PRNUM)]

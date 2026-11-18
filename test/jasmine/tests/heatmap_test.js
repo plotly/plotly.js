@@ -668,6 +668,18 @@ describe('heatmap plot', function() {
 
     afterEach(destroyGraphDiv);
 
+    it('places a one-column trace at its category on a shared category axis', function(done) {
+        Plotly.newPlot(gd, [
+            {type: 'heatmap', x: ['b', 'c'], y: ['x', 'y', 'z'], z: [[1, 4], [2, 5], [3, 6]]},
+            {type: 'heatmap', x: ['a'], y: ['x', 'y', 'z'], z: [[7], [8], [9]]}
+        ]).then(function() {
+            // z of every trace is laid out on all the axis categories, so bricks start at 0
+            expect(gd.calcdata[1][0].x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5]);
+        })
+        .then(done, done.fail);
+    });
+
     it('should not draw traces that are off-screen', function(done) {
         var mock = require('../../image/mocks/heatmap_multi-trace.json');
         var mockCopy = Lib.extendDeep({}, mock);

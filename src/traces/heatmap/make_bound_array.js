@@ -80,7 +80,8 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         if(isHist) {
             v0 = ax.r2c(v0In, 0, calendar);
         } else {
-            if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) {
+            // on a category axis, z is already laid out on all the axis categories (clean_2d_array)
+            if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1 && ax.type !== 'category') {
                 v0 = arrayIn[0];
             } else if(v0In === undefined) {
                 v0 = 0;
