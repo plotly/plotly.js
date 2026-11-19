@@ -127,12 +127,12 @@ describe('contour defaults', function() {
                 expected: [5, 6]
             },
             {
-                value: [10, 20],
-                expected: [10, 20]
+                value: ['10.5', '20.25', '30.75'],
+                expected: [10.5, 20.25]
             },
             {
-                value: [10, 20, 30],
-                expected: [10, 20]
+                value: [1.25, 2.75],
+                expected: [1.25, 2.75]
             }
         ];
     

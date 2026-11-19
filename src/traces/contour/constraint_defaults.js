@@ -56,18 +56,23 @@ function handleConstraintValueDefaults(coerce, contours) {
                 zvalue = parseFloat(contours.value);
                 contours.value = [zvalue, zvalue + 1];
             }
-        } else if(contours.value.length > 2) {
-            contours.value = contours.value.slice(0, 2);
-        } else if(contours.value.length === 0) {
-            contours.value = [0, 1];
-        } else if(contours.value.length < 2) {
-            zvalue = parseFloat(contours.value[0]);
-            contours.value = [zvalue, zvalue + 1];
+
         } else {
-            contours.value = [
-                parseFloat(contours.value[0]),
-                parseFloat(contours.value[1])
-            ];
+            switch(contours.value.length) {
+                case 0:
+                    contours.value = [0, 1];
+                    break;
+                case 1:
+                    zvalue = parseFloat(contours.value[0]);
+                    contours.value = [zvalue, zvalue + 1];
+                    break;
+                default:
+                    // Keep only the first two values
+                    contours.value = [
+                        parseFloat(contours.value[0]),
+                        parseFloat(contours.value[1])
+                    ];
+            }
         }
     } else {
         // Requires a single scalar:
