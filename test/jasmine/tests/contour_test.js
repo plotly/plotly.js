@@ -133,6 +133,10 @@ describe('contour defaults', function() {
             {
                 value: [1.25, 2.75],
                 expected: [1.25, 2.75]
+            },
+            {
+                value: new Float64Array([1.5, 2.5, 3.5]),
+                expected: [1.5, 2.5]
             }
         ];
     
