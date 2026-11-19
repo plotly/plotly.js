@@ -230,5 +230,16 @@ module.exports = {
             '*v* only vertical, *d* only diagonal and *any* sets no limit.'
         ].join(' '),
         editType: 'none'
+    },
+    zoomdirection: {
+        valType: 'flaglist',
+        flags: ['h', 'v', 'd'],
+        dflt: 'h+v+d',
+        description: [
+            'When `dragmode` is set to *zoom*, this limits the zoombox drag.',
+            'Combine *h* for horizontal, *v* for vertical, and *d* for diagonal with *+*.',
+            'The default *h+v+d* sets no limit. Also applies when Shift turns *pan* into a zoombox drag.'
+        ].join(' '),
+        editType: 'none'
     }
 };

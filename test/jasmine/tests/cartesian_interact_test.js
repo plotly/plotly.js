@@ -740,6 +740,100 @@ describe('axis zoom/pan and main plot zoom', function() {
         .then(done, done.fail);
     });
 
+    it('limits zoombox drags with zoomdirection', async() => {
+        let x0;
+        let y0;
+
+        async function resetPlot(zoomdirection) {
+            await Plotly.relayout(gd, {zoomdirection});
+            await Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            x0 = gd.layout.xaxis.range.slice();
+            y0 = gd.layout.yaxis.range.slice();
+        }
+
+        async function dragBy(dx, dy) {
+            gd._mouseDownTime = 0;
+            await drag({node: getDragger('xy', 'nsew'), dpos: [dx, dy]});
+        }
+
+        function assertAxes(msg, xZoomed, yZoomed) {
+            const xRange = gd.layout.xaxis.range;
+            if(xZoomed) {
+                expect(xRange[1] - xRange[0]).withContext(msg + ' x zoomed').toBeLessThan(x0[1] - x0[0]);
+            } else {
+                expect(xRange).toBeCloseToArray(x0, 5, msg + ' x unchanged');
+            }
+
+            const yRange = gd.layout.yaxis.range;
+            if(yZoomed) {
+                expect(yRange[1] - yRange[0]).withContext(msg + ' y zoomed').toBeLessThan(y0[1] - y0[0]);
+            } else {
+                expect(yRange).toBeCloseToArray(y0, 5, msg + ' y unchanged');
+            }
+        }
+
+        const cases = [
+            {zoomdirection: 'h', dx: 80, dy: 0, xZoomed: true, yZoomed: false},
+            {zoomdirection: 'h', dx: 80, dy: 40, xZoomed: true, yZoomed: false},
+            {zoomdirection: 'h', dx: 0, dy: 80, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'h', dx: 40, dy: 80, xZoomed: true, yZoomed: false},
+
+            {zoomdirection: 'v', dx: 80, dy: 0, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'v', dx: 80, dy: 40, xZoomed: false, yZoomed: true},
+            {zoomdirection: 'v', dx: 0, dy: 80, xZoomed: false, yZoomed: true},
+            {zoomdirection: 'v', dx: 40, dy: 80, xZoomed: false, yZoomed: true},
+
+            {zoomdirection: 'd', dx: 80, dy: 0, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'd', dx: 80, dy: 40, xZoomed: true, yZoomed: true},
+            {zoomdirection: 'd', dx: 0, dy: 80, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'd', dx: 40, dy: 80, xZoomed: true, yZoomed: true},
+
+            {zoomdirection: 'h+v', dx: 80, dy: 0, xZoomed: true, yZoomed: false},
+            {zoomdirection: 'h+v', dx: 80, dy: 40, xZoomed: true, yZoomed: false},
+            {zoomdirection: 'h+v', dx: 0, dy: 80, xZoomed: false, yZoomed: true},
+            {zoomdirection: 'h+v', dx: 40, dy: 80, xZoomed: false, yZoomed: true},
+
+            {zoomdirection: 'h+d', dx: 80, dy: 0, xZoomed: true, yZoomed: false},
+            {zoomdirection: 'h+d', dx: 80, dy: 40, xZoomed: true, yZoomed: true},
+            {zoomdirection: 'h+d', dx: 0, dy: 80, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'h+d', dx: 5, dy: 80, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'h+d', dx: 15, dy: 80, xZoomed: true, yZoomed: true},
+            {zoomdirection: 'h+d', dx: 40, dy: 80, xZoomed: true, yZoomed: true},
+
+            {zoomdirection: 'v+d', dx: 80, dy: 0, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'v+d', dx: 80, dy: 5, xZoomed: false, yZoomed: false},
+            {zoomdirection: 'v+d', dx: 80, dy: 15, xZoomed: true, yZoomed: true},
+            {zoomdirection: 'v+d', dx: 80, dy: 40, xZoomed: true, yZoomed: true},
+            {zoomdirection: 'v+d', dx: 0, dy: 80, xZoomed: false, yZoomed: true},
+            {zoomdirection: 'v+d', dx: 40, dy: 80, xZoomed: true, yZoomed: true},
+
+            {zoomdirection: 'h+v+d', dx: 80, dy: 0, xZoomed: true, yZoomed: false},
+            {zoomdirection: 'h+v+d', dx: 80, dy: 40, xZoomed: true, yZoomed: true},
+            {zoomdirection: 'h+v+d', dx: 0, dy: 80, xZoomed: false, yZoomed: true},
+            {zoomdirection: 'h+v+d', dx: 40, dy: 80, xZoomed: true, yZoomed: true},
+        ];
+
+        await Plotly.newPlot(gd, [{y: [1, 2, 3, 2, 1]}], {
+            width: 500,
+            height: 500,
+            margin: {l: 50, r: 20, t: 20, b: 40},
+            dragmode: 'zoom',
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]}
+        });
+        expect(gd._fullLayout.zoomdirection).toBe('h+v+d');
+
+        for(const {zoomdirection, dx, dy, xZoomed, yZoomed} of cases) {
+            const msg = zoomdirection + ' drag ' + dx + ',' + dy;
+
+            await resetPlot(zoomdirection);
+            expect(gd._fullLayout.zoomdirection).withContext(msg).toBe(zoomdirection);
+
+            await dragBy(dx, dy);
+            assertAxes(msg, xZoomed, yZoomed);
+        }
+    });
+
     it('handles y-only to xy back to y-only in single zoombox drag motion', function(done) {
         function _assert(msg, evtData, xrng, yrng) {
             expect([evtData['xaxis.range[0]'], evtData['xaxis.range[1]']])

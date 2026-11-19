@@ -21,6 +21,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
     var dragMode = coerce('dragmode');
     if(dragMode === 'select') coerce('selectdirection');
+    if(dragMode === 'zoom' || dragMode === 'pan') coerce('zoomdirection');
 
     // if only map or geo subplots is present on graph,
     // reset 'zoom' dragmode to 'pan' until 'zoom' is implemented,

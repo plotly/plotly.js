@@ -321,6 +321,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var corners;
     // zoom takes over minDrag, so it also has to take over gd._dragged
     var zoomDragged;
+    // allowed zoom directions
+    var allowH, allowV, allowD;
 
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
@@ -340,8 +342,37 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dimmed = false;
         zoomMode = 'xy';
         zoomDragged = false;
+
+        var zoomDirectionFlags = (gd._fullLayout.zoomdirection || 'h+v+d').split('+');
+        allowH = zoomDirectionFlags.indexOf('h') !== -1;
+        allowV = zoomDirectionFlags.indexOf('v') !== -1;
+        allowD = zoomDirectionFlags.indexOf('d') !== -1;
+
         zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
         corners = makeCorners(zoomlayer, xs, ys);
+    }
+
+    function applyZoomDirection(zoomModeCandidate, dx, dy) {
+        if (allowD && !allowH && !allowV) {
+            return dx >= MINDRAG && dy >= MINDRAG ? 'xy' : '';
+        }
+        if (zoomModeCandidate === 'xy' && !allowD) {
+            if (allowH && allowV) return dx / pw > dy / ph ? 'x' : 'y';
+            if (allowH) return 'x';
+            if (allowV) return 'y';
+            return '';
+        }
+        if (zoomModeCandidate === 'x' && !allowH) {
+            if (allowD && dx >= MINDRAG && dy >= MINDRAG) return 'xy';
+            if (allowV && !allowD && dy >= MINDRAG) return 'y';
+            return '';
+        }
+        if (zoomModeCandidate === 'y' && !allowV) {
+            if (allowD && dx >= MINDRAG && dy >= MINDRAG) return 'xy';
+            if (allowH && !allowD && dx >= MINDRAG) return 'x';
+            return '';
+        }
+        return zoomModeCandidate;
     }
 
     function zoomMove(dx0, dy0) {
@@ -367,7 +398,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         if(links.isSubplotConstrained) {
-            if(dx > MINZOOM || dy > MINZOOM) {
+            if((dx > MINZOOM || dy > MINZOOM) && allowD) {
                 zoomMode = 'xy';
                 if(dx / pw > dy / ph) {
                     dy = dx * ph / pw;
@@ -383,7 +414,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 noZoom();
             }
         } else if(matches.isSubplotConstrained) {
-            if(dx > MINZOOM || dy > MINZOOM) {
+            if((dx > MINZOOM || dy > MINZOOM) && allowD) {
                 zoomMode = 'xy';
 
                 var r0 = Math.min(box.l / pw, (ph - box.b) / ph);
@@ -397,26 +428,37 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             } else {
                 noZoom();
             }
-        } else if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
-            // look for small drags in one direction or the other,
-            // and only drag the other axis
+        } else {
+            let zoomModeCandidate = '';
+            if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
+                // look for small drags in one direction or the other,
+                // and only drag the other axis
 
-            if(dx < MINDRAG || !xActive) {
-                noZoom();
+                if(dx < MINDRAG || !xActive) {
+                    zoomModeCandidate = '';
+                } else {
+                    zoomModeCandidate = 'x';
+                }
+            } else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
+                zoomModeCandidate = 'y';
             } else {
+                zoomModeCandidate = 'xy';
+            }
+
+            zoomMode = applyZoomDirection(zoomModeCandidate, dx, dy);
+            if(zoomMode === 'x') {
                 box.t = 0;
                 box.b = ph;
-                zoomMode = 'x';
                 corners.attr('d', xCorners(box, y0));
+            } else if(zoomMode === 'y') {
+                box.l = 0;
+                box.r = pw;
+                corners.attr('d', yCorners(box, x0));
+            } else if(zoomMode === 'xy') {
+                corners.attr('d', xyCorners(box));
+            } else {
+                noZoom();
             }
-        } else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
-            box.l = 0;
-            box.r = pw;
-            zoomMode = 'y';
-            corners.attr('d', yCorners(box, x0));
-        } else {
-            zoomMode = 'xy';
-            corners.attr('d', xyCorners(box));
         }
         box.w = box.r - box.l;
         box.h = box.b - box.t;
