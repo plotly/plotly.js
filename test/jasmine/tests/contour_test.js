@@ -115,6 +115,49 @@ describe('contour defaults', function() {
         expect(traceOut.xcalendar).toBe('coptic');
         expect(traceOut.ycalendar).toBe('ethiopian');
     });
+
+    it('should coerce constraint interval values to two numbers', function() {
+        var specs = [
+            {
+                value: [],
+                expected: [0, 1]
+            },
+            {
+                value: [5],
+                expected: [5, 6]
+            },
+            {
+                value: ['10.5', '20.25', '30.75'],
+                expected: [10.5, 20.25]
+            },
+            {
+                value: [1.25, 2.75],
+                expected: [1.25, 2.75]
+            },
+            {
+                value: new Float64Array([1.5, 2.5, 3.5]),
+                expected: [1.5, 2.5]
+            }
+        ];
+    
+        specs.forEach(function(spec) {
+            traceIn = {
+                type: 'contour',
+                z: [[0, 1], [2, 3]],
+                contours: {
+                    type: 'constraint',
+                    operation: '[]',
+                    value: spec.value
+                }
+            };
+    
+            traceOut = {};
+    
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+    
+            expect(traceOut.contours.value).toEqual(spec.expected);
+        });
+    });
 });
 
 describe('contour makeColorMap', function() {
