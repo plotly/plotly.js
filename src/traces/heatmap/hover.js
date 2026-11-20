@@ -82,8 +82,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
         xl = xc ? _x[nx] : ((_x[nx] + _x[nx + 1]) / 2);
         yl = yc ? _y[ny] : ((_y[ny] + _y[ny + 1]) / 2);
 
-        if(xa && xa.type === 'category') xl = x[nx];
-        if(ya && ya.type === 'category') yl = y[ny];
+        // Report the cell center, which is the category position
+        if (xa?.type === 'category') xl = (x[nx] + x[nx + 1]) / 2;
+        if (ya?.type === 'category') yl = (y[ny] + y[ny + 1]) / 2;
 
         if(trace.zsmooth) {
             x0 = x1 = xa.c2p(xl);

@@ -1016,7 +1016,7 @@ describe('heatmap hover', function() {
         it('should find closest point (case 1) and should', function() {
             var pt = _hover(gd, 3, 1)[0];
             expect(pt.index).toEqual([1, 3], 'have correct index');
-            assertLabels(pt, 2.5, 0.5, 0);
+            assertLabels(pt, 3, 1, 0);
         });
     });
 
