@@ -38,22 +38,16 @@ const isPureTex = (str) => {
 exports.isPureTex = isPureTex;
 
 /**
- * Positions a MathJax-typeset group against its source <text> node's x/y
- * and text-anchor.
+ * Measures the typeset glyphs of a MathJax svg.
  *
- * @param {d3 selection} _context: the source <text> element
- * @param {string} svgClass: the '<baseClass>-math' class used on newSvg
- * @param {d3 selection} mathjaxGroup: the '<svgClass>-group' wrapper
- * @param {d3 selection} newSvg: the typeset <svg>, already sized
- * @param {string} textAnchor: _context's text-anchor to position against
- * @param {number} fontSize: _context's font size, for the baseline offset
+ * @param {d3 selection} newSvg: the typeset <svg>
  * @param {number} [width0]: the SVG's own reported width, to detect the
  *   Firefox v82+ overflow bug (see link below); omit to skip that check
  * @param {number} [height0]: same, for height
+ * @return {{width: number, height: number}}
  */
-function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, width0, height0) {
-    var g = newSvg.select('g');
-    var bb = g.node().getBoundingClientRect();
+function measureMath(newSvg, width0, height0) {
+    var bb = newSvg.select('g').node().getBoundingClientRect();
     var w = bb.width;
     var h = bb.height;
     var w0 = width0 === undefined ? w : width0;
@@ -67,6 +61,37 @@ function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor,
         w = bb.width;
         h = bb.height;
     }
+
+    return {width: w, height: h};
+}
+
+/**
+ * The size of a typeset group in its own units, which unlike its client rect
+ * does not change when the group, or something above it, is rotated or scaled.
+ *
+ * @param {d3 selection} mathjaxGroup: the '<svgClass>-group' wrapper
+ * @return {{width: number, height: number}}
+ */
+function getLocalSize(mathjaxGroup) {
+    var bb = mathjaxGroup.node().getBBox();
+    return {width: bb.width, height: bb.height};
+}
+
+/**
+ * Positions a MathJax-typeset group against its source <text> node's x/y
+ * and text-anchor.
+ *
+ * @param {d3 selection} _context: the source <text> element
+ * @param {string} svgClass: the '<baseClass>-math' class used on newSvg
+ * @param {d3 selection} mathjaxGroup: the '<svgClass>-group' wrapper
+ * @param {d3 selection} newSvg: the typeset <svg>, already sized
+ * @param {string} textAnchor: _context's text-anchor to position against
+ * @param {number} fontSize: _context's font size, for the baseline offset
+ * @param {{width: number, height: number}} size: the typeset glyphs' size
+ */
+function positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, size) {
+    var w = size.width;
+    var h = size.height;
 
     var x = +_context.attr('x');
     var y = +_context.attr('y');
@@ -231,7 +256,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var g = newSvg.select('g');
                 g.attr({fill: fill, stroke: fill});
 
-                positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, w0, h0);
+                positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, measureMath(newSvg, w0, h0));
 
                 if(_callback) _callback.call(_context, mathjaxGroup);
                 resolve(mathjaxGroup);
@@ -247,38 +272,51 @@ exports.convertToTspans = function(_context, gd, _callback) {
  * convertToTspans, to match its source <text> node's *current* x/y and
  * text-anchor.
  *
+ * The size is measured in the group's own units, so it does not change with
+ * the rotation or scale of whatever the group sits in.
+ *
  * @param {d3 selection} _context: the source <text> element
+ * @param {{width: number, height: number}} [size]: a size returned by an
+ *   earlier call, to use instead of measuring again
+ * @return {?{width: number, height: number}} the size used, or null if there
+ *   is no typeset group to reposition
  */
-exports.repositionMathGroup = function(_context) {
-    if(_context.empty()) return;
+exports.repositionMathGroup = function(_context, size) {
+    if(_context.empty()) return null;
 
     var svgClass = (_context.attr('class') ? _context.attr('class').split(' ')[0] : 'text') + '-math';
     var parent = d3.select(_context.node().parentNode);
     var mathjaxGroup = parent.select('g.' + svgClass + '-group');
     var newSvg = mathjaxGroup.select('svg.' + svgClass);
-    if(mathjaxGroup.empty() || newSvg.empty()) return;
+    if(mathjaxGroup.empty() || newSvg.empty()) return null;
 
+    size = size || getLocalSize(mathjaxGroup);
     var textAnchor = _context.attr('text-anchor');
     var fontSize = parseInt(_context.node().style.fontSize, 10);
-    positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize);
+    positionMathGroup(_context, svgClass, mathjaxGroup, newSvg, textAnchor, fontSize, size);
+    return size;
 };
 
 /**
- * Finds the node whose bounding box represents a source <text> element's
- * rendered content: the typeset MathJax group if convertToTspans replaced
- * the text with one (the source itself is display:none in that case), or
- * the <text> node otherwise.
+ * The client rect of a source <text> element's rendered content: the typeset
+ * glyphs if convertToTspans replaced the text with a MathJax group (the source
+ * itself is display:none in that case), or the <text> node otherwise.
  *
  * @param {d3 selection} textSel: the source <text> element
- * @return {?Element} the node to measure, or null if textSel is empty
+ * @return {?DOMRect} null if textSel is empty
  */
-exports.getMathOrTextNode = function(textSel) {
+exports.getTextClientRect = function(textSel) {
     var node = textSel.node();
     if(!node) return null;
 
     var svgClass = (textSel.attr('class') ? textSel.attr('class').split(' ')[0] : 'text') + '-math';
     var mathGroup = d3.select(node.parentNode).select('g.' + svgClass + '-group');
-    return mathGroup.empty() ? node : mathGroup.node();
+    if(mathGroup.empty()) return node.getBoundingClientRect();
+
+    // Firefox can report a near-empty rect for the group itself (seen on
+    // rotated hover labels), but measures the glyphs inside it correctly
+    var glyphs = mathGroup.select('svg g');
+    return (glyphs.empty() ? mathGroup : glyphs).node().getBoundingClientRect();
 };
 
 
