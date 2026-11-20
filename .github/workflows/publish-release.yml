@@ -1,0 +1,160 @@
+name: publish-release
+
+# Publishes the version in package.json when a release pull request from prepare-release.yml merges.
+# The publish job waits for approval in the `release` environment. Every publish step skips work
+# that is already done, so a failed run can be run again. See RELEASE.md.
+
+on:
+  push:
+    branches: [main]
+    paths: [package.json]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.check.outputs.release }}
+      version: ${{ steps.check.outputs.version }}
+      dist-tag: ${{ steps.check.outputs.dist-tag }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Decide whether this commit is a release
+        id: check
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          # A package.json change that keeps the version, such as a dependency update, is not a release
+          if git rev-parse -q --verify "refs/tags/$TAG" > /dev/null; then
+            if [ "$(git rev-list -n 1 "$TAG")" != "$(git rev-parse HEAD)" ]; then
+              echo "Tag $TAG is on another commit, so this commit is not a release"
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Tag $TAG is on this commit. Resume the publish steps that did not finish."
+          fi
+
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE="${VERSION#*-}"
+            DIST_TAG="${PRERELEASE%%.*}"
+          else
+            DIST_TAG=latest
+          fi
+
+          echo "Release $VERSION with the npm dist-tag '$DIST_TAG'"
+          echo "release=true" >> "$GITHUB_OUTPUT"
+          echo "dist-tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: check
+    if: needs.check.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+      DIST_TAG: ${{ needs.check.outputs.dist-tag }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Tag the release
+        run: |
+          set -euo pipefail
+          if git rev-parse -q --verify "refs/tags/v$VERSION" > /dev/null; then
+            echo "Tag v$VERSION already exists"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "v$VERSION"
+          git push origin "v$VERSION"
+
+      # Publish files built from the tagged commit, not the committed dist/. A commit that merged after prepare-release ran is then in every published file.
+      - name: Build dist/
+        run: npm run build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      # Trusted publishing needs npm 11.5.1 or later, and Node.js 22 ships npm 10
+      - name: Install npm 11
+        run: npm install -g npm@11
+
+      - name: Publish plotly.js to npm
+        run: |
+          set -euo pipefail
+          if npm view "plotly.js@$VERSION" version > /dev/null 2>&1; then
+            echo "plotly.js@$VERSION is already on npm"
+            exit 0
+          fi
+          npm publish --tag "$DIST_TAG"
+
+      - name: Publish the bundle and locale packages to npm
+        run: npm run sync-packages -- --tag "$DIST_TAG"
+
+      - name: Configure AWS credentials for the CDN
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.CDN_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.CDN_AWS_REGION }}
+
+      - name: Upload the bundles to the CDN
+        run: |
+          set -euo pipefail
+          ./tasks/cdn_publish.sh
+          for FILE in "plotly-$VERSION.js" "plotly-$VERSION.min.js"; do
+            curl --fail --silent --show-error --head "https://cdn.plot.ly/$FILE" > /dev/null
+          done
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "GitHub release v$VERSION already exists"
+            exit 0
+          fi
+
+          node tasks/release_notes.mjs > "$RUNNER_TEMP/notes.md"
+          FLAGS=()
+          if [[ "$VERSION" == *-* ]]; then FLAGS+=(--prerelease); fi
+          gh release create "v$VERSION" --verify-tag --title "v$VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${FLAGS[@]}"
+
+      - name: Write the run summary
+        run: |
+          {
+            echo "### Published plotly.js v$VERSION"
+            echo "- npm dist-tag: \`$DIST_TAG\`"
+            echo "- GitHub release: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
+          } >> "$GITHUB_STEP_SUMMARY"

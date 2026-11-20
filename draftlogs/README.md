@@ -14,10 +14,10 @@ If your PR falls into more than one category - for example adding a new feature 
 - filename: `5546_add.md`
 - content:
 ```
- - Add `icicle` trace type [[#5546](https://github.com/plotly/plotly.js/pull/5546)]
+- Add `icicle` trace type [[#5546](https://github.com/plotly/plotly.js/pull/5546)]
 ```
 which would render
- - Add `icicle` trace type [[#5546](https://github.com/plotly/plotly.js/pull/5546)]
+- Add `icicle` trace type [[#5546](https://github.com/plotly/plotly.js/pull/5546)]
 
 > Please start your single-line or multiple lined message with a verb.
 
@@ -26,6 +26,13 @@ Each entry must include a link back to its own PR in the form shown above:
 `/issues/1234` is also accepted, since GitHub redirects between the two).
 The number in the filename, the `#1234` label, and the URL must all be the
 same PR number.
+
+### Credit for community contributions
+
+If a community contributor opened the PR, add a credit at the end of the entry. The release copies the entry into the CHANGELOG as written.
+```
+- Add `icicle` trace type [[#5546](https://github.com/plotly/plotly.js/pull/5546)], with thanks to @username for the contribution!
+```
 
 ### Skipping the draftlog
 
