@@ -20,6 +20,8 @@ var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 
+const { releaseImageHrefs } = require('../lib/image_href');
+
 var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
@@ -733,6 +735,9 @@ exports.drawData = function(gd) {
     for(var i = 0; i < basePlotModules.length; i++) {
         basePlotModules[i].plot(gd);
     }
+
+    // Release blob URLs for image nodes removed during this redraw.
+    releaseImageHrefs(gd, true);
 
     exports.redrawReglTraces(gd);
 
