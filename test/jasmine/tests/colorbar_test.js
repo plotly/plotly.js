@@ -165,6 +165,40 @@ describe('Test colorbar:', function() {
             .then(done, done.fail);
         });
 
+        // see https://github.com/plotly/plotly.js/issues/6973
+        it('removes tick labels and titles of the previous orientation', async () => {
+            const z = [
+                [1, 2],
+                [3, 4]
+            ];
+            const vertical = [{ type: 'heatmap', z, colorbar: { title: { text: 'Vertical title' } } }];
+            const horizontal = [{ type: 'heatmap', z, colorbar: { orientation: 'h', len: 0.2 } }];
+            const layout = { width: 500, height: 400 };
+
+            const state = () => {
+                const texts = [];
+                d3Select(gd)
+                    .selectAll('.colorbar text')
+                    .each(function () {
+                        texts.push(this.textContent);
+                    });
+                const { w, h } = gd._fullLayout._size;
+                return { texts, w, h };
+            };
+
+            await Plotly.newPlot(gd, vertical, layout);
+            const expectedVertical = state();
+            await Plotly.newPlot(gd, horizontal, layout);
+            const expectedHorizontal = state();
+
+            await Plotly.newPlot(gd, vertical, layout);
+            await Plotly.react(gd, horizontal, layout);
+            expect(state()).toEqual(expectedHorizontal, 'vertical to horizontal');
+
+            await Plotly.react(gd, vertical, layout);
+            expect(state()).toEqual(expectedVertical, 'horizontal to vertical');
+        });
+
         function assertCB(msg, present, opts) {
             var expandedMarginR = opts.expandedMarginR;
             var expandedMarginT = opts.expandedMarginT;

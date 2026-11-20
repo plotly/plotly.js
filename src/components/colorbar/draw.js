@@ -333,14 +333,15 @@ function drawColorBar(g, opts, gd) {
             containerGroup: g.select('.' + cn.cbtitle)
         };
 
-        // this class-to-rotate thing with convertToTspans is
-        // getting hackier and hackier... delete groups with the
-        // wrong class (in case earlier the colorbar was drawn on
-        // a different side, I think?)
-        var otherClass = titleClass.charAt(0) === 'h' ?
-            titleClass.slice(1) :
-            'h' + titleClass;
-        g.selectAll('.' + otherClass + ',.' + otherClass + '-math-group').remove();
+        // The title class changes with the orientation and the title side.
+        for (const letter of ['x', 'y']) {
+            for (const prefix of ['', 'h', 'v']) {
+                const otherClass = `${prefix}${letter}${opts._id}title`;
+                if (otherClass !== titleClass) {
+                    g.selectAll(`.${otherClass},.${otherClass}-math-group`).remove();
+                }
+            }
+        }
 
         Titles.draw(gd, titleClass, extendFlat(dfltTitleOpts, titleOpts || {}));
     }
@@ -574,7 +575,7 @@ function drawColorBar(g, opts, gd) {
         });
 
         // force full redraw of labels and ticks
-        axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
+        axLayer.selectAll(`g.x${opts._id}tick,g.y${opts._id}tick,path`).remove();
 
         var shift = uPx + thickPx +
             (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
