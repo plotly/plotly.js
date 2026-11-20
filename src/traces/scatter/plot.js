@@ -185,7 +185,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     // functions for converting a point array to a path
     var pathfn, revpathbase, revpathfn;
     // variables used before and after the data join
-    var pt0, lastSegment, pt1;
+    const fillpaths = [];
+    const fillends = [];
+    const filltopology = [];
+    const ownFillsegments = [];
 
     // thisPolygons always contains only the polygons of this trace only
     // whereas trace._polygons may be extended to include those of the previous
@@ -243,7 +246,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             shape: line.shape,
             backoff: line.backoff,
             simplify: line.simplify,
-            fill: trace.fill
+            fill: trace.fill,
+            segmentInfo: ownFillEl3 && ownFillDir
         });
 
         // since we already have the pixel segments here, use them to make
@@ -254,9 +258,21 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // need to redraw when you change hoveron...
         fillsegments = new Array(segments.length);
         var fillsegmentCount = 0;
+        let previousSegmentIndex;
         for(i = 0; i < segments.length; i++) {
             var curpoints;
             var pts = segments[i];
+            if(ownFillEl3 && ownFillDir) {
+                const segmentIndex = pts.segmentIndex;
+                if(segmentIndex !== previousSegmentIndex) {
+                    ownFillsegments.push(pts.slice());
+                } else {
+                    const ownFillpoints = ownFillsegments[ownFillsegments.length - 1];
+                    ownFillpoints.push.apply(ownFillpoints, pts);
+                }
+                previousSegmentIndex = segmentIndex;
+                pts.segmentIndex = ownFillsegments.length - 1;
+            }
             if(!curpoints || !ownFillDir) {
                 curpoints = pts.slice();
                 fillsegments[fillsegmentCount] = curpoints;
@@ -272,15 +288,23 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         trace._fillsegments = fillsegments.slice(0, fillsegmentCount);
         fillsegments = trace._fillsegments;
 
-        if(segments.length) {
-            pt0 = segments[0][0].slice();
-            lastSegment = segments[segments.length - 1];
-            pt1 = lastSegment[lastSegment.length - 1].slice();
-        }
-
         makeUpdate = function(isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
+                if(ownFillEl3 && ownFillDir) {
+                    const segmentIndex = pts.segmentIndex;
+                    const end = pts[pts.length - 1].slice();
+                    end[fillAxisIndex] = fillAxisZero;
+                    if(fillpaths[segmentIndex]) {
+                        fillpaths[segmentIndex] += `L${thispath.slice(1)}`;
+                    } else {
+                        const start = pts[0].slice();
+                        start[fillAxisIndex] = fillAxisZero;
+                        fillpaths[segmentIndex] = `M${start}L${thispath.slice(1)}`;
+                        filltopology[segmentIndex] = `${pts.startIndex}:${pts.endIndex}`;
+                    }
+                    fillends[segmentIndex] = `L${end}Z`;
+                }
                 thisrevpath = revpathfn(pts); // side-effect: reverses input
                 // calculate SVG path over all segments for fills
                 if(!fullpath) {
@@ -351,15 +375,16 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         if(!prevFillsegments || prevFillsegments.length === 0) {
             // if there are no fill segments of a previous trace, stretch the
             // polygon to the relevant axis
-            polygons = new Array(fillsegments.length);
-            for(i = 0; i < fillsegments.length; i++) {
-                var pt0 = fillsegments[i][0].slice();
-                var pt1 = fillsegments[i][fillsegments[i].length - 1].slice();
+            const zeroFillsegments = ownFillEl3 && ownFillDir ? ownFillsegments : fillsegments;
+            polygons = new Array(zeroFillsegments.length);
+            for(i = 0; i < zeroFillsegments.length; i++) {
+                const segment = zeroFillsegments[i];
+                const pt0 = segment[0].slice();
+                const pt1 = segment[segment.length - 1].slice();
 
                 pt0[fillAxisIndex] = pt1[fillAxisIndex] = fillAxisZero;
 
-                var zeropoints = [pt1, pt0];
-                var polypoints = zeropoints.concat(fillsegments[i]);
+                const polypoints = [pt1, pt0].concat(segment);
                 polygons[i] = polygonTester(polypoints);
             }
         } else {
@@ -386,28 +411,37 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     if(segments.length) {
         if(ownFillEl3) {
             ownFillEl3.datum(cdscatter);
-            if(pt0 && pt1) { // TODO(2023-12-10): this is always true if segments is not empty (?)
-                if(ownFillDir) {
-                    pt0[fillAxisIndex] = pt1[fillAxisIndex] = fillAxisZero;
-
-                    // fill to zero: full trace path, plus extension of
-                    // the endpoints to the appropriate axis
-                    // For the sake of animations, wrap the points around so that
-                    // the points on the axes are the first two points. Otherwise
-                    // animations get a little crazy if the number of points changes.
-                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.slice(1))
-                        .call(Drawing.singleFillStyle, gd);
-
-                    // create hover polygons that extend to the axis as well.
-                    thisPolygons = makePolygonsToPrevious(null); // polygon to axis
-                } else {
-                    // fill to self: just join the path to itself
-                    transition(ownFillEl3).attr('d', fullpath + 'Z')
-                        .call(Drawing.singleFillStyle, gd);
-
-                    // and simply emit hover polygons for each segment
-                    thisPolygons = makeSelfPolygons();
+            if(ownFillDir) {
+                for(i = 0; i < fillpaths.length; i++) {
+                    fillpaths[i] += fillends[i];
                 }
+                const fillpath = fillpaths.join('');
+                const topology = filltopology.join('|');
+                const fillNode = ownFillEl3.node();
+                const fillSelection = transition(ownFillEl3);
+                if(hasTransition) {
+                    fillSelection.attrTween('d', () => {
+                        const previousPath = fillNode.getAttribute('d') || '';
+                        const sameTopology = fillNode._fillTopology === topology &&
+                            previousPath.replace(/[^MLHVCSQTAZ]/gi, '') === fillpath.replace(/[^MLHVCSQTAZ]/gi, '');
+                        fillNode._fillTopology = topology;
+                        // D3 pairs numbers across subpaths when segment boundaries or path commands change.
+                        return sameTopology ? d3.interpolateString(previousPath, fillpath) : () => fillpath;
+                    });
+                } else {
+                    fillNode._fillTopology = topology;
+                    fillSelection.attr('d', fillpath);
+                }
+                fillSelection.call(Drawing.singleFillStyle, gd);
+
+                thisPolygons = makePolygonsToPrevious(null);
+            } else {
+                // fill to self: just join the path to itself
+                transition(ownFillEl3).attr('d', fullpath + 'Z')
+                    .call(Drawing.singleFillStyle, gd);
+
+                // and simply emit hover polygons for each segment
+                thisPolygons = makeSelfPolygons();
             }
             trace._polygons = thisPolygons;
             trace._fillElement = ownFillEl3;
@@ -451,7 +485,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
         trace._prevRevpath = revpath;
     } else {
-        if(ownFillEl3) clearFill(ownFillEl3);
+        if(ownFillEl3 && ownFillDir) {
+            ownFillEl3.node()._fillTopology = null;
+            ownFillEl3.interrupt().attr('d', 'M0,0Z');
+        } else if(ownFillEl3) clearFill(ownFillEl3);
         else if(tonext) clearFill(tonext);
         trace._prevRevpath = null;
     }

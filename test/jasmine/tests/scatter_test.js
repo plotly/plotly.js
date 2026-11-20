@@ -908,6 +908,188 @@ describe('end-to-end scatter tests', function() {
         }).then(done, done.fail);
     });
 
+    describe('tozero fill gaps', () => {
+        const layout = {
+            width: 600, height: 400,
+            margin: {l: 60, r: 30, t: 40, b: 50},
+            xaxis: {range: [0, 8]}, yaxis: {range: [0, 4]},
+            showlegend: false
+        };
+
+        const contains = (fill, position, value) => {
+            const path = gd.querySelector('.js-fill');
+            const point = path.ownerSVGElement.createSVGPoint();
+            point.x = gd._fullLayout.xaxis.c2p(fill === 'tozeroy' ? position : value);
+            point.y = gd._fullLayout.yaxis.c2p(fill === 'tozeroy' ? value : position);
+            return path.isPointInFill(point);
+        };
+
+        const makeTrace = (fill, positions, values, line = {}) => ({
+            x: fill === 'tozeroy' ? positions : values,
+            y: fill === 'tozeroy' ? values : positions,
+            fill, mode: 'lines', line
+        });
+
+        ['tozeroy', 'tozerox'].forEach(fill => {
+            const positionAxis = fill === 'tozeroy' ? 'xaxis' : 'yaxis';
+            const valueAxis = fill === 'tozeroy' ? 'yaxis' : 'xaxis';
+            const valueKey = fill === 'tozeroy' ? 'y' : 'x';
+            const makeLayout = () => {
+                const out = Lib.extendDeep({}, layout);
+                out[positionAxis].range = [0, 8];
+                out[valueAxis].range = [0, 4];
+                return out;
+            };
+
+            ['linear', 'hv', 'vh', 'hvh', 'vhv', 'spline'].forEach(shape => {
+                it(`keeps ${fill} ${shape} gaps empty through restyle and axis changes`, async () => {
+                    const trace = makeTrace(fill, [1, 1.5, 2, 3, 4, 4.5, 5],
+                        [2, 2.4, 2, null, 2, 2.6, 2], {shape, simplify: false});
+                    for(const axisMode of ['linear', 'reversed', 'log-value', 'log-position']) {
+                        const plotLayout = makeLayout();
+                        if(axisMode === 'reversed') {
+                            plotLayout[positionAxis].range.reverse();
+                            plotLayout[valueAxis].range.reverse();
+                        } else if(axisMode === 'log-value') {
+                            plotLayout[valueAxis] = {type: 'log', range: [-1, 1]};
+                        } else if(axisMode === 'log-position') {
+                            plotLayout[positionAxis] = {type: 'log', range: [0, 1]};
+                        }
+                        await Plotly.newPlot(gd, [trace], plotLayout);
+                        for(const connectgaps of [false, true, false]) {
+                            await Plotly.restyle(gd, 'connectgaps', connectgaps);
+                            expect(contains(fill, 1.5, 1)).toBe(true, axisMode);
+                            expect(contains(fill, 3, 1)).toBe(connectgaps, axisMode);
+                            expect(contains(fill, 4.5, 1)).toBe(true, axisMode);
+                        }
+                    }
+                });
+            });
+
+            it(`keeps isolated points and edge gaps empty for ${fill}`, async () => {
+                await Plotly.newPlot(gd, [makeTrace(fill, [0, 1, 2, 3, 4, 5, 6],
+                    [null, 2, null, 2, 2, null, null])], makeLayout());
+                for(const position of [0.5, 1, 2, 5]) {
+                    expect(contains(fill, position, 1)).toBe(false, `position ${position}`);
+                }
+                expect(contains(fill, 3.5, 1)).toBe(true);
+            });
+
+            it(`does not split ${fill} at marker backoff`, async () => {
+                const trace = makeTrace(fill, [0, 1, 2, 3, 4, 5, 6],
+                    [2, 3, 2, null, 2, 3, 2]);
+                trace.mode = 'lines+markers';
+                trace.marker = {symbol: 'arrow', size: 20, angleref: 'previous'};
+                await Plotly.newPlot(gd, [trace], makeLayout());
+                for(const backoff of [10, 'auto', 0]) {
+                    await Plotly.restyle(gd, 'line.backoff', backoff);
+                    expect(contains(fill, 0.95, 1)).toBe(true, `backoff ${backoff}`);
+                    expect(contains(fill, 4.95, 1)).toBe(true, `backoff ${backoff}`);
+                    expect(contains(fill, 3, 1)).toBe(false, `backoff ${backoff}`);
+                }
+            });
+
+            it(`keeps ${fill} gaps empty when simplification changes path commands`, async () => {
+                const positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                const plotLayout = makeLayout();
+                plotLayout[positionAxis].range = [0, 10];
+                await Plotly.newPlot(gd, [makeTrace(fill, positions,
+                    [2, 2, 2, null, 2, 2, 2, null, 2, 2, 2])], plotLayout);
+                const commands = gd.querySelector('.js-fill').getAttribute('d').replace(/[^MLZ]/g, '');
+                let animationFrame;
+                let paintedGap = false;
+                const sample = () => {
+                    paintedGap = paintedGap || contains(fill, 3, 1) || contains(fill, 7, 1);
+                    animationFrame = requestAnimationFrame(sample);
+                };
+                animationFrame = requestAnimationFrame(sample);
+                try {
+                    await Plotly.animate(gd, {data: [{[valueKey]:
+                        [2, 3, 2, null, 2, 2, 2, null, 2, 2, 2]
+                    }], traces: [0]}, {
+                        transition: {duration: 120, easing: 'linear'},
+                        frame: {duration: 150, redraw: false}, mode: 'immediate'
+                    });
+                } finally {
+                    cancelAnimationFrame(animationFrame);
+                }
+                expect(gd.querySelector('.js-fill').getAttribute('d').replace(/[^MLZ]/g, '')).not.toBe(commands);
+                expect(paintedGap).toBe(false);
+            });
+
+            it(`does not interpolate ${fill} between different runs with matching path commands`, async () => {
+                const positions = [0, 1, 2, 2.5, 3.5, 4, 5, 6, 7, 9, 10];
+                const plotLayout = makeLayout();
+                plotLayout[positionAxis].range = [0, 10];
+                const trace = makeTrace(fill, positions,
+                    [2, 2, null, null, null, null, 2, 2, null, 2, 2], {simplify: false});
+                await Plotly.newPlot(gd, [trace], plotLayout);
+                let animationFrame;
+                let paintedGap = false;
+                const sample = () => {
+                    paintedGap = paintedGap || contains(fill, 4, 1);
+                    animationFrame = requestAnimationFrame(sample);
+                };
+                animationFrame = requestAnimationFrame(sample);
+                try {
+                    await Plotly.animate(gd, {data: [{[valueKey]:
+                        [2, 2, null, 2, 2, null, null, null, null, 2, 2]
+                    }], traces: [0]}, {
+                        transition: {duration: 120, easing: 'linear'},
+                        frame: {duration: 150, redraw: false}, mode: 'immediate'
+                    });
+                } finally {
+                    cancelAnimationFrame(animationFrame);
+                }
+                expect(paintedGap).toBe(false);
+            });
+
+            ['linear', 'hv', 'vh', 'hvh', 'vhv', 'spline'].forEach(shape => {
+                it(`keeps ${fill} ${shape} gaps empty during changes to segment topology`, async () => {
+                    const frames = [
+                        [2, 2, 2, null, 2, 2, null, 2, 2],
+                        [2, null, 2, null, 2, 2, null, 2, 2],
+                        [2, 2, null, null, 2, 2, null, 2, 2],
+                        [2, 2, 2, null, 2, 2, null, 2, 2],
+                        [3, 3, 3, null, 3, 3, null, 3, 3],
+                        [null, null, null, null, null, null, null, null, null],
+                        [2, 2, 2, null, 2, 2, null, 2, 2]
+                    ];
+                    await Plotly.newPlot(gd, [makeTrace(fill, [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                        frames[0], {shape, simplify: false})], makeLayout());
+                    for(let i = 1; i < frames.length; i++) {
+                        let samples = 0;
+                        let paintedGap = false;
+                        let intermediate = false;
+                        let animationFrame;
+                        const sample = () => {
+                            samples++;
+                            paintedGap = paintedGap || contains(fill, 3, 1) || contains(fill, 6, 1);
+                            intermediate = intermediate || contains(fill, 4.5, 2.2) && !contains(fill, 4.5, 2.8);
+                            animationFrame = requestAnimationFrame(sample);
+                        };
+                        animationFrame = requestAnimationFrame(sample);
+                        try {
+                            await Plotly.animate(gd, {data: [{[valueKey]: frames[i]}], traces: [0]}, {
+                                transition: {duration: 120, easing: 'linear'},
+                                frame: {duration: 150, redraw: false}, mode: 'immediate'
+                            });
+                        } finally {
+                            cancelAnimationFrame(animationFrame);
+                        }
+                        expect(samples).toBeGreaterThan(0);
+                        expect(paintedGap).toBe(false, `frame ${i}`);
+                        expect(contains(fill, 3, 1)).toBe(false);
+                        expect(contains(fill, 6, 1)).toBe(false);
+                        expect(contains(fill, 4.5, 1)).toBe(i !== 5);
+                        if(i === 4) expect(intermediate).toBe(true, 'smooth height change');
+                    }
+                });
+            });
+
+        });
+    });
+
     it('clears fills tonext when either trace is emptied out', function(done) {
         var trace0 = {y: [1, 3, 5, 7]};
         var trace1 = {y: [1, 2, 3, 4], line: {width: 0}, mode: 'lines'};
@@ -1495,6 +1677,32 @@ describe('scatter hoverFills', function() {
         });
     }
 
+    ['tozeroy', 'tozerox'].forEach(fill => {
+        it(`anchors ${fill} hover labels inside each filled segment`, async () => {
+            const gd = createGraphDiv();
+            const positions = [0, 1, 2, 3, 4];
+            const values = [2, 2, null, 2, 2];
+            await Plotly.newPlot(gd, [{
+                x: fill === 'tozeroy' ? positions : values,
+                y: fill === 'tozeroy' ? values : positions,
+                fill, hoveron: 'fills', mode: 'lines'
+            }], {
+                width: 600, height: 400, margin: {l: 60, r: 30, t: 40, b: 50},
+                xaxis: {range: [0, 4]}, yaxis: {range: [0, 4]}
+            });
+            for(const position of [0.5, 3.5]) {
+                const point = _hover(gd, fill === 'tozeroy' ? position : 1,
+                    fill === 'tozeroy' ? 1 : position, 'closest', 'xy')[0];
+                expect(point).toBeTruthy();
+                const axis = gd._fullLayout[fill === 'tozeroy' ? 'xaxis' : 'yaxis'];
+                const center = fill === 'tozeroy' ? (point.x0 + point.x1) / 2 : (point.y0 + point.y1) / 2;
+                expect(axis.p2c(center)).toBeCloseTo(position, 6);
+            }
+            expect(_hover(gd, fill === 'tozeroy' ? 2 : 1,
+                fill === 'tozeroy' ? 1 : 2, 'closest', 'xy')[0]).toBeFalsy();
+        });
+    });
+
     it('should correctly detect the fill that is hovered over for self and next fills', function(done) {
         var gd = createGraphDiv();
         var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_self_next'));
@@ -1529,7 +1737,7 @@ describe('scatter hoverFills', function() {
         .then(done, done.fail);
     });
 
-    it('should correctly detect the fill that is hovered over for tozeroy and tonexty fills', function(done) {
+    it('should correctly detect the fill that is hovered over for tozeroy fills', done => {
         var gd = createGraphDiv();
         var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_corner_cases'));
 
@@ -1537,10 +1745,10 @@ describe('scatter hoverFills', function() {
 
         var testPoints = [ // all the following points should be in fill region of corresponding tozeroy traces 0-4
             [], // single point has no "fill" when using SVG element containment tests
-            [[0.1, 0.9], [0.1, 0.8], [1.5, 0.9], [1.5, 1.04], [2, 0.8], [2, 1.09], [3, 0.8]],
-            [[0.1, 0.75], [0.1, 0.61], [1.01, 0.501], [1.5, 0.8], [1.5, 0.55], [2, 0.74], [2, 0.55], [3, 0.74], [3, 0.51]],
-            [[0.1, 0.599], [0.1, 0.5], [0.1, 0.3], [0.99, 0.59], [1, 0.49], [1, 0.36], [1.5, 0.26], [2, 0.49], [2, 0.16], [3, 0.49], [3, 0.26]],
-            [[0.1, 0.25], [0.1, 0.1], [1, 0.34], [1.5, 0.24], [2, 0.14], [3, 0.24], [3, 0.1]],
+            [[1.5, 0.9], [1.5, 1.04], [2, 0.8], [2, 1.09], [3, 0.8]],
+            [[0.1, 0.75], [0.1, 0.61], [2, 0.74], [2, 0.55], [3, 0.74], [3, 0.51]],
+            [[0.1, 0.599], [0.1, 0.5], [0.1, 0.3], [0.99, 0.59], [1, 0.49], [1, 0.36], [1.5, 0.26], [2, 0.49], [2, 0.16]],
+            [], // isolated points do not enclose a fill region
         ];
 
         var outsidePoints = [ // all these should not result in a hover detection, for any trace
@@ -1576,11 +1784,19 @@ describe('scatter hoverFills', function() {
                 }
             }
 
+            const gapPoints = [
+                [1, 0.5, 0.8], [2, 1.25, 0.5], [2, 1.75, 0.5],
+                [3, 2.5, 0.3], [4, 0.5, 0.1], [4, 1.5, 0.1], [4, 2.5, 0.1]
+            ];
+            for(const [traceIndex, x, y] of gapPoints) {
+                expect(_hover(gd, x, y, 'x', 'xy')[traceIndex]).toBeFalsy(`gap in trace ${traceIndex}`);
+            }
+
             for(j = 0; j < outsidePoints.length; j++) {
                 testCoords = outsidePoints[j];
                 pts = _hover(gd, testCoords[0], testCoords[1], 'x', 'xy');
                 for(k = 0; k < testPoints.length; k++) {
-                    expect(pts[i]).toBeFalsy(
+                    expect(pts[traceOffset + k]).toBeFalsy(
                         'trace detected for outside point ' + testCoords.join(',') + ', got ' + (traceOffset + k)
                     );
                 }
