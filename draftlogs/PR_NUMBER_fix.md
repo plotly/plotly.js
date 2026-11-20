@@ -1,0 +1,1 @@
+- Show non-numeric table cells as text when `cells.format` is set, instead of `NaN` [[#PR_NUMBER](https://github.com/plotly/plotly.js/pull/PR_NUMBER)]
