@@ -645,6 +645,54 @@ describe('end-to-end scattergl tests', function() {
         .then(done, done.fail);
     });
 
+    it('@gl should split tozero fills where the line crosses zero', function(done) {
+        function fillOptions(i) {
+            return gd._fullLayout._plots.xy._scene.fillOptions[i];
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'scattergl',
+            mode: 'lines',
+            fill: 'tozeroy',
+            x: [0, 1, 2, 3],
+            y: [2, -2, null, 2]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            fill: 'tozerox',
+            x: [2, 0, -2],
+            y: [0, 1, 2]
+        }, {
+            type: 'scattergl',
+            mode: 'lines',
+            fill: 'tozeroy',
+            x: [0, 1, 2],
+            y: [1, 2, 1]
+        }])
+        .then(function() {
+            // the gap is skipped, so the fill also splits where the line crosses zero across it
+            expect(fillOptions(0).positions).toEqual([
+                0, 0, 0, 2, 0.5, 0, null, null,
+                0.5, 0, 1, -2, 2, 0, null, null,
+                2, 0, 3, 2, 3, 0
+            ], 'tozeroy');
+            expect(fillOptions(0).splitNull).toBe(true, 'tozeroy splitNull');
+
+            // the point on zero closes the first polygon
+            expect(fillOptions(1).positions).toEqual([
+                0, 0, 2, 0, 0, 1, null, null,
+                0, 1, -2, 2, 0, 2
+            ], 'tozerox');
+            expect(fillOptions(1).splitNull).toBe(true, 'tozerox splitNull');
+
+            expect(fillOptions(2).positions).toEqual([
+                0, 0, 0, 1, 1, 2, 2, 1, 2, 0
+            ], 'no crossing');
+            expect(fillOptions(2).splitNull).toBe(false, 'no crossing splitNull');
+        })
+        .then(done, done.fail);
+    });
+
     it('@gl should reset the sanp to length after react and not to TOO_MANY_POINTS constant', function(done) {
         Lib.seedPseudoRandom();
 

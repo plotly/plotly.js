@@ -1,0 +1,1 @@
+- Fix `scattergl` `tozeroy` and `tozerox` fills when the line crosses zero [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
