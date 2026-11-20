@@ -156,7 +156,7 @@ async function createLandLayer({ bounds, name, resolution, source }) {
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/land.geojson`;
     const commands = [
         inputFilePath,
-        '-dissolve2',
+        '-dissolve',
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         `-o ${outputFilePath}`
     ].join(' ');
@@ -168,7 +168,7 @@ async function createCoastlinesLayer({ bounds, name, resolution, source }) {
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/coastlines.geojson`;
     const commands = [
         inputFilePath,
-        '-dissolve2',
+        '-dissolve',
         '-lines',
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         // Erase world border to avoid unpleasant lines through polygons crossing the border.
@@ -367,7 +367,7 @@ const commandsAntarctica = [
     // Add rectangle to extend Antarctica to bottom of world
     '-rectangle bbox=-180,-90,180,-89 name=antarctica_rectangle',
     '-merge-layers target=antarctica,antarctica_rectangle force',
-    `-dissolve2 target=antarctica copy-fields=${copyFieldsList}`,
+    `-dissolve target=antarctica copy-fields=${copyFieldsList}`,
     `-o force target=antarctica ${outputFilePathAntarctica50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsAntarctica);
@@ -407,7 +407,7 @@ fs.writeFileSync(outputFilePathFijiAntimeridian50m, JSON.stringify(fijiAntimerid
 const commandsFixFijiAntimeridian = [
     outputFilePathFijiAntimeridian50m,
     '-proj +proj=eck4 +lon_0=11 +datum=WGS84',
-    `-dissolve2 copy-fields=${copyFieldsList}`,
+    `-dissolve copy-fields=${copyFieldsList}`,
     '-clean snap-interval=951',
     `-proj ${antimeridianCrs}`,
     `-o force ${outputFilePathFijiAntimeridian50m}`
@@ -421,7 +421,7 @@ const commandsFiji = [
     `-each 'id = this.id' target=fiji`,
     `-filter '!${fijiAntimeridianIds}.includes(id)' target=fiji`,
     '-merge-layers target=fiji,fiji_antimeridian force name=fiji',
-    `-dissolve2 target=fiji copy-fields=${copyFieldsList}`,
+    `-dissolve target=fiji copy-fields=${copyFieldsList}`,
     `-o force target=fiji ${outputFilePathFiji50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsFiji);
@@ -444,7 +444,7 @@ await mapshaper.runCommands(commandsIsolateRussiaAntimeridian);
 const commandsFixRussiaAntimeridian = [
     outputFilePathRussiaAntimeridian50m,
     '-proj +proj=eck4 +lon_0=11 +datum=WGS84',
-    `-dissolve2 copy-fields=${copyFieldsList}`,
+    `-dissolve copy-fields=${copyFieldsList}`,
     '-clean snap-interval=257',
     `-proj ${antimeridianCrs}`,
     `-o force ${outputFilePathRussiaAntimeridian50m}`
@@ -458,7 +458,7 @@ const commandsRussia = [
     `-each 'id = this.id' target=russia`,
     `-filter '!${russiaAntimeridianIds}.includes(id)' target=russia`,
     '-merge-layers target=russia,russia_antimeridian force name=russia',
-    `-dissolve2 target=russia copy-fields=${copyFieldsList}`,
+    `-dissolve target=russia copy-fields=${copyFieldsList}`,
     `-o force target=russia ${outputFilePathRussia50m}`
 ].join(' ');
 await mapshaper.runCommands(commandsRussia);
@@ -500,7 +500,7 @@ createCountriesList(outputFilePathCountries50m, `${outputDirTopojson}/country_na
 // Get land from all polygon features
 const inputFilePathLand50m = outputFilePathCountries50m;
 const outputFilePathLand50m = `${outputDirGeojson}/${unFilename}_50m/land.geojson`;
-const commandsLand50m = [inputFilePathLand50m, '-dissolve2', `-o ${outputFilePathLand50m}`].join(' ');
+const commandsLand50m = [inputFilePathLand50m, '-dissolve', `-o ${outputFilePathLand50m}`].join(' ');
 await mapshaper.runCommands(commandsLand50m);
 
 // Process 110m UN geodata
@@ -519,7 +519,7 @@ await mapshaper.runCommands(commandsCountries110m);
 // Get land from all polygon features
 const inputFilePathLand110m = outputFilePathCountries110m;
 const outputFilePathLand110m = `${outputDirGeojson}/${unFilename}_110m/land.geojson`;
-const commandsLand110m = [inputFilePathLand110m, '-dissolve2', `-o ${outputFilePathLand110m}`].join(' ');
+const commandsLand110m = [inputFilePathLand110m, '-dissolve', `-o ${outputFilePathLand110m}`].join(' ');
 await mapshaper.runCommands(commandsLand110m);
 
 for (const resolution of resolutions) {
