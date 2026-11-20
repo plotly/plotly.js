@@ -864,6 +864,23 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     sortHoverData();
 
     var axLetter = hovermode.charAt(0);
+
+    // On category axes drop points outside the category under the cursor
+    const isCategoryAxis = (ax) => ax && ['category', 'multicategory'].includes(ax.type);
+    const axArray = axLetter === 'x' ? xaArray : yaArray;
+    const valArray = axLetter === 'x' ? xvalArray : yvalArray;
+    if (helpers.isXYhover(_mode) && valArray) {
+        const filteredHoverData = hoverData.filter((point) => {
+            const ax = point[axLetter + 'a'];
+            const i = axArray.indexOf(ax);
+            // Rounding works only on a hovered category axis, so keep other points unchanged
+            if (!isCategoryAxis(ax) || i === -1) return true;
+            return point[axLetter + 'LabelVal'] === Math.round(valArray[i]);
+        });
+        // Keep the old behavior when no point falls in the hovered category
+        if (filteredHoverData.length) hoverData = filteredHoverData;
+    }
+
     var spikeOnWinning =
         (axLetter === 'x' || axLetter === 'y') && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
 
