@@ -63,7 +63,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if (subTypes.hasText(traceOut)) {
         coerce('texttemplate');
         coerce('texttemplatefallback');
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(traceIn, traceOut, layout, coerce, { noAutoPosition: true });
     }
 
     coerce('fill');

@@ -205,11 +205,12 @@ exports.cleanData = function (data) {
 
         if (!traceIs(trace, 'pie-like') && !traceIs(trace, 'bar-like')) {
             if (Array.isArray(trace.textposition)) {
+                const keepAuto = acceptsAutoTextPosition(trace);
                 for (i = 0; i < trace.textposition.length; i++) {
-                    trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
+                    trace.textposition[i] = cleanTextPosition(trace.textposition[i], keepAuto);
                 }
             } else if (trace.textposition) {
-                trace.textposition = cleanTextPosition(trace.textposition);
+                trace.textposition = cleanTextPosition(trace.textposition, acceptsAutoTextPosition(trace));
             }
         }
 
@@ -321,9 +322,17 @@ function commonPrefix(name1, name2, show1, show2) {
     return out.trim();
 }
 
+// Only some trace types accept *auto*, so the others clean it like any other incorrect value
+function acceptsAutoTextPosition(trace) {
+    const values = Registry.getModule(trace.type || 'scatter')?.attributes?.textposition?.values;
+    return Array.isArray(values) && values.includes('auto');
+}
+
 // textposition - support partial attributes (ie just 'top')
 // and incorrect use of middle / center etc.
-function cleanTextPosition(textposition) {
+function cleanTextPosition(textposition, keepAuto) {
+    if (keepAuto && textposition === 'auto') return textposition;
+
     var posY = 'middle';
     var posX = 'center';
 
