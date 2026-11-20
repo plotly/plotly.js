@@ -1,6 +1,9 @@
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Events = require('../../lib/events');
+var overrideCursor = require('../../lib/override_cursor');
 var throttle = require('../../lib/throttle');
 var getGraphDiv = require('../../lib/dom').getGraphDiv;
 
@@ -45,6 +48,8 @@ unhover.raw = function raw(gd, evt) {
     var oldhoverdata = gd._hoverdata;
 
     if(!evt) evt = {};
+    if(evt.target && evt.target.tagName) overrideCursor(d3.select(evt.target), '');
+
     if(evt.target && !gd._dragged &&
        Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
         return false;

@@ -310,19 +310,19 @@ describe('relayout', function() {
             return Plotly.relayout(gd, 'yaxis.fixedrange', true);
         }).then(function() {
             // still active with fixedrange because we're handling clicks here too.
-            assertMainDrag('pointer', true);
+            assertMainDrag('default', true);
 
             return Plotly.relayout(gd, 'dragmode', 'drag');
         }).then(function() {
-            assertMainDrag('pointer', true);
+            assertMainDrag('default', true);
 
             return Plotly.relayout(gd, 'dragmode', 'lasso');
         }).then(function() {
-            assertMainDrag('pointer', true);
+            assertMainDrag('default', true);
 
             return Plotly.relayout(gd, 'dragmode', 'select');
         }).then(function() {
-            assertMainDrag('pointer', true);
+            assertMainDrag('default', true);
 
             return Plotly.relayout(gd, 'xaxis.fixedrange', false);
         }).then(function() {
