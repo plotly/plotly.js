@@ -987,6 +987,11 @@ exports.makeEditable = function(context, options) {
     if(context.size() !== 1) throw new Error('boo');
 
     function handleClick() {
+        // A click that ends another edit can redraw this element before the
+        // click is handled. The old element is no longer in the plot, so
+        // there is nothing to align the edit box with: ignore the click.
+        if(!gd.contains(context.node())) return;
+
         appendEditable();
         context.style({opacity: 0});
         // also hide any mathjax svg

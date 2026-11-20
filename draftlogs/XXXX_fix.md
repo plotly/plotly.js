@@ -1,0 +1,1 @@
+- Fix the editing box appearing in the top-left corner when an annotation is clicked while another one is being edited [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]

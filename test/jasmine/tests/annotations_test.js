@@ -17,6 +17,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var drag = require('../assets/drag');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
+var delay = require('../assets/delay');
 
 describe('Test annotations', function() {
     'use strict';
@@ -1674,6 +1675,53 @@ describe('annotation effects', function() {
                     onScreen: true
                 }))
                 .then(fns.end);
+        })
+        .then(done, done.fail);
+    });
+
+    it('does not open a misplaced edit box when a click ends another annotation edit', function(done) {
+        gd = createGraphDiv();
+
+        function textGroup(index) {
+            return gd.querySelector('.annotation[data-index="' + index + '"] .annotation-text-g>g');
+        }
+
+        function editBoxes() { return gd.querySelectorAll('.plugin-editable.editable'); }
+
+        // autoranged axes, so finishing an edit redraws every annotation
+        Plotly.newPlot(gd, [{x: [0, 100], y: [0, 100], mode: 'markers'}], {
+            width: 500,
+            height: 500,
+            annotations: [
+                {x: 20, y: 20, text: 'first', showarrow: false},
+                {x: 80, y: 80, text: 'second', showarrow: false}
+            ]
+        }, {editable: true})
+        .then(function() {
+            textGroup(0).dispatchEvent(new MouseEvent('click', {bubbles: true}));
+            expect(editBoxes().length).toBe(1, 'editing the first annotation');
+
+            // a click on the second annotation: the mouseup ends the first edit
+            // and redraws the annotations, then the click lands on the old element
+            var oldSecond = textGroup(1);
+            oldSecond.dispatchEvent(new MouseEvent('mouseup', {bubbles: true}));
+            oldSecond.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+            expect(textGroup(1)).not.toBe(oldSecond, 'second annotation was redrawn');
+
+            // the finished edit box is removed by a zero-length transition
+            return delay(100)();
+        })
+        .then(function() {
+            expect(editBoxes().length).toBe(0, 'no edit box for the removed element');
+
+            textGroup(1).dispatchEvent(new MouseEvent('click', {bubbles: true}));
+            var boxes = editBoxes();
+            expect(boxes.length).toBe(1, 'editing the second annotation');
+
+            var boxRect = boxes[0].getBoundingClientRect();
+            var textRect = gd.querySelector('.annotation[data-index="1"] .annotation-text').getBoundingClientRect();
+            expect(boxRect.left).toBeWithin(textRect.left, 5, 'edit box left');
+            expect(boxRect.top).toBeWithin(textRect.top, 10, 'edit box top');
         })
         .then(done, done.fail);
     });
