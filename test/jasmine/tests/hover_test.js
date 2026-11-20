@@ -5532,6 +5532,106 @@ describe('hover distance', function () {
                 .then(done, done.fail);
         });
 
+        it('only selects points in the category under the cursor on a category axis', (done) => {
+            // Categories 21px wide put the line point at 'c28' within the default hoverdistance of 'Other' (see #7152)
+            const x = Array.from({ length: 29 }, (_, i) => 'c' + i).concat('Other');
+            const mock = {
+                data: [
+                    { type: 'bar', x, y: x.map((_, i) => i + 1) },
+                    { mode: 'lines', x, y: x.map((_, i) => (i === 29 ? null : 40 - i)) }
+                ],
+                layout: {
+                    width: 700,
+                    showlegend: false,
+                    hovermode: 'x',
+                    margin: { l: 0, r: 0 },
+                    xaxis: { range: [-1.753, 31.588] }
+                }
+            };
+            const hoveredCategories = (xval) => {
+                Fx.hover(gd, { xval });
+                Lib.clearThrottle();
+                return gd._hoverdata.map((d) => d.x);
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(() => {
+                    expect(hoveredCategories(29)).toEqual(['Other']);
+                    expect(hoveredCategories(28.6)).toEqual(['Other']);
+                    expect(hoveredCategories(28)).toEqual(['c28', 'c28']);
+                })
+                .then(done, done.fail);
+        });
+
+        it('keeps heatmap points in the category under the cursor on a category axis', (done) => {
+            // A heatmap must report the cell center, not the cell edge, as its position on a category axis
+            const x = Array.from({ length: 29 }, (_, i) => 'c' + i).concat('Other');
+            const z = x.map((_, i) => i + 1);
+            const mock = {
+                data: [
+                    { type: 'heatmap', name: 'hm', x, y: [0, 1], z: [z, z], showscale: false },
+                    { type: 'bar', name: 'bar', x, y: x.map(() => 1) }
+                ],
+                layout: {
+                    width: 700,
+                    showlegend: false,
+                    hovermode: 'x',
+                    margin: { l: 0, r: 0 },
+                    xaxis: { range: [-1.753, 31.588] }
+                }
+            };
+            const hoveredTraces = (xval) => {
+                Fx.hover(gd, { xval });
+                Lib.clearThrottle();
+                return gd._hoverdata.map((d) => d.data.name).sort();
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(() => {
+                    expect(hoveredTraces(28)).toEqual(['bar', 'hm']);
+                    expect(hoveredTraces(29)).toEqual(['bar', 'hm']);
+                })
+                .then(done, done.fail);
+        });
+
+        it('drops points in the next category on an overlaying category axis', (done) => {
+            // Categories 21px wide put the line point at 'k28' within the default hoverdistance of 'Other' (see #7152)
+            const x = Array.from({ length: 29 }, (_, i) => 'c' + i).concat('Other');
+            const mock = {
+                data: [
+                    { type: 'bar', name: 'bar', x, y: x.map((_, i) => i + 1) },
+                    {
+                        mode: 'lines',
+                        name: 'line',
+                        xaxis: 'x2',
+                        x: x.map((_, i) => 'k' + i),
+                        y: x.map((_, i) => (i === 29 ? null : 40 - i))
+                    }
+                ],
+                layout: {
+                    width: 700,
+                    showlegend: false,
+                    hovermode: 'x',
+                    margin: { l: 0, r: 0 },
+                    xaxis: { range: [-1.753, 31.588] },
+                    xaxis2: { overlaying: 'x', side: 'top', range: [-1.753, 31.588] }
+                }
+            };
+            const hoveredPoints = (xval) => {
+                Fx.hover(gd, { xval });
+                Lib.clearThrottle();
+                return gd._hoverdata.map((d) => d.data.name + '@' + d.x).sort();
+            };
+
+            Plotly.newPlot(gd, mock)
+                .then(() => {
+                    expect(hoveredPoints(29)).toEqual(['bar@Other']);
+                    expect(hoveredPoints(28.6)).toEqual(['bar@Other']);
+                    expect(hoveredPoints(28)).toEqual(['bar@c28', 'line@k28']);
+                })
+                .then(done, done.fail);
+        });
+
         it('selects all points at the same position on a date axis', function (done) {
             var x = ['2018', '2019', '2020'];
             var mock = {
@@ -7632,6 +7732,63 @@ describe('hovermode: (x|y)unified', function () {
             .then(function () {
                 _hover(gd, { xpx: 200, ypx: 200 });
                 assertLabel({ title: 'X: 02/01/2000 00:00:00', items: ['trace 0 : 2', 'trace 1 : 3'] });
+            })
+            .then(done, done.fail);
+    });
+
+    it('hover label should only show values of hovered category', (done) => {
+        Plotly.newPlot(gd, {
+            data: [
+                { name: 'bar', x: ['A', 'B'], y: [1, 2], type: 'bar' },
+                {
+                    name: 'scatter',
+                    x: ['A', 'B'],
+                    y: [10, null],
+                    type: 'scatter'
+                }
+            ],
+            layout: {
+                width: 400,
+                hovermode: 'x unified',
+                hoverdistance: 110
+            }
+        })
+            .then(() => {
+                _hover(gd, { xval: 1.1 });
+                assertLabel({ title: 'B', items: ['bar : 2'] });
+            })
+            .then(() => {
+                _hover(gd, { xval: 0 });
+                assertLabel({ title: 'A', items: ['bar : 1', 'scatter : 10'] });
+            })
+            .then(done, done.fail);
+    });
+
+    it('hover label should show the category under the cursor when a line point in the next category is within hoverdistance', (done) => {
+        // Categories 21px wide put the line point at 'c28' within the default hoverdistance of 'Other' (see #7152)
+        const x = Array.from({ length: 29 }, (_, i) => 'c' + i).concat('Other');
+        Plotly.newPlot(gd, {
+            data: [
+                { name: 'bar', type: 'bar', x, y: x.map((_, i) => i + 1) },
+                { name: 'line', mode: 'lines', x, y: x.map((_, i) => (i === 29 ? null : 40 - i)) }
+            ],
+            layout: {
+                width: 700,
+                showlegend: false,
+                hovermode: 'x unified',
+                margin: { l: 0, r: 0 },
+                xaxis: { range: [-1.753, 31.588] }
+            }
+        })
+            .then(() => {
+                _hover(gd, { xval: 29 });
+                assertLabel({ title: 'Other', items: ['bar : 30'] });
+
+                _hover(gd, { xval: 28.6 });
+                assertLabel({ title: 'Other', items: ['bar : 30'] });
+
+                _hover(gd, { xval: 28 });
+                assertLabel({ title: 'c28', items: ['bar : 29', 'line : 12'] });
             })
             .then(done, done.fail);
     });

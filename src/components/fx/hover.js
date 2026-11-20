@@ -864,6 +864,23 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     sortHoverData();
 
     var axLetter = hovermode.charAt(0);
+
+    // On category axes drop points outside the category under the cursor
+    const isCategoryAxis = (ax) => ax && ['category', 'multicategory'].includes(ax.type);
+    const axArray = axLetter === 'x' ? xaArray : yaArray;
+    const valArray = axLetter === 'x' ? xvalArray : yvalArray;
+    if (helpers.isXYhover(_mode) && valArray) {
+        const filteredHoverData = hoverData.filter((point) => {
+            const ax = point[axLetter + 'a'];
+            const i = axArray.indexOf(ax);
+            // Rounding works only on a hovered category axis, so keep other points unchanged
+            if (!isCategoryAxis(ax) || i === -1) return true;
+            return point[axLetter + 'LabelVal'] === Math.round(valArray[i]);
+        });
+        // Keep the old behavior when no point falls in the hovered category
+        if (filteredHoverData.length) hoverData = filteredHoverData;
+    }
+
     var spikeOnWinning =
         (axLetter === 'x' || axLetter === 'y') && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
 
@@ -972,6 +989,21 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         for (k = hoverData.length - 1; k > initLen - 1; k--) {
             insert(hoverData[k]);
         }
+
+        // on category axes only keep points that fall in the hovered category
+        var winAx = winningPoint[axLetter + 'a'];
+        if (winAx && (winAx.type === 'category' || winAx.type === 'multicategory')) {
+            var winCat = winningPoint[axLetter + 'LabelVal'];
+            finalPoints = finalPoints.filter(function (point) {
+                var pointAx = point[axLetter + 'a'];
+                if (!pointAx || (pointAx.type !== 'category' && pointAx.type !== 'multicategory')) {
+                    // rare case of data point on overlaying axis
+                    return true;
+                }
+                return point[axLetter + 'LabelVal'] === winCat;
+            });
+        }
+
         hoverData = finalPoints;
         sortHoverData();
     }
