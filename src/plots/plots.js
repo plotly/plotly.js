@@ -108,6 +108,10 @@ plots.resize = function(gd) {
 // for use in Lib.syncOrAsync, check if there are any
 // pending promises in this plot and wait for them
 plots.previousPromises = function(gd) {
+    // A draw that waits for the fonts of config.fonts holds the later calls on the graph
+    if (gd._fontWait) {
+        return gd._fontWait.then(() => plots.previousPromises(gd));
+    }
     if((gd._promises || []).length) {
         return Promise.all(gd._promises)
             .then(function() { gd._promises = []; });
@@ -1471,6 +1475,10 @@ plots.purge = function(gd) {
 
     // Cancel the pending redraw for web fonts
     delete gd._fontLoadToken;
+
+    // Stop a draw that waits for the fonts of config.fonts. Calls after the purge do not wait for it.
+    delete gd._fontWaitToken;
+    delete gd._fontWait;
 
     // data and layout
     delete gd.data;

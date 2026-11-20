@@ -3,7 +3,7 @@
  *
  * This file overlays a small hand-written interface on the schema-derived
  * `ConfigBase` to build `Config`. Most fields come straight from the schema.
- * The overrides cover the five fields whose schema `valType` is `any`. Those
+ * The overrides cover the six fields whose schema `valType` is `any`. Those
  * fields accept a function value, an arbitrary-key map, or a structure too
  * irregular for the schema to model.
  */
@@ -51,13 +51,32 @@ export interface DownloadImgopts extends Omit<ToImgopts, 'imageDataOnly'> {
 }
 
 // ---------------------------------------------------------------------------
+// Fonts
+// ---------------------------------------------------------------------------
+
+/**
+ * One font face for `config.fonts`. plotly.js loads the face before the graph
+ * draws, and embeds it in exported images.
+ */
+export interface FontSource {
+    /** The family name that the figure uses in its `font.family` values */
+    family: string;
+    /** The URL of a font file, a base64 data URL, or the font bytes */
+    source: string | ArrayBuffer | ArrayBufferView;
+    /** The weight of the face, as in a CSS `@font-face` rule. The default is `'normal'`. */
+    weight?: number | string;
+    /** The style of the face: `'normal'`, `'italic'` or `'oblique'`. The default is `'normal'`. */
+    style?: string;
+}
+
+// ---------------------------------------------------------------------------
 // Config - hybrid (schema-derived + hand-written overrides)
 // ---------------------------------------------------------------------------
 
 /**
- * Hand-written overrides for the five `schema.config` fields whose `valType`
- * is `any`. These fields accept functions or arbitrary-key maps, which the
- * JSON schema cannot describe.
+ * Hand-written overrides for the six `schema.config` fields whose `valType`
+ * is `any`. These fields accept functions, arbitrary-key maps or binary data,
+ * which the JSON schema cannot describe.
  */
 interface ConfigOverrides {
     /** Override the background color with a static color name, or with a function that runs on each render */
@@ -70,6 +89,8 @@ interface ConfigOverrides {
     modeBarButtonsToRemove?: ModeBarDefaultButtons[];
     /** Localization definitions under a locale id key, for example `'en-US'` or `'fr'` */
     locales?: Record<string, { dictionary?: Record<string, string>; format?: Record<string, any> }>;
+    /** Fonts to load before the graph draws, and to embed in exported images */
+    fonts?: FontSource[];
 }
 
 /**

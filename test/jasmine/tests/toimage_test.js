@@ -5,6 +5,8 @@ function b64encodeTypedArray(typedArray) {
 
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
+const toSVG = require('../../../src/snapshot/tosvg');
+const testFonts = require('../assets/test_fonts');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -643,6 +645,141 @@ describe('Plotly.toImage', function () {
                     var computed = fig.layout.computed;
                     expect(computed.margin.b).toBeGreaterThan(80);
                     expect(computed.margin.r).toBeGreaterThan(80);
+                })
+                .then(done, done.fail);
+        });
+    });
+
+    describe('with config.fonts', () => {
+        const plot = (family, source) =>
+            Plotly.newPlot(
+                gd,
+                [{ y: [1, 2] }],
+                { width: 400, height: 300, font: { family: `${family}, Arial` }, title: { text: 'ABCDE' } },
+                { fonts: [{ family, source }] }
+            );
+        const svgOf = () => Plotly.toImage(gd, { format: 'svg', imageDataOnly: true });
+
+        it('embeds the fonts that the graph uses in svg exports', (done) => {
+            const family = 'ToImageFonts';
+            plot(family, testFonts.square)
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('@font-face');
+                    expect(svg).toContain(`font-family:"${family}"`);
+                    expect(svg).toContain('data:font/ttf;base64,');
+                })
+                .then(done, done.fail);
+        });
+
+        it('does not embed a font that forbids embedding in svg exports', (done) => {
+            spyOn(Lib, 'warn');
+            const family = 'ToImageFontsRestricted';
+            plot(family, testFonts.squareRestricted)
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).not.toContain('@font-face');
+                    expect(Lib.warn).toHaveBeenCalledWith(jasmine.stringMatching('forbids embedding'));
+                })
+                .then(done, done.fail);
+        });
+
+        it('embeds a font that forbids embedding in raster exports', (done) => {
+            // A raster export keeps the pixels of the text, not the font
+            plot('ToImageFontsRaster', testFonts.squareRestricted)
+                .then(() => {
+                    expect(toSVG(gd, 'png')).toContain('@font-face');
+                })
+                .then(done, done.fail);
+        });
+
+        it('embeds a font whose embedding permission cannot be read in svg exports', (done) => {
+            // Without DecompressionStream, plotly.js cannot read the compressed OS/2 table of a WOFF file
+            // Start the plot inside a promise, so that a synchronous error still restores the global
+            const decompressionStream = window.DecompressionStream;
+            window.DecompressionStream = undefined;
+            Promise.resolve()
+                .then(() => plot('ToImageFontsUnknown', testFonts.squareWoff))
+                .finally(() => {
+                    window.DecompressionStream = decompressionStream;
+                })
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('data:font/woff;base64,');
+                })
+                .then(done, done.fail);
+        });
+
+        it('reads the embedding permission of a WOFF file with a compressed OS/2 table', (done) => {
+            plot('ToImageFontsWoff', testFonts.squareWoff)
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('data:font/woff;base64,');
+                    return plot('ToImageFontsWoffRestricted', testFonts.squareRestrictedWoff);
+                })
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).not.toContain('@font-face');
+                })
+                .then(done, done.fail);
+        });
+
+        it('embeds a font from an ArrayBuffer that the caller detaches after the draw', (done) => {
+            const buffer = Uint8Array.from(atob(testFonts.square.split(',')[1]), (c) => c.charCodeAt(0)).buffer;
+            plot('ToImageFontsDetached', buffer)
+                .then(() => {
+                    structuredClone(buffer, { transfer: [buffer] });
+                    expect(buffer.byteLength).toBe(0, 'the buffer is detached');
+                    return svgOf();
+                })
+                .then((svg) => {
+                    expect(svg).toContain('data:font/ttf;base64,');
+                })
+                .then(done, done.fail);
+        });
+
+        it('does not embed a font that no text of the graph uses', (done) => {
+            // The SVG holds the word 'legend' in class names, but no text uses the family 'Legend'
+            Plotly.newPlot(
+                gd,
+                [{ y: [1, 2] }, { y: [2, 1] }],
+                { width: 400, height: 300, font: { family: 'Arial' } },
+                { fonts: [{ family: 'Legend', source: testFonts.square }] }
+            )
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain('legend');
+                    expect(svg).not.toContain('@font-face');
+                })
+                .then(done, done.fail);
+        });
+
+        it('embeds a font that a text span names in other letter case', (done) => {
+            const family = 'ToImage Fonts Span';
+            Plotly.newPlot(
+                gd,
+                [{ y: [1, 2] }],
+                {
+                    width: 400,
+                    height: 300,
+                    font: { family: 'Arial' },
+                    title: { text: `x <span style="font-family:'toimage fonts span'">ABCDE</span>` }
+                },
+                { fonts: [{ family, source: testFonts.square }] }
+            )
+                .then(svgOf)
+                .then((svg) => {
+                    expect(svg).toContain(`font-family:"${family}"`);
+                })
+                .then(done, done.fail);
+        });
+
+        it('keeps the fonts in a snapshot clone', (done) => {
+            const fonts = [{ family: 'ToImageFontsClone', source: testFonts.square }];
+            plot('ToImageFontsClone', testFonts.square)
+                .then(() => {
+                    expect(Plotly.Snapshot.clone(gd, { format: 'png' }).config.fonts).toBe(gd._context.fonts);
+                    expect(gd._context.fonts).toEqual(fonts);
                 })
                 .then(done, done.fail);
         });

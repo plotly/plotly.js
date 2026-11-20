@@ -1,6 +1,7 @@
 var Lib = require('../../../src/lib');
 var setCursor = require('../../../src/lib/setcursor');
 var overrideCursor = require('../../../src/lib/override_cursor');
+const { readEmbeddingPermission } = require('../../../src/lib/font_faces');
 var config = require('../../../src/plot_api/plot_config').dfltConfig;
 
 var d3Select = require('../../strict-d3').select;
@@ -3384,6 +3385,45 @@ describe('Test lib.js:', function () {
                 spyOnProperty(navigator, 'userAgent').and.returnValue(userAgentStrings.macSafari);
                 expect(Lib.getFirefoxVersion()).toBe(null);
             });
+        });
+    });
+
+    describe('readEmbeddingPermission', () => {
+        // A minimal TrueType file with one OS/2 table that holds only fsType
+        const sfnt = (fsType) => {
+            const view = new DataView(new ArrayBuffer(38));
+            view.setUint32(0, 0x00010000);
+            view.setUint16(4, 1);
+            view.setUint32(12, 0x4f532f32);
+            view.setUint32(20, 28);
+            view.setUint16(36, fsType);
+            return view.buffer;
+        };
+        const read = (files) => Promise.all(files.map(readEmbeddingPermission));
+
+        it('permits embedding for installable, preview, editable and legacy fonts', (done) => {
+            read([0x0000, 0x0004, 0x0008, 0x0006].map(sfnt))
+                .then((permissions) => {
+                    expect(permissions).toEqual(['embed', 'embed', 'embed', 'embed']);
+                })
+                .then(done, done.fail);
+        });
+
+        it('forbids embedding for restricted and bitmap-only fonts', (done) => {
+            read([0x0002, 0x0102, 0x0200].map(sfnt))
+                .then((permissions) => {
+                    expect(permissions).toEqual(['forbid', 'forbid', 'forbid']);
+                })
+                .then(done, done.fail);
+        });
+
+        it('cannot read the permission of a WOFF2 file or a truncated file', (done) => {
+            const woff2 = new Uint8Array([0x77, 0x4f, 0x46, 0x32, 0, 0, 0, 0]).buffer;
+            read([woff2, sfnt(0).slice(0, 20)])
+                .then((permissions) => {
+                    expect(permissions).toEqual(['unknown', 'unknown']);
+                })
+                .then(done, done.fail);
         });
     });
 });

@@ -71,6 +71,7 @@ export type {
 export type {
     Config,
     DownloadImgopts,
+    FontSource,
     ToImageButtonOptions,
     ToImgopts
 } from '../src/types/core/config';
