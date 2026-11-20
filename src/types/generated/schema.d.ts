@@ -16710,6 +16710,11 @@ export interface Layout {
     width?: number;
     xaxis?: LayoutAxis;
     yaxis?: LayoutAxis;
+    /**
+     * When `dragmode` is set to *zoom*, this limits the zoombox drag. Combine *h* for horizontal, *v* for vertical, and *d* for diagonal with *+*. The default *h+v+d* sets no limit. Also applies when Shift turns *pan* into a zoombox drag.
+     * @default 'h+v+d'
+     */
+    zoomdirection?: 'h' | 'v' | 'd' | (string & {});
 
     // Subplot index signatures for numbered variants
     [key: `coloraxis${number}`]: ColorAxis;
