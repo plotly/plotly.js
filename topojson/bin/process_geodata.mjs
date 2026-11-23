@@ -146,6 +146,9 @@ async function createCountriesLayer({ bounds, filter, name, resolution, source }
         inputFilePath,
         bounds.length ? `-clip bbox=${bounds.join(',')}` : '',
         filter ? `-filter '${filter}'` : '',
+        // Make one feature for each country code, because plotly.js only finds the first feature with a given code.
+        // Dissolve after the filter, because the parts of one country can be in different regions.
+        '-dissolve iso3cd',
         `-o ${outputFilePath}`
     ].join(' ');
     await mapshaper.runCommands(commands);
