@@ -42,7 +42,9 @@ const config = {
             name: 'oceania',
             specs: {
                 filter: 'georeg === "OCE"',
-                bounds: [-180, -50, 180, 25]
+                bounds: [-180, -50, 180, 25],
+                // Polygons in this scope cross the antimeridian, so they need stitching
+                stitch: true
             }
         },
         {
