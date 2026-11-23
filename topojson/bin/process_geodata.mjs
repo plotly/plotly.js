@@ -217,9 +217,7 @@ async function createLakesLayer({ name, resolution, source }) {
     await mapshaper.runCommands(commands);
 }
 
-async function createSubunitsLayer({ name, resolution, source }) {
-    // Only include USA for 'usa' scope since the UN and NE borders don't match exactly and slivers of Canada creep in
-    const filter = name === 'usa' ? 'adm0_a3 === "USA"' : config.filters.subunits;
+async function createSubunitsLayer({ filter, name, resolution, source }) {
     const inputFilePath = `${outputDirGeojson}/${getNEFilename({ resolution, source })}.geojson`;
     const outputFilePath = `${outputDirGeojson}/${name}_${resolution}m/subunits.geojson`;
     const commands = [
@@ -232,15 +230,15 @@ async function createSubunitsLayer({ name, resolution, source }) {
     addCentroidsToGeojson(outputFilePath);
 }
 
-async function convertLayersToTopojson({ name, resolution }) {
+async function convertLayersToTopojson({ name, resolution, stitch }) {
     const regionDir = path.join(outputDirGeojson, `${name}_${resolution}m`);
     if (!fs.existsSync(regionDir)) return;
 
     const outputFile = `${outputDirTopojson}/${name}_${resolution}m.json`;
     // Scopes with polygons that cross the antimeridian need to be stitched
-    if (['antarctica', 'world'].includes(name)) {
+    if (stitch) {
         const geojsonObjects = {};
-        for (const layer of Object.keys(config.layers)) {
+        for (const layer of Object.keys(layers)) {
             const filePath = path.join(regionDir, `${layer}.geojson`);
             geojsonObjects[layer] = geoStitch(rewindGeojson(getJsonFile(filePath)));
         }
@@ -567,7 +565,7 @@ for (const resolution of resolutions) {
 for (const resolution of resolutions) {
     for (const {
         name,
-        specs: { bounds, filter }
+        specs: { bounds, filter, stitch, subunitsFilter = filters.subunits }
     } of scopes) {
         await createCountriesLayer({ bounds, filter, name, resolution, source: layers.countries });
         await createLandLayer({ bounds, name, resolution });
@@ -575,7 +573,7 @@ for (const resolution of resolutions) {
         await createOceanLayer({ bounds, name, resolution, source: layers.ocean });
         await createRiversLayer({ name, resolution, source: layers.rivers });
         await createLakesLayer({ name, resolution, source: layers.lakes });
-        await createSubunitsLayer({ name, resolution, source: layers.subunits });
-        await convertLayersToTopojson({ name, resolution });
+        await createSubunitsLayer({ filter: subunitsFilter, name, resolution, source: layers.subunits });
+        await convertLayersToTopojson({ name, resolution, stitch });
     }
 }
