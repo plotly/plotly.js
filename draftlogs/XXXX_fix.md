@@ -1,0 +1,1 @@
+- Fix the `scatter3d` z range on log axes cutting off the lower error bars when the smallest point is not the first one, and keep the range in sync with the data after `Plotly.react` [[#XXXX](https://github.com/plotly/plotly.js/pull/XXXX)]
