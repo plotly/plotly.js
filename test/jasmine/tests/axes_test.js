@@ -7037,6 +7037,55 @@ describe('Test axes', function() {
                 .then(done, done.fail);
             });
         });
+
+        [
+            [-1, 1],
+            [-4, 4]
+        ].forEach((ticklabelindex) => {
+            it(`with *ticklabelindex* ${ticklabelindex}, should label the partial periods at both range ends`, async () => {
+                await Plotly.newPlot(gd, [{ x: ['2017-01-01', '2017-12-31'] }], {
+                    width: 1000,
+                    xaxis: {
+                        range: ['2017-02-05', '2017-09-25'],
+                        dtick: 'M3',
+                        tickformat: '%b',
+                        ticklabelmode: 'period',
+                        ticklabelindex,
+                        minor: { dtick: 'M1' }
+                    }
+                });
+
+                const labels = gd._fullLayout.xaxis._vals.filter((d) => d.text).map((d) => d.text);
+                expect(labels).toEqual(['Feb', 'Mar', 'May', 'Jun', 'Aug', 'Sep']);
+            });
+        });
+
+        it('with *ticklabelindex*, should keep weekly minor ticks on their tick0 when major ticks are monthly', async () => {
+            await Plotly.newPlot(gd, [{ x: ['2017-01-01', '2017-06-30'] }], {
+                width: 1000,
+                xaxis: {
+                    range: ['2017-01-10', '2017-05-31'],
+                    dtick: 'M1',
+                    tickformat: '%b %d',
+                    ticklabelmode: 'period',
+                    ticklabelindex: -1,
+                    minor: { ticks: 'outside', dtick: ONEWEEK, tick0: '2016-07-03' }
+                }
+            });
+
+            const ax = gd._fullLayout.xaxis;
+            const minorTicks = ax._vals.filter((d) => d.minor && !d.noTick);
+            expect(minorTicks.length).toBe(20);
+            minorTicks.forEach((d) => {
+                // 2016-07-03 is a Sunday
+                expect(new Date(d.x).getUTCDay()).withContext(ax.c2d(d.x)).toBe(0);
+            });
+
+            // The last period ends on the hidden major tick of June 1
+            const labels = ax._vals.filter((d) => d.text);
+            expect(labels.map((d) => d.text)).toEqual(['Jan 29', 'Feb 26', 'Mar 26', 'Apr 30', 'May 28']);
+            expect(ax.c2d(labels[4].periodX)).toBe('2017-05-30');
+        });
     });
 
     describe('minor ticks"', function() {

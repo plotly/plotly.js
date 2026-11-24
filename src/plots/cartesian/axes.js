@@ -1024,7 +1024,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
     // the labels are placed at minor ticks (even if invisible) instead of major ticks.
     var calcMinor = hasMinor || ax._useTicklabelIndex;
 
-    var majorDtick = ax.dtick;
+    // Number of hidden major steps past each range end. A label can sit |ticklabelindex| ticks
+    // away from its major tick, and its period needs one more tick to end.
+    // The cap keeps a huge ticklabelindex from exhausting the tick budget.
+    let helperSteps = 0;
+    if (isPeriod) {
+        const maxLabelIndex = ax._useTicklabelIndex ? Math.max(0, ...Array.from(ticklabelIndex, Math.abs)) : 0;
+        helperSteps = Math.min(maxLabelIndex + 1, Math.floor(maxTicks / 2));
+    }
     // calc major first
     for(var major = 1; major >= (calcMinor ? 0 : 1); major--) {
         var isMinor = !major;
@@ -1042,7 +1049,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
             axes.prepMinorTicks(mockAx, ax, opts);
         } else {
             axes.prepTicks(mockAx, opts);
-            majorDtick = mockAx.dtick;
         }
 
         // now that we've figured out the auto values for formatting
@@ -1069,11 +1075,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var exRng = expandRange(rng);
         var startTick = exRng[0];
         var endTick = exRng[1];
-        var visibleEndTick = endTick; // for period axis, there will be an additional major tick after that
+        const visibleEndTick = endTick; // Ticks past this end are hidden helper ticks for period labels
         var dtick = mockAx.dtick;
 
-        var numDtick = isNumeric(dtick);
-        var isDLog = (type === 'log') && !(numDtick || dtick.charAt(0) === 'L');
+        const numDtick = isNumeric(dtick);
+        const isDLog = type === 'log' && !(numDtick || dtick.charAt(0) === 'L');
 
         // find the first tick
         var x0 = axes.tickFirst(mockAx, opts);
@@ -1127,13 +1133,20 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        if((major || ax._useTicklabelIndex) && isPeriod) {
-            // add an additional major tick and correspondingly many minor ticks
-            // before the first major tick to be able to label the period before the first visible ticks.
-            x = axes.tickIncrement(x, majorDtick, !axrev, calendar);
-            // same after the last major tick to be able to label the period after the last visible tick.
-            if (ax._useTicklabelIndex) endTick = axes.tickIncrement(endTick, majorDtick, axrev, calendar);
-            if (major) majorId--;
+        if (major && helperSteps) {
+            // Hidden helper ticks outside the range carry the labels of the periods that the range cuts
+            for (let k = 0; k < helperSteps; k++) {
+                x = axes.tickIncrement(x, dtick, !axrev, calendar);
+                if (ax._useTicklabelIndex) endTick = axes.tickIncrement(endTick, dtick, axrev, calendar);
+            }
+            majorId -= helperSteps;
+        } else if (isMinor && helperSteps && ax._useTicklabelIndex && tickVals.length) {
+            // Minor ticks span the major ticks, on their own grid
+            const firstMajor = tickVals[0].value;
+            while (axrev ? x < firstMajor : x > firstMajor) {
+                x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            }
+            endTick = tickVals[tickVals.length - 1].value;
         }
 
         for(;
@@ -1158,13 +1171,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             // prevent infinite loops - no more than one tick per pixel,
             // and make sure each value is different from the previous
-            if(tickVals.length > maxTicks || x === prevX) break;
+            if (tickVals.length > maxTicks + 2 * helperSteps || x === prevX) break;
             prevX = x;
 
             var obj = { value: snapToGrid(x, tick0l, dtick) };
 
             // mark ticks that were only added for period label positioning as "noTick" so they aren't drawn.
-            if (axrev ? (x > startTick || x < visibleEndTick) : (x < startTick || x > visibleEndTick)) {
+            if (axrev ? x > startTick || x < visibleEndTick : x < startTick || x > visibleEndTick) {
                 obj.noTick = true;
             }
 
@@ -1205,8 +1218,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     };
 
     // check if ticklabelIndex makes sense, otherwise ignore it.
-    // It makes sense if in addition to the always present dummy, there are at least 2 minor ticks 
-    // with the required distance to each other.
+    // It makes sense if there are at least 2 visible minor ticks with the required distance to each other.
     if (ax._useTicklabelIndex) {
         const visibleMinorTicks = minorTickVals.filter((minorTick) => !minorTick.noTick);
         if (visibleMinorTicks.length < 2) {
@@ -1232,6 +1244,17 @@ axes.calcTicks = function calcTicks(ax, opts) {
         const labelTickValsAscending = tickVals.concat(filteredMinors)
             .sort((a, b) => a.value - b.value);
 
+        // A hidden tick gets a label only if its period ends on a visible tick.
+        // Sub-hour periods get no periodX, so setTickLabel cannot hide their out-of-range labels.
+        const addTicklabel = (ticks, index) => {
+            const tickToLabel = ticks[index];
+            const periodEndTick = isPeriod ? ticks[index + 1] : undefined;
+            if (tickToLabel.noTick && !(periodEndTick && !periodEndTick.noTick)) return;
+
+            allTicklabelVals.push(tickToLabel);
+            if (periodEndTick) tickToLabel.periodEndTick = periodEndTick;
+        };
+
         tickVals.forEach(function(majorTick) {
             if (!majorTick.skipLabel) {
                 ticklabelIndex.forEach((labelIndex) => {
@@ -1240,28 +1263,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
                         const absLabelIndex = Math.abs(labelIndex);
                         const labeledTickIndex = smallerTicks.length - absLabelIndex - 1;
                         if (absLabelIndex < smallerTicks.length) {
-                            const tickToLabel = smallerTicks[labeledTickIndex];
-                            const periodEndTick = isPeriod ? smallerTicks[labeledTickIndex + 1] : undefined;
-                            const labelVisible = !tickToLabel.noTick || (periodEndTick && !periodEndTick.noTick);
-                            if (labelVisible) {
-                                allTicklabelVals.push(tickToLabel);
-                                if (periodEndTick && !periodEndTick.noTick) {
-                                    tickToLabel.periodEndTick = periodEndTick;
-                                }
-                            }
+                            addTicklabel(smallerTicks, labeledTickIndex);
                         }
                     } else { // labelIndex >= 0
                         const largerTicks = labelTickValsAscending.filter((minorTick) => minorTick.value >= majorTick.value);
-                        if (labelIndex < largerTicks.length && !largerTicks[labelIndex].noTick) {
-                            const tickToLabel = largerTicks[labelIndex];
-                            const periodEndTick = isPeriod ? largerTicks[labelIndex + 1] : undefined;
-                            const labelVisible = !tickToLabel.noTick || (periodEndTick && !periodEndTick.noTick);
-                            if (labelVisible) {
-                                allTicklabelVals.push(tickToLabel);
-                                if (periodEndTick && !periodEndTick.noTick) {
-                                    tickToLabel.periodEndTick = periodEndTick;
-                                }
-                            }
+                        if (labelIndex < largerTicks.length) {
+                            addTicklabel(largerTicks, labelIndex);
                         }
                     }
                 });
@@ -1380,7 +1387,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if(ax._useTicklabelIndex && allTicklabelVals.indexOf(tickVals[i]) !== -1) {
                 t = setTickLabel(ax, tickVals[i]);
             } else {
-                t = { x: _value, text: ''};
+                t = { x: _value, text: '' };
             }
             t.noTick = tickVals[i].noTick;
             t.minor = true;
