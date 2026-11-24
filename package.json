@@ -1,7 +1,7 @@
 {
   "name": "plotly.js",
   "version": "4.3.0",
-  "description": "The open source JavaScript graphing library that powers plotly.py and Plotly Dash",
+  "description": "The open source JavaScript graphing library that also powers plotly.py and Plotly Dash",
   "license": "MIT",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

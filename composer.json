@@ -1,6 +1,6 @@
 {
   "name": "plotly/plotly.js",
-  "description": "The open source JavaScript graphing library that powers plotly.py and Plotly Dash",
+  "description": "The open source JavaScript graphing library that also powers plotly.py and Plotly Dash",
   "keywords": [
       "graphing",
       "plotting",
