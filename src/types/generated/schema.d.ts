@@ -5211,9 +5211,9 @@ export interface ImageData {
     /** A 2-dimensional array in which each element is an array of 3 or 4 numbers representing a color. */
     z?: Datum[] | Datum[][] | TypedArray;
     /** Array defining the higher bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [255, 255, 255]. For the `rgba` colormodel, it is [255, 255, 255, 1]. For the `rgba256` colormodel, it is [255, 255, 255, 255]. For the `hsl` colormodel, it is [360, 100, 100]. For the `hsla` colormodel, it is [360, 100, 100, 1]. */
-    zmax?: [number, number, number, number];
+    zmax?: number[];
     /** Array defining the lower bound for each color component. Note that the default value will depend on the colormodel. For the `rgb` colormodel, it is [0, 0, 0]. For the `rgba` colormodel, it is [0, 0, 0, 0]. For the `rgba256` colormodel, it is [0, 0, 0, 0]. For the `hsl` colormodel, it is [0, 0, 0]. For the `hsla` colormodel, it is [0, 0, 0, 0]. */
-    zmin?: [number, number, number, number];
+    zmin?: number[];
     /**
      * Sets the layer on which this trace is displayed, relative to other SVG traces on the same subplot. SVG traces with higher `zorder` appear in front of those with lower `zorder`.
      * @default 0

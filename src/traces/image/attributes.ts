@@ -58,6 +58,7 @@ const attributes = {
             { valType: 'number', editType: 'calc' },
             { valType: 'number', editType: 'calc' }
         ],
+        freeLength: true,
         editType: 'calc',
         description: [
             'Array defining the lower bound for each color component.',
@@ -73,6 +74,7 @@ const attributes = {
             { valType: 'number', editType: 'calc' },
             { valType: 'number', editType: 'calc' }
         ],
+        freeLength: true,
         editType: 'calc',
         description: [
             'Array defining the higher bound for each color component.',
