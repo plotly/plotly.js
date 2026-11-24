@@ -7,7 +7,7 @@ plotly.js follows [semver](https://semver.org). A release that adds functionalit
 Two GitHub Actions workflows do the release:
 
 1. [`prepare-release`](.github/workflows/prepare-release.yml) builds the release files and opens a release pull request. A maintainer starts it by hand.
-2. [`publish-release`](.github/workflows/publish-release.yml) starts when the release pull request merges. It tags the merge commit, waits for approval, and then publishes the release to npm, the Plotly CDN, and GitHub.
+2. [`publish-release`](.github/workflows/publish-release.yml) starts when the release pull request merges. It builds and packs the release files, waits for approval, and then tags the merge commit and publishes the release to npm, the Plotly CDN, and GitHub.
 
 The workflows tag and publish nothing before the approval. Until then, you can stop a release at no cost. Close the pull request, delete the branch, and start again.
 
@@ -34,10 +34,9 @@ The workflows tag and publish nothing before the approval. Until then, you can s
    > [!CAUTION]
    > If `main` changes before you merge, the release includes those changes, but the new `CHANGELOG.md` section does not list them. Their draftlogs stay for the next release. To list them in this release, close the pull request, delete the branch, and run `prepare-release` again.
 
-8. Open the [`publish-release`](https://github.com/plotly/plotly.js/actions/workflows/publish-release.yml) run for the merge commit
-9. Click "Review deployments", select `release`, and approve. The workflow then does these steps:
+8. Open the [`publish-release`](https://github.com/plotly/plotly.js/actions/workflows/publish-release.yml) run for the merge commit. Its `build` job runs `npm run build` on the merge commit and packs every release file. The published files come from this build, not from the committed `dist/`.
+9. Click "Review deployments", select `release`, and approve. The `publish` job then does these steps:
    - It tags the merge commit `vX.Y.Z`
-   - It runs `npm run build` on the tagged commit. The published files come from this build, not from the committed `dist/`.
    - It publishes `plotly.js` and the 19 bundle and locale packages to npm, with the dist-tag `latest`, or `rc` for a release candidate
    - It uploads the bundles to the Plotly CDN. Then it makes sure that the CDN serves `plotly-X.Y.Z.js` and `plotly-X.Y.Z.min.js`.
    - It creates the GitHub release from the CHANGELOG section
@@ -88,7 +87,7 @@ Do not upload a maintenance release to the CDN. This policy encourages every use
 
 ## If a publish step fails
 
-Every step in the publish job skips the work that is already done. The npm and GitHub steps make sure that the version is not already published before they publish. The CDN step uploads the files again and overwrites them.
+Every step in the `publish` job skips the work that is already done. The job reuses the files from the `build` job of the same run. The npm and GitHub steps make sure that the version is not already published before they publish. The CDN step uploads the files again and overwrites them.
 
 1. Read the failed step in the `publish-release` run, and fix the cause. For example, renew a credential or wait for an npm outage to end.
 2. Click "Re-run failed jobs"

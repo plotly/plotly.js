@@ -41,6 +41,22 @@ const getDistTag = () => {
     return prerelease ? prerelease.split('.')[0] : 'latest';
 };
 
+/**
+ * Get the folder for `--pack`.
+ *
+ * @returns The absolute path that follows `--pack`, or undefined when the caller does not pass `--pack`
+ */
+const getPackDir = () => {
+    const i = process.argv.indexOf('--pack');
+    if (i === -1) return undefined;
+
+    const dir = process.argv[i + 1];
+    if (!dir || dir.startsWith('--')) throw new Error('Missing value for --pack');
+    return path.resolve(dir);
+};
+
+const packDir = getPackDir();
+
 const partialBundlePaths = constants.partialBundleNames.map(constants.makePartialBundleOpts);
 
 const distPackages = partialBundlePaths
@@ -236,6 +252,11 @@ const runNpm = (args, cwd) =>
     });
 
 const publishToNPM = async (pkgPath, name, tag) => {
+    if (packDir) {
+        await runNpm(['pack', '--pack-destination', packDir], pkgPath);
+        return;
+    }
+
     if (process.env.DRYRUN) {
         console.log(`Dry run, did not publish ${name}`);
         await runNpm(['publish', '--dry-run', '--tag', tag], pkgPath);
@@ -285,7 +306,12 @@ const syncLocalesPkg = async (d, tag) => {
 
 const main = async () => {
     const tag = getDistTag();
-    console.log(`Publish the plotly.js ${pkg.version} bundle packages with the "${tag}" dist-tag`);
+    if (packDir) {
+        await fs.ensureDir(packDir);
+        console.log(`Pack the plotly.js ${pkg.version} bundle packages into ${packDir}`);
+    } else {
+        console.log(`Publish the plotly.js ${pkg.version} bundle packages with the "${tag}" dist-tag`);
+    }
 
     // Publish one package at a time, so that a failure stops the run with a clear cause
     for (const d of [...distPackages, ...distMinPackages]) await syncBundlePkg(d, tag);

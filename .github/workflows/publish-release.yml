@@ -1,8 +1,10 @@
 name: publish-release
 
 # Publishes the version in package.json when a release pull request from prepare-release.yml merges.
-# The publish job waits for approval in the `release` environment. Every publish step skips work
-# that is already done, so a failed run can be run again. See RELEASE.md.
+# The build job runs the dependency code and packs every release file, with read-only permissions.
+# The publish job holds the publish credentials and runs no dependency code. It waits for approval
+# in the `release` environment. Every publish step skips work that is already done, so a failed run
+# can be run again. See RELEASE.md.
 
 on:
   push:
@@ -60,9 +62,52 @@ jobs:
           echo "release=true" >> "$GITHUB_OUTPUT"
           echo "dist-tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
 
-  publish:
+  build:
     needs: check
     if: needs.check.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      # Publish files built from the release commit, not the committed dist/
+      - name: Build dist/
+        run: npm run build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Pack the release files
+        run: |
+          set -euo pipefail
+          mkdir -p build/release/packages
+          npm pack --pack-destination build/release/packages
+          npm run sync-packages -- --pack build/release/packages
+          ./tasks/cdn_publish.sh --prepare-only
+          node tasks/release_notes.mjs > build/release/notes.md
+          ls -l build/release/packages
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-files
+          path: |
+            build/release
+            build/sync
+          if-no-files-found: error
+
+  # Dependency code can read every credential in its job, so this job installs no dependencies and runs no build
+  publish:
+    needs: [check, build]
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -80,13 +125,16 @@ jobs:
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install dependencies
-        run: npm ci
-        env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+      # Trusted publishing needs npm 11.5.1 or later, and Node.js 22 ships npm 10
+      - name: Install npm 11
+        run: npm install -g npm@11
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: release-files
+          path: build
 
       - name: Tag the release
         run: |
@@ -100,27 +148,19 @@ jobs:
           git tag -a "v$VERSION" -m "v$VERSION"
           git push origin "v$VERSION"
 
-      # Publish files built from the tagged commit, not the committed dist/. A commit that merged after prepare-release ran is then in every published file.
-      - name: Build dist/
-        run: npm run build
-        env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
-
-      # Trusted publishing needs npm 11.5.1 or later, and Node.js 22 ships npm 10
-      - name: Install npm 11
-        run: npm install -g npm@11
-
-      - name: Publish plotly.js to npm
+      - name: Publish the packages to npm
         run: |
           set -euo pipefail
-          if npm view "plotly.js@$VERSION" version > /dev/null 2>&1; then
-            echo "plotly.js@$VERSION is already on npm"
-            exit 0
-          fi
-          npm publish --tag "$DIST_TAG"
-
-      - name: Publish the bundle and locale packages to npm
-        run: npm run sync-packages -- --tag "$DIST_TAG"
+          cd build/release/packages
+          # Publish plotly.js first, then the bundle and locale packages
+          for FILE in "plotly.js-$VERSION.tgz" $(ls -- *.tgz | grep -vxF "plotly.js-$VERSION.tgz"); do
+            NAME="${FILE%-"$VERSION".tgz}"
+            if npm view "$NAME@$VERSION" version > /dev/null 2>&1; then
+              echo "Skip $NAME@$VERSION, which is already on npm"
+              continue
+            fi
+            npm publish "$FILE" --tag "$DIST_TAG"
+          done
 
       - name: Configure AWS credentials for the CDN
         uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
@@ -131,7 +171,7 @@ jobs:
       - name: Upload the bundles to the CDN
         run: |
           set -euo pipefail
-          ./tasks/cdn_publish.sh
+          ./tasks/cdn_publish.sh --upload-only
           for FILE in "plotly-$VERSION.js" "plotly-$VERSION.min.js"; do
             curl --fail --silent --show-error --head "https://cdn.plot.ly/$FILE" > /dev/null
           done
@@ -146,10 +186,9 @@ jobs:
             exit 0
           fi
 
-          node tasks/release_notes.mjs > "$RUNNER_TEMP/notes.md"
           FLAGS=()
           if [[ "$VERSION" == *-* ]]; then FLAGS+=(--prerelease); fi
-          gh release create "v$VERSION" --verify-tag --title "v$VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${FLAGS[@]}"
+          gh release create "v$VERSION" --verify-tag --title "v$VERSION" --notes-file build/release/notes.md "${FLAGS[@]}"
 
       - name: Write the run summary
         run: |
